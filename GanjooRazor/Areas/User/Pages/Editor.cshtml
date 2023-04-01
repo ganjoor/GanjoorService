@@ -811,6 +811,55 @@ else
 
             </tr>
 
+            <tr style="background-color:@color">
+                <td>
+                    زبان فعلی:
+                </td>
+            </tr>
+
+            <tr style="background-color:@color">
+                <td>
+                    @if(verse.LanguageId == null)
+                    {
+                        @("فارسی")
+                        <div id="language-old" class="hidden-recitation">1</div>
+                    }
+                    else
+                    {
+                        @Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Name
+                        <div id="language-old" class="hidden-recitation">odel.Languages.Where(l => l.Id == verse.LanguageId).Single().Id</div>
+                    }
+                </td>
+            </tr>
+
+            <tr style="background-color:@color">
+                <td>
+                    <label for="language">زبان:</label>
+                    <br />
+                    <select id="language">
+                        @foreach (var lang in Model.Languages)
+                        {
+                            @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && v.LanguageId == lang.Id).Any())
+                            {
+                                <option value="@lang.Id" selected>@lang.Name</option>
+                            }
+                            else if (verse.LanguageId == null && lang.Id == 1)
+                            {
+                                <option value="1" selected>فارسی</option>
+                            }
+                            else if (verse.LanguageId == lang.Id)
+                            {
+                                <option value="@lang.Id" selected>@lang.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@lang.Id">@lang.Name</option>
+                            }
+                        }
+                    </select>
+                </td>
+            </tr>
+
 
 
             <tr style="background-color:@color">
