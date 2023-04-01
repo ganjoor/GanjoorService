@@ -102,6 +102,20 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public PoemGeoDateTag[] PoemGeoDateTags { get; set; }
 
+        public GanjoorLanguage[] Languages { get; set; }
+
+        private async Task ReadLanguagesAsync(HttpClient secureClient)
+        {
+            HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
+            if (!response.IsSuccessStatusCode)
+            {
+                FatalError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return;
+            }
+
+            Languages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await response.Content.ReadAsStringAsync());
+        }
+
         /// <summary>
         /// get
         /// </summary>
@@ -203,7 +217,9 @@ namespace GanjooRazor.Areas.User.Pages
                         CanAssignRhythms = false;
                     }
 
-                    if(ShowAdminOps)
+                    await ReadLanguagesAsync(secureClient);
+
+                    if (ShowAdminOps)
                     {
                         var responseLocations = await secureClient.GetAsync($"{APIRoot.Url}/api/locations");
                         if (!responseLocations.IsSuccessStatusCode)
