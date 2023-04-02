@@ -168,7 +168,13 @@ namespace RMuseum.Services.Implementation
                         if (dbVerse.SummaryReviewResult == CorrectionReviewResult.Approved)
                             poemVerse.CoupletSummary = dbVerse.CoupletSummary;
                         if (dbVerse.LanguageReviewResult == CorrectionReviewResult.Approved)
+                        {
+                            if(dbVerse.LanguageId == 1)//fa-IR
+                            {
+                                dbVerse.LanguageId = null;
+                            }
                             poemVerse.LanguageId = dbVerse.LanguageId;
+                        }
                         modifiedVerses.Add(poemVerse);
                     }
                 }
