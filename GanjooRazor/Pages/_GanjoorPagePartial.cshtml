@@ -247,7 +247,11 @@
                                 var popup = new L.Popup();
                                 oms.addListener('click', function (marker) {
 
-                                    var poemDesc = marker.order + ' - ' + marker.poemGeoTag.Location.Name + '<br> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
+                                    var markOrder = '';
+                                    if (marker.poemGeoTag.LunarYear != null){
+                                        markOrder = marker.order + ' - ';
+                                    }
+                                    var poemDesc = markOrder + marker.poemGeoTag.Location.Name + '<br> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
                                     if (marker.poemGeoTag.LunarYear != null) {
                                         poemDesc += '<br> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
                                     }
@@ -257,7 +261,7 @@
                                 });
 
                                 var polygon = L.polyline([
-                            @foreach (var poemGeoTag in Model.CategoryPoemGeoDateTags.Where(t => t.Location != null).ToArray())
+                            @foreach (var poemGeoTag in Model.CategoryPoemGeoDateTags.Where(t => t.Location != null && t.LunarYear != null).ToArray())
                             {
                                 @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
                             }
