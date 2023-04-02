@@ -117,7 +117,7 @@ else
                                 </tr>
                             }
                         }
-                        else if(verse.NewVerse)
+                        else if (verse.NewVerse)
                         {
                             if (verse.NewVerseResult == CorrectionReviewResult.Approved)
                             {
@@ -147,8 +147,13 @@ else
                                 </tr>
                             }
 
-                            if(verse.SummaryReviewResult == CorrectionReviewResult.Approved)
+                            if (verse.SummaryReviewResult == CorrectionReviewResult.Approved)
                             {
+                                <tr>
+                                    <td colspan="2">
+                                        @verse.OriginalText
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td>
                                         معنی: <p style="color:red">@verse.OriginalCoupletSummary</p>
@@ -160,23 +165,58 @@ else
                                 </tr>
                             }
 
-                            if (verse.VersePosition != null)
+                            if (verse.VersePosition != null && verse.VersePositionResult == CorrectionReviewResult.Approved)
                             {
-                                if (verse.VersePositionResult == CorrectionReviewResult.Approved)
-                                {
-                                    <tr>
-                                        <td>
-                                            <p>@verse.OriginalText</p>
-                                            <p style="color:red">تبدیل نوع مصرع از @RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((VersePosition)verse.OriginalVersePosition)</p>
-                                        </td>
-                                        <td>
-                                            <p>@verse.Text</p>
-                                            <p style="color:green">تبدیل نوع مصرع به @RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((VersePosition)verse.VersePosition)</p>
-                                        </td>
+                                <tr>
+                                    <td colspan="2">
+                                        @verse.OriginalText
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
 
-                                    </tr>
-                                }
+                                        <p style="color:red">تبدیل نوع مصرع از @RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((VersePosition)verse.OriginalVersePosition)</p>
+                                    </td>
+                                    <td>
+                                        <p>@verse.Text</p>
+                                        <p style="color:green">تبدیل نوع مصرع به @RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((VersePosition)verse.VersePosition)</p>
+                                    </td>
+                                </tr>
                             }
+
+                            @if (verse.LanguageId != null && verse.LanguageReviewResult == CorrectionReviewResult.Approved)
+                            {
+                                <tr>
+                                    <td colspan="2">
+                                        @verse.OriginalText
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @if (verse.OriginalLanguageId != null)
+                                        {
+                                            <p>تغییر زبان از @Model.Languages.Where(l => l.Id == verse.OriginalLanguageId).Single().Name </p>
+                                        }
+                                        else
+                                        {
+                                            <p>تغییر زبان از فارسی</p>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (verse.LanguageId != null)
+                                        {
+                                            <p>به @Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Name </p>
+                                        }
+                                        else
+                                        {
+                                            <p>به فارسی</p>
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+
+                            <tr><td colspan="2" style="background-color:black">&nbsp;</td></tr>
                         }
                     }
 
