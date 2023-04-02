@@ -142,6 +142,8 @@ namespace GanjooRazor.Areas.User.Pages
                     }
                     MyLastEdit = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await editResponse.Content.ReadAsStringAsync());
 
+                   
+
 
                     var rhythmResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms?sortOnVerseCount=true");
                     if (!rhythmResponse.IsSuccessStatusCode)
@@ -182,6 +184,7 @@ namespace GanjooRazor.Areas.User.Pages
                         return Page();
                     }
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+                    
 
                     if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && !string.IsNullOrEmpty(s.RhymeLetters)).Any())
                     {

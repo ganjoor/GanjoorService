@@ -482,6 +482,9 @@ else
                     @if (verse.MarkForDelete)
                     {
                         <tr>
+                            <td colspan="2">@verse.OriginalText</td>
+                        </tr>
+                        <tr>
                             <td>
                                 <p>@verse.OriginalText</p>
                             </td>
@@ -494,6 +497,9 @@ else
                     {
                         @if (verse.VersePosition != null)
                         {
+                            <tr>
+                                <td colspan="2">@verse.OriginalText</td>
+                            </tr>
                             <tr>
                                 <td>
                                     @if (verse.OriginalVersePosition != null)
@@ -511,11 +517,37 @@ else
                         @if (verse.Text != null)
                         {
                             <tr>
+                                <td colspan="2">@verse.OriginalText</td>
+                            </tr>
+                            <tr>
                                 <td>
                                     <p class="red-color">@verse.OriginalText</p>
                                 </td>
                                 <td>
                                     <p class="green-color">@verse.Text</p>
+                                </td>
+                            </tr>
+                        }
+
+                        @if (verse.LanguageId != null)
+                        {
+                            <tr>
+                                <td colspan="2">@verse.OriginalText</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @if(verse.OriginalLanguageId == null)
+                                    {
+                                        <p class="red-color">زبان: فارسی</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="red-color">زبان: @Model.Languages.Where(l => l.Id == verse.OriginalLanguageId).Single().Name</p>
+                                    }
+                                    
+                                </td>
+                                <td>
+                                    <p class="green-color">@Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Name</p>
                                 </td>
                             </tr>
                         }
