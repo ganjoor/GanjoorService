@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 
@@ -41,6 +42,20 @@ namespace GanjooRazor.Areas.User.Pages
         /// Corrections
         /// </summary>
         public List<GanjoorPoemCorrectionViewModel> Corrections { get; set; }
+
+        public GanjoorLanguage[] Languages { get; set; }
+
+        private async Task ReadLanguagesAsync(HttpClient secureClient)
+        {
+            HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
+            if (!response.IsSuccessStatusCode)
+            {
+                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return;
+            }
+
+            Languages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await response.Content.ReadAsStringAsync());
+        }
         public async Task<IActionResult> OnGetAsync()
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
@@ -144,7 +159,7 @@ namespace GanjooRazor.Areas.User.Pages
                                 }
                             }
                         }
-
+                        await ReadLanguagesAsync(secureClient);
                     }
                 }
                 else

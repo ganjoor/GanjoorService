@@ -281,12 +281,12 @@ else
                                 </td>
                             </tr>
                         }
-                        else if(verse.NewVerse)
+                        else if (verse.NewVerse)
                         {
                             <tr>
                                 <td>
                                     <p>پیشنهاد مصرع جدید</p>
-                                    
+
                                 </td>
                                 <td>
                                     <p>@verse.Text</p>
@@ -308,7 +308,7 @@ else
                                 </td>
                             </tr>
                         }
-                        else if(verse.Text != null)
+                        else if (verse.Text != null)
                         {
                             <tr>
                                 <td>
@@ -337,6 +337,11 @@ else
                         @if (verse.CoupletSummary != null)
                         {
                             <tr>
+                                <td colspan="3">
+                                    @verse.OriginalText
+                                </td>
+                            </tr>
+                            <tr>
                                 <td>
                                     معنی: <p style="color:red">@verse.OriginalCoupletSummary</p>
                                 </td>
@@ -363,6 +368,11 @@ else
                         @if (verse.VersePosition != null && !verse.NewVerse && verse.VersePositionResult != CorrectionReviewResult.NotSuggestedByUser)
                         {
                             <tr>
+                                <td colspan="3">
+                                    @verse.OriginalText
+                                </td>
+                            </tr>
+                            <tr>
                                 <td>
                                     @if (verse.OriginalVersePosition != null)
                                     {
@@ -385,6 +395,51 @@ else
                                     else
                                     {
                                         <p style="color:red">@CorrectionReviewResultConvertor.GetString(verse.VersePositionResult)</p>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        @if (verse.LanguageId != null && !verse.NewVerse && verse.LanguageReviewResult != CorrectionReviewResult.NotSuggestedByUser)
+                        {
+                            <tr>
+                                <td colspan="3">
+                                    @verse.OriginalText
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @if (verse.OriginalLanguageId != null)
+                                    {
+                                        <p>تغییر زبان از @Model.Languages.Where(l => l.Id == verse.OriginalLanguageId).Single().Name </p>
+                                    }
+                                    else
+                                    {
+                                        <p>تغییر زبان از فارسی</p>
+                                    }
+                                </td>
+                                <td>
+                                    @if (verse.LanguageId != null)
+                                    {
+                                        <p>به @Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Name </p>
+                                    }
+                                    else
+                                    {
+                                        <p>به فارسی</p>
+                                    }
+                                </td>
+                                <td>
+                                    @if (verse.LanguageReviewResult == CorrectionReviewResult.NotReviewed)
+                                    {
+                                        <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.LanguageReviewResult)</p>
+                                    }
+                                    else
+                                   if (verse.LanguageReviewResult == CorrectionReviewResult.Approved)
+                                    {
+                                        <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.LanguageReviewResult)</p>
+                                    }
+                                    else
+                                    {
+                                        <p style="color:red">@CorrectionReviewResultConvertor.GetString(verse.LanguageReviewResult)</p>
                                     }
                                 </td>
                             </tr>
