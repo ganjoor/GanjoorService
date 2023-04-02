@@ -70,6 +70,7 @@
         var versePosReviewResult = [];
         var verseReviewNotes = [];
         var verseSummaryResults = [];
+        var verseLanguageReviewResult = [];
         
         for (var i = 0; i <= (verseCount + 100); i++) {
 
@@ -86,6 +87,15 @@
                 }
                 else {
                     versePosReviewResult.push('NotChanged');
+                }
+
+                var verseLanguageElementId = '#verse-language' + (i + 1).toString() + '_review_result_Approved';
+                if ($(verseLanguageElementId).length > 0) {
+                    var verseLanguageElementName = 'verse-language' + (i + 1).toString() + '_review_result';
+                    verseLanguageReviewResult.push($('input[name=' + verseLanguageElementName + ']:checked').val())
+                }
+                else {
+                    verseLanguageReviewResult.push('NotChanged');
                 }
 
                 var summaryElementId = '#verse-summary' + (i + 1).toString() + '_review_result_Approved';
@@ -126,6 +136,7 @@
                 verseReviewResult: verseReviewResult,
                 versePosReviewResult: versePosReviewResult,
                 verseSummaryResults: verseSummaryResults,
+                verseLanguageReviewResult: verseLanguageReviewResult,
                 verseReviewNotes: verseReviewNotes,
             },
             success: function() {

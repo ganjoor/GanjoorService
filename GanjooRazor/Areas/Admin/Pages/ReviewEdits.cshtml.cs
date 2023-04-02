@@ -227,6 +227,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             string titleReviewNote, string[] verseReviewResult,
             string[] versePosReviewResult,
             string[] verseSummaryResults,
+            string[] verseLanguageReviewResult,
             string[] verseReviewNotes
             )
         {
@@ -350,6 +351,31 @@ namespace GanjooRazor.Areas.Admin.Pages
                                         Correction.VerseOrderText[i].VersePositionResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), versePosReviewResult[i]);
                                     }
                                     
+                                }
+
+                                if (Correction.VerseOrderText[i].LanguageId != null)
+                                {
+                                    if (i >= verseLanguageReviewResult.Length)
+                                    {
+                                        if (Correction.VerseOrderText[i].Result != CorrectionReviewResult.Approved)
+                                        {
+                                            Correction.VerseOrderText[i].LanguageReviewResult = CorrectionReviewResult.NotSuggestedByUser;
+                                        }
+                                        else
+                                        {
+                                            Correction.VerseOrderText[i].LanguageReviewResult = CorrectionReviewResult.Approved;
+                                        }
+                                    }
+                                    else
+                                    if (verseLanguageReviewResult[i] == null)
+                                    {
+                                        return new BadRequestObjectResult("لطفاً تکلیف بررسی تمام مصرعهای پیشنهادی را مشخص کنید.");
+                                    }
+                                    else
+                                    {
+                                        Correction.VerseOrderText[i].LanguageReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseLanguageReviewResult[i]);
+                                    }
+
                                 }
 
                                 if (Correction.VerseOrderText[i].CoupletSummary != null)
