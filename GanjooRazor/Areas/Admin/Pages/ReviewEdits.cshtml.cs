@@ -51,6 +51,20 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public string RhymeLetters { get; set; }
 
+        public GanjoorLanguage[] Languages { get; set; }
+
+        private async Task ReadLanguagesAsync(HttpClient secureClient)
+        {
+            HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
+            if (!response.IsSuccessStatusCode)
+            {
+                FatalError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return;
+            }
+
+            Languages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await response.Content.ReadAsStringAsync());
+        }
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
@@ -76,6 +90,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                     {
                         TotalCount = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata).totalCount;
                     }
+
+                    await ReadLanguagesAsync(secureClient);
+
+
                     Correction = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await nextResponse.Content.ReadAsStringAsync());
                     if(Correction != null)
                     {
@@ -131,6 +149,9 @@ namespace GanjooRazor.Areas.Admin.Pages
                                     if (!verse.NewVerse)
                                     {
                                         verse.OriginalText = v.Text;
+                                        verse.OriginalCoupletSummary = v.CoupletSummary;
+                                        verse.OriginalLanguageId = v.LanguageId;
+                                        verse.OriginalVersePosition = v.VersePosition;
                                         verse.CoupletIndex = v.CoupletIndex;
                                         if(string.IsNullOrEmpty(verse.Text))
                                         {
@@ -138,7 +159,6 @@ namespace GanjooRazor.Areas.Admin.Pages
                                         }
                                         if(!string.IsNullOrEmpty(verse.CoupletSummary))
                                         {
-                                            verse.OriginalCoupletSummary = v.CoupletSummary;
                                             if(verse.CoupletSummary == verse.OriginalCoupletSummary)
                                             {
                                                 verse.SummaryReviewResult = CorrectionReviewResult.NotChanged;
@@ -199,6 +219,8 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             return Page();
         }
+
+        
 
         public async Task<IActionResult> OnPostSendCorrectionsModerationAsync(int correctionId, 
             string titleReviewResult, string summaryReviewResult, string rhythmReviewResult, string rhythm2ReviewResult, string rhymeReviewResult,
