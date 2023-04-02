@@ -1078,3 +1078,10 @@ function w3_close_showHelp() {
     document.getElementById("mySidebar").style.display = "none";
     document.getElementById('navbarhelp').style.display = 'block'
 }
+
+function viewLocation(lt, lg) {
+    link = document.createElement("a")
+    link.href = 'https://maps.google.com/?q=' + lt + ',' + lg + '&ll=' + lt + ',' + lg + '&z=3';
+    link.target = "_blank"
+    link.click()
+}

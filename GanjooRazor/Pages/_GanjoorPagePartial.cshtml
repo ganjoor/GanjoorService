@@ -251,7 +251,7 @@
                                     if (marker.poemGeoTag.LunarYear != null){
                                         markOrder = marker.order + ' - ';
                                     }
-                                    var poemDesc = markOrder + marker.poemGeoTag.Location.Name + '<br> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
+                                    var poemDesc = markOrder + '<a class="actionlink" onclick="viewLocation(marker.poemGeoTag.Location.Latitude, marker.poemGeoTag.Location.Longitude)">' + marker.poemGeoTag.Location.Name + '</a> <br> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
                                     if (marker.poemGeoTag.LunarYear != null) {
                                         poemDesc += '<br> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
                                     }
