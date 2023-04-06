@@ -23,6 +23,7 @@
             font-family: 'Vazir'
         }
     </style>
+    <script src="/js/bk.js?version=38"></script>
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="~/js/leaflet.js"></script>
     <script src="~/js/leaflet-providers.js"></script>
@@ -65,7 +66,7 @@
                 var index = $('#rangeInput').val();
                 for (var i = 0; i < poetsgroups[index].Poets.length; i++) {
                     if (poetsgroups[index].Poets[i].Name == marker.desc) {
-                        poetDesc = '<a target="_blank" href="' + poetsgroups[index].Poets[i].FullUrl + '">' + poetsgroups[index].Poets[i].Name + '</a>'
+                        poetDesc = '<a target="_blank" href="' + poetsgroups[index].Poets[i].FullUrl + '">' + poetsgroups[index].Poets[i].Name + '</a><br /><a class="actionlink" onclick = "viewLocation(' + poetsgroups[index].Poets[i].BirthPlaceLatitude + ', ' + poetsgroups[index].Poets[i].BirthPlaceLongitude + ')"> ' + poetsgroups[index].Poets[i].BirthPlace + ' </a>'
                         break;
                     }
                 }
