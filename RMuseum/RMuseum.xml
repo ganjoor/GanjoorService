@@ -6300,6 +6300,16 @@
             user image id
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.SumUpSubsGeoLocations">
+            <summary>
+            sum up sub categories geo locations
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.MapName">
+            <summary>
+            category map name
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorCatType">
             <summary>
             Ganjoor Category Type

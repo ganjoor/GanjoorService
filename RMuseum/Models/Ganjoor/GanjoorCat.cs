@@ -95,5 +95,15 @@ namespace RMuseum.Models.Ganjoor
         /// user image id
         /// </summary>
         public Guid? RImageId { get; set; }
+
+        /// <summary>
+        /// sum up sub categories geo locations
+        /// </summary>
+        public bool SumUpSubsGeoLocations { get; set; }
+
+        /// <summary>
+        /// category map name
+        /// </summary>
+        public string MapName { get; set; }
     }
 }
