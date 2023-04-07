@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using RSecurityBackend.Models.Image;
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RMuseum.Models.Ganjoor
@@ -78,5 +80,20 @@ namespace RMuseum.Models.Ganjoor
         /// published
         /// </summary>
         public bool Published { get; set; }
+
+        /// <summary>
+        /// category book name
+        /// </summary>
+        public string BookName { get; set; }
+
+        /// <summary>
+        /// poet image
+        /// </summary>
+        public virtual RImage RImage { get; set; }
+
+        /// <summary>
+        /// user image id
+        /// </summary>
+        public Guid? RImageId { get; set; }
     }
 }

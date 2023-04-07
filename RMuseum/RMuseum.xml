@@ -6285,6 +6285,21 @@
             published
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.BookName">
+            <summary>
+            category book name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.RImage">
+            <summary>
+            poet image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCat.RImageId">
+            <summary>
+            user image id
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorCatType">
             <summary>
             Ganjoor Category Type
