@@ -8948,6 +8948,31 @@
             published
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.BookName">
+            <summary>
+            category book name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.RImage">
+            <summary>
+            poet image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.RImageId">
+            <summary>
+            user image id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.SumUpSubsGeoLocations">
+            <summary>
+            sum up sub categories geo locations
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.MapName">
+            <summary>
+            category map name
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.Next">
             <summary>
             Next Category without Ancestors/Children/Poems info

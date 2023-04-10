@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using RSecurityBackend.Models.Image;
+using System;
+using System.Collections.Generic;
 
 namespace RMuseum.Models.Ganjoor.ViewModels
 {
@@ -56,6 +58,31 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// published
         /// </summary>
         public bool Published { get; set; }
+
+        /// <summary>
+        /// category book name
+        /// </summary>
+        public string BookName { get; set; }
+
+        /// <summary>
+        /// poet image
+        /// </summary>
+        public virtual RImage RImage { get; set; }
+
+        /// <summary>
+        /// user image id
+        /// </summary>
+        public Guid? RImageId { get; set; }
+
+        /// <summary>
+        /// sum up sub categories geo locations
+        /// </summary>
+        public bool SumUpSubsGeoLocations { get; set; }
+
+        /// <summary>
+        /// category map name
+        /// </summary>
+        public string MapName { get; set; }
 
         /// <summary>
         /// Next Category without Ancestors/Children/Poems info
