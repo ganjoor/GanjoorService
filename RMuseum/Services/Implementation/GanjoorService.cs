@@ -202,6 +202,10 @@ namespace RMuseum.Services.Implementation
                     DescriptionHtml = parent.DescriptionHtml,
                     MixedModeOrder = parent.MixedModeOrder,
                     Published = parent.Published,
+                    BookName = parent.BookName,
+                    RImageId = parent.RImageId,
+                    SumUpSubsGeoLocations = parent.SumUpSubsGeoLocations,
+                    MapName = parent.MapName,
                 });
 
                 parent = await _context.GanjoorCategories.Where(c => c.Id == parent.ParentId).AsNoTracking().FirstOrDefaultAsync();
@@ -231,6 +235,10 @@ namespace RMuseum.Services.Implementation
                                                     DescriptionHtml = c.DescriptionHtml,
                                                     MixedModeOrder = c.MixedModeOrder,
                                                     Published = c.Published,
+                                                    BookName = c.BookName,
+                                                    RImageId = c.RImageId,
+                                                    SumUpSubsGeoLocations = c.SumUpSubsGeoLocations,
+                                                    MapName = c.MapName,
                                                     //other fields null
                                                 }
                                         ).AsNoTracking().SingleOrDefaultAsync();
@@ -258,6 +266,10 @@ namespace RMuseum.Services.Implementation
                                                     DescriptionHtml = c.DescriptionHtml,
                                                     MixedModeOrder = c.MixedModeOrder,
                                                     Published = c.Published,
+                                                    BookName = c.BookName,
+                                                    RImageId = c.RImageId,
+                                                    SumUpSubsGeoLocations = c.SumUpSubsGeoLocations,
+                                                    MapName = c.MapName,
                                                     //other fields null
                                                 }
                                         ).AsNoTracking().SingleOrDefaultAsync();
@@ -274,6 +286,10 @@ namespace RMuseum.Services.Implementation
                 DescriptionHtml = cat.DescriptionHtml,
                 MixedModeOrder = cat.MixedModeOrder,
                 Published = cat.Published,
+                BookName = cat.BookName,
+                RImageId = cat.RImageId,
+                SumUpSubsGeoLocations = cat.SumUpSubsGeoLocations,
+                MapName = cat.MapName,
                 Next = nextCat,
                 Previous = preCat,
                 Ancestors = ancetors,

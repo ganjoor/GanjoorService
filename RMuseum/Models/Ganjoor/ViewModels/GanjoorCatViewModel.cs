@@ -65,11 +65,6 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public string BookName { get; set; }
 
         /// <summary>
-        /// poet image
-        /// </summary>
-        public virtual RImage RImage { get; set; }
-
-        /// <summary>
         /// user image id
         /// </summary>
         public Guid? RImageId { get; set; }

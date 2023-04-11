@@ -8953,11 +8953,6 @@
             category book name
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.RImage">
-            <summary>
-            poet image
-            </summary>
-        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.RImageId">
             <summary>
             user image id
