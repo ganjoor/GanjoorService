@@ -989,6 +989,13 @@
             <param name="mainSections"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.SetCategoryExtraInfo(System.Int32)">
+            <summary>
+            set category extra info
+            </summary>
+            <param name="id"></param>
+            <returns>only RImageId field is valid</returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.BatchRenameCatPoemTitles(System.Int32,RMuseum.Models.Ganjoor.ViewModels.GanjoorBatchNamingModel)">
             <summary>
             batch rename cat poems

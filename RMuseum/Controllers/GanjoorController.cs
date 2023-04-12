@@ -460,6 +460,60 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// set category extra info
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>only RImageId field is valid</returns>
+        [HttpPut("cat/extra/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCatViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+        public async Task<IActionResult> SetCategoryExtraInfo(int id)
+        {
+            try
+            {
+                Guid? imageId = null;
+                if(Request.Form.Files.Count > 0)
+                {
+                    IFormFile file = Request.Form.Files[0];
+                    RServiceResult<RImage> image = await _imageFileService.Add(file, null, file.FileName, Path.Combine(Configuration.GetSection("PictureFileService")["StoragePath"], "CategoryImages"));
+                    if (!string.IsNullOrEmpty(image.ExceptionString))
+                    {
+                        return BadRequest(image.ExceptionString);
+                    }
+                    image = await _imageFileService.Store(image.Result);
+                    if (!string.IsNullOrEmpty(image.ExceptionString))
+                    {
+                        return BadRequest(image.ExceptionString);
+                    }
+                    imageId = image.Result.Id;
+                }
+
+                var res = await _ganjoorService.SetCategoryExtraInfo(id, Request.Form["bookName"], imageId, bool.Parse(Request.Form["sumUpSubsGeoLocations"]), Request.Form["mapName"]);
+
+                if(!string.IsNullOrEmpty(res.ExceptionString))
+                {
+                    return BadRequest(res.ExceptionString);
+                }
+
+                if(res.Result == null)
+                {
+                    return NotFound();
+                }
+
+
+                return Ok(res.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// batch rename cat poems
         /// </summary>
         /// <param name="id"></param>
