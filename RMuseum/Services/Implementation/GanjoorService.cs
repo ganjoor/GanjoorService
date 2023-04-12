@@ -173,6 +173,43 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// Update category extra info
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="bookName"></param>
+        /// <param name="imageId"></param>
+        /// <param name="sumUpSubsGeoLocations"></param>
+        /// <param name="mapName"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorCatViewModel>> SetCategoryExtraInfo(int catId, string bookName, Guid? imageId, bool sumUpSubsGeoLocations, string mapName)
+        {
+            try
+            {
+                var cat = await _context.GanjoorCategories.Where(c => c.Id == catId).SingleOrDefaultAsync();
+                if (cat == null)
+                    return new RServiceResult<GanjoorCatViewModel>(null);//not found
+                cat.BookName = bookName;
+                cat.RImageId = imageId;
+                cat.SumUpSubsGeoLocations = sumUpSubsGeoLocations;
+                cat.MapName = mapName;
+                _context.Update(cat);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<GanjoorCatViewModel>
+                    (
+                    new GanjoorCatViewModel()
+                    {
+                       RImageId = imageId,
+                    }
+                    );
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorCatViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// get cat by id
         /// </summary>
         /// <param name="id"></param>

@@ -63,6 +63,17 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatByUrl(string url, bool poems = false, bool mainSections = false);
 
         /// <summary>
+        /// Update category extra info
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="bookName"></param>
+        /// <param name="imageId"></param>
+        /// <param name="sumUpSubsGeoLocations"></param>
+        /// <param name="mapName"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorCatViewModel>> SetCategoryExtraInfo(int catId, string bookName, Guid? imageId, bool sumUpSubsGeoLocations, string mapName);
+
+        /// <summary>
         /// get page by url
         /// </summary>
         /// <param name="url"></param>

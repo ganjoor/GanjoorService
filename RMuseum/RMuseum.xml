@@ -12497,6 +12497,17 @@
             <param name="mainSections"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SetCategoryExtraInfo(System.Int32,System.String,System.Nullable{System.Guid},System.Boolean,System.String)">
+            <summary>
+            Update category extra info
+            </summary>
+            <param name="catId"></param>
+            <param name="bookName"></param>
+            <param name="imageId"></param>
+            <param name="sumUpSubsGeoLocations"></param>
+            <param name="mapName"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPageByUrl(System.String,System.Boolean)">
             <summary>
             get page by url
@@ -15668,6 +15679,17 @@
             <param name="url"></param>
             <param name="poems"></param>
             <param name="mainSections"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SetCategoryExtraInfo(System.Int32,System.String,System.Nullable{System.Guid},System.Boolean,System.String)">
+            <summary>
+            Update category extra info
+            </summary>
+            <param name="catId"></param>
+            <param name="bookName"></param>
+            <param name="imageId"></param>
+            <param name="sumUpSubsGeoLocations"></param>
+            <param name="mapName"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatById(System.Int32,System.Boolean,System.Boolean)">
