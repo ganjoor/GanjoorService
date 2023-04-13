@@ -9000,6 +9000,11 @@
             poems
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.NewImage">
+            <summary>
+            new image
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCenturyViewModel">
             <summary>
             GanjoorCentury View Model

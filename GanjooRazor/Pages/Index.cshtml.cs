@@ -807,7 +807,7 @@ namespace GanjooRazor.Pages
 
             ViewData["BrearCrumpList"] = breadCrumbList.ToString();
 
-            if(IsCatPage)
+            if(IsCatPage || IsPoetPage)
             {
                 var tagsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{GanjoorPage.PoetOrCat.Cat.Id}/geotag");
                 if (!tagsResponse.IsSuccessStatusCode)

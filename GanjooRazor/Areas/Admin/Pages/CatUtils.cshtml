@@ -595,6 +595,49 @@
     </table>
 </form>
 
+<h2>ابرداده‌های دیگر بخش</h2>
+<form method="post" action="?Handler=UpdateCatMeta&url=@Model.Cat.Cat.FullUrl">
+    <table>
+        <tr>
+            <td>
+                نام کتاب:
+            </td>
+            <td>
+                <input asp-for="CatMeta.BookName" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                تصویر کتاب:
+            </td>
+            <td>
+                <input asp-for="CatMeta.NewImage" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                گردآوری نقشه‌های زیربخش‌ها
+            </td>
+            <td>
+                <input asp-for="CatMeta.SumUpSubsGeoLocations" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                نام نقشه
+            </td>
+            <td>
+                <input asp-for="CatMeta.MapName" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="به‌روزرسانی ابرداده‌های دیگر" />
+            </td>
+        </tr>
+    </table>
+</form>
+
 
 <table>
     <tr>

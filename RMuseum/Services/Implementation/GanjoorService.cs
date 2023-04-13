@@ -188,6 +188,13 @@ namespace RMuseum.Services.Implementation
                 var cat = await _context.GanjoorCategories.Where(c => c.Id == catId).SingleOrDefaultAsync();
                 if (cat == null)
                     return new RServiceResult<GanjoorCatViewModel>(null);//not found
+                if(!string.IsNullOrEmpty(bookName))
+                {
+                    if(cat.CatType != GanjoorCatType.Book)
+                    {
+                        return new RServiceResult<GanjoorCatViewModel>(null, "cat.CatType != GanjoorCatType.Book");
+                    }
+                }
                 cat.BookName = bookName;
                 cat.RImageId = imageId;
                 cat.SumUpSubsGeoLocations = sumUpSubsGeoLocations;

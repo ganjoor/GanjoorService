@@ -75,6 +75,9 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public GanjoorLanguage[] Languages { get; set; }
 
+        [BindProperty]
+        public GanjoorCatViewModel CatMeta { get; set; }
+
         private async Task ReadLanguagesAsync()
         {
             HttpResponseMessage response = await _httpClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
@@ -99,6 +102,18 @@ namespace GanjooRazor.Areas.Admin.Pages
                 return false;
             }
             Cat = JsonConvert.DeserializeObject<GanjoorPoetCompleteViewModel>(await response.Content.ReadAsStringAsync());
+
+            if (CatMeta == null)
+            {
+                CatMeta = new GanjoorCatViewModel()
+                {
+                    Id = Cat.Cat.Id,
+                    BookName = Cat.Cat.BookName,
+                    SumUpSubsGeoLocations = Cat.Cat.SumUpSubsGeoLocations,
+                    MapName = Cat.Cat.MapName,
+                };
+            }
+           
 
             var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Query["url"]}");
             if (!pageQuery.IsSuccessStatusCode)
@@ -369,7 +384,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             return new OkObjectResult(false);
         }
 
-        public async Task<IActionResult> OnPostRegenerateNumberingsAsync(int id)
+        public async Task<IActionResult> OnPostRegenerateNumberingsAsync()
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -455,7 +470,39 @@ namespace GanjooRazor.Areas.Admin.Pages
             return new OkObjectResult(false);
         }
 
-        
+        public async Task<IActionResult> OnPostUpdateCatMeta(GanjoorCatViewModel CatMeta)
+        {
+            await GetInformationAsync();
 
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
+
+                MultipartFormDataContent form = new MultipartFormDataContent
+                {
+                    { new StringContent(CatMeta.BookName), "bookName" },
+                    { new StringContent(CatMeta.SumUpSubsGeoLocations.ToString()), "sumUpSubsGeoLocations" },
+                    { new StringContent(CatMeta.MapName), "mapName" }
+                };
+
+                if (CatMeta.NewImage != null)
+                {
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        await CatMeta.NewImage.CopyToAsync(stream);
+                        var fileContent = stream.ToArray();
+                        form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), CatMeta.BookName, CatMeta.NewImage.FileName);
+                    }  
+                }
+                HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/extra/{Cat.Cat.Id}", form);
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    return Page();
+                }
+                return Redirect($"/Admin/CatUtils?url={Cat.Cat.FullUrl}");
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using RSecurityBackend.Models.Image;
+﻿using Microsoft.AspNetCore.Http;
+using RSecurityBackend.Models.Image;
 using System;
 using System.Collections.Generic;
 
@@ -103,6 +104,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// poems
         /// </summary>
         public ICollection<GanjoorPoemSummaryViewModel> Poems { get; set; }
+
+        /// <summary>
+        /// new image
+        /// </summary>
+        public IFormFile NewImage { get; set; }
 
         public override string ToString()
         {
