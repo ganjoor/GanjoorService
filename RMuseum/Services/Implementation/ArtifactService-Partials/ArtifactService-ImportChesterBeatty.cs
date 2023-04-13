@@ -148,8 +148,8 @@ namespace RMuseum.Services.Implementation
                                                 LastModified = DateTime.Now
                                             };
 
-                                            string imageUrl = $"https://viewer.cbl.ie/viewer/rest/image/Per_{resourceNumber}/Per{resourceNumber}_{$"{order}".PadLeft(3, '0')}.jpg/full/!10000,10000/0/default.jpg?ignoreWatermark=true";
-
+                                            //string imageUrl = $"https://viewer.cbl.ie/viewer/rest/image/Per_{resourceNumber}/Per{resourceNumber}_{$"{order}".PadLeft(3, '0')}.jpg/full/!10000,10000/0/default.jpg?ignoreWatermark=true";
+                                            string imageUrl = $"https://viewer.cbl.ie/viewer/api/v1/records/Per_{resourceNumber}/files/images/Per{resourceNumber}_{$"{order}".PadLeft(2, '0')}.jpg/full/max/0/default.jpg";
 
                                             page.Tags = new RTagValue[] { };
 
