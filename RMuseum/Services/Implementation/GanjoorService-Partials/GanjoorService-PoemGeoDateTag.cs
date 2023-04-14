@@ -131,8 +131,9 @@ namespace RMuseum.Services.Implementation
         /// get a categoty poem tags
         /// </summary>
         /// <param name="catId"></param>
+        /// <param name="ignoreSumup"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PoemGeoDateTag[]>> GetCatPoemGeoDateTagsAsync(int catId)
+        public async Task<RServiceResult<PoemGeoDateTag[]>> GetCatPoemGeoDateTagsAsync(int catId, bool ignoreSumup = false)
         {
             try
             {
@@ -148,7 +149,7 @@ namespace RMuseum.Services.Implementation
                     tag.Poem.PlainText = "";
                 }
 
-                if(cat.SumUpSubsGeoLocations)
+                if(cat.SumUpSubsGeoLocations && !ignoreSumup)
                 {
                     List<PoemGeoDateTag> summedTags = new List<PoemGeoDateTag>(tags);
                     List<int> catIdList = new List<int>();
@@ -156,7 +157,7 @@ namespace RMuseum.Services.Implementation
 
                     foreach (var childCatId in catIdList)
                     {
-                        var childCatRes = await GetCatPoemGeoDateTagsAsync(childCatId);//be carefull: childCat.SumUpSubsGeoLocations must be false
+                        var childCatRes = await GetCatPoemGeoDateTagsAsync(childCatId, true);
                         if (!string.IsNullOrEmpty(childCatRes.ExceptionString))
                         {
                             return new RServiceResult<PoemGeoDateTag[]>(null, childCatRes.ExceptionString);

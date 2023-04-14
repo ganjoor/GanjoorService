@@ -13590,11 +13590,12 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetCatPoemGeoDateTagsAsync(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetCatPoemGeoDateTagsAsync(System.Int32,System.Boolean)">
             <summary>
             get a categoty poem tags
             </summary>
             <param name="catId"></param>
+            <param name="ignoreSumup"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
@@ -15367,11 +15368,12 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatPoemGeoDateTagsAsync(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatPoemGeoDateTagsAsync(System.Int32,System.Boolean)">
             <summary>
             get a categoty poem tags
             </summary>
             <param name="catId"></param>
+            <param name="ignoreSumup"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFillingPoemSectionsCoupletIndex">
