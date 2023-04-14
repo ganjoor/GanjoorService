@@ -2,6 +2,7 @@
 using RMuseum.Models.Ganjoor;
 using RSecurityBackend.Models.Generic;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -124,6 +125,8 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+
+
         /// <summary>
         /// get a categoty poem tags
         /// </summary>
@@ -133,6 +136,8 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                var cat = await _context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
+
                 var tags = await _context.PoemGeoDateTags.AsNoTracking().Include(t => t.Location).Include(t => t.Poem).Where(t => t.Poem.CatId == catId && t.IgnoreInCategory == false)
                                 .OrderBy(t => t.LunarDateTotalNumber)
                                 .ThenBy(t => t.PoemId)
@@ -142,7 +147,33 @@ namespace RMuseum.Services.Implementation
                     tag.Poem.HtmlText = "";
                     tag.Poem.PlainText = "";
                 }
-                return new RServiceResult<PoemGeoDateTag[]>(tags);
+
+                if(cat.SumUpSubsGeoLocations)
+                {
+                    List<PoemGeoDateTag> summedTags = new List<PoemGeoDateTag>(tags);
+                    List<int> catIdList = new List<int>();
+                    await _populateCategoryChildren(catId, catIdList);
+
+                    foreach (var childCatId in catIdList)
+                    {
+                        var childCatRes = await GetCatPoemGeoDateTagsAsync(childCatId);//be carefull: childCat.SumUpSubsGeoLocations must be false
+                        if (!string.IsNullOrEmpty(childCatRes.ExceptionString))
+                        {
+                            return new RServiceResult<PoemGeoDateTag[]>(null, childCatRes.ExceptionString);
+                        }
+                        if(childCatRes.Result.Length > 0)
+                        {
+                            summedTags.AddRange(childCatRes.Result);
+                        }
+                    }
+                    
+                    return new RServiceResult<PoemGeoDateTag[]>(summedTags.OrderBy(t => t.LunarDateTotalNumber).ThenBy(t => t.PoemId).ToArray());
+                }
+                else
+                {
+                    return new RServiceResult<PoemGeoDateTag[]>(tags);
+                }
+                
             }
             catch (Exception exp)
             {
