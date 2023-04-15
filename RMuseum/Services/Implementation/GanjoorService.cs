@@ -2186,7 +2186,7 @@ namespace RMuseum.Services.Implementation
                     Id = dbCorrection.Id,
                     PoemId = dbCorrection.PoemId,
                     UserId = dbCorrection.UserId,
-                    VerseOrderText = dbCorrection.VerseOrderText == null ? null : dbCorrection.VerseOrderText.ToArray(),
+                    VerseOrderText = dbCorrection.VerseOrderText == null ? null : dbCorrection.VerseOrderText.OrderBy(v => v.VORder).ToArray(),
                     Title = dbCorrection.Title,
                     OriginalTitle = dbCorrection.OriginalTitle,
                     Rhythm = dbCorrection.Rhythm,

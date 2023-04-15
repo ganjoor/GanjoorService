@@ -103,6 +103,9 @@
                     var summaryElementName = 'verse-summary' + (i + 1).toString() + '_review_result';
                     verseSummaryResults.push($('input[name=' + summaryElementName + ']:checked').val())
                 }
+                else {
+                    verseSummaryResults.push('NotChanged');
+                }
             }
             else {
                 var deleteElementId = '#marked-for-delete-' + (i + 1).toString();
