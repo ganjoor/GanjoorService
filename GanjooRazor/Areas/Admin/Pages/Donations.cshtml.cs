@@ -100,7 +100,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if(donation != null)
                 {
                     int rowNumber = Donations.Length - Array.IndexOf(Donations, donation);
-                    EmailContent = $"با درود و سپاس از بزرگواری شما{Environment.NewLine}" +
+                    EmailContent = $"با درود به {donation.DonorName} عزیز و سپاس از بزرگواری شما{Environment.NewLine}" +
                             $"کمک دریافتی به شماره ردیف {rowNumber.ToPersianNumbers()} در این نشانی ثبت شد:{Environment.NewLine}" +
                             $"https://ganjoor.net/donate{Environment.NewLine}" +
                             $"نحوهٔ هزینه شدن آن متعاقباً در همان ردیف مستند خواهد شد.{Environment.NewLine}" +
