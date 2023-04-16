@@ -209,7 +209,7 @@
 
 
                     @if (
-                   (Model.IsCatPage && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+                   ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
                    ||
                    (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
                    )
@@ -217,7 +217,7 @@
                         <div id="catmap"></div>
                     }
 
-                    @if (Model.IsCatPage && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+                    @if ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
                     {
                         <script>
                             var poemGeoTags = [];

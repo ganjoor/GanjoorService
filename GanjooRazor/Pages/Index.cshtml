@@ -64,7 +64,7 @@
 
     }
 
-    @if (Model.IsCatPage && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+    @if ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
     {
         <link rel="stylesheet" href="/css/leaflet.css">
         <style>
