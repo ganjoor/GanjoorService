@@ -215,6 +215,12 @@
                    )
                     {
                         <div id="catmap"></div>
+                        @if(!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
+                        {
+                            <div class="century">
+                                @Model.GanjoorPage.PoetOrCat.Cat.MapName
+                            </div>
+                        }
                     }
 
                     @if ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
