@@ -149,7 +149,7 @@ namespace GanjooRazor.Pages
                                 coupetIndex++;
                                 couplets.Add(new Tuple<int, string>(coupetIndex, pageInformation.Poem.Verses[verseIndex].Text));
                                 break;
-                            case RMuseum.Models.Ganjoor.VersePosition.Left:
+                            case RMuseum.Models.Ganjoor.VersePosition.Right:
                             case RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1:
                                 incompleteCouplet = true;
                                 if (!string.IsNullOrEmpty(coupletText))
@@ -159,7 +159,7 @@ namespace GanjooRazor.Pages
                                 coupetIndex++;
                                 coupletText = pageInformation.Poem.Verses[verseIndex].Text;
                                 break;
-                            case RMuseum.Models.Ganjoor.VersePosition.Right:
+                            case RMuseum.Models.Ganjoor.VersePosition.Left:
                             case RMuseum.Models.Ganjoor.VersePosition.CenteredVerse2:
                                 incompleteCouplet = false;
                                 coupletText += $" {pageInformation.Poem.Verses[verseIndex].Text}";
