@@ -8,6 +8,7 @@ using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -122,6 +123,51 @@ namespace GanjooRazor.Pages
                     string coupletText = "";
                     List<Tuple<int, string>> couplets = new List<Tuple<int, string>>();
                     couplets.Add(new Tuple<int, string>(-1, "*"));
+                    int verseIndex = 0;
+                    bool incompleteCouplet = false;
+                    while(verseIndex < pageInformation.Poem.Verses.Length)
+                    {
+                         
+                        switch(pageInformation.Poem.Verses[verseIndex].VersePosition)
+                        {
+                            case RMuseum.Models.Ganjoor.VersePosition.Comment:
+                                incompleteCouplet = false;
+                                if (!string.IsNullOrEmpty(coupletText))
+                                {
+                                    couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
+                                    coupletText = "";
+                                }
+                                break;
+                            case RMuseum.Models.Ganjoor.VersePosition.Paragraph:
+                            case RMuseum.Models.Ganjoor.VersePosition.Single:
+                                incompleteCouplet = false;
+                                if (!string.IsNullOrEmpty(coupletText))
+                                {
+                                    couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
+                                    coupletText = "";
+                                }
+                                coupetIndex++;
+                                couplets.Add(new Tuple<int, string>(coupetIndex, pageInformation.Poem.Verses[verseIndex].Text));
+                                break;
+                            case RMuseum.Models.Ganjoor.VersePosition.Left:
+                            case RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1:
+                                incompleteCouplet = true;
+                                if (!string.IsNullOrEmpty(coupletText))
+                                {
+                                    couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
+                                }
+                                coupetIndex++;
+                                coupletText = pageInformation.Poem.Verses[verseIndex].Text;
+                                break;
+                            case RMuseum.Models.Ganjoor.VersePosition.Right:
+                            case RMuseum.Models.Ganjoor.VersePosition.CenteredVerse2:
+                                incompleteCouplet = false;
+                                coupletText += $" {pageInformation.Poem.Verses[verseIndex].Text}";
+                                break;
+                        }
+                        verseIndex++;
+                    }
+                    /*
                     foreach (var verse in pageInformation.Poem.Verses)
                     {
                         if(verse.CoupletIndex != null && verse.CoupletIndex != coupetIndex && verse.CoupletIndex >= 0)
@@ -134,9 +180,9 @@ namespace GanjooRazor.Pages
                         if (!string.IsNullOrEmpty(coupletText))
                             coupletText += " ";
                         coupletText += verse.Text;
-                    }
+                    }*/
 
-                    if (!string.IsNullOrEmpty(coupletText))
+                    if (incompleteCouplet && !string.IsNullOrEmpty(coupletText))
                         couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
 
                     Couplets = couplets.ToArray();
