@@ -151,7 +151,7 @@ namespace GanjooRazor.Pages
                                 break;
                             case RMuseum.Models.Ganjoor.VersePosition.Right:
                             case RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1:
-                                incompleteCouplet = true;
+                                incompleteCouplet = false;
                                 if (!string.IsNullOrEmpty(coupletText))
                                 {
                                     couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
@@ -161,7 +161,7 @@ namespace GanjooRazor.Pages
                                 break;
                             case RMuseum.Models.Ganjoor.VersePosition.Left:
                             case RMuseum.Models.Ganjoor.VersePosition.CenteredVerse2:
-                                incompleteCouplet = false;
+                                incompleteCouplet = true;
                                 coupletText += $" {pageInformation.Poem.Verses[verseIndex].Text}";
                                 break;
                         }
