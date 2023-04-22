@@ -195,6 +195,36 @@ namespace RMuseum.Services.Implementation
                         return new RServiceResult<GanjoorCatViewModel>(null, "cat.CatType != GanjoorCatType.Book");
                     }
                 }
+                if(imageId != null)
+                {
+                    RServiceResult<RImage> img =
+                    await _imageFileService.GetImage((Guid)imageId);
+                    if (!string.IsNullOrEmpty(img.ExceptionString))
+                    {
+                        return new RServiceResult<GanjoorCatViewModel>(null, img.ExceptionString);
+                    }
+
+                    if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
+                    {
+                        var ftpClient = new AsyncFtpClient
+                                            (
+                                                Configuration.GetSection("ExternalFTPServer")["Host"],
+                                                Configuration.GetSection("ExternalFTPServer")["Username"],
+                                                Configuration.GetSection("ExternalFTPServer")["Password"]
+                                            );
+                        ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                        await ftpClient.AutoConnect();
+                        ftpClient.Config.RetryAttempts = 3;
+                        RServiceResult<string> imgPath = _imageFileService.GetImagePath(img.Result);
+                        if (!string.IsNullOrEmpty(imgPath.ExceptionString))
+                            return new RServiceResult<GanjoorCatViewModel>(null, imgPath.ExceptionString);
+
+                        var localFilePath = imgPath.Result;
+                        var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/CategoryImages/{Path.GetFileName(localFilePath)}";
+                        await ftpClient.UploadFile(localFilePath, remoteFilePath);
+                        await ftpClient.Disconnect();
+                    }
+                }
                 cat.BookName = bookName;
                 cat.RImageId = imageId;
                 cat.SumUpSubsGeoLocations = sumUpSubsGeoLocations;
