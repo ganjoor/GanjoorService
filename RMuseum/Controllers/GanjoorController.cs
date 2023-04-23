@@ -514,6 +514,26 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// list of books
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("books")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCatViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetBooksAsync()
+        {
+            var books = await _ganjoorService.GetBooksAsync();
+            if(!string.IsNullOrEmpty(books.ExceptionString))
+            {
+                return BadRequest(books.ExceptionString);
+            }
+            return Ok(books);
+        }
+
+        /// <summary>
         /// batch rename cat poems
         /// </summary>
         /// <param name="id"></param>

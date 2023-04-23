@@ -996,6 +996,12 @@
             <param name="id"></param>
             <returns>only RImageId field is valid</returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetBooksAsync">
+            <summary>
+            list of books
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.BatchRenameCatPoemTitles(System.Int32,RMuseum.Models.Ganjoor.ViewModels.GanjoorBatchNamingModel)">
             <summary>
             batch rename cat poems
@@ -12520,6 +12526,12 @@
             <param name="mapName"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetBooksAsync">
+            <summary>
+            get list of books
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPageByUrl(System.String,System.Boolean)">
             <summary>
             get page by url
@@ -15704,6 +15716,12 @@
             <param name="imageId"></param>
             <param name="sumUpSubsGeoLocations"></param>
             <param name="mapName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetBooksAsync">
+            <summary>
+            get list of books
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatById(System.Int32,System.Boolean,System.Boolean)">

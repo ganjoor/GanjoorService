@@ -245,6 +245,33 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorCatViewModel>(null, exp.ToString());
             }
         }
+        
+        /// <summary>
+        /// get list of books
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorCatViewModel[]>> GetBooksAsync()
+        {
+            try
+            {
+                return new RServiceResult<GanjoorCatViewModel[]>
+                    (
+                    await _context.GanjoorCategories.AsNoTracking().Where(c => !string.IsNullOrEmpty(c.BookName)).OrderBy(c => c.BookName)
+                    .Select(c => new GanjoorCatViewModel()
+                    {
+                        BookName = c.BookName,
+                        FullUrl = c.FullUrl,
+                        RImageId = c.RImageId
+                    }
+                    )
+                    .ToArrayAsync()
+                    );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorCatViewModel[]>(null, exp.ToString());
+            }
+        }
 
         /// <summary>
         /// get cat by id

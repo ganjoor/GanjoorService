@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using RSecurityBackend.Models.Image;
 using System;
 using System.Collections.Generic;
 

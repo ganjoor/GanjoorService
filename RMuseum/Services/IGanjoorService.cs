@@ -74,6 +74,12 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorCatViewModel>> SetCategoryExtraInfo(int catId, string bookName, Guid? imageId, bool sumUpSubsGeoLocations, string mapName);
 
         /// <summary>
+        /// get list of books
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorCatViewModel[]>> GetBooksAsync();
+
+        /// <summary>
         /// get page by url
         /// </summary>
         /// <param name="url"></param>
