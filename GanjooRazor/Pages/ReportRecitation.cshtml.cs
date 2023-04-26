@@ -29,6 +29,16 @@ namespace GanjooRazor.Pages
         private readonly IConfiguration Configuration;
 
         /// <summary>
+        /// recitation
+        /// </summary>
+        public PublicRecitationViewModel Recitation { get; set; }
+
+        /// <summary>
+        /// poem
+        /// </summary>
+        public GanjoorPoemCompleteViewModel Poem { get; set; }
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
@@ -99,10 +109,10 @@ namespace GanjooRazor.Pages
                 }
                 else
                 {
-                    var recitation = JsonConvert.DeserializeObject<PublicRecitationViewModel>(await response.Content.ReadAsStringAsync());
-                    RecitationInfo = $"{recitation.AudioTitle} به خوانش {recitation.AudioArtist}";
+                    Recitation = JsonConvert.DeserializeObject<PublicRecitationViewModel>(await response.Content.ReadAsStringAsync());
+                    RecitationInfo = $"{Recitation.AudioTitle} به خوانش {Recitation.AudioArtist}";
 
-                    var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={recitation.PoemId}");
+                    var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Recitation.PoemId}");
                     if (!pageUrlResponse.IsSuccessStatusCode)
                     {
                         LastError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
@@ -118,7 +128,7 @@ namespace GanjooRazor.Pages
                     }
                     var pageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
-
+                    Poem = pageInformation.Poem;
                     int coupetIndex = -1;
                     string coupletText = "";
                     List<Tuple<int, string>> couplets = new List<Tuple<int, string>>();
@@ -188,6 +198,11 @@ namespace GanjooRazor.Pages
                     Couplets = couplets.ToArray();
 
                 }
+
+
+                
+
+
             }
             else
             {
