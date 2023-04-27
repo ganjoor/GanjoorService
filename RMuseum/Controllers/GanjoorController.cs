@@ -530,7 +530,7 @@ namespace RMuseum.Controllers
             {
                 return BadRequest(books.ExceptionString);
             }
-            return Ok(books);
+            return Ok(books.Result);
         }
 
         /// <summary>

@@ -1,0 +1,46 @@
+﻿@page
+@model GanjooRazor.Pages.BooksModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+        @ViewData["Title"]
+    </title>
+
+    <link href="/css/p8.css?version=49" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
+    <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/js/bk.js?version=38"></script>
+    <script>
+        var cookieValue = getCookie("playerScrollLock");
+        var playerScrollLock = cookieValue === "true";
+
+        cookieValue = getCookie("stickyEnabled");
+        var stickyEnabled = cookieValue != "false";
+    </script>
+</head>
+<body>
+    @if(!string.IsNullOrEmpty(Model.LastError))
+    {
+        @Model.LastError
+    }
+    else
+    {
+        <table>
+            @foreach (var book in Model.Books)
+            {
+                <tr>
+                    <td><a href="@book.FullUrl">@book.BookName</a></td>
+                </tr>
+            }
+        </table>
+    }
+   
+</body>
+</html>
