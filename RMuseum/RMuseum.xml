@@ -996,6 +996,12 @@
             <param name="id"></param>
             <returns>only RImageId field is valid</returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GenerateMissingBookCoversAsync">
+            <summary>
+            generate missing book covers
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetBooksAsync">
             <summary>
             list of books
@@ -12532,6 +12538,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GenerateMissingBookCoversAsync">
+            <summary>
+            generate missing book covers
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPageByUrl(System.String,System.Boolean)">
             <summary>
             get page by url
@@ -15721,6 +15733,12 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetBooksAsync">
             <summary>
             get list of books
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GenerateMissingBookCoversAsync">
+            <summary>
+            generate missing book covers
             </summary>
             <returns></returns>
         </member>

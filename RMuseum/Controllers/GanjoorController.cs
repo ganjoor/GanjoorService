@@ -514,6 +514,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// generate missing book covers
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("generatemissingbookcovers")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
+        public async Task<IActionResult> GenerateMissingBookCoversAsync()
+        {
+            var res = await _ganjoorService.GenerateMissingBookCoversAsync();
+            if(!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         /// list of books
         /// </summary>
         /// <returns></returns>

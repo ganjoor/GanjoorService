@@ -80,6 +80,12 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorCatViewModel[]>> GetBooksAsync();
 
         /// <summary>
+        /// generate missing book covers
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> GenerateMissingBookCoversAsync();
+
+        /// <summary>
         /// get page by url
         /// </summary>
         /// <param name="url"></param>

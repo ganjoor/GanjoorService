@@ -24,6 +24,10 @@ using RMuseum.Models.Auth.Memory;
 using System.IO;
 using RSecurityBackend.Models.Image;
 using FluentFTP;
+using NAudio.Gui;
+using System.Drawing;
+using static System.Net.Mime.MediaTypeNames;
+using Microsoft.IdentityModel.Tokens;
 
 namespace RMuseum.Services.Implementation
 {
@@ -270,6 +274,58 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<GanjoorCatViewModel[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// generate missing book covers
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> GenerateMissingBookCoversAsync()
+        {
+            try
+            {
+                var books = await _context.GanjoorCategories.Where(c => !string.IsNullOrEmpty(c.BookName) && c.RImageId == null).ToListAsync();
+                foreach (var book in books)
+                {
+                    using (System.Drawing.Image coverImg = System.Drawing.Image.FromFile(Configuration.GetSection("Ganjoor")["BooksCoverTemplate"]))
+                    {
+                        using (Graphics g = Graphics.FromImage(coverImg))
+                        {
+                            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+                            using(Font font = new Font(Configuration.GetSection("Ganjoor")["BooksCoverTitleFontName"], float.Parse(Configuration.GetSection("Ganjoor")["BooksCoverTitleFontSize"])))
+                            {
+                                SizeF sz = g.MeasureString(book.BookName, font);
+                                using (SolidBrush brsh = new SolidBrush(Color.FromArgb(51, 0, 0)))
+                                    g.DrawString(book.BookName, font, brsh, new PointF(200.0f - sz.Width / 2, 230.0f - sz.Height / 2));
+                            }
+                            
+                        }
+                        MemoryStream coverData = new MemoryStream();
+                        coverImg.Save(coverData, System.Drawing.Imaging.ImageFormat.Png);
+                        RServiceResult<RImage> imageRes = await _imageFileService.Add(null, coverData, $"Book-{book.Id}", Path.Combine(Configuration.GetSection("PictureFileService")["StoragePath"], "CategoryImages"));
+                        if(!string.IsNullOrEmpty(imageRes.ExceptionString))
+                        {
+                            return new RServiceResult<bool>(false, imageRes.ExceptionString);
+                        }
+                        imageRes = await _imageFileService.Store(imageRes.Result);
+                        if (!string.IsNullOrEmpty(imageRes.ExceptionString))
+                        {
+                            return new RServiceResult<bool>(false, imageRes.ExceptionString);
+                        }
+                        var finalRes = await SetCategoryExtraInfo(book.Id, book.BookName, imageRes.Result.Id, book.SumUpSubsGeoLocations, book.MapName);
+                        if(!string.IsNullOrEmpty(finalRes.ExceptionString))
+                        {
+                            return new RServiceResult<bool>(false, finalRes.ExceptionString);
+                        }    
+                    }
+                }
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
             }
         }
 
