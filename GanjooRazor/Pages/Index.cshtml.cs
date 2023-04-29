@@ -1,5 +1,4 @@
-﻿using Azure;
-using GanjooRazor.Utils;
+﻿using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

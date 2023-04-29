@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
@@ -20,6 +19,7 @@ namespace GanjooRazor.Pages
                 return StatusCode(503);
             }
             ViewData["Title"] = "›Â—”  ò «»ùÂ«";
+            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
 
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/books");
             if (!response.IsSuccessStatusCode)

@@ -41,6 +41,19 @@
             }
         </table>
     }
+
+    @if (ViewData["GoogleAnalyticsCode"] != null && !string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
+    {
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=@(ViewData["GoogleAnalyticsCode"])"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+
+            gtag('config', '@ViewData["GoogleAnalyticsCode"]');
+        </script>
+    }
    
 </body>
 </html>
