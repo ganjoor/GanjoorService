@@ -26,21 +26,58 @@
     </script>
 </head>
 <body>
-    @if(!string.IsNullOrEmpty(Model.LastError))
-    {
-        @Model.LastError
-    }
-    else
-    {
-        <table>
-            @foreach (var book in Model.Books)
-            {
-                <tr>
-                    <td><a href="@book.FullUrl">@book.BookName</a></td>
-                </tr>
-            }
-        </table>
-    }
+    
+
+    <div id="hdr">
+        <h1><a href="/" title="گنجور"><img src="/image/gdap.png" alt="گنجور" class="home-logo"></a></h1>
+    </div>
+
+    <div id="fa">
+
+        <div class="actionbox">
+            <form action="/search" method="get" id="searchhorm">
+                <input type="text" name="s" id="s" placeholder="جستجو" class="inputText" size="35" value="">
+                <input type="hidden" name="es" id="es" value="1">
+                <select name="author" id="author">
+                    <option value="0" selected>در آثار همهٔ سخنوران</option>
+                    @{
+                        foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
+                        {
+                            <option value="@poet.Id">@poet.Nickname</option>
+                        }
+                    }
+                </select>
+                <input type="submit" value="بیاب">
+            </form>
+        </div>
+
+        <partial name="_InlineLoginPartial" model="Model">
+
+            <div id="main">
+                <div id="guides">
+
+                    @if (!string.IsNullOrEmpty(Model.LastError))
+                    {
+                        @Model.LastError
+                    }
+                    else
+                    {
+                        <table>
+                            @foreach (var book in Model.Books)
+                            {
+                                <tr>
+                                    <td><a href="@book.FullUrl">@book.BookName</a></td>
+                                </tr>
+                            }
+                        </table>
+                    }
+                </div>
+
+            </div>
+
+            <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true})>
+
+    </div>
 
     @if (ViewData["GoogleAnalyticsCode"] != null && !string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
     {
