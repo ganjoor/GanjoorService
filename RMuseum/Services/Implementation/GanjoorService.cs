@@ -303,8 +303,9 @@ namespace RMuseum.Services.Implementation
                             
                         }
                         MemoryStream coverData = new MemoryStream();
-                        coverImg.Save(coverData, System.Drawing.Imaging.ImageFormat.Png);
-                        RServiceResult<RImage> imageRes = await _imageFileService.Add(null, coverData, $"Book-{book.Id}", Path.Combine(Configuration.GetSection("PictureFileService")["StoragePath"], "CategoryImages"));
+                        coverImg.Save(coverData, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        coverData.Seek(0, SeekOrigin.Begin);
+                        RServiceResult<RImage> imageRes = await _imageFileService.Add(null, coverData, $"Book-{book.Id}", "CategoryImages");
                         if(!string.IsNullOrEmpty(imageRes.ExceptionString))
                         {
                             return new RServiceResult<bool>(false, imageRes.ExceptionString);
