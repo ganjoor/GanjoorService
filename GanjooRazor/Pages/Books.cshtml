@@ -62,14 +62,24 @@
                     }
                     else
                     {
-                        <table>
+                        <div class="spacer">
                             @foreach (var book in Model.Books)
                             {
-                                <tr>
-                                    <td><a href="@book.FullUrl">@book.BookName</a></td>
-                                </tr>
+                                
+                                <div class="poet book">
+                                    @if (book.RImageId != null)
+                                    {
+                                        <a href="@book.FullUrl" title="@book.BookName">
+                                            <img src="@($"{GanjooRazor.APIRoot.InternetUrl}/api/rimages/{book.RImageId}.jpg")" alt="@book.BookName">
+                                        </a>
+                                    }
+                                    
+                                    <div class="caption">
+                                        <a href="@book.FullUrl">@book.BookName</a>
+                                    </div>
+                                </div>
                             }
-                        </table>
+                        </div>
                     }
                 </div>
 

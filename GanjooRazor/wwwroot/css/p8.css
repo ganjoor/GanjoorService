@@ -269,6 +269,7 @@ select {
             margin-top: 5px;
         }
 
+
 .caption {
     max-height: 20px;
 }
@@ -2011,3 +2012,11 @@ fieldset {
 .sidebar-close {
     border: 1px solid white !important;
 }
+
+.book {
+    width: 150px !important;
+}
+
+    .book img {
+        border: 1px solid black;
+    }
