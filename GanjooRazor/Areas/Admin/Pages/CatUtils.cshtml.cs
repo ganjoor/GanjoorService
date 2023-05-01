@@ -479,6 +479,9 @@ namespace GanjooRazor.Areas.Admin.Pages
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
 
+                CatMeta.BookName ??= "";
+                CatMeta.MapName ??= "";
+
                 MultipartFormDataContent form = new MultipartFormDataContent
                 {
                     { new StringContent(CatMeta.BookName), "bookName" },
