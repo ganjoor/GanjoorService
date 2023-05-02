@@ -2042,6 +2042,13 @@
             <param name="rejectionCause"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.DeletePoetSuggestedPhotoAsync(System.Int32)">
+            <summary>
+            delete published suggested photo
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController._poetPhotosService">
             <summary>
             Poets Photos Service
@@ -16761,6 +16768,13 @@
             <param name="rejectionCause"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PoetPhotoSuggestionService.DeletePoetSuggestedPhotoAsync(System.Int32)">
+            <summary>
+            delete published suggested photo
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.PoetPhotoSuggestionService._context">
             <summary>
             Database Context
@@ -17446,6 +17460,13 @@
             <param name="id"></param>
             <param name="deleteUserId"></param>
             <param name="rejectionCause"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPoetPhotoSuggestionService.DeletePoetSuggestedPhotoAsync(System.Int32)">
+            <summary>
+            delete published suggested photo
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IRecitationService">

@@ -180,6 +180,25 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// delete published suggested photo
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModeratePoetPhotos)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> DeletePoetSuggestedPhotoAsync(int id)
+        {
+
+            var res = await _poetPhotosService.DeletePoetSuggestedPhotoAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// Poets Photos Service
         /// </summary>
         protected readonly IPoetPhotoSuggestionService _poetPhotosService;

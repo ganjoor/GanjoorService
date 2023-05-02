@@ -66,6 +66,13 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<bool>> RejectPoetSuggestedPhotosAsync(int id, Guid deleteUserId, string rejectionCause);
 
+        /// <summary>
+        /// delete published suggested photo
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeletePoetSuggestedPhotoAsync(int id);
+
 
     }
 }

@@ -372,6 +372,30 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// delete published suggested photo
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeletePoetSuggestedPhotoAsync(int id)
+        {
+            try
+            {
+                var dbModel = await _context.GanjoorPoetSuggestedPictures.Where(s => s.Id == id).SingleAsync();
+                if(dbModel.Published)
+                {
+                    return new RServiceResult<bool>(false, "برای رد تصاویر تأیید نشده از تابع reject استفاده کنید.");
+                }
+                _context.Remove(dbModel);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// Database Context
