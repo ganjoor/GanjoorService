@@ -62,11 +62,18 @@
                     }
                     else
                     {
+                        <div class="clear-both">
+                            <input type="text" id="findbook" placeholder="جستجوی کتاب" size="35" value="" oninput="onInlineSearch(this.value, 'found-books', 'book')">
+                            <div class="spacer" id="found-books"></div>
+                        </div>
+                        <div class="century">
+                           فهرست الفبایی کتاب‌ها
+                        </div>
                         <div class="spacer">
                             @foreach (var book in Model.Books)
                             {
-                                
-                                <div class="poet book">
+
+                                <div class="poet book" data-value="@book.BookName">
                                     @if (book.RImageId != null)
                                     {
                                         <a href="@book.FullUrl" title="@book.BookName">
