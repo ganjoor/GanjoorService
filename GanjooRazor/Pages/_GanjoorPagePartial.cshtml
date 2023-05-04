@@ -414,17 +414,32 @@
                                         {
                                             <table>
                                                 @if (!Model.MutiPartPoemPage)
-                                                    @foreach (var s in Model.GanjoorPage.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.GanjoorMetre != null).ToList())
+                                                    @foreach (var s in Model.GanjoorPage.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem).ToList())
                                                     {
-                                                        <tr>
-                                                            <td>
-                                                                وزن:
-                                                            </td>
-                                                            <td>
-                                                                <a href="@Html.Raw($"/vazn/?v={Uri.EscapeDataString(s.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@s.GanjoorMetre.Rhythm</a>
-                                                            </td>
-                                                        </tr>
-                                                    }
+                                                        @if(s.GanjoorMetre != null)
+                                                        {
+                                                            <tr>
+                                                                <td>
+                                                                    وزن:
+                                                                </td>
+                                                                <td>
+                                                                    <a href="@Html.Raw($"/vazn/?v={Uri.EscapeDataString(s.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@s.GanjoorMetre.Rhythm</a>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                        @if(s.PoemFormat != null && s.PoemFormat != RMuseum.Models.Ganjoor.GanjoorPoemFormat.Unknown)
+                                                        {
+                                                            <tr>
+                                                                <td>
+                                                                    قالب شعری:
+                                                                </td>
+                                                                <td>
+                                                                    @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)s.PoemFormat)
+                                                                </td>
+                                                            </tr>
+                                                        }
+
+                                    }
                                                 @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag))
                                                 {
                                                     <tr>
