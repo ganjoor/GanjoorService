@@ -387,6 +387,33 @@ else
                 </td>
             </tr>
         }
+
+        <tr>
+            <td>
+                <label for="">قالب شعری:</label>
+                <br />
+                <select id="poemformat">
+                    @foreach (var poemFormat in System.Enum.GetValues(typeof(RMuseum.Models.Ganjoor.GanjoorPoemFormat)))
+                    {
+                        @if (Model.MyLastEdit != null && (Model.MyLastEdit.PoemFormat == (RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat ))
+                        {
+                            <option value="@poemFormat" selected>@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
+                        }
+                        else if (Model.PoemSection.PoemFormat == (RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)
+                        {
+                            <option value="@poemFormat" selected>@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
+                        }
+                        else
+                        {
+                            <option value="@poemFormat">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
+                        }
+                        
+                    }
+                </select>
+            </td>
+        </tr>
+
+        
         
         <tr>
             <td>
