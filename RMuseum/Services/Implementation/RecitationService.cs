@@ -896,7 +896,7 @@ namespace RMuseum.Services.Implementationa
                                     else
                                     {
                                         bool overCrowdedPoem = false;
-                                        if (maxRecitationsPerPoem != 0 && maxRecitationsPerPoem <= (await context.Recitations.AsNoTracking().CountAsync(r => r.GanjoorPostId == audio.PoemId)))
+                                        if (maxRecitationsPerPoem != 0 && maxRecitationsPerPoem <= (await context.Recitations.AsNoTracking().CountAsync(r => r.GanjoorPostId == audio.PoemId && r.ReviewStatus == AudioReviewStatus.Approved)))
                                         {
                                             if
                                             (
