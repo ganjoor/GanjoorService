@@ -390,6 +390,19 @@ else
 
         <tr>
             <td>
+                قالب شعری فعلی:
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)Model.PoemSection.PoemFormat)
+                <div id="poemformat-old" class="hidden-recitation">@Model.PoemSection.PoemFormat</div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
                 <label for="">قالب شعری:</label>
                 <br />
                 <select id="poemformat">
