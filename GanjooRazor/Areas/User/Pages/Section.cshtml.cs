@@ -193,7 +193,7 @@ namespace GanjooRazor.Areas.User.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostSendSectionCorrectionsAsync(int sectionId, string rhythm, string rhyme, int[] breakFromVIndices, string note, string lang)
+        public async Task<IActionResult> OnPostSendSectionCorrectionsAsync(int sectionId, string rhythm, string rhyme, int[] breakFromVIndices, string note, string lang, GanjoorPoemFormat? format)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -312,6 +312,7 @@ namespace GanjooRazor.Areas.User.Pages
                         BreakFromVerse10VOrder = breakFromVerse10VOrder,
                         Note = note,
                         Language = lang,
+                        PoemFormat = format
                     };
 
                     HttpResponseMessage response = await secureClient.PostAsync(

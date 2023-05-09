@@ -72,6 +72,11 @@ else
                 return;
             }
 
+            var section_format = $('#poemformat').val();
+            if (section_format == $('#poemformat-old').text()) {
+                section_format = null;
+            }
+
             $('#savecorrections').hide();
             $('#saving').text('در حال ذخیره ...');
 
@@ -87,7 +92,8 @@ else
                     rhyme: rhyme_letters,
                     breakFromVIndices: breakFromVIndices,
                     note: $('#note').val(),
-                    lang: section_lang
+                    lang: section_lang,
+                    format: section_format
 
                 },
                 success: function () {
