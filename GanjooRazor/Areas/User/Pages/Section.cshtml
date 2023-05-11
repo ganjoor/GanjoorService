@@ -67,15 +67,17 @@ else
                 section_lang = null;
             }
 
-            if (breakFromVIndices.length == 0 && rhythm_new == null && rhyme_letters == null && section_lang == null) {
+           var section_format = $('#poemformat').val();
+            if (section_format == $('#poemformat-old').text()) {
+                section_format = null;
+            }
+
+            if (breakFromVIndices.length == 0 && rhythm_new == null && rhyme_letters == null && section_lang == null && section_format == null) {
                 alert('شما هیچ تغییری در متن نداده‌اید!');
                 return;
             }
 
-            var section_format = $('#poemformat').val();
-            if (section_format == $('#poemformat-old').text()) {
-                section_format = null;
-            }
+           
 
             $('#savecorrections').hide();
             $('#saving').text('در حال ذخیره ...');
