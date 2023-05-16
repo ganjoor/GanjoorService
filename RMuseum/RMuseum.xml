@@ -14989,7 +14989,7 @@
             poem format convertor
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(RMuseum.Models.Ganjoor.GanjoorPoemFormat)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(System.Nullable{RMuseum.Models.Ganjoor.GanjoorPoemFormat})">
             <summary>
             تبدیل به رشته
             </summary>

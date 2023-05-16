@@ -12,8 +12,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="format"></param>
         /// <returns></returns>
-        public static string GetString(GanjoorPoemFormat format)
+        public static string GetString(GanjoorPoemFormat? format)
         {
+            if (format == null) return "";
             switch (format)
             {
                 case GanjoorPoemFormat.Ghazal:

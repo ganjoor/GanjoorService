@@ -178,6 +178,41 @@ else
                     }
                 }
 
+                @if (correction.PoemFormat != null)
+                {
+                    <tr>
+                        <td>
+                            <p style="color:red">قالب شعری: @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat?)correction.OriginalPoemFormat)</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat?)correction.PoemFormat)</p>
+                        </td>
+                        <td>
+                            @if (correction.PoemFormatReviewResult == CorrectionReviewResult.NotReviewed)
+                            {
+                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.PoemFormatReviewResult)</p>
+                            }
+                            else
+                            @if (correction.PoemFormatReviewResult == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.PoemFormatReviewResult)</p>
+                            }
+                            else
+                            {
+                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.PoemFormatReviewResult)</p>
+                            }
+                        </td>
+                    </tr>
+                    @if (!string.IsNullOrEmpty(correction.ReviewNote))
+                    {
+                        <tr>
+                            <td colspan="3">
+                                <p>@correction.ReviewNote</p>
+                            </td>
+                        </tr>
+                    }
+                }
+
                 @if (
                correction.BreakFromVerse1VOrderResult == CorrectionReviewResult.Approved
                ||
