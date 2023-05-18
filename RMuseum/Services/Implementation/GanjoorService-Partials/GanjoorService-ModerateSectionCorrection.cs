@@ -1041,6 +1041,10 @@ namespace RMuseum.Services.Implementation
                     Language = dbCorrection.Language,
                     OriginalLanguage = dbCorrection.OriginalLanguage,
                     LanguageReviewResult = dbCorrection.LanguageReviewResult,
+                    PoemFormat = dbCorrection.PoemFormat,
+                    OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
+                    PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
+                    HideMyName = dbCorrection.HideMyName,
                 }
                 );
         }
