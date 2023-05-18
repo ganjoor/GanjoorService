@@ -219,6 +219,8 @@ namespace GanjooRazor.Areas.Admin.Pages
             string titleReviewNote,
             string languageReviewResult, 
             string languageReviewNote,
+            string poemformatReviewResult,
+            string poemformatReviewNote,
             string reviewNote)
         {
             using (HttpClient secureClient = new HttpClient())
@@ -353,12 +355,25 @@ namespace GanjooRazor.Areas.Admin.Pages
                     {
                         if(languageReviewResult == null)
                         {
-                            return new BadRequestObjectResult("لطفا تغییر زبان را بازبینی کنید.");
+                            return new BadRequestObjectResult("لطفاً تغییر زبان را بازبینی کنید.");
                         }
                         else
                         {
                             Correction.LanguageReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), languageReviewResult);
                             Correction.ReviewNote = languageReviewNote;
+                        }
+                    }
+
+                    if(Correction.PoemFormat != null)
+                    {
+                        if(poemformatReviewResult == null)
+                        {
+                            return new BadRequestObjectResult("لطفاً تغییر قالب شعری را بازبینی کنید.");
+                        }
+                        else
+                        {
+                            Correction.PoemFormatReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), poemformatReviewResult);
+                            Correction.ReviewNote = poemformatReviewNote;
                         }
                     }
 
