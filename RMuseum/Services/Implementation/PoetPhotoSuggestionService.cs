@@ -382,7 +382,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var dbModel = await _context.GanjoorPoetSuggestedPictures.Where(s => s.Id == id).SingleAsync();
-                if(dbModel.Published)
+                if(!dbModel.Published)
                 {
                     return new RServiceResult<bool>(false, "برای رد تصاویر تأیید نشده از تابع reject استفاده کنید.");
                 }
