@@ -214,13 +214,22 @@
                    (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
                    )
                     {
-                        <div id="catmap"></div>
-                        @if(!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
-                        {
-                            <div class="century">
-                                @Model.GanjoorPage.PoetOrCat.Cat.MapName
-                            </div>
-                        }
+                        <div class="comments-like-div">
+                            @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
+                            {
+                                <div class="century">
+                                    @Model.GanjoorPage.PoetOrCat.Cat.MapName
+                                </div>
+                            }
+                            else
+
+                            {
+                                <div class="century">
+                                    مکان‌های نامبرده شده
+                                </div>
+                            }
+                            <div id="catmap"></div>
+                        </div>
                     }
 
                     @if ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
@@ -254,7 +263,7 @@
                                 oms.addListener('click', function (marker) {
 
                                     var markOrder = '';
-                                    if (marker.poemGeoTag.LunarYear != null){
+                                    if (marker.poemGeoTag.LunarYear != null) {
                                         markOrder = marker.order + ' - ';
                                     }
                                     var poemDesc = markOrder + '<a class="actionlink" onclick="viewLocation(marker.poemGeoTag.Location.Latitude, marker.poemGeoTag.Location.Longitude)">' + marker.poemGeoTag.Location.Name + '</a> <br> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
@@ -271,7 +280,7 @@
                             {
                                 @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
                             }
-                                                                                                                                                                                                                                                                                ]).addTo(map);
+                                                                                                                                                                                                                                                                                                                                                                    ]).addTo(map);
 
                                 for (var i = 0; i < poemGeoTags.length; i++) {
                                     var poemGeoTag = poemGeoTags[i];
@@ -416,7 +425,7 @@
                                                 @if (!Model.MutiPartPoemPage)
                                                     @foreach (var s in Model.GanjoorPage.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem).ToList())
                                                     {
-                                                        @if(s.GanjoorMetre != null)
+                                                        @if (s.GanjoorMetre != null)
                                                         {
                                                             <tr>
                                                                 <td>
@@ -427,7 +436,7 @@
                                                                 </td>
                                                             </tr>
                                                         }
-                                                        @if(s.PoemFormat != null && s.PoemFormat != RMuseum.Models.Ganjoor.GanjoorPoemFormat.Unknown)
+                                                        @if (s.PoemFormat != null && s.PoemFormat != RMuseum.Models.Ganjoor.GanjoorPoemFormat.Unknown)
                                                         {
                                                             <tr>
                                                                 <td>
@@ -439,7 +448,7 @@
                                                             </tr>
                                                         }
 
-                                    }
+                                                    }
                                                 @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag))
                                                 {
                                                     <tr>
@@ -512,7 +521,7 @@
                                                        ))
                                                        ; nIndex++)
                                                             {
-                                                                if(nIndex == verseIndex)
+                                                                if (nIndex == verseIndex)
                                                                 {
                                                                     <p>
                                                                         <a href="#bn@(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletIndex + 1)">#</a> @Model.GanjoorPage.Poem.Verses[nIndex].Text
@@ -524,7 +533,7 @@
                                                                         @Model.GanjoorPage.Poem.Verses[nIndex].Text
                                                                     </p>
                                                                 }
-                                                               
+
                                                             }
 
 
