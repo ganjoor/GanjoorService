@@ -326,8 +326,11 @@
 
                                 var popup = new L.Popup();
                                 oms.addListener('click', function (marker) {
-
-                                    popup.setContent(marker.poemGeoTag.Location.Name);
+                                    var poemDesc = '<a class="actionlink" onclick="viewLocation(marker.poemGeoTag.Location.Latitude, marker.poemGeoTag.Location.Longitude)">' + marker.poemGeoTag.Location.Name + '</a>';
+                                    if (marker.poemGeoTag.LunarYear != null) {
+                                        poemDesc += '<br> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
+                                    }
+                                    popup.setContent(poemDesc);
                                     popup.setLatLng(marker.getLatLng());
                                     map.openPopup(popup);
                                 });
