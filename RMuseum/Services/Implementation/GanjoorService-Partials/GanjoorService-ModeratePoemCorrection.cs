@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace RMuseum.Services.Implementation
 {
@@ -199,7 +199,11 @@ namespace RMuseum.Services.Implementation
                     dbVerse.ReviewNote = moderatedVerse.ReviewNote;
                     if (dbVerse.MarkForDeleteResult == CorrectionReviewResult.Approved)
                     {
-                        dbVerse.OriginalText = dbVerse.Text;
+                        if(!string.IsNullOrEmpty(dbVerse.Text))
+                        {
+                            dbVerse.OriginalText = dbVerse.Text;
+                        }
+                       
                         dbCorrection.AffectedThePoem = true;
                         versesDeleted = true;
                         updatePoem = true;

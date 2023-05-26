@@ -2034,7 +2034,7 @@ namespace RMuseum.Services.Implementation
             {
                 if (!verse.NewVerse)
                 {
-                    var v = poem.Verses.Where(v => v.VOrder == verse.VORder).Single();
+                    var v = poem.Verses.Where(poemVerse => poemVerse.VOrder == verse.VORder).Single();
                     verse.OriginalText = v.Text;
                     verse.OriginalVersePosition = v.VersePosition;
                     verse.OriginalLanguageId = v.LanguageId;
