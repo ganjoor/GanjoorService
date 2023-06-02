@@ -82,6 +82,11 @@ namespace GanjooRazor.Areas.User.Pages
         public string RhymeLetters { get; set; }
 
         /// <summary>
+        /// valid for whole poem sections
+        /// </summary>
+        public GanjoorPoemFormat? PoemFormat { get; set; }
+
+        /// <summary>
         /// can edit
         /// </summary>
         public bool CanEdit { get; set; }
@@ -200,6 +205,11 @@ namespace GanjooRazor.Areas.User.Pages
                         }
                     }
 
+                    if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.PoemFormat != null).Any())
+                    {
+                        PoemFormat = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.PoemFormat != null).OrderBy(s => s.VerseType).First().PoemFormat;
+                    }
+
                     if (PageInformation.Poem.Images.Where(i => i.IsTextOriginalSource).Any())
                     {
                         TextSourceImage = PageInformation.Poem.Images.Where(i => i.IsTextOriginalSource).First();
@@ -283,7 +293,7 @@ namespace GanjooRazor.Areas.User.Pages
             return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
         }
 
-        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, int[] verseOrderMarkedForDelete, VersePosition[] versePositions, string rhythm, string rhythm2, string rhyme, string[] verseOrderSummaries, int[] verseLanguages, string note, bool hideMyName)
+        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, int[] verseOrderMarkedForDelete, VersePosition[] versePositions, string rhythm, string rhythm2, string rhyme, GanjoorPoemFormat? format, string[] verseOrderSummaries, int[] verseLanguages, string note, bool hideMyName)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -399,6 +409,7 @@ namespace GanjooRazor.Areas.User.Pages
                         Rhythm = rhythm,
                         Rhythm2 = rhythm2,
                         RhymeLetters = rhyme,
+                        PoemFormat = format,
                         PoemSummary = poemSummary,
                         Note = note,
                         HideMyName = hideMyName

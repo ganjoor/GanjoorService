@@ -77,8 +77,13 @@
             rhythm_new2 = null;
         }
 
+        var section_format = $('#poemformat').val();
+        if (section_format == $('#poemformat-old').text()) {
+            section_format = null;
+        }
+
         if (verseOrderText.length == 0 && verseOrderSummaries.length == 0) {
-            if (rhythm_new == null && rhythm_new2 == null && rhyme_letters == null) {
+            if (rhythm_new == null && rhythm_new2 == null && rhyme_letters == null && section_format == null) {
                 alert('شما هیچ تغییری در اطلاعات نداده‌اید!');
                 return;
             }
@@ -102,6 +107,7 @@
                 rhythm: rhythm_new,
                 rhythm2: rhythm_new2,
                 rhyme: rhyme_letters,
+                format: section_format,
                 verseOrderSummaries: verseOrderSummaries,
                 verseLanguages: verseLanguages,
                 note: $('#note').val(),
@@ -1136,6 +1142,44 @@ else
                 <a role="button" onclick="resetRhythm('rhythm-new2')" class="pagebutton">پاک کردن وزن</a>
             </td>
         </tr>
+
+            <tr>
+                <td>
+                    قالب شعری فعلی:
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)Model.PoemFormat)
+                    <div id="poemformat-old" class="hidden-recitation">@Model.PoemFormat</div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label for="">قالب شعری:</label>
+                    <br />
+                    <select id="poemformat">
+                        @foreach (var poemFormat in System.Enum.GetValues(typeof(RMuseum.Models.Ganjoor.GanjoorPoemFormat)))
+                        {
+                            @if (Model.MyLastEdit != null && (Model.MyLastEdit.PoemFormat == (RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat))
+                            {
+                                <option value="@poemFormat" selected>@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
+                            }
+                            else if (Model.PoemFormat == (RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)
+                            {
+                                <option value="@poemFormat" selected>@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
+                            }
+                            else
+                            {
+                                <option value="@poemFormat">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
+                            }
+
+                        }
+                    </select>
+                </td>
+            </tr>
 
         }
 
