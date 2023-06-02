@@ -35,7 +35,7 @@ document.addEventListener('selectionchange', function() {
 
 	
 	$meaning.attr({
-		href: 'https://www.vaabd.js?version=4.com/?q=' + encodeURI(text),
+		href: 'https://www.vajehyab.com/?q=' + encodeURI(text),
 		title: 'جستجو در واژه‌یاب',
 		target: '_blank'
 	})
