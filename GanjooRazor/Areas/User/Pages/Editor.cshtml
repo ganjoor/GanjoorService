@@ -942,11 +942,13 @@ else
         {
             <tr>
                 <td>
-                    <p class="red-color">این مورد شامل بیش از یک قطعه شعر یا دارای پاراگراف نثر است و امکان انتساب وزن به آن یا تعیین حروف قافیهٔ ان وجود ندارد.</p>
+                    <p class="red-color">این مورد شامل بیش از یک قطعه شعر یا دارای پاراگراف نثر است و امکان انتساب وزن و قالب شعری به آن و یا تعیین حروف قافیهٔ آن وجود ندارد.</p>
                 </td>
             </tr>
         }
-        <tr id="rhythms-section">
+        else
+        {
+                    <tr id="rhythms-section">
             <td>
                 وزن فعلی:
             </td>
@@ -1134,6 +1136,8 @@ else
                 <a role="button" onclick="resetRhythm('rhythm-new2')" class="pagebutton">پاک کردن وزن</a>
             </td>
         </tr>
+
+        }
 
 
         <tr>
