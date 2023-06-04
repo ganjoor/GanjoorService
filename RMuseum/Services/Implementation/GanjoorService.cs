@@ -2054,6 +2054,8 @@ namespace RMuseum.Services.Implementation
                 OriginalRhythm2 = (secondSection == null || secondSection.GanjoorMetre == null) ? null : secondSection.GanjoorMetre.Rhythm,
                 RhymeLetters = correction.RhymeLetters,
                 OriginalRhymeLetters = mainSection == null ? null : mainSection.RhymeLetters,
+                PoemFormat = correction.PoemFormat,
+                OriginalPoemFormat = correction.PoemFormat == null ? null : mainSection.PoemFormat,
                 Note = correction.Note,
                 Date = DateTime.Now,
                 Result = CorrectionReviewResult.NotReviewed,
@@ -2211,7 +2213,9 @@ namespace RMuseum.Services.Implementation
                          dbCorrection.Reviewed == true
                          &&
                          (
-                         dbCorrection.Result == CorrectionReviewResult.Approved || dbCorrection.RhythmResult == CorrectionReviewResult.Approved || dbCorrection.Rhythm2Result == CorrectionReviewResult.Approved || dbCorrection.RhymeLettersReviewResult == CorrectionReviewResult.Approved
+                         dbCorrection.Result == CorrectionReviewResult.Approved || dbCorrection.RhythmResult == CorrectionReviewResult.Approved 
+                         || dbCorrection.Rhythm2Result == CorrectionReviewResult.Approved || dbCorrection.RhymeLettersReviewResult == CorrectionReviewResult.Approved
+                         || dbCorrection.PoemFormatReviewResult == CorrectionReviewResult.Approved
                          ||
                          dbCorrection.SummaryReviewResult == CorrectionReviewResult.Approved
                          ||
