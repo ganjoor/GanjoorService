@@ -426,7 +426,7 @@ else
 
             @if (Model.MyLastEdit.Title != null)
             {
-                  <tr>
+                <tr>
                     <td colspan="2">
                         تغییرات عنوان
                     </td>
@@ -442,7 +442,7 @@ else
             }
             @if (Model.MyLastEdit.Rhythm != null)
             {
-                  <tr>
+                <tr>
                     <td colspan="2">
                         تغییرات وزن
                     </td>
@@ -458,7 +458,7 @@ else
             }
             @if (Model.MyLastEdit.Rhythm2 != null)
             {
-                  <tr>
+                <tr>
                     <td colspan="2">
                         تغییرات وزن دوم
                     </td>
@@ -520,7 +520,7 @@ else
             }
             @if (Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Length > 0)
             {
-                  <tr>
+                <tr>
                     <td colspan="2">
                         تغییرات متن
                     </td>
@@ -584,7 +584,7 @@ else
                             </tr>
                             <tr>
                                 <td>
-                                    @if(verse.OriginalLanguageId == null)
+                                    @if (verse.OriginalLanguageId == null)
                                     {
                                         <p class="red-color">زبان: فارسی</p>
                                     }
@@ -592,7 +592,7 @@ else
                                     {
                                         <p class="red-color">زبان: @Model.Languages.Where(l => l.Id == verse.OriginalLanguageId).Single().Name</p>
                                     }
-                                    
+
                                 </td>
                                 <td>
                                     <p class="green-color">@Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Name</p>
@@ -912,7 +912,7 @@ else
 
             <tr style="background-color:@color">
                 <td>
-                    @if(verse.LanguageId == null)
+                    @if (verse.LanguageId == null)
                     {
                         @("فارسی")
                         <div id="language-old-@verse.VOrder" class="hidden-recitation">1</div>
@@ -997,194 +997,194 @@ else
         }
         else
         {
-                    <tr id="rhythms-section">
-            <td>
-                وزن فعلی:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p id="rhythm-old">@(Model.GanjoorMetre1 == null ? "" : Model.GanjoorMetre1.Rhythm)</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                وزن ویراستهٔ من:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label for="select-search">جستجوی وزن:</label><br />
-                <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo('select-search', 'rhythm-new')" list="inputRhythms" autocomplete="off" size="50" />
-                <datalist id="inputRhythms">
-                    @if (Model.RhythmsByVerseCount != null)
-                        @foreach (var rhythm in Model.RhythmsByVerseCount)
-                        {
-                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
-                        }
-                </datalist>
+            <tr id="rhythms-section">
+                <td>
+                    وزن فعلی:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p id="rhythm-old">@(Model.GanjoorMetre1 == null ? "" : Model.GanjoorMetre1.Rhythm)</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    وزن ویراستهٔ من:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="select-search">جستجوی وزن:</label><br />
+                    <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo('select-search', 'rhythm-new')" list="inputRhythms" autocomplete="off" size="50" />
+                    <datalist id="inputRhythms">
+                        @if (Model.RhythmsByVerseCount != null)
+                            @foreach (var rhythm in Model.RhythmsByVerseCount)
+                            {
+                                <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                            }
+                    </datalist>
 
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label for="rhythm-new">وزن انتخاب شده:</label>
-                <br />
-                <select id="rhythm-new" name="rhythm-new">
-                    @foreach (var rhythm in Model.RhythmsAlphabetically)
-                    {
-                        if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm == rhythm.Rhythm)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="rhythm-new">وزن انتخاب شده:</label>
+                    <br />
+                    <select id="rhythm-new" name="rhythm-new">
+                        @foreach (var rhythm in Model.RhythmsAlphabetically)
                         {
-                            <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
-                        }
-                        else
-                        {
-                            if (Model.GanjoorMetre1 != null && Model.GanjoorMetre1.Rhythm == rhythm.Rhythm)
+                            if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm == rhythm.Rhythm)
                             {
                                 <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
                             }
                             else
                             {
-                                <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
-                            }
-
-                        }
-
-                    }
-                </select>
-                <a role="button" onclick="resetRhythm('rhythm-new')" class="pagebutton">پاک کردن وزن</a>
-                <br />
-                <script>
-                    function newRhythm() {
-                        var rhythm = prompt("پیشنهاد وزن جدید", "");
-                        if (rhythm != null) {
-                            var select = document.getElementById('rhythm-new');
-                            var options = select.options;
-                            for (let i = 0; i < options.length; i++) {
-                                if (options[i].value == rhythm) {
-                                    alert('وزن پیشنهادی تکراری است.');
-                                    return;
+                                if (Model.GanjoorMetre1 != null && Model.GanjoorMetre1.Rhythm == rhythm.Rhythm)
+                                {
+                                    <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
                                 }
+                                else
+                                {
+                                    <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                                }
+
                             }
-                            var opt = document.createElement('option');
-                            opt.value = rhythm;
-                            opt.innerHTML = rhythm;
-                            select.appendChild(opt);
 
-                            var opt2 = document.createElement('option');
-                            opt2.value = rhythm;
-                            opt2.innerHTML = rhythm;
-                            document.getElementById('rhythm-new2').appendChild(opt2);
-
-                            alert('وزن پیشنهادی به انتهای لیست وزن‌ها اضافه شده. لطفاً از لیست آن را انتخاب کنید.');
                         }
-                    }
-                </script>
-                <a role="button" onclick="newRhythm()" class="pagebutton">پیشنهاد وزن جدید</a>
-            </td>
-        </tr>
+                    </select>
+                    <a role="button" onclick="resetRhythm('rhythm-new')" class="pagebutton">پاک کردن وزن</a>
+                    <br />
+                    <script>
+                        function newRhythm() {
+                            var rhythm = prompt("پیشنهاد وزن جدید", "");
+                            if (rhythm != null) {
+                                var select = document.getElementById('rhythm-new');
+                                var options = select.options;
+                                for (let i = 0; i < options.length; i++) {
+                                    if (options[i].value == rhythm) {
+                                        alert('وزن پیشنهادی تکراری است.');
+                                        return;
+                                    }
+                                }
+                                var opt = document.createElement('option');
+                                opt.value = rhythm;
+                                opt.innerHTML = rhythm;
+                                select.appendChild(opt);
 
-        <tr>
-            <td>
-                حروف قافیهٔ فعلی:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p id="rhyme-letters-old">@Model.RhymeLetters</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                حروف قافیهٔ ویراستهٔ من (بدون فاصله و حرکات):
-            </td>
-        </tr>
-        <tr>
-            <td>
+                                var opt2 = document.createElement('option');
+                                opt2.value = rhythm;
+                                opt2.innerHTML = rhythm;
+                                document.getElementById('rhythm-new2').appendChild(opt2);
 
-                @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.RhymeLetters))
-                {
-                    <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.MyLastEdit.RhymeLetters" size="50" />
-                }
-                else
-                {
-                    <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.RhymeLetters" size="50" />
-                }
-                <a role="button" onclick="computePoemRhyme(@Model.PageInformation.Id, '#rhyme-letters')" class="pagebutton">محاسبه</a>
-
-            </td>
-        </tr>
-
-
-
-        <tr id="secondr-btn">
-            <td>
-                <a role="button" onclick="secondR()" class="pagebutton">این شعر دو وزنی است</a>
-            </td>
-        </tr>
-
-        <tr id="secondr1" style="display:none">
-            <td>
-                وزن دوم (شعرهای چندوزنی):
-            </td>
-
-        </tr>
-        <tr id="secondr2" style="display:none">
-            <td>
-                <p class="red-color">تعدادی کمی از شعرها دو وزنی هستند.</p>
-            </td>
-        </tr>
-        <tr id="secondr3" style="display:none">
-            <td>
-                <p id="rhythm-old2">@(Model.GanjoorMetre2 == null ? "" : Model.GanjoorMetre2.Rhythm)</p>
-            </td>
-        </tr>
-        <tr id="secondr4" style="display:none">
-            <td>
-                وزن ویراستهٔ من (دوم):
-            </td>
-        </tr>
-        <tr id="secondr5" style="display:none">
-            <td>
-                <label for="select-search2">جستجوی وزن (دوم):</label><br />
-                <input type="text" id="select-search2" value="" oninput="doSearchInRhythmsCombo('select-search2', 'rhythm-new2')" list="inputRhythms" autocomplete="off" size="50" />
-                <datalist id="inputRhythms2">
-                    @if (Model.RhythmsByVerseCount != null)
-                        @foreach (var rhythm in Model.RhythmsByVerseCount)
-                        {
-                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                                alert('وزن پیشنهادی به انتهای لیست وزن‌ها اضافه شده. لطفاً از لیست آن را انتخاب کنید.');
+                            }
                         }
-                </datalist>
+                    </script>
+                    <a role="button" onclick="newRhythm()" class="pagebutton">پیشنهاد وزن جدید</a>
+                </td>
+            </tr>
 
-            </td>
-        </tr>
-        <tr id="secondr6" style="display:none">
-            <td>
-                <label for="rhythm-new2">وزن (دوم) انتخاب شده:</label><br /><select id="rhythm-new2" name="rhythm-new2">
-                    @foreach (var rhythm in Model.RhythmsAlphabetically)
+            <tr>
+                <td>
+                    حروف قافیهٔ فعلی:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p id="rhyme-letters-old">@Model.RhymeLetters</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    حروف قافیهٔ ویراستهٔ من (بدون فاصله و حرکات):
+                </td>
+            </tr>
+            <tr>
+                <td>
+
+                    @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.RhymeLetters))
                     {
-                        if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm2 == rhythm.Rhythm)
+                        <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.MyLastEdit.RhymeLetters" size="50" />
+                    }
+                    else
+                    {
+                        <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.RhymeLetters" size="50" />
+                    }
+                    <a role="button" onclick="computePoemRhyme(@Model.PageInformation.Id, '#rhyme-letters')" class="pagebutton">محاسبه</a>
+
+                </td>
+            </tr>
+
+
+
+            <tr id="secondr-btn">
+                <td>
+                    <a role="button" onclick="secondR()" class="pagebutton">این شعر دو وزنی است</a>
+                </td>
+            </tr>
+
+            <tr id="secondr1" style="display:none">
+                <td>
+                    وزن دوم (شعرهای چندوزنی):
+                </td>
+
+            </tr>
+            <tr id="secondr2" style="display:none">
+                <td>
+                    <p class="red-color">تعدادی کمی از شعرها دو وزنی هستند.</p>
+                </td>
+            </tr>
+            <tr id="secondr3" style="display:none">
+                <td>
+                    <p id="rhythm-old2">@(Model.GanjoorMetre2 == null ? "" : Model.GanjoorMetre2.Rhythm)</p>
+                </td>
+            </tr>
+            <tr id="secondr4" style="display:none">
+                <td>
+                    وزن ویراستهٔ من (دوم):
+                </td>
+            </tr>
+            <tr id="secondr5" style="display:none">
+                <td>
+                    <label for="select-search2">جستجوی وزن (دوم):</label><br />
+                    <input type="text" id="select-search2" value="" oninput="doSearchInRhythmsCombo('select-search2', 'rhythm-new2')" list="inputRhythms" autocomplete="off" size="50" />
+                    <datalist id="inputRhythms2">
+                        @if (Model.RhythmsByVerseCount != null)
+                            @foreach (var rhythm in Model.RhythmsByVerseCount)
+                            {
+                                <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                            }
+                    </datalist>
+
+                </td>
+            </tr>
+            <tr id="secondr6" style="display:none">
+                <td>
+                    <label for="rhythm-new2">وزن (دوم) انتخاب شده:</label><br /><select id="rhythm-new2" name="rhythm-new2">
+                        @foreach (var rhythm in Model.RhythmsAlphabetically)
                         {
-                            <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
-                        }
-                        else
-                        {
-                            if (Model.GanjoorMetre2 != null && Model.GanjoorMetre2.Rhythm == rhythm.Rhythm)
+                            if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm2 == rhythm.Rhythm)
                             {
                                 <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
                             }
                             else
                             {
-                                <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                                if (Model.GanjoorMetre2 != null && Model.GanjoorMetre2.Rhythm == rhythm.Rhythm)
+                                {
+                                    <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
+                                }
+                                else
+                                {
+                                    <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                                }
+
                             }
 
                         }
-
-                    }
-                </select>
-                <a role="button" onclick="resetRhythm('rhythm-new2')" class="pagebutton">پاک کردن وزن</a>
-            </td>
-        </tr>
+                    </select>
+                    <a role="button" onclick="resetRhythm('rhythm-new2')" class="pagebutton">پاک کردن وزن</a>
+                </td>
+            </tr>
 
             <tr>
                 <td>
@@ -1382,7 +1382,7 @@ else
                     <td>
                         معنای خط یا بیت:
                     </td>
-                    
+
                 </tr>
                 <tr>
                     <td><p><span style="color:red">تذکّر مهم:</span> از این کادر برای نوشتن چیزی جز معنی استفاده <span style="color:red">نکنید</span>.</p></td>
