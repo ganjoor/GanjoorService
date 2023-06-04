@@ -384,7 +384,7 @@ namespace GanjooRazor.Areas.User.Pages
                         }
                     }
 
-                    if (title == null && poemSummary == null && vOrderTexts.Count == 0 && rhythm == null && rhythm2 == null && rhyme == null)
+                    if (title == null && poemSummary == null && vOrderTexts.Count == 0 && rhythm == null && rhythm2 == null && rhyme == null && format == null)
                         return new BadRequestObjectResult("شما هیچ تغییری در اطلاعات نداده‌اید!");
 
                     if (rhythm == "null")

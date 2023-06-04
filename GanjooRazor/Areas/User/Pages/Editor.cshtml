@@ -426,6 +426,11 @@ else
 
             @if (Model.MyLastEdit.Title != null)
             {
+                  <tr>
+                    <td colspan="2">
+                        تغییرات عنوان
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         <p class="red-color">@Model.MyLastEdit.OriginalTitle</p>
@@ -437,6 +442,11 @@ else
             }
             @if (Model.MyLastEdit.Rhythm != null)
             {
+                  <tr>
+                    <td colspan="2">
+                        تغییرات وزن
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         <p class="red-color">@Model.MyLastEdit.OriginalRhythm</p>
@@ -448,6 +458,11 @@ else
             }
             @if (Model.MyLastEdit.Rhythm2 != null)
             {
+                  <tr>
+                    <td colspan="2">
+                        تغییرات وزن دوم
+                    </td>
+                </tr>
                 <tr>
                     <td>
                         <p class="red-color">@Model.MyLastEdit.OriginalRhythm2</p>
@@ -460,11 +475,32 @@ else
             @if (Model.MyLastEdit.RhymeLetters != null)
             {
                 <tr>
+                    <td colspan="2">
+                        تغییرات قافیه
+                    </td>
+                </tr>
+                <tr>
                     <td>
                         <p class="red-color">@Model.RhymeLetters</p>
                     </td>
                     <td>
                         <p class="green-color">@Model.MyLastEdit.RhymeLetters</p>
+                    </td>
+                </tr>
+            }
+            @if (Model.MyLastEdit.PoemFormat != null)
+            {
+                <tr>
+                    <td colspan="2">
+                        تغییرات قالب شعری
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p class="red-color"> @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat?)Model.MyLastEdit.OriginalPoemFormat)</p>
+                    </td>
+                    <td>
+                        <p class="green-color"> @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat?)Model.MyLastEdit.PoemFormat)</p>
                     </td>
                 </tr>
             }
@@ -482,7 +518,13 @@ else
                     </td>
                 </tr>
             }
-            @if (Model.MyLastEdit.VerseOrderText != null)
+            @if (Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Length > 0)
+            {
+                  <tr>
+                    <td colspan="2">
+                        تغییرات متن
+                    </td>
+                </tr>
                 @foreach (var verse in Model.MyLastEdit.VerseOrderText)
                 {
                     @if (verse.MarkForDelete)
@@ -578,6 +620,7 @@ else
                     }
 
                 }
+            }
             @if (!string.IsNullOrEmpty(Model.MyLastEdit.Note))
             {
                 <tr>
