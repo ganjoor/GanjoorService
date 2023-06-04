@@ -228,7 +228,9 @@ namespace GanjooRazor.Areas.Admin.Pages
             string[] versePosReviewResult,
             string[] verseSummaryResults,
             string[] verseLanguageReviewResult,
-            string[] verseReviewNotes
+            string[] verseReviewNotes,
+            string poemformatReviewResult,
+            string poemformatReviewNote
             )
         {
             using (HttpClient secureClient = new HttpClient())
@@ -305,6 +307,19 @@ namespace GanjooRazor.Areas.Admin.Pages
                         {
                             Correction.RhymeLettersReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), rhymeReviewResult);
                             Correction.ReviewNote = titleReviewNote;
+                        }
+                    }
+
+                    if (Correction.PoemFormat != null)
+                    {
+                        if (poemformatReviewResult == null)
+                        {
+                            return new BadRequestObjectResult("لطفاً تغییر قالب شعری را بازبینی کنید.");
+                        }
+                        else
+                        {
+                            Correction.PoemFormatReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), poemformatReviewResult);
+                            Correction.ReviewNote = poemformatReviewNote;
                         }
                     }
 

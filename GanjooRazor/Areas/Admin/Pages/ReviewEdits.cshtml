@@ -65,6 +65,11 @@
             rhymeReviewResult = $('input[name=rhyme_review_result]:checked').val()
         }
 
+        var poemformatReviewResult = 'DontCare';
+        if ($('#poemformat_review_result_Approved').length > 0) {
+            poemformatReviewResult = $('input[name=poemformat_review_result]:checked').val()
+        }
+
 
         var verseReviewResult = [];
         var versePosReviewResult = [];
@@ -141,6 +146,8 @@
                 verseSummaryResults: verseSummaryResults,
                 verseLanguageReviewResult: verseLanguageReviewResult,
                 verseReviewNotes: verseReviewNotes,
+                poemformatReviewResult: poemformatReviewResult,
+                poemformatReviewNote: $('#poemformat_review_note') == null ? null : $('#poemformat_review_note').val(),
             },
             success: function() {
                 location.reload(true);
@@ -487,6 +494,56 @@ else
                     {
                         <input type="text" id="title_review_note" name="title_review_note" value="" size="50" />
                     }
+                </td>
+            </tr>
+        }
+
+        @if (Model.Correction.PoemFormat != null)
+        {
+            <tr>
+                <td colspan="2">
+                    قالب شعری
+                </td>
+            </tr>
+            <tr>
+                <td>متن اولیه</td>
+                <td>پیشنهاد</td>
+            </tr>
+            <tr>
+                <td>
+                    <p id="original-poemformat" class="red-color">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat?)Model.Correction.OriginalPoemFormat)</p>
+                </td>
+                <td>
+                    <p id="edited-poemformat" class="green-color">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat?)Model.Correction.PoemFormat)</p>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    @if (Model.Correction.PoemFormatReviewResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
+                    {
+                        <input type="radio" id="poemformat_review_result_Approved" name="poemformat_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+                        <label for="poemformat_review_result_Approved">تأیید می‌شود</label>
+
+                        <br>
+                        <input type="radio" id="poemformat_review_result_NotChanged" name="poemformat_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
+                    }
+                    else
+                    {
+                        <input type="radio" id="poemformat_review_result_Approved" name="poemformat_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
+                        <label for="poemformat_review_result_Approved">تأیید می‌شود</label>
+
+                        <br>
+                        <input type="radio" id="poemformat_review_result_NotChanged" name="poemformat_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
+                    }
+                    <label for="poemformat_review_result_NotChanged">تغییری نکرده</label><br>
+                    <input type="radio" id="poemformat_review_result_RejectedBecauseWrong" name="poemformat_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
+                    <label for="poemformat_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <input type="radio" id="poemformat_review_result_RejectedBecauseVariant" name="poemformat_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
+                    <label for="poemformat_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
+                    <input type="radio" id="poemformat_review_result_Rejected" name="poemformat_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
+                    <label for="poemformat_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                    <input type="text" id="poemformat_review_note" name="poemformat_review_note" value="" size="50" />
                 </td>
             </tr>
         }
