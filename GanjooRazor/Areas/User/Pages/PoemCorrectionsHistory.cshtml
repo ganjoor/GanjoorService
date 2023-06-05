@@ -99,6 +99,19 @@ else
                     </tr>
 
                 }
+                @if (correction.PoemFormat != null && correction.PoemFormatReviewResult == CorrectionReviewResult.Approved)
+                {
+                    <tr>
+                        <td>
+                            <p style="color:red">قالب شعری: @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(correction.OriginalPoemFormat)</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(correction.PoemFormat)</p>
+                        </td>
+
+                    </tr>
+
+                }
                 @if (correction.VerseOrderText != null)
                     @foreach (var verse in correction.VerseOrderText)
                     {
