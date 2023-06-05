@@ -2341,6 +2341,13 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetPoemCategoryTopRecitations(System.Int32)">
+            <summary>
+            get category top one recitations
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetPublishedRecitationById(System.Int32)">
             <summary>
             get published recitation by id
@@ -17008,6 +17015,13 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPoemCategoryTopRecitations(System.Int32)">
+            <summary>
+            get category top one recitations
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPublishedRecitationById(System.Int32)">
             <summary>
             get published recitation by id
@@ -17513,6 +17527,13 @@
             <param name="paging"></param>
             <param name="searchTerm"></param>
             <param name="poetId"></param>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.GetPoemCategoryTopRecitations(System.Int32)">
+            <summary>
+            get category top recitations
+            </summary>
             <param name="catId"></param>
             <returns></returns>
         </member>

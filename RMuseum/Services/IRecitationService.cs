@@ -36,6 +36,13 @@ namespace RMuseum.Services
         Task<RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>> GetPublishedRecitations(PagingParameterModel paging, string searchTerm = "", int poetId = 0, int catId = 0);
 
         /// <summary>
+        /// get category top recitations
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PublicRecitationViewModel[]>> GetPoemCategoryTopRecitations(int catId);
+
+        /// <summary>
         /// get published recitation by id
         /// </summary>
         /// <param name="id"></param>

@@ -276,6 +276,57 @@ namespace RMuseum.Services.Implementationa
         }
 
         /// <summary>
+        /// get category top one recitations
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PublicRecitationViewModel[]>> GetPoemCategoryTopRecitations(int catId)
+        {
+            try
+            {
+                var source =     from poem in _context.GanjoorPoems.AsNoTracking()
+                                 from audio in _context.Recitations
+                                                   .Where(a => a.GanjoorPostId == poem.Id && a.ReviewStatus == AudioReviewStatus.Approved)
+                                                   .OrderBy(a => a.AudioOrder)
+                                                   .Take(1)
+                                                   .DefaultIfEmpty()
+                                 where
+                                 poem.CatId == catId
+                                 orderby poem.Id
+                                 select new PublicRecitationViewModel()
+                                 {
+                                     Id = audio.Id,
+                                     PoemId = audio.GanjoorPostId,
+                                     PoemFullTitle = poem.FullTitle,
+                                     PoemFullUrl = poem.FullUrl,
+                                     AudioTitle = audio.AudioTitle,
+                                     AudioArtist = audio.AudioArtist,
+                                     AudioArtistUrl = audio.AudioArtistUrl,
+                                     AudioSrc = audio.AudioSrc,
+                                     AudioSrcUrl = audio.AudioSrcUrl,
+                                     LegacyAudioGuid = audio.LegacyAudioGuid,
+                                     Mp3FileCheckSum = audio.Mp3FileCheckSum,
+                                     Mp3SizeInBytes = audio.Mp3SizeInBytes,
+                                     PublishDate = audio.ReviewDate,
+                                     FileLastUpdated = audio.FileLastUpdated,
+                                     Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                                     XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
+                                     PlainText = poem.PlainText,
+                                     HtmlText = poem.HtmlText,
+                                     AudioOrder = audio.AudioOrder,
+                                     UpVotedByUser = false,
+                                 };
+
+                return new RServiceResult<PublicRecitationViewModel[]>(await source.ToArrayAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PublicRecitationViewModel[]>(null, exp.ToString());
+            }
+        }
+
+
+        /// <summary>
         /// get published recitation by id
         /// </summary>
         /// <param name="id"></param>

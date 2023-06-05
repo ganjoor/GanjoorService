@@ -52,6 +52,23 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get category top one recitations
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        [HttpGet("cattop1/{catId}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PublicRecitationViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoemCategoryTopRecitations(int catId)
+        {
+            var res = await _audioService.GetPoemCategoryTopRecitations(catId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// get published recitation by id
         /// </summary>
         /// <param name="id"></param>
