@@ -291,7 +291,7 @@ namespace RMuseum.Services.Implementationa
                                                    .Take(1)
                                                    .DefaultIfEmpty()
                                  where
-                                 poem.CatId == catId
+                                 poem.CatId == catId && audio != null
                                  orderby poem.Id
                                  select new PublicRecitationViewModel()
                                  {
