@@ -374,6 +374,16 @@
                                 </div>
                             </div>
                         </nav>
+
+                        @if (Model.CategoryTop1Recitations.Length > 0)
+                        {
+                            <div class="spacer">&nbsp;</div>
+                            <div class="related-images-frame" id="recitations">
+                                <div id="recitations-section">
+                                    <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.CategoryTop1Recitations, true) />
+                                </div>
+                            </div>
+                        }
                     }
 
                     @if (Model.CanEdit && !Model.IsPoemPage)
@@ -567,7 +577,7 @@
                                                 @(Model.GanjoorPage.Poem.Recitations.Length > 1 ? "خوانش‌ها" : "خوانش") <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('recitations-section', 'recitations-collapse-button')"><i class="info-buttons expand_circle_down" id="recitations-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                             </div>
                                             <div id="recitations-section">
-                                                <partial name="_AudioPlayerPartial" model=Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations) />
+                                                <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false) />
                                             </div>
                                         </div>
                                     }

@@ -23,59 +23,72 @@
                 </script>
             }
             <div class="recitaion-info">
-                <a role="button" onclick="document.getElementById('audio-@(nRecitationIndex + 1)').play()" class="actionlink">@recitaion.AudioTitle</a> @Html.Raw(Model.getAudioDesc(recitaion, nRecitationIndex == 0))
-            </div>
-            <div class="audio-partial-action-box">
-                <a role="button" class="w3tooltip cursor-pointer recitation-button" onclick="document.getElementById('audio-@(nRecitationIndex + 1)').play()"><i class="recitation-icons recitation-play"></i><span class="w3tooltiptext">پخش</span></a>
-                <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@($"/AudioClip/?a={recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="recitation-icons recitation-download"></i><span class="w3tooltiptext">دریافت خوانش</span></a>
-                <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@($"/ReportRecitation/?a={recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="recitation-icons recitation-report"></i><span class="w3tooltiptext">گزارش خطا</span></a>
-                @if (Model.LoggedIn)
+                @if(Model.CategoryMode)
                 {
-                    <a role="button" class="w3tooltip cursor-pointer recitation-button" onclick="switchRecitationVote(@recitaion.Id)"><i class="recitation-icons @(recitaion.UpVotedByUser ? "recitation-vote" : "recitation-novote")" id="@($"recitaion-{recitaion.Id}")"></i><span class="w3tooltiptext">رأی به خوانش</span></a>
+                    <a role="button" href="@recitaion.PoemFullUrl" class="actionlink">@recitaion.PoemFullTitle</a> @Html.Raw(Model.getAudioDesc(recitaion))
                 }
-                <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@($"/RecitationsOrder/?p={recitaion.PoemId}#a{recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="recitation-icons recitation-score"></i><span class="w3tooltiptext">اطلاعات رتبه‌بندی</span></a>
-                @if (recitaion.AudioArtistUrl.IndexOf("http") == 0)
+                else
                 {
-                    <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@Html.Raw(recitaion.AudioArtistUrl)" target="_blank"><i class="recitation-icons recitation-website"></i><span class="w3tooltiptext">@recitaion.AudioArtist</span></a>
+                    <a role="button" onclick="document.getElementById('audio-@(nRecitationIndex + 1)').play()" class="actionlink">@recitaion.AudioTitle</a> @Html.Raw(Model.getAudioDesc(recitaion, nRecitationIndex == 0))
                 }
+                
             </div>
-            @if (recitaion.Mistakes.Length > 0)
+
+            @if(!Model.CategoryMode)
             {
-                <div class="recitaion-mistakes">
-                    <div class="recitaion-mistakes-header">
-                        اشکالات خوانش
-                    </div>
-                    @foreach (var mistake in recitaion.Mistakes)
+                <div class="audio-partial-action-box">
+                    <a role="button" class="w3tooltip cursor-pointer recitation-button" onclick="document.getElementById('audio-@(nRecitationIndex + 1)').play()"><i class="recitation-icons recitation-play"></i><span class="w3tooltiptext">پخش</span></a>
+                    <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@($"/AudioClip/?a={recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="recitation-icons recitation-download"></i><span class="w3tooltiptext">دریافت خوانش</span></a>
+                    <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@($"/ReportRecitation/?a={recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="recitation-icons recitation-report"></i><span class="w3tooltiptext">گزارش خطا</span></a>
+                    @if (Model.LoggedIn)
                     {
-                        <div class="recitaion-mistake">
-                            <p>
-                                @if (mistake.CoupletIndex != -1)
-                                {
-                                    <a href="@($"#bn{mistake.CoupletIndex + 1}")">#</a>
-                                }
-                                @Html.Raw(mistake.Mistake.Replace("\r\n", "<br>"))
-                            </p>
-                        </div>
+                        <a role="button" class="w3tooltip cursor-pointer recitation-button" onclick="switchRecitationVote(@recitaion.Id)"><i class="recitation-icons @(recitaion.UpVotedByUser ? "recitation-vote" : "recitation-novote")" id="@($"recitaion-{recitaion.Id}")"></i><span class="w3tooltiptext">رأی به خوانش</span></a>
+                    }
+                    <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@($"/RecitationsOrder/?p={recitaion.PoemId}#a{recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="recitation-icons recitation-score"></i><span class="w3tooltiptext">اطلاعات رتبه‌بندی</span></a>
+                    @if (recitaion.AudioArtistUrl.IndexOf("http") == 0)
+                    {
+                        <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@Html.Raw(recitaion.AudioArtistUrl)" target="_blank"><i class="recitation-icons recitation-website"></i><span class="w3tooltiptext">@recitaion.AudioArtist</span></a>
                     }
                 </div>
-            }
-            <script>
-                document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener('play', () => {
-                    currentAudio = document.getElementById('audio-@(nRecitationIndex + 1)');
-                    var audioList = document.querySelectorAll('audio');
-                    audioList.forEach(function (audioElement) {
-                        if (audioElement != currentAudio) {
-                            audioElement.pause();
+                @if (recitaion.Mistakes.Length > 0)
+                {
+                    <div class="recitaion-mistakes">
+                        <div class="recitaion-mistakes-header">
+                            اشکالات خوانش
+                        </div>
+                        @foreach (var mistake in recitaion.Mistakes)
+                        {
+                            <div class="recitaion-mistake">
+                                <p>
+                                    @if (mistake.CoupletIndex != -1)
+                                    {
+                                        <a href="@($"#bn{mistake.CoupletIndex + 1}")">#</a>
+                                    }
+                                    @Html.Raw(mistake.Mistake.Replace("\r\n", "<br>"))
+                                </p>
+                            </div>
                         }
+                    </div>
+                }
+                <script>
+                    document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener('play', () => {
+                        currentAudio = document.getElementById('audio-@(nRecitationIndex + 1)');
+                        var audioList = document.querySelectorAll('audio');
+                        audioList.forEach(function (audioElement) {
+                            if (audioElement != currentAudio) {
+                                audioElement.pause();
+                            }
+                        });
+
+                        _setXml('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitaion.Id}.xml")');
                     });
 
-                    _setXml('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitaion.Id}.xml")');
-                });
-
-                document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener('timeupdate', () => {
-                    _trackTimeChanged(document.getElementById('audio-@(nRecitationIndex + 1)'));
-                });
-            </script>
+                    document.getElementById('audio-@(nRecitationIndex + 1)').addEventListener('timeupdate', () => {
+                        _trackTimeChanged(document.getElementById('audio-@(nRecitationIndex + 1)'));
+                    });
+                </script>
+            }
+           
         </div>
 
         @if (!Model.ShowAllRecitaions && nRecitationIndex == 4 && Model.Recitations.Length > 5)

@@ -1,4 +1,5 @@
-﻿using GanjooRazor.Utils;
+﻿using Azure;
+using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -93,13 +94,14 @@ namespace GanjooRazor.Pages
             };
         }
 
-        public _AudioPlayerPartialModel GetRecitationsModel(PublicRecitationViewModel[] recitations)
+        public _AudioPlayerPartialModel GetRecitationsModel(PublicRecitationViewModel[] recitations, bool minimumControls)
         {
             return new _AudioPlayerPartialModel()
             {
                 LoggedIn = LoggedIn,
                 Recitations = recitations,
-                ShowAllRecitaions = ShowAllRecitaions
+                ShowAllRecitaions = minimumControls ? true : ShowAllRecitaions,
+                CategoryMode = minimumControls
             };
         }
 
@@ -310,6 +312,8 @@ namespace GanjooRazor.Pages
         /// category poem geo date tags
         /// </summary>
         public PoemGeoDateTag[] CategoryPoemGeoDateTags { get; set; }
+
+        public PublicRecitationViewModel[] CategoryTop1Recitations { get; set; }
 
         /// <summary>
         /// prepare poem except
@@ -711,6 +715,16 @@ namespace GanjooRazor.Pages
                         break;
                     case GanjoorPageType.CatPage:
                         _prepareNextPre();
+                        {
+                            var catTop1RecitationsQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/cattop1/{GanjoorPage.PoetOrCat.Cat.Id}?includePoemText=false");
+                         
+                            if (!catTop1RecitationsQuery.IsSuccessStatusCode)
+                            {
+                                LastError = JsonConvert.DeserializeObject<string>(await catTop1RecitationsQuery.Content.ReadAsStringAsync());
+                                return Page();
+                            }
+                            CategoryTop1Recitations = JsonConvert.DeserializeObject<PublicRecitationViewModel[]>(await catTop1RecitationsQuery.Content.ReadAsStringAsync());
+                        }
                         IsCatPage = true;
                         break;
                 }
