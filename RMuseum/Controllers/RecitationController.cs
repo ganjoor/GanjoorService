@@ -51,22 +51,6 @@ namespace RMuseum.Controllers
             return Ok(res.Result.Items);
         }
 
-        /// <summary>
-        /// get category top one recitations
-        /// </summary>
-        /// <param name="catId"></param>
-        /// <returns></returns>
-        [HttpGet("cattop1/{catId}")]
-        [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PublicRecitationViewModel>))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetPoemCategoryTopRecitations(int catId)
-        {
-            var res = await _audioService.GetPoemCategoryTopRecitations(catId);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
-        }
 
         /// <summary>
         /// get published recitation by id
@@ -1076,6 +1060,51 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(resExec.ExceptionString))
                 return BadRequest(resExec.ExceptionString);
             return Ok(resExec.Result);
+        }
+
+        /// <summary>
+        /// get category top one recitations
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="includePoemText"></param>
+        /// <returns></returns>
+        [HttpGet("cattop1/{catId}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PublicRecitationViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoemCategoryTopRecitations(int catId, bool includePoemText)
+        {
+            var res = await _audioService.GetPoemCategoryTopRecitations(catId, includePoemText);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// rss for category top one recitations
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="includePoemText"></param>
+        /// <returns></returns>
+
+        [HttpGet("cattop1/{catId}/rss")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoemCategoryTopRecitationsRSS(int catId, bool includePoemText)
+        {
+            var res = await _audioService.GetPoemCategoryTopRecitations(catId, includePoemText);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            string rss = RecitationsRssBuilder.Build(res.Result);
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(rss);
+            writer.Flush();
+            stream.Position = 0;
+
+            return new FileStreamResult(stream, "application/rss+xml");
         }
 
         /// <summary>
