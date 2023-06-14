@@ -15073,6 +15073,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -15151,6 +15154,56 @@
             <param name="paging"></param>
             <param name="userId"></param>
             <param name="q"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SetCategoryLanguageTag(System.Int32,System.String)">
+            <summary>
+            set category poems language tag
+            </summary>
+            <param name="catId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BatchReSlugCatPoems(System.Int32)">
+            <summary>
+            re sulg cat poems
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BatchRenameCatPoemTitles(System.Int32,RMuseum.Models.Ganjoor.ViewModels.GanjoorBatchNamingModel,System.Guid)">
+            <summary>
+            batch rename
+            </summary>
+            <param name="catId"></param>
+            <param name="model"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryDuplicates(System.Int32)">
+            <summary>
+            list of category saved duplicated poems
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SetCategoryExtraInfo(System.Int32,System.String,System.Nullable{System.Guid},System.Boolean,System.String)">
+            <summary>
+            Update category extra info
+            </summary>
+            <param name="catId"></param>
+            <param name="bookName"></param>
+            <param name="imageId"></param>
+            <param name="sumUpSubsGeoLocations"></param>
+            <param name="mapName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.FindCategoryPoemsRhymes(System.Int32,System.Boolean)">
+            <summary>
+            find category poem rhymes
+            </summary>
+            <param name="catId"></param>
+            <param name="retag"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCenturiesAsync">
@@ -15754,17 +15807,6 @@
             <param name="mainSections"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.SetCategoryExtraInfo(System.Int32,System.String,System.Nullable{System.Guid},System.Boolean,System.String)">
-            <summary>
-            Update category extra info
-            </summary>
-            <param name="catId"></param>
-            <param name="bookName"></param>
-            <param name="imageId"></param>
-            <param name="sumUpSubsGeoLocations"></param>
-            <param name="mapName"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetBooksAsync">
             <summary>
             get list of books
@@ -16220,22 +16262,6 @@
             <param name="imageId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.BatchRenameCatPoemTitles(System.Int32,RMuseum.Models.Ganjoor.ViewModels.GanjoorBatchNamingModel,System.Guid)">
-            <summary>
-            batch rename
-            </summary>
-            <param name="catId"></param>
-            <param name="model"></param>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.BatchReSlugCatPoems(System.Int32)">
-            <summary>
-            re sulg cat poems
-            </summary>
-            <param name="catId"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.FindPoemMainSectionRhyme(System.Int32)">
             <summary>
             find poem rhyme
@@ -16250,34 +16276,11 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.SetCategoryLanguageTag(System.Int32,System.String)">
-            <summary>
-            set category poems language tag
-            </summary>
-            <param name="catId"></param>
-            <param name="language"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.FindCategoryPoemsRhymes(System.Int32,System.Boolean)">
-            <summary>
-            find category poem rhymes
-            </summary>
-            <param name="catId"></param>
-            <param name="retag"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.FindPoemMainSectionRhythm(System.Int32)">
             <summary>
             find poem rhythm
             </summary>
             <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryDuplicates(System.Int32)">
-            <summary>
-            list of category saved duplicated poems
-            </summary>
-            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.AdDuplicateAsync(System.Int32,System.Int32,System.Int32)">
