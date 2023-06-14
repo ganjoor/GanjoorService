@@ -2341,13 +2341,6 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.GetPoemCategoryTopRecitations(System.Int32)">
-            <summary>
-            get category top one recitations
-            </summary>
-            <param name="catId"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetPublishedRecitationById(System.Int32)">
             <summary>
             get published recitation by id
@@ -2612,6 +2605,22 @@
             <summary>
             Makes recitations of فریدون فرح‌اندوز first recitations
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetPoemCategoryTopRecitations(System.Int32,System.Boolean)">
+            <summary>
+            get category top one recitations
+            </summary>
+            <param name="catId"></param>
+            <param name="includePoemText"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetPoemCategoryTopRecitationsRSS(System.Int32,System.Boolean)">
+            <summary>
+            rss for category top one recitations
+            </summary>
+            <param name="catId"></param>
+            <param name="includePoemText"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Controllers.RecitationController.ReadOnlyMode">
@@ -17018,11 +17027,12 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPoemCategoryTopRecitations(System.Int32)">
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPoemCategoryTopRecitations(System.Int32,System.Boolean)">
             <summary>
             get category top one recitations
             </summary>
             <param name="catId"></param>
+            <param name="includePoemText"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPublishedRecitationById(System.Int32)">
@@ -17533,11 +17543,12 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IRecitationService.GetPoemCategoryTopRecitations(System.Int32)">
+        <member name="M:RMuseum.Services.IRecitationService.GetPoemCategoryTopRecitations(System.Int32,System.Boolean)">
             <summary>
             get category top recitations
             </summary>
             <param name="catId"></param>
+            <param name="includePoemText"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.GetPublishedRecitationById(System.Int32)">

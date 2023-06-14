@@ -8,6 +8,7 @@ namespace GanjooRazor.Pages
         public bool LoggedIn { get; set; }
         public PublicRecitationViewModel[] Recitations { get; set; }
         public bool ShowAllRecitaions { get; set; }
+        public bool CategoryMode { get; set; }
 
         public string getAudioDesc(PublicRecitationViewModel recitation, bool contributionLink = false)
         {

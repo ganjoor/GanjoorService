@@ -279,8 +279,9 @@ namespace RMuseum.Services.Implementationa
         /// get category top one recitations
         /// </summary>
         /// <param name="catId"></param>
+        /// <param name="includePoemText"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PublicRecitationViewModel[]>> GetPoemCategoryTopRecitations(int catId)
+        public async Task<RServiceResult<PublicRecitationViewModel[]>> GetPoemCategoryTopRecitations(int catId, bool includePoemText)
         {
             try
             {
@@ -291,7 +292,7 @@ namespace RMuseum.Services.Implementationa
                                                    .Take(1)
                                                    .DefaultIfEmpty()
                                  where
-                                 poem.CatId == catId
+                                 poem.CatId == catId && audio != null
                                  orderby poem.Id
                                  select new PublicRecitationViewModel()
                                  {
@@ -311,8 +312,8 @@ namespace RMuseum.Services.Implementationa
                                      FileLastUpdated = audio.FileLastUpdated,
                                      Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
                                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
-                                     PlainText = poem.PlainText,
-                                     HtmlText = poem.HtmlText,
+                                     PlainText = includePoemText ? poem.PlainText : "",
+                                     HtmlText = includePoemText ? poem.HtmlText : "",
                                      AudioOrder = audio.AudioOrder,
                                      UpVotedByUser = false,
                                  };

@@ -39,8 +39,9 @@ namespace RMuseum.Services
         /// get category top recitations
         /// </summary>
         /// <param name="catId"></param>
+        /// <param name="includePoemText"></param>
         /// <returns></returns>
-        Task<RServiceResult<PublicRecitationViewModel[]>> GetPoemCategoryTopRecitations(int catId);
+        Task<RServiceResult<PublicRecitationViewModel[]>> GetPoemCategoryTopRecitations(int catId, bool includePoemText);
 
         /// <summary>
         /// get published recitation by id
