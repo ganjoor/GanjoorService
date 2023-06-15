@@ -623,11 +623,33 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> SetCategoryLanguageTag(int id, string language)
+        public async Task<IActionResult> SetCategoryLanguageTagAsync(int id, string language)
         {
 
             var res =
-                await _ganjoorService.SetCategoryLanguageTag(id, language);
+                await _ganjoorService.SetCategoryLanguageTagAsync(id, language);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// set category poems language tag
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="poemformat"></param>
+        /// <returns></returns>
+
+        [HttpPut]
+        [Route("cat/poemformat/{id}/{poemformat}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> SetCategoryPoemFormatAsync(int id, GanjoorPoemFormat? poemformat)
+        {
+
+            var res =
+                await _ganjoorService.SetCategoryPoemFormatAsync(id, poemformat);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok();

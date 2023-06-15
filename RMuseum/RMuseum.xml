@@ -1023,12 +1023,20 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.SetCategoryLanguageTag(System.Int32,System.String)">
+        <member name="M:RMuseum.Controllers.GanjoorController.SetCategoryLanguageTagAsync(System.Int32,System.String)">
             <summary>
             set category poems language tag
             </summary>
             <param name="id"></param>
             <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.SetCategoryPoemFormatAsync(System.Int32,System.Nullable{RMuseum.Models.Ganjoor.GanjoorPoemFormat})">
+            <summary>
+            set category poems language tag
+            </summary>
+            <param name="id"></param>
+            <param name="poemformat"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.FindCategoryPoemsRhythms(System.Int32,System.Boolean,System.String)">
@@ -13434,12 +13442,20 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.SetCategoryLanguageTag(System.Int32,System.String)">
+        <member name="M:RMuseum.Services.IGanjoorService.SetCategoryLanguageTagAsync(System.Int32,System.String)">
             <summary>
             set category poems language tag
             </summary>
             <param name="catId"></param>
             <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SetCategoryPoemFormatAsync(System.Int32,System.Nullable{RMuseum.Models.Ganjoor.GanjoorPoemFormat})">
+            <summary>
+            set category poem format tag for poems consisting of a single whole poem section
+            </summary>
+            <param name="catId"></param>
+            <param name="format"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.StartRegeneratingTOCs(System.Guid)">
@@ -15165,7 +15181,15 @@
             <param name="q"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.SetCategoryLanguageTag(System.Int32,System.String)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SetCategoryPoemFormatAsync(System.Int32,System.Nullable{RMuseum.Models.Ganjoor.GanjoorPoemFormat})">
+            <summary>
+            set category poem format tag for poems consisting of a single whole poem section
+            </summary>
+            <param name="catId"></param>
+            <param name="format"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SetCategoryLanguageTagAsync(System.Int32,System.String)">
             <summary>
             set category poems language tag
             </summary>

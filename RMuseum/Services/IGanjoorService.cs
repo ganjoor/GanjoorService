@@ -959,7 +959,15 @@ namespace RMuseum.Services
         /// <param name="catId"></param>
         /// <param name="language"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> SetCategoryLanguageTag(int catId, string language);
+        Task<RServiceResult<bool>> SetCategoryLanguageTagAsync(int catId, string language);
+
+        /// <summary>
+        /// set category poem format tag for poems consisting of a single whole poem section
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> SetCategoryPoemFormatAsync(int catId, GanjoorPoemFormat? format);
 
         /// <summary>
         /// regenerate TOCs

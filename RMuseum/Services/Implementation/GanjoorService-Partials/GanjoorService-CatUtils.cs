@@ -21,13 +21,47 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+
+        /// <summary>
+        /// set category poem format tag for poems consisting of a single whole poem section
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> SetCategoryPoemFormatAsync(int catId, GanjoorPoemFormat? format)
+        {
+            try
+            {
+                var poemList = await _context.GanjoorPoems.Where(p => p.CatId == catId).ToListAsync();
+                foreach (var poem in poemList)
+                {
+                    var poemSections = await _context.GanjoorPoemSections.Where(s => s.PoemId == poem.Id && s.SectionType == PoemSectionType.WholePoem).ToListAsync();
+                    if(poemSections.Count == 1)
+                    {
+                        foreach (var section in poemSections)
+                        {
+                            section.PoemFormat = format;
+                        }
+                        _context.UpdateRange(poemSections);
+                    }
+                }
+                _context.UpdateRange(poemList);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
         /// <summary>
         /// set category poems language tag
         /// </summary>
         /// <param name="catId"></param>
         /// <param name="language"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> SetCategoryLanguageTag(int catId, string language)
+        public async Task<RServiceResult<bool>> SetCategoryLanguageTagAsync(int catId, string language)
         {
             try
             {
