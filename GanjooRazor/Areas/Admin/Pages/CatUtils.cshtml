@@ -164,6 +164,32 @@
         }
     }
 
+    function tagPoemsWithFormat(catId) {
+
+        var format = document.getElementById('cat-poem-format').value;
+        if (confirm(format)) {
+            var url = '?handler=SetCategoryPoemFormat';
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    id: catId,
+                    format: format
+                },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+                success: function () {
+                    alert('انجام شد.')
+                },
+
+            });
+        }
+    }
+
     function onSwitchPoemsSelections(){
         var value = document.getElementById('poems-select-switch').checked;
         var checkboxes = document.getElementsByClassName('poemSelect');
@@ -371,6 +397,27 @@
         <tr>
             <td colspan="2">
                 <p><a role="button" onclick="tagPoemsWithLanguage(@Model.Cat.Cat.Id)" class="actionlink">تعیین زبان</a></p>
+            </td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <td>
+                <span class="inputlabel">قالب اشعار بخش</span>
+            </td>
+            <td>
+                <select id="cat-poem-format">
+                    @foreach (var poemFormat in System.Enum.GetValues(typeof(RMuseum.Models.Ganjoor.GanjoorPoemFormat)))
+                    {
+                        <option value="@poemFormat">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
+                    }
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <p><a role="button" onclick="tagPoemsWithFormat(@Model.Cat.Cat.Id)" class="actionlink">تعیین قالب</a></p>
             </td>
         </tr>
     </table>

@@ -365,6 +365,23 @@ namespace GanjooRazor.Areas.Admin.Pages
             return new OkObjectResult(false);
         }
 
+        public async Task<IActionResult> OnPostSetCategoryPoemFormatAsync(int id, GanjoorPoemFormat format)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/poemformat/{id}/{format}", null);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return new BadRequestObjectResult(res);
+                    }
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
 
         public async Task<IActionResult> OnPostRecountAsync(int id)
         {
