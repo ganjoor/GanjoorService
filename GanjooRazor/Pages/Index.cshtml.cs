@@ -307,14 +307,6 @@ namespace GanjooRazor.Pages
         /// </summary>
         public bool ShowAllRecitaions { get; set; }
 
-
-        /// <summary>
-        /// category poem geo date tags
-        /// </summary>
-        public PoemGeoDateTag[] CategoryPoemGeoDateTags { get; set; }
-
-        public PublicRecitationViewModel[] CategoryTop1Recitations { get; set; }
-
         /// <summary>
         /// prepare poem except
         /// </summary>
