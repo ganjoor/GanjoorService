@@ -2,7 +2,18 @@
 @using DNTPersianUtils.Core
 
 <div id="utils-navbar">
-    @if (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null)
+    @if (Model.GanjoorPage != null 
+    && 
+    (
+        Model.GanjoorPage.Poem != null 
+        ||
+        !string.IsNullOrEmpty(Model.PreviousUrl) || !string.IsNullOrEmpty(Model.NextUrl)
+        ||
+        (Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+        ||
+        (Model.CategoryTop1Recitations != null && Model.CategoryTop1Recitations.Length > 0)
+    )
+    )
     {
         <div class="clear-both utilbar">
             @if (Model.GanjoorPage.Poem != null)
@@ -98,15 +109,7 @@
                     </a>
                 }
 
-                @if (Model.GanjoorPage.Poem.Recitations.Length > 0)
-                {
-                    <a href="#recitations" role="button" class="w3tooltip cursor-pointer">
-                        <div class="circled-number">
-                            <i class="noindent-info-button recitation-listen"></i>
-                        </div>
-                        <span class="w3tooltiptext">خوانش‌ها</span>
-                    </a>
-                }
+                
 
                 @if (Model.SectionsWithMetreAndRhymes != null)
                 {
@@ -134,26 +137,69 @@
                         }
                     }
                 }
+            }
 
-                @if (!string.IsNullOrEmpty(Model.PreviousUrl))
-                {
-                    <a href="@Html.Raw(Model.PreviousUrl)" role="button" class="w3tooltip cursor-pointer">
-                        <div class="circled-number">
-                            <i class="noindent-info-button right-btn"></i>
-                        </div>
-                        <span class="w3tooltiptext">قبلی</span>
-                    </a>
-                }
+            @if 
+            (
+                (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null && Model.GanjoorPage.Poem.Recitations.Length > 0)
+                ||
+                (Model.CategoryTop1Recitations != null && Model.CategoryTop1Recitations.Length > 0)
+            )
+            {
+                <a href="#recitations" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button recitation-listen"></i>
+                    </div>
+                    <span class="w3tooltiptext">خوانش‌ها</span>
+                </a>
+            }
 
-                @if (!string.IsNullOrEmpty(Model.NextUrl))
-                {
-                    <a href="@Html.Raw(Model.NextUrl)" role="button" class="w3tooltip cursor-pointer">
-                        <div class="circled-number">
-                            <i class="noindent-info-button left-btn"></i>
-                        </div>
-                        <span class="w3tooltiptext">بعدی</span>
-                    </a>
-                }
+            @if
+            (
+                (Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+                ||
+                (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
+            )
+            {
+                <a href="#map-section" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button map-icon"></i>
+                    </div>
+                    <span class="w3tooltiptext">
+                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
+                        {
+                            <text>
+                                 @Model.GanjoorPage.PoetOrCat.Cat.MapName
+                            </text>
+                        }
+                        else
+                        {
+                            <text>
+                                مکان‌های نامبرده شده
+                            </text>
+                        }
+                    </span>
+                </a>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.PreviousUrl))
+            {
+                <a href="@Html.Raw(Model.PreviousUrl)" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button right-btn"></i>
+                    </div>
+                    <span class="w3tooltiptext">قبلی</span>
+                </a>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.NextUrl))
+            {
+                <a href="@Html.Raw(Model.NextUrl)" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button left-btn"></i>
+                    </div>
+                    <span class="w3tooltiptext">بعدی</span>
+                </a>
             }
         </div>
     }

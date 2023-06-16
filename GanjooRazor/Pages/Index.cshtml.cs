@@ -707,18 +707,21 @@ namespace GanjooRazor.Pages
                         break;
                     case GanjoorPageType.CatPage:
                         _prepareNextPre();
-                        {
-                            var catTop1RecitationsQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/cattop1/{GanjoorPage.PoetOrCat.Cat.Id}?includePoemText=false");
-                         
-                            if (!catTop1RecitationsQuery.IsSuccessStatusCode)
-                            {
-                                LastError = JsonConvert.DeserializeObject<string>(await catTop1RecitationsQuery.Content.ReadAsStringAsync());
-                                return Page();
-                            }
-                            CategoryTop1Recitations = JsonConvert.DeserializeObject<PublicRecitationViewModel[]>(await catTop1RecitationsQuery.Content.ReadAsStringAsync());
-                        }
+                        
                         IsCatPage = true;
                         break;
+                }
+
+                if(IsPoetPage || IsCatPage)
+                {
+                    var catTop1RecitationsQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/cattop1/{GanjoorPage.PoetOrCat.Cat.Id}?includePoemText=false");
+
+                    if (!catTop1RecitationsQuery.IsSuccessStatusCode)
+                    {
+                        LastError = JsonConvert.DeserializeObject<string>(await catTop1RecitationsQuery.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+                    CategoryTop1Recitations = JsonConvert.DeserializeObject<PublicRecitationViewModel[]>(await catTop1RecitationsQuery.Content.ReadAsStringAsync());
                 }
 
                 if (IsPoemPage)
