@@ -8191,6 +8191,71 @@
             suggested by
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorRelatedPerson">
+            <summary>
+             a person refered by a poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.WikiUrl">
+            <summary>
+            wikipedia url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.BirthYearInLHijri">
+            <summary>
+            birth year in lunar hijri
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.DeathYearInLHijri">
+            <summary>
+            death year in lunar hijri
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.ValidBirthDate">
+            <summary>
+            BirthYearInLHijri, for some poets it is only indicator of their century of birth and should not be relied as their valid birth date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.ValidDeathDate">
+            <summary>
+            DeathYearInLHijri, for some poets it is only indicator of their century of death and should not be relied as their valid death date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.BirthLocationId">
+            <summary>
+            birth location id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.BirthLocation">
+            <summary>
+            birth location
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.DeathLocationId">
+            <summary>
+            death location id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.DeathLocation">
+            <summary>
+            death location
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorSiteBanner">
             <summary>
             ganjoor.net site banner
