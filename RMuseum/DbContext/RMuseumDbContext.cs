@@ -501,5 +501,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<PoemGeoDateTag> PoemGeoDateTags { get; set; }
 
+        /// <summary>
+        /// People tags
+        /// </summary>
+        public DbSet<GanjoorRelatedPerson> GanjoorRelatedPersons { get; set; }
+
     }
 }

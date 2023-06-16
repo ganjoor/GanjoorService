@@ -64,5 +64,15 @@
         /// ignore in category
         /// </summary>
         public bool IgnoreInCategory { get; set; }
+
+        /// <summary>
+        /// related person id
+        /// </summary>
+        public int? PersonId { get; set; }
+
+        /// <summary>
+        /// related person
+        /// </summary>
+        public virtual GanjoorRelatedPerson Person { get; set; }
     }
 }
