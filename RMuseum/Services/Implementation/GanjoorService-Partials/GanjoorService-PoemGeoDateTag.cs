@@ -113,7 +113,7 @@ namespace RMuseum.Services.Implementation
            
             try
             {
-                var tags = await _context.PoemGeoDateTags.AsNoTracking().Include(t => t.Location).Where(t => t.PoemId == poemId)
+                var tags = await _context.PoemGeoDateTags.AsNoTracking().Include(t => t.Location).Include(t => t.Person).Where(t => t.PoemId == poemId)
                                .OrderBy(t => t.LunarDateTotalNumber)
                                .ThenBy(t => t.Id)
                                .ToArrayAsync();
