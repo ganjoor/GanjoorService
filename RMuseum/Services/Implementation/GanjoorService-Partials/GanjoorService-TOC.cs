@@ -227,7 +227,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
-                string html = string.IsNullOrEmpty(cat.DescriptionHtml) ? "" : $"{cat.DescriptionHtml}{Environment.NewLine}";
+                string html = string.IsNullOrEmpty(cat.DescriptionHtml) ? "" : $"{cat.DescriptionHtml.Replace("../", "https://ganjoor.net/") }{Environment.NewLine}";
                 var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).OrderBy(c => c.MixedModeOrder).ThenBy(c => c.Id).ToListAsync();
                 var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).OrderBy(p => p.MixedModeOrder).ThenBy(p => p.Id).ToListAsync();
 

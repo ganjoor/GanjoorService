@@ -158,7 +158,7 @@ namespace RMuseum.Services.Implementation
 
                                             await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Importing");
 
-                                            var resImport = await _ImportSQLiteCatChildren(context, sqlite, poet.Id, await sqlite.QuerySingleAsync<int>($"SELECT id FROM cat WHERE parent_id = 0"), cat, poet.Nickname, jobProgressServiceEF, job, catPage.Id);
+                                            var resImport = await _ImportSQLiteCatChildren(context, sqlite, poet.Id, await sqlite.QuerySingleAsync<int>($"SELECT id FROM cat WHERE parent_id = 0"), cat, catPage.FullTitle, jobProgressServiceEF, job, catPage.Id);
 
                                             if (string.IsNullOrEmpty(resImport))
                                             {
