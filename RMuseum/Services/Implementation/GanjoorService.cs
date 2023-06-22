@@ -2268,7 +2268,8 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetNextUnreviewedCorrection(int skip, bool onlyUserCorrections)
         {
             string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
-            var systemUserId = (Guid)(await _appUserService.FindUserByEmail(systemEmail)).Result.Id;
+            var systemUser = await _appUserService.FindUserByEmail(systemEmail);
+            var systemUserId = systemUser.Result == null ? Guid.Empty : (Guid)systemUser.Result.Id;
 
             var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.User)
                 .Where(c => c.Reviewed == false && (onlyUserCorrections == false || c.UserId != systemUserId))
@@ -2324,7 +2325,8 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<int>> GetUnreviewedCorrectionCount(bool onlyUserCorrections)
         {
             string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
-            var systemUserId = (Guid)(await _appUserService.FindUserByEmail(systemEmail)).Result.Id;
+            var systemUser = await _appUserService.FindUserByEmail(systemEmail);
+            var systemUserId = systemUser.Result == null ? Guid.Empty : (Guid)systemUser.Result.Id;
             return new RServiceResult<int>(await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText)
                 .Where(c => c.Reviewed == false && (onlyUserCorrections == false || c.UserId != systemUserId))
                 .CountAsync());
