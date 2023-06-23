@@ -1,5 +1,4 @@
-﻿using Azure;
-using GanjooRazor.Utils;
+﻿using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -517,12 +516,6 @@ namespace GanjooRazor.Pages
         /// </summary>
         public List<GanjoorCenturyViewModel> PoetGroups { get; set; }
 
-        /// <summary>
-        /// html language
-        /// </summary>
-        public string HtmlLanguage { get; set; } = "fa-IR";
-
-
 
         private void _prepareNextPre()
         {
@@ -726,7 +719,6 @@ namespace GanjooRazor.Pages
 
                 if (IsPoemPage)
                 {
-                    HtmlLanguage = string.IsNullOrEmpty(GanjoorPage.Poem.Language) ? "fa-IR" : GanjoorPage.Poem.Language;
                     if (bool.Parse(Configuration["BannersEnabled"]))
                     {
                         var bannerQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/banners/random");
