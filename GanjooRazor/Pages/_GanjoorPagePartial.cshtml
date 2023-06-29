@@ -141,12 +141,12 @@
                             @if (Model.GanjoorPage.SecondPoet != null)
                             {
                                 <div id="poets">
-                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)" class="poets-poet"></a>
-                                    <a href="@Html.Raw(Model.GanjoorPage.SecondPoet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.SecondPoet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.SecondPoet.Name)" class="poets-poet"></a>
+                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Nickname)" class="poets-poet"></a>
+                                    <a href="@Html.Raw(Model.GanjoorPage.SecondPoet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.SecondPoet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.SecondPoet.Nickname)" class="poets-poet"></a>
                                 </div>
                                 <div id="page-hierarchy">
                                     @{
-                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)</a>
+                                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Nickname)</a>
 
                                         <span> &raquo;</span>
                                         <h2><a href="@Html.Raw(Model.GanjoorPage.FullUrl)">@Html.Raw(Model.GanjoorPage.Title)</a></h2>
@@ -157,7 +157,7 @@
                             else
                             {
                                 <div id="poet-image">
-                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Name)"></a>
+                                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Nickname)"></a>
                                 </div>
                                 <div id="page-hierarchy" class="width-100per margin-auto">
                                     @{
