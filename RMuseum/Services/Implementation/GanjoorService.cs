@@ -597,7 +597,7 @@ namespace RMuseum.Services.Implementation
                       join cat in _context.GanjoorCategories.Where(c => c.ParentId == null)
                       on poet.Id equals cat.PoetId
                       where poet.Id == (int)dbPage.SecondPoetId
-                      orderby poet.Name descending
+                      orderby poet.Nickname descending
                       select new GanjoorPoetViewModel()
                       {
                           Id = poet.Id,

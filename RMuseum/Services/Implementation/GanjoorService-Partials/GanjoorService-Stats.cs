@@ -193,7 +193,7 @@ namespace RMuseum.Services.Implementation
 
                 if (languagesCoupletsCountsUnprocessed.Count > 1)
                 {
-                    htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ {poet.Name} با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
+                    htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ {poet.Nickname} با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
 
                     htmlText += $"<table>{Environment.NewLine}" +
                         $"<tr class=\"h\">{Environment.NewLine}" +
