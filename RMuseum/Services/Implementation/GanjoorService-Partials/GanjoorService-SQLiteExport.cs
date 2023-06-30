@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DNTPersianUtils.Core;
+using FluentFTP;
 using ganjoor;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
@@ -130,10 +131,10 @@ namespace RMuseum.Services.Implementation
                                                         CatName = poet.Nickname,
                                                         CatID = catPoet.Id,
                                                         PoetID = poet.Id,
-                                                        DownloadUrl = $"http://i.ganjoor.net/android/gdb/{Path.GetFileName(zipFile)}",
+                                                        DownloadUrl = $"https://i.ganjoor.net/android/gdb/{Path.GetFileName(zipFile)}",
                                                         BlogUrl = "",
                                                         FileExt = ".zip",
-                                                        ImageUrl = (hasImage ? $"http://i.ganjoor.net/android/img/{poet.Id}.png" : ""),
+                                                        ImageUrl = (hasImage ? $"https://i.ganjoor.net/android/img/{poet.Id}.png" : ""),
                                                         FileSizeInByte = zipArray.Length,
                                                         LowestPoemID = lowestPoemID,
                                                         PubDate = DateTime.Now
@@ -157,6 +158,43 @@ namespace RMuseum.Services.Implementation
                                         lstFiles.Sort((a, b) => a.CatName.CompareTo(b.CatName));
 
                                         GDBListProcessor.Save(xmlFile, "مجموعه‌های قابل دریافت از گنجور", "", "", lstFiles);
+
+
+                                        if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
+                                        {
+                                            var ftpClient = new AsyncFtpClient
+                                            (
+                                                Configuration.GetSection("ExternalFTPServer")["Host"],
+                                                Configuration.GetSection("ExternalFTPServer")["Username"],
+                                                Configuration.GetSection("ExternalFTPServer")["Password"]
+                                            );
+                                            ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                                            await ftpClient.AutoConnect();
+                                            ftpClient.Config.RetryAttempts = 3;
+
+                                            string dir = Path.GetDirectoryName(xmlFile);
+
+                                            string rootDirName = Path.GetFileName(dir);
+                                            string gdbDirName = Path.GetFileName(Path.GetDirectoryName(outDir));
+
+                                            foreach (var localFilePath in Directory.GetFiles(Path.Combine(dir, gdbDirName), "*.zip"))
+                                            {
+                                                var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/{rootDirName}/{gdbDirName}/{Path.GetFileName(localFilePath)}";
+                                                await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+                                            }
+
+                                            string imgDirName = Path.GetFileName(Path.GetDirectoryName(imgDir));
+                                            foreach (var localFilePath in Directory.GetFiles(Path.Combine(dir, imgDirName), "*.png"))
+                                            {
+
+                                                var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/{rootDirName}/{imgDirName}/{Path.GetFileName(localFilePath)}";
+                                                await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+                                            }
+
+                                            await ftpClient.UploadFile(xmlFile, $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/{rootDirName}/{Path.GetFileName(xmlFile)}", createRemoteDir: true);
+
+                                            await ftpClient.Disconnect();
+                                        }
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                     }
