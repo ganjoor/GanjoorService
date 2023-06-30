@@ -25,8 +25,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="resourceNumber">MEDREN_9949222153503681</param>
         /// <param name="friendlyUrl"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> StartImportingFromPenLibraries(string resourceNumber, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromPenLibraries(string resourceNumber, string friendlyUrl, bool skipUpload)
         {
             string url = $"http://dla.library.upenn.edu/dla/medren/pageturn.html?id={resourceNumber}&rotation=0&size=0";
             if (
@@ -446,7 +447,7 @@ namespace RMuseum.Services.Implementation
                                                 await context.Artifacts.AddAsync(book);
                                                 await context.SaveChangesAsync();
 
-                                                var resFTPUpload = await _UploadArtifactToExternalServer(book, context);
+                                                var resFTPUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
                                                 if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
                                                 {
                                                     job.EndTime = DateTime.Now;

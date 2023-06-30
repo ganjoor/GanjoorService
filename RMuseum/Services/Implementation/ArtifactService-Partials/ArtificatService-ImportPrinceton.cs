@@ -26,8 +26,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="resourceNumber">dj52w476m</param>
         /// <param name="friendlyUrl"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> StartImportingFromPrinceton(string resourceNumber, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromPrinceton(string resourceNumber, string friendlyUrl, bool skipUpload)
         {
             string url = $"http://pudl.princeton.edu/mdCompiler2.php?obj={resourceNumber}";
             if (
@@ -423,7 +424,7 @@ namespace RMuseum.Services.Implementation
                                                 await context.Artifacts.AddAsync(book);
                                                 await context.SaveChangesAsync();
 
-                                                var resFTPUpload = await _UploadArtifactToExternalServer(book, context);
+                                                var resFTPUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
                                                 if(!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
                                                 {
                                                     job.EndTime = DateTime.Now;

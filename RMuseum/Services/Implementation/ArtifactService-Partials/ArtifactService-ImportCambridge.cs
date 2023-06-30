@@ -43,8 +43,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="resourceNumber">MS-RAS-00258</param>
         /// <param name="friendlyUrl"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> StartImportingFromCambridge(string resourceNumber, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromCambridge(string resourceNumber, string friendlyUrl, bool skipUpload)
         {
             string url = $"http://cudl.lib.cam.ac.uk/view/{resourceNumber}.json";
             if (
@@ -433,7 +434,7 @@ namespace RMuseum.Services.Implementation
                                                 await context.Artifacts.AddAsync(book);
                                                 await context.SaveChangesAsync();
 
-                                                var resFTPUpload = await _UploadArtifactToExternalServer(book, context);
+                                                var resFTPUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
                                                 if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
                                                 {
                                                     job.EndTime = DateTime.Now;

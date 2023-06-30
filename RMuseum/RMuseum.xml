@@ -313,7 +313,7 @@
             </summary>        
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ArtifactController.Import(System.String,System.String,System.String,System.String)">
+        <member name="M:RMuseum.Controllers.ArtifactController.Import(System.String,System.String,System.String,System.String,System.Boolean)">
             <summary>
             import from external resources
             </summary>
@@ -321,6 +321,7 @@
             <param name="resourceNumber">119/foldername</param>
             <param name="friendlyUrl">golestan-baysonghori/artifact id</param>
             <param name="resourcePrefix"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.ArtifactController.KeepAlive">
@@ -329,17 +330,18 @@
             </summary>
             <returns>true</returns>
         </member>
-        <member name="M:RMuseum.Controllers.ArtifactController.RetryImport">
+        <member name="M:RMuseum.Controllers.ArtifactController.RetryImport(RMuseum.Models.ImportJob.JobType,System.Boolean)">
             <summary>
             retry import
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ArtifactController.ReExamineLocDownloads(System.String)">
+        <member name="M:RMuseum.Controllers.ArtifactController.ReExamineLocDownloads(System.String,System.Boolean)">
             <summary>
             due to a bug in loc json outputs some artifacts with more than 1000 pages were downloaded incompletely
             </summary>
             <param name="pass">123456</param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.ArtifactController.BookmarkArtifact(System.Guid)">
@@ -626,11 +628,12 @@
             <param name="artifactId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ArtifactController.StartUploadingArtifactToExternalServer(System.Guid)">
+        <member name="M:RMuseum.Controllers.ArtifactController.StartUploadingArtifactToExternalServer(System.Guid,System.Boolean)">
             <summary>
             upload artifact to external server
             </summary>
             <param name="artifactId"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Controllers.ArtifactController.ReadOnlyMode">
@@ -12001,7 +12004,7 @@
             <param name="stream"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IArtifactService.Import(System.String,System.String,System.String,System.String)">
+        <member name="M:RMuseum.Services.IArtifactService.Import(System.String,System.String,System.String,System.String,System.Boolean)">
             <summary>
             import from external resources
             </summary>
@@ -12009,19 +12012,22 @@
             <param name="resourceNumber">119</param>
             <param name="friendlyUrl">golestan-baysonghori</param>
             <param name="resourcePrefix"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IArtifactService.RescheduleJobs(RMuseum.Models.ImportJob.JobType)">
+        <member name="M:RMuseum.Services.IArtifactService.RescheduleJobs(RMuseum.Models.ImportJob.JobType,System.Boolean)">
             <summary>
             reschedule jobs
             </summary>
             <param name="jobType"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IArtifactService.ReExamineLocDownloads">
+        <member name="M:RMuseum.Services.IArtifactService.ReExamineLocDownloads(System.Boolean)">
             <summary>
             due to a bug in loc json outputs some artifacts with more than 1000 pages were downloaded incompletely
             </summary>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IArtifactService.GetImportJobs(RSecurityBackend.Models.Generic.PagingParameterModel)">
@@ -12337,11 +12343,12 @@
             <param name="artifactId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IArtifactService.StartUploadingArtifactToExternalServer(System.Guid)">
+        <member name="M:RMuseum.Services.IArtifactService.StartUploadingArtifactToExternalServer(System.Guid,System.Boolean)">
             <summary>
             upload artifact to external server
             </summary>
             <param name="artifactId"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IDonationService">
@@ -13925,56 +13932,62 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHarvardDirectly(System.String,System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHarvardDirectly(System.String,System.String,System.String,System.Boolean)">
             <summary>
             import from http://www.qajarwomen.org
             </summary>
             <param name="hardvardResourceNumber">43117279</param>
             <param name="friendlyUrl">atame</param>
             <param name="srcUrl">http://www.qajarwomen.org/fa/items/1018A10.html</param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromBritishLibrary(System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromBritishLibrary(System.String,System.String,System.Boolean)">
             <summary>
             from http://www.bl.uk
             </summary>
             <param name="resourceNumber">grenville_xli_f001r</param>
             <param name="friendlyUrl"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromCambridge(System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromCambridge(System.String,System.String,System.Boolean)">
             <summary>
             from http://cudl.lib.cam.ac.uk
             </summary>
             <param name="resourceNumber">MS-RAS-00258</param>
             <param name="friendlyUrl"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromChesterBeatty(System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromChesterBeatty(System.String,System.String,System.Boolean)">
             <summary>
             import from https://viewer.cbl.ie
             </summary>
             <param name="resourceNumber">119</param>
             <param name="friendlyUrl">golestan-baysonghori</param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHarvard(System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHarvard(System.String,System.String,System.Boolean)">
             <summary>
             from https://curiosity.lib.harvard.edu
             </summary>
             <param name="url">example: https://curiosity.lib.harvard.edu/islamic-heritage-project/catalog/40-990114893240203941</param>
             <param name="friendlyUrl"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHathiTrust(System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromHathiTrust(System.String,System.String,System.Boolean)">
             <summary>
             from https://catalog.hathitrust.org
             </summary>
             <param name="resourceNumber">006814127</param>
             <param name="friendlyUrl"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromTheLibraryOfCongress(System.String,System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromTheLibraryOfCongress(System.String,System.String,System.String,System.Boolean)">
             <summary>
             from https://www.loc.gov
             </summary>
@@ -13992,45 +14005,51 @@
             <example>
             plmp
             </example>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.ReExamineLocDownloads">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.ReExamineLocDownloads(System.Boolean)">
             <summary>
             due to a bug in loc json outputs some artifacts with more than 1000 pages were downloaded incompletely
             </summary>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromPenLibraries(System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromPenLibraries(System.String,System.String,System.Boolean)">
             <summary>
             from http://www.library.upenn.edu/
             </summary>
             <param name="resourceNumber">MEDREN_9949222153503681</param>
             <param name="friendlyUrl"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromServerFolder(System.String,System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromServerFolder(System.String,System.String,System.String,System.Boolean)">
             <summary>
             import from server folder
             </summary>
             <param name="folderPath">C:\Tools\batches\florence</param>
             <param name="friendlyUrl">shahname-florence</param>
             <param name="srcUrl">https://t.me/dr_khatibi_abolfazl/888</param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartAppendingFromServerFolder(System.String,System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartAppendingFromServerFolder(System.String,System.Guid,System.Boolean)">
             <summary>
             start appending from server folder
             </summary>
             <param name="folderPath"></param>
             <param name="artifactId"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromWalters(System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromWalters(System.String,System.String,System.Boolean)">
             <summary>
             from http://www.thedigitalwalters.org/01_ACCESS_WALTERS_MANUSCRIPTS.html
             </summary>
             <param name="resourceNumber">W619</param>
             <param name="friendlyUrl">golestan-walters-01</param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.StartSettingArtifactAsTextOriginalSource(System.Int32,System.Guid)">
@@ -14047,12 +14066,13 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromPrinceton(System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromPrinceton(System.String,System.String,System.Boolean)">
             <summary>
             from http://pudl.princeton.edu/
             </summary>
             <param name="resourceNumber">dj52w476m</param>
             <param name="friendlyUrl"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.GetAll(RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Artifact.PublishStatus[])">
@@ -14281,7 +14301,7 @@
             <param name="stream"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.Import(System.String,System.String,System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.Import(System.String,System.String,System.String,System.String,System.Boolean)">
             <summary>
             import from external resources
             </summary>
@@ -14289,28 +14309,32 @@
             <param name="resourceNumber">119/foldername</param>
             <param name="friendlyUrl">golestan-baysonghori/artifact id</param>
             <param name="resourcePrefix"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartUploadingArtifactToExternalServer(System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartUploadingArtifactToExternalServer(System.Guid,System.Boolean)">
             <summary>
             upload artifact to external server
             </summary>
             <param name="artifactId"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService._UploadArtifactToExternalServer(RMuseum.Models.Artifact.RArtifactMasterRecord,RMuseum.DbContext.RMuseumDbContext)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService._UploadArtifactToExternalServer(RMuseum.Models.Artifact.RArtifactMasterRecord,RMuseum.DbContext.RMuseumDbContext,System.Boolean)">
             <summary>
             upload artifact to external server
             </summary>
             <param name="book"></param>
             <param name="context"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.RescheduleJobs(RMuseum.Models.ImportJob.JobType)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.RescheduleJobs(RMuseum.Models.ImportJob.JobType,System.Boolean)">
             <summary>
             reschedule jobs
             </summary>
             <param name="jobType"></param>
+            <param name="skipUpload"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.RemoveArtifact(System.Guid,System.Boolean)">

@@ -27,8 +27,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="resourceNumber">grenville_xli_f001r</param>
         /// <param name="friendlyUrl"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> StartImportingFromBritishLibrary(string resourceNumber, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromBritishLibrary(string resourceNumber, string friendlyUrl, bool skipUpload)
         {
             string url = $"http://www.bl.uk/manuscripts/Viewer.aspx?ref={resourceNumber}";
             if (
@@ -641,7 +642,7 @@ namespace RMuseum.Services.Implementation
                                                 await context.Artifacts.AddAsync(book);
                                                 await context.SaveChangesAsync();
 
-                                                var resFTPUpload = await _UploadArtifactToExternalServer(book, context);
+                                                var resFTPUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
                                                 if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
                                                 {
                                                     job.EndTime = DateTime.Now;

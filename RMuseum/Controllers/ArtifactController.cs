@@ -1082,16 +1082,17 @@ namespace RMuseum.Controllers
         /// <param name="resourceNumber">119/foldername</param>
         /// <param name="friendlyUrl">golestan-baysonghori/artifact id</param>
         /// <param name="resourcePrefix"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("import")]
         [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> Import(string srcType, string resourceNumber, string friendlyUrl, string resourcePrefix)
+        public async Task<IActionResult> Import(string srcType, string resourceNumber, string friendlyUrl, string resourcePrefix, bool skipUpload)
         {
             RServiceResult<bool> res =
-                await _artifactService.Import(srcType, resourceNumber, friendlyUrl, resourcePrefix);
+                await _artifactService.Import(srcType, resourceNumber, friendlyUrl, resourcePrefix, skipUpload);
             if (res.Result)
                 return Ok();
             return BadRequest(res.ExceptionString);
@@ -1121,9 +1122,9 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> RetryImport()
+        public async Task<IActionResult> RetryImport(JobType jobType = JobType.BritishLibrary, bool skipUpload = false)
         {
-            RServiceResult<bool> res = await _artifactService.RescheduleJobs(JobType.BritishLibrary);
+            RServiceResult<bool> res = await _artifactService.RescheduleJobs(jobType, skipUpload);
             if (res.Result)
                 return Ok();
             return BadRequest(res.ExceptionString);
@@ -1133,17 +1134,18 @@ namespace RMuseum.Controllers
         /// due to a bug in loc json outputs some artifacts with more than 1000 pages were downloaded incompletely
         /// </summary>
         /// <param name="pass">123456</param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("reexamineimport")]
         [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> ReExamineLocDownloads(string pass)
+        public async Task<IActionResult> ReExamineLocDownloads(string pass, bool skipUpload)
         {
             if (pass != "123456") //this is a heavy processor consuming call, so prevent mistaken call of it from swagger ui
                 return BadRequest("invalid password");
-            RServiceResult<string[]> res = await _artifactService.ReExamineLocDownloads();
+            RServiceResult<string[]> res = await _artifactService.ReExamineLocDownloads(skipUpload);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -2079,6 +2081,7 @@ namespace RMuseum.Controllers
         /// upload artifact to external server
         /// </summary>
         /// <param name="artifactId"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
 
         [HttpPut("upload/external/{artifactId}")]
@@ -2086,11 +2089,11 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public IActionResult StartUploadingArtifactToExternalServer(Guid artifactId)
+        public IActionResult StartUploadingArtifactToExternalServer(Guid artifactId, bool skipUpload)
         {
             try
             {
-                var res = _artifactService.StartUploadingArtifactToExternalServer(artifactId);
+                var res = _artifactService.StartUploadingArtifactToExternalServer(artifactId, skipUpload);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 return Ok();

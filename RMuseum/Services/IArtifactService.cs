@@ -257,21 +257,24 @@ namespace RMuseum.Services
         /// <param name="resourceNumber">119</param>
         /// <param name="friendlyUrl">golestan-baysonghori</param>
         /// <param name="resourcePrefix"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> Import(string srcType, string resourceNumber, string friendlyUrl, string resourcePrefix);
+        Task<RServiceResult<bool>> Import(string srcType, string resourceNumber, string friendlyUrl, string resourcePrefix, bool skipUpload);
 
         /// <summary>
         /// reschedule jobs
         /// </summary>
         /// <param name="jobType"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> RescheduleJobs(JobType jobType);
+        Task<RServiceResult<bool>> RescheduleJobs(JobType jobType, bool skipUpload);
 
         /// <summary>
         /// due to a bug in loc json outputs some artifacts with more than 1000 pages were downloaded incompletely
         /// </summary>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        Task<RServiceResult<string[]>> ReExamineLocDownloads();
+        Task<RServiceResult<string[]>> ReExamineLocDownloads(bool skipUpload);
 
         /// <summary>
         /// import jobs
@@ -592,8 +595,9 @@ namespace RMuseum.Services
         /// upload artifact to external server
         /// </summary>
         /// <param name="artifactId"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartUploadingArtifactToExternalServer(Guid artifactId);
+        RServiceResult<bool> StartUploadingArtifactToExternalServer(Guid artifactId, bool skipUpload);
 
     }
 }

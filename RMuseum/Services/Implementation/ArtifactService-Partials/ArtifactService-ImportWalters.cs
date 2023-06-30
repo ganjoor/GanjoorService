@@ -26,8 +26,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="resourceNumber">W619</param>
         /// <param name="friendlyUrl">golestan-walters-01</param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> StartImportingFromWalters(string resourceNumber, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromWalters(string resourceNumber, string friendlyUrl, bool skipUpload)
         {
             string url = $"http://www.thedigitalwalters.org/Data/WaltersManuscripts/ManuscriptDescriptions/{resourceNumber}_tei.xml";
             if (
@@ -432,7 +433,7 @@ namespace RMuseum.Services.Implementation
                                                 await context.Artifacts.AddAsync(book);
                                                 await context.SaveChangesAsync();
 
-                                                var resFTPUpload = await _UploadArtifactToExternalServer(book, context);
+                                                var resFTPUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
                                                 if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
                                                 {
                                                     job.EndTime = DateTime.Now;

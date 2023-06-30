@@ -37,8 +37,9 @@ namespace RMuseum.Services.Implementation
         /// <example>
         /// plmp
         /// </example>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> StartImportingFromTheLibraryOfCongress(string resourceNumber, string friendlyUrl, string resourcePrefix)
+        private async Task<RServiceResult<bool>> StartImportingFromTheLibraryOfCongress(string resourceNumber, string friendlyUrl, string resourcePrefix, bool skipUpload)
         {
             string url = $"https://www.loc.gov/resource/{resourcePrefix}.{resourceNumber}/?fo=json&st=gallery";
 
@@ -473,7 +474,7 @@ namespace RMuseum.Services.Implementation
                                                 await context.Artifacts.AddAsync(book);
                                                 await context.SaveChangesAsync();
 
-                                                var resFTPUpload = await _UploadArtifactToExternalServer(book, context);
+                                                var resFTPUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
                                                 if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
                                                 {
                                                     job.EndTime = DateTime.Now;
@@ -539,8 +540,9 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// due to a bug in loc json outputs some artifacts with more than 1000 pages were downloaded incompletely
         /// </summary>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<string[]>> ReExamineLocDownloads()
+        public async Task<RServiceResult<string[]>> ReExamineLocDownloads(bool skipUpload)
         {
             try
             {
@@ -609,7 +611,7 @@ namespace RMuseum.Services.Implementation
                     await RemoveArtifact((Guid)job.ArtifactId, false);
                     _context.ImportJobs.Remove(job);
                     await _context.SaveChangesAsync();
-                    RServiceResult<bool> rescheduled = await StartImportingFromTheLibraryOfCongress(job.ResourceNumber, job.FriendlyUrl, "rbc0001");//plmp
+                    RServiceResult<bool> rescheduled = await StartImportingFromTheLibraryOfCongress(job.ResourceNumber, job.FriendlyUrl, "rbc0001", skipUpload);//plmp
                     if (rescheduled.Result)
                     {
 

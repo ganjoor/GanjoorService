@@ -26,8 +26,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="url">example: https://curiosity.lib.harvard.edu/islamic-heritage-project/catalog/40-990114893240203941</param>
         /// <param name="friendlyUrl"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> StartImportingFromHarvard(string url, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromHarvard(string url, string friendlyUrl, bool skipUpload)
         {
             try
             {
@@ -214,7 +215,7 @@ namespace RMuseum.Services.Implementation
                                                 await context.SaveChangesAsync();
 
 
-                                                var resFTPUpload = await _UploadArtifactToExternalServer(book, context);
+                                                var resFTPUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
                                                 if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
                                                 {
                                                     job.EndTime = DateTime.Now;

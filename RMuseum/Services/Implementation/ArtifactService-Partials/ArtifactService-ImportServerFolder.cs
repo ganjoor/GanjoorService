@@ -23,8 +23,9 @@ namespace RMuseum.Services.Implementation
         /// <param name="folderPath">C:\Tools\batches\florence</param>
         /// <param name="friendlyUrl">shahname-florence</param>
         /// <param name="srcUrl">https://t.me/dr_khatibi_abolfazl/888</param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> StartImportingFromServerFolder(string folderPath, string friendlyUrl, string srcUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromServerFolder(string folderPath, string friendlyUrl, string srcUrl, bool skipUpload)
         {
             try
             {
@@ -138,7 +139,7 @@ namespace RMuseum.Services.Implementation
                                     await context.Artifacts.AddAsync(book);
                                     await context.SaveChangesAsync();
 
-                                    var resFTPUpload = await _UploadArtifactToExternalServer(book, context);
+                                    var resFTPUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
                                     if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
                                     {
                                         job.EndTime = DateTime.Now;
@@ -191,8 +192,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="folderPath"></param>
         /// <param name="artifactId"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> StartAppendingFromServerFolder(string folderPath, Guid artifactId)
+        private async Task<RServiceResult<bool>> StartAppendingFromServerFolder(string folderPath, Guid artifactId, bool skipUpload)
         {
             try
             {
@@ -249,7 +251,7 @@ namespace RMuseum.Services.Implementation
                                     context.Update(book);
                                     await context.SaveChangesAsync();
 
-                                    var resFTPUpload = await _UploadArtifactToExternalServer(book, context);
+                                    var resFTPUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
                                     if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
                                     {
                                         job.EndTime = DateTime.Now;

@@ -25,8 +25,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="resourceNumber">119</param>
         /// <param name="friendlyUrl">golestan-baysonghori</param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> StartImportingFromChesterBeatty(string resourceNumber, string friendlyUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromChesterBeatty(string resourceNumber, string friendlyUrl, bool skipUpload)
         {
             try
             {
@@ -328,7 +329,7 @@ namespace RMuseum.Services.Implementation
                                     await context.Artifacts.AddAsync(book);
                                     await context.SaveChangesAsync();
 
-                                    var resFTPUpload = await _UploadArtifactToExternalServer(book, context);
+                                    var resFTPUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
                                     if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
                                     {
                                         job.EndTime = DateTime.Now;

@@ -1165,52 +1165,54 @@ namespace RMuseum.Services.Implementation
         /// <param name="resourceNumber">119/foldername</param>
         /// <param name="friendlyUrl">golestan-baysonghori/artifact id</param>
         /// <param name="resourcePrefix"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> Import(string srcType, string resourceNumber, string friendlyUrl, string resourcePrefix)
+        public async Task<RServiceResult<bool>> Import(string srcType, string resourceNumber, string friendlyUrl, string resourcePrefix, bool skipUpload)
         {
             return
                  srcType == "princeton" ?
-                 await StartImportingFromPrinceton(resourceNumber, friendlyUrl)
+                 await StartImportingFromPrinceton(resourceNumber, friendlyUrl, skipUpload)
                  :
                  srcType == "harvard" ?
-                 await StartImportingFromHarvard(resourceNumber, friendlyUrl)
+                 await StartImportingFromHarvard(resourceNumber, friendlyUrl, skipUpload)
                  :
                   srcType == "qajarwomen" ?
-                 await StartImportingFromHarvardDirectly(resourceNumber, friendlyUrl, resourcePrefix)
+                 await StartImportingFromHarvardDirectly(resourceNumber, friendlyUrl, resourcePrefix, skipUpload)
                  :
                   srcType == "hathitrust" ?
-                 await StartImportingFromHathiTrust(resourceNumber, friendlyUrl)
+                 await StartImportingFromHathiTrust(resourceNumber, friendlyUrl, skipUpload)
                  :
                  srcType == "penn" ?
-                 await StartImportingFromPenLibraries(resourceNumber, friendlyUrl)
+                 await StartImportingFromPenLibraries(resourceNumber, friendlyUrl, skipUpload)
                  :
                  srcType == "cam" ?
-                 await StartImportingFromCambridge(resourceNumber, friendlyUrl)
+                 await StartImportingFromCambridge(resourceNumber, friendlyUrl, skipUpload)
                  :
                  srcType == "bl" ?
-                 await StartImportingFromBritishLibrary(resourceNumber, friendlyUrl)
+                 await StartImportingFromBritishLibrary(resourceNumber, friendlyUrl, skipUpload)
                  :
                  srcType == "folder" ?
-                 await StartImportingFromServerFolder(resourceNumber, friendlyUrl, resourcePrefix)
+                 await StartImportingFromServerFolder(resourceNumber, friendlyUrl, resourcePrefix, skipUpload)
                  :
                  srcType == "append" ?
-                 await StartAppendingFromServerFolder(resourceNumber, Guid.Parse(friendlyUrl))
+                 await StartAppendingFromServerFolder(resourceNumber, Guid.Parse(friendlyUrl), skipUpload)
                  :
                  srcType == "walters" ?
-                 await StartImportingFromWalters(resourceNumber, friendlyUrl)
+                 await StartImportingFromWalters(resourceNumber, friendlyUrl, skipUpload)
                   :
                  srcType == "cbl" ?
-                 await StartImportingFromChesterBeatty(resourceNumber, friendlyUrl)
+                 await StartImportingFromChesterBeatty(resourceNumber, friendlyUrl, skipUpload)
                  :
-                 await StartImportingFromTheLibraryOfCongress(resourceNumber, friendlyUrl, resourcePrefix);
+                 await StartImportingFromTheLibraryOfCongress(resourceNumber, friendlyUrl, resourcePrefix, skipUpload);
         }
 
         /// <summary>
         /// upload artifact to external server
         /// </summary>
         /// <param name="artifactId"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartUploadingArtifactToExternalServer(Guid artifactId)
+        public RServiceResult<bool> StartUploadingArtifactToExternalServer(Guid artifactId, bool skipUpload)
         {
             try
             {
@@ -1227,7 +1229,7 @@ namespace RMuseum.Services.Implementation
                                    {
                                        var book = await context.Artifacts.Include(a => a.Items).ThenInclude(i => i.Images).Include(a => a.CoverImage).SingleAsync();
                                        await jobProgressServiceEF.UpdateJob(job.Id, 2, $"بارگذاری {book.Name}");
-                                       var resUpload = await _UploadArtifactToExternalServer(book, context);
+                                       var resUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
                                        if(!string.IsNullOrEmpty(resUpload.ExceptionString))
                                        {
                                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, resUpload.ExceptionString);
@@ -1259,8 +1261,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="book"></param>
         /// <param name="context"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> _UploadArtifactToExternalServer(RArtifactMasterRecord book, RMuseumDbContext context)
+        private async Task<RServiceResult<bool>> _UploadArtifactToExternalServer(RArtifactMasterRecord book, RMuseumDbContext context, bool skipUpload)
         {
             try
             {
@@ -1272,9 +1275,14 @@ namespace RMuseum.Services.Implementation
                         Configuration.GetSection("ExternalFTPServer")["Username"],
                         Configuration.GetSection("ExternalFTPServer")["Password"]
                     );
-                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
-                    await ftpClient.AutoConnect();
-                    ftpClient.Config.RetryAttempts = 3;
+                    
+                    if(!skipUpload)
+                    {
+                        ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                        await ftpClient.AutoConnect();
+                        ftpClient.Config.RetryAttempts = 3;
+                    }
+                   
 
                     foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
                     {
@@ -1284,8 +1292,12 @@ namespace RMuseum.Services.Implementation
                             book.CoverImage.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/{book.CoverImage.FolderName}/orig/{Path.GetFileName(localFilePath)}";
                             context.Update(book.CoverImage);
                         }
-                        var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{book.CoverImage.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
-                        await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+                        if(!skipUpload)
+                        {
+                            var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{book.CoverImage.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                            await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+                        }
+                      
                     }
 
 
@@ -1301,13 +1313,21 @@ namespace RMuseum.Services.Implementation
                                     image.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/{image.FolderName}/orig/{Path.GetFileName(localFilePath)}";
                                     context.Update(image);
                                 }
-                                var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{book.CoverImage.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
-                                await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+                                if(!skipUpload)
+                                {
+                                    var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{book.CoverImage.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                                    await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+                                }
+                               
                             }
                         }
                     }
+
+                    if(!skipUpload)
+                    {
+                        await ftpClient.Disconnect();
+                    }
                     
-                    await ftpClient.Disconnect();
                     await context.SaveChangesAsync();
                 }
 
@@ -1324,8 +1344,9 @@ namespace RMuseum.Services.Implementation
         /// reschedule jobs
         /// </summary>
         /// <param name="jobType"></param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> RescheduleJobs(JobType jobType)
+        public async Task<RServiceResult<bool>> RescheduleJobs(JobType jobType, bool skipUpload)
         {
 
             ImportJob[] jobs = await _context.ImportJobs.Where(j => j.Status != ImportJobStatus.Succeeded && j.JobType == jobType).OrderByDescending(j => j.ProgressPercent).ToArrayAsync();
@@ -1356,34 +1377,34 @@ namespace RMuseum.Services.Implementation
 
                     RServiceResult<bool> rescheduled =
                         job.JobType == JobType.Princeton ?
-                 await StartImportingFromPrinceton(job.ResourceNumber, job.FriendlyUrl)
+                 await StartImportingFromPrinceton(job.ResourceNumber, job.FriendlyUrl, skipUpload)
                  :
                  job.JobType == JobType.Harvard ?
-                 await StartImportingFromHarvard(job.ResourceNumber, job.FriendlyUrl)
+                 await StartImportingFromHarvard(job.ResourceNumber, job.FriendlyUrl, skipUpload)
                  :
                   job.JobType == JobType.HarvardDirect ?
-                 await StartImportingFromHarvardDirectly(job.ResourceNumber, job.FriendlyUrl, job.SrcUrl)
+                 await StartImportingFromHarvardDirectly(job.ResourceNumber, job.FriendlyUrl, job.SrcUrl, skipUpload)
                  :
                   job.JobType == JobType.HathiTrust ?
-                 await StartImportingFromHathiTrust(job.ResourceNumber, job.FriendlyUrl)
+                 await StartImportingFromHathiTrust(job.ResourceNumber, job.FriendlyUrl, skipUpload)
                  :
                  job.JobType == JobType.PennLibraries ?
-                 await StartImportingFromPenLibraries(job.ResourceNumber, job.FriendlyUrl)
+                 await StartImportingFromPenLibraries(job.ResourceNumber, job.FriendlyUrl, skipUpload)
                  :
                  job.JobType == JobType.Cambridge ?
-                 await StartImportingFromCambridge(job.ResourceNumber, job.FriendlyUrl)
+                 await StartImportingFromCambridge(job.ResourceNumber, job.FriendlyUrl, skipUpload)
                  :
                  job.JobType == JobType.BritishLibrary ?
-                 await StartImportingFromBritishLibrary(job.ResourceNumber, job.FriendlyUrl)
+                 await StartImportingFromBritishLibrary(job.ResourceNumber, job.FriendlyUrl, skipUpload)
                  :
                  job.JobType == JobType.ServerFolder ?
-                 await StartImportingFromServerFolder(job.ResourceNumber, job.FriendlyUrl, job.SrcUrl)
+                 await StartImportingFromServerFolder(job.ResourceNumber, job.FriendlyUrl, job.SrcUrl, skipUpload)
                  :
                  job.JobType == JobType.Walters ?
-                 await StartImportingFromWalters(job.ResourceNumber, job.FriendlyUrl)
+                 await StartImportingFromWalters(job.ResourceNumber, job.FriendlyUrl, skipUpload)
                   :
                  job.JobType == JobType.ChesterBeatty ?
-                 await StartImportingFromChesterBeatty(job.ResourceNumber, job.FriendlyUrl)
+                 await StartImportingFromChesterBeatty(job.ResourceNumber, job.FriendlyUrl, skipUpload)
                  :
                  new RServiceResult<bool>(false, "StartImportingFromTheLibraryOfCongress NOT SUPPORTED");
 

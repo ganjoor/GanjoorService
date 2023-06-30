@@ -22,8 +22,9 @@ namespace RMuseum.Services.Implementation
         /// <param name="hardvardResourceNumber">43117279</param>
         /// <param name="friendlyUrl">atame</param>
         /// <param name="srcUrl">http://www.qajarwomen.org/fa/items/1018A10.html</param>
+        /// <param name="skipUpload"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> StartImportingFromHarvardDirectly(string hardvardResourceNumber, string friendlyUrl, string srcUrl)
+        private async Task<RServiceResult<bool>> StartImportingFromHarvardDirectly(string hardvardResourceNumber, string friendlyUrl, string srcUrl, bool skipUpload)
         {
             try
             {
@@ -152,7 +153,7 @@ namespace RMuseum.Services.Implementation
                                     await context.Artifacts.AddAsync(book);
                                     await context.SaveChangesAsync();
 
-                                    var resFTPUpload = await _UploadArtifactToExternalServer(book, context);
+                                    var resFTPUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
                                     if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
                                     {
                                         job.EndTime = DateTime.Now;
