@@ -420,6 +420,15 @@
                             </div>
                         </nav>
 
+                        <div class="spacer">&nbsp;</div>
+
+                        @if (Model.Banner != null)
+                        {
+                            <div class="margin-auto">
+                                <a href="@Model.Banner.TargetUrl"><img src="@($"{GanjooRazor.APIRoot.InternetUrl}/{Model.Banner.ImageUrl}")" alt="@Model.Banner.AlternateText"></a>
+                            </div>
+                        }
+
                         <div id="comments">
 
 
@@ -898,15 +907,6 @@
 
                 }
 
-
-                <div class="spacer">&nbsp;</div>
-
-                @if (Model.Banner != null)
-                {
-                    <div class="margin-auto">
-                        <a href="@Model.Banner.TargetUrl"><img src="@($"{GanjooRazor.APIRoot.InternetUrl}/{Model.Banner.ImageUrl}")" alt="@Model.Banner.AlternateText"></a>
-                    </div>
-                }
 
 
             </div>
