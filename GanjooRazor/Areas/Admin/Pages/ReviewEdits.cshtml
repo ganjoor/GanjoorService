@@ -218,7 +218,7 @@ else
 
         <tr>
             <td colspan=2>
-                <a role="button" onclick="checkAllNotCorrect()" class="pagebutton">درست نیست</a>
+                <a role="button" onclick="checkAllNotCorrect()" class="pagebutton">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</a>
             </td>
         </tr>
 
@@ -287,7 +287,7 @@ else
                     @if (Model.Correction.Result == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                     {
                         <input type="radio" id="title_review_result_Approved" name="title_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                        <label for="title_review_result_Approved">تأیید می‌شود</label>
+                        <label for="title_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                         <br>
                         <input type="radio" id="title_review_result_NotChanged" name="title_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
@@ -295,18 +295,18 @@ else
                     else
                     {
                         <input type="radio" id="title_review_result_Approved" name="title_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
-                        <label for="title_review_result_Approved">تأیید می‌شود</label>
+                        <label for="title_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                         <br>
                         <input type="radio" id="title_review_result_NotChanged" name="title_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                     }
-                    <label for="title_review_result_NotChanged">تغییری نکرده</label><br>
+                    <label for="title_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label><br>
                     <input type="radio" id="title_review_result_RejectedBecauseWrong" name="title_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                    <label for="title_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <label for="title_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label><br>
                     <input type="radio" id="title_review_result_RejectedBecauseVariant" name="title_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
                     <label for="title_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
                     <input type="radio" id="title_review_result_Rejected" name="title_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-                    <label for="title_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                    <label for="title_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label><br>
                     <input type="text" id="title_review_note" name="title_review_note" value="" size="50" />
                 </td>
             </tr>
@@ -350,7 +350,7 @@ else
                     @if (Model.Correction.RhythmResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                     {
                         <input type="radio" id="rhythm_review_result_Approved" name="rhythm_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                        <label for="rhythm_review_result_Approved">تأیید می‌شود</label>
+                        <label for="rhythm_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                         <br>
                         <input type="radio" id="rhythm_review_result_NotChanged" name="rhythm_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
@@ -358,18 +358,18 @@ else
                     else
                     {
                         <input type="radio" id="rhythm_review_result_Approved" name="rhythm_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
-                        <label for="rhythm_review_result_Approved">تأیید می‌شود</label>
+                        <label for="rhythm_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                         <br>
                         <input type="radio" id="rhythm_review_result_NotChanged" name="rhythm_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                     }
-                    <label for="rhythm_review_result_NotChanged">تغییری نکرده</label><br>
+                    <label for="rhythm_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label><br>
                     <input type="radio" id="rhythm_review_result_RejectedBecauseWrong" name="rhythm_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                    <label for="rhythm_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <label for="rhythm_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label><br>
                     <input type="radio" id="rhythm_review_result_RejectedBecauseVariant" name="rhythm_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
                     <label for="rhythm_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
                     <input type="radio" id="rhythm_review_result_Rejected" name="rhythm_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-                    <label for="rhythm_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                    <label for="rhythm_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label><br>
                     @if (Model.Correction.Title != null)
                     {
                         <p>در صورت نیاز به درج یادداشت برای تغییر وزن آن را در قسمت عنوان وارد فرمایید.</p>
@@ -407,7 +407,7 @@ else
                     @if (Model.Correction.RhymeLettersReviewResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                     {
                         <input type="radio" id="rhyme_review_result_Approved" name="rhyme_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                        <label for="rhyme_review_result_Approved">تأیید می‌شود</label>
+                        <label for="rhyme_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                         <br>
                         <input type="radio" id="rhyme_review_result_NotChanged" name="rhyme_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
@@ -415,16 +415,16 @@ else
                     else
                     {
                         <input type="radio" id="rhyme_review_result_Approved" name="rhyme_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
-                        <label for="rhyme_review_result_Approved">تأیید می‌شود</label>
+                        <label for="rhyme_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                         <br>
                         <input type="radio" id="rhyme_review_result_NotChanged" name="rhyme_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                     }
-                    <label for="rhyme_review_result_NotChanged">تغییری نکرده</label><br>
+                    <label for="rhyme_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label><br>
                     <input type="radio" id="rhyme_review_result_RejectedBecauseWrong" name="rhyme_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                    <label for="rhyme_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <label for="rhyme_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label><br>
                     <input type="radio" id="rhyme_review_result_RejectedBecauseVariant" name="rhyme_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
-                    <label for="rhyme_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                    <label for="rhyme_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label><br>
                     <input type="text" id="title_review_note" name="title_review_note" value="" size="50" />
                 </td>
             </tr>
@@ -467,7 +467,7 @@ else
             <tr>
                 <td colspan="2">
                     <input type="radio" id="rhythm2_review_result_Approved" name="rhythm2_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                    <label for="rhythm2_review_result_Approved">تأیید می‌شود</label>
+                    <label for="rhythm2_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
                     <br>
                     @if (Model.Correction.Rhythm2Result == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                     {
@@ -477,15 +477,15 @@ else
                     {
                         <input type="radio" id="rhythm2_review_result_NotChanged" name="rhythm2_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                     }
-                    <label for="rhythm2_review_result_NotChanged">تغییری نکرده</label><br>
+                    <label for="rhythm2_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label><br>
                     <input type="radio" id="rhythm2_review_result_RejectedBecauseWrong" name="rhythm2_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                    <label for="rhythm2_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <label for="rhythm2_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label><br>
                     <input type="radio" id="rhythm2_review_result_RejectedBecauseVariant" name="rhythm2_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
                     <label for="rhythm2_review_result_RejectedBecauseVariant">مربوط به نسخهٔ دیگری است</label><br>
                     <input type="radio" id="rhythm_2review_result_RejectedBecauseUnnecessaryChange" name="rhythm2_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseUnnecessaryChange">
                     <label for="rhythm2_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
                     <input type="radio" id="rhythm2_review_result_Rejected" name="rhythm2_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-                    <label for="rhythm2_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                    <label for="rhythm2_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label><br>
                     @if (Model.Correction.Title != null)
                     {
                         <p>در صورت نیاز به درج یادداشت برای تغییر وزن آن را در قسمت عنوان وارد فرمایید.</p>
@@ -523,7 +523,7 @@ else
                     @if (Model.Correction.PoemFormatReviewResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                     {
                         <input type="radio" id="poemformat_review_result_Approved" name="poemformat_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                        <label for="poemformat_review_result_Approved">تأیید می‌شود</label>
+                        <label for="poemformat_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                         <br>
                         <input type="radio" id="poemformat_review_result_NotChanged" name="poemformat_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
@@ -531,18 +531,18 @@ else
                     else
                     {
                         <input type="radio" id="poemformat_review_result_Approved" name="poemformat_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
-                        <label for="poemformat_review_result_Approved">تأیید می‌شود</label>
+                        <label for="poemformat_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                         <br>
                         <input type="radio" id="poemformat_review_result_NotChanged" name="poemformat_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                     }
-                    <label for="poemformat_review_result_NotChanged">تغییری نکرده</label><br>
+                    <label for="poemformat_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label><br>
                     <input type="radio" id="poemformat_review_result_RejectedBecauseWrong" name="poemformat_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                    <label for="poemformat_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <label for="poemformat_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label><br>
                     <input type="radio" id="poemformat_review_result_RejectedBecauseVariant" name="poemformat_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
                     <label for="poemformat_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
                     <input type="radio" id="poemformat_review_result_Rejected" name="poemformat_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-                    <label for="poemformat_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                    <label for="poemformat_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label><br>
                     <input type="text" id="poemformat_review_note" name="poemformat_review_note" value="" size="50" />
                 </td>
             </tr>
@@ -583,7 +583,7 @@ else
                     @if (Model.Correction.SummaryReviewResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                     {
                         <input type="radio" id="poem-summary_review_result_Approved" name="poem-summary_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                        <label for="poem-summary_review_result_Approved">تأیید می‌شود</label>
+                        <label for="poem-summary_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                         <br>
                         <input type="radio" id="poem-summary_review_result_NotChanged" name="poem-summary_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
@@ -591,28 +591,43 @@ else
                     else
                     {
                         <input type="radio" id="poem-summary_review_result_Approved" name="poem-summary_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
-                        <label for="poem-summary_review_result_Approved">تأیید می‌شود</label>
+                        <label for="poem-summary_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                         <br>
                         <input type="radio" id="poem-summary_review_result_NotChanged" name="poem-summary_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                     }
-                    <label for="poem-summary_review_result_NotChanged">تغییری نکرده</label><br>
+                    <label for="poem-summary_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label><br>
+                    
                     <input type="radio" id="poem-summary_review_result_RejectedBecauseWrong" name="poem-summary_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                    <label for="poem-summary_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <label for="poem-summary_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label><br>
+                    
                     <input type="radio" id="poem-summary_review_result_RejectedParaphraseBecauseInformal" name="poem-summary_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseInformal">
-                    <label for="poem-summary_review_result_RejectedParaphraseBecauseInformal">محاوره‌ای است</label><br>
+                    <label for="poem-summary_review_result_RejectedParaphraseBecauseInformal">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseInformal)</label><br>
+                    
                     <input type="radio" id="poem-summary_review_result_RejectedParaphraseBecauseArtificial" name="poem-summary_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseArtificial">
-                    <label for="poem-summary_review_result_RejectedParaphraseBecauseArtificial">سره است یا در آن از واژه‌های نامأنوس استفاده شده است</label><br>
+                    <label for="poem-summary_review_result_RejectedParaphraseBecauseArtificial">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseArtificial)</label><br>
+                    
                     <input type="radio" id="poem-summary_review_result_RejectedParaphraseBecauseUnfathomable" name="poem-summary_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseUnfathomable">
-                    <label for="poem-summary_review_result_RejectedParaphraseBecauseUnfathomable">نامفهوم است</label><br>
+                    <label for="poem-summary_review_result_RejectedParaphraseBecauseUnfathomable">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseUnfathomable)</label><br>
+                    
                     <input type="radio" id="poem-summary_review_result_RejectedParaphraseBecauseContainsOwnIdeas" name="poem-summary_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseContainsOwnIdeas">
-                    <label for="poem-summary_review_result_RejectedParaphraseBecauseContainsOwnIdeas">شامل تفسیرهای شخصی است</label><br>
+                    <label for="poem-summary_review_result_RejectedParaphraseBecauseContainsOwnIdeas">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseContainsOwnIdeas)</label><br>
+                    
                     <input type="radio" id="poem-summary_review_result_RejectedParaphraseBecauseHasServeralTypoErrors" name="poem-summary_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseHasServeralTypoErrors">
-                    <label for="poem-summary_review_result_RejectedParaphraseBecauseHasServeralTypoErrors">غلطهای تایپی و املایی زیاد دارد</label><br>
+                    <label for="poem-summary_review_result_RejectedParaphraseBecauseHasServeralTypoErrors">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseHasServeralTypoErrors)</label><br>
+                    
                     <input type="radio" id="poem-summary_review_result_RejectedParaphraseBecauseNotBetter" name="poem-summary_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseNotBetter">
-                    <label for="poem-summary_review_result_RejectedParaphraseBecauseNotBetter">از متن قبلی بهتر نیست</label><br>
+                    <label for="poem-summary_review_result_RejectedParaphraseBecauseNotBetter">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseNotBetter)</label><br>
+                    
+                    <input type="radio" id="poem-summary_review_result_RejectedParaphraseBecauseItIsNotAParaphrase" name="poem-summary_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseItIsNotAParaphrase">
+                    <label for="poem-summary_review_result_RejectedParaphraseBecauseItIsNotAParaphrase">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseItIsNotAParaphrase)</label><br>
+                    
+                    <input type="radio" id="poem-summary_review_result_RejectedParaphraseBecauseItIsWordMeaningOrIncomplete" name="poem-summary_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseItIsWordMeaningOrIncomplete">
+                    <label for="poem-summary_review_result_RejectedParaphraseBecauseItIsWordMeaningOrIncomplete">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseItIsWordMeaningOrIncomplete)</label><br>
+                    
                     <input type="radio" id="poem-summary_review_result_Rejected" name="poem-summary_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-                    <label for="poem-summary_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                    <label for="poem-summary_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label><br>
+                    
                     <input type="text" id="poem-summary_review_note" name="poem-summary_review_note" value="" size="50" />
                 </td>
             </tr>
@@ -672,7 +687,7 @@ else
                             @if (verse.NewVerseResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                             {
                                 <input type="radio" id="verse@(verse.VORder)_review_result_Approved" name="verse@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                                <label for="verse@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+                                <label for="verse@(verse.VORder)_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                                 <br>
                                 <input type="radio" id="verse@(verse.VORder)_review_result_NotChanged" name="verse@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
@@ -680,20 +695,20 @@ else
                             else
                             {
                                 <input type="radio" id="verse@(verse.VORder)_review_result_Approved" name="verse@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
-                                <label for="verse@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+                                <label for="verse@(verse.VORder)_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                                 <br>
                                 <input type="radio" id="verse@(verse.VORder)_review_result_NotChanged" name="verse@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                             }
-                            <label for="verse@(verse.VORder)_review_result_NotChanged">تغییری نکرده</label><br>
+                            <label for="verse@(verse.VORder)_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label><br>
                             <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseWrong" name="verse@(verse.VORder)_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                            <label for="verse@(verse.VORder)_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                            <label for="verse@(verse.VORder)_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label><br>
                             <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseVariant" name="verse@(verse.VORder)_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
                             <label for="verse@(verse.VORder)_review_result_RejectedBecauseVariant">مربوط به نسخهٔ دیگری است</label><br>
                             <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseUnnecessaryChange" name="verse@(verse.VORder)_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseUnnecessaryChange">
                             <label for="verse@(verse.VORder)_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
                             <input type="radio" id="verse@(verse.VORder)_review_result_Rejected" name="verse@(verse.VORder)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-                            <label for="verse@(verse.VORder)_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                            <label for="verse@(verse.VORder)_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label><br>
                             <input type="text" id="verse@(verse.VORder)_review_note" name="verse@(verse.VORder)_review_note" value="" size="50" />
                         </td>
                     </tr>
@@ -727,7 +742,7 @@ else
                         <tr>
                             <td colspan="2">
                                 <input type="radio" id="verse-position@(verse.VORder)_review_result_Approved" name="verse-position@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                                <label for="verse-position@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+                                <label for="verse-position@(verse.VORder)_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
                                 <br>
                                 @if (verse.VersePositionResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                                 {
@@ -737,11 +752,11 @@ else
                                 {
                                     <input type="radio" id="verse-position@(verse.VORder)_review_result_NotChanged" name="verse-position@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                                 }
-                                <label for="verse-position@(verse.VORder)_review_result_NotChanged">تغییری نکرده</label><br>
+                                <label for="verse-position@(verse.VORder)_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label><br>
                                 <input type="radio" id="verse-position@(verse.VORder)_review_result_RejectedBecauseWrong" name="verse-position@(verse.VORder)_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                                <label for="verse-position@(verse.VORder)_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                                <label for="verse-position@(verse.VORder)_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label><br>
                                 <input type="radio" id="verse-position@(verse.VORder)_review_result_Rejected" name="verse-position@(verse.VORder)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-                                <label for="verse-position@(verse.VORder)_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                                <label for="verse-position@(verse.VORder)_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label><br>
                                 <input type="radio" id="verse-position@(verse.VORder)_review_result_NotSuggectedByUser" name="verse-position@(verse.VORder)_review_result" class="radio-bug" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotSuggestedByUser">
                                 <label for="verse-position@(verse.VORder)_review_result_NotSuggectedByUser">اشکال نرم‌افزار گنجور</label><br>
                             </td>
@@ -773,7 +788,7 @@ else
                                 @if (verse.Result == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                                 {
                                     <input type="radio" id="verse@(verse.VORder)_review_result_Approved" name="verse@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                                    <label for="verse@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+                                    <label for="verse@(verse.VORder)_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                                     <br>
                                     <input type="radio" id="verse@(verse.VORder)_review_result_NotChanged" name="verse@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
@@ -781,20 +796,20 @@ else
                                 else
                                 {
                                     <input type="radio" id="verse@(verse.VORder)_review_result_Approved" name="verse@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
-                                    <label for="verse@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+                                    <label for="verse@(verse.VORder)_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                                     <br>
                                     <input type="radio" id="verse@(verse.VORder)_review_result_NotChanged" name="verse@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                                 }
-                                <label for="verse@(verse.VORder)_review_result_NotChanged">تغییری نکرده</label><br>
+                                <label for="verse@(verse.VORder)_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label><br>
                                 <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseWrong" name="verse@(verse.VORder)_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                                <label for="verse@(verse.VORder)_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                                <label for="verse@(verse.VORder)_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label><br>
                                 <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseVariant" name="verse@(verse.VORder)_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
                                 <label for="verse@(verse.VORder)_review_result_RejectedBecauseVariant">مربوط به نسخهٔ دیگری است</label><br>
                                 <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseUnnecessaryChange" name="verse@(verse.VORder)_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseUnnecessaryChange">
                                 <label for="verse@(verse.VORder)_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
                                 <input type="radio" id="verse@(verse.VORder)_review_result_Rejected" name="verse@(verse.VORder)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-                                <label for="verse@(verse.VORder)_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                                <label for="verse@(verse.VORder)_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label><br>
                                 <input type="text" id="verse@(verse.VORder)_review_note" name="verse@(verse.VORder)_review_note" value="" size="50" />
                             </td>
                         </tr>
@@ -832,22 +847,22 @@ else
                                 @if (verse.LanguageReviewResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                                 {
                                     <input type="radio" id="verse-language@(verse.VORder)_review_result_Approved" name="verse-language@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                                    <label for="verse-language@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+                                    <label for="verse-language@(verse.VORder)_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
                                     <br>
                                     <input type="radio" id="verse-language@(verse.VORder)_review_result_NotChanged" name="verse-language@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
                                 }
                                 else
                                 {
                                     <input type="radio" id="verse-language@(verse.VORder)_review_result_Approved" name="verse-language@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
-                                    <label for="verse-language@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+                                    <label for="verse-language@(verse.VORder)_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
                                     <br>
                                     <input type="radio" id="verse-language@(verse.VORder)_review_result_NotChanged" name="verse-language@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                                 }
-                                <label for="verse-language@(verse.VORder)_review_result_NotChanged">تغییری نکرده</label><br>
+                                <label for="verse-language@(verse.VORder)_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label><br>
                                 <input type="radio" id="verse-language@(verse.VORder)_review_result_RejectedBecauseWrong" name="verse-language@(verse.VORder)_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                                <label for="verse-language@(verse.VORder)_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                                <label for="verse-language@(verse.VORder)_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label><br>
                                 <input type="radio" id="verse-language@(verse.VORder)_review_result_Rejected" name="verse-language@(verse.VORder)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-                                <label for="verse-language@(verse.VORder)_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                                <label for="verse-language@(verse.VORder)_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label><br>
                                 <input type="radio" id="verse-language@(verse.VORder)_review_result_NotSuggectedByUser" name="verse-language@(verse.VORder)_review_result" class="radio-bug" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotSuggestedByUser">
                                 <label for="verse-language@(verse.VORder)_review_result_NotSuggectedByUser">اشکال نرم‌افزار گنجور</label><br>
                             </td>
@@ -884,7 +899,7 @@ else
                                 @if (verse.SummaryReviewResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
                                 {
                                     <input type="radio" id="verse-summary@(verse.VORder)_review_result_Approved" name="verse-summary@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
-                                    <label for="verse-summary@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+                                    <label for="verse-summary@(verse.VORder)_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                                     <br>
                                     <input type="radio" id="verse-summary@(verse.VORder)_review_result_NotChanged" name="verse-summary@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
@@ -892,28 +907,43 @@ else
                                 else
                                 {
                                     <input type="radio" id="verse-summary@(verse.VORder)_review_result_Approved" name="verse-summary@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
-                                    <label for="verse-summary@(verse.VORder)_review_result_Approved">تأیید می‌شود</label>
+                                    <label for="verse-summary@(verse.VORder)_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 
                                     <br>
                                     <input type="radio" id="verse-summary@(verse.VORder)_review_result_NotChanged" name="verse-summary@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                                 }
-                                <label for="verse-summary@(verse.VORder)_review_result_NotChanged">تغییری نکرده</label><br>
+                                <label for="verse-summary@(verse.VORder)_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label><br>
+                                
                                 <input type="radio" id="verse-summary@(verse.VORder)_review_result_RejectedBecauseWrong" name="verse-summary@(verse.VORder)_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                                <label for="verse-summary@(verse.VORder)_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                                <label for="verse-summary@(verse.VORder)_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label><br>
+                                
                                 <input type="radio" id="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseInformal" name="verse-summary@(verse.VORder)_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseInformal">
-                                <label for="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseInformal">محاوره‌ای است</label><br>
+                                <label for="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseInformal">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseInformal)</label><br>
+                                
                                 <input type="radio" id="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseArtificial" name="verse-summary@(verse.VORder)_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseArtificial">
-                                <label for="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseArtificial">سره است یا در آن از واژه‌های نامأنوس استفاده شده است</label><br>
+                                <label for="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseArtificial">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseArtificial)</label><br>
+                                
                                 <input type="radio" id="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseUnfathomable" name="verse-summary@(verse.VORder)_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseUnfathomable">
-                                <label for="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseUnfathomable">نامفهوم است</label><br>
+                                <label for="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseUnfathomable">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseUnfathomable)</label><br>
+                                
                                 <input type="radio" id="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseContainsOwnIdeas" name="verse-summary@(verse.VORder)_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseContainsOwnIdeas">
-                                <label for="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseContainsOwnIdeas">شامل تفسیرهای شخصی است</label><br>
+                                <label for="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseContainsOwnIdeas">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseContainsOwnIdeas)</label><br>
+                                
                                 <input type="radio" id="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseHasServeralTypoErrors" name="verse-summary@(verse.VORder)_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseHasServeralTypoErrors">
-                                <label for="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseHasServeralTypoErrors">غلطهای تایپی و املایی زیاد دارد</label><br>
+                                <label for="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseHasServeralTypoErrors">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseHasServeralTypoErrors)</label><br>
+                                
                                 <input type="radio" id="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseNotBetter" name="verse-summary@(verse.VORder)_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseNotBetter">
-                                <label for="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseNotBetter">از متن قبلی بهتر نیست</label><br>
+                                <label for="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseNotBetter">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseNotBetter)</label><br>
+                                
+                                <input type="radio" id="verse-summary@(verse.VORder)-summary_review_result_RejectedParaphraseBecauseItIsNotAParaphrase" name="verse-summary@(verse.VORder)_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseItIsNotAParaphrase">
+                                <label for="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseItIsNotAParaphrase">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseItIsNotAParaphrase)</label><br>
+                                
+                                <input type="radio" id="verse-summary@(verse.VORder)_review_result_RejectedParaphraseBecauseItIsWordMeaningOrIncomplete" name="verse-summary@(verse.VORder)_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseItIsWordMeaningOrIncomplete">
+                                <label for="verse-summary@(verse.VORder)-summary_review_result_RejectedParaphraseBecauseItIsWordMeaningOrIncomplete">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedParaphraseBecauseItIsWordMeaningOrIncomplete)</label><br>
+
                                 <input type="radio" id="verse-summary@(verse.VORder)_review_result_Rejected" name="verse-summary@(verse.VORder)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-                                <label for="verse-summary@(verse.VORder)_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
+                                <label for="verse-summary@(verse.VORder)_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label><br>
+                                
                                 <input type="text" id="verse-summary@(verse.VORder)_review_note" name="verse-summary@(verse.VORder)_review_note" value="" size="50" />
                             </td>
                         </tr>

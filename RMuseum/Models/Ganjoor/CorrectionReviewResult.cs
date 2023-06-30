@@ -19,5 +19,7 @@
         RejectedParaphraseBecauseContainsOwnIdeas = 11,
         RejectedParaphraseBecauseHasServeralTypoErrors = 12,
         RejectedParaphraseBecauseNotBetter = 13,
+        RejectedParaphraseBecauseItIsNotAParaphrase = 14,
+        RejectedParaphraseBecauseItIsWordMeaningOrIncomplete = 15,
     }
 }

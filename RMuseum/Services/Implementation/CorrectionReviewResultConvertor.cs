@@ -17,33 +17,37 @@ namespace RMuseum.Services.Implementation
             switch(reviewResult)
             {
                 case CorrectionReviewResult.Approved:
-                    return "تأیید می‌شود";
+                    return "تأیید می‌شود.";
                 case CorrectionReviewResult.NotChanged:
-                    return "تغییری نکرده";
+                    return "تغییری نکرده.";
                 case CorrectionReviewResult.RejectedBecauseWrong:
-                    return "درست نیست";
+                    return "درست نیست.";
                 case CorrectionReviewResult.RejectedBecauseVariant:
-                    return "مربوط به نسخهٔ دیگری است";
+                    return "مربوط به نسخهٔ دیگری است.";
                 case CorrectionReviewResult.RejectedBecauseUnnecessaryChange:
-                    return "تغییر سلیقه‌ای یا بی دلیل است";
+                    return "تغییر سلیقه‌ای یا بی دلیل است.";
                 case CorrectionReviewResult.Rejected:
-                    return "به دلیل دیگری رد می‌شود";
+                    return "به دلیل دیگری رد می‌شود.";
                 case CorrectionReviewResult.NotSuggestedByUser:
-                    return "ایراد نرم‌افزار گنجور";
+                    return "ایراد نرم‌افزار گنجور.";
                 case CorrectionReviewResult.RejectedParaphraseBecauseInformal:
-                    return "محاوره‌ای است";
+                    return "محاوره‌ای است.";
                 case CorrectionReviewResult.RejectedParaphraseBecauseArtificial:
-                    return "سره است یا در آن از واژه‌های نامأنوس استفاده شده است";
+                    return "در آن از واژه‌های نامأنوس استفاده شده است.";
                 case CorrectionReviewResult.RejectedParaphraseBecauseUnfathomable:
-                    return "نامفهوم است";
+                    return "نامفهوم است.";
                 case CorrectionReviewResult.RejectedParaphraseBecauseContainsOwnIdeas:
-                    return "شامل تفسیرهای شخصی است";
+                    return "شامل تفسیرهای شخصی است.";
                 case CorrectionReviewResult.RejectedParaphraseBecauseHasServeralTypoErrors:
-                    return "غلطهای تایپی و املایی زیاد دارد";
+                    return "غلطهای تایپی و املایی زیاد دارد.";
                 case CorrectionReviewResult.RejectedParaphraseBecauseNotBetter:
-                    return "از متن قبلی بهتر نیست";
+                    return "از متن قبلی بهتر نیست.";
+                case CorrectionReviewResult.RejectedParaphraseBecauseItIsNotAParaphrase:
+                    return "از کادر معنی برای پیشنهاد تصحیح یا ارائهٔ توضیح تصحیحی استفاده شده است.";
+                case CorrectionReviewResult.RejectedParaphraseBecauseItIsWordMeaningOrIncomplete:
+                    return "معنی یا خلاصهٔ ارائه شده جزئی و ناقص یا در حد معنی کلمه است.";
             }
-            return "بررسی نشده";
+            return "هنوز بررسی نشده";
         }
     }
 }
