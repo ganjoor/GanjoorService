@@ -383,7 +383,7 @@ div.n, div.l {
     text-align: right;
 }
 
-.b2 p, .c p {
+.b2 p {
     text-align: center;
 }
 
@@ -429,7 +429,7 @@ div.n, div.l {
     border-radius: 20px;
 }
 
-.notice {
+.notice, .c p {
     width: 90%;
     margin: 6px auto;
     display: block;
@@ -437,6 +437,10 @@ div.n, div.l {
     padding: 3px;
     clear: both;
     border: 2px solid #300;
+}
+
+.c p {
+    font-size: 0.8em;
 }
 
 #commentsp h3, #comments h3 {
