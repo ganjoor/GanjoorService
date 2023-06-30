@@ -1265,6 +1265,9 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         private async Task<RServiceResult<bool>> _UploadArtifactToExternalServer(RArtifactMasterRecord book, RMuseumDbContext context, bool skipUpload)
         {
+            LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+            var job = (await jobProgressServiceEF.NewJob("_UploadArtifactToExternalServer", $"Uploading {book.Name}")).Result;
+
             try
             {
                 if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
@@ -1275,8 +1278,10 @@ namespace RMuseum.Services.Implementation
                         Configuration.GetSection("ExternalFTPServer")["Username"],
                         Configuration.GetSection("ExternalFTPServer")["Password"]
                     );
-                    
-                    if(!skipUpload)
+
+                   
+
+                    if (!skipUpload)
                     {
                         ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
                         await ftpClient.AutoConnect();
@@ -1294,6 +1299,8 @@ namespace RMuseum.Services.Implementation
                         }
                         if(!skipUpload)
                         {
+                            await jobProgressServiceEF.UpdateJob(job.Id, 0, localFilePath);
+
                             var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{book.CoverImage.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
                             await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
                         }
@@ -1315,6 +1322,7 @@ namespace RMuseum.Services.Implementation
                                 }
                                 if(!skipUpload)
                                 {
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 0, localFilePath);
                                     var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{book.CoverImage.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
                                     await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
                                 }
@@ -1327,14 +1335,15 @@ namespace RMuseum.Services.Implementation
                     {
                         await ftpClient.Disconnect();
                     }
-                    
-                    await context.SaveChangesAsync();
+                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                    await context.SaveChangesAsync();//redundant
                 }
 
                 return new RServiceResult<bool>(true);
             }
             catch (Exception exp)
             {
+                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }
