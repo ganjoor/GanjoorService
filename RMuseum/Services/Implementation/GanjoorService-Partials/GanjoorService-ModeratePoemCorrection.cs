@@ -249,10 +249,6 @@ namespace RMuseum.Services.Implementation
                         var lastInsertedVerse = addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).OrderBy(v => v.VORder).Last();
                         var firstInsertedVerse = addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).OrderBy(v => v.VORder).First();
                         int newVersesCount = addedVerses.Count(v => v.NewVerseResult == CorrectionReviewResult.Approved);
-                        foreach (var nextVerse in poemVerses.Where(v => v.VOrder >= lastInsertedVerse.VORder).OrderBy(v => v.VOrder).ToList())
-                        {
-                            nextVerse.VOrder = nextVerse.VOrder + newVersesCount;
-                        }
                         var previousVerse = poemVerses.Where(v => v.VOrder == firstInsertedVerse.VORder).SingleOrDefault();
                         int nextVerseOrder = previousVerse.VOrder + 1;
                         int insertionIndex = previousVerse == null ? 0 : poemVerses.IndexOf(previousVerse);
@@ -274,6 +270,7 @@ namespace RMuseum.Services.Implementation
                                     SectionIndex4 = previousVerse == null ? null : previousVerse.SectionIndex4,
                                 });
                             nextVerseOrder++;
+                            insertionIndex++;
                         }
 
                     }
