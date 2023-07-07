@@ -1301,11 +1301,12 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetAllCorrections(RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetAllCorrections(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
             <summary>
             get list of all suggested corrections
             </summary>
             <param name="paging"></param>
+            <param name="userId">userId</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemEffectiveCorrections(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">

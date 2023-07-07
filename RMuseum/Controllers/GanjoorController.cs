@@ -1381,17 +1381,18 @@ namespace RMuseum.Controllers
         /// get list of all suggested corrections
         /// </summary>
         /// <param name="paging"></param>
+        /// <param name="userId">userId</param>
         /// <returns></returns>
         [HttpGet]
         [Route("corrections/all")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCorrectionViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetAllCorrections([FromQuery] PagingParameterModel paging)
+        public async Task<IActionResult> GetAllCorrections([FromQuery] PagingParameterModel paging, Guid? userId = null)
         {
 
             var res =
-                await _ganjoorService.GetUserCorrections(Guid.Empty, paging);
+                await _ganjoorService.GetUserCorrections(userId ?? Guid.Empty, paging);
 
             // Paging Header
             HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
