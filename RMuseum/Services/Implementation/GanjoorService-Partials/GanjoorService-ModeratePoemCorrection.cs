@@ -249,10 +249,16 @@ namespace RMuseum.Services.Implementation
                         var lastInsertedVerse = addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).OrderBy(v => v.VORder).Last();
                         var firstInsertedVerse = addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).OrderBy(v => v.VORder).First();
                         int newVersesCount = addedVerses.Count(v => v.NewVerseResult == CorrectionReviewResult.Approved);
-                        var previousVerse = poemVerses.Where(v => v.VOrder == firstInsertedVerse.VORder).SingleOrDefault();
-                        int nextVerseOrder = previousVerse.VOrder + 1;
-                        int insertionIndex = previousVerse == null ? 0 : poemVerses.IndexOf(previousVerse);
-                       
+                        var beforeVerse = poemVerses.Where(v => v.VOrder == firstInsertedVerse.VORder).SingleOrDefault();
+                        int nextVerseOrder = beforeVerse == null ? 1 : beforeVerse.VOrder; //VOrder starts from 1
+                        int insertionIndex = beforeVerse == null ? 0 : poemVerses.IndexOf(beforeVerse);
+
+                        foreach(var nextVerse in poemVerses.Where(v => v.VOrder >= nextVerseOrder))
+                        {
+                            nextVerse.VOrder += newVersesCount;
+                        }
+
+                        VersePosition versePosition = VersePosition.Right;
                         foreach (var newVerse in addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).OrderByDescending(v => v.VORder).ToList())
                         {
                             newVerse.VORder = nextVerseOrder;
@@ -262,15 +268,16 @@ namespace RMuseum.Services.Implementation
                                 {
                                     PoemId = dbCorrection.PoemId,
                                     VOrder = newVerse.VORder,
-                                    VersePosition = (VersePosition)newVerse.VersePosition,
+                                    VersePosition = versePosition,
                                     Text = newVerse.Text.Replace("  ", " ").ApplyCorrectYeKe().Trim(),
-                                    SectionIndex1 = previousVerse == null ? 0 : previousVerse.SectionIndex1,
-                                    SectionIndex2 = previousVerse == null ? null : previousVerse.SectionIndex2,
-                                    SectionIndex3 = previousVerse == null ? null : previousVerse.SectionIndex3,
-                                    SectionIndex4 = previousVerse == null ? null : previousVerse.SectionIndex4,
+                                    SectionIndex1 = beforeVerse == null ? 0 : beforeVerse.SectionIndex1,
+                                    SectionIndex2 = beforeVerse == null ? null : beforeVerse.SectionIndex2,
+                                    SectionIndex3 = beforeVerse == null ? null : beforeVerse.SectionIndex3,
+                                    SectionIndex4 = beforeVerse == null ? null : beforeVerse.SectionIndex4,
                                 });
                             nextVerseOrder++;
                             insertionIndex++;
+                            versePosition = versePosition == VersePosition.Right ? VersePosition.Left : VersePosition.Right;
                         }
 
                     }
