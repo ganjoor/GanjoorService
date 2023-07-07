@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RMuseum.Models.Auth.ViewModel;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -37,6 +39,13 @@ namespace GanjooRazor.Areas.User.Pages
         /// all users edits
         /// </summary>
         public bool AllUsersEdits { get; set; }
+
+        /// <summary>
+        /// filteredUserId
+        /// </summary>
+        public Guid? filteredUserId { get; set; }
+
+        public GanjoorUserPublicProfile Profile { get; set; }
 
         /// <summary>
         /// Corrections
@@ -79,6 +88,19 @@ namespace GanjooRazor.Areas.User.Pages
                             if (AllUsersEdits)
                             {
                                 url = $"{APIRoot.Url}/api/ganjoor/corrections/all?PageNumber={pageNumber}&PageSize=20";
+                            }
+                            filteredUserId = string.IsNullOrEmpty(Request.Query["UserId"]) ? null : Guid.Parse(Request.Query["UserId"]);
+                            if (filteredUserId != null)
+                            {
+                                url += $"&userId={filteredUserId}";
+                                var responseUserProfile = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/user/profile/{filteredUserId}");
+                                if (!responseUserProfile.IsSuccessStatusCode)
+                                {
+                                    LastError = JsonConvert.DeserializeObject<string>(await responseUserProfile.Content.ReadAsStringAsync());
+                                    return Page();
+                                }
+
+                                Profile = JsonConvert.DeserializeObject<GanjoorUserPublicProfile>(await responseUserProfile.Content.ReadAsStringAsync());
                             }
                         }
                         var response = await secureClient.GetAsync(url);

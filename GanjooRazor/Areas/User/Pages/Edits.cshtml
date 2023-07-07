@@ -18,11 +18,37 @@ else
 
     if (@Model.CanEdit)
     {
-        <div class="clear-both">
-            <p>
-                <a role="button" href="/User/Edits?AllUsers=1" class="pagebutton">ویرایش‌های همه</a>
-            </p>
-        </div>
+        @if (Model.Profile != null)
+        {
+          
+            <div id="profile">
+                <p>
+                    <a href="/hashieha?userId=@Model.Profile.Id">@Model.Profile.NickName</a>
+
+                    @if (!string.IsNullOrEmpty(Model.Profile.Website))
+                    {
+                        <a href="@Model.Profile.Website">🌐</a>
+                    }
+
+                    
+                </p>
+
+                @if (!string.IsNullOrEmpty(Model.Profile.Bio))
+                {
+                    @Html.Raw(Model.Profile.Bio)
+                }
+            </div>
+            <hr />
+        }
+        else
+        {
+            <div class="clear-both">
+                <p>
+                    <a role="button" href="/User/Edits?AllUsers=1" class="pagebutton">ویرایش‌های همه</a>
+                </p>
+            </div>
+        }
+       
     }
 
     @if (Model.Corrections.Count == 0)
