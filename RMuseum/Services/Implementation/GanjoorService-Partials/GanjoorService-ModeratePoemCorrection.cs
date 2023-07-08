@@ -259,7 +259,7 @@ namespace RMuseum.Services.Implementation
                         }
 
                         VersePosition versePosition = VersePosition.Right;
-                        foreach (var newVerse in addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).OrderByDescending(v => v.VORder).ToList())
+                        foreach (var newVerse in addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).OrderBy(v => v.VORder).ToList())
                         {
                             newVerse.VORder = nextVerseOrder;
                             poemVerses.Insert(
