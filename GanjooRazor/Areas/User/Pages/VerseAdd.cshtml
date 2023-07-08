@@ -92,14 +92,17 @@
                             <tr>
                                 <td>
                                     <select asp-for="NewVerses.VOrder" style="width:100%">
-                                        @if(Model.PageInformation.Poem.Verses.Length == 0)
+                                        @if (Model.PageInformation.Poem.Verses.Length == 0)
                                         {
                                             <option value="1">*</option>
                                         }
                                         else
-                                        foreach (var verse in Model.PageInformation.Poem.Verses)
                                         {
-                                            <option value="@verse.VOrder">@($"{(verse.CoupletIndex + 1).ToPersianNumbers()} - {verse.Text}")</option>
+                                            foreach (var verse in Model.PageInformation.Poem.Verses)
+                                            {
+                                                <option value="@verse.VOrder">@($"{(verse.CoupletIndex + 1).ToPersianNumbers()} - {verse.Text}")</option>
+                                            }
+                                            <option value="@(1 + Model.PageInformation.Poem.Verses.Last().VOrder)">* بعد از مصرع آخر</option>
                                         }
                                     </select>
                                 </td>
