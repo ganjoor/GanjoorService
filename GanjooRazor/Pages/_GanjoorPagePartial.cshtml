@@ -280,7 +280,7 @@
                             {
                                 @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
                             }
-                                                                                                                                                                                                                                                                                                                                                                    ]).addTo(map);
+                                                                                                                                                                                                                                                                                                                                                                                                                            ]).addTo(map);
 
                                 for (var i = 0; i < poemGeoTags.length; i++) {
                                     var poemGeoTag = poemGeoTags[i];
@@ -375,15 +375,17 @@
                             </div>
                         </nav>
 
-                       
+
                     }
 
                     @if ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryTop1Recitations.Length > 0)
                     {
                         <div class="spacer">&nbsp;</div>
                         <div class="related-images-frame" id="recitations">
+                            <div class="century cursor-pointer" id="load-cat-recitations" onclick="loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">
+                                خوانش‌ها را بارگذاری کن
+                            </div>
                             <div id="recitations-section">
-                                <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.CategoryTop1Recitations, true) />
                             </div>
                         </div>
                     }

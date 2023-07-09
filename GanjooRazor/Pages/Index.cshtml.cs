@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RMuseum.Migrations;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
@@ -17,6 +18,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace GanjooRazor.Pages
 {
@@ -911,6 +913,32 @@ namespace GanjooRazor.Pages
                         Sections = sections,
                         SectionsWithMetreAndRhymes = sectionsWithMetreAndRhymes,
                         Verses = verses,
+                    }
+                }
+            };
+        }
+
+        public async Task<ActionResult> OnGetCategoryRecitationsAsync(int catId)
+        {
+            var catTop1RecitationsQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/cattop1/{catId}?includePoemText=false");
+
+            if (!catTop1RecitationsQuery.IsSuccessStatusCode)
+            {
+                return BadRequest(JsonConvert.DeserializeObject<string>(await catTop1RecitationsQuery.Content.ReadAsStringAsync()));
+            }
+            var categoryTop1Recitations = JsonConvert.DeserializeObject<PublicRecitationViewModel[]>(await catTop1RecitationsQuery.Content.ReadAsStringAsync());
+            
+            return new PartialViewResult()
+            {
+                ViewName = "_AudioPlayerPartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _AudioPlayerPartialModel()
+                    {
+                        LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
+                        Recitations = categoryTop1Recitations,
+                        ShowAllRecitaions = true,
+                        CategoryMode = true,
                     }
                 }
             };

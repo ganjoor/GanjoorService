@@ -1085,3 +1085,26 @@ function viewLocation(lt, lg) {
     link.target = "_blank"
     link.click()
 }
+
+function loadCatRecitations(catId) {
+
+    var loadButton = document.getElementById("load-cat-recitations");
+    if (loadButton == null) {
+        
+        return;
+    }
+
+    var divParent = document.getElementById('recitations-section');
+    var imgElementId = 'loadingimg';
+   divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="remove-this"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
+    $.ajax({
+        type: "GET",
+        url: '?Handler=CategoryRecitations&catId=' + String(catId),
+        success: function (data) {
+            document.getElementById("remove-this").remove();
+            loadButton.remove();
+            $(data).appendTo(divParent);
+        },
+    });
+
+}
