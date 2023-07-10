@@ -11,7 +11,7 @@
         ||
         (Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
         ||
-        (Model.CategoryTop1Recitations != null && Model.CategoryTop1Recitations.Length > 0)
+        (Model.CategoryHasRecitations)
     )
     )
     {
@@ -143,7 +143,7 @@
             (
                 (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null && Model.GanjoorPage.Poem.Recitations.Length > 0)
                 ||
-                (Model.CategoryTop1Recitations != null && Model.CategoryTop1Recitations.Length > 0)
+                (Model.CategoryHasRecitations)
             )
             {
                 <a href="#recitations" role="button" class="w3tooltip cursor-pointer">

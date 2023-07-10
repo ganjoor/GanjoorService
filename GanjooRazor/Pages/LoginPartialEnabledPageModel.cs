@@ -51,7 +51,7 @@ namespace GanjooRazor.Pages
         
         public PoemGeoDateTag[] CategoryPoemGeoDateTags { get; set; }
 
-        public PublicRecitationViewModel[] CategoryTop1Recitations { get; set; }
+        public bool CategoryHasRecitations { get; set; }
        
         /// <summary>
         /// logout
