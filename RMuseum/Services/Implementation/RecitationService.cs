@@ -285,44 +285,68 @@ namespace RMuseum.Services.Implementationa
         {
             try
             {
-                var source =     from poem in _context.GanjoorPoems.AsNoTracking()
-                                 from audio in _context.Recitations
-                                                   .Where(a => a.GanjoorPostId == poem.Id && a.ReviewStatus == AudioReviewStatus.Approved)
-                                                   .OrderBy(a => a.AudioOrder)
-                                                   .Take(1)
-                                                   .DefaultIfEmpty()
-                                 where
-                                 poem.CatId == catId && audio != null
-                                 orderby poem.Id
-                                 select new PublicRecitationViewModel()
-                                 {
-                                     Id = audio.Id,
-                                     PoemId = audio.GanjoorPostId,
-                                     PoemFullTitle = poem.FullTitle,
-                                     PoemFullUrl = poem.FullUrl,
-                                     AudioTitle = audio.AudioTitle,
-                                     AudioArtist = audio.AudioArtist,
-                                     AudioArtistUrl = audio.AudioArtistUrl,
-                                     AudioSrc = audio.AudioSrc,
-                                     AudioSrcUrl = audio.AudioSrcUrl,
-                                     LegacyAudioGuid = audio.LegacyAudioGuid,
-                                     Mp3FileCheckSum = audio.Mp3FileCheckSum,
-                                     Mp3SizeInBytes = audio.Mp3SizeInBytes,
-                                     PublishDate = audio.ReviewDate,
-                                     FileLastUpdated = audio.FileLastUpdated,
-                                     Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
-                                     XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
-                                     PlainText = includePoemText ? poem.PlainText : "",
-                                     HtmlText = includePoemText ? poem.HtmlText : "",
-                                     AudioOrder = audio.AudioOrder,
-                                     UpVotedByUser = false,
-                                 };
+                var source = from poem in _context.GanjoorPoems.AsNoTracking()
+                             from audio in _context.Recitations
+                                               .Where(a => a.GanjoorPostId == poem.Id && a.ReviewStatus == AudioReviewStatus.Approved)
+                                               .OrderBy(a => a.AudioOrder)
+                                               .Take(1)
+                                               .DefaultIfEmpty()
+                             where
+                             poem.CatId == catId && audio != null
+                             orderby poem.Id
+                             select new PublicRecitationViewModel()
+                             {
+                                 Id = audio.Id,
+                                 PoemId = audio.GanjoorPostId,
+                                 PoemFullTitle = poem.FullTitle,
+                                 PoemFullUrl = poem.FullUrl,
+                                 AudioTitle = audio.AudioTitle,
+                                 AudioArtist = audio.AudioArtist,
+                                 AudioArtistUrl = audio.AudioArtistUrl,
+                                 AudioSrc = audio.AudioSrc,
+                                 AudioSrcUrl = audio.AudioSrcUrl,
+                                 LegacyAudioGuid = audio.LegacyAudioGuid,
+                                 Mp3FileCheckSum = audio.Mp3FileCheckSum,
+                                 Mp3SizeInBytes = audio.Mp3SizeInBytes,
+                                 PublishDate = audio.ReviewDate,
+                                 FileLastUpdated = audio.FileLastUpdated,
+                                 Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                                 XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
+                                 PlainText = includePoemText ? poem.PlainText : "",
+                                 HtmlText = includePoemText ? poem.HtmlText : "",
+                                 AudioOrder = audio.AudioOrder,
+                                 UpVotedByUser = false,
+                             };
 
                 return new RServiceResult<PublicRecitationViewModel[]>(await source.ToArrayAsync());
             }
             catch (Exception exp)
             {
                 return new RServiceResult<PublicRecitationViewModel[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// check if a category has any recitations
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> GetPoemCategoryHasAnyRecitations(int catId)
+        {
+            try
+            {
+                return new RServiceResult<bool>(
+                    await _context.Recitations.AsNoTracking().Where(
+                    a =>
+                    _context.GanjoorPoems.Where(p => p.CatId == catId && p.Id == a.GanjoorPostId
+                    &&
+                    a.ReviewStatus == AudioReviewStatus.Approved
+                    ).Any()
+                    ).AnyAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
             }
         }
 
@@ -449,7 +473,7 @@ namespace RMuseum.Services.Implementationa
             return new RServiceResult<bool>(true);
         }
 
-   
+
         /// <summary>
         /// Gets Verse Sync Range Information
         /// </summary>

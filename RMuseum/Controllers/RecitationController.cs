@@ -1081,6 +1081,23 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        ///  check if a category has any recitations
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        [HttpGet("catany/{catId}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoemCategoryHasAnyRecitations(int catId)
+        {
+            var res = await _audioService.GetPoemCategoryHasAnyRecitations(catId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// rss for category top one recitations
         /// </summary>
         /// <param name="catId"></param>

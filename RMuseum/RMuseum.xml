@@ -2627,6 +2627,13 @@
             <param name="includePoemText"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.GetPoemCategoryHasAnyRecitations(System.Int32)">
+            <summary>
+             check if a category has any recitations
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetPoemCategoryTopRecitationsRSS(System.Int32,System.Boolean)">
             <summary>
             rss for category top one recitations
@@ -17176,6 +17183,13 @@
             <param name="includePoemText"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPoemCategoryHasAnyRecitations(System.Int32)">
+            <summary>
+            check if a category has any recitations
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPublishedRecitationById(System.Int32)">
             <summary>
             get published recitation by id
@@ -17690,6 +17704,13 @@
             </summary>
             <param name="catId"></param>
             <param name="includePoemText"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.GetPoemCategoryHasAnyRecitations(System.Int32)">
+            <summary>
+            check if a category has any recitations
+            </summary>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.GetPublishedRecitationById(System.Int32)">
