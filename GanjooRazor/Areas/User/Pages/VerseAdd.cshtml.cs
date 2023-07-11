@@ -180,6 +180,7 @@ namespace GanjooRazor.Areas.User.Pages
                     else
                     {
                         PostSuccess = true;
+                        return Redirect($"/User/Editor?id={PageInformation.Id}");
                     }
                 }
                 else
