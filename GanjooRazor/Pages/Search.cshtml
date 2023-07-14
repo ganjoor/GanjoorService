@@ -1,5 +1,6 @@
 ﻿@page
 @model GanjooRazor.Pages.SearchModel
+@using DNTPersianUtils.Core
 @{
     Layout = null;
 }
@@ -182,12 +183,18 @@
                     </div>
                 }
                 else
-                    foreach (var poem in Model.Poems)
+                    for (int poemIndex = 0; poemIndex < Model.Poems.Count; poemIndex++)
                     {
+                        var poem = Model.Poems[poemIndex];
 
                         <div class="sitem">
+                            @if(Model.PaginationMetadata != null)
+                            {
+                                <div class="circled-number-diff">@(((Model.PaginationMetadata.currentPage - 1) * Model.PaginationMetadata.pageSize + poemIndex + 1).ToPersianNumbers())</div>
+                            }
+                            
                             <h2>
-                                <a href="@poem.FullUrl">@poem.FullTitle</a>
+                                 <a href="@poem.FullUrl">@poem.FullTitle</a>
                             </h2>
                             <div class="spacer">&nbsp;</div>
                             <div class="sit">

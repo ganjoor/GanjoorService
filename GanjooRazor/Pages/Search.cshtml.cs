@@ -70,6 +70,7 @@ namespace GanjooRazor.Pages
         public int CatId { get; set; }
         public GanjoorPoetCompleteViewModel Poet { get; set; }
         public List<GanjoorPoemCompleteViewModel> Poems { get; set; }
+        public PaginationMetadata PaginationMetadata { get; set; }
         public string PagingToolsHtml { get; set; }
 
         public string LastError { get; set; }
@@ -332,13 +333,13 @@ namespace GanjooRazor.Pages
 
                     if (!string.IsNullOrEmpty(paginationMetadataJsonValue))
                     {
-                        PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginationMetadataJsonValue);
+                        PaginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginationMetadataJsonValue);
                         string catQuery = "";
                         if (!string.IsNullOrEmpty(Request.Query["cat"]))
                         {
                             catQuery = $"&cat={Request.Query["cat"]}";
                         }
-                        PagingToolsHtml = GeneratePagingBarHtml(paginationMetadata, $"/search?s={WebUtility.UrlEncode(Query)}&amp;author={PoetId}{catQuery}");
+                        PagingToolsHtml = GeneratePagingBarHtml(PaginationMetadata, $"/search?s={WebUtility.UrlEncode(Query)}&amp;author={PoetId}{catQuery}");
                     }
                 }
 
