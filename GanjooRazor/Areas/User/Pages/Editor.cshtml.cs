@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -147,7 +148,7 @@ namespace GanjooRazor.Areas.User.Pages
                     }
                     MyLastEdit = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await editResponse.Content.ReadAsStringAsync());
 
-                   
+
 
 
                     var rhythmResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms?sortOnVerseCount=true");
@@ -189,7 +190,7 @@ namespace GanjooRazor.Areas.User.Pages
                         return Page();
                     }
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
-                    
+
 
                     if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && !string.IsNullOrEmpty(s.RhymeLetters)).Any())
                     {
@@ -293,13 +294,37 @@ namespace GanjooRazor.Areas.User.Pages
             return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
         }
 
-        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync(int poemid, string[] verseOrderText, int[] verseOrderMarkedForDelete, VersePosition[] versePositions, string rhythm, string rhythm2, string rhyme, GanjoorPoemFormat? format, string[] verseOrderSummaries, int[] verseLanguages, string note, bool hideMyName)
+
+        public class PoemCorrectionStructue
         {
+            public int poemid { get; set; }
+            public string[] verseOrderText { get; set; }
+            
+            public int[] verseOrderMarkedForDelete { get; set; }
+            
+            public string[] versePositions { get; set; }
+            public string rhythm { get; set; }
+            public string rhythm2 { get; set; }
+            public string rhyme { get; set; }
+            public string format { get; set; }
+            public string[] verseOrderSummaries { get; set; }
+            public string[] verseLanguages { get; set; }
+            public string note { get; set; }
+            public bool hideMyName { get; set; }
+        }
+
+        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync([FromBody] PoemCorrectionStructue pcs)
+        {
+            if (pcs == null)
+            {
+                return new BadRequestObjectResult("خطای پیش‌بینی نشده");
+            }
+            
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={poemid}");
+                    var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={pcs.poemid}");
                     if (!pageUrlResponse.IsSuccessStatusCode)
                     {
                         FatalError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
@@ -313,28 +338,37 @@ namespace GanjooRazor.Areas.User.Pages
                         FatalError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
                         return new BadRequestObjectResult(FatalError);
                     }
-                    var pageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();                    
-                    
+                    var pageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
                     string title = null;
                     List<GanjoorVerseVOrderText> vOrderTexts = new List<GanjoorVerseVOrderText>();
-                    foreach (string v in verseOrderText)
+                    List<VersePosition?> versePositions = new List<VersePosition?>();
+                    foreach (var versePosition in pcs.versePositions)
                     {
-                        var vParts = v.Split("TextSeparator", System.StringSplitOptions.RemoveEmptyEntries);
+                        if(versePosition != null)
+                        {
+                            versePositions.Add((VersePosition)Enum.Parse(typeof(VersePosition), versePosition));
+                        }
+                        
+                    }
+                    foreach (string v in pcs.verseOrderText)
+                    {
+                        var vParts = v.Split("TextSeparator", StringSplitOptions.RemoveEmptyEntries);
                         int vOrder = int.Parse(vParts[0]);
                         if (vOrder == 0)
                             title = vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک");
                         else
                         {
                             int? langaugeId = null;
-                            if (!(verseLanguages[vOrder - 1] == 1 && pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).LanguageId == null))
+                            if (!(int.Parse(pcs.verseLanguages[vOrder - 1]) == 1 && pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).LanguageId == null))
                             {
-                                langaugeId = verseLanguages[vOrder - 1];
+                                langaugeId = int.Parse(pcs.verseLanguages[vOrder - 1]);
                             }
                             string verseText = pageInformation.Poem.Verses.Where(verse => verse.VOrder == vOrder).Single().Text == vParts[1] ? null : vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک");
                             VersePosition? versePos = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : versePositions[vOrder - 1];
-                            bool markedForDelete = verseOrderMarkedForDelete.Any(v => v == vOrder);
-                            
-                            if(verseText != null || markedForDelete || versePos != null || langaugeId != null)
+                            bool markedForDelete = pcs.verseOrderMarkedForDelete.Any(v => v == vOrder);
+
+                            if (verseText != null || markedForDelete || versePos != null || langaugeId != null)
                             {
                                 vOrderTexts.Add
                                 (
@@ -348,12 +382,12 @@ namespace GanjooRazor.Areas.User.Pages
                                 }
                                 );
                             }
-                            
+
                         }
                     }
 
                     string poemSummary = null;
-                    foreach ( string v in verseOrderSummaries )
+                    foreach (string v in pcs.verseOrderSummaries)
                     {
                         var vParts = v.Split("TextSeparator", System.StringSplitOptions.RemoveEmptyEntries);
                         int vOrder = int.Parse(vParts[0]);
@@ -363,7 +397,7 @@ namespace GanjooRazor.Areas.User.Pages
                         }
                         else
                         {
-                            if(vOrderTexts.Where(t => t.VORder == vOrder).Any())
+                            if (vOrderTexts.Where(t => t.VORder == vOrder).Any())
                             {
                                 vOrderTexts.First(t => t.VORder == vOrder).CoupletSummary = vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک");
                             }
@@ -384,18 +418,18 @@ namespace GanjooRazor.Areas.User.Pages
                         }
                     }
 
-                    if (title == null && poemSummary == null && vOrderTexts.Count == 0 && rhythm == null && rhythm2 == null && rhyme == null && format == null)
+                    if (title == null && poemSummary == null && vOrderTexts.Count == 0 && pcs.rhythm == null && pcs.rhythm2 == null && pcs.rhyme == null && pcs.format == null)
                         return new BadRequestObjectResult("شما هیچ تغییری در اطلاعات نداده‌اید!");
 
-                    if (rhythm == "null")
-                        rhythm = "";
+                    if (pcs.rhythm == "null")
+                        pcs.rhythm = "";
 
-                    if (rhythm2 == "null")
-                        rhythm2 = "";
+                    if (pcs.rhythm2 == "null")
+                        pcs.rhythm2 = "";
 
-                    if (rhythm2 != null)
+                    if (pcs.rhythm2 != null)
                     {
-                        if (rhythm == rhythm2)
+                        if (pcs.rhythm == pcs.rhythm2)
                             return new BadRequestObjectResult("وزن اول و دوم یکسانند!");
                     }
 
@@ -403,16 +437,16 @@ namespace GanjooRazor.Areas.User.Pages
 
                     GanjoorPoemCorrectionViewModel correction = new GanjoorPoemCorrectionViewModel()
                     {
-                        PoemId = poemid,
+                        PoemId = pcs.poemid,
                         Title = title,
                         VerseOrderText = vOrderTexts.ToArray(),
-                        Rhythm = rhythm,
-                        Rhythm2 = rhythm2,
-                        RhymeLetters = rhyme,
-                        PoemFormat = format,
+                        Rhythm = pcs.rhythm,
+                        Rhythm2 = pcs.rhythm2,
+                        RhymeLetters = pcs.rhyme,
+                        PoemFormat = string.IsNullOrEmpty(pcs.format) ? (GanjoorPoemFormat?) null : (GanjoorPoemFormat)Enum.Parse(typeof(GanjoorPoemFormat), pcs.format),
                         PoemSummary = poemSummary,
-                        Note = note,
-                        HideMyName = hideMyName
+                        Note = pcs.note,
+                        HideMyName = pcs.hideMyName
                     };
 
                     HttpResponseMessage response = await secureClient.PostAsync(
@@ -511,7 +545,7 @@ namespace GanjooRazor.Areas.User.Pages
             }
         }
 
-              
+
 
         public async Task<IActionResult> OnGetComputeRhymeAsync(int id)
         {

@@ -92,28 +92,28 @@
         $('#savecorrections').hide();
         $('#saving').text('در حال ذخیره ...');
 
-
+        var pcs = {};
+        pcs.poemid = id;
+        pcs.verseOrderText = verseOrderText;
+        pcs.verseOrderMarkedForDelete = verseOrderMarkedForDelete;
+        pcs.versePositions = versePositions;
+        pcs.rhythm = rhythm_new;
+        pcs.rhythm2 = rhythm_new2;
+        pcs.rhyme = rhyme_letters;
+        pcs.format = section_format;
+        pcs.verseOrderSummaries = verseOrderSummaries;
+        pcs.verseLanguages = verseLanguages;
+        pcs.note = $('#note').val();
+        pcs.hideMyName = $('#hide-my-name').is(":checked");
 
         var url = '?handler=SendPoemCorrections';
 
         $.ajax({
             type: "POST",
             url: url,
-            data: {
-                poemid: id,
-                verseOrderText: verseOrderText,
-                verseOrderMarkedForDelete: verseOrderMarkedForDelete,
-                versePositions: versePositions,
-                rhythm: rhythm_new,
-                rhythm2: rhythm_new2,
-                rhyme: rhyme_letters,
-                format: section_format,
-                verseOrderSummaries: verseOrderSummaries,
-                verseLanguages: verseLanguages,
-                note: $('#note').val(),
-                hideMyName: $('#hide-my-name').is(":checked")
-
-            },
+            data: JSON.stringify(pcs),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
             success: function () {
                 location.reload(true);
             },
