@@ -317,7 +317,7 @@ namespace GanjooRazor.Areas.User.Pages
         {
             if (pcs == null)
             {
-                return new BadRequestObjectResult("خطای پیش‌بینی نشده");
+                return new BadRequestObjectResult("خطای پیش‌بینی نشده: لطفاً نشانی این شعر را به ganjoor@ganjoor.net ارسال بفرمایید تا بررسی بیشتری انجام شود.");
             }
             
             using (HttpClient secureClient = new HttpClient())
