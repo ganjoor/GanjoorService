@@ -349,7 +349,6 @@ namespace GanjooRazor.Areas.User.Pages
                         {
                             versePositions.Add((VersePosition)Enum.Parse(typeof(VersePosition), versePosition));
                         }
-                        
                     }
                     foreach (string v in pcs.verseOrderText)
                     {
@@ -360,9 +359,9 @@ namespace GanjooRazor.Areas.User.Pages
                         else
                         {
                             int? langaugeId = null;
-                            if (!(int.Parse(pcs.verseLanguages[vOrder - 1]) == 1 && pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).LanguageId == null))
+                            if (!(int.Parse(pcs.verseLanguages[vOrder]) == 1 && pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).LanguageId == null))
                             {
-                                langaugeId = int.Parse(pcs.verseLanguages[vOrder - 1]);
+                                langaugeId = int.Parse(pcs.verseLanguages[vOrder]);
                             }
                             string verseText = pageInformation.Poem.Verses.Where(verse => verse.VOrder == vOrder).Single().Text == vParts[1] ? null : vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک");
                             VersePosition? versePos = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : versePositions[vOrder - 1];
