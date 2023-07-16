@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ganjoor;
+using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Artifact;
 using RMuseum.Models.ImportJob;
@@ -11,40 +12,40 @@ using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
 {
-
     /// <summary>
     /// IArtifactService implementation
     /// </summary>
     public partial class ArtifactService : IArtifactService
     {
         /// <summary>
-        /// import from server folder
+        /// import local pdf file (eg: C:\ImportFolder\1.pdf) : some intermediatory images are written in a folder created in the filePath directory
         /// </summary>
-        /// <param name="folderPath">C:\Tools\batches\florence</param>
-        /// <param name="friendlyUrl">shahname-florence</param>
-        /// <param name="srcUrl">https://t.me/dr_khatibi_abolfazl/888</param>
+        /// <param name="filePath"></param>
+        /// <param name="friendlyUrl"></param>
+        /// <param name="srcUrl"></param>
         /// <param name="skipUpload"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> StartImportingFromServerFolder(string folderPath, string friendlyUrl, string srcUrl, bool skipUpload)
+        private async Task<RServiceResult<bool>> StartImportingLocalPDFFile(string filePath, string friendlyUrl, string srcUrl, bool skipUpload)
         {
             try
             {
+                string fileChecksum = PoemAudio.ComputeCheckSum(filePath);
                 if (
                     (
                     await _context.ImportJobs
-                        .Where(j => j.JobType == JobType.ServerFolder && j.ResourceNumber == folderPath && !(j.Status == ImportJobStatus.Failed || j.Status == ImportJobStatus.Aborted))
+                        .Where(j => j.JobType == JobType.Pdf && j.SrcContent == fileChecksum && !(j.Status == ImportJobStatus.Failed || j.Status == ImportJobStatus.Aborted))
                         .SingleOrDefaultAsync()
                     )
                     !=
                     null
                     )
                 {
-                    return new RServiceResult<bool>(false, $"Job is already scheduled or running for importing server folder {folderPath}");
+                    return new RServiceResult<bool>(false, $"Job is already scheduled or running for importing pdf file {filePath} (duplicated checksum: {fileChecksum})");
                 }
 
                 if (string.IsNullOrEmpty(friendlyUrl))
                 {
-                    return new RServiceResult<bool>(false, $"Friendly url is empty, server folder {folderPath}");
+                    return new RServiceResult<bool>(false, $"Friendly url is empty, pdf file: {filePath}");
                 }
 
                 if (
@@ -58,8 +59,9 @@ namespace RMuseum.Services.Implementation
 
                 ImportJob job = new ImportJob()
                 {
-                    JobType = JobType.ServerFolder,
-                    ResourceNumber = folderPath,
+                    JobType = JobType.Pdf,
+                    SrcContent = fileChecksum,
+                    ResourceNumber = filePath,
                     FriendlyUrl = friendlyUrl,
                     SrcUrl = srcUrl,
                     QueueTime = DateTime.Now,
@@ -83,7 +85,7 @@ namespace RMuseum.Services.Implementation
                             {
                                 using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                 {
-                                    RArtifactMasterRecord book = new RArtifactMasterRecord($"extracted from server folder {job.ResourceNumber}", $"extracted from server folder {job.ResourceNumber}")
+                                    RArtifactMasterRecord book = new RArtifactMasterRecord($"extracted from pdf file {job.ResourceNumber}", $"extracted from pdf file {job.ResourceNumber}")
                                     {
                                         Status = PublishStatus.Draft,
                                         DateTime = DateTime.Now,
@@ -116,7 +118,7 @@ namespace RMuseum.Services.Implementation
                                         await importJobUpdaterDb.SaveChangesAsync();
                                     }
 
-                                    List<RArtifactItemRecord> pages = await _ImportAndReturnServerFolderJobImages(book, job, 0);
+                                    List<RArtifactItemRecord> pages = await _ImportAndReturnPDFJobImages(book, job, 0);
 
                                     book.Tags = meta.ToArray();
 
@@ -186,127 +188,36 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-
-        /// <summary>
-        /// start appending from server folder
-        /// </summary>
-        /// <param name="folderPath"></param>
-        /// <param name="artifactId"></param>
-        /// <param name="skipUpload"></param>
-        /// <returns></returns>
-        private async Task<RServiceResult<bool>> StartAppendingFromServerFolder(string folderPath, Guid artifactId, bool skipUpload)
-        {
-            try
-            {
-
-                var nonTrackingBook = await _context.Artifacts.AsNoTracking().Where(b => b.Id == artifactId).SingleOrDefaultAsync();
-                if (nonTrackingBook == null)
-                    return new RServiceResult<bool>(false, "artifact not found!");
-
-                ImportJob job = new ImportJob()
-                {
-                    JobType = JobType.AppendFromServerFolder,
-                    ResourceNumber = folderPath,
-                    FriendlyUrl = nonTrackingBook.FriendlyUrl,
-                    SrcUrl = "",
-                    QueueTime = DateTime.Now,
-                    ProgressPercent = 0,
-                    Status = ImportJobStatus.NotStarted
-                };
-
-
-                await _context.ImportJobs.AddAsync
-                    (
-                    job
-                    );
-
-                await _context.SaveChangesAsync();
-
-                _backgroundTaskQueue.QueueBackgroundWorkItem
-                    (
-                        async token =>
-                        {
-                            try
-                            {
-                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
-                                {
-                                    var book = await context.Artifacts.Include(a => a.Items).Where(b => b.Id == artifactId).SingleOrDefaultAsync();
-
-                                    using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
-                                    {
-                                        job.StartTime = DateTime.Now;
-                                        job.Status = ImportJobStatus.Running;
-                                        job.SrcContent = "";
-                                        importJobUpdaterDb.Update(job);
-                                        await importJobUpdaterDb.SaveChangesAsync();
-                                    }
-
-                                    List<RArtifactItemRecord> pages = await _ImportAndReturnServerFolderJobImages(book, job, book.ItemCount);
-
-                                    pages.InsertRange(0, book.Items);
-
-                                    book.Items = pages.ToArray();
-                                    book.ItemCount = pages.Count;
-
-                                    context.Update(book);
-                                    await context.SaveChangesAsync();
-
-                                    var resFTPUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
-                                    if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
-                                    {
-                                        job.EndTime = DateTime.Now;
-                                        job.Status = ImportJobStatus.Failed;
-                                        job.Exception = $"UploadArtifactToExternalServer: {resFTPUpload.ExceptionString}";
-                                        job.ArtifactId = book.Id;
-                                        job.EndTime = DateTime.Now;
-                                        context.Update(job);
-                                        await context.SaveChangesAsync();
-                                        return;
-                                    }
-
-                                    job.ProgressPercent = 100;
-                                    job.Status = ImportJobStatus.Succeeded;
-                                    job.ArtifactId = book.Id;
-                                    job.EndTime = DateTime.Now;
-                                    context.Update(job);
-                                    await context.SaveChangesAsync();
-
-                                }
-                            }
-                            catch (Exception exp)
-                            {
-                                using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
-                                {
-                                    job.EndTime = DateTime.Now;
-                                    job.Status = ImportJobStatus.Failed;
-                                    job.Exception = exp.ToString();
-                                    importJobUpdaterDb.Update(job);
-                                    await importJobUpdaterDb.SaveChangesAsync();
-                                }
-
-                            }
-                        }
-                    );
-
-                return new RServiceResult<bool>(true);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
-        }
-
-
-        private async Task<List<RArtifactItemRecord>> _ImportAndReturnServerFolderJobImages(RArtifactMasterRecord book, ImportJob job, int order)
+        private async Task<List<RArtifactItemRecord>> _ImportAndReturnPDFJobImages(RArtifactMasterRecord book, ImportJob job, int order)
         {
             List<RArtifactItemRecord> pages = new List<RArtifactItemRecord>();
-            string[] fileNames = Directory.GetFiles(job.ResourceNumber, "*.jpg");
-            
+
+            string pdfFilePath = job.ResourceNumber;
+
+            string intermediateFolder = Path.Combine(Path.GetDirectoryName(pdfFilePath), Path.GetFileNameWithoutExtension(pdfFilePath));
+            Directory.CreateDirectory(intermediateFolder);
+
+            List<string> fileNames = new List<string>();
+            int imageOrder = 1;
+            using(FileStream fs = File.OpenRead(pdfFilePath))
+            {
+                var skBitmaps = PDFtoImage.Conversion.ToImages(fs);
+                foreach (var skBitmap in skBitmaps)
+                {
+                    string outFileName = Path.Combine(intermediateFolder, $"{imageOrder}".PadLeft(4, '0') + ".jpg");
+                    using(FileStream fsOut = File.OpenWrite(outFileName))
+                    {
+                        skBitmap.Encode(fsOut, SkiaSharp.SKEncodedImageFormat.Jpeg, 90);
+                    }
+                    fileNames.Add(outFileName);
+                }
+            }
+
             foreach (string fileName in fileNames)
             {
                 using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                 {
-                    job.ProgressPercent = order * 100 / (decimal)fileNames.Length;
+                    job.ProgressPercent = order * 100 / (decimal)fileNames.Count;
                     importJobUpdaterDb.Update(job);
                     await importJobUpdaterDb.SaveChangesAsync();
                 }
@@ -390,7 +301,14 @@ namespace RMuseum.Services.Implementation
                 pages.Add(page);
             }
 
+            foreach (var fileName in fileNames)
+            {
+                File.Delete(fileName);
+            }
+            Directory.Delete(intermediateFolder, true );
+
             return pages;
         }
     }
 }
+

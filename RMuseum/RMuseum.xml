@@ -13933,6 +13933,17 @@
             <summary>
             IArtifactService implementation
             </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartSettingArtifactAsTextOriginalSource(System.Int32,System.Guid)">
+            <summary>
+            start setting an artifact items as text original source
+            </summary>
+            <param name="ganjoorCatId"></param>
+            <param name="artifactId"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.StartFillingGanjoorLinkOriginalSources">
             <summary>
@@ -14023,6 +14034,16 @@
             <param name="skipUpload"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingLocalPDFFile(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            import local pdf file (eg: C:\ImportFolder\1.pdf) : some intermediatory images are written in a folder created in the filePath directory
+            </summary>
+            <param name="filePath"></param>
+            <param name="friendlyUrl"></param>
+            <param name="srcUrl"></param>
+            <param name="skipUpload"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromPenLibraries(System.String,System.String,System.Boolean)">
             <summary>
             from http://www.library.upenn.edu/
@@ -14058,14 +14079,6 @@
             <param name="resourceNumber">W619</param>
             <param name="friendlyUrl">golestan-walters-01</param>
             <param name="skipUpload"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartSettingArtifactAsTextOriginalSource(System.Int32,System.Guid)">
-            <summary>
-            start setting an artifact items as text original source
-            </summary>
-            <param name="ganjoorCatId"></param>
-            <param name="artifactId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.StartRemovingOriginalImages">
