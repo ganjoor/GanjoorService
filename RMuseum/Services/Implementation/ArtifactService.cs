@@ -1161,7 +1161,7 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// import from external resources
         /// </summary>
-        /// <param name="srcType">loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl/append</param>
+        /// <param name="srcType">pdf/loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl/append</param>
         /// <param name="resourceNumber">119/foldername</param>
         /// <param name="friendlyUrl">golestan-baysonghori/artifact id</param>
         /// <param name="resourcePrefix"></param>
@@ -1170,6 +1170,8 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<bool>> Import(string srcType, string resourceNumber, string friendlyUrl, string resourcePrefix, bool skipUpload)
         {
             return
+                 srcType == "pdf" ?
+                 await StartImportingLocalPDFFile(resourceNumber, friendlyUrl, resourcePrefix, skipUpload) :
                  srcType == "princeton" ?
                  await StartImportingFromPrinceton(resourceNumber, friendlyUrl, skipUpload)
                  :
@@ -1385,6 +1387,9 @@ namespace RMuseum.Services.Implementation
                     scheduled.Add(job.ResourceNumber);
 
                     RServiceResult<bool> rescheduled =
+                        job.JobType == JobType.Pdf ?
+                        await StartImportingLocalPDFFile(job.ResourceNumber, job.FriendlyUrl, job.SrcUrl, skipUpload)
+                        :
                         job.JobType == JobType.Princeton ?
                  await StartImportingFromPrinceton(job.ResourceNumber, job.FriendlyUrl, skipUpload)
                  :
