@@ -11,6 +11,11 @@
         public int Id { get; set; }
 
         /// <summary>
+        /// Friendly Url
+        /// </summary>
+        public string FriendlyUrl { get; set; }
+
+        /// <summary>
         /// Name
         /// </summary>
         public string Name { get; set; }
