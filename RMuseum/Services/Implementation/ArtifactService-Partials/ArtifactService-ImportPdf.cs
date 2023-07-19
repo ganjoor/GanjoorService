@@ -210,6 +210,7 @@ namespace RMuseum.Services.Implementation
                         skBitmap.Encode(fsOut, SkiaSharp.SKEncodedImageFormat.Jpeg, 90);
                     }
                     fileNames.Add(outFileName);
+                    imageOrder++;
                 }
             }
 
