@@ -1,6 +1,7 @@
 ﻿using RMuseum.Models.Artifact;
 using RSecurityBackend.Models.Image;
 using System;
+using System.Collections.Generic;
 
 namespace RMuseum.Models.PDFLibrary
 {
@@ -95,6 +96,21 @@ namespace RMuseum.Models.PDFLibrary
         public int? ClaimedPageCount { get; set; }
 
         /// <summary>
+        /// MultiVolumePDFCollection Id
+        /// </summary>
+        public int? MultiVolumePDFCollectionId { get; set; }
+
+        /// <summary>
+        /// MultiVolumePDFCollection
+        /// </summary>
+        public virtual MultiVolumePDFCollection MultiVolumePDFCollection { get; set; }
+
+        /// <summary>
+        /// Volume Order
+        /// </summary>
+        public int VolumeOrder { get; set; }
+
+        /// <summary>
         /// Date/Time
         /// </summary>
         public DateTime DateTime { get; set; }
@@ -138,5 +154,20 @@ namespace RMuseum.Models.PDFLibrary
         /// original file url
         /// </summary>
         public string OriginalFileUrl { get; set; }
+
+        /// <summary>
+        /// Pages
+        /// </summary>
+        public ICollection<PDFPage> Pages { get; set; }
+
+        /// <summary>
+        /// page count
+        /// </summary>
+        public int PageCount { get; set; }
+
+        /// <summary>
+        /// Attributes
+        /// </summary>
+        public ICollection<RTagValue> Tags { get; set; }
     }
 }

@@ -11598,6 +11598,11 @@
             Friendly Url
             </summary>
         </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Status">
+            <summary>
+            Publish Status
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Title">
             <summary>
             Title
@@ -11676,6 +11681,101 @@
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.LastModified">
             <summary>
             Last Modified for caching purposes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.PDFFile">
+            <summary>
+            PDF File
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.ExternalPDFFileUrl">
+            <summary>
+            external url for PDF File
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.CoverImage">
+            <summary>
+            Cover Image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.ExtenalCoverImageUrl">
+            <summary>
+            external cover image url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.OriginalSourceName">
+            <summary>
+            original source name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.OriginalSourceUrl">
+            <summary>
+            original source url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.OriginalFileUrl">
+            <summary>
+            original file url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Pages">
+            <summary>
+            Pages
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.PageCount">
+            <summary>
+            page count
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Tags">
+            <summary>
+            Attributes
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.PDFLibrary.PDFPage">
+            <summary>
+            PDF Page
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.PDFBookId">
+            <summary>
+            PDF Book Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.PageNumber">
+            <summary>
+            page number
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.Thumbnail">
+            <summary>
+            Thumbnail Image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.ExtenalThumbnailImageUrl">
+            <summary>
+            external thumbnail image url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.LastModified">
+            <summary>
+            Last Modified 
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.Tags">
+            <summary>
+            Attributes
             </summary>
         </member>
         <member name="T:RMuseum.Models.UploadSession.UploadSession">
