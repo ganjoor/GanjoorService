@@ -1,4 +1,5 @@
-﻿using RSecurityBackend.Models.Image;
+﻿using RMuseum.Models.Artifact;
+using RSecurityBackend.Models.Image;
 using System;
 
 namespace RMuseum.Models.PDFLibrary
@@ -17,6 +18,11 @@ namespace RMuseum.Models.PDFLibrary
         /// Friendly Url
         /// </summary>
         public string FriendlyUrl { get; set; }
+
+        /// <summary>
+        /// Publish Status
+        /// </summary>
+        public PublishStatus Status { get; set; }
 
         /// <summary>
         /// Title
