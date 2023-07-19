@@ -1,6 +1,5 @@
 ﻿using RSecurityBackend.Models.Image;
 using System;
-using static System.Windows.Forms.LinkLabel;
 
 
 namespace RMuseum.Models.Artifact
