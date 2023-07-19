@@ -11583,6 +11583,101 @@
             <param name="dateTime"></param>
             <returns></returns>
         </member>
+        <member name="T:RMuseum.Models.PDFLibrary.PDFBook">
+            <summary>
+            PDF Book
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.FriendlyUrl">
+            <summary>
+            Friendly Url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Title">
+            <summary>
+            Title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.SubTitle">
+            <summary>
+            secondary or complementary title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.AuthorsLine">
+            <summary>
+            authors (descriptive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.ISBN">
+            <summary>
+            ISBN
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Language">
+            <summary>
+            language
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.IsTranslation">
+            <summary>
+            is translation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.TranslatorsLine">
+            <summary>
+            translators (descriptive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.TitleInOriginalLanguage">
+            <summary>
+            title in original language
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.PublisherLine">
+            <summary>
+            publisher (descriptive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.PublishingDate">
+            <summary>
+            publishing date (descriptive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.PublishingLocation">
+            <summary>
+            publishing location (descriptive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.PublishingNumber">
+            <summary>
+            publishing number
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.ClaimedPageCount">
+            <summary>
+            claimed page count
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.DateTime">
+            <summary>
+            Date/Time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.LastModified">
+            <summary>
+            Last Modified for caching purposes
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.UploadSession.UploadSession">
             <summary>
             Upload Session
