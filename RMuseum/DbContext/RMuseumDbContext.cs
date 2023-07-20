@@ -15,6 +15,7 @@ using RMuseum.Models.Accounting;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using RMuseum.Models.FAQ;
+using RMuseum.Models.PDFLibrary;
 
 namespace RMuseum.DbContext
 {
@@ -505,6 +506,31 @@ namespace RMuseum.DbContext
         /// People tags
         /// </summary>
         public DbSet<GanjoorRelatedPerson> GanjoorRelatedPersons { get; set; }
+
+        /// <summary>
+        /// Books (PDF Library)
+        /// </summary>
+        public DbSet<Book> Books { get; set; }
+
+        /// <summary>
+        /// Authurs
+        /// </summary>
+        public DbSet<Author> Authors { get; set; }
+
+        /// <summary>
+        /// Multi Volume PDF Collections
+        /// </summary>
+        public DbSet<MultiVolumePDFCollection> MultiVolumePDFCollections { get; set; }
+
+        /// <summary>
+        /// PDF Books
+        /// </summary>
+        public DbSet<PDFBook> PDFBooks { get; set; }
+
+        /// <summary>
+        /// PDF Pages
+        /// </summary>
+        public DbSet<PDFPage> PDFPages { get; set; }
 
     }
 }
