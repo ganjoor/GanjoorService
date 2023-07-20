@@ -141,6 +141,11 @@ namespace RMuseum.Models.PDFLibrary
         public RImage CoverImage { get; set; }
 
         /// <summary>
+        /// Cover Image Id
+        /// </summary>
+        public Guid CoverImageId { get; set; }
+
+        /// <summary>
         /// external cover image url
         /// </summary>
         public string ExtenalCoverImageUrl { get; set; }
@@ -159,6 +164,11 @@ namespace RMuseum.Models.PDFLibrary
         /// original file url
         /// </summary>
         public string OriginalFileUrl { get; set; }
+
+        /// <summary>
+        /// specific authors for this edition AKA. translators
+        /// </summary>
+        public ICollection<AuthorRole> Contributers { get; set; }
 
         /// <summary>
         /// Pages

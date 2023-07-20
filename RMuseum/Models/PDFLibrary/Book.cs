@@ -1,4 +1,6 @@
 ﻿using RMuseum.Models.Artifact;
+using RSecurityBackend.Models.Image;
+using System;
 using System.Collections.Generic;
 
 namespace RMuseum.Models.PDFLibrary
@@ -22,6 +24,31 @@ namespace RMuseum.Models.PDFLibrary
         /// description
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Cover Image
+        /// </summary>
+        public RImage CoverImage { get; set; }
+
+        /// <summary>
+        /// Cover Image Id
+        /// </summary>
+        public Guid CoverImageId { get; set; }
+
+        /// <summary>
+        /// external cover image url
+        /// </summary>
+        public string ExtenalCoverImageUrl { get; set; }
+
+        /// <summary>
+        /// Last Modified 
+        /// </summary>
+        public DateTime LastModified { get; set; }
+
+        /// <summary>
+        /// Authors
+        /// </summary>
+        public ICollection<AuthorRole> Authors { get; set; }
 
         /// <summary>
         /// Attributes

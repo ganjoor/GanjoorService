@@ -11583,6 +11583,61 @@
             <param name="dateTime"></param>
             <returns></returns>
         </member>
+        <member name="T:RMuseum.Models.PDFLibrary.Author">
+            <summary>
+            Author
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Author.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Author.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Author.NameInOriginalLanguage">
+            <summary>
+            Name in original language
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Author.Bio">
+            <summary>
+            bio
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Author.Image">
+            <summary>
+            Cover Image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Author.ImageId">
+            <summary>
+            Cover Image Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Author.ExtenalImageUrl">
+            <summary>
+            external image url
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.PDFLibrary.AuthorRole">
+            <summary>
+            Author Role
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.AuthorRole.Author">
+            <summary>
+            Author
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.AuthorRole.Role">
+            <summary>
+            Role
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.PDFLibrary.Book">
             <summary>
             a book might have different PDFBook or MultiVolumePDFCollection instances
@@ -11601,6 +11656,26 @@
         <member name="P:RMuseum.Models.PDFLibrary.Book.Description">
             <summary>
             description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Book.CoverImage">
+            <summary>
+            Cover Image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Book.CoverImageId">
+            <summary>
+            Cover Image Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Book.ExtenalCoverImageUrl">
+            <summary>
+            external cover image url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Book.Authors">
+            <summary>
+            Authors
             </summary>
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.Book.Tags">
@@ -11773,6 +11848,11 @@
             Cover Image
             </summary>
         </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.CoverImageId">
+            <summary>
+            Cover Image Id
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.ExtenalCoverImageUrl">
             <summary>
             external cover image url
@@ -11791,6 +11871,11 @@
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.OriginalFileUrl">
             <summary>
             original file url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.OtherAuthors">
+            <summary>
+            AKA. translators
             </summary>
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Pages">
@@ -11831,6 +11916,11 @@
         <member name="P:RMuseum.Models.PDFLibrary.PDFPage.Thumbnail">
             <summary>
             Thumbnail Image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.ThumbnailId">
+            <summary>
+            Thumbnail Image Id
             </summary>
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.PDFPage.ExtenalThumbnailImageUrl">
