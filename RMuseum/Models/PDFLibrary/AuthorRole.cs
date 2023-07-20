@@ -6,6 +6,11 @@
     public class AuthorRole
     {
         /// <summary>
+        /// Id
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
         /// Author
         /// </summary>
         public Author Author { get; set; }

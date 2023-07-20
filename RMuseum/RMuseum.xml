@@ -3211,6 +3211,31 @@
             People tags
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.Books">
+            <summary>
+            Books (PDF Library)
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.Authors">
+            <summary>
+            Authurs
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.MultiVolumePDFCollections">
+            <summary>
+            Multi Volume PDF Collections
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.PDFBooks">
+            <summary>
+            PDF Books
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.PDFPages">
+            <summary>
+            PDF Pages
+            </summary>
+        </member>
         <member name="T:RMuseum.Migrations.PictureFileExtUrl">
             <inheritdoc />
         </member>
@@ -3317,6 +3342,18 @@
             <inheritdoc />
         </member>
         <member name="M:RMuseum.Migrations.People.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.PDFLibEntities">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.PDFLibEntities.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.PDFLibEntities.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.PDFLibEntities.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -11623,9 +11660,19 @@
             external image url
             </summary>
         </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Author.LastModified">
+            <summary>
+            Last Modified 
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.PDFLibrary.AuthorRole">
             <summary>
             Author Role
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.AuthorRole.Id">
+            <summary>
+            Id
             </summary>
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.AuthorRole.Author">
@@ -11671,6 +11718,11 @@
         <member name="P:RMuseum.Models.PDFLibrary.Book.ExtenalCoverImageUrl">
             <summary>
             external cover image url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Book.LastModified">
+            <summary>
+            Last Modified 
             </summary>
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.Book.Authors">
@@ -11873,9 +11925,9 @@
             original file url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.OtherAuthors">
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Contributers">
             <summary>
-            AKA. translators
+            specific authors for this edition AKA. translators
             </summary>
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Pages">
@@ -11913,12 +11965,12 @@
             page number
             </summary>
         </member>
-        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.Thumbnail">
+        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.ThumbnailImage">
             <summary>
             Thumbnail Image
             </summary>
         </member>
-        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.ThumbnailId">
+        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.ThumbnailImageId">
             <summary>
             Thumbnail Image Id
             </summary>

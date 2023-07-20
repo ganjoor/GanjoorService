@@ -28,12 +28,12 @@ namespace RMuseum.Models.PDFLibrary
         /// <summary>
         /// Thumbnail Image
         /// </summary>
-        public RImage ThumbnailImage { get; set; }
+        public virtual RImage ThumbnailImage { get; set; }
 
         /// <summary>
         /// Thumbnail Image Id
         /// </summary>
-        public Guid ThumbnailImageId { get; set; }
+        public Guid? ThumbnailImageId { get; set; }
 
         /// <summary>
         /// external thumbnail image url

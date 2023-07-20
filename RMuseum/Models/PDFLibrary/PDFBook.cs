@@ -138,12 +138,12 @@ namespace RMuseum.Models.PDFLibrary
         /// <summary>
         /// Cover Image
         /// </summary>
-        public RImage CoverImage { get; set; }
+        public virtual RImage CoverImage { get; set; }
 
         /// <summary>
         /// Cover Image Id
         /// </summary>
-        public Guid CoverImageId { get; set; }
+        public Guid? CoverImageId { get; set; }
 
         /// <summary>
         /// external cover image url
