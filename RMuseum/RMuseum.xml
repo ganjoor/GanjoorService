@@ -11583,6 +11583,61 @@
             <param name="dateTime"></param>
             <returns></returns>
         </member>
+        <member name="T:RMuseum.Models.PDFLibrary.Book">
+            <summary>
+            a book might have different PDFBook or MultiVolumePDFCollection instances
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Book.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Book.Name">
+            <summary>
+            book name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Book.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.Book.Tags">
+            <summary>
+            Attributes
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.PDFLibrary.MultiVolumePDFCollection">
+            <summary>
+            Multi Volume Book
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.MultiVolumePDFCollection.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.MultiVolumePDFCollection.BookId">
+            <summary>
+            book id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.MultiVolumePDFCollection.Book">
+            <summary>
+            book
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.MultiVolumePDFCollection.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.MultiVolumePDFCollection.Description">
+            <summary>
+            Description
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.PDFLibrary.PDFBook">
             <summary>
             PDF Book
@@ -11593,9 +11648,14 @@
             Id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.FriendlyUrl">
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.BookId">
             <summary>
-            Friendly Url
+            book id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Book">
+            <summary>
+            book
             </summary>
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Status">
@@ -11671,6 +11731,21 @@
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.ClaimedPageCount">
             <summary>
             claimed page count
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.MultiVolumePDFCollectionId">
+            <summary>
+            MultiVolumePDFCollection Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.MultiVolumePDFCollection">
+            <summary>
+            MultiVolumePDFCollection
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.VolumeOrder">
+            <summary>
+            Volume Order
             </summary>
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.DateTime">
