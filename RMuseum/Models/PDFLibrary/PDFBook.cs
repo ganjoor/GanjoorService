@@ -184,5 +184,10 @@ namespace RMuseum.Models.PDFLibrary
         /// Attributes
         /// </summary>
         public ICollection<RTagValue> Tags { get; set; }
+
+        /// <summary>
+        /// file check sum
+        /// </summary>
+        public string FileMD5CheckSum { get; set; }
     }
 }
