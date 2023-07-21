@@ -416,6 +416,18 @@ namespace RMuseum.Services.Implementation
             e.Accept = true;
         }
 
+        /// <summary>
+        /// عرض تصویر بندانگشتی
+        /// </summary>
+        protected int ThumbnailImageWidth { get { return int.Parse($"{Configuration.GetSection("PictureFileService")["ThumbnailImageWidth"]}"); } }
+
+        /// <summary>
+        /// طول تصویر بندانگشتی
+        /// </summary>
+        protected int ThumbnailImageMaxHeight { get { return int.Parse($"{Configuration.GetSection("PictureFileService")["ThumbnailMaxHeight"]}"); } }
+
+
+
 
     }
 }

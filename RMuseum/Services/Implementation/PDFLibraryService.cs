@@ -6,16 +6,6 @@ namespace RMuseum.Services.Implementation
 {
     public partial class PDFLibraryService
     {
-        /// <summary>
-        /// عرض تصویر بندانگشتی
-        /// </summary>
-        protected int ThumbnailImageWidth { get { return int.Parse($"{Configuration.GetSection("PictureFileService")["ThumbnailImageWidth"]}"); } }
-
-        /// <summary>
-        /// طول تصویر بندانگشتی
-        /// </summary>
-        protected int ThumbnailImageMaxHeight { get { return int.Parse($"{Configuration.GetSection("PictureFileService")["ThumbnailMaxHeight"]}"); } }
-
 
         /// <summary>
         /// Database Context
