@@ -154,7 +154,7 @@ namespace RMuseum.Services.Implementation
                                         {
                                             job.EndTime = DateTime.Now;
                                             job.Status = ImportJobStatus.Failed;
-                                            job.Exception = $"pdfStorageResult.ExceptionString): {pdfStorageResult.ExceptionString}";
+                                            job.Exception = $"pdfStorageResult.ExceptionString: {pdfStorageResult.ExceptionString}";
 
                                             job.EndTime = DateTime.Now;
                                             context.Update(job);
@@ -168,6 +168,14 @@ namespace RMuseum.Services.Implementation
 
                                     await context.PDFBooks.AddAsync(pdfBook);
                                     await context.SaveChangesAsync();
+
+                                    var book = await context.Books.Where(b => b.Id == bookId).SingleAsync();
+                                    if(book.CoverImageId == null)
+                                    {
+                                        book.CoverImage = pdfBook.CoverImage.DuplicateExcludingId(pdfBook.CoverImage);
+                                        context.Update(book);
+                                        await context.SaveChangesAsync();
+                                    }
 
                                     var resFTPUpload = await _UploadPDFBookToExternalServer(pdfBook, context, skipUpload);
                                     if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
