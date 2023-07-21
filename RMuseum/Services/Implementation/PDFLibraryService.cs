@@ -139,16 +139,34 @@ namespace RMuseum.Services.Implementation
 
                                     if (pages.Count == 0)
                                     {
-                                        using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
+                                        job.EndTime = DateTime.Now;
+                                        job.Status = ImportJobStatus.Failed;
+                                        job.Exception = "Pages.Count == 0";
+                                        context.Update(job);
+                                        await context.SaveChangesAsync();
+                                        return;
+                                    }
+
+                                    string pdfFilePath = Path.Combine(Path.Combine(_imageFileService.ImageStoragePath, pdfBook.StorageFolderName), pdfBook.OriginalFileName);
+
+                                    using(FileStream fs = new FileStream(pdfFilePath, FileMode.Open))
+                                    {
+                                        var pdfStorageResult =  await _imageFileService.Add(null, fs, pdfBook.OriginalFileName, pdfBook.StorageFolderName, false);
+                                        if(!string.IsNullOrEmpty(pdfStorageResult.ExceptionString))
                                         {
                                             job.EndTime = DateTime.Now;
                                             job.Status = ImportJobStatus.Failed;
-                                            job.Exception = "Pages.Count == 0";
-                                            importJobUpdaterDb.Update(job);
-                                            await importJobUpdaterDb.SaveChangesAsync();
+                                            job.Exception = $"pdfStorageResult.ExceptionString): {pdfStorageResult.ExceptionString}";
+
+                                            job.EndTime = DateTime.Now;
+                                            context.Update(job);
+                                            await context.SaveChangesAsync();
+                                            return;
                                         }
-                                        return;
+                                        pdfStorageResult.Result.ContentType = "application/pdf";
+                                        pdfBook.PDFFile = pdfStorageResult.Result;
                                     }
+
 
                                     await context.PDFBooks.AddAsync(pdfBook);
                                     await context.SaveChangesAsync();
@@ -291,19 +309,7 @@ namespace RMuseum.Services.Implementation
 
                         if (page.PageNumber == 1)
                         {
-                            RImage copy = new RImage()
-                            {
-                                OriginalFileName = picture.Result.OriginalFileName,
-                                ContentType = picture.Result.ContentType,
-                                DataTime = picture.Result.DataTime,
-                                FileSizeInBytes = picture.Result.FileSizeInBytes,
-                                FolderName = picture.Result.FolderName,
-                                ImageHeight = picture.Result.ImageHeight,
-                                ImageWidth = picture.Result.ImageWidth,
-                                LastModified = picture.Result.LastModified,
-                                StoredFileName = picture.Result.StoredFileName,
-                            };
-                            pdfBook.CoverImage = copy;
+                            pdfBook.CoverImage = picture.Result.DuplicateExcludingId(picture.Result);
                         }
                     }
                 }
@@ -346,17 +352,28 @@ namespace RMuseum.Services.Implementation
                         ftpClient.Config.RetryAttempts = 3;
                     }
 
-
-
+                    var localPDFFilePath = _imageFileService.GetImagePath(book.PDFFile).Result;
+                    var remotePDFFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{book.StorageFolderName}/{Path.GetFileName(localPDFFilePath)}";
 
                     if (!skipUpload)
                     {
-                        var localFilePath = _imageFileService.GetImagePath(book.CoverImage).Result;
-                        await jobProgressServiceEF.UpdateJob(job.Id, 0, localFilePath);
-
-                        var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{book.CoverImage.FolderName}/{Path.GetFileName(localFilePath)}";
-                        await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+                        await jobProgressServiceEF.UpdateJob(job.Id, 0, localPDFFilePath);
+                        await ftpClient.UploadFile(localPDFFilePath, remotePDFFilePath, createRemoteDir: true);
                     }
+
+                    var localCoverImageFilePath = _imageFileService.GetImagePath(book.CoverImage).Result;
+                    var remoteCoverImageFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{book.StorageFolderName}/{Path.GetFileName(localCoverImageFilePath)}";
+
+                    if (!skipUpload)
+                    {
+                        await jobProgressServiceEF.UpdateJob(job.Id, 0, localCoverImageFilePath);
+                        await ftpClient.UploadFile(localCoverImageFilePath, remoteCoverImageFilePath, createRemoteDir: true);
+                    }
+
+                    book.ExternalPDFFileUrl = remotePDFFilePath;
+                    book.ExtenalCoverImageUrl = remoteCoverImageFilePath;
+
+                    context.Update(book);
 
 
                     foreach (var item in book.Pages)
@@ -377,7 +394,6 @@ namespace RMuseum.Services.Implementation
                         await ftpClient.Disconnect();
                     }
                     await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
-                    await context.SaveChangesAsync();//redundant
                 }
 
                 return new RServiceResult<bool>(true);

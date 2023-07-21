@@ -99,7 +99,7 @@ namespace RMuseum.Services.Implementation
                                         {
                                             using (Stream imageStream = await imageResult.Content.ReadAsStreamAsync())
                                             {
-                                                RServiceResult<RImage> image = await imageFileService.Add(null, imageStream, $"{beepId}.jpg", Path.Combine(configuration.GetSection("PictureFileService")["StoragePath"], "SingerImages"));
+                                                RServiceResult<RImage> image = await imageFileService.Add(null, imageStream, $"{beepId}.jpg", Path.Combine(configuration.GetSection("PictureFileService")["StoragePath"], "SingerImages"), true);
                                                 if (string.IsNullOrEmpty(image.ExceptionString))
                                                 {
                                                     image = await imageFileService.Store(image.Result);
