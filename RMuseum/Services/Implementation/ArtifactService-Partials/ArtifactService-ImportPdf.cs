@@ -105,10 +105,6 @@ namespace RMuseum.Services.Implementation
                                     tag = await TagHandler.PrepareAttribute(context, "Type", "Manuscript", 1);
                                     meta.Add(tag);
 
-
-
-                                    meta.Add(tag);
-
                                     using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                     {
                                         job.StartTime = DateTime.Now;
