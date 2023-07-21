@@ -189,5 +189,15 @@ namespace RMuseum.Models.PDFLibrary
         /// file check sum
         /// </summary>
         public string FileMD5CheckSum { get; set; }
+
+        /// <summary>
+        /// original file name
+        /// </summary>
+        public string OriginalFileName { get; set; }
+
+        /// <summary>
+        /// storage folder name
+        /// </summary>
+        public string StorageFolderName { get; set; }
     }
 }
