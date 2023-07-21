@@ -11945,6 +11945,21 @@
             Attributes
             </summary>
         </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.FileMD5CheckSum">
+            <summary>
+            file check sum
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.OriginalFileName">
+            <summary>
+            original file name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.StorageFolderName">
+            <summary>
+            storage folder name
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.PDFLibrary.PDFPage">
             <summary>
             PDF Page
@@ -17179,6 +17194,45 @@
             </summary>
             <param name="configuration"></param>
             <param name="context"></param>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.PDFLibraryService.ThumbnailImageWidth">
+            <summary>
+            عرض تصویر بندانگشتی
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.PDFLibraryService.ThumbnailImageMaxHeight">
+            <summary>
+            طول تصویر بندانگشتی
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.PDFLibraryService._context">
+            <summary>
+            Database Context
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.PDFLibraryService._backgroundTaskQueue">
+            <summary>
+            Background Task Queue Instance
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.PDFLibraryService._imageFileService">
+            <summary>
+            image file service
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.PDFLibraryService.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.#ctor(RMuseum.DbContext.RMuseumDbContext,RSecurityBackend.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+            <param name="backgroundTaskQueue"></param>
+            <param name="imageFileService"></param>
+            <param name="configuration"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.PictureFileService">
             <summary>
