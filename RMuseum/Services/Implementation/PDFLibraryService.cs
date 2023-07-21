@@ -41,6 +41,17 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<bool>(false, $"Job is already scheduled or running for importing pdf file {filePath} (duplicated checksum: {fileChecksum})");
                 }
 
+                if (!string.IsNullOrEmpty(srcUrl))
+                {
+                    if (
+                        (await _context.PDFBooks.Where(a => a.OriginalSourceUrl == srcUrl).SingleOrDefaultAsync())
+                        !=
+                        null
+                        )
+                        {
+                            return new RServiceResult<bool>(false, $"duplicated srcUrl '{srcUrl}'");
+                        }
+                }
 
 
                 if (
@@ -96,6 +107,7 @@ namespace RMuseum.Services.Implementation
                                         DateTime = DateTime.Now,
                                         LastModified = DateTime.Now,
                                         FileMD5CheckSum = fileChecksum,
+                                        OriginalSourceUrl = srcUrl,
                                         OriginalFileName = Path.GetFileName(filePath),
                                         StorageFolderName = $"pdfbook-{folderNumber}",
                                     };
@@ -234,12 +246,12 @@ namespace RMuseum.Services.Implementation
 
                 string thumbnailPath = Path.Combine(Path.Combine(_imageFileService.ImageStoragePath, pdfBook.StorageFolderName), thumbnailImageName);
 
-                if(File.Exists(thumbnailPath))
+                if (File.Exists(thumbnailPath))
                 {
                     File.Delete(thumbnailPath);
                 }
 
-                using (System.Drawing.Image img = System.Drawing.Image.FromFile(fileName))
+                using (Image img = Image.FromFile(fileName))
                 {
                     int imageWidth = img.Width;
                     int imageHeight = img.Height;
@@ -255,7 +267,7 @@ namespace RMuseum.Services.Implementation
 
                     //روی خود img تأثیر می گذارد
                     // به احتمال قوی داریم روی تصویر resize کار می‌کنیم
-                    System.Drawing.Image thumbnail = new Bitmap(thumbnailImageWidth, thumbnailImageHeight);
+                    Image thumbnail = new Bitmap(thumbnailImageWidth, thumbnailImageHeight);
                     using (Graphics gThumbnail = Graphics.FromImage(thumbnail))
                     {
                         gThumbnail.DrawImage(img, 0, 0, imageWidth, imageHeight);
@@ -276,7 +288,19 @@ namespace RMuseum.Services.Implementation
 
                         if (page.PageNumber == 1)
                         {
-                            pdfBook.CoverImage = picture.Result;
+                            RImage copy = new RImage()
+                            {
+                                OriginalFileName = picture.Result.OriginalFileName,
+                                ContentType = picture.Result.ContentType,
+                                DataTime = picture.Result.DataTime,
+                                FileSizeInBytes = picture.Result.FileSizeInBytes,
+                                FolderName = picture.Result.FolderName,
+                                ImageHeight = picture.Result.ImageHeight,
+                                ImageWidth = picture.Result.ImageWidth,
+                                LastModified = picture.Result.LastModified,
+                                StoredFileName = picture.Result.StoredFileName,
+                            };
+                            pdfBook.CoverImage = copy;
                         }
                     }
                 }
@@ -320,8 +344,8 @@ namespace RMuseum.Services.Implementation
                     }
 
 
-                    
-                   
+
+
                     if (!skipUpload)
                     {
                         var localFilePath = _imageFileService.GetImagePath(book.CoverImage).Result;
