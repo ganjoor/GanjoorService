@@ -23,7 +23,7 @@ namespace RMuseum.Services.Implementation
 {
     public class PDFLibraryService
     {
-        private async Task<RServiceResult<bool>> StartImportingLocalPDFFile(string filePath, string srcUrl, bool skipUpload)
+        private async Task<RServiceResult<bool>> StartImportingLocalPDFFile(int bookId, int? volumeId, int volumeOrder, string filePath, string srcUrl, bool skipUpload)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace RMuseum.Services.Implementation
                             {
                                 using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                 {
-
+                                    
                                     var folderNumber = await context.PDFBooks.CountAsync();
 
                                     while (Directory.Exists(Path.Combine(_imageFileService.ImageStoragePath, $"pdfbook-{folderNumber}")))
@@ -110,6 +110,9 @@ namespace RMuseum.Services.Implementation
                                         OriginalSourceUrl = srcUrl,
                                         OriginalFileName = Path.GetFileName(filePath),
                                         StorageFolderName = $"pdfbook-{folderNumber}",
+                                        BookId = bookId,
+                                        VolumeOrder = volumeOrder,
+                                        MultiVolumePDFCollectionId = volumeId,
                                     };
 
 
