@@ -29,5 +29,11 @@
         /// Description
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// volume count
+        /// </summary>
+        public int VolumeCount { get; set; }
+
     }
 }
