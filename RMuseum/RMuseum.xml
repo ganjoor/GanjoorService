@@ -17407,11 +17407,54 @@
             طول تصویر بندانگشتی
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetPDFBookByIdAsync(System.Int32)">
+            <summary>
+            get pdf book by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartImportingLocalPDF(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
             <summary>
             start importing local pdf file
             </summary>
             <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddAuthorAsync(RMuseum.Models.PDFLibrary.Author)">
+            <summary>
+            add author
+            </summary>
+            <param name="author"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetAuthorByIdAsync(System.Int32)">
+            <summary>
+            get author by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetAuthorsAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            get authors
+            </summary>
+            <param name="paging"></param>
+            <param name="authorName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">
+            <summary>
+            add book
+            </summary>
+            <param name="book"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
+            <summary>
+            add multi volume pdf collection
+            </summary>
+            <param name="multiVolumePDFCollection"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.PDFLibraryService._context">
