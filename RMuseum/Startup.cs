@@ -303,6 +303,9 @@ namespace RMuseum
             //faq service
             services.AddTransient<IFAQService, FAQService>();
 
+            //PDF library service
+            services.AddTransient<IPDFLibraryService, PDFLibraryService>();
+
             //upload limit for IIS
             services.Configure<IISServerOptions>(options =>
             {
