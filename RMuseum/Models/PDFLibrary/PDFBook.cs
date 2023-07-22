@@ -166,7 +166,7 @@ namespace RMuseum.Models.PDFLibrary
         public string OriginalFileUrl { get; set; }
 
         /// <summary>
-        /// specific authors for this edition AKA. translators
+        /// contributers
         /// </summary>
         public ICollection<AuthorRole> Contributers { get; set; }
 

@@ -11927,7 +11927,7 @@
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Contributers">
             <summary>
-            specific authors for this edition AKA. translators
+            contributers
             </summary>
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Pages">
@@ -17395,6 +17395,13 @@
             طول تصویر بندانگشتی
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartImportingLocalPDF(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
+            <summary>
+            start importing local pdf file
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.PDFLibraryService._context">
             <summary>
             Database Context
@@ -18197,6 +18204,13 @@
             <summary>
             PDF Library Services
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.StartImportingLocalPDF(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
+            <summary>
+            start importing local pdf file
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">
             <summary>
