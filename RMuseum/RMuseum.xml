@@ -11852,7 +11852,7 @@
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.PublishingNumber">
             <summary>
-            publishing number
+            publishing number  (تیراژ)
             </summary>
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.ClaimedPageCount">
@@ -12008,6 +12008,191 @@
         <member name="P:RMuseum.Models.PDFLibrary.PDFPage.Tags">
             <summary>
             Attributes
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel">
+            <summary>
+            new PDFBook view model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.LocalImportingPDFFilePath">
+            <summary>
+            PDF File Path
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.SkipUpload">
+            <summary>
+            skip uploading to external FTP Site
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.BookId">
+            <summary>
+            book id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.Title">
+            <summary>
+            Title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.SubTitle">
+            <summary>
+            secondary or complementary title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.AuthorsLine">
+            <summary>
+            authors (descriptive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.ISBN">
+            <summary>
+            ISBN
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.Language">
+            <summary>
+            language
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.IsTranslation">
+            <summary>
+            is translation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.TranslatorsLine">
+            <summary>
+            translators (descriptive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.TitleInOriginalLanguage">
+            <summary>
+            title in original language
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.PublisherLine">
+            <summary>
+            publisher (descriptive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.PublishingDate">
+            <summary>
+            publishing date (descriptive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.PublishingLocation">
+            <summary>
+            publishing location (descriptive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.PublishingNumber">
+            <summary>
+            publishing number (تیراژ)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.ClaimedPageCount">
+            <summary>
+            claimed page count
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.MultiVolumePDFCollectionId">
+            <summary>
+            MultiVolumePDFCollection Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.VolumeOrder">
+            <summary>
+            Volume Order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.OriginalSourceName">
+            <summary>
+            original source name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.OriginalSourceUrl">
+            <summary>
+            original source url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.OriginalFileUrl">
+            <summary>
+            original file url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.WriterId">
+            <summary>
+            writer id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.Writer2Id">
+            <summary>
+            writer 2 id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.Writer3Id">
+            <summary>
+            writer 3 id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.Writer4Id">
+            <summary>
+            writer 4 id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.TranslatorId">
+            <summary>
+            translator id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.Translator2Id">
+            <summary>
+            translator 2 id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.Translator3Id">
+            <summary>
+            translator 3 id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.Translator4Id">
+            <summary>
+            translator 4 id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.CollectorId">
+            <summary>
+            collector id (مصحح)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.Collector2Id">
+            <summary>
+            collector 2 id (مصحح)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.OtherContributerRole">
+            <summary>
+            Other contributing role
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.OtherContributerId">
+            <summary>
+            other contributing role
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.OtherContributer2Role">
+            <summary>
+            Other contributing role 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.OtherContributer2Id">
+            <summary>
+            other contributing role 2
             </summary>
         </member>
         <member name="T:RMuseum.Models.UploadSession.UploadSession">
@@ -17195,6 +17380,11 @@
             <param name="configuration"></param>
             <param name="context"></param>
         </member>
+        <member name="T:RMuseum.Services.Implementation.PDFLibraryService">
+            <summary>
+            PDF Library Services
+            </summary>
+        </member>
         <member name="P:RMuseum.Services.Implementation.PDFLibraryService.ThumbnailImageWidth">
             <summary>
             عرض تصویر بندانگشتی
@@ -18002,6 +18192,11 @@
             </summary>
             <param name="id"></param>
             <returns></returns>
+        </member>
+        <member name="T:RMuseum.Services.IPDFLibraryService">
+            <summary>
+            PDF Library Services
+            </summary>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">
             <summary>

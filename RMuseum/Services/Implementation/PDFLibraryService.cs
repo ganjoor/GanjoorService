@@ -4,7 +4,10 @@ using RSecurityBackend.Services;
 
 namespace RMuseum.Services.Implementation
 {
-    public partial class PDFLibraryService
+    /// <summary>
+    /// PDF Library Services
+    /// </summary>
+    public partial class PDFLibraryService : IPDFLibraryService
     {
 
         /// <summary>

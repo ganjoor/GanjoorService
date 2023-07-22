@@ -1,34 +1,24 @@
-﻿using RMuseum.Models.Artifact;
-using RSecurityBackend.Models.Image;
-using System;
-using System.Collections.Generic;
-
-namespace RMuseum.Models.PDFLibrary
+﻿namespace RMuseum.Models.PDFLibrary.ViewModels
 {
     /// <summary>
-    /// PDF Book
+    /// new PDFBook view model
     /// </summary>
-    public class PDFBook
+    public class NewPDFBookViewModel
     {
         /// <summary>
-        /// Id
+        /// PDF File Path
         /// </summary>
-        public int Id { get; set; }
+        public string LocalImportingPDFFilePath { get; set; }
+
+        /// <summary>
+        /// skip uploading to external FTP Site
+        /// </summary>
+        public bool SkipUpload { get; set; }
 
         /// <summary>
         /// book id
         /// </summary>
         public int BookId { get; set; }
-
-        /// <summary>
-        /// book
-        /// </summary>
-        public Book Book { get; set; }
-
-        /// <summary>
-        /// Publish Status
-        /// </summary>
-        public PublishStatus Status { get; set; }
 
         /// <summary>
         /// Title
@@ -91,7 +81,7 @@ namespace RMuseum.Models.PDFLibrary
         public string PublishingLocation { get; set; }
 
         /// <summary>
-        /// publishing number  (تیراژ)
+        /// publishing number (تیراژ)
         /// </summary>
         public int? PublishingNumber { get; set; }
 
@@ -106,49 +96,9 @@ namespace RMuseum.Models.PDFLibrary
         public int? MultiVolumePDFCollectionId { get; set; }
 
         /// <summary>
-        /// MultiVolumePDFCollection
-        /// </summary>
-        public virtual MultiVolumePDFCollection MultiVolumePDFCollection { get; set; }
-
-        /// <summary>
         /// Volume Order
         /// </summary>
         public int VolumeOrder { get; set; }
-
-        /// <summary>
-        /// Date/Time
-        /// </summary>
-        public DateTime DateTime { get; set; }
-
-        /// <summary>
-        /// Last Modified for caching purposes
-        /// </summary>
-        public DateTime LastModified { get; set; }
-
-        /// <summary>
-        /// PDF File
-        /// </summary>
-        public RImage PDFFile { get; set; }
-
-        /// <summary>
-        /// external url for PDF File
-        /// </summary>
-        public string ExternalPDFFileUrl { get; set; }
-
-        /// <summary>
-        /// Cover Image
-        /// </summary>
-        public virtual RImage CoverImage { get; set; }
-
-        /// <summary>
-        /// Cover Image Id
-        /// </summary>
-        public Guid? CoverImageId { get; set; }
-
-        /// <summary>
-        /// external cover image url
-        /// </summary>
-        public string ExtenalCoverImageUrl { get; set; }
 
         /// <summary>
         /// original source name
@@ -166,38 +116,74 @@ namespace RMuseum.Models.PDFLibrary
         public string OriginalFileUrl { get; set; }
 
         /// <summary>
-        /// specific authors for this edition AKA. translators
+        /// writer id
         /// </summary>
-        public ICollection<AuthorRole> Contributers { get; set; }
+        public int? WriterId { get; set; }
 
         /// <summary>
-        /// Pages
+        /// writer 2 id
         /// </summary>
-        public ICollection<PDFPage> Pages { get; set; }
+        public int? Writer2Id { get; set; }
 
         /// <summary>
-        /// page count
+        /// writer 3 id
         /// </summary>
-        public int PageCount { get; set; }
+        public int? Writer3Id { get; set; }
 
         /// <summary>
-        /// Attributes
+        /// writer 4 id
         /// </summary>
-        public ICollection<RTagValue> Tags { get; set; }
+        public int? Writer4Id { get; set; }
 
         /// <summary>
-        /// file check sum
+        /// translator id
         /// </summary>
-        public string FileMD5CheckSum { get; set; }
+        public int? TranslatorId { get; set; }
 
         /// <summary>
-        /// original file name
+        /// translator 2 id
         /// </summary>
-        public string OriginalFileName { get; set; }
+        public int? Translator2Id { get; set; }
 
         /// <summary>
-        /// storage folder name
+        /// translator 3 id
         /// </summary>
-        public string StorageFolderName { get; set; }
+        public int? Translator3Id { get; set; }
+
+        /// <summary>
+        /// translator 4 id
+        /// </summary>
+        public int? Translator4Id { get; set; }
+
+        /// <summary>
+        /// collector id (مصحح)
+        /// </summary>
+        public int? CollectorId { get; set; }
+
+        /// <summary>
+        /// collector 2 id (مصحح)
+        /// </summary>
+        public int? Collector2Id { get; set; }
+
+        /// <summary>
+        /// Other contributing role
+        /// </summary>
+        public string OtherContributerRole { get; set; }
+
+        /// <summary>
+        /// other contributing role
+        /// </summary>
+        public int? OtherContributerId { get; set; }
+
+        /// <summary>
+        /// Other contributing role 2
+        /// </summary>
+        public string OtherContributer2Role { get; set; }
+
+        /// <summary>
+        /// other contributing role 2
+        /// </summary>
+        public int? OtherContributer2Id { get; set; }
+
     }
 }
