@@ -29,7 +29,7 @@ namespace RMuseum.Services.Implementation
                         {
                             using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                             {
-                                var pdfRes = await ImportLocalPDFFile(context, model.BookId, model.MultiVolumePDFCollectionId, model.VolumeOrder, model.LocalImportingPDFFilePath, model.OriginalSourceUrl, model.SkipUpload);
+                                var pdfRes = await ImportLocalPDFFileAsync(context, model.BookId, model.MultiVolumePDFCollectionId, model.VolumeOrder, model.LocalImportingPDFFilePath, model.OriginalSourceUrl, model.SkipUpload);
                                 if (pdfRes.Result != null)
                                 {
                                     var pdfBook = pdfRes.Result;
