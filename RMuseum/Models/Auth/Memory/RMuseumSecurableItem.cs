@@ -206,6 +206,7 @@ namespace RMuseum.Models.Auth.Memory
                         Operations = new SecurableItemOperation[]
                         {
                             new SecurableItemOperation(ModifyOperationShortName, "ویرایش محتوا", false),
+                            new SecurableItemOperation(ViewDraftOperationShortName, "مشاهدهٔ پیش‌نویس‌ها", false),
                         }
                     },
 

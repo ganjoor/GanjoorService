@@ -2343,16 +2343,64 @@
             <param name="numberingService"></param>
             <param name="configuration"></param>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.StartImportingLocalPDF(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
+            <summary>
+            start importing a local pdf file
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetUserVisible(System.Int32)">
+            <summary>
+            secure get a pdf book
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetPDFBookByIdAsync(System.Int32)">
+            <summary>
+            get published PDF Book by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">
+            <summary>
+            add a new book
+            </summary>
+            <param name="book"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.AddAuthorAsync(RMuseum.Models.PDFLibrary.Author)">
+            <summary>
+            add a new author
+            </summary>
+            <param name="author"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
+            <summary>
+            add a new mukti volume pdf collection
+            </summary>
+            <param name="volumes"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.PDFLibraryController._pdfService">
             <summary>
             PDF Service
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.#ctor(RMuseum.Services.IPDFLibraryService)">
+        <member name="F:RMuseum.Controllers.PDFLibraryController._userPermissionChecker">
+            <summary>
+            IUserPermissionChecker instance
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.#ctor(RMuseum.Services.IPDFLibraryService,RSecurityBackend.Services.IUserPermissionChecker)">
             <summary>
             constructor
             </summary>
             <param name="pdfService"></param>
+            <param name="userPermissionChecker"></param>
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetPublished(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Int32,System.Int32)">
             <summary>

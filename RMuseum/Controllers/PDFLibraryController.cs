@@ -1,12 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RMuseum.Models.Artifact;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.PDFLibrary.ViewModels;
 using RMuseum.Services;
 using RSecurityBackend.Models.Auth.Memory;
+using RSecurityBackend.Models.Generic;
+using System.Linq;
+using System;
 using System.Net;
 using System.Threading.Tasks;
+using RSecurityBackend.Services;
 
 namespace RMuseum.Controllers
 {
@@ -29,6 +35,129 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok();
+        }
+
+        /// <summary>
+        /// secure get a pdf book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("secure/{id}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PDFBook))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetUserVisible(int id)
+        {
+            RServiceResult<PublishStatus[]> v = await _GetUserVisibleArtifactStatusSet
+               (
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value),
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value)
+               );
+            if (!string.IsNullOrEmpty(v.ExceptionString))
+                return BadRequest(v.ExceptionString);
+            PublishStatus[] visibleItems = v.Result;
+            RServiceResult<PDFBook> bookRes = null;
+            if (visibleItems.Length == 1 && visibleItems[0] == PublishStatus.Published)
+            {
+                bookRes = await _pdfService.GetPDFBookByIdAsync(id, new PublishStatus[] { PublishStatus.Published });
+                if (!string.IsNullOrEmpty(bookRes.ExceptionString))
+                {
+                    return BadRequest(bookRes.ExceptionString);
+                }
+                if (bookRes.Result == null)
+                    return NotFound();
+            }
+            if (bookRes == null)
+            {
+                bookRes = await _pdfService.GetPDFBookByIdAsync(id, visibleItems);
+            }
+
+            if (!string.IsNullOrEmpty(bookRes.ExceptionString))
+            {
+                return BadRequest(bookRes.ExceptionString);
+            }
+            if (bookRes.Result == null)
+                return NotFound();
+
+            Response.GetTypedHeaders().LastModified = bookRes.Result.LastModified;
+
+            var requestHeaders = Request.GetTypedHeaders();
+            if (requestHeaders.IfModifiedSince.HasValue &&
+                requestHeaders.IfModifiedSince.Value >= bookRes.Result.LastModified)
+            {
+                return StatusCode(StatusCodes.Status304NotModified);
+            }
+
+
+            return Ok(bookRes.Result);
+        }
+
+        private async Task<RServiceResult<PublishStatus[]>> _GetUserVisibleArtifactStatusSet(Guid loggedOnUserId, Guid sessionId)
+        {
+            RServiceResult<bool>
+                canView =
+                await _userPermissionChecker.Check
+                    (
+                        loggedOnUserId,
+                        sessionId,
+                        RMuseumSecurableItem.PDFLibraryEntityShortName,
+                        RMuseumSecurableItem.ViewDraftOperationShortName
+                        );
+            if (!string.IsNullOrEmpty(canView.ExceptionString))
+                return new RServiceResult<PublishStatus[]>(null, canView.ExceptionString);
+
+            PublishStatus[] visibleItems =
+                canView.Result
+                ?
+                new PublishStatus[]
+                {
+                    PublishStatus.Published,
+                    PublishStatus.Restricted,
+                    PublishStatus.Draft,
+                    PublishStatus.Awaiting
+                }
+                :
+                 new PublishStatus[]
+                {
+                    PublishStatus.Published
+                };
+
+            return new RServiceResult<PublishStatus[]>(visibleItems);
+        }
+
+        /// <summary>
+        /// get published PDF Book by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PDFBook))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetPDFBookByIdAsync(int id)
+        {
+            var bookRes = await _pdfService.GetPDFBookByIdAsync(id, new PublishStatus[] { PublishStatus.Published });
+
+            if (!string.IsNullOrEmpty(bookRes.ExceptionString))
+            {
+                return BadRequest(bookRes.ExceptionString);
+            }
+            if (bookRes.Result == null)
+                return NotFound();
+
+            Response.GetTypedHeaders().LastModified = bookRes.Result.LastModified;
+
+            var requestHeaders = Request.GetTypedHeaders();
+            if (requestHeaders.IfModifiedSince.HasValue &&
+                requestHeaders.IfModifiedSince.Value >= bookRes.Result.LastModified)
+            {
+                return StatusCode(StatusCodes.Status304NotModified);
+            }
+
+
+            return Ok(bookRes.Result);
         }
 
         /// <summary>
@@ -90,12 +219,19 @@ namespace RMuseum.Controllers
         protected readonly IPDFLibraryService _pdfService;
 
         /// <summary>
+        /// IUserPermissionChecker instance
+        /// </summary>
+        protected IUserPermissionChecker _userPermissionChecker;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="pdfService"></param>
-        public PDFLibraryController(IPDFLibraryService pdfService)
+        /// <param name="userPermissionChecker"></param>
+        public PDFLibraryController(IPDFLibraryService pdfService, IUserPermissionChecker userPermissionChecker)
         {
             _pdfService = pdfService;
+            _userPermissionChecker = userPermissionChecker;
         }
     }
 }
