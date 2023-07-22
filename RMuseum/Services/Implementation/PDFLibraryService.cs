@@ -1,12 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
+using RMuseum.Models.Artifact;
 using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.PDFLibrary.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services;
+using RSecurityBackend.Services.Implementation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
 {
@@ -49,7 +53,7 @@ namespace RMuseum.Services.Implementation
                                     pdfBook.OriginalSourceName = model.OriginalSourceName;
                                     pdfBook.OriginalFileUrl = model.OriginalFileUrl;
                                     List<AuthorRole> roles = new List<AuthorRole>();
-                                    if(model.WriterId != null)
+                                    if (model.WriterId != null)
                                     {
                                         roles.Add(new AuthorRole()
                                         {
@@ -81,7 +85,7 @@ namespace RMuseum.Services.Implementation
                                             Role = "نویسنده",
                                         });
                                     }
-                                    if(model.TranslatorId != null)
+                                    if (model.TranslatorId != null)
                                     {
                                         roles.Add(new AuthorRole()
                                         {
@@ -129,7 +133,7 @@ namespace RMuseum.Services.Implementation
                                             Role = "مصحح",
                                         });
                                     }
-                                    if(roles.Count > 0)
+                                    if (roles.Count > 0)
                                     {
                                         pdfBook.Contributers = roles;
                                     }
@@ -143,6 +147,61 @@ namespace RMuseum.Services.Implementation
 
 
             return new RServiceResult<bool>(true);
+        }
+
+        /// <summary>
+        /// add author
+        /// </summary>
+        /// <param name="author"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<Author>> AddAuthorAsync(Author author)
+        {
+            try
+            {
+                _context.Add(author);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<Author>(author);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<Author>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get authors
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="authorName"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, Author[] Authors)>> GetAuthorsAsync(PagingParameterModel paging, string authorName)
+        {
+            var source =
+                 _context.Authors
+                 .Where(a => string.IsNullOrEmpty(authorName) || (authorName.Contains(a.Name) || (!string.IsNullOrEmpty(a.NameInOriginalLanguage) && authorName.Contains(a.NameInOriginalLanguage)) ))
+                .AsQueryable();
+            (PaginationMetadata PagingMeta, Author[] Items) paginatedResult =
+                await QueryablePaginator<Author>.Paginate(source, paging);
+            return new RServiceResult<(PaginationMetadata PagingMeta, Author[] Authors)>(paginatedResult);
+        }
+
+        /// <summary>
+        /// add book
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<Book>> AddBookAsync(Book book)
+        {
+            try
+            {
+                _context.Add(book);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<Book>(book);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<Book>(null, exp.ToString());
+            }
         }
 
         /// <summary>
