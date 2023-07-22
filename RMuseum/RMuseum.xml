@@ -17407,11 +17407,12 @@
             طول تصویر بندانگشتی
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetPDFBookByIdAsync(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetPDFBookByIdAsync(System.Int32,RMuseum.Models.Artifact.PublishStatus[])">
             <summary>
             get pdf book by id
             </summary>
             <param name="id"></param>
+            <param name="statusArray"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartImportingLocalPDF(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
@@ -18259,6 +18260,50 @@
             <summary>
             PDF Library Services
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetPDFBookByIdAsync(System.Int32,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            get pdf book by id
+            </summary>
+            <param name="id"></param>
+            <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.AddAuthorAsync(RMuseum.Models.PDFLibrary.Author)">
+            <summary>
+            add author
+            </summary>
+            <param name="author"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetAuthorByIdAsync(System.Int32)">
+            <summary>
+            get author by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetAuthorsAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            get authors
+            </summary>
+            <param name="paging"></param>
+            <param name="authorName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">
+            <summary>
+            add book
+            </summary>
+            <param name="book"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
+            <summary>
+            add multi volume pdf collection
+            </summary>
+            <param name="multiVolumePDFCollection"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.StartImportingLocalPDF(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
             <summary>

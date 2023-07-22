@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
+using RMuseum.Models.Artifact;
 using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.PDFLibrary.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -22,8 +23,9 @@ namespace RMuseum.Services.Implementation
         /// get pdf book by id
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="statusArray"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PDFBook>> GetPDFBookByIdAsync(int id)
+        public async Task<RServiceResult<PDFBook>> GetPDFBookByIdAsync(int id, PublishStatus[] statusArray)
         {
             try
             {
@@ -33,7 +35,7 @@ namespace RMuseum.Services.Implementation
                             .Include(b => b.Contributers)
                             .Include(b => b.Tags)
                             .Include(b => b.Pages)
-                            .Where(b => b.Id == id)
+                            .Where(b => statusArray.Contains(b.Status) &&b.Id == id)
                             .SingleOrDefaultAsync();
                 return new RServiceResult<PDFBook>(pdfBook);
             
@@ -169,6 +171,7 @@ namespace RMuseum.Services.Implementation
                     );
             return new RServiceResult<bool>(true);
         }
+
         /// <summary>
         /// add author
         /// </summary>
@@ -187,6 +190,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<Author>(null, exp.ToString());
             }
         }
+
         /// <summary>
         /// get author by id
         /// </summary>
@@ -203,6 +207,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<Author>(null, exp.ToString());
             }
         }
+
         /// <summary>
         /// get authors
         /// </summary>
@@ -219,6 +224,7 @@ namespace RMuseum.Services.Implementation
                 await QueryablePaginator<Author>.Paginate(source, paging);
             return new RServiceResult<(PaginationMetadata PagingMeta, Author[] Authors)>(paginatedResult);
         }
+
         /// <summary>
         /// add book
         /// </summary>
@@ -237,6 +243,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<Book>(null, exp.ToString());
             }
         }
+
         /// <summary>
         /// add multi volume pdf collection
         /// </summary>
@@ -255,6 +262,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<MultiVolumePDFCollection>(null, exp.ToString());
             }
         }
+
         /// <summary>
         /// Database Context
         /// </summary>
