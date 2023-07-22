@@ -109,6 +109,11 @@ namespace RMuseum.Models.Auth.Memory
         public const string ModeratePoetPhotos = "photos";
 
         /// <summary>
+        /// pdf
+        /// </summary>
+        public const string PDFLibraryEntityShortName = "pdf";
+
+        /// <summary>
         /// list of forms and their permissions
         /// </summary>
         public new static SecurableItem[] Items
@@ -192,6 +197,16 @@ namespace RMuseum.Models.Auth.Memory
                         Operations = new SecurableItemOperation[]
                         {
                             new SecurableItemOperation(ModerateOperationShortName, "مدیریت", false),
+                        }
+                    },
+                    new SecurableItem()
+                    {
+                        ShortName = PDFLibraryEntityShortName,
+                        Description = "نسک‌بان",
+                        Operations = new SecurableItemOperation[]
+                        {
+                            new SecurableItemOperation(ModifyOperationShortName, "ویرایش محتوا", false),
+                            new SecurableItemOperation(ViewDraftOperationShortName, "مشاهدهٔ پیش‌نویس‌ها", false),
                         }
                     },
 

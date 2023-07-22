@@ -20,7 +20,7 @@ namespace RMuseum.Services.Implementation
 {
     public partial class PDFLibraryService
     {
-        private async Task<RServiceResult<PDFBook>> ImportLocalPDFFile(RMuseumDbContext context, int bookId, int? volumeId, int volumeOrder, string filePath, string srcUrl, bool skipUpload)
+        private async Task<RServiceResult<PDFBook>> ImportLocalPDFFileAsync(RMuseumDbContext context, int bookId, int? volumeId, int volumeOrder, string filePath, string srcUrl, bool skipUpload)
         {
             string fileChecksum = PoemAudio.ComputeCheckSum(filePath);
             if (

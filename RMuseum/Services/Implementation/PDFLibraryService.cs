@@ -1,12 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
+using RMuseum.Models.Artifact;
 using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.PDFLibrary.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services;
+using RSecurityBackend.Services.Implementation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
 {
@@ -15,6 +19,32 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class PDFLibraryService : IPDFLibraryService
     {
+        /// <summary>
+        /// get pdf book by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="statusArray"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PDFBook>> GetPDFBookByIdAsync(int id, PublishStatus[] statusArray)
+        {
+            try
+            {
+                var pdfBook = await _context.PDFBooks.AsNoTracking()
+                            .Include(b => b.Book)
+                            .Include(b => b.MultiVolumePDFCollection)
+                            .Include(b => b.Contributers)
+                            .Include(b => b.Tags)
+                            .Include(b => b.Pages)
+                            .Where(b => statusArray.Contains(b.Status) &&b.Id == id)
+                            .SingleOrDefaultAsync();
+                return new RServiceResult<PDFBook>(pdfBook);
+            
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PDFBook>(null, exp.ToString());
+            }
+        }
 
         /// <summary>
         /// start importing local pdf file
@@ -29,7 +59,7 @@ namespace RMuseum.Services.Implementation
                         {
                             using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                             {
-                                var pdfRes = await ImportLocalPDFFile(context, model.BookId, model.MultiVolumePDFCollectionId, model.VolumeOrder, model.LocalImportingPDFFilePath, model.OriginalSourceUrl, model.SkipUpload);
+                                var pdfRes = await ImportLocalPDFFileAsync(context, model.BookId, model.MultiVolumePDFCollectionId, model.VolumeOrder, model.LocalImportingPDFFilePath, model.OriginalSourceUrl, model.SkipUpload);
                                 if (pdfRes.Result != null)
                                 {
                                     var pdfBook = pdfRes.Result;
@@ -49,7 +79,7 @@ namespace RMuseum.Services.Implementation
                                     pdfBook.OriginalSourceName = model.OriginalSourceName;
                                     pdfBook.OriginalFileUrl = model.OriginalFileUrl;
                                     List<AuthorRole> roles = new List<AuthorRole>();
-                                    if(model.WriterId != null)
+                                    if (model.WriterId != null)
                                     {
                                         roles.Add(new AuthorRole()
                                         {
@@ -81,7 +111,7 @@ namespace RMuseum.Services.Implementation
                                             Role = "نویسنده",
                                         });
                                     }
-                                    if(model.TranslatorId != null)
+                                    if (model.TranslatorId != null)
                                     {
                                         roles.Add(new AuthorRole()
                                         {
@@ -129,7 +159,7 @@ namespace RMuseum.Services.Implementation
                                             Role = "مصحح",
                                         });
                                     }
-                                    if(roles.Count > 0)
+                                    if (roles.Count > 0)
                                     {
                                         pdfBook.Contributers = roles;
                                     }
@@ -137,35 +167,118 @@ namespace RMuseum.Services.Implementation
                                     await context.SaveChangesAsync();
                                 }
                             }
-
                         }
                     );
-
-
             return new RServiceResult<bool>(true);
+        }
+
+        /// <summary>
+        /// add author
+        /// </summary>
+        /// <param name="author"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<Author>> AddAuthorAsync(Author author)
+        {
+            try
+            {
+                _context.Add(author);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<Author>(author);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<Author>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get author by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<Author>> GetAuthorByIdAsync(int id)
+        {
+            try
+            {
+                return new RServiceResult<Author>(await _context.Authors.AsNoTracking().Where(a => a.Id == id).SingleOrDefaultAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<Author>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get authors
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="authorName"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, Author[] Authors)>> GetAuthorsAsync(PagingParameterModel paging, string authorName)
+        {
+            var source =
+                 _context.Authors
+                 .Where(a => string.IsNullOrEmpty(authorName) || (authorName.Contains(a.Name) || (!string.IsNullOrEmpty(a.NameInOriginalLanguage) && authorName.Contains(a.NameInOriginalLanguage)) ))
+                .AsQueryable();
+            (PaginationMetadata PagingMeta, Author[] Items) paginatedResult =
+                await QueryablePaginator<Author>.Paginate(source, paging);
+            return new RServiceResult<(PaginationMetadata PagingMeta, Author[] Authors)>(paginatedResult);
+        }
+
+        /// <summary>
+        /// add book
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<Book>> AddBookAsync(Book book)
+        {
+            try
+            {
+                _context.Add(book);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<Book>(book);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<Book>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// add multi volume pdf collection
+        /// </summary>
+        /// <param name="multiVolumePDFCollection"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<MultiVolumePDFCollection>> AddMultiVolumePDFCollection(MultiVolumePDFCollection multiVolumePDFCollection)
+        {
+            try
+            {
+                _context.Add(multiVolumePDFCollection);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<MultiVolumePDFCollection>(multiVolumePDFCollection);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<MultiVolumePDFCollection>(null, exp.ToString());
+            }
         }
 
         /// <summary>
         /// Database Context
         /// </summary>
         protected readonly RMuseumDbContext _context;
-
         /// <summary>
         /// Background Task Queue Instance
         /// </summary>
         protected readonly IBackgroundTaskQueue _backgroundTaskQueue;
-
         /// <summary>
         /// image file service
         /// </summary>
         protected readonly IImageFileService _imageFileService;
-
         /// <summary>
         /// Configuration
         /// </summary>
         protected IConfiguration Configuration { get; }
-
-
         /// <summary>
         /// constructor
         /// </summary>
