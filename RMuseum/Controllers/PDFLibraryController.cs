@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.PDFLibrary;
+using RMuseum.Models.PDFLibrary.ViewModels;
 using RMuseum.Services;
 using RSecurityBackend.Models.Auth.Memory;
 using System.Net;
@@ -13,6 +14,23 @@ namespace RMuseum.Controllers
     [Route("api/pdf")]
     public class PDFLibraryController : Controller
     {
+        /// <summary>
+        /// start importing a local pdf file
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartImportingLocalPDF([FromBody] NewPDFBookViewModel model)
+        {
+            var res = _pdfService.StartImportingLocalPDF(model);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
         /// <summary>
         /// add a new book
         /// </summary>
