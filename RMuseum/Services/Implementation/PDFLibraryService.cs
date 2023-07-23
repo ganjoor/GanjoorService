@@ -74,12 +74,12 @@ namespace RMuseum.Services.Implementation
                                     pdfBook.PublisherLine = model.PublisherLine;
                                     pdfBook.PublishingDate = model.PublishingDate;
                                     pdfBook.PublishingLocation = model.PublishingLocation;
-                                    pdfBook.PublishingNumber = model.PublishingNumber;
-                                    pdfBook.ClaimedPageCount = model.ClaimedPageCount;
+                                    pdfBook.PublishingNumber = model.PublishingNumber == 0 ? null : model.PublishingNumber;
+                                    pdfBook.ClaimedPageCount = model.ClaimedPageCount == 0 ? null : model.ClaimedPageCount;
                                     pdfBook.OriginalSourceName = model.OriginalSourceName;
                                     pdfBook.OriginalFileUrl = model.OriginalFileUrl;
                                     List<AuthorRole> roles = new List<AuthorRole>();
-                                    if (model.WriterId != null)
+                                    if (model.WriterId != null && model.WriterId != 0)
                                     {
                                         roles.Add(new AuthorRole()
                                         {
@@ -87,7 +87,7 @@ namespace RMuseum.Services.Implementation
                                             Role = "نویسنده",
                                         });
                                     }
-                                    if (model.Writer2Id != null)
+                                    if (model.Writer2Id != null && model.Writer2Id != 0)
                                     {
                                         roles.Add(new AuthorRole()
                                         {
@@ -95,7 +95,7 @@ namespace RMuseum.Services.Implementation
                                             Role = "نویسنده",
                                         });
                                     }
-                                    if (model.Writer3Id != null)
+                                    if (model.Writer3Id != null && model.Writer3Id != 0)
                                     {
                                         roles.Add(new AuthorRole()
                                         {
@@ -103,7 +103,7 @@ namespace RMuseum.Services.Implementation
                                             Role = "نویسنده",
                                         });
                                     }
-                                    if (model.Writer4Id != null)
+                                    if (model.Writer4Id != null && model.Writer4Id != 0)
                                     {
                                         roles.Add(new AuthorRole()
                                         {
@@ -111,7 +111,7 @@ namespace RMuseum.Services.Implementation
                                             Role = "نویسنده",
                                         });
                                     }
-                                    if (model.TranslatorId != null)
+                                    if (model.TranslatorId != null && model.TranslatorId != 0)
                                     {
                                         roles.Add(new AuthorRole()
                                         {
@@ -119,7 +119,7 @@ namespace RMuseum.Services.Implementation
                                             Role = "مترجم",
                                         });
                                     }
-                                    if (model.Translator2Id != null)
+                                    if (model.Translator2Id != null && model.Translator2Id != 0)
                                     {
                                         roles.Add(new AuthorRole()
                                         {
@@ -127,7 +127,7 @@ namespace RMuseum.Services.Implementation
                                             Role = "مترجم",
                                         });
                                     }
-                                    if (model.Translator3Id != null)
+                                    if (model.Translator3Id != null && model.Translator3Id != 0)
                                     {
                                         roles.Add(new AuthorRole()
                                         {
@@ -135,7 +135,7 @@ namespace RMuseum.Services.Implementation
                                             Role = "مترجم",
                                         });
                                     }
-                                    if (model.Translator4Id != null)
+                                    if (model.Translator4Id != null && model.Translator4Id != 0)
                                     {
                                         roles.Add(new AuthorRole()
                                         {
@@ -143,7 +143,7 @@ namespace RMuseum.Services.Implementation
                                             Role = "مترجم",
                                         });
                                     }
-                                    if (model.CollectorId != null)
+                                    if (model.CollectorId != null && model.CollectorId != 0)
                                     {
                                         roles.Add(new AuthorRole()
                                         {
@@ -151,7 +151,7 @@ namespace RMuseum.Services.Implementation
                                             Role = "مصحح",
                                         });
                                     }
-                                    if (model.Collector2Id != null)
+                                    if (model.Collector2Id != null && model.Collector2Id != 0)
                                     {
                                         roles.Add(new AuthorRole()
                                         {
