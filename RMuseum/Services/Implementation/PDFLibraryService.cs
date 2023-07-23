@@ -53,6 +53,10 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public RServiceResult<bool> StartImportingLocalPDF(NewPDFBookViewModel model)
         {
+            if(model == null)
+            {
+                return new RServiceResult<bool>(false, "model == null");
+            }
             _backgroundTaskQueue.QueueBackgroundWorkItem
                     (
                         async token =>

@@ -12105,7 +12105,7 @@
         </member>
         <member name="T:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel">
             <summary>
-            new PDFBook view model
+            New PDFBook view model
             </summary>
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.LocalImportingPDFFilePath">

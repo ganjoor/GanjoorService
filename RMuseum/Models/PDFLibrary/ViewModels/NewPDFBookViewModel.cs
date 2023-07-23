@@ -1,7 +1,7 @@
 ﻿namespace RMuseum.Models.PDFLibrary.ViewModels
 {
     /// <summary>
-    /// new PDFBook view model
+    /// New PDFBook view model
     /// </summary>
     public class NewPDFBookViewModel
     {
