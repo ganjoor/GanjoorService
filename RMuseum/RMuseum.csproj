@@ -27,7 +27,7 @@
     </PackageReference>
     <PackageReference Include="NAudio" Version="2.1.0" />
     <PackageReference Include="PDFtoImage" Version="2.3.0" />
-    <PackageReference Include="RSecurityBackend" Version="1.1.9" />
+    <PackageReference Include="RSecurityBackend" Version="1.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.8" />

@@ -34,6 +34,7 @@ namespace RMuseum.Services.Implementation
             {
                 var pdfBook = await _context.PDFBooks.AsNoTracking()
                             .Include(b => b.Book)
+                            .Include(b => b.PDFFile)
                             .Include(b => b.MultiVolumePDFCollection)
                             .Include(b => b.Contributers)
                             .Include(b => b.Tags)
