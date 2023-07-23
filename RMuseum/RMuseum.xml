@@ -2343,7 +2343,7 @@
             <param name="numberingService"></param>
             <param name="configuration"></param>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.StartImportingLocalPDF(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.StartImportingLocalPDFAsync(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
             <summary>
             start importing a local pdf file
             </summary>
@@ -17496,7 +17496,7 @@
             <param name="statusArray"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartImportingLocalPDF(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartImportingLocalPDFAsync(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
             <summary>
             start importing local pdf file
             </summary>
@@ -18386,7 +18386,7 @@
             <param name="multiVolumePDFCollection"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IPDFLibraryService.StartImportingLocalPDF(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
+        <member name="M:RMuseum.Services.IPDFLibraryService.StartImportingLocalPDFAsync(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
             <summary>
             start importing local pdf file
             </summary>

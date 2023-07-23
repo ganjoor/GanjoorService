@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ganjoor;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
 using RMuseum.Models.Artifact;
+using RMuseum.Models.ImportJob;
 using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.PDFLibrary.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -9,6 +11,7 @@ using RSecurityBackend.Services;
 using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -51,129 +54,154 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartImportingLocalPDF(NewPDFBookViewModel model)
+        public async Task<RServiceResult<bool>> StartImportingLocalPDFAsync(NewPDFBookViewModel model)
         {
-            if(model == null)
+            try
             {
-                return new RServiceResult<bool>(false, "model == null");
-            }
-            _backgroundTaskQueue.QueueBackgroundWorkItem
+                if (model == null)
+                {
+                    return new RServiceResult<bool>(false, "model == null");
+                }
+                if (!File.Exists(model.LocalImportingPDFFilePath))
+                {
+                    return new RServiceResult<bool>(false, $"file does not exist! : {model.LocalImportingPDFFilePath}");
+                }
+                string fileChecksum = PoemAudio.ComputeCheckSum(model.LocalImportingPDFFilePath);
+                if (
                     (
-                        async token =>
-                        {
-                            using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
+                    await _context.ImportJobs
+                        .Where(j => j.JobType == JobType.Pdf && j.SrcContent == fileChecksum && !(j.Status == ImportJobStatus.Failed || j.Status == ImportJobStatus.Aborted))
+                        .SingleOrDefaultAsync()
+                    )
+                    !=
+                    null
+                    )
+                {
+                    return new RServiceResult<bool>(false, $"Job is already scheduled or running for importing pdf file {model.LocalImportingPDFFilePath} (duplicated checksum: {fileChecksum})");
+                }
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                        (
+                            async token =>
                             {
-                                var pdfRes = await ImportLocalPDFFileAsync(context, model.BookId, model.MultiVolumePDFCollectionId, model.VolumeOrder, model.LocalImportingPDFFilePath, model.OriginalSourceUrl, model.SkipUpload);
-                                if (pdfRes.Result != null)
+                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                 {
-                                    var pdfBook = pdfRes.Result;
-                                    pdfBook.Title = model.Title;
-                                    pdfBook.SubTitle = model.SubTitle;
-                                    pdfBook.AuthorsLine = model.AuthorsLine;
-                                    pdfBook.ISBN = model.ISBN;
-                                    pdfBook.Description = model.Description;
-                                    pdfBook.IsTranslation = model.IsTranslation;
-                                    pdfBook.TranslatorsLine = model.TranslatorsLine;
-                                    pdfBook.TitleInOriginalLanguage = model.TitleInOriginalLanguage;
-                                    pdfBook.PublisherLine = model.PublisherLine;
-                                    pdfBook.PublishingDate = model.PublishingDate;
-                                    pdfBook.PublishingLocation = model.PublishingLocation;
-                                    pdfBook.PublishingNumber = model.PublishingNumber == 0 ? null : model.PublishingNumber;
-                                    pdfBook.ClaimedPageCount = model.ClaimedPageCount == 0 ? null : model.ClaimedPageCount;
-                                    pdfBook.OriginalSourceName = model.OriginalSourceName;
-                                    pdfBook.OriginalFileUrl = model.OriginalFileUrl;
-                                    List<AuthorRole> roles = new List<AuthorRole>();
-                                    if (model.WriterId != null && model.WriterId != 0)
+                                    var pdfRes = await ImportLocalPDFFileAsync(context, model.BookId, model.MultiVolumePDFCollectionId, model.VolumeOrder, model.LocalImportingPDFFilePath, model.OriginalSourceUrl, model.SkipUpload, fileChecksum);
+                                    if (pdfRes.Result != null)
                                     {
-                                        roles.Add(new AuthorRole()
+                                        var pdfBook = pdfRes.Result;
+                                        pdfBook.Title = model.Title;
+                                        pdfBook.SubTitle = model.SubTitle;
+                                        pdfBook.AuthorsLine = model.AuthorsLine;
+                                        pdfBook.ISBN = model.ISBN;
+                                        pdfBook.Description = model.Description;
+                                        pdfBook.IsTranslation = model.IsTranslation;
+                                        pdfBook.TranslatorsLine = model.TranslatorsLine;
+                                        pdfBook.TitleInOriginalLanguage = model.TitleInOriginalLanguage;
+                                        pdfBook.PublisherLine = model.PublisherLine;
+                                        pdfBook.PublishingDate = model.PublishingDate;
+                                        pdfBook.PublishingLocation = model.PublishingLocation;
+                                        pdfBook.PublishingNumber = model.PublishingNumber == 0 ? null : model.PublishingNumber;
+                                        pdfBook.ClaimedPageCount = model.ClaimedPageCount == 0 ? null : model.ClaimedPageCount;
+                                        pdfBook.OriginalSourceName = model.OriginalSourceName;
+                                        pdfBook.OriginalFileUrl = model.OriginalFileUrl;
+                                        List<AuthorRole> roles = new List<AuthorRole>();
+                                        if (model.WriterId != null && model.WriterId != 0)
                                         {
-                                            Author = await context.Authors.Where(a => a.Id == model.WriterId).SingleAsync(),
-                                            Role = "نویسنده",
-                                        });
-                                    }
-                                    if (model.Writer2Id != null && model.Writer2Id != 0)
-                                    {
-                                        roles.Add(new AuthorRole()
+                                            roles.Add(new AuthorRole()
+                                            {
+                                                Author = await context.Authors.Where(a => a.Id == model.WriterId).SingleAsync(),
+                                                Role = "نویسنده",
+                                            });
+                                        }
+                                        if (model.Writer2Id != null && model.Writer2Id != 0)
                                         {
-                                            Author = await context.Authors.Where(a => a.Id == model.Writer2Id).SingleAsync(),
-                                            Role = "نویسنده",
-                                        });
-                                    }
-                                    if (model.Writer3Id != null && model.Writer3Id != 0)
-                                    {
-                                        roles.Add(new AuthorRole()
+                                            roles.Add(new AuthorRole()
+                                            {
+                                                Author = await context.Authors.Where(a => a.Id == model.Writer2Id).SingleAsync(),
+                                                Role = "نویسنده",
+                                            });
+                                        }
+                                        if (model.Writer3Id != null && model.Writer3Id != 0)
                                         {
-                                            Author = await context.Authors.Where(a => a.Id == model.Writer3Id).SingleAsync(),
-                                            Role = "نویسنده",
-                                        });
-                                    }
-                                    if (model.Writer4Id != null && model.Writer4Id != 0)
-                                    {
-                                        roles.Add(new AuthorRole()
+                                            roles.Add(new AuthorRole()
+                                            {
+                                                Author = await context.Authors.Where(a => a.Id == model.Writer3Id).SingleAsync(),
+                                                Role = "نویسنده",
+                                            });
+                                        }
+                                        if (model.Writer4Id != null && model.Writer4Id != 0)
                                         {
-                                            Author = await context.Authors.Where(a => a.Id == model.Writer4Id).SingleAsync(),
-                                            Role = "نویسنده",
-                                        });
-                                    }
-                                    if (model.TranslatorId != null && model.TranslatorId != 0)
-                                    {
-                                        roles.Add(new AuthorRole()
+                                            roles.Add(new AuthorRole()
+                                            {
+                                                Author = await context.Authors.Where(a => a.Id == model.Writer4Id).SingleAsync(),
+                                                Role = "نویسنده",
+                                            });
+                                        }
+                                        if (model.TranslatorId != null && model.TranslatorId != 0)
                                         {
-                                            Author = await context.Authors.Where(a => a.Id == model.TranslatorId).SingleAsync(),
-                                            Role = "مترجم",
-                                        });
-                                    }
-                                    if (model.Translator2Id != null && model.Translator2Id != 0)
-                                    {
-                                        roles.Add(new AuthorRole()
+                                            roles.Add(new AuthorRole()
+                                            {
+                                                Author = await context.Authors.Where(a => a.Id == model.TranslatorId).SingleAsync(),
+                                                Role = "مترجم",
+                                            });
+                                        }
+                                        if (model.Translator2Id != null && model.Translator2Id != 0)
                                         {
-                                            Author = await context.Authors.Where(a => a.Id == model.Translator2Id).SingleAsync(),
-                                            Role = "مترجم",
-                                        });
-                                    }
-                                    if (model.Translator3Id != null && model.Translator3Id != 0)
-                                    {
-                                        roles.Add(new AuthorRole()
+                                            roles.Add(new AuthorRole()
+                                            {
+                                                Author = await context.Authors.Where(a => a.Id == model.Translator2Id).SingleAsync(),
+                                                Role = "مترجم",
+                                            });
+                                        }
+                                        if (model.Translator3Id != null && model.Translator3Id != 0)
                                         {
-                                            Author = await context.Authors.Where(a => a.Id == model.Translator3Id).SingleAsync(),
-                                            Role = "مترجم",
-                                        });
-                                    }
-                                    if (model.Translator4Id != null && model.Translator4Id != 0)
-                                    {
-                                        roles.Add(new AuthorRole()
+                                            roles.Add(new AuthorRole()
+                                            {
+                                                Author = await context.Authors.Where(a => a.Id == model.Translator3Id).SingleAsync(),
+                                                Role = "مترجم",
+                                            });
+                                        }
+                                        if (model.Translator4Id != null && model.Translator4Id != 0)
                                         {
-                                            Author = await context.Authors.Where(a => a.Id == model.Translator4Id).SingleAsync(),
-                                            Role = "مترجم",
-                                        });
-                                    }
-                                    if (model.CollectorId != null && model.CollectorId != 0)
-                                    {
-                                        roles.Add(new AuthorRole()
+                                            roles.Add(new AuthorRole()
+                                            {
+                                                Author = await context.Authors.Where(a => a.Id == model.Translator4Id).SingleAsync(),
+                                                Role = "مترجم",
+                                            });
+                                        }
+                                        if (model.CollectorId != null && model.CollectorId != 0)
                                         {
-                                            Author = await context.Authors.Where(a => a.Id == model.CollectorId).SingleAsync(),
-                                            Role = "مصحح",
-                                        });
-                                    }
-                                    if (model.Collector2Id != null && model.Collector2Id != 0)
-                                    {
-                                        roles.Add(new AuthorRole()
+                                            roles.Add(new AuthorRole()
+                                            {
+                                                Author = await context.Authors.Where(a => a.Id == model.CollectorId).SingleAsync(),
+                                                Role = "مصحح",
+                                            });
+                                        }
+                                        if (model.Collector2Id != null && model.Collector2Id != 0)
                                         {
-                                            Author = await context.Authors.Where(a => a.Id == model.Collector2Id).SingleAsync(),
-                                            Role = "مصحح",
-                                        });
+                                            roles.Add(new AuthorRole()
+                                            {
+                                                Author = await context.Authors.Where(a => a.Id == model.Collector2Id).SingleAsync(),
+                                                Role = "مصحح",
+                                            });
+                                        }
+                                        if (roles.Count > 0)
+                                        {
+                                            pdfBook.Contributers = roles;
+                                        }
+                                        context.Update(pdfBook);
+                                        await context.SaveChangesAsync();
                                     }
-                                    if (roles.Count > 0)
-                                    {
-                                        pdfBook.Contributers = roles;
-                                    }
-                                    context.Update(pdfBook);
-                                    await context.SaveChangesAsync();
                                 }
                             }
-                        }
-                    );
-            return new RServiceResult<bool>(true);
+                        );
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+ 
         }
 
         /// <summary>

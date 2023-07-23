@@ -29,9 +29,9 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult StartImportingLocalPDF([FromBody] NewPDFBookViewModel model)
+        public async Task<IActionResult> StartImportingLocalPDFAsync([FromBody] NewPDFBookViewModel model)
         {
-            var res = _pdfService.StartImportingLocalPDF(model);
+            var res = await _pdfService.StartImportingLocalPDFAsync(model);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok();

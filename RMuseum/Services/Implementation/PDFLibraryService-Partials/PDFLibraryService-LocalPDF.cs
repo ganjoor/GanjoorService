@@ -20,43 +20,11 @@ namespace RMuseum.Services.Implementation
 {
     public partial class PDFLibraryService
     {
-        private async Task<RServiceResult<PDFBook>> ImportLocalPDFFileAsync(RMuseumDbContext context, int bookId, int? volumeId, int volumeOrder, string filePath, string srcUrl, bool skipUpload)
+        private async Task<RServiceResult<PDFBook>> ImportLocalPDFFileAsync(RMuseumDbContext context, int bookId, int? volumeId, int volumeOrder, string filePath, string srcUrl, bool skipUpload, string fileChecksum)
         {
             try
             {
-                if (volumeId == 0) volumeId = null;
-                string fileChecksum = PoemAudio.ComputeCheckSum(filePath);
-                if (
-                    (
-                    await context.ImportJobs
-                        .Where(j => j.JobType == JobType.Pdf && j.SrcContent == fileChecksum && !(j.Status == ImportJobStatus.Failed || j.Status == ImportJobStatus.Aborted))
-                        .SingleOrDefaultAsync()
-                    )
-                    !=
-                    null
-                    )
-                {
-                    return new RServiceResult<PDFBook>(null, $"Job is already scheduled or running for importing pdf file {filePath} (duplicated checksum: {fileChecksum})");
-                }
-                if (!string.IsNullOrEmpty(srcUrl))
-                {
-                    if (
-                        (await context.PDFBooks.Where(a => a.OriginalSourceUrl == srcUrl).SingleOrDefaultAsync())
-                        !=
-                        null
-                        )
-                    {
-                        return new RServiceResult<PDFBook>(null, $"duplicated srcUrl '{srcUrl}'");
-                    }
-                }
-                if (
-                (await context.PDFBooks.Where(a => a.FileMD5CheckSum == fileChecksum).SingleOrDefaultAsync())
-                !=
-                null
-                )
-                {
-                    return new RServiceResult<PDFBook>(null, $"duplicated pdf with checksum '{fileChecksum}'");
-                }
+                
                 ImportJob job = new ImportJob()
                 {
                     JobType = JobType.Pdf,
@@ -73,6 +41,40 @@ namespace RMuseum.Services.Implementation
                     job
                     );
                 await context.SaveChangesAsync();
+
+                if (volumeId == 0) volumeId = null;
+               
+                
+                if (!string.IsNullOrEmpty(srcUrl))
+                {
+                    if (
+                        (await context.PDFBooks.Where(a => a.OriginalSourceUrl == srcUrl).SingleOrDefaultAsync())
+                        !=
+                        null
+                        )
+                    {
+                        job.EndTime = DateTime.Now;
+                        job.Status = ImportJobStatus.Failed;
+                        job.Exception = $"duplicated srcUrl '{srcUrl}'";
+                        context.Update(job);
+                        await context.SaveChangesAsync();
+                        return new RServiceResult<PDFBook>(null, job.Exception);
+                    }
+                }
+                if (
+                (await context.PDFBooks.Where(a => a.FileMD5CheckSum == fileChecksum).SingleOrDefaultAsync())
+                !=
+                null
+                )
+                {
+                    job.EndTime = DateTime.Now;
+                    job.Status = ImportJobStatus.Failed;
+                    job.Exception = $"duplicated pdf with checksum '{fileChecksum}'";
+                    context.Update(job);
+                    await context.SaveChangesAsync();
+                    return new RServiceResult<PDFBook>(null, job.Exception);
+                }
+               
                 try
                 {
                     var folderNumber = 1 + await context.PDFBooks.CountAsync();
@@ -96,14 +98,11 @@ namespace RMuseum.Services.Implementation
                     };
                     job.FriendlyUrl = pdfBook.StorageFolderName;
                     List<RTagValue> meta = new List<RTagValue>();
-                    using (RMuseumDbContext importJobUpdaterDb = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
-                    {
-                        job.StartTime = DateTime.Now;
-                        job.Status = ImportJobStatus.Running;
-                        job.SrcContent = "";
-                        importJobUpdaterDb.Update(job);
-                        await importJobUpdaterDb.SaveChangesAsync();
-                    }
+                    job.StartTime = DateTime.Now;
+                    job.Status = ImportJobStatus.Running;
+                    job.SrcContent = "";
+                    context.Update(job);
+                    await context.SaveChangesAsync();
                     List<PDFPage> pages = await _ImportAndReturnPDFJobImages(pdfBook, job, 0);
                     pdfBook.Tags = meta.ToArray();
                     pdfBook.Pages = pages.ToArray();
@@ -119,7 +118,7 @@ namespace RMuseum.Services.Implementation
                     }
                     using (FileStream fs = new FileStream(filePath, FileMode.Open))
                     {
-                        var pdfStorageResult = await _imageFileService.Add(null, fs, pdfBook.OriginalFileName, pdfBook.StorageFolderName, false);
+                        var pdfStorageResult = await _imageFileService.Add(null, fs, pdfBook.OriginalFileName, pdfBook.StorageFolderName, false, "application/pdf");
                         if (!string.IsNullOrEmpty(pdfStorageResult.ExceptionString))
                         {
                             job.EndTime = DateTime.Now;
@@ -130,7 +129,6 @@ namespace RMuseum.Services.Implementation
                             await context.SaveChangesAsync();
                             return new RServiceResult<PDFBook>(null, job.Exception);
                         }
-                        pdfStorageResult.Result.ContentType = "application/pdf";
                         pdfBook.PDFFile = pdfStorageResult.Result;
                     }
                     await context.PDFBooks.AddAsync(pdfBook);

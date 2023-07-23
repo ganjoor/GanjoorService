@@ -60,6 +60,6 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartImportingLocalPDF(NewPDFBookViewModel model);
+        Task<RServiceResult<bool>> StartImportingLocalPDFAsync(NewPDFBookViewModel model);
     }
 }
