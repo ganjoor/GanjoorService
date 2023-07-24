@@ -20,6 +20,14 @@ namespace RMuseum.Services
         Task<RServiceResult<PDFBook>> GetPDFBookByIdAsync(int id, PublishStatus[] statusArray);
 
         /// <summary>
+        /// get all pdfbooks (including CoverImage info but not pages or tagibutes info)
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="statusArray"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetAllPDFBooks(PagingParameterModel paging, PublishStatus[] statusArray);
+
+        /// <summary>
         /// add author
         /// </summary>
         /// <param name="author"></param>

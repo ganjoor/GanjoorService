@@ -14,6 +14,8 @@ using System.Net;
 using System.Threading.Tasks;
 using RSecurityBackend.Services;
 using RMuseum.Services.Implementation;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace RMuseum.Controllers
 {
@@ -21,6 +23,44 @@ namespace RMuseum.Controllers
     [Route("api/pdf")]
     public class PDFLibraryController : Controller
     {
+        /// <summary>
+        ///get all published pdfbooks (including CoverImage info but not pages or tagibutes info) - check paging-headers for paging info
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+
+        [HttpGet]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetAllPDFBooks([FromQuery] PagingParameterModel paging)
+        {
+            var pdfBooksInfo = await _pdfService.GetAllPDFBooks(paging, new PublishStatus[] { PublishStatus.Published });
+            if (!string.IsNullOrEmpty(pdfBooksInfo.ExceptionString))
+            {
+                return BadRequest(pdfBooksInfo.ExceptionString);
+            }
+
+            if (pdfBooksInfo.Result.Books.Count() > 0)
+            {
+                DateTime lastModification = pdfBooksInfo.Result.Books.Max(i => i.LastModified);
+                Response.GetTypedHeaders().LastModified = lastModification;
+
+                var requestHeaders = Request.GetTypedHeaders();
+                if (requestHeaders.IfModifiedSince.HasValue &&
+                    requestHeaders.IfModifiedSince.Value >= lastModification)
+                {
+                    return StatusCode(StatusCodes.Status304NotModified);
+                }
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pdfBooksInfo.Result.PagingMeta));
+
+            return Ok(pdfBooksInfo.Result.Books);
+        }
+
         /// <summary>
         /// start importing a local pdf file
         /// </summary>

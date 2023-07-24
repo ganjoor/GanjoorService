@@ -52,6 +52,25 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get all pdfbooks (including CoverImage info but not pages or tagibutes info)
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="statusArray"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetAllPDFBooks(PagingParameterModel paging, PublishStatus[] statusArray)
+        {
+            var source =
+                 _context.PDFBooks.AsNoTracking()
+                 .Include(a => a.CoverImage)
+                 .Where(a => statusArray.Contains(a.Status))
+                .OrderByDescending(t => t.DateTime)
+                .AsQueryable();
+            (PaginationMetadata PagingMeta, PDFBook[] Books) paginatedResult =
+                await QueryablePaginator<PDFBook>.Paginate(source, paging);
+            return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>(paginatedResult);
+        }
+
+        /// <summary>
         /// start importing local pdf file
         /// </summary>
         /// <param name="model"></param>
