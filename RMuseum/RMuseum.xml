@@ -2364,6 +2364,16 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.Put(RMuseum.Models.PDFLibrary.PDFBook)">
+            <summary>
+            edit pdf book master record (user should have additional permissions pdf:awaiting and pdf:publish to change status of pdf book)
+            </summary>
+            <remarks>
+            editing related collections such as pages and attributed or complex properties such as CoverImage is ignored
+            </remarks>
+            <param name="pdf"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">
             <summary>
             add a new book
@@ -17503,6 +17513,15 @@
             <param name="model"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.EditPDFBookMasterRecord(RMuseum.Models.PDFLibrary.PDFBook,System.Boolean,System.Boolean)">
+            <summary>
+            edit pdf book master record
+            </summary>
+            <param name="model"></param>
+            <param name="canChangeStatusToAwaiting"></param>
+            <param name="canPublish"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddAuthorAsync(RMuseum.Models.PDFLibrary.Author)">
             <summary>
             add author
@@ -18391,6 +18410,15 @@
             start importing local pdf file
             </summary>
             <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.EditPDFBookMasterRecord(RMuseum.Models.PDFLibrary.PDFBook,System.Boolean,System.Boolean)">
+            <summary>
+            edit pdf book master record
+            </summary>
+            <param name="model"></param>
+            <param name="canChangeStatusToAwaiting"></param>
+            <param name="canPublish"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">

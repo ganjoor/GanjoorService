@@ -61,5 +61,14 @@ namespace RMuseum.Services
         /// <param name="model"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> StartImportingLocalPDFAsync(NewPDFBookViewModel model);
+
+        /// <summary>
+        /// edit pdf book master record
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="canChangeStatusToAwaiting"></param>
+        /// <param name="canPublish"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PDFBook>> EditPDFBookMasterRecord(PDFBook model, bool canChangeStatusToAwaiting, bool canPublish);
     }
 }

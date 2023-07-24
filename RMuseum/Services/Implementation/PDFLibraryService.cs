@@ -206,6 +206,75 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// edit pdf book master record
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="canChangeStatusToAwaiting"></param>
+        /// <param name="canPublish"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PDFBook>> EditPDFBookMasterRecord(PDFBook model, bool canChangeStatusToAwaiting, bool canPublish)
+        {
+            if (string.IsNullOrEmpty(model.Title))
+            {
+                return new RServiceResult<PDFBook>(null, "Name could not be empty.");
+            }
+
+            PDFBook pdfBook =
+                 await _context.PDFBooks
+                 .Where(a => a.Id == model.Id)
+                .SingleOrDefaultAsync();
+
+
+            if (pdfBook != null)
+            {
+                if (pdfBook.Status != model.Status)
+                {
+                    if (!canChangeStatusToAwaiting)
+                    {
+                        return new RServiceResult<PDFBook>(null, "User should be able to change status to Awaiting to complete this operation.");
+                    }
+
+                    if (
+                        !
+                        (
+                        (pdfBook.Status == PublishStatus.Draft && model.Status == PublishStatus.Awaiting)
+                        ||
+                        (pdfBook.Status == PublishStatus.Awaiting && model.Status == PublishStatus.Draft)
+                        )
+                        )
+                    {
+                        if (!canPublish)
+                        {
+                            return new RServiceResult<PDFBook>(null, "User should have Publish permission to complete this operation.");
+                        }
+                    }
+                }
+
+                pdfBook.Status = model.Status;
+                pdfBook.Title = model.Title;
+                pdfBook.SubTitle = model.SubTitle;
+                pdfBook.AuthorsLine = model.AuthorsLine;
+                pdfBook.ISBN = model.ISBN;
+                pdfBook.Description = model.Description;
+                pdfBook.IsTranslation = model.IsTranslation;
+                pdfBook.TranslatorsLine = model.TranslatorsLine;
+                pdfBook.TitleInOriginalLanguage = model.TitleInOriginalLanguage;
+                pdfBook.PublisherLine = model.PublisherLine;
+                pdfBook.PublishingDate = model.PublishingDate;
+                pdfBook.PublishingLocation = model.PublishingLocation;
+                pdfBook.PublishingNumber = model.PublishingNumber == 0 ? null : model.PublishingNumber;
+                pdfBook.ClaimedPageCount = model.ClaimedPageCount == 0 ? null : model.ClaimedPageCount;
+                pdfBook.OriginalSourceName = model.OriginalSourceName;
+                pdfBook.OriginalFileUrl = model.OriginalFileUrl;
+                pdfBook.LastModified = DateTime.Now;
+
+                _context.Update(pdfBook);
+                await _context.SaveChangesAsync();
+            }
+            return new RServiceResult<PDFBook>(pdfBook);
+        }
+
+        /// <summary>
         /// add author
         /// </summary>
         /// <param name="author"></param>

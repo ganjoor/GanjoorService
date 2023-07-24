@@ -13,6 +13,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using RSecurityBackend.Services;
+using RMuseum.Services.Implementation;
 
 namespace RMuseum.Controllers
 {
@@ -158,6 +159,62 @@ namespace RMuseum.Controllers
 
 
             return Ok(bookRes.Result);
+        }
+
+        /// <summary>
+        /// edit pdf book master record (user should have additional permissions pdf:awaiting and pdf:publish to change status of pdf book)
+        /// </summary>
+        /// <remarks>
+        /// editing related collections such as pages and attributed or complex properties such as CoverImage is ignored
+        /// </remarks>
+        /// <param name="pdf"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> Put([FromBody] PDFBook pdf)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+
+            RServiceResult<bool>
+                canChangeStatusToAwaiting =
+                await _userPermissionChecker.Check
+                    (
+                        loggedOnUserId,
+                        sessionId,
+                        RMuseumSecurableItem.PDFLibraryEntityShortName,
+                        RMuseumSecurableItem.ToAwaitingStatusOperationShortName
+                        );
+            if (!string.IsNullOrEmpty(canChangeStatusToAwaiting.ExceptionString))
+                return BadRequest(canChangeStatusToAwaiting.ExceptionString);
+
+            RServiceResult<bool>
+                canPublish =
+                await _userPermissionChecker.Check
+                    (
+                        loggedOnUserId,
+                        sessionId,
+                        RMuseumSecurableItem.PDFLibraryEntityShortName,
+                        RMuseumSecurableItem.PublishOperationShortName
+                        );
+            if (!string.IsNullOrEmpty(canPublish.ExceptionString))
+                return BadRequest(canPublish.ExceptionString);
+
+            RServiceResult<PDFBook> itemInfo = await _pdfService.EditPDFBookMasterRecord(pdf, canChangeStatusToAwaiting.Result, canPublish.Result);
+            if (!string.IsNullOrEmpty(itemInfo.ExceptionString))
+            {
+                return BadRequest(itemInfo.ExceptionString);
+            }
+
+            if (itemInfo == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(); ;
         }
 
         /// <summary>
