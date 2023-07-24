@@ -511,6 +511,32 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get author by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("author/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Author))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetAuthorByIdAsync(int id)
+        {
+            var authorsRes = await _pdfService.GetAuthorByIdAsync(id);
+            if (!string.IsNullOrEmpty(authorsRes.ExceptionString))
+            {
+                return BadRequest(authorsRes.ExceptionString);
+            }
+
+            if(authorsRes.Result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(authorsRes.Result);
+        }
+
+        /// <summary>
         /// add a new author
         /// </summary>
         /// <param name="author"></param>

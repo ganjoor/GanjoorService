@@ -2454,6 +2454,13 @@
             <param name="authorName"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetAuthorByIdAsync(System.Int32)">
+            <summary>
+            get author by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.AddAuthorAsync(RMuseum.Models.PDFLibrary.Author)">
             <summary>
             add a new author
