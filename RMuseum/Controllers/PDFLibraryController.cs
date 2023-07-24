@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RMuseum.Models.Artifact;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.PDFLibrary.ViewModels;
@@ -16,6 +15,7 @@ using RSecurityBackend.Services;
 using RMuseum.Services.Implementation;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using RMuseum.Models.Artifact;
 
 namespace RMuseum.Controllers
 {
@@ -62,20 +62,54 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// start importing a local pdf file
+        /// get all pdf books visible by user (including CoverImage info but not items info)
         /// </summary>
-        /// <param name="model"></param>
+        /// <param name="paging"></param>
         /// <returns></returns>
-        [HttpPost]
-        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [HttpGet]
+        [Route("secure")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> StartImportingLocalPDFAsync([FromBody] NewPDFBookViewModel model)
+        public async Task<IActionResult> GetUserVisible([FromQuery] PagingParameterModel paging)
         {
-            var res = await _pdfService.StartImportingLocalPDFAsync(model);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok();
+            RServiceResult<PublishStatus[]> v = await _GetUserVisiblePDFBooksStatusSet
+                (
+                new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value),
+                new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value)
+                );
+            if (!string.IsNullOrEmpty(v.ExceptionString))
+                return BadRequest(v.ExceptionString);
+            PublishStatus[] visibleItems = v.Result;
+
+            if (visibleItems.Length == 1 && visibleItems[0] == PublishStatus.Published) //Caching
+            {
+                return await GetAllPDFBooks(paging);
+            }
+
+            RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)> itemsInfo = await _pdfService.GetAllPDFBooks(paging, visibleItems);
+            if (!string.IsNullOrEmpty(itemsInfo.ExceptionString))
+            {
+                return BadRequest(itemsInfo.ExceptionString);
+            }
+
+            if (itemsInfo.Result.Books.Count() > 0)
+            {
+                DateTime lastModification = itemsInfo.Result.Books.Max(i => i.LastModified);
+                Response.GetTypedHeaders().LastModified = lastModification;
+
+                var requestHeaders = Request.GetTypedHeaders();
+                if (requestHeaders.IfModifiedSince.HasValue &&
+                    requestHeaders.IfModifiedSince.Value >= lastModification)
+                {
+                    return StatusCode(StatusCodes.Status304NotModified);
+                }
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(itemsInfo.Result.PagingMeta));
+
+            return Ok(itemsInfo.Result.Books);
         }
 
         /// <summary>
@@ -90,7 +124,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetUserVisible(int id)
         {
-            RServiceResult<PublishStatus[]> v = await _GetUserVisibleArtifactStatusSet
+            RServiceResult<PublishStatus[]> v = await _GetUserVisiblePDFBooksStatusSet
                (
                new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value),
                new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value)
@@ -134,7 +168,7 @@ namespace RMuseum.Controllers
             return Ok(bookRes.Result);
         }
 
-        private async Task<RServiceResult<PublishStatus[]>> _GetUserVisibleArtifactStatusSet(Guid loggedOnUserId, Guid sessionId)
+        private async Task<RServiceResult<PublishStatus[]>> _GetUserVisiblePDFBooksStatusSet(Guid loggedOnUserId, Guid sessionId)
         {
             RServiceResult<bool>
                 canView =
@@ -200,6 +234,25 @@ namespace RMuseum.Controllers
 
             return Ok(bookRes.Result);
         }
+
+
+        /// <summary>
+        /// start importing a local pdf file
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> StartImportingLocalPDFAsync([FromBody] NewPDFBookViewModel model)
+        {
+            var res = await _pdfService.StartImportingLocalPDFAsync(model);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
 
         /// <summary>
         /// edit pdf book master record (user should have additional permissions pdf:awaiting and pdf:publish to change status of pdf book)
@@ -273,6 +326,26 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest();
             return Ok();
+        }
+
+        /// <summary>
+        /// remove unpublished pdf book
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns></returns>
+        [HttpDelete("{bookId}")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.DeleteOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> RemovePDFBookAsync(int bookId)
+        {
+            RServiceResult<bool> res = await _pdfService.RemovePDFBookAsync(bookId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            return Ok(res.Result);
         }
 
         /// <summary>

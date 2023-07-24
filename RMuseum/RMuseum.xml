@@ -2350,11 +2350,11 @@
              <param name="paging"></param>
              <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.StartImportingLocalPDFAsync(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetUserVisible(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
-            start importing a local pdf file
+            get all pdf books visible by user (including CoverImage info but not items info)
             </summary>
-            <param name="model"></param>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.GetUserVisible(System.Int32)">
@@ -2369,6 +2369,13 @@
             get published PDF Book by id
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.StartImportingLocalPDFAsync(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
+            <summary>
+            start importing a local pdf file
+            </summary>
+            <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.Put(RMuseum.Models.PDFLibrary.PDFBook)">
@@ -2387,6 +2394,13 @@
             </summary>
             <param name="id"></param>
             <param name="pageId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.RemovePDFBookAsync(System.Int32)">
+            <summary>
+            remove unpublished pdf book
+            </summary>
+            <param name="bookId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">
@@ -17553,6 +17567,13 @@
             <param name="pdfpageId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.RemovePDFBookAsync(System.Int32)">
+            <summary>
+            an incomplete prototype for removing PDF books
+            </summary>
+            <param name="pdfBookId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddAuthorAsync(RMuseum.Models.PDFLibrary.Author)">
             <summary>
             add author
@@ -18406,6 +18427,13 @@
             </summary>
             <param name="paging"></param>
             <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.RemovePDFBookAsync(System.Int32)">
+            <summary>
+            an incomplete prototype for removing PDF books
+            </summary>
+            <param name="pdfBookId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.AddAuthorAsync(RMuseum.Models.PDFLibrary.Author)">

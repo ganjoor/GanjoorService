@@ -338,6 +338,63 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// an incomplete prototype for removing PDF books
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> RemovePDFBookAsync(int pdfBookId)
+        {
+            try
+            {
+                PDFBook record = await _context.PDFBooks
+                        .Include(a => a.Pages).ThenInclude(i => i.ThumbnailImage)
+                        .Include(a => a.Pages).ThenInclude(i => i.Tags)
+                        .Include(a => a.Tags)
+                        .Where(a => a.Id == pdfBookId)
+                        .SingleOrDefaultAsync();
+                if (record == null)
+                {
+                    return new RServiceResult<bool>(false, "PDFBook not found.");
+                }
+                if (record.Status == PublishStatus.Published)
+                {
+                    return new RServiceResult<bool>(false, "Can not delete published pdf book");
+                }
+
+                
+
+                string artifactFolder = Path.Combine(_imageFileService.ImageStoragePath, record.StorageFolderName);
+
+                foreach (PDFPage pages in record.Pages)
+                {
+                    _context.TagValues.RemoveRange(pages.Tags);
+                }
+
+                _context.RemoveRange(record.Pages);
+                _context.TagValues.RemoveRange(record.Tags);
+                _context.Remove(record);
+                await _context.SaveChangesAsync();
+
+                if (!string.IsNullOrEmpty(artifactFolder))
+                {
+                    try
+                    {
+                        Directory.Delete(artifactFolder, true);
+                    }
+                    catch
+                    {
+                        //ignore errors
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+            return new RServiceResult<bool>(true);
+        }
+
+        /// <summary>
         /// add author
         /// </summary>
         /// <param name="author"></param>

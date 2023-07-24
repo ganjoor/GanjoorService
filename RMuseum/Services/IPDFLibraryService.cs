@@ -28,6 +28,13 @@ namespace RMuseum.Services
         Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetAllPDFBooks(PagingParameterModel paging, PublishStatus[] statusArray);
 
         /// <summary>
+        /// an incomplete prototype for removing PDF books
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> RemovePDFBookAsync(int pdfBookId);
+
+        /// <summary>
         /// add author
         /// </summary>
         /// <param name="author"></param>
