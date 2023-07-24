@@ -2403,6 +2403,34 @@
             <param name="bookId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.TagPDFBookAsync(System.Int32,RMuseum.Models.Artifact.RTag)">
+            <summary>
+            add new tag value to artifact
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="tag">only name is processed</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.EditPDFBookTagValueAsync(System.Int32,System.Boolean,RMuseum.Models.Artifact.RTagValue)">
+            <summary>
+            edit pdf book attribute value
+            </summary>
+            <remarks>
+            editable fields are limited
+            </remarks>
+            <param name="pdfBookId"></param>
+            <param name="tagvalue"></param>
+            <param name="global">apply on all same value tags</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.UnTagPDFBookAsync(System.Int32,System.Guid)">
+            <summary>
+            remove tag from pdf book
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="tagValueId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.GetByTagValue(System.String,System.String)">
             <summary>
             get tagged publish pdfbooks (including CoverImage info but not pages or tagibutes info) 
@@ -17591,6 +17619,31 @@
             <param name="statusArray"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.TagPDFBookAsync(System.Int32,RMuseum.Models.Artifact.RTag)">
+            <summary>
+            add pdf book tag value
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="rTag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.UnTagPDFBookAsync(System.Int32,System.Guid)">
+            <summary>
+            remove pdf book tag value
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="tagValueId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.EditPDFBookTagValueAsync(System.Int32,RMuseum.Models.Artifact.RTagValue,System.Boolean)">
+            <summary>
+            edit pdf book tag value
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="edited"></param>
+            <param name="global">apply on all same value tags</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddAuthorAsync(RMuseum.Models.PDFLibrary.Author)">
             <summary>
             add author
@@ -18451,6 +18504,31 @@
             an incomplete prototype for removing PDF books
             </summary>
             <param name="pdfBookId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.TagPDFBookAsync(System.Int32,RMuseum.Models.Artifact.RTag)">
+            <summary>
+            add pdf book tag value
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="rTag"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.UnTagPDFBookAsync(System.Int32,System.Guid)">
+            <summary>
+            remove pdf book tag value
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="tagValueId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.EditPDFBookTagValueAsync(System.Int32,RMuseum.Models.Artifact.RTagValue,System.Boolean)">
+            <summary>
+            edit pdf book tag value
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="edited"></param>
+            <param name="global">apply on all same value tags</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.GetPDFBookByTagValueAsync(System.String,System.String,RMuseum.Models.Artifact.PublishStatus[])">

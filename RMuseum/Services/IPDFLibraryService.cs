@@ -2,6 +2,7 @@
 using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.PDFLibrary.ViewModels;
 using RSecurityBackend.Models.Generic;
+using System;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services
@@ -33,6 +34,31 @@ namespace RMuseum.Services
         /// <param name="pdfBookId"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> RemovePDFBookAsync(int pdfBookId);
+
+        /// <summary>
+        /// add pdf book tag value
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="rTag"></param>
+        /// <returns></returns>
+        Task<RServiceResult<RTagValue>> TagPDFBookAsync(int pdfBookId, RTag rTag);
+
+        /// <summary>
+        /// remove pdf book tag value
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="tagValueId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> UnTagPDFBookAsync(int pdfBookId, Guid tagValueId);
+
+        /// <summary>
+        /// edit pdf book tag value
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="edited"></param>
+        /// <param name="global">apply on all same value tags</param>
+        /// <returns></returns>
+        Task<RServiceResult<RTagValue>> EditPDFBookTagValueAsync(int pdfBookId, RTagValue edited, bool global);
 
         /// <summary>
         /// get tagged publish pdfbooks (including CoverImage info but not pages or tagibutes info) 

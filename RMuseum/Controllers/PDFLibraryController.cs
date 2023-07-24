@@ -347,6 +347,78 @@ namespace RMuseum.Controllers
             }
             return Ok(res.Result);
         }
+
+        /// <summary>
+        /// add new tag value to artifact
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="tag">only name is processed</param>
+        /// <returns></returns>
+        [HttpPost("tagvalue/{pdfBookId}")]
+        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.EditTagValueOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RTagValue))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> TagPDFBookAsync(int pdfBookId, [FromBody] RTag tag)
+        {
+            RServiceResult<RTagValue> res = await _pdfService.TagPDFBookAsync(pdfBookId, tag);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// edit pdf book attribute value
+        /// </summary>
+        /// <remarks>
+        /// editable fields are limited
+        /// </remarks>
+        /// <param name="pdfBookId"></param>
+        /// <param name="tagvalue"></param>
+        /// <param name="global">apply on all same value tags</param>
+        /// <returns></returns>
+        [HttpPut("tagvalue/{pdfBookId}/{global=true}")]
+        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.EditTagValueOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> EditPDFBookTagValueAsync(int pdfBookId, bool global, [FromBody] RTagValue tagvalue)
+        {
+
+            RServiceResult<RTagValue> itemInfo = await _pdfService.EditPDFBookTagValueAsync(pdfBookId, tagvalue, global);
+            if (!string.IsNullOrEmpty(itemInfo.ExceptionString))
+            {
+                return BadRequest(itemInfo.ExceptionString);
+            }
+
+            if (itemInfo == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(); ;
+        }
+
+        /// <summary>
+        /// remove tag from pdf book
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="tagValueId"></param>
+        /// <returns></returns>
+        [HttpDelete("tagvalue/{pdfBookId}/{tagValueId}")]
+        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.EditTagValueOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> UnTagPDFBookAsync(int pdfBookId, Guid tagValueId)
+        {
+            RServiceResult<bool> res = await _pdfService.UnTagPDFBookAsync(pdfBookId, tagValueId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            return Ok(res.Result);
+        }
+
         /// <summary>
         /// get tagged publish pdfbooks (including CoverImage info but not pages or tagibutes info) 
         /// </summary>

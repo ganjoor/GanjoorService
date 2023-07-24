@@ -361,7 +361,7 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<bool>(false, "Can not delete published pdf book");
                 }
 
-                
+
 
                 string artifactFolder = Path.Combine(_imageFileService.ImageStoragePath, record.StorageFolderName);
 
@@ -403,26 +403,179 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<PDFBook[]>> GetPDFBookByTagValueAsync(string tagUrl, string valueUrl, PublishStatus[] statusArray)
         {
-            RTag tag =
+            try
+            {
+                RTag tag =
                         await _context.Tags
                         .Where(a => a.FriendlyUrl == tagUrl)
                     .SingleOrDefaultAsync();
-            if (tag == null)
-                return new RServiceResult<PDFBook[]>(new PDFBook[] { });
+                if (tag == null)
+                    return new RServiceResult<PDFBook[]>(new PDFBook[] { });
 
 
-            PDFBook[] taggedItems =
-                await _context.PDFBooks.Include(a => a.Tags)
-                 .Include(a => a.CoverImage)
-                .Where(a => statusArray.Contains(a.Status) && a.Tags != null && a.Tags.Any(v => v.RTagId == tag.Id && v.FriendlyUrl == valueUrl))
-                .OrderByDescending(t => t.DateTime)
-                .AsNoTracking()
-                .ToArrayAsync();
+                PDFBook[] taggedItems =
+                    await _context.PDFBooks.Include(a => a.Tags)
+                     .Include(a => a.CoverImage)
+                    .Where(a => statusArray.Contains(a.Status) && a.Tags != null && a.Tags.Any(v => v.RTagId == tag.Id && v.FriendlyUrl == valueUrl))
+                    .OrderByDescending(t => t.DateTime)
+                    .AsNoTracking()
+                    .ToArrayAsync();
 
-            foreach (PDFBook taggedItem in taggedItems)
-                taggedItem.Tags = null;
+                foreach (PDFBook taggedItem in taggedItems)
+                    taggedItem.Tags = null;
 
-            return new RServiceResult<PDFBook[]>(taggedItems);
+                return new RServiceResult<PDFBook[]>(taggedItems);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PDFBook[]>(null, exp.ToString());
+            }
+
+        }
+
+        /// <summary>
+        /// add pdf book tag value
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="rTag"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<RTagValue>> TagPDFBookAsync(int pdfBookId, RTag rTag)
+        {
+            try
+            {
+                RTag type = await _context.Tags.Where(a => a.Id == rTag.Id).SingleOrDefaultAsync();
+
+                PDFBook item = await _context.PDFBooks.Include(i => i.Tags).Where(i => i.Id == pdfBookId).SingleOrDefaultAsync();
+
+                int order = item.Tags.Where(t => t.RTagId == type.Id).Count() == 0 ? 1 : item.Tags.Where(t => t.RTagId == type.Id).OrderByDescending(t => t.Order).FirstOrDefault().Order + 1;
+
+                RTagValue tag =
+                new RTagValue()
+                {
+                    Order = order,
+                    Value = "",
+                    ValueInEnglish = "",
+                    ValueSupplement = "",
+                    RTag = type,
+                    Status = PublishStatus.Published
+                };
+
+                item.Tags.Add(tag);
+                item.LastModified = DateTime.Now;
+                _context.Update(item);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<RTagValue>(tag);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<RTagValue>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// remove pdf book tag value
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="tagValueId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> UnTagPDFBookAsync(int pdfBookId, Guid tagValueId)
+        {
+            try
+            {
+                PDFBook item = await _context.PDFBooks.Include(i => i.Tags).Where(i => i.Id == pdfBookId).SingleOrDefaultAsync();
+                item.Tags.Remove(item.Tags.Where(t => t.Id == tagValueId).SingleOrDefault());
+                item.LastModified = DateTime.Now;
+                _context.Update(item);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+
+        /// <summary>
+        /// edit pdf book tag value
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="edited"></param>
+        /// <param name="global">apply on all same value tags</param>
+        /// <returns></returns>
+        public async Task<RServiceResult<RTagValue>> EditPDFBookTagValueAsync(int pdfBookId, RTagValue edited, bool global)
+        {
+            if (string.IsNullOrEmpty(edited.Value))
+            {
+                return new RServiceResult<RTagValue>(null, "Value could not be empty.");
+            }
+
+            PDFBook pdfBook =
+                await _context.PDFBooks
+                 .Include(a => a.Tags)
+                 .Where(a => a.Id == pdfBookId)
+                .SingleOrDefaultAsync();
+            if (pdfBook == null)
+                return new RServiceResult<RTagValue>(null);
+
+            RTagValue tag =
+                pdfBook.Tags.Where(a => a.Id == edited.Id)
+                .SingleOrDefault();
+
+
+            if (tag != null)
+            {
+                tag.Order = edited.Order;
+                tag.ValueSupplement = edited.ValueSupplement;
+                _context.Update(tag);
+
+                if (global)
+                {
+                    RTagValue[] sameValueTags = await _context.TagValues.Where(v => v.Value == tag.Value && v.RTagId == tag.RTagId).ToArrayAsync();
+                    foreach (RTagValue sameValueTag in sameValueTags)
+                    {
+                        sameValueTag.Value = edited.Value;
+                        sameValueTag.ValueInEnglish = edited.ValueInEnglish;
+                        sameValueTag.Status = edited.Status;
+                        sameValueTag.FriendlyUrl = edited.FriendlyUrl;
+                        _context.Update(sameValueTag);
+
+                        RArtifactMasterRecord correspondingArtifact =
+                            await _context.Artifacts.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
+                        if (correspondingArtifact != null)
+                        {
+                            correspondingArtifact.LastModified = DateTime.Now;
+                            _context.Update(correspondingArtifact);
+                        }
+
+                        RArtifactItemRecord correspondingItem =
+                            await _context.Items.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
+                        if (correspondingItem != null)
+                        {
+                            correspondingItem.LastModified = DateTime.Now;
+                            _context.Update(correspondingItem);
+                        }
+
+                    }
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    tag.Value = edited.Value;
+                    tag.ValueInEnglish = edited.ValueInEnglish;
+                    tag.Order = edited.Order;
+                    tag.FriendlyUrl = edited.FriendlyUrl;
+                    tag.Status = edited.Status;
+                    tag.ValueSupplement = edited.ValueSupplement;
+                    _context.Update(tag);
+                    pdfBook.LastModified = DateTime.Now;
+                    _context.Update(pdfBook);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            return new RServiceResult<RTagValue>(tag);
         }
 
         /// <summary>
