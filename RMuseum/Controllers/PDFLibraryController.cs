@@ -473,6 +473,44 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get authors
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="authorName"></param>
+        /// <returns></returns>
+        [HttpGet("author")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<Author>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetAuthorsAsync([FromQuery] PagingParameterModel paging, string authorName = null)
+        {
+            var authorsRes = await _pdfService.GetAuthorsAsync(paging, authorName);
+            if (!string.IsNullOrEmpty(authorsRes.ExceptionString))
+            {
+                return BadRequest(authorsRes.ExceptionString);
+            }
+
+            if (authorsRes.Result.Authors.Count() > 0)
+            {
+                DateTime lastModification = authorsRes.Result.Authors.Max(i => i.LastModified);
+                Response.GetTypedHeaders().LastModified = lastModification;
+
+                var requestHeaders = Request.GetTypedHeaders();
+                if (requestHeaders.IfModifiedSince.HasValue &&
+                    requestHeaders.IfModifiedSince.Value >= lastModification)
+                {
+                    return StatusCode(StatusCodes.Status304NotModified);
+                }
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(authorsRes.Result.PagingMeta));
+
+            return Ok(authorsRes.Result.Authors);
+        }
+
+        /// <summary>
         /// add a new author
         /// </summary>
         /// <param name="author"></param>

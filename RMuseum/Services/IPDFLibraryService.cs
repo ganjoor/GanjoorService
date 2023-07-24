@@ -92,6 +92,20 @@ namespace RMuseum.Services
         Task<RServiceResult<(PaginationMetadata PagingMeta, Author[] Authors)>> GetAuthorsAsync(PagingParameterModel paging, string authorName);
 
         /// <summary>
+        /// update author
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<RServiceResult<Author>> UpdateAuthorAsync(Author model);
+
+        /// <summary>
+        /// delete author by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteAuthorAsync(int id);
+
+        /// <summary>
         /// add book
         /// </summary>
         /// <param name="book"></param>

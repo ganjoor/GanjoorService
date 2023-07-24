@@ -616,6 +616,51 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// update author
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<Author>> UpdateAuthorAsync(Author model)
+        {
+            try
+            {
+                var dbAuthor = await _context.Authors.Where(author => author.Id == model.Id).SingleOrDefaultAsync();
+                dbAuthor.Name = model.Name;
+                dbAuthor.NameInOriginalLanguage = model.NameInOriginalLanguage;
+                dbAuthor.Bio = model.Bio;
+                dbAuthor.ImageId = model.ImageId;
+                dbAuthor.ExtenalImageUrl = model.ExtenalImageUrl;
+                _context.Update(dbAuthor);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<Author>(model);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<Author>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// delete author by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteAuthorAsync(int id)
+        {
+            try
+            {
+                var dbAuthor = await _context.Authors.Where(author => author.Id == id).SingleOrDefaultAsync();
+                _context.Remove(dbAuthor);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// get author by id
         /// </summary>
         /// <param name="id"></param>
@@ -675,6 +720,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<Book>(null, exp.ToString());
             }
         }
+
 
         /// <summary>
         /// add multi volume pdf collection

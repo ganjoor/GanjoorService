@@ -2446,6 +2446,14 @@
             <param name="book"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetAuthorsAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            get authors
+            </summary>
+            <param name="paging"></param>
+            <param name="authorName"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.AddAuthorAsync(RMuseum.Models.PDFLibrary.Author)">
             <summary>
             add a new author
@@ -17651,6 +17659,20 @@
             <param name="author"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.UpdateAuthorAsync(RMuseum.Models.PDFLibrary.Author)">
+            <summary>
+            update author
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.DeleteAuthorAsync(System.Int32)">
+            <summary>
+            delete author by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetAuthorByIdAsync(System.Int32)">
             <summary>
             get author by id
@@ -18560,6 +18582,20 @@
             </summary>
             <param name="paging"></param>
             <param name="authorName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.UpdateAuthorAsync(RMuseum.Models.PDFLibrary.Author)">
+            <summary>
+            update author
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.DeleteAuthorAsync(System.Int32)">
+            <summary>
+            delete author by id
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">
