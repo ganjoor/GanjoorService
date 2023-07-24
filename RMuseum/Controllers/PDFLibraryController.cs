@@ -26,7 +26,7 @@ namespace RMuseum.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> StartImportingLocalPDFAsync([FromBody] NewPDFBookViewModel model)
@@ -167,7 +167,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
 
         [HttpPost("book")]
-        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Book))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> AddBookAsync([FromBody] Book book)
@@ -185,7 +185,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
 
         [HttpPost("author")]
-        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Author))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> AddAuthorAsync([FromBody] Author author)
@@ -202,7 +202,7 @@ namespace RMuseum.Controllers
         /// <param name="volumes"></param>
         /// <returns></returns>
         [HttpPost("volumes")]
-        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(MultiVolumePDFCollection))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> AddMultiVolumePDFCollection([FromBody] MultiVolumePDFCollection volumes)

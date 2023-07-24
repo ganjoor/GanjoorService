@@ -205,8 +205,14 @@ namespace RMuseum.Models.Auth.Memory
                         Description = "نسک‌بان",
                         Operations = new SecurableItemOperation[]
                         {
+                            new SecurableItemOperation(AddOperationShortName, "ایجاد", false),
+                            new SecurableItemOperation(ImportOperationShortName, "ورود اطلاعات از منابع خارجی", false),
                             new SecurableItemOperation(ModifyOperationShortName, "ویرایش محتوا", false),
+                            new SecurableItemOperation(DeleteOperationShortName, "حذف", false),
                             new SecurableItemOperation(ViewDraftOperationShortName, "مشاهدهٔ پیش‌نویس‌ها", false),
+                            new SecurableItemOperation(EditTagValueOperationShortName, "اصلاح مقدار ویژگی", false),
+                            new SecurableItemOperation(ToAwaitingStatusOperationShortName, "درخواست بازبینی", false),
+                            new SecurableItemOperation(PublishOperationShortName, "انتشار", false),
                         }
                     },
 
