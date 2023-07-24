@@ -2482,6 +2482,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.DeletePDFBookContributerAsync(System.Int32,System.Int32)">
+            <summary>
+            delete an existing contribution from pdf book
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="contributorRecordId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
             <summary>
             add a new mukti volume pdf collection
@@ -17709,6 +17717,23 @@
             <param name="authorName"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddPDFBookContributerAsync(System.Int32,System.Int32,System.String)">
+            <summary>
+            add pdf book contributer
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="authorId"></param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.DeletePDFBookContributerAsync(System.Int32,System.Int32)">
+            <summary>
+            remove contribution from pdf book
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="contributionId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">
             <summary>
             add book
@@ -18617,6 +18642,23 @@
             delete author by id
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.AddPDFBookContributerAsync(System.Int32,System.Int32,System.String)">
+            <summary>
+            add pdf book contributer
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="authorId"></param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.DeletePDFBookContributerAsync(System.Int32,System.Int32)">
+            <summary>
+            remove contribution from pdf book
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="contributionId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">

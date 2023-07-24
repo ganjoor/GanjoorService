@@ -699,7 +699,69 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<(PaginationMetadata PagingMeta, Author[] Authors)>((null, null), exp.ToString());
             }
+        }
 
+        /// <summary>
+        /// add pdf book contributer
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="authorId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> AddPDFBookContributerAsync(int pdfBookId, int authorId, string role)
+        {
+            try
+            {
+                role = role.Trim();
+                var pdfBook = await _context.PDFBooks.Include(b => b.Contributers).ThenInclude(a => a.Author).Where(b => b.Id == pdfBookId).SingleAsync();
+                if(pdfBook.Contributers.Any(a => a.Author.Id == authorId && a.Role == role))
+                {
+                    return new RServiceResult<bool>(false, "author contribution already added");
+                }
+                var author = await _context.Authors.AsNoTracking().Where(a => a.Id == authorId).SingleAsync();
+                pdfBook.Contributers.Add(new AuthorRole()
+                {
+                    Author = author,
+                    Role = role
+                });
+                _context.Update(pdfBook);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// remove contribution from pdf book
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="contributionId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeletePDFBookContributerAsync(int pdfBookId, int contributionId)
+        {
+            try
+            {
+                var pdfBook = await _context.PDFBooks.Include(b => b.Contributers).ThenInclude(a => a.Author).Where(b => b.Id == pdfBookId).SingleAsync();
+                if (!pdfBook.Contributers.Any(a => a.Id == contributionId))
+                {
+                    return new RServiceResult<bool>(false, "author contribution not found.");
+                }
+
+                var contribution = pdfBook.Contributers.Where(a => a.Id == contributionId).Single();
+
+
+                pdfBook.Contributers.Remove(contribution);
+                _context.Update(pdfBook);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
         }
 
         /// <summary>

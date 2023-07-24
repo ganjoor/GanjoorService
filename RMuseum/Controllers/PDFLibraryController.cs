@@ -590,6 +590,38 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        [HttpPost("pdfbook/{pdfBookId}/contributor")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> AddPDFBookContributerAsync(int pdfBookId, [FromBody] AuthorRole role)
+        {
+            var res = await _pdfService.AddPDFBookContributerAsync(pdfBookId, role.Author.Id, role.Role);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+
+        /// <summary>
+        /// delete an existing contribution from pdf book
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="contributorRecordId"></param>
+        /// <returns></returns>
+
+        [HttpDelete("pdfbook/{pdfBookId}/contributor/{contributorRecordId}")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeletePDFBookContributerAsync(int pdfBookId, int contributorRecordId)
+        {
+            var res = await _pdfService.DeletePDFBookContributerAsync(pdfBookId, contributorRecordId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
         /// <summary>
         /// add a new mukti volume pdf collection
         /// </summary>

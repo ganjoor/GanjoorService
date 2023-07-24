@@ -106,6 +106,23 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> DeleteAuthorAsync(int id);
 
         /// <summary>
+        /// add pdf book contributer
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="authorId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> AddPDFBookContributerAsync(int pdfBookId, int authorId, string role);
+
+        /// <summary>
+        /// remove contribution from pdf book
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="contributionId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeletePDFBookContributerAsync(int pdfBookId, int contributionId);
+
+        /// <summary>
         /// add book
         /// </summary>
         /// <param name="book"></param>
