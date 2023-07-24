@@ -2490,6 +2490,15 @@
             <param name="contributorRecordId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetPublishedPDFBooksByAuthorAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32,System.String)">
+            <summary>
+            pdf book by contributer
+            </summary>
+            <param name="paging"></param>
+            <param name="authorId"></param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
             <summary>
             add a new mukti volume pdf collection
@@ -17734,6 +17743,15 @@
             <param name="contributionId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetPublishedPDFBooksByAuthorAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32,System.String)">
+            <summary>
+            get published pdf books by author
+            </summary>
+            <param name="paging"></param>
+            <param name="authorId"></param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">
             <summary>
             add book
@@ -18659,6 +18677,15 @@
             </summary>
             <param name="pdfBookId"></param>
             <param name="contributionId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetPublishedPDFBooksByAuthorAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32,System.String)">
+            <summary>
+            get published pdf books by author
+            </summary>
+            <param name="paging"></param>
+            <param name="authorId"></param>
+            <param name="role"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">

@@ -623,6 +623,45 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// pdf book by contributer
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="authorId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        [HttpGet("pdfbook/by/contributer/{authorId}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetPublishedPDFBooksByAuthorAsync([FromQuery] PagingParameterModel paging, int authorId, string role = null)
+        {
+            var pdfBooksInfo = await _pdfService.GetPublishedPDFBooksByAuthorAsync(paging, authorId, role);
+            if (!string.IsNullOrEmpty(pdfBooksInfo.ExceptionString))
+            {
+                return BadRequest(pdfBooksInfo.ExceptionString);
+            }
+
+            if (pdfBooksInfo.Result.Books.Count() > 0)
+            {
+                DateTime lastModification = pdfBooksInfo.Result.Books.Max(i => i.LastModified);
+                Response.GetTypedHeaders().LastModified = lastModification;
+
+                var requestHeaders = Request.GetTypedHeaders();
+                if (requestHeaders.IfModifiedSince.HasValue &&
+                    requestHeaders.IfModifiedSince.Value >= lastModification)
+                {
+                    return StatusCode(StatusCodes.Status304NotModified);
+                }
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pdfBooksInfo.Result.PagingMeta));
+
+            return Ok(pdfBooksInfo.Result.Books);
+        }
+
+        /// <summary>
         /// add a new mukti volume pdf collection
         /// </summary>
         /// <param name="volumes"></param>

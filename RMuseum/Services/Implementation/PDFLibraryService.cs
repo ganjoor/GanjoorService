@@ -75,7 +75,6 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>((null, null), exp.ToString());
             }
-
         }
 
         /// <summary>
@@ -761,6 +760,32 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get published pdf books by author
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="authorId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetPublishedPDFBooksByAuthorAsync(PagingParameterModel paging, int authorId, string role)
+        {
+            try
+            {
+                var source =
+                _context.PDFBooks.AsNoTracking()
+                .Include(a => a.CoverImage).Include(a => a.Contributers).ThenInclude(c => c.Author)
+                .Where(a => a.Status == PublishStatus.Published && a.Contributers.Any(a => a.Author.Id == authorId && (string.IsNullOrEmpty(role) || (!string.IsNullOrEmpty(role) && a.Role == role))))
+               .AsQueryable();
+                (PaginationMetadata PagingMeta, PDFBook[] Books) paginatedResult =
+                    await QueryablePaginator<PDFBook>.Paginate(source, paging);
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>((null, null), exp.ToString());
             }
         }
 

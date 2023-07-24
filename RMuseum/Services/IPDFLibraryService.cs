@@ -123,6 +123,15 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> DeletePDFBookContributerAsync(int pdfBookId, int contributionId);
 
         /// <summary>
+        /// get published pdf books by author
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="authorId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetPublishedPDFBooksByAuthorAsync(PagingParameterModel paging, int authorId, string role);
+
+        /// <summary>
         /// add book
         /// </summary>
         /// <param name="book"></param>
