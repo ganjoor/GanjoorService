@@ -529,6 +529,42 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// edit an existing author
+        /// </summary>
+        /// <param name="author"></param>
+        /// <returns></returns>
+
+        [HttpPut("author")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> UpdateAuthorAsync([FromBody] Author author)
+        {
+            var res = await _pdfService.UpdateAuthorAsync(author);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// delete an existing author
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        [HttpDelete("author/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeleteAuthorAsync(int id)
+        {
+            var res = await _pdfService.DeleteAuthorAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         /// add a new mukti volume pdf collection
         /// </summary>
         /// <param name="volumes"></param>

@@ -2461,6 +2461,20 @@
             <param name="author"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.UpdateAuthorAsync(RMuseum.Models.PDFLibrary.Author)">
+            <summary>
+            edit an existing author
+            </summary>
+            <param name="author"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.DeleteAuthorAsync(System.Int32)">
+            <summary>
+            delete an existing author
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
             <summary>
             add a new mukti volume pdf collection
