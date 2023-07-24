@@ -214,7 +214,25 @@ namespace RMuseum.Controllers
                 return NotFound();
             }
 
-            return Ok(); ;
+            return Ok();
+        }
+
+        /// <summary>
+        /// Copy PDF Book Cover Image From Page Thumbnail image
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="pageId"></param>
+        /// <returns></returns>
+        [HttpPut("{id}/cover/{pageId}")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> SetPDFBookCoverImageFromPage(int id, int pageId)
+        {
+            RServiceResult<bool> res = await _pdfService.SetPDFBookCoverImageFromPage(id, pageId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest();
+            return Ok();
         }
 
         /// <summary>

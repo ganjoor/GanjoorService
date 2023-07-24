@@ -136,7 +136,7 @@ namespace RMuseum.Services.Implementation
                     var book = await context.Books.Where(b => b.Id == bookId).SingleAsync();
                     if (book.CoverImageId == null)
                     {
-                        book.CoverImage = pdfBook.CoverImage.DuplicateExcludingId(pdfBook.CoverImage);
+                        book.CoverImage = RImage.DuplicateExcludingId(pdfBook.CoverImage);
                         context.Update(book);
                         await context.SaveChangesAsync();
                     }
@@ -248,7 +248,7 @@ namespace RMuseum.Services.Implementation
                         page.ThumbnailImage = picture.Result;
                         if (page.PageNumber == 1)
                         {
-                            pdfBook.CoverImage = picture.Result.DuplicateExcludingId(picture.Result);
+                            pdfBook.CoverImage = RImage.DuplicateExcludingId(picture.Result);
                         }
                     }
                 }

@@ -70,5 +70,13 @@ namespace RMuseum.Services
         /// <param name="canPublish"></param>
         /// <returns></returns>
         Task<RServiceResult<PDFBook>> EditPDFBookMasterRecord(PDFBook model, bool canChangeStatusToAwaiting, bool canPublish);
+
+        /// <summary>
+        /// Copy PDF Book Cover Image From Page Thumbnail image
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="pdfpageId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> SetPDFBookCoverImageFromPage(int pdfBookId, int pdfpageId);
     }
 }

@@ -7,6 +7,7 @@ using RMuseum.Models.ImportJob;
 using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.PDFLibrary.ViewModels;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Models.Image;
 using RSecurityBackend.Services;
 using RSecurityBackend.Services.Implementation;
 using System;
@@ -39,10 +40,10 @@ namespace RMuseum.Services.Implementation
                             .Include(b => b.Contributers)
                             .Include(b => b.Tags)
                             .Include(b => b.Pages)
-                            .Where(b => statusArray.Contains(b.Status) &&b.Id == id)
+                            .Where(b => statusArray.Contains(b.Status) && b.Id == id)
                             .SingleOrDefaultAsync();
                 return new RServiceResult<PDFBook>(pdfBook);
-            
+
             }
             catch (Exception exp)
             {
@@ -202,7 +203,7 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
- 
+
         }
 
         /// <summary>
@@ -214,64 +215,107 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<PDFBook>> EditPDFBookMasterRecord(PDFBook model, bool canChangeStatusToAwaiting, bool canPublish)
         {
-            if (string.IsNullOrEmpty(model.Title))
+            try
             {
-                return new RServiceResult<PDFBook>(null, "Name could not be empty.");
-            }
-
-            PDFBook pdfBook =
-                 await _context.PDFBooks
-                 .Where(a => a.Id == model.Id)
-                .SingleOrDefaultAsync();
-
-
-            if (pdfBook != null)
-            {
-                if (pdfBook.Status != model.Status)
+                if (string.IsNullOrEmpty(model.Title))
                 {
-                    if (!canChangeStatusToAwaiting)
-                    {
-                        return new RServiceResult<PDFBook>(null, "User should be able to change status to Awaiting to complete this operation.");
-                    }
-
-                    if (
-                        !
-                        (
-                        (pdfBook.Status == PublishStatus.Draft && model.Status == PublishStatus.Awaiting)
-                        ||
-                        (pdfBook.Status == PublishStatus.Awaiting && model.Status == PublishStatus.Draft)
-                        )
-                        )
-                    {
-                        if (!canPublish)
-                        {
-                            return new RServiceResult<PDFBook>(null, "User should have Publish permission to complete this operation.");
-                        }
-                    }
+                    return new RServiceResult<PDFBook>(null, "Name could not be empty.");
                 }
 
-                pdfBook.Status = model.Status;
-                pdfBook.Title = model.Title;
-                pdfBook.SubTitle = model.SubTitle;
-                pdfBook.AuthorsLine = model.AuthorsLine;
-                pdfBook.ISBN = model.ISBN;
-                pdfBook.Description = model.Description;
-                pdfBook.IsTranslation = model.IsTranslation;
-                pdfBook.TranslatorsLine = model.TranslatorsLine;
-                pdfBook.TitleInOriginalLanguage = model.TitleInOriginalLanguage;
-                pdfBook.PublisherLine = model.PublisherLine;
-                pdfBook.PublishingDate = model.PublishingDate;
-                pdfBook.PublishingLocation = model.PublishingLocation;
-                pdfBook.PublishingNumber = model.PublishingNumber == 0 ? null : model.PublishingNumber;
-                pdfBook.ClaimedPageCount = model.ClaimedPageCount == 0 ? null : model.ClaimedPageCount;
-                pdfBook.OriginalSourceName = model.OriginalSourceName;
-                pdfBook.OriginalFileUrl = model.OriginalFileUrl;
+                PDFBook pdfBook =
+                     await _context.PDFBooks
+                     .Where(a => a.Id == model.Id)
+                    .SingleOrDefaultAsync();
+
+
+                if (pdfBook != null)
+                {
+                    if (pdfBook.Status != model.Status)
+                    {
+                        if (!canChangeStatusToAwaiting)
+                        {
+                            return new RServiceResult<PDFBook>(null, "User should be able to change status to Awaiting to complete this operation.");
+                        }
+
+                        if (
+                            !
+                            (
+                            (pdfBook.Status == PublishStatus.Draft && model.Status == PublishStatus.Awaiting)
+                            ||
+                            (pdfBook.Status == PublishStatus.Awaiting && model.Status == PublishStatus.Draft)
+                            )
+                            )
+                        {
+                            if (!canPublish)
+                            {
+                                return new RServiceResult<PDFBook>(null, "User should have Publish permission to complete this operation.");
+                            }
+                        }
+                    }
+
+                    pdfBook.Status = model.Status;
+                    pdfBook.Title = model.Title;
+                    pdfBook.SubTitle = model.SubTitle;
+                    pdfBook.AuthorsLine = model.AuthorsLine;
+                    pdfBook.ISBN = model.ISBN;
+                    pdfBook.Description = model.Description;
+                    pdfBook.IsTranslation = model.IsTranslation;
+                    pdfBook.TranslatorsLine = model.TranslatorsLine;
+                    pdfBook.TitleInOriginalLanguage = model.TitleInOriginalLanguage;
+                    pdfBook.PublisherLine = model.PublisherLine;
+                    pdfBook.PublishingDate = model.PublishingDate;
+                    pdfBook.PublishingLocation = model.PublishingLocation;
+                    pdfBook.PublishingNumber = model.PublishingNumber == 0 ? null : model.PublishingNumber;
+                    pdfBook.ClaimedPageCount = model.ClaimedPageCount == 0 ? null : model.ClaimedPageCount;
+                    pdfBook.OriginalSourceName = model.OriginalSourceName;
+                    pdfBook.OriginalFileUrl = model.OriginalFileUrl;
+                    pdfBook.LastModified = DateTime.Now;
+
+                    _context.Update(pdfBook);
+                    await _context.SaveChangesAsync();
+                }
+                return new RServiceResult<PDFBook>(pdfBook);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PDFBook>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Copy PDF Book Cover Image From Page Thumbnail image
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="pdfpageId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> SetPDFBookCoverImageFromPage(int pdfBookId, int pdfpageId)
+        {
+            try
+            {
+                PDFBook pdfBook = await _context
+                    .PDFBooks.Where(a => a.Id == pdfBookId)
+                    .SingleOrDefaultAsync();
+                if (pdfBook == null)
+                    return new RServiceResult<bool>(false, "pdf book not found.");
+
+                PDFPage pdfPage = await _context.PDFPages.AsNoTracking().Include(p => p.ThumbnailImage).Where(p => p.Id == pdfpageId).SingleOrDefaultAsync();
+
+                if (pdfPage == null)
+                    return new RServiceResult<bool>(false, "Page not found.");
+
+                pdfBook.CoverImage = RImage.DuplicateExcludingId(pdfPage.ThumbnailImage);
+
                 pdfBook.LastModified = DateTime.Now;
 
                 _context.Update(pdfBook);
                 await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
             }
-            return new RServiceResult<PDFBook>(pdfBook);
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
         }
 
         /// <summary>
@@ -320,7 +364,7 @@ namespace RMuseum.Services.Implementation
         {
             var source =
                  _context.Authors
-                 .Where(a => string.IsNullOrEmpty(authorName) || (authorName.Contains(a.Name) || (!string.IsNullOrEmpty(a.NameInOriginalLanguage) && authorName.Contains(a.NameInOriginalLanguage)) ))
+                 .Where(a => string.IsNullOrEmpty(authorName) || (authorName.Contains(a.Name) || (!string.IsNullOrEmpty(a.NameInOriginalLanguage) && authorName.Contains(a.NameInOriginalLanguage))))
                 .AsQueryable();
             (PaginationMetadata PagingMeta, Author[] Items) paginatedResult =
                 await QueryablePaginator<Author>.Paginate(source, paging);
