@@ -12,10 +12,10 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using RSecurityBackend.Services;
-using RMuseum.Services.Implementation;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using RMuseum.Models.Artifact;
+using RMuseum.Services.Implementation;
 
 namespace RMuseum.Controllers
 {
@@ -34,9 +34,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
-        public async Task<IActionResult> GetAllPDFBooks([FromQuery] PagingParameterModel paging)
+        public async Task<IActionResult> GetAllPDFBooksAsync([FromQuery] PagingParameterModel paging)
         {
-            var pdfBooksInfo = await _pdfService.GetAllPDFBooks(paging, new PublishStatus[] { PublishStatus.Published });
+            var pdfBooksInfo = await _pdfService.GetAllPDFBooksAsync(paging, new PublishStatus[] { PublishStatus.Published });
             if (!string.IsNullOrEmpty(pdfBooksInfo.ExceptionString))
             {
                 return BadRequest(pdfBooksInfo.ExceptionString);
@@ -71,9 +71,9 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetUserVisible([FromQuery] PagingParameterModel paging)
+        public async Task<IActionResult> GetUserVisiblePDFBooksAsync([FromQuery] PagingParameterModel paging)
         {
-            RServiceResult<PublishStatus[]> v = await _GetUserVisiblePDFBooksStatusSet
+            RServiceResult<PublishStatus[]> v = await _GetUserVisiblePDFBooksStatusSetAsync
                 (
                 new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value),
                 new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value)
@@ -84,10 +84,10 @@ namespace RMuseum.Controllers
 
             if (visibleItems.Length == 1 && visibleItems[0] == PublishStatus.Published) //Caching
             {
-                return await GetAllPDFBooks(paging);
+                return await GetAllPDFBooksAsync(paging);
             }
 
-            RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)> itemsInfo = await _pdfService.GetAllPDFBooks(paging, visibleItems);
+            RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)> itemsInfo = await _pdfService.GetAllPDFBooksAsync(paging, visibleItems);
             if (!string.IsNullOrEmpty(itemsInfo.ExceptionString))
             {
                 return BadRequest(itemsInfo.ExceptionString);
@@ -122,9 +122,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PDFBook))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetUserVisible(int id)
+        public async Task<IActionResult> GetUserVisiblePDFBookAsync(int id)
         {
-            RServiceResult<PublishStatus[]> v = await _GetUserVisiblePDFBooksStatusSet
+            RServiceResult<PublishStatus[]> v = await _GetUserVisiblePDFBooksStatusSetAsync
                (
                new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value),
                new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value)
@@ -168,7 +168,7 @@ namespace RMuseum.Controllers
             return Ok(bookRes.Result);
         }
 
-        private async Task<RServiceResult<PublishStatus[]>> _GetUserVisiblePDFBooksStatusSet(Guid loggedOnUserId, Guid sessionId)
+        private async Task<RServiceResult<PublishStatus[]>> _GetUserVisiblePDFBooksStatusSetAsync(Guid loggedOnUserId, Guid sessionId)
         {
             RServiceResult<bool>
                 canView =
@@ -267,7 +267,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> Put([FromBody] PDFBook pdf)
+        public async Task<IActionResult> PutPDFBookAsync([FromBody] PDFBook pdf)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
@@ -296,7 +296,7 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(canPublish.ExceptionString))
                 return BadRequest(canPublish.ExceptionString);
 
-            RServiceResult<PDFBook> itemInfo = await _pdfService.EditPDFBookMasterRecord(pdf, canChangeStatusToAwaiting.Result, canPublish.Result);
+            RServiceResult<PDFBook> itemInfo = await _pdfService.EditPDFBookMasterRecordAsync(pdf, canChangeStatusToAwaiting.Result, canPublish.Result);
             if (!string.IsNullOrEmpty(itemInfo.ExceptionString))
             {
                 return BadRequest(itemInfo.ExceptionString);
@@ -320,9 +320,9 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> SetPDFBookCoverImageFromPage(int id, int pageId)
+        public async Task<IActionResult> SetPDFBookCoverImageFromPageAsync(int id, int pageId)
         {
-            RServiceResult<bool> res = await _pdfService.SetPDFBookCoverImageFromPage(id, pageId);
+            RServiceResult<bool> res = await _pdfService.SetPDFBookCoverImageFromPageAsync(id, pageId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest();
             return Ok();
@@ -346,6 +346,40 @@ namespace RMuseum.Controllers
                 return BadRequest(res.ExceptionString);
             }
             return Ok(res.Result);
+        }
+        /// <summary>
+        /// get tagged publish pdfbooks (including CoverImage info but not pages or tagibutes info) 
+        /// </summary>
+        /// <param name="tagUrl"></param>
+        /// <param name="valueUrl"></param>
+        /// <returns></returns>
+
+        [HttpGet("tagged/{tagUrl}/{valueUrl}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetByTagValue(string tagUrl, string valueUrl)
+        {
+            RServiceResult<PDFBook[]> itemsInfo = await _pdfService.GetPDFBookByTagValueAsync(tagUrl, valueUrl, new PublishStatus[] { PublishStatus.Published });
+            if (!string.IsNullOrEmpty(itemsInfo.ExceptionString))
+            {
+                return BadRequest(itemsInfo.ExceptionString);
+            }
+
+            if (itemsInfo.Result.Length > 0)
+            {
+                DateTime lastModification = itemsInfo.Result.Max(i => i.LastModified);
+                Response.GetTypedHeaders().LastModified = lastModification;
+
+                var requestHeaders = Request.GetTypedHeaders();
+                if (requestHeaders.IfModifiedSince.HasValue &&
+                    requestHeaders.IfModifiedSince.Value >= lastModification)
+                {
+                    return StatusCode(StatusCodes.Status304NotModified);
+                }
+            }
+
+            return Ok(itemsInfo.Result);
         }
 
         /// <summary>

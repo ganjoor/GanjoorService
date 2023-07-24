@@ -2343,21 +2343,21 @@
             <param name="numberingService"></param>
             <param name="configuration"></param>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.GetAllPDFBooks(RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetAllPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
              <summary>
             get all published pdfbooks (including CoverImage info but not pages or tagibutes info) - check paging-headers for paging info
              </summary>
              <param name="paging"></param>
              <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.GetUserVisible(RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetUserVisiblePDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             get all pdf books visible by user (including CoverImage info but not items info)
             </summary>
             <param name="paging"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.GetUserVisible(System.Int32)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetUserVisiblePDFBookAsync(System.Int32)">
             <summary>
             secure get a pdf book
             </summary>
@@ -2378,7 +2378,7 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.Put(RMuseum.Models.PDFLibrary.PDFBook)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.PutPDFBookAsync(RMuseum.Models.PDFLibrary.PDFBook)">
             <summary>
             edit pdf book master record (user should have additional permissions pdf:awaiting and pdf:publish to change status of pdf book)
             </summary>
@@ -2388,7 +2388,7 @@
             <param name="pdf"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.SetPDFBookCoverImageFromPage(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.SetPDFBookCoverImageFromPageAsync(System.Int32,System.Int32)">
             <summary>
             Copy PDF Book Cover Image From Page Thumbnail image
             </summary>
@@ -2401,6 +2401,14 @@
             remove unpublished pdf book
             </summary>
             <param name="bookId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetByTagValue(System.String,System.String)">
+            <summary>
+            get tagged publish pdfbooks (including CoverImage info but not pages or tagibutes info) 
+            </summary>
+            <param name="tagUrl"></param>
+            <param name="valueUrl"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">
@@ -17535,7 +17543,7 @@
             <param name="statusArray"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetAllPDFBooks(RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Artifact.PublishStatus[])">
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetAllPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Artifact.PublishStatus[])">
             <summary>
             get all pdfbooks (including CoverImage info but not pages or tagibutes info)
             </summary>
@@ -17550,7 +17558,7 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.EditPDFBookMasterRecord(RMuseum.Models.PDFLibrary.PDFBook,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.EditPDFBookMasterRecordAsync(RMuseum.Models.PDFLibrary.PDFBook,System.Boolean,System.Boolean)">
             <summary>
             edit pdf book master record
             </summary>
@@ -17559,7 +17567,7 @@
             <param name="canPublish"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.SetPDFBookCoverImageFromPage(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.SetPDFBookCoverImageFromPageAsync(System.Int32,System.Int32)">
             <summary>
             Copy PDF Book Cover Image From Page Thumbnail image
             </summary>
@@ -17572,6 +17580,15 @@
             an incomplete prototype for removing PDF books
             </summary>
             <param name="pdfBookId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetPDFBookByTagValueAsync(System.String,System.String,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            get tagged publish pdfbooks (including CoverImage info but not pages or tagibutes info) 
+            </summary>
+            <param name="tagUrl"></param>
+            <param name="valueUrl"></param>
+            <param name="statusArray"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddAuthorAsync(RMuseum.Models.PDFLibrary.Author)">
@@ -18421,7 +18438,7 @@
             <param name="statusArray"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IPDFLibraryService.GetAllPDFBooks(RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Artifact.PublishStatus[])">
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetAllPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Artifact.PublishStatus[])">
             <summary>
             get all pdfbooks (including CoverImage info but not pages or tagibutes info)
             </summary>
@@ -18434,6 +18451,15 @@
             an incomplete prototype for removing PDF books
             </summary>
             <param name="pdfBookId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetPDFBookByTagValueAsync(System.String,System.String,RMuseum.Models.Artifact.PublishStatus[])">
+            <summary>
+            get tagged publish pdfbooks (including CoverImage info but not pages or tagibutes info) 
+            </summary>
+            <param name="tagUrl"></param>
+            <param name="valueUrl"></param>
+            <param name="statusArray"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.AddAuthorAsync(RMuseum.Models.PDFLibrary.Author)">
@@ -18479,7 +18505,7 @@
             <param name="model"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IPDFLibraryService.EditPDFBookMasterRecord(RMuseum.Models.PDFLibrary.PDFBook,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.IPDFLibraryService.EditPDFBookMasterRecordAsync(RMuseum.Models.PDFLibrary.PDFBook,System.Boolean,System.Boolean)">
             <summary>
             edit pdf book master record
             </summary>
@@ -18488,7 +18514,7 @@
             <param name="canPublish"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IPDFLibraryService.SetPDFBookCoverImageFromPage(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.IPDFLibraryService.SetPDFBookCoverImageFromPageAsync(System.Int32,System.Int32)">
             <summary>
             Copy PDF Book Cover Image From Page Thumbnail image
             </summary>

@@ -57,7 +57,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="paging"></param>
         /// <param name="statusArray"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetAllPDFBooks(PagingParameterModel paging, PublishStatus[] statusArray)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetAllPDFBooksAsync(PagingParameterModel paging, PublishStatus[] statusArray)
         {
             var source =
                  _context.PDFBooks.AsNoTracking()
@@ -232,7 +232,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="canChangeStatusToAwaiting"></param>
         /// <param name="canPublish"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PDFBook>> EditPDFBookMasterRecord(PDFBook model, bool canChangeStatusToAwaiting, bool canPublish)
+        public async Task<RServiceResult<PDFBook>> EditPDFBookMasterRecordAsync(PDFBook model, bool canChangeStatusToAwaiting, bool canPublish)
         {
             try
             {
@@ -307,7 +307,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="pdfBookId"></param>
         /// <param name="pdfpageId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> SetPDFBookCoverImageFromPage(int pdfBookId, int pdfpageId)
+        public async Task<RServiceResult<bool>> SetPDFBookCoverImageFromPageAsync(int pdfBookId, int pdfpageId)
         {
             try
             {
@@ -392,6 +392,37 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false, exp.ToString());
             }
             return new RServiceResult<bool>(true);
+        }
+
+        /// <summary>
+        /// get tagged publish pdfbooks (including CoverImage info but not pages or tagibutes info) 
+        /// </summary>
+        /// <param name="tagUrl"></param>
+        /// <param name="valueUrl"></param>
+        /// <param name="statusArray"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PDFBook[]>> GetPDFBookByTagValueAsync(string tagUrl, string valueUrl, PublishStatus[] statusArray)
+        {
+            RTag tag =
+                        await _context.Tags
+                        .Where(a => a.FriendlyUrl == tagUrl)
+                    .SingleOrDefaultAsync();
+            if (tag == null)
+                return new RServiceResult<PDFBook[]>(new PDFBook[] { });
+
+
+            PDFBook[] taggedItems =
+                await _context.PDFBooks.Include(a => a.Tags)
+                 .Include(a => a.CoverImage)
+                .Where(a => statusArray.Contains(a.Status) && a.Tags != null && a.Tags.Any(v => v.RTagId == tag.Id && v.FriendlyUrl == valueUrl))
+                .OrderByDescending(t => t.DateTime)
+                .AsNoTracking()
+                .ToArrayAsync();
+
+            foreach (PDFBook taggedItem in taggedItems)
+                taggedItem.Tags = null;
+
+            return new RServiceResult<PDFBook[]>(taggedItems);
         }
 
         /// <summary>

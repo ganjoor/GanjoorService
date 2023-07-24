@@ -25,7 +25,7 @@ namespace RMuseum.Services
         /// <param name="paging"></param>
         /// <param name="statusArray"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetAllPDFBooks(PagingParameterModel paging, PublishStatus[] statusArray);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetAllPDFBooksAsync(PagingParameterModel paging, PublishStatus[] statusArray);
 
         /// <summary>
         /// an incomplete prototype for removing PDF books
@@ -33,6 +33,15 @@ namespace RMuseum.Services
         /// <param name="pdfBookId"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> RemovePDFBookAsync(int pdfBookId);
+
+        /// <summary>
+        /// get tagged publish pdfbooks (including CoverImage info but not pages or tagibutes info) 
+        /// </summary>
+        /// <param name="tagUrl"></param>
+        /// <param name="valueUrl"></param>
+        /// <param name="statusArray"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PDFBook[]>> GetPDFBookByTagValueAsync(string tagUrl, string valueUrl, PublishStatus[] statusArray);
 
         /// <summary>
         /// add author
@@ -84,7 +93,7 @@ namespace RMuseum.Services
         /// <param name="canChangeStatusToAwaiting"></param>
         /// <param name="canPublish"></param>
         /// <returns></returns>
-        Task<RServiceResult<PDFBook>> EditPDFBookMasterRecord(PDFBook model, bool canChangeStatusToAwaiting, bool canPublish);
+        Task<RServiceResult<PDFBook>> EditPDFBookMasterRecordAsync(PDFBook model, bool canChangeStatusToAwaiting, bool canPublish);
 
         /// <summary>
         /// Copy PDF Book Cover Image From Page Thumbnail image
@@ -92,6 +101,6 @@ namespace RMuseum.Services
         /// <param name="pdfBookId"></param>
         /// <param name="pdfpageId"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> SetPDFBookCoverImageFromPage(int pdfBookId, int pdfpageId);
+        Task<RServiceResult<bool>> SetPDFBookCoverImageFromPageAsync(int pdfBookId, int pdfpageId);
     }
 }
