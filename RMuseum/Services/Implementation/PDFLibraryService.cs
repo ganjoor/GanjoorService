@@ -59,15 +59,23 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetAllPDFBooksAsync(PagingParameterModel paging, PublishStatus[] statusArray)
         {
-            var source =
-                 _context.PDFBooks.AsNoTracking()
-                 .Include(a => a.CoverImage)
-                 .Where(a => statusArray.Contains(a.Status))
-                .OrderByDescending(t => t.DateTime)
-                .AsQueryable();
-            (PaginationMetadata PagingMeta, PDFBook[] Books) paginatedResult =
-                await QueryablePaginator<PDFBook>.Paginate(source, paging);
-            return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>(paginatedResult);
+            try
+            {
+                var source =
+                _context.PDFBooks.AsNoTracking()
+                .Include(a => a.CoverImage)
+                .Where(a => statusArray.Contains(a.Status))
+               .OrderByDescending(t => t.DateTime)
+               .AsQueryable();
+                (PaginationMetadata PagingMeta, PDFBook[] Books) paginatedResult =
+                    await QueryablePaginator<PDFBook>.Paginate(source, paging);
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>((null, null), exp.ToString());
+            }
+
         }
 
         /// <summary>
@@ -288,6 +296,9 @@ namespace RMuseum.Services.Implementation
                     pdfBook.ClaimedPageCount = model.ClaimedPageCount == 0 ? null : model.ClaimedPageCount;
                     pdfBook.OriginalSourceName = model.OriginalSourceName;
                     pdfBook.OriginalFileUrl = model.OriginalFileUrl;
+                    pdfBook.VolumeOrder = model.VolumeOrder;
+                    pdfBook.MultiVolumePDFCollectionId = model.MultiVolumePDFCollectionId;
+                    pdfBook.BookId = model.BookId;
                     pdfBook.LastModified = DateTime.Now;
 
                     _context.Update(pdfBook);
@@ -507,75 +518,82 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<RTagValue>> EditPDFBookTagValueAsync(int pdfBookId, RTagValue edited, bool global)
         {
-            if (string.IsNullOrEmpty(edited.Value))
+            try
             {
-                return new RServiceResult<RTagValue>(null, "Value could not be empty.");
-            }
-
-            PDFBook pdfBook =
-                await _context.PDFBooks
-                 .Include(a => a.Tags)
-                 .Where(a => a.Id == pdfBookId)
-                .SingleOrDefaultAsync();
-            if (pdfBook == null)
-                return new RServiceResult<RTagValue>(null);
-
-            RTagValue tag =
-                pdfBook.Tags.Where(a => a.Id == edited.Id)
-                .SingleOrDefault();
-
-
-            if (tag != null)
-            {
-                tag.Order = edited.Order;
-                tag.ValueSupplement = edited.ValueSupplement;
-                _context.Update(tag);
-
-                if (global)
+                if (string.IsNullOrEmpty(edited.Value))
                 {
-                    RTagValue[] sameValueTags = await _context.TagValues.Where(v => v.Value == tag.Value && v.RTagId == tag.RTagId).ToArrayAsync();
-                    foreach (RTagValue sameValueTag in sameValueTags)
-                    {
-                        sameValueTag.Value = edited.Value;
-                        sameValueTag.ValueInEnglish = edited.ValueInEnglish;
-                        sameValueTag.Status = edited.Status;
-                        sameValueTag.FriendlyUrl = edited.FriendlyUrl;
-                        _context.Update(sameValueTag);
-
-                        RArtifactMasterRecord correspondingArtifact =
-                            await _context.Artifacts.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
-                        if (correspondingArtifact != null)
-                        {
-                            correspondingArtifact.LastModified = DateTime.Now;
-                            _context.Update(correspondingArtifact);
-                        }
-
-                        RArtifactItemRecord correspondingItem =
-                            await _context.Items.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
-                        if (correspondingItem != null)
-                        {
-                            correspondingItem.LastModified = DateTime.Now;
-                            _context.Update(correspondingItem);
-                        }
-
-                    }
-                    await _context.SaveChangesAsync();
+                    return new RServiceResult<RTagValue>(null, "Value could not be empty.");
                 }
-                else
+
+                PDFBook pdfBook =
+                    await _context.PDFBooks
+                     .Include(a => a.Tags)
+                     .Where(a => a.Id == pdfBookId)
+                    .SingleOrDefaultAsync();
+                if (pdfBook == null)
+                    return new RServiceResult<RTagValue>(null);
+
+                RTagValue tag =
+                    pdfBook.Tags.Where(a => a.Id == edited.Id)
+                    .SingleOrDefault();
+
+
+                if (tag != null)
                 {
-                    tag.Value = edited.Value;
-                    tag.ValueInEnglish = edited.ValueInEnglish;
                     tag.Order = edited.Order;
-                    tag.FriendlyUrl = edited.FriendlyUrl;
-                    tag.Status = edited.Status;
                     tag.ValueSupplement = edited.ValueSupplement;
                     _context.Update(tag);
-                    pdfBook.LastModified = DateTime.Now;
-                    _context.Update(pdfBook);
-                    await _context.SaveChangesAsync();
+
+                    if (global)
+                    {
+                        RTagValue[] sameValueTags = await _context.TagValues.Where(v => v.Value == tag.Value && v.RTagId == tag.RTagId).ToArrayAsync();
+                        foreach (RTagValue sameValueTag in sameValueTags)
+                        {
+                            sameValueTag.Value = edited.Value;
+                            sameValueTag.ValueInEnglish = edited.ValueInEnglish;
+                            sameValueTag.Status = edited.Status;
+                            sameValueTag.FriendlyUrl = edited.FriendlyUrl;
+                            _context.Update(sameValueTag);
+
+                            RArtifactMasterRecord correspondingArtifact =
+                                await _context.Artifacts.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
+                            if (correspondingArtifact != null)
+                            {
+                                correspondingArtifact.LastModified = DateTime.Now;
+                                _context.Update(correspondingArtifact);
+                            }
+
+                            RArtifactItemRecord correspondingItem =
+                                await _context.Items.Include(a => a.Tags).Where(a => a.Tags.Contains(sameValueTag)).SingleOrDefaultAsync();
+                            if (correspondingItem != null)
+                            {
+                                correspondingItem.LastModified = DateTime.Now;
+                                _context.Update(correspondingItem);
+                            }
+
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        tag.Value = edited.Value;
+                        tag.ValueInEnglish = edited.ValueInEnglish;
+                        tag.Order = edited.Order;
+                        tag.FriendlyUrl = edited.FriendlyUrl;
+                        tag.Status = edited.Status;
+                        tag.ValueSupplement = edited.ValueSupplement;
+                        _context.Update(tag);
+                        pdfBook.LastModified = DateTime.Now;
+                        _context.Update(pdfBook);
+                        await _context.SaveChangesAsync();
+                    }
                 }
+                return new RServiceResult<RTagValue>(tag);
             }
-            return new RServiceResult<RTagValue>(tag);
+            catch (Exception exp)
+            {
+                return new RServiceResult<RTagValue>(null, exp.ToString());
+            }
         }
 
         /// <summary>
@@ -622,13 +640,21 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, Author[] Authors)>> GetAuthorsAsync(PagingParameterModel paging, string authorName)
         {
-            var source =
-                 _context.Authors
-                 .Where(a => string.IsNullOrEmpty(authorName) || (authorName.Contains(a.Name) || (!string.IsNullOrEmpty(a.NameInOriginalLanguage) && authorName.Contains(a.NameInOriginalLanguage))))
-                .AsQueryable();
-            (PaginationMetadata PagingMeta, Author[] Items) paginatedResult =
-                await QueryablePaginator<Author>.Paginate(source, paging);
-            return new RServiceResult<(PaginationMetadata PagingMeta, Author[] Authors)>(paginatedResult);
+            try
+            {
+                var source =
+                  _context.Authors
+                  .Where(a => string.IsNullOrEmpty(authorName) || (authorName.Contains(a.Name) || (!string.IsNullOrEmpty(a.NameInOriginalLanguage) && authorName.Contains(a.NameInOriginalLanguage))))
+                 .AsQueryable();
+                (PaginationMetadata PagingMeta, Author[] Items) paginatedResult =
+                    await QueryablePaginator<Author>.Paginate(source, paging);
+                return new RServiceResult<(PaginationMetadata PagingMeta, Author[] Authors)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, Author[] Authors)>((null, null), exp.ToString());
+            }
+
         }
 
         /// <summary>
