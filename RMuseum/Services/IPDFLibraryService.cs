@@ -161,6 +161,40 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> DeleteBookAsync(int id);
 
         /// <summary>
+        /// add book author
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="authorId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> AddBookAuthorAsync(int bookId, int authorId, string role);
+
+        /// <summary>
+        /// remove author from book
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="contributionId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteBookAuthorAsync(int bookId, int contributionId);
+
+        /// <summary>
+        /// get books by author
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="authorId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, Book[] Books)>> GetBooksByAuthorAsync(PagingParameterModel paging, int authorId, string role);
+
+        /// <summary>
+        /// get books by author stats (group by role)
+        /// </summary>
+        /// <param name="authorId"></param>
+        /// <returns></returns>
+
+        Task<RServiceResult<AuthorRoleCount[]>> GetBookbyAuthorGroupedByRoleAsync(int authorId);
+
+        /// <summary>
         /// add multi volume pdf collection
         /// </summary>
         /// <param name="multiVolumePDFCollection"></param>

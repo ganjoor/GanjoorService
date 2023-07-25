@@ -2520,6 +2520,38 @@
             <param name="authorId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.AddBookAuthorAsync(System.Int32,RMuseum.Models.PDFLibrary.AuthorRole)">
+            <summary>
+            add book author
+            </summary>
+            <param name="bookId"></param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.DeleteBookAuthorAsync(System.Int32,System.Int32)">
+            <summary>
+            delete an existing author from book
+            </summary>
+            <param name="bookId"></param>
+            <param name="authorRecordId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetBooksByAuthorAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32,System.String)">
+            <summary>
+            books by author
+            </summary>
+            <param name="paging"></param>
+            <param name="authorId"></param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetBookbyAuthorGroupedByRoleAsync(System.Int32)">
+            <summary>
+            get books by author stats (group by role)
+            </summary>
+            <param name="authorId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
             <summary>
             add a new multi volume pdf collection
@@ -17816,6 +17848,39 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddBookAuthorAsync(System.Int32,System.Int32,System.String)">
+            <summary>
+            add book author
+            </summary>
+            <param name="bookId"></param>
+            <param name="authorId"></param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.DeleteBookAuthorAsync(System.Int32,System.Int32)">
+            <summary>
+            remove author from book
+            </summary>
+            <param name="bookId"></param>
+            <param name="contributionId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetBooksByAuthorAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32,System.String)">
+            <summary>
+            get books by author
+            </summary>
+            <param name="paging"></param>
+            <param name="authorId"></param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetBookbyAuthorGroupedByRoleAsync(System.Int32)">
+            <summary>
+            get books by author stats (group by role)
+            </summary>
+            <param name="authorId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
             <summary>
             add multi volume pdf collection
@@ -18771,6 +18836,39 @@
             delete book
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.AddBookAuthorAsync(System.Int32,System.Int32,System.String)">
+            <summary>
+            add book author
+            </summary>
+            <param name="bookId"></param>
+            <param name="authorId"></param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.DeleteBookAuthorAsync(System.Int32,System.Int32)">
+            <summary>
+            remove author from book
+            </summary>
+            <param name="bookId"></param>
+            <param name="contributionId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetBooksByAuthorAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32,System.String)">
+            <summary>
+            get books by author
+            </summary>
+            <param name="paging"></param>
+            <param name="authorId"></param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetBookbyAuthorGroupedByRoleAsync(System.Int32)">
+            <summary>
+            get books by author stats (group by role)
+            </summary>
+            <param name="authorId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">

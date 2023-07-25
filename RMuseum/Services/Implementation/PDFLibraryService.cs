@@ -907,6 +907,147 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// add book author
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="authorId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> AddBookAuthorAsync(int bookId, int authorId, string role)
+        {
+            try
+            {
+                role = role.Trim();
+                var book = await _context.Books.Include(b => b.Authors).ThenInclude(a => a.Author).Where(b => b.Id == bookId).SingleAsync();
+                if (book.Authors.Any(a => a.Author.Id == authorId && a.Role == role))
+                {
+                    return new RServiceResult<bool>(false, "author contribution already added.");
+                }
+                var author = await _context.Authors.AsNoTracking().Where(a => a.Id == authorId).SingleAsync();
+                book.Authors.Add(new AuthorRole()
+                {
+                    Author = author,
+                    Role = role
+                });
+                _context.Update(book);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// remove author from book
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="contributionId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteBookAuthorAsync(int bookId, int contributionId)
+        {
+            try
+            {
+                var book = await _context.Books.Include(b => b.Authors).ThenInclude(a => a.Author).Where(b => b.Id == bookId).SingleAsync();
+                if (!book.Authors.Any(a => a.Id == contributionId))
+                {
+                    return new RServiceResult<bool>(false, "author contribution not found.");
+                }
+
+                var contribution = book.Authors.Where(a => a.Id == contributionId).Single();
+
+
+                book.Authors.Remove(contribution);
+                _context.Update(book);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get books by author
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="authorId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, Book[] Books)>> GetBooksByAuthorAsync(PagingParameterModel paging, int authorId, string role)
+        {
+            try
+            {
+                var source =
+                _context.Books.AsNoTracking()
+                .Include(a => a.CoverImage).Include(a => a.Authors).ThenInclude(c => c.Author)
+                .Where(a => a.Authors.Any(a => a.Author.Id == authorId && (string.IsNullOrEmpty(role) || (!string.IsNullOrEmpty(role) && a.Role == role))))
+               .AsQueryable();
+                (PaginationMetadata PagingMeta, Book[] Books) paginatedResult =
+                    await QueryablePaginator<Book>.Paginate(source, paging);
+                return new RServiceResult<(PaginationMetadata PagingMeta, Book[] Books)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, Book[] Books)>((null, null), exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get books by author stats (group by role)
+        /// </summary>
+        /// <param name="authorId"></param>
+        /// <returns></returns>
+
+        public async Task<RServiceResult<AuthorRoleCount[]>> GetBookbyAuthorGroupedByRoleAsync(int authorId)
+        {
+            try
+            {
+                var books = await _context.Books.AsNoTracking().Include(b => b.Authors).ThenInclude(c => c.Author)
+                                        .Where(a => a.Authors.Any(a => a.Author.Id == authorId))
+                                        .ToListAsync();
+                Dictionary<string, int> roleCount = new Dictionary<string, int>();
+                foreach (var book in books)
+                {
+                    foreach (var contributer in book.Authors)
+                    {
+                        if (contributer.Author.Id == authorId)
+                        {
+                            if (roleCount.ContainsKey(contributer.Role))
+                            {
+                                roleCount[contributer.Role] = 1;
+                            }
+                            else
+                            {
+                                roleCount[contributer.Role]++;
+                            }
+                        }
+                    }
+                }
+
+                List<AuthorRoleCount> authorRoles = new List<AuthorRoleCount>();
+                foreach (var role in roleCount.Keys)
+                {
+                    authorRoles.Add
+                        (
+                        new AuthorRoleCount()
+                        {
+                            Role = role,
+                            Count = roleCount[role]
+                        }
+                        );
+                }
+                return new RServiceResult<AuthorRoleCount[]>(authorRoles.ToArray());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<AuthorRoleCount[]>(null, exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// add multi volume pdf collection

@@ -717,6 +717,104 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// add book author
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        [HttpPost("book/{bookId}/author")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> AddBookAuthorAsync(int bookId, [FromBody] AuthorRole role)
+        {
+            var res = await _pdfService.AddBookAuthorAsync(bookId, role.Author.Id, role.Role);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+
+        /// <summary>
+        /// delete an existing author from book
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="authorRecordId"></param>
+        /// <returns></returns>
+
+        [HttpDelete("book/{bookId}/author/{authorRecordId}")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeleteBookAuthorAsync(int bookId, int authorRecordId)
+        {
+            var res = await _pdfService.DeleteBookAuthorAsync(bookId, authorRecordId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// books by author
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="authorId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        [HttpGet("book/by/author/{authorId}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetBooksByAuthorAsync([FromQuery] PagingParameterModel paging, int authorId, string role = null)
+        {
+            var res = await _pdfService.GetBooksByAuthorAsync(paging, authorId, role);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+
+            if (res.Result.Books.Count() > 0)
+            {
+                DateTime lastModification = res.Result.Books.Max(i => i.LastModified);
+                Response.GetTypedHeaders().LastModified = lastModification;
+
+                var requestHeaders = Request.GetTypedHeaders();
+                if (requestHeaders.IfModifiedSince.HasValue &&
+                    requestHeaders.IfModifiedSince.Value >= lastModification)
+                {
+                    return StatusCode(StatusCodes.Status304NotModified);
+                }
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            return Ok(res.Result.Books);
+        }
+
+        /// <summary>
+        /// get books by author stats (group by role)
+        /// </summary>
+        /// <param name="authorId"></param>
+        /// <returns></returns>
+        [HttpGet("book/by/author/{authorId}/groupby/role")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<AuthorRoleCount>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetBookbyAuthorGroupedByRoleAsync(int authorId)
+        {
+            var res = await _pdfService.GetBookbyAuthorGroupedByRoleAsync(authorId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// add a new multi volume pdf collection
         /// </summary>
         /// <param name="volumes"></param>
