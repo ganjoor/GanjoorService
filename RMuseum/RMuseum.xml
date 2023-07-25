@@ -2499,6 +2499,13 @@
             <param name="authorId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetAllBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get all books
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.GetBookByIdAsync(System.Int32)">
             <summary>
             book by id
@@ -17870,6 +17877,13 @@
             <param name="authorId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetAllBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get all books
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">
             <summary>
             add book
@@ -18901,6 +18915,13 @@
             get published pdf books by author stats (group by role)
             </summary>
             <param name="authorId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetAllBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get all books
+            </summary>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">

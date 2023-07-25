@@ -663,7 +663,45 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
-                /// <summary>
+        /// <summary>
+        /// get all books
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+
+        [HttpGet("book")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<Book>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetAllBooksAsync([FromQuery] PagingParameterModel paging)
+        {
+            var res = await _pdfService.GetAllBooksAsync(paging);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+
+            if (res.Result.Books.Count() > 0)
+            {
+                DateTime lastModification = res.Result.Books.Max(i => i.LastModified);
+                Response.GetTypedHeaders().LastModified = lastModification;
+
+                var requestHeaders = Request.GetTypedHeaders();
+                if (requestHeaders.IfModifiedSince.HasValue &&
+                    requestHeaders.IfModifiedSince.Value >= lastModification)
+                {
+                    return StatusCode(StatusCodes.Status304NotModified);
+                }
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            return Ok(res.Result.Books);
+        }
+
+        /// <summary>
         /// book by id
         /// </summary>
         /// <param name="id"></param>

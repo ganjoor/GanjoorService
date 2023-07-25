@@ -843,6 +843,30 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get all books
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, Book[] Books)>> GetAllBooksAsync(PagingParameterModel paging)
+        {
+            try
+            {
+                var source =
+                _context.Books.AsNoTracking()
+                .Include(a => a.CoverImage)
+               .OrderByDescending(t => t.Name)
+               .AsQueryable();
+                (PaginationMetadata PagingMeta, Book[] Books) paginatedResult =
+                    await QueryablePaginator<Book>.Paginate(source, paging);
+                return new RServiceResult<(PaginationMetadata PagingMeta, Book[] Books)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, Book[] Books)>((null, null), exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// add book
         /// </summary>
         /// <param name="book"></param>
