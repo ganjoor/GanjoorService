@@ -12577,6 +12577,11 @@
             other contributing role 2
             </summary>
         </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.PDFSourceId">
+            <summary>
+            PDF Source Id
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.UploadSession.UploadSession">
             <summary>
             Upload Session

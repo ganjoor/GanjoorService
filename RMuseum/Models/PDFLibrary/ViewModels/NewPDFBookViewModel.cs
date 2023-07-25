@@ -185,5 +185,10 @@
         /// </summary>
         public int? OtherContributer2Id { get; set; }
 
+        /// <summary>
+        /// PDF Source Id
+        /// </summary>
+        public int? PDFSourceId { get; set; }
+
     }
 }
