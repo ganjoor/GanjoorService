@@ -96,54 +96,6 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        /// <summary>
-        /// start importing local pdf file
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public async Task<RServiceResult<bool>> StartImportingLocalPDFAsync(NewPDFBookViewModel model)
-        {
-            try
-            {
-                if (model == null)
-                {
-                    return new RServiceResult<bool>(false, "model == null");
-                }
-                if (!File.Exists(model.LocalImportingPDFFilePath))
-                {
-                    return new RServiceResult<bool>(false, $"file does not exist! : {model.LocalImportingPDFFilePath}");
-                }
-                string fileChecksum = PoemAudio.ComputeCheckSum(model.LocalImportingPDFFilePath);
-                if (
-                    (
-                    await _context.ImportJobs
-                        .Where(j => j.JobType == JobType.Pdf && j.SrcContent == fileChecksum && !(j.Status == ImportJobStatus.Failed || j.Status == ImportJobStatus.Aborted))
-                        .SingleOrDefaultAsync()
-                    )
-                    !=
-                    null
-                    )
-                {
-                    return new RServiceResult<bool>(false, $"Job is already scheduled or running for importing pdf file {model.LocalImportingPDFFilePath} (duplicated checksum: {fileChecksum})");
-                }
-                _backgroundTaskQueue.QueueBackgroundWorkItem
-                        (
-                            async token =>
-                            {
-                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
-                                {
-                                    await ImportLocalPDFFileAsync(context, model, fileChecksum);  
-                                }
-                            }
-                        );
-                return new RServiceResult<bool>(true);
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<bool>(false, exp.ToString());
-            }
-
-        }
 
         /// <summary>
         /// edit pdf book master record

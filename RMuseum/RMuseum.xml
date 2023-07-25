@@ -17851,6 +17851,13 @@
             PDF Library Services
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartImportingLocalPDFAsync(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
+            <summary>
+            start importing local pdf file
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Services.Implementation.PDFLibraryService.ThumbnailImageWidth">
             <summary>
             عرض تصویر بندانگشتی
@@ -17875,13 +17882,6 @@
             </summary>
             <param name="paging"></param>
             <param name="statusArray"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartImportingLocalPDFAsync(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
-            <summary>
-            start importing local pdf file
-            </summary>
-            <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.EditPDFBookMasterRecordAsync(RMuseum.Models.PDFLibrary.PDFBook,System.Boolean,System.Boolean)">
