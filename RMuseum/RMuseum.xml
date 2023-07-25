@@ -12099,6 +12099,21 @@
             pdf books
             </summary>
         </member>
+        <member name="T:RMuseum.Models.PDFLibrary.BookScriptType">
+            <summary>
+            Book Script Type
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.PDFLibrary.BookScriptType.Printed">
+            <summary>
+            Printed
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.PDFLibrary.BookScriptType.Manuscript">
+            <summary>
+            Manuscript
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.PDFLibrary.MultiVolumePDFCollection">
             <summary>
             Multi Volume Book
@@ -12332,6 +12347,11 @@
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.StorageFolderName">
             <summary>
             storage folder name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.BookScriptType">
+            <summary>
+            Book Script Type
             </summary>
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.PDFBook.PDFSourceId">
@@ -12622,6 +12642,11 @@
         <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.PDFSourceId">
             <summary>
             PDF Source Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel.BookScriptType">
+            <summary>
+            Book Script Type
             </summary>
         </member>
         <member name="T:RMuseum.Models.UploadSession.UploadSession">

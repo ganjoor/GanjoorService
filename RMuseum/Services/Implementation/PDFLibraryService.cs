@@ -152,6 +152,7 @@ namespace RMuseum.Services.Implementation
                                         pdfBook.OriginalSourceName = model.OriginalSourceName;
                                         pdfBook.OriginalFileUrl = model.OriginalFileUrl;
                                         pdfBook.PDFSourceId = model.PDFSourceId;
+                                        pdfBook.BookScriptType = model.BookScriptType;
                                         List<AuthorRole> roles = new List<AuthorRole>();
                                         if (model.WriterId != null)
                                         {
@@ -334,6 +335,8 @@ namespace RMuseum.Services.Implementation
                     pdfBook.VolumeOrder = model.VolumeOrder;
                     pdfBook.MultiVolumePDFCollectionId = model.MultiVolumePDFCollectionId;
                     pdfBook.BookId = model.BookId;
+                    pdfBook.PDFSourceId = model.PDFSourceId;
+                    pdfBook.BookScriptType = model.BookScriptType;
                     pdfBook.LastModified = DateTime.Now;
 
                     _context.Update(pdfBook);

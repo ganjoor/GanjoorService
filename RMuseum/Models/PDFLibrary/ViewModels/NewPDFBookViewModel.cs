@@ -190,5 +190,10 @@
         /// </summary>
         public int? PDFSourceId { get; set; }
 
+        /// <summary>
+        /// Book Script Type
+        /// </summary>
+        public BookScriptType BookScriptType { get; set; }
+
     }
 }

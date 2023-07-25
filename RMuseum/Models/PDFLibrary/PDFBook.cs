@@ -201,6 +201,11 @@ namespace RMuseum.Models.PDFLibrary
         public string StorageFolderName { get; set; }
 
         /// <summary>
+        /// Book Script Type
+        /// </summary>
+        public BookScriptType BookScriptType { get; set; }
+
+        /// <summary>
         /// PDF Source Id
         /// </summary>
         public int? PDFSourceId { get; set; }
