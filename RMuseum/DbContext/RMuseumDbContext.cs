@@ -532,5 +532,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<PDFPage> PDFPages { get; set; }
 
+        /// <summary>
+        /// PDF Sources
+        /// </summary>
+        public DbSet<PDFSource> PDFSources { get; set; }
+
     }
 }

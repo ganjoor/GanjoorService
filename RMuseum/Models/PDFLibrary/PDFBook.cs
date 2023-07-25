@@ -199,5 +199,15 @@ namespace RMuseum.Models.PDFLibrary
         /// storage folder name
         /// </summary>
         public string StorageFolderName { get; set; }
+
+        /// <summary>
+        /// PDF Source Id
+        /// </summary>
+        public int? PDFSourceId { get; set; }
+
+        /// <summary>
+        /// PDF Source
+        /// </summary>
+        public virtual PDFSource PDFSource { get; set; }
     }
 }

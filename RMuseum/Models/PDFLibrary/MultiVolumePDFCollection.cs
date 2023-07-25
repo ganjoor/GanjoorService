@@ -1,4 +1,7 @@
-﻿namespace RMuseum.Models.PDFLibrary
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace RMuseum.Models.PDFLibrary
 {
     /// <summary>
     /// Multi Volume Book
@@ -34,6 +37,12 @@
         /// volume count
         /// </summary>
         public int VolumeCount { get; set; }
+
+        /// <summary>
+        /// pdf books
+        /// </summary>
+        [NotMapped]
+        public ICollection<PDFBook> PDFBooks { get; set; }
 
     }
 }

@@ -37,11 +37,30 @@ namespace RMuseum.Services.Implementation
                             .Include(b => b.Book)
                             .Include(b => b.PDFFile)
                             .Include(b => b.MultiVolumePDFCollection)
+                            .Include(b => b.PDFSource)
                             .Include(b => b.Contributers)
                             .Include(b => b.Tags)
                             .Include(b => b.Pages)
                             .Where(b => statusArray.Contains(b.Status) && b.Id == id)
                             .SingleOrDefaultAsync();
+                if(pdfBook != null)
+                {
+                    if(pdfBook.Book != null)
+                    {
+                        pdfBook.Book.PDFBooks = await _context.PDFBooks.AsNoTracking()
+                            .Include(a => a.CoverImage)
+                            .Where(a => a.Status == PublishStatus.Published && a.BookId == id)
+                           .OrderByDescending(t => t.Title).ToArrayAsync();
+                    }
+                    if(pdfBook.MultiVolumePDFCollection != null)
+                    {
+                        pdfBook.MultiVolumePDFCollection.PDFBooks = await _context.PDFBooks.AsNoTracking()
+                            .Include(a => a.CoverImage)
+                            .Where(a => a.Status == PublishStatus.Published && a.MultiVolumePDFCollectionId == id)
+                           .OrderBy(t => t.VolumeOrder)
+                           .ToArrayAsync();
+                    }
+                }
                 return new RServiceResult<PDFBook>(pdfBook);
 
             }
@@ -1006,8 +1025,16 @@ namespace RMuseum.Services.Implementation
                 var book = await _context.Books.AsNoTracking()
                     .Include(b => b.CoverImage)
                     .Include(b => b.Authors).ThenInclude(a => a.Author)
-                    .Include(b => b.Tags).ThenInclude(t => t.Value)
+                    .Include(b => b.Tags)
                     .Where(b => b.Id == id).SingleOrDefaultAsync();
+                if(book != null)
+                {
+                    book.PDFBooks = await _context.PDFBooks.AsNoTracking()
+                        .Include(a => a.CoverImage)
+                        .Where(a => a.Status == PublishStatus.Published && a.BookId == id)
+                       .OrderByDescending(t => t.Title).ToArrayAsync();
+                }
+
                 return new RServiceResult<Book>(book);
             }
             catch (Exception exp)
@@ -1108,7 +1135,7 @@ namespace RMuseum.Services.Implementation
                 _context.PDFBooks.AsNoTracking()
                 .Include(a => a.CoverImage)
                 .Where(a => a.Status == PublishStatus.Published && a.BookId == bookId)
-               .OrderByDescending(t => t.DateTime)
+               .OrderByDescending(t => t.Title)
                .AsQueryable();
                 (PaginationMetadata PagingMeta, PDFBook[] Books) paginatedResult =
                     await QueryablePaginator<PDFBook>.Paginate(source, paging);
@@ -1193,7 +1220,16 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                return new RServiceResult<MultiVolumePDFCollection>(await _context.MultiVolumePDFCollections.AsNoTracking().Where(x => x.Id == id).SingleOrDefaultAsync());
+                var volumes = await _context.MultiVolumePDFCollections.Include(v => v.Book).AsNoTracking().Where(x => x.Id == id).SingleOrDefaultAsync();
+                if(volumes != null)
+                {
+                    volumes.PDFBooks = await _context.PDFBooks.AsNoTracking()
+                        .Include(a => a.CoverImage)
+                        .Where(a => a.Status == PublishStatus.Published && a.MultiVolumePDFCollectionId == id)
+                       .OrderBy(t => t.VolumeOrder)
+                       .ToArrayAsync();
+                }
+                return new RServiceResult<MultiVolumePDFCollection>(volumes);
             }
             catch (Exception exp)
             {
