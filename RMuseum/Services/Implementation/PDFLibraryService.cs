@@ -629,6 +629,7 @@ namespace RMuseum.Services.Implementation
                 dbAuthor.Bio = model.Bio;
                 dbAuthor.ImageId = model.ImageId;
                 dbAuthor.ExtenalImageUrl = model.ExtenalImageUrl;
+                dbAuthor.LastModified = DateTime.Now;
                 _context.Update(dbAuthor);
                 await _context.SaveChangesAsync();
                 return new RServiceResult<Author>(model);
@@ -857,6 +858,52 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<Book>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// update book
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<Book>> UpdateBookAsync(Book model)
+        {
+            try
+            {
+                var dbBook = await _context.Books.Where(b => b.Id == model.Id).SingleAsync();
+                dbBook.Name =   model.Name;
+                dbBook.Description = model.Description;
+                dbBook.CoverImageId = model.CoverImageId;
+                dbBook.ExtenalCoverImageUrl = model.ExtenalCoverImageUrl;
+                dbBook.LastModified = DateTime.Now;
+
+                _context.Update(model);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<Book>(model);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<Book>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// delete book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteBookAsync(int id)
+        {
+            try
+            {
+                var dbBook = await _context.Books.Where(b => b.Id == id).SingleAsync();
+                _context.Books.Remove(dbBook);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
             }
         }
 

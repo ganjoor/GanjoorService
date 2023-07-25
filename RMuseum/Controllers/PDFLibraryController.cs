@@ -430,7 +430,7 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetByTagValue(string tagUrl, string valueUrl)
+        public async Task<IActionResult> GetByTagValueAsync(string tagUrl, string valueUrl)
         {
             RServiceResult<PDFBook[]> itemsInfo = await _pdfService.GetPDFBookByTagValueAsync(tagUrl, valueUrl, new PublishStatus[] { PublishStatus.Published });
             if (!string.IsNullOrEmpty(itemsInfo.ExceptionString))
@@ -470,6 +470,40 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// update book
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns></returns>
+        [HttpPut("book")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> UpdateBookAsync([FromBody] Book book)
+        {
+            var res = await _pdfService.UpdateBookAsync(book);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// delete book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("book")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.DeleteOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeleteBookAsync(int id)
+        {
+            var res = await _pdfService.DeleteBookAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
         }
 
         /// <summary>
@@ -561,7 +595,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
 
         [HttpPut("author")]
-        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> UpdateAuthorAsync([FromBody] Author author)
@@ -579,7 +613,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
 
         [HttpDelete("author/{id}")]
-        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.DeleteOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> DeleteAuthorAsync(int id)
@@ -591,7 +625,7 @@ namespace RMuseum.Controllers
         }
 
         [HttpPost("pdfbook/{pdfBookId}/contributor")]
-        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> AddPDFBookContributerAsync(int pdfBookId, [FromBody] AuthorRole role)
@@ -611,7 +645,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
 
         [HttpDelete("pdfbook/{pdfBookId}/contributor/{contributorRecordId}")]
-        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> DeletePDFBookContributerAsync(int pdfBookId, int contributorRecordId)
@@ -683,7 +717,7 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// add a new mukti volume pdf collection
+        /// add a new multi volume pdf collection
         /// </summary>
         /// <param name="volumes"></param>
         /// <returns></returns>

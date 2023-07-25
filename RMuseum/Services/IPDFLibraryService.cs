@@ -147,6 +147,20 @@ namespace RMuseum.Services
         Task<RServiceResult<Book>> AddBookAsync(Book book);
 
         /// <summary>
+        /// update book
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<RServiceResult<Book>> UpdateBookAsync(Book model);
+
+        /// <summary>
+        /// delete book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteBookAsync(int id);
+
+        /// <summary>
         /// add multi volume pdf collection
         /// </summary>
         /// <param name="multiVolumePDFCollection"></param>

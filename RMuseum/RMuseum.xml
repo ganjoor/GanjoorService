@@ -2431,7 +2431,7 @@
             <param name="tagValueId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.GetByTagValue(System.String,System.String)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetByTagValueAsync(System.String,System.String)">
             <summary>
             get tagged publish pdfbooks (including CoverImage info but not pages or tagibutes info) 
             </summary>
@@ -2444,6 +2444,20 @@
             add a new book
             </summary>
             <param name="book"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.UpdateBookAsync(RMuseum.Models.PDFLibrary.Book)">
+            <summary>
+            update book
+            </summary>
+            <param name="book"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.DeleteBookAsync(System.Int32)">
+            <summary>
+            delete book
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.GetAuthorsAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
@@ -2508,7 +2522,7 @@
         </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
             <summary>
-            add a new mukti volume pdf collection
+            add a new multi volume pdf collection
             </summary>
             <param name="volumes"></param>
             <returns></returns>
@@ -17788,6 +17802,20 @@
             <param name="book"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.UpdateBookAsync(RMuseum.Models.PDFLibrary.Book)">
+            <summary>
+            update book
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.DeleteBookAsync(System.Int32)">
+            <summary>
+            delete book
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
             <summary>
             add multi volume pdf collection
@@ -18729,6 +18757,20 @@
             add book
             </summary>
             <param name="book"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.UpdateBookAsync(RMuseum.Models.PDFLibrary.Book)">
+            <summary>
+            update book
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.DeleteBookAsync(System.Int32)">
+            <summary>
+            delete book
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
