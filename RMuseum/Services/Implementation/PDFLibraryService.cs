@@ -714,7 +714,7 @@ namespace RMuseum.Services.Implementation
             {
                 role = role.Trim();
                 var pdfBook = await _context.PDFBooks.Include(b => b.Contributers).ThenInclude(a => a.Author).Where(b => b.Id == pdfBookId).SingleAsync();
-                if(pdfBook.Contributers.Any(a => a.Author.Id == authorId && a.Role == role))
+                if (pdfBook.Contributers.Any(a => a.Author.Id == authorId && a.Role == role))
                 {
                     return new RServiceResult<bool>(false, "author contribution already added");
                 }
@@ -808,7 +808,7 @@ namespace RMuseum.Services.Implementation
                 {
                     foreach (var contributer in book.Contributers)
                     {
-                        if(contributer.Author.Id == authorId)
+                        if (contributer.Author.Id == authorId)
                         {
                             if (roleCount.ContainsKey(contributer.Role))
                             {
@@ -823,7 +823,7 @@ namespace RMuseum.Services.Implementation
                 }
 
                 List<AuthorRoleCount> authorRoles = new List<AuthorRoleCount>();
-                foreach(var role in roleCount.Keys)
+                foreach (var role in roleCount.Keys)
                 {
                     authorRoles.Add
                         (
@@ -834,7 +834,7 @@ namespace RMuseum.Services.Implementation
                         }
                         );
                 }
-                return new RServiceResult<AuthorRoleCount[]>(authorRoles.ToArray()); 
+                return new RServiceResult<AuthorRoleCount[]>(authorRoles.ToArray());
             }
             catch (Exception exp)
             {
@@ -871,7 +871,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var dbBook = await _context.Books.Where(b => b.Id == model.Id).SingleAsync();
-                dbBook.Name =   model.Name;
+                dbBook.Name = model.Name;
                 dbBook.Description = model.Description;
                 dbBook.CoverImageId = model.CoverImageId;
                 dbBook.ExtenalCoverImageUrl = model.ExtenalCoverImageUrl;
@@ -1157,6 +1157,29 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get volumes pdf books
+        /// </summary>
+        /// <param name="volumeId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PDFBook[]>> GetVolumesPDFBooks(int volumeId)
+        {
+            try
+            {
+                var books =
+                await _context.PDFBooks.AsNoTracking()
+                .Include(a => a.CoverImage)
+                .Where(a => a.Status == PublishStatus.Published && a.MultiVolumePDFCollectionId == volumeId)
+               .OrderBy(t => t.VolumeOrder)
+               .ToArrayAsync();
+                return new RServiceResult<PDFBook[]>(books);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PDFBook[]>(null, exp.ToString());
             }
         }
 

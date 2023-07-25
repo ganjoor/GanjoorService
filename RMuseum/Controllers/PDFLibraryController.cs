@@ -927,6 +927,26 @@ namespace RMuseum.Controllers
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
         }
+        /// <summary>
+        /// get volumes pdf books
+        /// </summary>
+        /// <param name="volumeId"></param>
+        /// <returns></returns>
+        [HttpGet("volumes/{volumeId}/pdfs")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetVolumesPDFBooks(int volumeId)
+        {
+            var res = await _pdfService.GetVolumesPDFBooks(volumeId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+
+            return Ok(res.Result);
+        }
 
         /// <summary>
         /// PDF Service

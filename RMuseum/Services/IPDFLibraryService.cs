@@ -254,5 +254,12 @@ namespace RMuseum.Services
         /// <param name="pdfpageId"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> SetPDFBookCoverImageFromPageAsync(int pdfBookId, int pdfpageId);
+
+        /// <summary>
+        /// get volumes pdf books
+        /// </summary>
+        /// <param name="volumeId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PDFBook[]>> GetVolumesPDFBooks(int volumeId);
     }
 }
