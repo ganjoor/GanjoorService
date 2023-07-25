@@ -15,7 +15,6 @@ using RSecurityBackend.Services;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using RMuseum.Models.Artifact;
-using RMuseum.Services.Implementation;
 
 namespace RMuseum.Controllers
 {
@@ -349,13 +348,13 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// add new tag value to artifact
+        /// add new tag value to pdf book
         /// </summary>
         /// <param name="pdfBookId"></param>
         /// <param name="tag">only name is processed</param>
         /// <returns></returns>
         [HttpPost("tagvalue/{pdfBookId}")]
-        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.EditTagValueOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + RMuseumSecurableItem.EditTagValueOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RTagValue))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> TagPDFBookAsync(int pdfBookId, [FromBody] RTag tag)
@@ -377,7 +376,7 @@ namespace RMuseum.Controllers
         /// <param name="global">apply on all same value tags</param>
         /// <returns></returns>
         [HttpPut("tagvalue/{pdfBookId}/{global=true}")]
-        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.EditTagValueOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + RMuseumSecurableItem.EditTagValueOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -405,7 +404,7 @@ namespace RMuseum.Controllers
         /// <param name="tagValueId"></param>
         /// <returns></returns>
         [HttpDelete("tagvalue/{pdfBookId}/{tagValueId}")]
-        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.EditTagValueOperationShortName)]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + RMuseumSecurableItem.EditTagValueOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
@@ -452,58 +451,6 @@ namespace RMuseum.Controllers
             }
 
             return Ok(itemsInfo.Result);
-        }
-
-        /// <summary>
-        /// add a new book
-        /// </summary>
-        /// <param name="book"></param>
-        /// <returns></returns>
-
-        [HttpPost("book")]
-        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Book))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> AddBookAsync([FromBody] Book book)
-        {
-            var res = await _pdfService.AddBookAsync(book);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
-        }
-
-        /// <summary>
-        /// update book
-        /// </summary>
-        /// <param name="book"></param>
-        /// <returns></returns>
-        [HttpPut("book")]
-        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> UpdateBookAsync([FromBody] Book book)
-        {
-            var res = await _pdfService.UpdateBookAsync(book);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok();
-        }
-
-        /// <summary>
-        /// delete book
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpDelete("book")]
-        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.DeleteOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> DeleteBookAsync(int id)
-        {
-            var res = await _pdfService.DeleteBookAsync(id);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok();
         }
 
         /// <summary>
@@ -716,6 +663,79 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+                /// <summary>
+        /// book by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("book/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Book))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetBookByIdAsync(int id)
+        {
+            var res = await _pdfService.GetBookByIdAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// add a new book
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns></returns>
+
+        [HttpPost("book")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Book))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> AddBookAsync([FromBody] Book book)
+        {
+            var res = await _pdfService.AddBookAsync(book);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// update book
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns></returns>
+        [HttpPut("book")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> UpdateBookAsync([FromBody] Book book)
+        {
+            var res = await _pdfService.UpdateBookAsync(book);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// delete book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("book")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.DeleteOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeleteBookAsync(int id)
+        {
+            var res = await _pdfService.DeleteBookAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
         /// <summary>
         /// add book author
         /// </summary>
@@ -815,36 +835,13 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// book by id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet("book/{id}")]
-        [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Book))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-
-        public async Task<IActionResult> GetBookByIdAsync(int id)
-        {
-            var res = await _pdfService.GetBookByIdAsync(id);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-            {
-                return BadRequest(res.ExceptionString);
-            }
-
-            return Ok(res.Result);
-        }
-
-
-
-        /// <summary>
         /// get book related pdf books
         /// </summary>
         /// <param name="paging"></param>
         /// <param name="bookId"></param>
         /// <returns></returns>
 
-        [HttpGet("pdfbook/by/book/{bookId}")]
+        [HttpGet("book/{bookId}/pdfs")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
@@ -875,6 +872,29 @@ namespace RMuseum.Controllers
 
             return Ok(res.Result.Books);
         }
+
+        /// <summary>
+        /// volumes by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        [HttpGet("volumes/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(MultiVolumePDFCollection))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetMultiVolumePDFCollectionByIdAsync(int id)
+        {
+            var res = await _pdfService.GetMultiVolumePDFCollectionByIdAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+
+            return Ok(res.Result);
+        }
+
 
         /// <summary>
         /// add a new multi volume pdf collection

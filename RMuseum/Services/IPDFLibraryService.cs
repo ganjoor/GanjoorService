@@ -261,5 +261,12 @@ namespace RMuseum.Services
         /// <param name="volumeId"></param>
         /// <returns></returns>
         Task<RServiceResult<PDFBook[]>> GetVolumesPDFBooks(int volumeId);
+
+        /// <summary>
+        /// get volumes by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<MultiVolumePDFCollection>> GetMultiVolumePDFCollectionByIdAsync(int id);
     }
 }

@@ -2405,7 +2405,7 @@
         </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.TagPDFBookAsync(System.Int32,RMuseum.Models.Artifact.RTag)">
             <summary>
-            add new tag value to artifact
+            add new tag value to pdf book
             </summary>
             <param name="pdfBookId"></param>
             <param name="tag">only name is processed</param>
@@ -2437,27 +2437,6 @@
             </summary>
             <param name="tagUrl"></param>
             <param name="valueUrl"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">
-            <summary>
-            add a new book
-            </summary>
-            <param name="book"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.UpdateBookAsync(RMuseum.Models.PDFLibrary.Book)">
-            <summary>
-            update book
-            </summary>
-            <param name="book"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.DeleteBookAsync(System.Int32)">
-            <summary>
-            delete book
-            </summary>
-            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.GetAuthorsAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
@@ -2520,6 +2499,34 @@
             <param name="authorId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetBookByIdAsync(System.Int32)">
+            <summary>
+            book by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.AddBookAsync(RMuseum.Models.PDFLibrary.Book)">
+            <summary>
+            add a new book
+            </summary>
+            <param name="book"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.UpdateBookAsync(RMuseum.Models.PDFLibrary.Book)">
+            <summary>
+            update book
+            </summary>
+            <param name="book"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.DeleteBookAsync(System.Int32)">
+            <summary>
+            delete book
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.AddBookAuthorAsync(System.Int32,RMuseum.Models.PDFLibrary.AuthorRole)">
             <summary>
             add book author
@@ -2552,19 +2559,19 @@
             <param name="authorId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.GetBookByIdAsync(System.Int32)">
-            <summary>
-            book by id
-            </summary>
-            <param name="id"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.GetBookRelatedPFFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
             <summary>
             get book related pdf books
             </summary>
             <param name="paging"></param>
             <param name="bookId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetMultiVolumePDFCollectionByIdAsync(System.Int32)">
+            <summary>
+            volumes by id
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.AddMultiVolumePDFCollectionAsync(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
@@ -17953,6 +17960,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetMultiVolumePDFCollectionByIdAsync(System.Int32)">
+            <summary>
+            get volumes by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetVolumesPDFBooks(System.Int32)">
             <summary>
             get volumes pdf books
@@ -19008,6 +19022,13 @@
             get volumes pdf books
             </summary>
             <param name="volumeId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetMultiVolumePDFCollectionByIdAsync(System.Int32)">
+            <summary>
+            get volumes by id
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">

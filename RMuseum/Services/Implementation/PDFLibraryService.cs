@@ -1161,6 +1161,23 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get volumes by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<MultiVolumePDFCollection>> GetMultiVolumePDFCollectionByIdAsync(int id)
+        {
+            try
+            {
+                return new RServiceResult<MultiVolumePDFCollection>(await _context.MultiVolumePDFCollections.AsNoTracking().Where(x => x.Id == id).SingleOrDefaultAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<MultiVolumePDFCollection>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// get volumes pdf books
         /// </summary>
         /// <param name="volumeId"></param>
