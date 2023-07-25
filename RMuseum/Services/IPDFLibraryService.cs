@@ -178,6 +178,13 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> DeleteBookAuthorAsync(int bookId, int contributionId);
 
         /// <summary>
+        /// book by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<Book>> GetBookByIdAsync(int id);
+
+        /// <summary>
         /// get books by author
         /// </summary>
         /// <param name="paging"></param>

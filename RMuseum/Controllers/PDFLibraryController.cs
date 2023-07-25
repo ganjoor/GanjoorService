@@ -815,6 +815,29 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// book by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("book/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Book))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetBookByIdAsync(int id)
+        {
+            var res = await _pdfService.GetBookByIdAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+
+            return Ok(res.Result);
+        }
+
+
+
+        /// <summary>
         /// get book related pdf books
         /// </summary>
         /// <param name="paging"></param>

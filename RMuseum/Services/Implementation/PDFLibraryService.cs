@@ -971,6 +971,28 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// book by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<Book>> GetBookByIdAsync(int id)
+        {
+            try
+            {
+                var book = await _context.Books.AsNoTracking()
+                    .Include(b => b.CoverImage)
+                    .Include(b => b.Authors).ThenInclude(a => a.Author)
+                    .Include(b => b.Tags).ThenInclude(t => t.Value)
+                    .Where(b => b.Id == id).SingleOrDefaultAsync();
+                return new RServiceResult<Book>(book);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<Book>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// get books by author
         /// </summary>
         /// <param name="paging"></param>
