@@ -1080,7 +1080,7 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="multiVolumePDFCollection"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<MultiVolumePDFCollection>> AddMultiVolumePDFCollection(MultiVolumePDFCollection multiVolumePDFCollection)
+        public async Task<RServiceResult<MultiVolumePDFCollection>> AddMultiVolumePDFCollectionAsync(MultiVolumePDFCollection multiVolumePDFCollection)
         {
             try
             {
@@ -1091,6 +1091,50 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<MultiVolumePDFCollection>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// update multi volume pdf collection
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<MultiVolumePDFCollection>> UpdateMultiVolumePDFCollectionAsync(MultiVolumePDFCollection model)
+        {
+            try
+            {
+                var dbVolumes = await _context.MultiVolumePDFCollections.Where(x => x.Id == model.Id).SingleAsync();
+                dbVolumes.Name = model.Name;
+                dbVolumes.Description = model.Description;
+                dbVolumes.VolumeCount = model.VolumeCount;
+                dbVolumes.BookId = model.BookId;
+                _context.Update(dbVolumes);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<MultiVolumePDFCollection>(model);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<MultiVolumePDFCollection>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// delete multi volume pdf collection
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteMultiVolumePDFCollectionAsync(int id)
+        {
+            try
+            {
+                var dbVolumes = await _context.MultiVolumePDFCollections.Where(x => x.Id == id).SingleAsync();
+                _context.Remove(dbVolumes);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
             }
         }
 

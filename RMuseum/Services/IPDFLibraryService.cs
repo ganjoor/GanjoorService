@@ -207,7 +207,22 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="multiVolumePDFCollection"></param>
         /// <returns></returns>
-        Task<RServiceResult<MultiVolumePDFCollection>> AddMultiVolumePDFCollection(MultiVolumePDFCollection multiVolumePDFCollection);
+        Task<RServiceResult<MultiVolumePDFCollection>> AddMultiVolumePDFCollectionAsync(MultiVolumePDFCollection multiVolumePDFCollection);
+
+        /// <summary>
+        /// update multi volume pdf collection
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<RServiceResult<MultiVolumePDFCollection>> UpdateMultiVolumePDFCollectionAsync(MultiVolumePDFCollection model);
+
+        /// <summary>
+        /// delete multi volume pdf collection
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteMultiVolumePDFCollectionAsync(int id);
+
 
         /// <summary>
         /// start importing local pdf file

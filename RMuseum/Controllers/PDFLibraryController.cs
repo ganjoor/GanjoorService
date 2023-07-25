@@ -862,9 +862,44 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(MultiVolumePDFCollection))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> AddMultiVolumePDFCollection([FromBody] MultiVolumePDFCollection volumes)
+        public async Task<IActionResult> AddMultiVolumePDFCollectionAsync([FromBody] MultiVolumePDFCollection volumes)
         {
-            var res = await _pdfService.AddMultiVolumePDFCollection(volumes);
+            var res = await _pdfService.AddMultiVolumePDFCollectionAsync(volumes);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// update multi volume pdf collection
+        /// </summary>
+        /// <param name="volumes"></param>
+        /// <returns></returns>
+
+        [HttpPut("volumes")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> UpdateMultiVolumePDFCollectionAsync([FromBody] MultiVolumePDFCollection volumes)
+        {
+            var res = await _pdfService.UpdateMultiVolumePDFCollectionAsync(volumes);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// delete multi volume pdf collection
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("volumes")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.DeleteOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeleteMultiVolumePDFCollectionAsync(int id)
+        {
+            var res = await _pdfService.DeleteMultiVolumePDFCollectionAsync(id);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

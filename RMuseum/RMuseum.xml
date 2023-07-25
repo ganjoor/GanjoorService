@@ -2560,11 +2560,25 @@
             <param name="bookId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.AddMultiVolumePDFCollectionAsync(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
             <summary>
             add a new multi volume pdf collection
             </summary>
             <param name="volumes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.UpdateMultiVolumePDFCollectionAsync(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
+            <summary>
+            update multi volume pdf collection
+            </summary>
+            <param name="volumes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.DeleteMultiVolumePDFCollectionAsync(System.Int32)">
+            <summary>
+            delete multi volume pdf collection
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Controllers.PDFLibraryController._pdfService">
@@ -17897,11 +17911,25 @@
             <param name="bookId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddMultiVolumePDFCollectionAsync(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
             <summary>
             add multi volume pdf collection
             </summary>
             <param name="multiVolumePDFCollection"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.UpdateMultiVolumePDFCollectionAsync(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
+            <summary>
+            update multi volume pdf collection
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.DeleteMultiVolumePDFCollectionAsync(System.Int32)">
+            <summary>
+            delete multi volume pdf collection
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.PDFLibraryService._context">
@@ -18895,11 +18923,25 @@
             <param name="bookId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IPDFLibraryService.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
+        <member name="M:RMuseum.Services.IPDFLibraryService.AddMultiVolumePDFCollectionAsync(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
             <summary>
             add multi volume pdf collection
             </summary>
             <param name="multiVolumePDFCollection"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.UpdateMultiVolumePDFCollectionAsync(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
+            <summary>
+            update multi volume pdf collection
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.DeleteMultiVolumePDFCollectionAsync(System.Int32)">
+            <summary>
+            delete multi volume pdf collection
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.StartImportingLocalPDFAsync(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
