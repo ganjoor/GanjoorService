@@ -214,7 +214,7 @@ namespace RMuseum.Services
         /// <param name="paging"></param>
         /// <param name="bookId"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetBookRelatedPFFBooksAsync(PagingParameterModel paging, int bookId);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetBookRelatedPDFBooksAsync(PagingParameterModel paging, int bookId);
 
         /// <summary>
         /// add multi volume pdf collection

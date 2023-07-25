@@ -1144,7 +1144,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="paging"></param>
         /// <param name="bookId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetBookRelatedPFFBooksAsync(PagingParameterModel paging, int bookId)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetBookRelatedPDFBooksAsync(PagingParameterModel paging, int bookId)
         {
             try
             {
@@ -1274,6 +1274,127 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<PDFBook[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get pdf source by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PDFSource>> GetPDFSourceByIdAsync(int id)
+        {
+            try
+            {
+                return new RServiceResult<PDFSource>(await _context.PDFSources.AsNoTracking().Where(s => s.Id == id).SingleOrDefaultAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PDFSource>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Get All PDF Sources
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<PDFSource[]>> GetPDFSourcesAsync()
+        {
+            try
+            {
+                return new RServiceResult<PDFSource[]>(await _context.PDFSources.AsNoTracking().ToArrayAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PDFSource[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Add PDF Source
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PDFSource>> AddPDFSourceAsync(PDFSource source)
+        {
+            try
+            {
+                _context.PDFSources.Add(source);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<PDFSource>(source);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PDFSource>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// update PDF Source
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PDFSource>> UpdatePDFSourceAsync(PDFSource model)
+        {
+            try
+            {
+                var dbSource = await _context.PDFSources.Where(s => s.Id == model.Id).SingleAsync();
+                dbSource.Name = model.Name;
+                dbSource.Description = model.Description;
+                dbSource.Url = model.Url;
+                _context.Update(dbSource);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<PDFSource>(dbSource);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PDFSource>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// delete PDF Source
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeletePDFSourceAsync(int id)
+        {
+            try
+            {
+                var dbSource = await _context.PDFSources.Where(s => s.Id == id).SingleAsync();
+                _context.Remove(dbSource);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get source pdf books
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="sourceId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetSourceRelatedPDFBooksAsync(PagingParameterModel paging, int sourceId)
+        {
+            try
+            {
+                var source =
+                _context.PDFBooks.AsNoTracking()
+                .Include(a => a.CoverImage)
+                .Where(a => a.Status == PublishStatus.Published && a.PDFSourceId == sourceId)
+               .OrderByDescending(t => t.Title)
+               .AsQueryable();
+                (PaginationMetadata PagingMeta, PDFBook[] Books) paginatedResult =
+                    await QueryablePaginator<PDFBook>.Paginate(source, paging);
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>((null, null), exp.ToString());
             }
         }
 

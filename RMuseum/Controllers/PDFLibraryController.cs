@@ -884,9 +884,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
-        public async Task<IActionResult> GetBookRelatedPFFBooksAsync([FromQuery] PagingParameterModel paging, int bookId)
+        public async Task<IActionResult> GetBookRelatedPDFBooksAsync([FromQuery] PagingParameterModel paging, int bookId)
         {
-            var res = await _pdfService.GetBookRelatedPFFBooksAsync(paging, bookId);
+            var res = await _pdfService.GetBookRelatedPDFBooksAsync(paging, bookId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
             {
                 return BadRequest(res.ExceptionString);

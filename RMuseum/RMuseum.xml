@@ -2566,7 +2566,7 @@
             <param name="authorId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.GetBookRelatedPFFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetBookRelatedPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
             <summary>
             get book related pdf books
             </summary>
@@ -18000,7 +18000,7 @@
             <param name="authorId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetBookRelatedPFFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetBookRelatedPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
             <summary>
             get book related pdf books
             </summary>
@@ -18041,6 +18041,48 @@
             get volumes pdf books
             </summary>
             <param name="volumeId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetPDFSourceByIdAsync(System.Int32)">
+            <summary>
+            get pdf source by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetPDFSourcesAsync">
+            <summary>
+            Get All PDF Sources
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddPDFSourceAsync(RMuseum.Models.PDFLibrary.PDFSource)">
+            <summary>
+            Add PDF Source
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.UpdatePDFSourceAsync(RMuseum.Models.PDFLibrary.PDFSource)">
+            <summary>
+            update PDF Source
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.DeletePDFSourceAsync(System.Int32)">
+            <summary>
+            delete PDF Source
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetSourceRelatedPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
+            <summary>
+            get source pdf books
+            </summary>
+            <param name="paging"></param>
+            <param name="sourceId"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.PDFLibraryService._context">
@@ -19040,7 +19082,7 @@
             <param name="authorId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IPDFLibraryService.GetBookRelatedPFFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetBookRelatedPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
             <summary>
             get book related pdf books
             </summary>
