@@ -2571,7 +2571,7 @@
             get book related pdf books
             </summary>
             <param name="paging"></param>
-            <param name="bookId"></param>
+            <param name="sourceId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.GetMultiVolumePDFCollectionByIdAsync(System.Int32)">
@@ -2607,6 +2607,48 @@
             get volumes pdf books
             </summary>
             <param name="volumeId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetPDFSourcesAsync">
+            <summary>
+            get all sources
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetPDFSourceByIdAsync(System.Int32)">
+            <summary>
+            source by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.AddPDFSourceAsync(RMuseum.Models.PDFLibrary.PDFSource)">
+            <summary>
+            add a new source
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.UpdatePDFSourceAsync(RMuseum.Models.PDFLibrary.PDFSource)">
+            <summary>
+            update source
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.DeletePDFSourceAsync(System.Int32)">
+            <summary>
+            delete book
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetSourceRelatedPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
+            <summary>
+            get pdf source pdfs
+            </summary>
+            <param name="paging"></param>
+            <param name="sourceId"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Controllers.PDFLibraryController._pdfService">
@@ -19147,6 +19189,48 @@
             get volumes by id
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetPDFSourceByIdAsync(System.Int32)">
+            <summary>
+            get pdf source by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetPDFSourcesAsync">
+            <summary>
+            Get All PDF Sources
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.AddPDFSourceAsync(RMuseum.Models.PDFLibrary.PDFSource)">
+            <summary>
+            Add PDF Source
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.UpdatePDFSourceAsync(RMuseum.Models.PDFLibrary.PDFSource)">
+            <summary>
+            update PDF Source
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.DeletePDFSourceAsync(System.Int32)">
+            <summary>
+            delete PDF Source
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetSourceRelatedPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
+            <summary>
+            get source pdf books
+            </summary>
+            <param name="paging"></param>
+            <param name="sourceId"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">

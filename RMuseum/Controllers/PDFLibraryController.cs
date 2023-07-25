@@ -876,7 +876,7 @@ namespace RMuseum.Controllers
         /// get book related pdf books
         /// </summary>
         /// <param name="paging"></param>
-        /// <param name="bookId"></param>
+        /// <param name="sourceId"></param>
         /// <returns></returns>
 
         [HttpGet("book/{bookId}/pdfs")]
@@ -884,9 +884,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
-        public async Task<IActionResult> GetBookRelatedPDFBooksAsync([FromQuery] PagingParameterModel paging, int bookId)
+        public async Task<IActionResult> GetBookRelatedPDFBooksAsync([FromQuery] PagingParameterModel paging, int sourceId)
         {
-            var res = await _pdfService.GetBookRelatedPDFBooksAsync(paging, bookId);
+            var res = await _pdfService.GetBookRelatedPDFBooksAsync(paging, sourceId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
             {
                 return BadRequest(res.ExceptionString);
@@ -1004,6 +1004,138 @@ namespace RMuseum.Controllers
             }
 
             return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// get all sources
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpGet("source")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFSource>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetPDFSourcesAsync()
+        {
+            var res = await _pdfService.GetPDFSourcesAsync();
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// source by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("source/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PDFSource))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetPDFSourceByIdAsync(int id)
+        {
+            var res = await _pdfService.GetPDFSourceByIdAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// add a new source
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+
+        [HttpPost("source")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PDFSource))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> AddPDFSourceAsync([FromBody] PDFSource source)
+        {
+            var res = await _pdfService.AddPDFSourceAsync(source);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// update source
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        [HttpPut("source")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> UpdatePDFSourceAsync([FromBody] PDFSource source)
+        {
+            var res = await _pdfService.UpdatePDFSourceAsync(source);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// delete book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("source")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.DeleteOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeletePDFSourceAsync(int id)
+        {
+            var res = await _pdfService.DeletePDFSourceAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// get pdf source pdfs
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="sourceId"></param>
+        /// <returns></returns>
+        [HttpGet("source/{sourceId}/pdfs")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetSourceRelatedPDFBooksAsync([FromQuery] PagingParameterModel paging, int sourceId)
+        {
+            var res = await _pdfService.GetSourceRelatedPDFBooksAsync(paging, sourceId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+
+            if (res.Result.Books.Count() > 0)
+            {
+                DateTime lastModification = res.Result.Books.Max(i => i.LastModified);
+                Response.GetTypedHeaders().LastModified = lastModification;
+
+                var requestHeaders = Request.GetTypedHeaders();
+                if (requestHeaders.IfModifiedSince.HasValue &&
+                    requestHeaders.IfModifiedSince.Value >= lastModification)
+                {
+                    return StatusCode(StatusCodes.Status304NotModified);
+                }
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            return Ok(res.Result.Books);
         }
 
         /// <summary>

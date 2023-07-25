@@ -275,5 +275,47 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <returns></returns>
         Task<RServiceResult<MultiVolumePDFCollection>> GetMultiVolumePDFCollectionByIdAsync(int id);
+
+        /// <summary>
+        /// get pdf source by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PDFSource>> GetPDFSourceByIdAsync(int id);
+
+        /// <summary>
+        /// Get All PDF Sources
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<PDFSource[]>> GetPDFSourcesAsync();
+
+        /// <summary>
+        /// Add PDF Source
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PDFSource>> AddPDFSourceAsync(PDFSource source);
+
+        /// <summary>
+        /// update PDF Source
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PDFSource>> UpdatePDFSourceAsync(PDFSource model);
+
+        /// <summary>
+        /// delete PDF Source
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeletePDFSourceAsync(int id);
+
+        /// <summary>
+        /// get source pdf books
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="sourceId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetSourceRelatedPDFBooksAsync(PagingParameterModel paging, int sourceId);
     }
 }
