@@ -1048,6 +1048,32 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// get book related pdf books
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="bookId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetBookRelatedPFFBooksAsync(PagingParameterModel paging, int bookId)
+        {
+            try
+            {
+                var source =
+                _context.PDFBooks.AsNoTracking()
+                .Include(a => a.CoverImage)
+                .Where(a => a.Status == PublishStatus.Published && a.BookId == bookId)
+               .OrderByDescending(t => t.DateTime)
+               .AsQueryable();
+                (PaginationMetadata PagingMeta, PDFBook[] Books) paginatedResult =
+                    await QueryablePaginator<PDFBook>.Paginate(source, paging);
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>((null, null), exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// add multi volume pdf collection

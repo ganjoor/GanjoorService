@@ -763,7 +763,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpGet("book/by/author/{authorId}")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<Book>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
         public async Task<IActionResult> GetBooksByAuthorAsync([FromQuery] PagingParameterModel paging, int authorId, string role = null)
@@ -812,6 +812,45 @@ namespace RMuseum.Controllers
             }
 
             return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// get book related pdf books
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="bookId"></param>
+        /// <returns></returns>
+
+        [HttpGet("pdfbook/by/book/{bookId}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PDFBook>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetBookRelatedPFFBooksAsync([FromQuery] PagingParameterModel paging, int bookId)
+        {
+            var res = await _pdfService.GetBookRelatedPFFBooksAsync(paging, bookId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+
+            if (res.Result.Books.Count() > 0)
+            {
+                DateTime lastModification = res.Result.Books.Max(i => i.LastModified);
+                Response.GetTypedHeaders().LastModified = lastModification;
+
+                var requestHeaders = Request.GetTypedHeaders();
+                if (requestHeaders.IfModifiedSince.HasValue &&
+                    requestHeaders.IfModifiedSince.Value >= lastModification)
+                {
+                    return StatusCode(StatusCodes.Status304NotModified);
+                }
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            return Ok(res.Result.Books);
         }
 
         /// <summary>

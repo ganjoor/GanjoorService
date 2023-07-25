@@ -2552,6 +2552,14 @@
             <param name="authorId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetBookRelatedPFFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
+            <summary>
+            get book related pdf books
+            </summary>
+            <param name="paging"></param>
+            <param name="bookId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
             <summary>
             add a new multi volume pdf collection
@@ -17881,6 +17889,14 @@
             <param name="authorId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetBookRelatedPFFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
+            <summary>
+            get book related pdf books
+            </summary>
+            <param name="paging"></param>
+            <param name="bookId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
             <summary>
             add multi volume pdf collection
@@ -18869,6 +18885,14 @@
             get books by author stats (group by role)
             </summary>
             <param name="authorId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetBookRelatedPFFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
+            <summary>
+            get book related pdf books
+            </summary>
+            <param name="paging"></param>
+            <param name="bookId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.AddMultiVolumePDFCollection(RMuseum.Models.PDFLibrary.MultiVolumePDFCollection)">
