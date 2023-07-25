@@ -662,6 +662,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get published pdf books by author stats (group by role)
+        /// </summary>
+        /// <param name="authorId"></param>
+        /// <returns></returns>
+        [HttpGet("pdfbook/by/contributer/{authorId}/groupby/role")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<AuthorRoleCount>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetPublishedPDFBookbyAuthorGroupedByRoleAsync(int authorId)
+        {
+            var res = await _pdfService.GetPublishedPDFBookbyAuthorGroupedByRoleAsync(authorId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// add a new mukti volume pdf collection
         /// </summary>
         /// <param name="volumes"></param>

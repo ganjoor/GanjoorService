@@ -132,6 +132,14 @@ namespace RMuseum.Services
         Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetPublishedPDFBooksByAuthorAsync(PagingParameterModel paging, int authorId, string role);
 
         /// <summary>
+        /// get published pdf books by author stats (group by role)
+        /// </summary>
+        /// <param name="authorId"></param>
+        /// <returns></returns>
+
+        Task<RServiceResult<AuthorRoleCount[]>> GetPublishedPDFBookbyAuthorGroupedByRoleAsync(int authorId);
+
+        /// <summary>
         /// add book
         /// </summary>
         /// <param name="book"></param>

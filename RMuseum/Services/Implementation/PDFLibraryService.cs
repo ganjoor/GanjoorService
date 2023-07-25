@@ -790,6 +790,58 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get published pdf books by author stats (group by role)
+        /// </summary>
+        /// <param name="authorId"></param>
+        /// <returns></returns>
+
+        public async Task<RServiceResult<AuthorRoleCount[]>> GetPublishedPDFBookbyAuthorGroupedByRoleAsync(int authorId)
+        {
+            try
+            {
+                var books = await _context.PDFBooks.AsNoTracking().Include(b => b.Contributers).ThenInclude(c => c.Author)
+                                        .Where(a => a.Status == PublishStatus.Published && a.Contributers.Any(a => a.Author.Id == authorId))
+                                        .ToListAsync();
+                Dictionary<string, int> roleCount = new Dictionary<string, int>();
+                foreach (var book in books)
+                {
+                    foreach (var contributer in book.Contributers)
+                    {
+                        if(contributer.Author.Id == authorId)
+                        {
+                            if (roleCount.ContainsKey(contributer.Role))
+                            {
+                                roleCount[contributer.Role] = 1;
+                            }
+                            else
+                            {
+                                roleCount[contributer.Role]++;
+                            }
+                        }
+                    }
+                }
+
+                List<AuthorRoleCount> authorRoles = new List<AuthorRoleCount>();
+                foreach(var role in roleCount.Keys)
+                {
+                    authorRoles.Add
+                        (
+                        new AuthorRoleCount()
+                        {
+                            Role = role,
+                            Count = roleCount[role]
+                        }
+                        );
+                }
+                return new RServiceResult<AuthorRoleCount[]>(authorRoles.ToArray()); 
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<AuthorRoleCount[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// add book
         /// </summary>
         /// <param name="book"></param>
