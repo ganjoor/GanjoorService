@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Policy;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 namespace RMuseum.Services.Implementation
 {
@@ -89,6 +90,16 @@ namespace RMuseum.Services.Implementation
                                            }
                                        }
 
+                                       if (html.IndexOf("/item/download/") == -1)
+                                       {
+                                           job.EndTime = DateTime.Now;
+                                           job.Status = ImportJobStatus.Failed;
+                                           job.Exception = $"/item/download/ not found in html source.";
+                                           context.Update(job);
+                                           await context.SaveChangesAsync();
+                                           return;
+                                       }
+
                                        List<RTagValue> meta = new List<RTagValue>();
                                        int idxStart;
                                        int idx = html.IndexOf("branch-link");
@@ -121,9 +132,6 @@ namespace RMuseum.Services.Implementation
                                            await context.SaveChangesAsync();
                                            return;
                                        }
-
-
-
                                        idxStart = html.IndexOf(">", idx);
                                        if (idxStart != -1)
                                        {
@@ -136,6 +144,65 @@ namespace RMuseum.Services.Implementation
                                                model.Title = model.Title.ToPersianNumbers().ApplyCorrectYeKe();
                                            }
                                        }
+
+                                       idxStart = html.IndexOf("width-150");
+                                       while(idxStart != -1)
+                                       {
+                                           idxStart = html.IndexOf(">", idxStart);
+                                           if (idxStart == -1) break;
+                                           int idxEnd = html.IndexOf("<", idxStart);
+                                           if (idxEnd == -1) break;
+
+                                           string tagName = html.Substring(idxStart + 1, idxEnd - idxStart - 1).ToPersianNumbers().ApplyCorrectYeKe();
+                                           
+                                           idxStart = html.IndexOf("value-name", idxEnd);
+                                           if (idxStart == -1) break;
+                                           idxStart = html.IndexOf(">", idxStart);
+                                           if (idxStart == -1) break;
+                                           idxEnd = html.IndexOf("</span>", idxStart);
+                                           if (idxEnd == -1) break;
+
+                                           string tagValue = html.Substring(idxStart + 1, idxEnd - idxStart - 1).ToPersianNumbers().ApplyCorrectYeKe();
+                                           tagValue = Regex.Replace(tagValue, "<.*?>", string.Empty);
+
+                                           if (tagName == "نویسنده")
+                                           {
+                                               model.AuthorsLine = tagValue;
+                                               tagName = "Author";
+                                           }
+                                           if(tagName == "مترجم")
+                                           {
+                                               model.TranslatorsLine = tagValue;
+                                               model.IsTranslation = true;
+                                               tagName = "Translator";
+                                           }
+                                           if(tagName == "زبان")
+                                           {
+                                               model.Language = tagValue;
+                                               tagName = "Language";
+                                           }
+                                           if (tagName == "شماره جلد")
+                                           {
+                                               if (int.TryParse(tagValue, out int v))
+                                               {
+                                                   model.VolumeOrder = v;
+                                               }
+                                               tagName = "Volume";
+                                           }
+                                           meta.Add
+                                                   (
+                                                        await TagHandler.PrepareAttribute(context, tagName, tagValue, 1)
+                                                   );
+                                           idxStart = html.IndexOf("width-150", idxEnd);
+
+                                       }
+
+                                       idx = html.IndexOf("/item/download/");
+                                       int idxQuote = html.IndexOf('"', idx);
+                                       string downloadUrl = html.Substring(idx, idxQuote - idx - 1);
+                                       downloadUrl = "https://sohalibrary.com" + downloadUrl;
+
+
 
                                    }
                                    catch (Exception e)
