@@ -2378,6 +2378,13 @@
             <param name="model"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.StartImportingKnownSourceAsync(System.String)">
+            <summary>
+            import from known sources
+            </summary>
+            <param name="srcUrl"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.PutPDFBookAsync(RMuseum.Models.PDFLibrary.PDFBook)">
             <summary>
             edit pdf book master record (user should have additional permissions pdf:awaiting and pdf:publish to change status of pdf book)
@@ -17868,6 +17875,13 @@
             طول تصویر بندانگشتی
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartImportingKnownSourceAsync(System.String)">
+            <summary>
+            import from known sources
+            </summary>
+            <param name="srcUrl"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetPDFBookByIdAsync(System.Int32,RMuseum.Models.Artifact.PublishStatus[])">
             <summary>
             get pdf book by id
@@ -18966,6 +18980,13 @@
             <summary>
             PDF Library Services
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.StartImportingKnownSourceAsync(System.String)">
+            <summary>
+            import from known sources
+            </summary>
+            <param name="srcUrl"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.GetPDFBookByIdAsync(System.Int32,RMuseum.Models.Artifact.PublishStatus[])">
             <summary>

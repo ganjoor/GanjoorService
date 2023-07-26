@@ -72,7 +72,7 @@ namespace RMuseum.Services.Implementation
                                    try
                                    {
                                        var pdfSource = await context.PDFSources.Where(s => s.Name == "سها").SingleOrDefaultAsync();
-                                       if(pdfSource == null)
+                                       if (pdfSource == null)
                                        {
                                            PDFSource newSource = new PDFSource()
                                            {
@@ -162,8 +162,26 @@ namespace RMuseum.Services.Implementation
                                            {
                                                model.Title = html.Substring(idxStart + 1, idxEnd - idxStart - 1);
                                                //we can try to extract volume information from title here
-                                               model.Title = model.Title.ToPersianNumbers().ApplyCorrectYeKe();
+                                               model.Title = model.Title.ToPersianNumbers().ApplyCorrectYeKe().Trim();
                                            }
+                                       }
+
+                                       var book = await context.Books.AsNoTracking().Where(b => b.Name == model.Title).FirstOrDefaultAsync();
+                                       if(book != null)
+                                       {
+                                           model.BookId = book.Id;
+                                       }
+                                       else
+                                       {
+                                           Book newBook = new Book()
+                                           {
+                                               Name = model.Title,
+                                               Description = "",
+                                               LastModified = DateTime.Now,
+                                           };
+                                           context.Books.Add(newBook);
+                                           await context.SaveChangesAsync();
+                                           model.BookId = newBook.Id;
                                        }
 
                                        idxStart = html.IndexOf("width-150");
@@ -184,7 +202,7 @@ namespace RMuseum.Services.Implementation
                                            if (idxEnd == -1) break;
 
                                            string tagValue = html.Substring(idxStart + 1, idxEnd - idxStart - 1).ToPersianNumbers().ApplyCorrectYeKe();
-                                           tagValue = Regex.Replace(tagValue, "<.*?>", string.Empty);
+                                           tagValue = Regex.Replace(tagValue, "<.*?>", string.Empty).Trim();
 
                                            if (tagName == "نویسنده")
                                            {
@@ -192,7 +210,7 @@ namespace RMuseum.Services.Implementation
                                                tagName = "Author";
 
                                                var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == tagValue).FirstOrDefaultAsync();
-                                               if(existingAuthor != null)
+                                               if (existingAuthor != null)
                                                {
                                                    model.WriterId = existingAuthor.Id;
                                                }
@@ -262,38 +280,38 @@ namespace RMuseum.Services.Implementation
                                                }
                                                tagName = "Volume";
                                            }
-                                           if(tagName == "ناشر")
+                                           if (tagName == "ناشر")
                                            {
                                                model.PublisherLine = tagValue;
                                                tagName = "Publisher";
                                            }
-                                           if(tagName == "محل نشر")
+                                           if (tagName == "محل نشر")
                                            {
                                                model.PublishingLocation = tagValue;
                                                tagName = "Publishing Location";
                                            }
-                                           if(tagName == "تاریخ انتشار")
+                                           if (tagName == "تاریخ انتشار")
                                            {
                                                model.PublishingDate = tagValue;
                                                tagName = "Publishing Date";
                                            }
-                                           if(tagName == "موضوع")
+                                           if (tagName == "موضوع")
                                            {
                                                tagName = "Subject";
                                            }
                                            if (tagName == "تعداد صفحات")
                                            {
-                                               if(tagValue.Contains("ـ"))
+                                               if (tagValue.Contains("ـ"))
                                                {
                                                    tagValue = tagValue.Substring(tagValue.IndexOf("ـ")).Trim();
-                                                   if(int.TryParse(tagValue, out int v))
+                                                   if (int.TryParse(tagValue, out int v))
                                                    {
                                                        model.ClaimedPageCount = v;
                                                    }
                                                }
                                                tagName = "Page Count";
                                            }
-                                      
+
                                            meta.Add
                                                    (
                                                         await TagHandler.PrepareAttribute(context, tagName, tagValue, 1)
@@ -304,7 +322,7 @@ namespace RMuseum.Services.Implementation
 
                                        idx = html.IndexOf("/item/download/");
                                        int idxQuote = html.IndexOf('"', idx);
-                                       string downloadUrl = html.Substring(idx, idxQuote - idx - 1);
+                                       string downloadUrl = html.Substring(idx, idxQuote - idx);
                                        downloadUrl = "https://sohalibrary.com" + downloadUrl;
 
 
@@ -317,24 +335,19 @@ namespace RMuseum.Services.Implementation
                                                if (result.IsSuccessStatusCode)
                                                {
                                                    string fileName = string.Empty;
-                                                   if (result.Headers.TryGetValues("content-disposition", out IEnumerable<string> values))
+                                                   if (result.Content.Headers.ContentDisposition != null)
                                                    {
-                                                       string contentDisposition = values.ElementAt(0);
-                                                       if (!string.IsNullOrEmpty(contentDisposition))
-                                                       {
-                                                           string lookFor = "filename=";
-                                                           int index = contentDisposition.IndexOf(lookFor, StringComparison.CurrentCultureIgnoreCase);
-                                                           if (index >= 0)
-                                                               fileName = contentDisposition.Substring(index + lookFor.Length);
-                                                       }
+                                                       fileName = System.Net.WebUtility.UrlDecode(result.Content.Headers.ContentDisposition.FileName).Replace("\"", "");
                                                    }
 
-                                                   if(string.IsNullOrEmpty(fileName))
+                                                   if (string.IsNullOrEmpty(fileName) || File.Exists(Path.Combine(_imageFileService.ImageStoragePath, fileName)))
                                                    {
                                                        fileName = downloadUrl.Substring(downloadUrl.LastIndexOf('/') + 1) + ".pdf";
                                                    }
 
                                                    model.LocalImportingPDFFilePath = Path.Combine(_imageFileService.ImageStoragePath, fileName);
+                                                   if (File.Exists(model.LocalImportingPDFFilePath))
+                                                       File.Delete(model.LocalImportingPDFFilePath);
 
                                                    using (Stream pdfStream = await result.Content.ReadAsStreamAsync())
                                                    {
@@ -353,7 +366,7 @@ namespace RMuseum.Services.Implementation
 
                                                    var res = await ImportLocalPDFFileAsync(context, model, fileChecksum);
                                                    File.Delete(model.LocalImportingPDFFilePath);
-                                                   if(res.Result != null)
+                                                   if (res.Result != null)
                                                    {
                                                        var pdf = res.Result;
                                                        foreach (var tag in meta)
