@@ -408,7 +408,7 @@ namespace RMuseum.Services.Implementation
                                                    File.Delete(model.LocalImportingPDFFilePath);
                                                    if (res.Result != null)
                                                    {
-                                                       var pdf = res.Result;
+                                                       var pdf = await context.PDFBooks.Include(p => p.Tags).Where(p => p.Id == res.Result.Id).SingleAsync();
                                                        foreach (var tag in meta)
                                                        {
                                                            pdf.Tags.Add(tag);
