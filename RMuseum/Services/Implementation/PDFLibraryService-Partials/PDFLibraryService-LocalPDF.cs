@@ -322,14 +322,8 @@ namespace RMuseum.Services.Implementation
                     }
                     await context.PDFBooks.AddAsync(pdfBook);
                     await context.SaveChangesAsync();
-                    var book = await context.Books.Where(b => b.Id == bookId).SingleAsync();
-                    if (book.CoverImageId == null)
-                    {
-                        book.CoverImage = RImage.DuplicateExcludingId(pdfBook.CoverImage);
-                        book.ExtenalCoverImageUrl = pdfBook.ExtenalCoverImageUrl;
-                        context.Update(book);
-                        await context.SaveChangesAsync();
-                    }
+
+                    
                     var resFTPUpload = await _UploadPDFBookToExternalServer(pdfBook, context, skipUpload);
                     if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
                     {
@@ -341,6 +335,15 @@ namespace RMuseum.Services.Implementation
                         await context.SaveChangesAsync();
                         return new RServiceResult<PDFBook>(null, job.Exception);
                     }
+                    var book = await context.Books.Where(b => b.Id == bookId).SingleAsync();
+                    if (book.CoverImageId == null)
+                    {
+                        book.CoverImage = RImage.DuplicateExcludingId(pdfBook.CoverImage);
+                        book.ExtenalCoverImageUrl = pdfBook.ExtenalCoverImageUrl;
+                        context.Update(book);
+                        await context.SaveChangesAsync();
+                    }
+
                     job.ProgressPercent = 100;
                     job.Status = ImportJobStatus.Succeeded;
                     job.EndTime = DateTime.Now;
