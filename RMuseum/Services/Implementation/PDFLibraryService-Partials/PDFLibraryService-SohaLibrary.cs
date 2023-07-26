@@ -230,7 +230,7 @@ namespace RMuseum.Services.Implementation
                                            int idxEnd = html.IndexOf("<", idxStart);
                                            if (idxEnd == -1) break;
 
-                                           string tagName = html.Substring(idxStart + 1, idxEnd - idxStart - 1).ToPersianNumbers().ApplyCorrectYeKe();
+                                           string tagName = html.Substring(idxStart + 1, idxEnd - idxStart - 1).ToPersianNumbers().ApplyCorrectYeKe().Trim();
 
                                            idxStart = html.IndexOf("value-name", idxEnd);
                                            if (idxStart == -1) break;
