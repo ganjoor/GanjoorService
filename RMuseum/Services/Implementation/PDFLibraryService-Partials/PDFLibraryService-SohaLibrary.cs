@@ -89,6 +89,7 @@ namespace RMuseum.Services.Implementation
                                        model.OriginalSourceName = pdfSource.Name;
                                        model.OriginalSourceUrl = srcUrl;
                                        model.BookScriptType = BookScriptType.Printed;
+                                       model.Language = "فارسی";
                                        model.SkipUpload = true;
 
                                        string html = "";
@@ -342,7 +343,7 @@ namespace RMuseum.Services.Implementation
                                            {
                                                if (tagValue.Contains("ـ"))
                                                {
-                                                   tagValue = tagValue.Substring(tagValue.IndexOf("ـ")).Trim();
+                                                   tagValue = tagValue.Substring(tagValue.IndexOf("ـ") + 1).Trim();
                                                    if (int.TryParse(tagValue, out int v))
                                                    {
                                                        model.ClaimedPageCount = v;
