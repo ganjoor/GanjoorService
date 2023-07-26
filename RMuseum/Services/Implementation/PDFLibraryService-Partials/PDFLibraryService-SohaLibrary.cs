@@ -15,14 +15,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 namespace RMuseum.Services.Implementation
 {
     public partial class PDFLibraryService
     {
-        public async Task<RServiceResult<bool>> StartImportingSohaLibraryUrlAsync(string srcUrl)
+        private async Task<RServiceResult<bool>> StartImportingSohaLibraryUrlAsync(string srcUrl)
         {
             try
             {

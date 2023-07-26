@@ -13,6 +13,12 @@ namespace RMuseum.Services
     public interface IPDFLibraryService
     {
         /// <summary>
+        /// import from known sources
+        /// </summary>
+        /// <param name="srcUrl"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> StartImportingKnownSourceAsync(string srcUrl);
+        /// <summary>
         /// get pdf book by id
         /// </summary>
         /// <param name="id"></param>

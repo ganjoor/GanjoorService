@@ -24,6 +24,20 @@ namespace RMuseum.Services.Implementation
     public partial class PDFLibraryService : IPDFLibraryService
     {
         /// <summary>
+        /// import from known sources
+        /// </summary>
+        /// <param name="srcUrl"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> StartImportingKnownSourceAsync(string srcUrl)
+        {
+            if(srcUrl.Contains("https://sohalibrary.com/"))
+            {
+                return await StartImportingSohaLibraryUrlAsync(srcUrl);
+            }
+            return new RServiceResult<bool>(false, "Unknown source url");
+            
+        }
+        /// <summary>
         /// get pdf book by id
         /// </summary>
         /// <param name="id"></param>
