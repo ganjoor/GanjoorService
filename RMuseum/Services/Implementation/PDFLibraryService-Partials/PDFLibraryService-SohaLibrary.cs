@@ -409,10 +409,19 @@ namespace RMuseum.Services.Implementation
                                                    if (res.Result != null)
                                                    {
                                                        var pdf = await context.PDFBooks.Include(p => p.Tags).Where(p => p.Id == res.Result.Id).SingleAsync();
-                                                       foreach (var tag in meta)
+                                                       if(pdf.Tags.Count > 0)
                                                        {
-                                                           pdf.Tags.Add(tag);
+                                                           //not working
+                                                           foreach (var tag in meta)
+                                                           {
+                                                               pdf.Tags.Add(tag);
+                                                           }
                                                        }
+                                                       else
+                                                       {
+                                                           pdf.Tags = meta;
+                                                       }
+                                                       
                                                        context.Update(pdf);
                                                        await context.SaveChangesAsync();
                                                    }
