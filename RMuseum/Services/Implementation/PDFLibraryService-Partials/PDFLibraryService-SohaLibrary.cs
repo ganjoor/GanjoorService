@@ -89,6 +89,7 @@ namespace RMuseum.Services.Implementation
                                        model.OriginalSourceName = pdfSource.Name;
                                        model.OriginalSourceUrl = srcUrl;
                                        model.BookScriptType = BookScriptType.Printed;
+                                       model.SkipUpload = true;
 
                                        string html = "";
                                        using (var client = new HttpClient())
