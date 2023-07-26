@@ -36,7 +36,7 @@ namespace RMuseum.Services.Implementation
                 if (
                     (
                     await _context.ImportJobs
-                        .Where(j => j.JobType == JobType.Pdf && j.SrcUrl == srcUrl && !(j.Status == ImportJobStatus.Failed || j.Status == ImportJobStatus.Aborted))
+                        .Where(j => j.JobType == JobType.Pdf && j.SrcContent == ("scrapping ..." + srcUrl) && !(j.Status == ImportJobStatus.Failed || j.Status == ImportJobStatus.Aborted))
                         .SingleOrDefaultAsync()
                     )
                     !=
@@ -56,9 +56,9 @@ namespace RMuseum.Services.Implementation
                                    {
                                        JobType = JobType.Pdf,
                                        SrcContent = "",
-                                       ResourceNumber = "scrapping ...",
+                                       ResourceNumber = "scrapping ..." + srcUrl,
                                        FriendlyUrl = "",
-                                       SrcUrl = srcUrl,
+                                       SrcUrl = "",
                                        QueueTime = DateTime.Now,
                                        ProgressPercent = 0,
                                        Status = ImportJobStatus.NotStarted
@@ -162,11 +162,22 @@ namespace RMuseum.Services.Implementation
                                            {
                                                model.Title = html.Substring(idxStart + 1, idxEnd - idxStart - 1);
                                                //we can try to extract volume information from title here
-                                               model.Title = model.Title.ToPersianNumbers().ApplyCorrectYeKe().Trim();
+                                               model.Title = model.Title.Trim();
                                            }
                                        }
 
-                                       var book = await context.Books.AsNoTracking().Where(b => b.Name == model.Title).FirstOrDefaultAsync();
+                                       string bookTitle = model.Title;
+                                       int volumeNumber = 0;
+                                       if(bookTitle.Contains("ـ ج"))
+                                       {
+                                           bookTitle = bookTitle.Substring(0, model.Title.IndexOf("ـ ج") -1 );
+                                           int.TryParse(model.Title.Substring(model.Title.IndexOf("ـ ج") + "ـ ج".Length).Trim(), out volumeNumber);
+                                       }
+
+                                       bookTitle = bookTitle.ToPersianNumbers().ApplyCorrectYeKe().Trim();
+                                       model.Title = model.Title.ToPersianNumbers().ApplyCorrectYeKe().Trim();
+
+                                       var book = await context.Books.AsNoTracking().Where(b => b.Name == bookTitle).FirstOrDefaultAsync();
                                        if(book != null)
                                        {
                                            model.BookId = book.Id;
@@ -175,13 +186,40 @@ namespace RMuseum.Services.Implementation
                                        {
                                            Book newBook = new Book()
                                            {
-                                               Name = model.Title,
+                                               Name = bookTitle,
                                                Description = "",
                                                LastModified = DateTime.Now,
                                            };
                                            context.Books.Add(newBook);
                                            await context.SaveChangesAsync();
                                            model.BookId = newBook.Id;
+                                       }
+
+                                       if(volumeNumber != 0)
+                                       {
+                                           MultiVolumePDFCollection collection = await context.MultiVolumePDFCollections.Where(v => v.Name == bookTitle && v.BookId == model.BookId).SingleOrDefaultAsync();
+                                           if(collection != null)
+                                           {
+                                               model.MultiVolumePDFCollectionId = collection.Id;
+
+                                               collection.VolumeCount += 1;
+                                               context.Update(collection);
+                                               await context.SaveChangesAsync();
+
+                                           }
+                                           else
+                                           {
+                                               MultiVolumePDFCollection newCollection = new MultiVolumePDFCollection()
+                                               {
+                                                   Name = bookTitle,
+                                                   BookId = model.BookId,
+                                                   Description = "",
+                                                   VolumeCount = 1,
+                                               };
+                                               context.MultiVolumePDFCollections.Add(newCollection);
+                                               await context.SaveChangesAsync();
+                                               model.MultiVolumePDFCollectionId = newCollection.Id;
+                                           }
                                        }
 
                                        idxStart = html.IndexOf("width-150");
