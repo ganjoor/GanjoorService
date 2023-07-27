@@ -181,61 +181,7 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                string bookTitle = model.Title;
-                int volumeNumber = 0;
-                if (bookTitle.Contains("ـ ج"))
-                {
-                    bookTitle = bookTitle.Substring(0, model.Title.IndexOf("ـ ج") - 1);
-                    int.TryParse(model.Title.Substring(model.Title.IndexOf("ـ ج") + "ـ ج".Length).Trim(), out volumeNumber);
-                }
 
-                bookTitle = bookTitle.ToPersianNumbers().ApplyCorrectYeKe().Trim();
-                model.Title = model.Title.ToPersianNumbers().ApplyCorrectYeKe().Trim();
-
-                var book = await context.Books.AsNoTracking().Where(b => b.Name == bookTitle).FirstOrDefaultAsync();
-                if (book != null)
-                {
-                    model.BookId = book.Id;
-                }
-                else
-                {
-                    Book newBook = new Book()
-                    {
-                        Name = bookTitle,
-                        Description = "",
-                        LastModified = DateTime.Now,
-                    };
-                    context.Books.Add(newBook);
-                    await context.SaveChangesAsync();
-                    model.BookId = newBook.Id;
-                }
-
-                if (volumeNumber != 0)
-                {
-                    MultiVolumePDFCollection collection = await context.MultiVolumePDFCollections.Where(v => v.Name == bookTitle && v.BookId == model.BookId).SingleOrDefaultAsync();
-                    if (collection != null)
-                    {
-                        model.MultiVolumePDFCollectionId = collection.Id;
-
-                        collection.VolumeCount += 1;
-                        context.Update(collection);
-                        await context.SaveChangesAsync();
-
-                    }
-                    else
-                    {
-                        MultiVolumePDFCollection newCollection = new MultiVolumePDFCollection()
-                        {
-                            Name = bookTitle,
-                            BookId = model.BookId,
-                            Description = "",
-                            VolumeCount = 1,
-                        };
-                        context.MultiVolumePDFCollections.Add(newCollection);
-                        await context.SaveChangesAsync();
-                        model.MultiVolumePDFCollectionId = newCollection.Id;
-                    }
-                }
 
                 idxStart = html.IndexOf("width-150");
                 while (idxStart != -1)
@@ -386,6 +332,62 @@ namespace RMuseum.Services.Implementation
                             );
                     idxStart = html.IndexOf("width-150", idxEnd);
 
+                }
+
+                string bookTitle = model.Title;
+                int volumeNumber = 0;
+                if (bookTitle.Contains("ـ ج"))
+                {
+                    bookTitle = bookTitle.Substring(0, model.Title.IndexOf("ـ ج") - 1);
+                    int.TryParse(model.Title.Substring(model.Title.IndexOf("ـ ج") + "ـ ج".Length).Trim(), out volumeNumber);
+                }
+
+                bookTitle = bookTitle.ToPersianNumbers().ApplyCorrectYeKe().Trim();
+                model.Title = model.Title.ToPersianNumbers().ApplyCorrectYeKe().Trim();
+
+                var book = await context.Books.AsNoTracking().Where(b => b.Name == bookTitle).FirstOrDefaultAsync();
+                if (book != null)
+                {
+                    model.BookId = book.Id;
+                }
+                else
+                {
+                    Book newBook = new Book()
+                    {
+                        Name = bookTitle,
+                        Description = "",
+                        LastModified = DateTime.Now,
+                    };
+                    context.Books.Add(newBook);
+                    await context.SaveChangesAsync();
+                    model.BookId = newBook.Id;
+                }
+
+                if (volumeNumber != 0)
+                {
+                    MultiVolumePDFCollection collection = await context.MultiVolumePDFCollections.Where(v => v.Name == bookTitle && v.BookId == model.BookId).SingleOrDefaultAsync();
+                    if (collection != null)
+                    {
+                        model.MultiVolumePDFCollectionId = collection.Id;
+
+                        collection.VolumeCount += 1;
+                        context.Update(collection);
+                        await context.SaveChangesAsync();
+
+                    }
+                    else
+                    {
+                        MultiVolumePDFCollection newCollection = new MultiVolumePDFCollection()
+                        {
+                            Name = bookTitle,
+                            BookId = model.BookId,
+                            Description = "",
+                            VolumeCount = 1,
+                        };
+                        context.MultiVolumePDFCollections.Add(newCollection);
+                        await context.SaveChangesAsync();
+                        model.MultiVolumePDFCollectionId = newCollection.Id;
+                    }
                 }
 
                 idx = html.IndexOf("/item/download/");
