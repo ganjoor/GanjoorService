@@ -346,11 +346,14 @@ namespace RMuseum.Services.Implementation
                                                if (tagValue.Contains("ـ"))
                                                {
                                                    tagValue = tagValue.Substring(tagValue.IndexOf("ـ") + 1).Trim();
-                                                   if (int.TryParse(tagValue, out int v))
-                                                   {
-                                                       model.ClaimedPageCount = v;
-                                                   }
+                                                  
                                                }
+
+                                               if (int.TryParse(tagValue, out int v))
+                                               {
+                                                   model.ClaimedPageCount = v;
+                                               }
+
                                                tagName = "Page Count";
                                            }
 

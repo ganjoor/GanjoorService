@@ -93,6 +93,7 @@ namespace RMuseum.Services.Implementation
                     pdfBook.OriginalSourceName = model.OriginalSourceName;
                     pdfBook.OriginalFileUrl = model.OriginalFileUrl;
                     pdfBook.PDFSourceId = model.PDFSourceId;
+                    pdfBook.Language = model.Language;
                     pdfBook.BookScriptType = model.BookScriptType;
                     List<AuthorRole> roles = new List<AuthorRole>();
                     if (model.WriterId != null)
