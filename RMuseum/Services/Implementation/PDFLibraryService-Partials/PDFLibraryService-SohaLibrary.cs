@@ -139,6 +139,7 @@ namespace RMuseum.Services.Implementation
                 List<RTagValue> meta = new List<RTagValue>();
                 int idxStart;
                 int idx = html.IndexOf("branch-link");
+                string firstHandSource = "";
                 if (idx != -1)
                 {
                     idxStart = html.IndexOf(">", idx);
@@ -148,12 +149,23 @@ namespace RMuseum.Services.Implementation
 
                         if (idxEnd != -1)
                         {
+                            firstHandSource = html.Substring(idxStart + 1, idxEnd - idxStart - 1);
                             meta.Add
                             (
-                                 await TagHandler.PrepareAttribute(context, "First Hand Source", html.Substring(idxStart + 1, idxEnd - idxStart - 1), 1)
+                                 await TagHandler.PrepareAttribute(context, "First Hand Source", firstHandSource, 1)
                             );
                         }
                     }
+                }
+
+                if(firstHandSource != "کتابخانه تخصصی ادبیات")
+                {
+                    job.EndTime = DateTime.Now;
+                    job.Status = ImportJobStatus.Failed;
+                    job.Exception = $"کتابخانه تخصصی ادبیات not found.";
+                    context.Update(job);
+                    await context.SaveChangesAsync();
+                    return;
                 }
 
 
