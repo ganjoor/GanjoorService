@@ -323,5 +323,12 @@ namespace RMuseum.Services
         /// <param name="sourceId"></param>
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> GetSourceRelatedPDFBooksAsync(PagingParameterModel paging, int sourceId);
+
+        /// <summary>
+        /// batch import soha library
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        void BatchImportSohaLibraryAsync(int start, int end);
     }
 }

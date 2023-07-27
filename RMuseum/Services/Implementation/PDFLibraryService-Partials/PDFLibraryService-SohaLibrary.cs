@@ -326,6 +326,16 @@ namespace RMuseum.Services.Implementation
                     {
                         model.Language = tagValueCleaned;
                         tagName = "Language";
+
+                        if (tagValueCleaned != "فارسی")
+                        {
+                            job.EndTime = DateTime.Now;
+                            job.Status = ImportJobStatus.Failed;
+                            job.Exception = "Language is not فارسی";
+                            context.Update(job);
+                            await context.SaveChangesAsync();
+                            return;
+                        }
                     }
                     if (tagName == "شماره جلد")
                     {
@@ -472,5 +482,46 @@ namespace RMuseum.Services.Implementation
 
 
         }
+
+        /// <summary>
+        /// batch import soha library
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        public void BatchImportSohaLibraryAsync(int start, int end)
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                       (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
+                               {
+                                   for (int nUrlIndex = start; nUrlIndex <= end; nUrlIndex++)
+                                   {
+                                       string srcUrl = $"https://sohalibrary.com/item/view/{nUrlIndex}";
+                                       if (
+                                        (await context.PDFBooks.Where(a => a.OriginalSourceUrl == srcUrl).SingleOrDefaultAsync())
+                                        !=
+                                        null
+                                        )
+                                       {
+                                           continue;
+                                       }
+
+                                       try
+                                       {
+
+                                           await ImportSohaLibraryUrlAsync(srcUrl, context);
+                                       }
+                                       catch
+                                       {
+                                           //ignore
+                                       }
+                                   }
+                               }
+                           }
+                       );
+        }
+
     }
 }

@@ -269,6 +269,22 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// batch import soha library
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        [HttpPost("soha/{start}/{end}")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult BatchImportSohaLibraryAsync(int start, int end)
+        {
+            _pdfService.BatchImportSohaLibraryAsync(start, end);
+            return Ok();
+        }
+
 
         /// <summary>
         /// edit pdf book master record (user should have additional permissions pdf:awaiting and pdf:publish to change status of pdf book)
