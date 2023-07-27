@@ -210,21 +210,60 @@ namespace RMuseum.Services.Implementation
                         model.AuthorsLine = tagValueCleaned;
                         tagName = "Author";
 
-                        var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == tagValueCleaned).FirstOrDefaultAsync();
-                        if (existingAuthor != null)
+                        string[] authors = tagValueCleaned.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+                        for(int i = 0; i < authors.Length; i++)
                         {
-                            model.WriterId = existingAuthor.Id;
-                        }
-                        else
-                        {
-                            var newAuthor = new Author()
+                            string authorTrimmed = authors[i].Trim();
+                            var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == authorTrimmed).FirstOrDefaultAsync();
+                            if (existingAuthor != null)
                             {
-                                Name = tagValueCleaned
-                            };
-                            context.Authors.Add(newAuthor);
-                            await context.SaveChangesAsync();
-                            model.WriterId = newAuthor.Id;
+                                if(i == 0)
+                                {
+                                    model.WriterId = existingAuthor.Id;
+                                }
+                                if(i == 1)
+                                {
+                                    model.Writer2Id = existingAuthor.Id;
+                                }
+                                if(i == 2)
+                                {
+                                    model.Writer3Id = existingAuthor.Id;
+                                }
+                                if(i == 3)
+                                {
+                                    model.Writer4Id = existingAuthor.Id;
+                                }
+                                
+                            }
+                            else
+                            {
+                                var newAuthor = new Author()
+                                {
+                                    Name = authorTrimmed
+                                };
+                                context.Authors.Add(newAuthor);
+                                await context.SaveChangesAsync();
+                                if(i == 0)
+                                {
+                                    model.WriterId = newAuthor.Id;
+                                }
+                                if(i == 1)
+                                {
+                                    model.Writer2Id = newAuthor.Id;
+                                }
+                                if(i == 2)
+                                {
+                                    model.Writer3Id = newAuthor.Id;
+                                }
+                                if(i == 3)
+                                {
+                                    model.Writer4Id = newAuthor.Id;
+                                }
+                            }
                         }
+
+                        
                     }
                     if (tagName == "مترجم")
                     {
@@ -232,41 +271,101 @@ namespace RMuseum.Services.Implementation
                         model.IsTranslation = true;
                         tagName = "Translator";
 
-                        var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == tagValueCleaned).FirstOrDefaultAsync();
-                        if (existingAuthor != null)
+                        string[] authors = tagValueCleaned.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                        for(int i = 0; i < authors.Length; i++)
                         {
-                            model.TranslatorId = existingAuthor.Id;
-                        }
-                        else
-                        {
-                            var newAuthor = new Author()
+                            string authorTrimmed = authors[i].Trim();
+                            var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == authorTrimmed).FirstOrDefaultAsync();
+                            if (existingAuthor != null)
                             {
-                                Name = tagValueCleaned
-                            };
-                            context.Authors.Add(newAuthor);
-                            await context.SaveChangesAsync();
-                            model.TranslatorId = newAuthor.Id;
+                                if( i == 0 )
+                                {
+                                    model.TranslatorId = existingAuthor.Id;
+                                }
+                                if( i == 1)
+                                {
+                                    model.Translator2Id = existingAuthor.Id;
+                                }
+                                if( i == 2)
+                                {
+                                    model.Translator3Id = existingAuthor.Id;
+                                }
+                                if( i == 3)
+                                {
+                                    model.Translator4Id = existingAuthor.Id;
+                                }
+                            }
+                            else
+                            {
+                                var newAuthor = new Author()
+                                {
+                                    Name = authorTrimmed
+                                };
+                                context.Authors.Add(newAuthor);
+                                await context.SaveChangesAsync();
+
+                                if(i == 0)
+                                {
+                                    model.TranslatorId = newAuthor.Id;
+                                }
+                                if(i == 1)
+                                {
+                                    model.Translator2Id = newAuthor.Id;
+                                }
+                                if(i == 2)
+                                {
+                                    model.Translator3Id = newAuthor.Id;
+                                }
+                                if(i == 3)
+                                {
+                                    model.Translator4Id = newAuthor.Id;
+                                }
+                            }
                         }
+
+                        
                     }
                     if (tagName == "مصحح")
                     {
                         tagName = "Collector";
 
-                        var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == tagValueCleaned).FirstOrDefaultAsync();
-                        if (existingAuthor != null)
+                        string[] authors = tagValueCleaned.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                        for(int i=0; i<authors.Length; i++)
                         {
-                            model.CollectorId = existingAuthor.Id;
-                        }
-                        else
-                        {
-                            var newAuthor = new Author()
+                            string authorTrimmed = authors[i].Trim();
+                            var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == authorTrimmed).FirstOrDefaultAsync();
+                            if (existingAuthor != null)
                             {
-                                Name = tagValueCleaned
-                            };
-                            context.Authors.Add(newAuthor);
-                            await context.SaveChangesAsync();
-                            model.CollectorId = newAuthor.Id;
+                                if(i == 0)
+                                {
+                                    model.CollectorId = existingAuthor.Id;
+                                }
+                                if(i == 1) 
+                                {
+                                    model.Collector2Id = existingAuthor.Id;
+                                }
+                                
+                            }
+                            else
+                            {
+                                var newAuthor = new Author()
+                                {
+                                    Name = authorTrimmed
+                                };
+                                context.Authors.Add(newAuthor);
+                                await context.SaveChangesAsync();
+                                if (i == 0)
+                                {
+                                    model.CollectorId = newAuthor.Id;
+                                }
+                                if (i == 1)
+                                {
+                                    model.Collector2Id = newAuthor.Id;
+                                }
+                            }
                         }
+
+                        
                     }
                     if (tagName == "زبان")
                     {
