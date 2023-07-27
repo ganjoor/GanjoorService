@@ -241,15 +241,17 @@ namespace RMuseum.Services.Implementation
                                            idxEnd = html.IndexOf("</span>", idxStart);
                                            if (idxEnd == -1) break;
 
-                                           string tagValue = html.Substring(idxStart + 1, idxEnd - idxStart - 1).ToPersianNumbers().ApplyCorrectYeKe();
+                                           string tagValue = html.Substring(idxStart + 1, idxEnd - idxStart - 1);
                                            tagValue = Regex.Replace(tagValue, "<.*?>", string.Empty).Trim();
+
+                                           string tagValueCleaned = tagValue.ToPersianNumbers().ApplyCorrectYeKe();
 
                                            if (tagName == "نویسنده")
                                            {
-                                               model.AuthorsLine = tagValue;
+                                               model.AuthorsLine = tagValueCleaned;
                                                tagName = "Author";
 
-                                               var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == tagValue).FirstOrDefaultAsync();
+                                               var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == tagValueCleaned).FirstOrDefaultAsync();
                                                if (existingAuthor != null)
                                                {
                                                    model.WriterId = existingAuthor.Id;
@@ -258,7 +260,7 @@ namespace RMuseum.Services.Implementation
                                                {
                                                    var newAuthor = new Author()
                                                    {
-                                                       Name = tagValue
+                                                       Name = tagValueCleaned
                                                    };
                                                    context.Authors.Add(newAuthor);
                                                    await context.SaveChangesAsync();
@@ -267,11 +269,11 @@ namespace RMuseum.Services.Implementation
                                            }
                                            if (tagName == "مترجم")
                                            {
-                                               model.TranslatorsLine = tagValue;
+                                               model.TranslatorsLine = tagValueCleaned;
                                                model.IsTranslation = true;
                                                tagName = "Translator";
 
-                                               var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == tagValue).FirstOrDefaultAsync();
+                                               var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == tagValueCleaned).FirstOrDefaultAsync();
                                                if (existingAuthor != null)
                                                {
                                                    model.TranslatorId = existingAuthor.Id;
@@ -280,7 +282,7 @@ namespace RMuseum.Services.Implementation
                                                {
                                                    var newAuthor = new Author()
                                                    {
-                                                       Name = tagValue
+                                                       Name = tagValueCleaned
                                                    };
                                                    context.Authors.Add(newAuthor);
                                                    await context.SaveChangesAsync();
@@ -291,7 +293,7 @@ namespace RMuseum.Services.Implementation
                                            {
                                                tagName = "Collector";
 
-                                               var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == tagValue).FirstOrDefaultAsync();
+                                               var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == tagValueCleaned).FirstOrDefaultAsync();
                                                if (existingAuthor != null)
                                                {
                                                    model.CollectorId = existingAuthor.Id;
@@ -300,7 +302,7 @@ namespace RMuseum.Services.Implementation
                                                {
                                                    var newAuthor = new Author()
                                                    {
-                                                       Name = tagValue
+                                                       Name = tagValueCleaned
                                                    };
                                                    context.Authors.Add(newAuthor);
                                                    await context.SaveChangesAsync();
@@ -309,7 +311,7 @@ namespace RMuseum.Services.Implementation
                                            }
                                            if (tagName == "زبان")
                                            {
-                                               model.Language = tagValue;
+                                               model.Language = tagValueCleaned;
                                                tagName = "Language";
                                            }
                                            if (tagName == "شماره جلد")
@@ -322,17 +324,17 @@ namespace RMuseum.Services.Implementation
                                            }
                                            if (tagName == "ناشر")
                                            {
-                                               model.PublisherLine = tagValue;
+                                               model.PublisherLine = tagValueCleaned;
                                                tagName = "Publisher";
                                            }
                                            if (tagName == "محل نشر")
                                            {
-                                               model.PublishingLocation = tagValue;
+                                               model.PublishingLocation = tagValueCleaned;
                                                tagName = "Publishing Location";
                                            }
                                            if (tagName == "تاریخ انتشار")
                                            {
-                                               model.PublishingDate = tagValue;
+                                               model.PublishingDate = tagValueCleaned;
                                                tagName = "Publishing Date";
                                            }
                                            if (tagName == "موضوع")
@@ -354,7 +356,7 @@ namespace RMuseum.Services.Implementation
 
                                            meta.Add
                                                    (
-                                                        await TagHandler.PrepareAttribute(context, tagName, tagValue, 1)
+                                                        await TagHandler.PrepareAttribute(context, tagName, tagValueCleaned, 1)
                                                    );
                                            idxStart = html.IndexOf("width-150", idxEnd);
 
