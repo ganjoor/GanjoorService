@@ -5,6 +5,7 @@ using RMuseum.DbContext;
 using RMuseum.Models.ExternalFTPUpload;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services;
+using RSecurityBackend.Services.Implementation;
 using System;
 using System.IO;
 using System.Linq;
@@ -171,6 +172,30 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get queued ftp uploads
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, QueuedFTPUpload[] Items)>> GetQueuedFTPUploadsAsync(PagingParameterModel paging)
+        {
+            try
+            {
+                var source =
+                _context.QueuedFTPUploads.AsNoTracking()
+               .OrderBy(t => t.QueueDate)
+               .AsQueryable();
+                (PaginationMetadata PagingMeta, QueuedFTPUpload[] Items) paginatedResult =
+                    await QueryablePaginator<QueuedFTPUpload>.Paginate(source, paging);
+                return new RServiceResult<(PaginationMetadata PagingMeta, QueuedFTPUpload[] Items)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, QueuedFTPUpload[] Items)>((null, null), exp.ToString());
             }
         }
 

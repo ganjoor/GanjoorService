@@ -18541,6 +18541,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.GetQueuedFTPUploadsAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get queued ftp uploads
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.QueuedFTPUploadService._context">
             <summary>
             Database Context
