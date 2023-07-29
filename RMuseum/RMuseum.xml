@@ -787,12 +787,31 @@
             donation service
             </summary>
         </member>
-        <member name="F:RMuseum.Controllers.ExtenalFTPController._ftpService">
+        <member name="M:RMuseum.Controllers.ExternalFTPController.GetQueuedFTPUploadsAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            queued ftp uploads
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ExternalFTPController.ProcessQueueAsync">
+            <summary>
+            process ftp queue
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ExternalFTPController.ResetQueueAsync">
+            <summary>
+            reset ftp queue
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Controllers.ExternalFTPController._ftpService">
             <summary>
             FTP Service
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.ExtenalFTPController.#ctor(RMuseum.Services.IQueuedFTPUploadService)">
+        <member name="M:RMuseum.Controllers.ExternalFTPController.#ctor(RMuseum.Services.IQueuedFTPUploadService)">
             <summary>
             constructor
             </summary>
