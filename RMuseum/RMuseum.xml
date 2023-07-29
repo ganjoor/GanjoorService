@@ -4904,6 +4904,51 @@
             User Note
             </summary>
         </member>
+        <member name="T:RMuseum.Models.ExternalFTPUpload.UploadingItem">
+            <summary>
+            Uploadng Item
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.LocalFilePath">
+            <summary>
+            local file path
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.RemoteFilePath">
+            <summary>
+            remote file path
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.DeleteFileAfterUpload">
+            <summary>
+            delete file after upload
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.QueueDate">
+            <summary>
+            queue date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.Processing">
+            <summary>
+            processing
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.ProcessDate">
+            <summary>
+            process date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.Error">
+            <summary>
+            error
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.FAQ.FAQCategory">
             <summary>
             FAQ Category
