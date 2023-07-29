@@ -7,7 +7,6 @@ using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.PDFLibrary.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Models.Image;
-using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -455,23 +454,27 @@ namespace RMuseum.Services.Implementation
         }
         private async Task<RServiceResult<bool>> _UploadPDFBookToExternalServer(PDFBook book, RMuseumDbContext context, bool skipUpload)
         {
-            LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-            var job = (await jobProgressServiceEF.NewJob("_UploadArtifactToExternalServer", $"Uploading {book.StorageFolderName}")).Result;
             try
             {
                 var localPDFFilePath = _imageFileService.GetImagePath(book.PDFFile).Result;
                 var remotePDFFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localPDFFilePath)}";
                 if (!skipUpload)
                 {
-                    await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{localPDFFilePath} => {remotePDFFilePath}");
-                    await _ftpService.AddAsync(localPDFFilePath, remotePDFFilePath, true);
+                    var res = await _ftpService.AddAsync(localPDFFilePath, remotePDFFilePath, true);
+                    if(!string.IsNullOrEmpty(res.ExceptionString))
+                    {
+                        return new RServiceResult<bool>(false, $"ftp {localPDFFilePath} => {remotePDFFilePath} {res.ExceptionString}");
+                    }
                 }
                 var localCoverImageFilePath = _imageFileService.GetImagePath(book.CoverImage).Result;
                 var remoteCoverImageFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localCoverImageFilePath)}";
                 if (!skipUpload)
                 {
-                    await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{localCoverImageFilePath} => {remoteCoverImageFilePath}");
-                    await _ftpService.AddAsync(localCoverImageFilePath, remoteCoverImageFilePath, true);
+                    var res = await _ftpService.AddAsync(localCoverImageFilePath, remoteCoverImageFilePath, true);
+                    if (!string.IsNullOrEmpty(res.ExceptionString))
+                    {
+                        return new RServiceResult<bool>(false, $"ftp {localCoverImageFilePath} => {remoteCoverImageFilePath} {res.ExceptionString}");
+                    }
                 }
                 book.ExternalPDFFileUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localPDFFilePath)}";
                 book.ExtenalCoverImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localCoverImageFilePath)}";
@@ -484,23 +487,28 @@ namespace RMuseum.Services.Implementation
                     if (!skipUpload)
                     {
                         var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/pdf/{book.CoverImage.FolderName}/{Path.GetFileName(localFilePath)}";
-                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{localFilePath} => {remoteFilePath}");
-                        await _ftpService.AddAsync(localFilePath, remoteFilePath, true);
+                        var res = await _ftpService.AddAsync(localFilePath, remoteFilePath, true);
+                        if (!string.IsNullOrEmpty(res.ExceptionString))
+                        {
+                            return new RServiceResult<bool>(false, $"ftp {localFilePath} => {remoteFilePath} {res.ExceptionString}");
+                        }
                     }
                 }
                 if (!skipUpload)
                 {
                     if(false == await context.QueuedFTPUploads.AsNoTracking().Where(p => p.Processing).AnyAsync())
                     {
-                        await _ftpService.ProcessQueueAsync();
+                        var res = await _ftpService.ProcessQueueAsync();
+                        if (!string.IsNullOrEmpty(res.ExceptionString))
+                        {
+                            return new RServiceResult<bool>(false, $"FTP ProcessQueueAsync : {res.ExceptionString}");
+                        }
                     }
                 }
-                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                 return new RServiceResult<bool>(true);
             }
             catch (Exception exp)
             {
-                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }
