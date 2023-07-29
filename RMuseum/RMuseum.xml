@@ -787,6 +787,17 @@
             donation service
             </summary>
         </member>
+        <member name="F:RMuseum.Controllers.ExtenalFTPController._ftpService">
+            <summary>
+            FTP Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.ExtenalFTPController.#ctor(RMuseum.Services.IQueuedFTPUploadService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="ftpService"></param>
+        </member>
         <member name="M:RMuseum.Controllers.FAQController.GetCategoriesAsync">
             <summary>
             get published categories
@@ -4752,6 +4763,11 @@
         <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.PDFLibraryEntityShortName">
             <summary>
             pdf
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.QueuedFTPUploadShortName">
+            <summary>
+            ftp
             </summary>
         </member>
         <member name="P:RMuseum.Models.Auth.Memory.RMuseumSecurableItem.Items">

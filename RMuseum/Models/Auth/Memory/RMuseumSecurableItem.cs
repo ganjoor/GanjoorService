@@ -114,6 +114,11 @@ namespace RMuseum.Models.Auth.Memory
         public const string PDFLibraryEntityShortName = "pdf";
 
         /// <summary>
+        /// ftp
+        /// </summary>
+        public const string QueuedFTPUploadShortName = "ftp";
+
+        /// <summary>
         /// list of forms and their permissions
         /// </summary>
         public new static SecurableItem[] Items
@@ -213,6 +218,15 @@ namespace RMuseum.Models.Auth.Memory
                             new SecurableItemOperation(EditTagValueOperationShortName, "اصلاح مقدار ویژگی", false),
                             new SecurableItemOperation(ToAwaitingStatusOperationShortName, "درخواست بازبینی", false),
                             new SecurableItemOperation(PublishOperationShortName, "انتشار", false),
+                        }
+                    },
+                    new SecurableItem()
+                    {
+                        ShortName = QueuedFTPUploadShortName,
+                        Description = "بارگذاری به FTP خارجی",
+                        Operations = new SecurableItemOperation[]
+                        {
+                            new SecurableItemOperation(ModerateOperationShortName, "مدیریت", false),
                         }
                     },
 
