@@ -99,12 +99,15 @@ namespace RMuseum.Services.Implementation
                                                 {
                                                     try
                                                     {
-                                                        var dir = Path.GetDirectoryName(next.LocalFilePath);
                                                         File.Delete(next.LocalFilePath);
-                                                        if(Directory.GetFiles(dir).Length == 0)
+                                                        /*
+                                                        // deleting the directory causes conflicts, so keep it
+                                                        var dir = Path.GetDirectoryName(next.LocalFilePath);
+                                                        if (Directory.GetFiles(dir).Length == 0)
                                                         {
                                                             Directory.Delete(dir);
                                                         }
+                                                        */
                                                     }
                                                     catch
                                                     {
