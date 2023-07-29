@@ -10,7 +10,7 @@ namespace RMuseum.Controllers
 {
     [Produces("application/json")]
     [Route("api/ftp")]
-    public class ExtenalFTPController : Controller
+    public class ExternalFTPController : Controller
     {
         /// <summary>
         /// FTP Service
@@ -21,7 +21,7 @@ namespace RMuseum.Controllers
         /// constructor
         /// </summary>
         /// <param name="ftpService"></param>
-        public ExtenalFTPController(IQueuedFTPUploadService ftpService)
+        public ExternalFTPController(IQueuedFTPUploadService ftpService)
         {
             _ftpService = ftpService;
         }
