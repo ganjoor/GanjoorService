@@ -3581,6 +3581,11 @@
             PDF Sources
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.QueuedFTPUploads">
+            <summary>
+            Queued FTP Uploads
+            </summary>
+        </member>
         <member name="T:RMuseum.Migrations.PictureFileExtUrl">
             <inheritdoc />
         </member>
@@ -4904,47 +4909,47 @@
             User Note
             </summary>
         </member>
-        <member name="T:RMuseum.Models.ExternalFTPUpload.UploadingItem">
+        <member name="T:RMuseum.Models.ExternalFTPUpload.QueuedFTPUpload">
             <summary>
-            Uploadng Item
+            Queued FTP Upload
             </summary>
         </member>
-        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.Id">
+        <member name="P:RMuseum.Models.ExternalFTPUpload.QueuedFTPUpload.Id">
             <summary>
             id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.LocalFilePath">
+        <member name="P:RMuseum.Models.ExternalFTPUpload.QueuedFTPUpload.LocalFilePath">
             <summary>
             local file path
             </summary>
         </member>
-        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.RemoteFilePath">
+        <member name="P:RMuseum.Models.ExternalFTPUpload.QueuedFTPUpload.RemoteFilePath">
             <summary>
             remote file path
             </summary>
         </member>
-        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.DeleteFileAfterUpload">
+        <member name="P:RMuseum.Models.ExternalFTPUpload.QueuedFTPUpload.DeleteFileAfterUpload">
             <summary>
             delete file after upload
             </summary>
         </member>
-        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.QueueDate">
+        <member name="P:RMuseum.Models.ExternalFTPUpload.QueuedFTPUpload.QueueDate">
             <summary>
             queue date
             </summary>
         </member>
-        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.Processing">
+        <member name="P:RMuseum.Models.ExternalFTPUpload.QueuedFTPUpload.Processing">
             <summary>
             processing
             </summary>
         </member>
-        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.ProcessDate">
+        <member name="P:RMuseum.Models.ExternalFTPUpload.QueuedFTPUpload.ProcessDate">
             <summary>
             process date
             </summary>
         </member>
-        <member name="P:RMuseum.Models.ExternalFTPUpload.UploadingItem.Error">
+        <member name="P:RMuseum.Models.ExternalFTPUpload.QueuedFTPUpload.Error">
             <summary>
             error
             </summary>
@@ -18509,6 +18514,31 @@
             <param name="notificationService"></param>
             <param name="appUserService"></param>
             <param name="configuration"></param>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.QueuedFTPUploadService">
+            <summary>
+            Queued FTP Upload Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.AddAsync(System.String,System.String,System.Boolean)">
+            <summary>
+            add upload
+            </summary>
+            <param name="localFilePath"></param>
+            <param name="remoteFilePath"></param>
+            <param name="deleteFileAfterUpload"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.QueuedFTPUploadService._context">
+            <summary>
+            Database Context
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.#ctor(RMuseum.DbContext.RMuseumDbContext)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.RecitationsRssBuilder">
             <summary>
