@@ -1,6 +1,4 @@
-﻿using FluentFTP;
-using FluentFTP.Client.BaseClient;
-using ganjoor;
+﻿using ganjoor;
 using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Artifact;
@@ -461,55 +459,43 @@ namespace RMuseum.Services.Implementation
             var job = (await jobProgressServiceEF.NewJob("_UploadArtifactToExternalServer", $"Uploading {book.StorageFolderName}")).Result;
             try
             {
-                if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
+                var localPDFFilePath = _imageFileService.GetImagePath(book.PDFFile).Result;
+                var remotePDFFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localPDFFilePath)}";
+                if (!skipUpload)
                 {
-                    var ftpClient = new AsyncFtpClient
-                    (
-                        Configuration.GetSection("ExternalFTPServer")["Host"],
-                        Configuration.GetSection("ExternalFTPServer")["Username"],
-                        Configuration.GetSection("ExternalFTPServer")["Password"]
-                    );
-                    if (!skipUpload)
-                    {
-                        ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
-                        await ftpClient.AutoConnect();
-                        ftpClient.Config.RetryAttempts = 3;
-                    }
-                    var localPDFFilePath = _imageFileService.GetImagePath(book.PDFFile).Result;
-                    var remotePDFFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localPDFFilePath)}";
-                    if (!skipUpload)
-                    {
-                        await jobProgressServiceEF.UpdateJob(job.Id, 0, localPDFFilePath);
-                        await ftpClient.UploadFile(localPDFFilePath, remotePDFFilePath, createRemoteDir: true);
-                    }
-                    var localCoverImageFilePath = _imageFileService.GetImagePath(book.CoverImage).Result;
-                    var remoteCoverImageFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localCoverImageFilePath)}";
-                    if (!skipUpload)
-                    {
-                        await jobProgressServiceEF.UpdateJob(job.Id, 0, localCoverImageFilePath);
-                        await ftpClient.UploadFile(localCoverImageFilePath, remoteCoverImageFilePath, createRemoteDir: true);
-                    }
-                    book.ExternalPDFFileUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localPDFFilePath)}";
-                    book.ExtenalCoverImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localCoverImageFilePath)}";
-                    context.Update(book);
-                    foreach (var item in book.Pages)
-                    {
-                        var localFilePath = _imageFileService.GetImagePath(item.ThumbnailImage).Result;
-                        item.ExtenalThumbnailImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localFilePath)}";
-                        context.Update(item);
-                        if (!skipUpload)
-                        {
-                            await jobProgressServiceEF.UpdateJob(job.Id, 0, localFilePath);
-                            var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/pdf/{book.CoverImage.FolderName}/{Path.GetFileName(localFilePath)}";
-                            await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
-                        }
-                    }
-                    if (!skipUpload)
-                    {
-                        await ftpClient.Disconnect();
-                    }
-                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                    await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{localPDFFilePath} => {remotePDFFilePath}");
+                    await _ftpService.AddAsync(localPDFFilePath, remotePDFFilePath, true);
                 }
+                var localCoverImageFilePath = _imageFileService.GetImagePath(book.CoverImage).Result;
+                var remoteCoverImageFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localCoverImageFilePath)}";
+                if (!skipUpload)
+                {
+                    await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{localCoverImageFilePath} => {remoteCoverImageFilePath}");
+                    await _ftpService.AddAsync(localCoverImageFilePath, remoteCoverImageFilePath, true);
+                }
+                book.ExternalPDFFileUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localPDFFilePath)}";
+                book.ExtenalCoverImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localCoverImageFilePath)}";
+                context.Update(book);
+                foreach (var item in book.Pages)
+                {
+                    var localFilePath = _imageFileService.GetImagePath(item.ThumbnailImage).Result;
+                    item.ExtenalThumbnailImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localFilePath)}";
+                    context.Update(item);
+                    if (!skipUpload)
+                    {
+                        var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/pdf/{book.CoverImage.FolderName}/{Path.GetFileName(localFilePath)}";
+                        await jobProgressServiceEF.UpdateJob(job.Id, 0, $"{localFilePath} => {remoteFilePath}");
+                        await _ftpService.AddAsync(localFilePath, remoteFilePath, true);
+                    }
+                }
+                if (!skipUpload)
+                {
+                    if(false == await context.QueuedFTPUploads.AsNoTracking().Where(p => p.Processing).AnyAsync())
+                    {
+                        await _ftpService.ProcessQueueAsync();
+                    }
+                }
+                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                 return new RServiceResult<bool>(true);
             }
             catch (Exception exp)
@@ -517,10 +503,6 @@ namespace RMuseum.Services.Implementation
                 await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
                 return new RServiceResult<bool>(false, exp.ToString());
             }
-        }
-        private void FtpClient_ValidateCertificate(BaseFtpClient control, FtpSslValidationEventArgs e)
-        {
-            e.Accept = true;
         }
         /// <summary>
         /// عرض تصویر بندانگشتی

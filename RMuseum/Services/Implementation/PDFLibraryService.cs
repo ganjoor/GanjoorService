@@ -1,9 +1,7 @@
-﻿using ganjoor;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
 using RMuseum.Models.Artifact;
-using RMuseum.Models.ImportJob;
 using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.PDFLibrary.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -1256,6 +1254,10 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         protected readonly IImageFileService _imageFileService;
         /// <summary>
+        /// ftp service
+        /// </summary>
+        protected readonly IQueuedFTPUploadService _ftpService;
+        /// <summary>
         /// Configuration
         /// </summary>
         protected IConfiguration Configuration { get; }
@@ -1266,12 +1268,14 @@ namespace RMuseum.Services.Implementation
         /// <param name="backgroundTaskQueue"></param>
         /// <param name="imageFileService"></param>
         /// <param name="configuration"></param>
-        public PDFLibraryService(RMuseumDbContext context, IBackgroundTaskQueue backgroundTaskQueue, IImageFileService imageFileService, IConfiguration configuration)
+        /// <param name="ftpService"></param>
+        public PDFLibraryService(RMuseumDbContext context, IBackgroundTaskQueue backgroundTaskQueue, IImageFileService imageFileService, IConfiguration configuration, IQueuedFTPUploadService ftpService)
         {
             _context = context;
             _backgroundTaskQueue = backgroundTaskQueue;
             _imageFileService = imageFileService;
             Configuration = configuration;
+            _ftpService = ftpService;
         }
     }
 }

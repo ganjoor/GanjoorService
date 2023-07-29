@@ -103,7 +103,7 @@ namespace RMuseum.Services.Implementation
                 model.OriginalSourceUrl = srcUrl;
                 model.BookScriptType = BookScriptType.Printed;
                 model.Language = "فارسی";
-                model.SkipUpload = true;
+                model.SkipUpload = false;
 
                 string html = "";
                 using (var client = new HttpClient())

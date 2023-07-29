@@ -18293,12 +18293,17 @@
             image file service
             </summary>
         </member>
+        <member name="F:RMuseum.Services.Implementation.PDFLibraryService._ftpService">
+            <summary>
+            ftp service
+            </summary>
+        </member>
         <member name="P:RMuseum.Services.Implementation.PDFLibraryService.Configuration">
             <summary>
             Configuration
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.#ctor(RMuseum.DbContext.RMuseumDbContext,RSecurityBackend.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.#ctor(RMuseum.DbContext.RMuseumDbContext,RSecurityBackend.Services.IBackgroundTaskQueue,RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IQueuedFTPUploadService)">
             <summary>
             constructor
             </summary>
@@ -18306,6 +18311,7 @@
             <param name="backgroundTaskQueue"></param>
             <param name="imageFileService"></param>
             <param name="configuration"></param>
+            <param name="ftpService"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.PictureFileService">
             <summary>
