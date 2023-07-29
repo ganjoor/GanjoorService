@@ -18517,7 +18517,7 @@
         </member>
         <member name="T:RMuseum.Services.Implementation.QueuedFTPUploadService">
             <summary>
-            Queued FTP Upload Service
+            Queued FTP Upload Service Implementation
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.AddAsync(System.String,System.String,System.Boolean)">
@@ -18529,13 +18529,13 @@
             <param name="deleteFileAfterUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.ProcessQueue">
+        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.ProcessQueueAsync">
             <summary>
             process queue
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.ResetQueue">
+        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.ResetQueueAsync">
             <summary>
             reset queue
             </summary>
@@ -19565,6 +19565,39 @@
             delete published suggested photo
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RMuseum.Services.IQueuedFTPUploadService">
+            <summary>
+            Queued FTP Upload Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IQueuedFTPUploadService.AddAsync(System.String,System.String,System.Boolean)">
+            <summary>
+            add upload (you should call ProcessQueue manually)
+            </summary>
+            <param name="localFilePath"></param>
+            <param name="remoteFilePath"></param>
+            <param name="deleteFileAfterUpload"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IQueuedFTPUploadService.ProcessQueueAsync">
+            <summary>
+            process queue
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IQueuedFTPUploadService.ResetQueueAsync">
+            <summary>
+            reset queue
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IQueuedFTPUploadService.GetQueuedFTPUploadsAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get queued ftp uploads
+            </summary>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IRecitationService">

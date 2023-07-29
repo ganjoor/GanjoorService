@@ -15,9 +15,9 @@ namespace RMuseum.Services.Implementation
 {
     
     /// <summary>
-    /// Queued FTP Upload Service
+    /// Queued FTP Upload Service Implementation
     /// </summary>
-    public class QueuedFTPUploadService
+    public class QueuedFTPUploadService : IQueuedFTPUploadService
     {
         /// <summary>
         /// add upload (you should call ProcessQueue manually)
@@ -52,7 +52,7 @@ namespace RMuseum.Services.Implementation
         /// process queue
         /// </summary>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> ProcessQueue()
+        public async Task<RServiceResult<bool>> ProcessQueueAsync()
         {
             try
             {
@@ -156,7 +156,7 @@ namespace RMuseum.Services.Implementation
         /// reset queue
         /// </summary>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> ResetQueue()
+        public async Task<RServiceResult<bool>> ResetQueueAsync()
         {
             try
             {

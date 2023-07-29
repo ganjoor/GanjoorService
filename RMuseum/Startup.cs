@@ -306,6 +306,9 @@ namespace RMuseum
             //PDF library service
             services.AddTransient<IPDFLibraryService, PDFLibraryService>();
 
+            //Queued FTP Upload Service
+            services.AddTransient<IQueuedFTPUploadService, QueuedFTPUploadService>();
+
             //upload limit for IIS
             services.Configure<IISServerOptions>(options =>
             {
