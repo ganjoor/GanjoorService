@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using System.IO;
 using RMuseum.Models.FAQ;
 using RMuseum.Models.PDFLibrary;
+using RMuseum.Models.ExternalFTPUpload;
 
 namespace RMuseum.DbContext
 {
@@ -536,6 +537,11 @@ namespace RMuseum.DbContext
         /// PDF Sources
         /// </summary>
         public DbSet<PDFSource> PDFSources { get; set; }
+
+        /// <summary>
+        /// Queued FTP Uploads
+        /// </summary>
+        public DbSet<QueuedFTPUpload> QueuedFTPUploads { get; set; }
 
     }
 }

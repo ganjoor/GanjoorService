@@ -3,7 +3,7 @@
 namespace RMuseum.Models.ExternalFTPUpload
 {
     /// <summary>
-    /// Uploadng Item
+    /// Queued FTP Upload
     /// </summary>
     public class QueuedFTPUpload
     {
