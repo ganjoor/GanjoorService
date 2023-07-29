@@ -18522,11 +18522,23 @@
         </member>
         <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.AddAsync(System.String,System.String,System.Boolean)">
             <summary>
-            add upload
+            add upload (you should call ProcessQueue manually)
             </summary>
             <param name="localFilePath"></param>
             <param name="remoteFilePath"></param>
             <param name="deleteFileAfterUpload"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.ProcessQueue">
+            <summary>
+            process queue
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.ResetQueue">
+            <summary>
+            reset queue
+            </summary>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.QueuedFTPUploadService._context">
@@ -18534,11 +18546,23 @@
             Database Context
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.#ctor(RMuseum.DbContext.RMuseumDbContext)">
+        <member name="P:RMuseum.Services.Implementation.QueuedFTPUploadService.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.QueuedFTPUploadService._backgroundTaskQueue">
+            <summary>
+            Background Task Queue Instance
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IBackgroundTaskQueue)">
             <summary>
             constructor
             </summary>
             <param name="context"></param>
+            <param name="configuration"></param>
+            <param name="backgroundTaskQueue"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.RecitationsRssBuilder">
             <summary>

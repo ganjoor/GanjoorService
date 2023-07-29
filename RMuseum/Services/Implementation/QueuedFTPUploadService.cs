@@ -1,7 +1,13 @@
-﻿using RMuseum.DbContext;
+﻿using FluentFTP;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using RMuseum.DbContext;
 using RMuseum.Models.ExternalFTPUpload;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Services;
 using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
@@ -13,7 +19,7 @@ namespace RMuseum.Services.Implementation
     public class QueuedFTPUploadService
     {
         /// <summary>
-        /// add upload
+        /// add upload (you should call ProcessQueue manually)
         /// </summary>
         /// <param name="localFilePath"></param>
         /// <param name="remoteFilePath"></param>
@@ -42,18 +48,158 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// process queue
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> ProcessQueue()
+        {
+            try
+            {
+                var processing = await _context.QueuedFTPUploads.AsNoTracking().Where(q => q.Processing).FirstOrDefaultAsync();
+                if(processing != null)
+                {
+                    return new RServiceResult<bool>(false, $"already processing {processing.Id}.");
+                }
+
+                if (false == bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
+                {
+                    return new RServiceResult<bool>(false, "ExternalFTPServer.UploadEnabled is not set to True.");
+                }
+
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                        (
+                            async token =>
+                            {
+                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
+                                {
+                                    var next = await context.QueuedFTPUploads.Where(q  => q.Processing == false).FirstOrDefaultAsync();
+                                    if (next == null) return;
+                                    var ftpClient = new AsyncFtpClient
+                                        (
+                                            Configuration.GetSection("ExternalFTPServer")["Host"],
+                                            Configuration.GetSection("ExternalFTPServer")["Username"],
+                                            Configuration.GetSection("ExternalFTPServer")["Password"]
+                                        );
+                                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                                    await ftpClient.AutoConnect();
+                                    ftpClient.Config.RetryAttempts = 3;
+                                    while (next != null)
+                                    {
+                                        try
+                                        {
+                                            next.Processing = true;
+                                            next.ProcessDate = DateTime.Now;
+                                            context.Update(next);
+                                            await context.SaveChangesAsync();
+                                            var status = await ftpClient.UploadFile(next.LocalFilePath, next.RemoteFilePath, createRemoteDir: true);
+                                            if(status != FtpStatus.Failed)
+                                            {
+                                                if(next.DeleteFileAfterUpload)
+                                                {
+                                                    try
+                                                    {
+                                                        var dir = Path.GetDirectoryName(next.LocalFilePath);
+                                                        File.Delete(next.LocalFilePath);
+                                                        if(Directory.GetFiles(dir).Length == 0)
+                                                        {
+                                                            Directory.Delete(dir);
+                                                        }
+                                                    }
+                                                    catch
+                                                    {
+                                                        //do nothing! not very important
+                                                    }
+                                                }
+                                                context.Remove(next);
+                                                await context.SaveChangesAsync();
+                                            }
+                                            else
+                                            {
+                                                next.Error = "ftp client status is FtpStatus.Failed";
+                                                context.Update(next);
+                                                await context.SaveChangesAsync();
+                                                await ftpClient.Disconnect();
+                                                return;
+                                            }
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            next.Error = e.ToString();
+                                            context.Update(next);
+                                            await context.SaveChangesAsync();
+                                            await ftpClient.Disconnect();
+                                            return;
+                                        }
+
+                                        next = await context.QueuedFTPUploads.Where(q => q.Processing == false).FirstOrDefaultAsync();
+                                    }
+                                    await ftpClient.Disconnect();
+                                }
+                            }
+                        );
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        private void FtpClient_ValidateCertificate(FluentFTP.Client.BaseClient.BaseFtpClient control, FtpSslValidationEventArgs e)
+        {
+            e.Accept = true;
+        }
+
+        /// <summary>
+        /// reset queue
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> ResetQueue()
+        {
+            try
+            {
+                var queued = await _context.QueuedFTPUploads.Where(q => q.Processing).ToListAsync();
+                foreach (var queuedFTPUpload in queued)
+                {
+                    queuedFTPUpload.Processing = false;
+                }
+                _context.UpdateRange(queued);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Database Context
         /// </summary>
         protected readonly RMuseumDbContext _context;
 
+        /// <summary>
+        /// Configuration
+        /// </summary>
+        protected IConfiguration Configuration { get; }
+
+        /// <summary>
+        /// Background Task Queue Instance
+        /// </summary>
+        protected readonly IBackgroundTaskQueue _backgroundTaskQueue;
 
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="context"></param>
-        public QueuedFTPUploadService(RMuseumDbContext context)
+        /// <param name="configuration"></param>
+        /// <param name="backgroundTaskQueue"></param>
+        public QueuedFTPUploadService(RMuseumDbContext context, IConfiguration configuration, IBackgroundTaskQueue backgroundTaskQueue)
         {
             _context = context;
+            Configuration = configuration;
+            _backgroundTaskQueue = backgroundTaskQueue;
         }
     }
 }
