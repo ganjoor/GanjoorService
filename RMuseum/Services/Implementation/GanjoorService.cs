@@ -1195,7 +1195,8 @@ namespace RMuseum.Services.Implementation
                 await _notificationService.PushNotification((Guid)comment.UserId,
                                        "حذف حاشیهٔ شما",
                                        $"حاشیهٔ شما به دلیل ناسازگاری با قوانین حاشیه‌گذاری گنجور و طبق گزارشات دیگر کاربران حذف شده است.{Environment.NewLine}" +
-                                       $"{reason}" +
+                                       $"{reason}{Environment.NewLine}" +
+                                       $"<a href=\"https://ganjoor.net?p={comment.PoemId}\">نشانی صفحهٔ متناظر در گنجور</a>{Environment.NewLine}" +
                                        $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
                                        $"{comment.HtmlComment}"
                                        );
@@ -1294,6 +1295,7 @@ namespace RMuseum.Services.Implementation
                     await _notificationService.PushNotification((Guid)replies[i].UserId,
                                            "حذف پاسخ شما به حاشیه",
                                            $"پاسخ شما به یکی از حاشیه‌های گنجور به دلیل حذف زنجیرهٔ حاشیه توسط یکی از حاشیه‌گذاران حذف شده است.{Environment.NewLine}" +
+                                           $"<a href=\"https://ganjoor.net?p={comment.PoemId}\">نشانی صفحهٔ متناظر در گنجور</a>{Environment.NewLine}" +
                                            $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
                                            $"{replies[i].HtmlComment}"
                                            );
