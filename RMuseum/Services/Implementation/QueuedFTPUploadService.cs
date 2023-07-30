@@ -100,14 +100,13 @@ namespace RMuseum.Services.Implementation
                                                     try
                                                     {
                                                         File.Delete(next.LocalFilePath);
-                                                        /*
-                                                        // deleting the directory causes conflicts, so keep it
+                                                      
                                                         var dir = Path.GetDirectoryName(next.LocalFilePath);
                                                         if (Directory.GetFiles(dir).Length == 0)
                                                         {
                                                             Directory.Delete(dir);
                                                         }
-                                                        */
+                                                       
                                                     }
                                                     catch
                                                     {

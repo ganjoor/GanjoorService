@@ -264,12 +264,9 @@ namespace RMuseum.Services.Implementation
                
                 try
                 {
-                    var folderNumber = 1 + await context.PDFBooks.CountAsync();
-                    while (Directory.Exists(Path.Combine(_imageFileService.ImageStoragePath, $"{folderNumber}")))
-                    {
-                        folderNumber++;
-                    }
-                    Directory.CreateDirectory(Path.Combine(_imageFileService.ImageStoragePath, $"{folderNumber}"));
+                    //this code fails on empty database, but it is not important for me!
+                    string folderNumber = (1 + await context.PDFBooks.MaxAsync(p => p.Id)).ToString().PadLeft(8, '0');
+                    Directory.CreateDirectory(Path.Combine(_imageFileService.ImageStoragePath, folderNumber));
                     PDFBook pdfBook = new PDFBook()
                     {
                         Status = PublishStatus.Draft,
@@ -278,7 +275,7 @@ namespace RMuseum.Services.Implementation
                         FileMD5CheckSum = fileChecksum,
                         OriginalSourceUrl = srcUrl,
                         OriginalFileName = Path.GetFileName(filePath),
-                        StorageFolderName = $"{folderNumber}",
+                        StorageFolderName = folderNumber,
                         BookId = bookId,
                         VolumeOrder = volumeOrder,
                         MultiVolumePDFCollectionId = volumeId,
