@@ -168,10 +168,11 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var queued = await _context.QueuedFTPUploads.Where(q => q.Processing).ToListAsync();
+                var queued = await _context.QueuedFTPUploads.Where(q => q.Processing || !string.IsNullOrEmpty(q.Error)).ToListAsync();
                 foreach (var queuedFTPUpload in queued)
                 {
                     queuedFTPUpload.Processing = false;
+                    queuedFTPUpload.Error = null;
                 }
                 _context.UpdateRange(queued);
                 await _context.SaveChangesAsync();
