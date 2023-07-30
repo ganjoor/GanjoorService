@@ -22,11 +22,12 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// add upload (you should call ProcessQueue manually)
         /// </summary>
+        /// <param name="context">s</param>
         /// <param name="localFilePath"></param>
         /// <param name="remoteFilePath"></param>
         /// <param name="deleteFileAfterUpload"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<QueuedFTPUpload>> AddAsync(string localFilePath, string remoteFilePath, bool deleteFileAfterUpload)
+        public async Task<RServiceResult<QueuedFTPUpload>> AddAsync(RMuseumDbContext context, string localFilePath, string remoteFilePath, bool deleteFileAfterUpload)
         {
             try
             {
@@ -38,8 +39,8 @@ namespace RMuseum.Services.Implementation
                     QueueDate = DateTime.Now,
                     Processing = false,
                 };
-                _context.QueuedFTPUploads.Add(q);
-                await _context.SaveChangesAsync();
+                context.QueuedFTPUploads.Add(q);
+                await context.SaveChangesAsync();
                 return new RServiceResult<QueuedFTPUpload>(q);
             }
             catch (Exception exp)
@@ -51,12 +52,17 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// process queue
         /// </summary>
+        /// <param name="callContext"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> ProcessQueueAsync()
+        public async Task<RServiceResult<bool>> ProcessQueueAsync(RMuseumDbContext callContext)
         {
             try
             {
-                var processing = await _context.QueuedFTPUploads.AsNoTracking().Where(q => q.Processing).FirstOrDefaultAsync();
+                if(callContext == null)
+                {
+                    callContext = _context;
+                }
+                var processing = await callContext.QueuedFTPUploads.AsNoTracking().Where(q => q.Processing).FirstOrDefaultAsync();
                 if(processing != null)
                 {
                     return new RServiceResult<bool>(false, $"already processing {processing.Id}.");

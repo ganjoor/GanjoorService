@@ -18573,19 +18573,21 @@
             Queued FTP Upload Service Implementation
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.AddAsync(System.String,System.String,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.AddAsync(RMuseum.DbContext.RMuseumDbContext,System.String,System.String,System.Boolean)">
             <summary>
             add upload (you should call ProcessQueue manually)
             </summary>
+            <param name="context">s</param>
             <param name="localFilePath"></param>
             <param name="remoteFilePath"></param>
             <param name="deleteFileAfterUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.ProcessQueueAsync">
+        <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.ProcessQueueAsync(RMuseum.DbContext.RMuseumDbContext)">
             <summary>
             process queue
             </summary>
+            <param name="callContext"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.QueuedFTPUploadService.ResetQueueAsync">
@@ -19625,19 +19627,21 @@
             Queued FTP Upload Service
             </summary>
         </member>
-        <member name="M:RMuseum.Services.IQueuedFTPUploadService.AddAsync(System.String,System.String,System.Boolean)">
+        <member name="M:RMuseum.Services.IQueuedFTPUploadService.AddAsync(RMuseum.DbContext.RMuseumDbContext,System.String,System.String,System.Boolean)">
             <summary>
             add upload (you should call ProcessQueue manually)
             </summary>
+            <param name="context">s</param>
             <param name="localFilePath"></param>
             <param name="remoteFilePath"></param>
             <param name="deleteFileAfterUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IQueuedFTPUploadService.ProcessQueueAsync">
+        <member name="M:RMuseum.Services.IQueuedFTPUploadService.ProcessQueueAsync(RMuseum.DbContext.RMuseumDbContext)">
             <summary>
             process queue
             </summary>
+            <param name="callContext"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IQueuedFTPUploadService.ResetQueueAsync">

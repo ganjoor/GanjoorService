@@ -457,7 +457,7 @@ namespace RMuseum.Services.Implementation
                 var remotePDFFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localPDFFilePath)}";
                 if (!skipUpload)
                 {
-                    var res = await _ftpService.AddAsync(localPDFFilePath, remotePDFFilePath, true);
+                    var res = await _ftpService.AddAsync(context, localPDFFilePath, remotePDFFilePath, true);
                     if(!string.IsNullOrEmpty(res.ExceptionString))
                     {
                         return new RServiceResult<bool>(false, $"ftp {localPDFFilePath} => {remotePDFFilePath} {res.ExceptionString}");
@@ -467,7 +467,7 @@ namespace RMuseum.Services.Implementation
                 var remoteCoverImageFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/pdf/{book.StorageFolderName}/{Path.GetFileName(localCoverImageFilePath)}";
                 if (!skipUpload)
                 {
-                    var res = await _ftpService.AddAsync(localCoverImageFilePath, remoteCoverImageFilePath, true);
+                    var res = await _ftpService.AddAsync(context, localCoverImageFilePath, remoteCoverImageFilePath, true);
                     if (!string.IsNullOrEmpty(res.ExceptionString))
                     {
                         return new RServiceResult<bool>(false, $"ftp {localCoverImageFilePath} => {remoteCoverImageFilePath} {res.ExceptionString}");
@@ -484,7 +484,7 @@ namespace RMuseum.Services.Implementation
                     if (!skipUpload)
                     {
                         var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/pdf/{book.CoverImage.FolderName}/{Path.GetFileName(localFilePath)}";
-                        var res = await _ftpService.AddAsync(localFilePath, remoteFilePath, true);
+                        var res = await _ftpService.AddAsync(context, localFilePath, remoteFilePath, true);
                         if (!string.IsNullOrEmpty(res.ExceptionString))
                         {
                             return new RServiceResult<bool>(false, $"ftp {localFilePath} => {remoteFilePath} {res.ExceptionString}");
@@ -495,7 +495,7 @@ namespace RMuseum.Services.Implementation
                 {
                     if(false == await context.QueuedFTPUploads.AsNoTracking().Where(p => p.Processing).AnyAsync())
                     {
-                        var res = await _ftpService.ProcessQueueAsync();
+                        var res = await _ftpService.ProcessQueueAsync(context);
                         if (!string.IsNullOrEmpty(res.ExceptionString))
                         {
                             return new RServiceResult<bool>(false, $"FTP ProcessQueueAsync : {res.ExceptionString}");

@@ -49,7 +49,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> ProcessQueueAsync()
         {
-            var res = await _ftpService.ProcessQueueAsync();
+            var res = await _ftpService.ProcessQueueAsync(null);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok();
