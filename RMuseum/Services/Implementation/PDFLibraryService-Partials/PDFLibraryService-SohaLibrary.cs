@@ -526,6 +526,11 @@ namespace RMuseum.Services.Implementation
                                 fileName = downloadUrl.Substring(downloadUrl.LastIndexOf('/') + 1) + ".pdf";
                             }
 
+                            if(fileName.Length > 70)
+                            {
+                                fileName = Path.GetFileNameWithoutExtension(fileName).Substring(0, 64) + ".pdf";
+                            }
+
                             model.LocalImportingPDFFilePath = Path.Combine(_imageFileService.ImageStoragePath, fileName);
                             if (File.Exists(model.LocalImportingPDFFilePath))
                                 File.Delete(model.LocalImportingPDFFilePath);
