@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
 using RMuseum.Models.Artifact;
+using RMuseum.Models.Artifact.ViewModels;
 using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.PDFLibrary.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -55,7 +56,7 @@ namespace RMuseum.Services.Implementation
                             .Include(b => b.Pages)
                             .Where(b => statusArray.Contains(b.Status) && b.Id == id)
                             .SingleOrDefaultAsync();
-                if(pdfBook != null)
+                if (pdfBook != null)
                 {
                     if(pdfBook.Book != null)
                     {
@@ -72,6 +73,40 @@ namespace RMuseum.Services.Implementation
                            .OrderBy(t => t.VolumeOrder)
                            .ToArrayAsync();
                     }
+                    List<RArtifactTagViewModel> rArtifactTags = new List<RArtifactTagViewModel>();
+                    if (pdfBook.Tags != null)
+                    {
+                        foreach (RTagValue tag in pdfBook.Tags)
+                        {
+                            RArtifactTagViewModel related = rArtifactTags.Where(t => t.Id == tag.RTagId).SingleOrDefault();
+                            List<RTagValue> values = (related == null) ? new List<RTagValue>() : new List<RTagValue>(related.Values);
+                            if (related == null)
+                            {
+                                related =
+                                    new RArtifactTagViewModel()
+                                    {
+                                        Id = tag.RTag.Id,
+                                        Order = tag.RTag.Order,
+                                        TagType = tag.RTag.TagType,
+                                        FriendlyUrl = tag.RTag.FriendlyUrl,
+                                        Status = tag.RTag.Status,
+                                        Name = tag.RTag.Name,
+                                        NameInEnglish = tag.RTag.NameInEnglish,
+                                        GlobalValue = tag.RTag.GlobalValue,
+                                        PluralName = tag.RTag.PluralName,
+                                        PluralNameInEnglish = tag.RTag.PluralNameInEnglish
+                                    };
+                                rArtifactTags.Add(related);
+
+                            }
+                            values.Add(tag);
+                            values.Sort((a, b) => a.Order - b.Order);
+                            related.Values = values;
+                        }
+
+                        rArtifactTags.Sort((a, b) => a.Order - b.Order);
+                    }
+                    pdfBook.ArtifactTags = rArtifactTags;
                 }
                 return new RServiceResult<PDFBook>(pdfBook);
 

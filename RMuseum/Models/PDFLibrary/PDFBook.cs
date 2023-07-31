@@ -1,7 +1,9 @@
 ﻿using RMuseum.Models.Artifact;
+using RMuseum.Models.Artifact.ViewModels;
 using RSecurityBackend.Models.Image;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RMuseum.Models.PDFLibrary
 {
@@ -214,5 +216,23 @@ namespace RMuseum.Models.PDFLibrary
         /// PDF Source
         /// </summary>
         public virtual PDFSource PDFSource { get; set; }
+
+        /// <summary>
+        /// tags view models
+        /// </summary>
+        [NotMapped]
+        public ICollection<RArtifactTagViewModel> ArtifactTags { get; set; }
+
+        /// <summary>
+        /// Binary Tagged Items
+        /// </summary>
+        [NotMapped]
+        public ICollection<RTagSum> RTagSums { get; set; }
+
+        /// <summary>
+        /// Titles of Items in Contents
+        /// </summary>
+        [NotMapped]
+        public ICollection<RTitleInContents> Contents { get; set; }
     }
 }

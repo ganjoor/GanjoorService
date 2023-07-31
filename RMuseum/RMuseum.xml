@@ -12488,6 +12488,21 @@
             PDF Source
             </summary>
         </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.ArtifactTags">
+            <summary>
+            tags view models
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.RTagSums">
+            <summary>
+            Binary Tagged Items
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.Contents">
+            <summary>
+            Titles of Items in Contents
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.PDFLibrary.PDFPage">
             <summary>
             PDF Page
