@@ -15,6 +15,7 @@ using RSecurityBackend.Services;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using RMuseum.Models.Artifact;
+using RMuseum.Services.Implementation;
 
 namespace RMuseum.Controllers
 {
@@ -1169,6 +1170,30 @@ namespace RMuseum.Controllers
             HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             return Ok(res.Result.Books);
+        }
+
+        /// <summary>
+        /// search pdf books (titles and authors and translators and tags)
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("search")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RArtifactMasterRecord>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> SearchPDFBooksAsync([FromQuery] PagingParameterModel paging, string term)
+        {
+            var pagedResult = await _pdfService.SearchPDFBooksAsync(paging, term);
+            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
+                return BadRequest(pagedResult.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+
+            return Ok(pagedResult.Result.Items);
         }
 
         /// <summary>

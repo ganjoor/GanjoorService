@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DNTPersianUtils.Core;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
 using RMuseum.Models.Artifact;
@@ -1274,6 +1275,69 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>((null, null), exp.ToString());
             }
+        }
+
+        /// <summary>
+        /// search pdf books
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>> SearchPDFBooksAsync(PagingParameterModel paging, string term)
+        {
+            term = term.Trim().ApplyCorrectYeKe();
+
+            if (string.IsNullOrEmpty(term))
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>((null, null), "خطای جستجوی عبارت خالی");
+            }
+
+            term = term.Replace("‌", " ");//replace zwnj with space
+
+            string searchConditions;
+            if (term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
+            {
+                searchConditions = term.Replace("\"", "").Replace("'", "");
+                searchConditions = $"\"{searchConditions}\"";
+            }
+            else
+            {
+                string[] words = term.Replace("\"", "").Replace("'", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                searchConditions = "";
+                string emptyOrAnd = "";
+                foreach (string word in words)
+                {
+                    searchConditions += $" {emptyOrAnd} \"*{word}*\" ";
+                    emptyOrAnd = " AND ";
+                }
+            }
+            //full text catalogue should be created manually
+
+            var source =
+                _context.PDFBooks.AsNoTracking().Include(a => a.Tags)
+                .Where(p =>
+                       p.Status == PublishStatus.Published
+                       &&
+                       (
+                       EF.Functions.Contains(p.Title, searchConditions)
+                       ||
+                       EF.Functions.Contains(p.AuthorsLine, searchConditions)
+                       ||
+                       EF.Functions.Contains(p.TranslatorsLine, searchConditions)
+                       ||
+                       EF.Functions.Contains(p.Description, searchConditions)
+                       ||
+                       p.Tags.Where(t => EF.Functions.Contains(t.Value, searchConditions) || EF.Functions.Contains(t.ValueInEnglish, searchConditions)).Any()
+                       )
+                       ).OrderBy(i => i.Title);
+
+
+            (PaginationMetadata PagingMeta, PDFBook[] Items) paginatedResult =
+               await QueryablePaginator<PDFBook>.Paginate(source, paging);
+
+
+            return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>(paginatedResult);
         }
 
         /// <summary>

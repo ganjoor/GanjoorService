@@ -2696,6 +2696,14 @@
             <param name="sourceId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.SearchPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            search pdf books (titles and authors and translators and tags)
+            </summary>
+            <param name="paging"></param>
+            <param name="term"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.PDFLibraryController._pdfService">
             <summary>
             PDF Service
@@ -18305,6 +18313,14 @@
             <param name="sourceId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.SearchPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            search pdf books
+            </summary>
+            <param name="paging"></param>
+            <param name="term"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.PDFLibraryService._context">
             <summary>
             Database Context
@@ -19488,6 +19504,14 @@
             </summary>
             <param name="start"></param>
             <param name="end"></param>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.SearchPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            search pdf books
+            </summary>
+            <param name="paging"></param>
+            <param name="term"></param>
+            <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">
             <summary>

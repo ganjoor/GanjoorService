@@ -330,5 +330,13 @@ namespace RMuseum.Services
         /// <param name="start"></param>
         /// <param name="end"></param>
         void BatchImportSohaLibraryAsync(int start, int end);
+
+        /// <summary>
+        /// search pdf books
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>> SearchPDFBooksAsync(PagingParameterModel paging, string term);
     }
 }
