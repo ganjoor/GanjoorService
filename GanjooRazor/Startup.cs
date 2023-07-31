@@ -40,6 +40,8 @@ namespace GanjooRazor
             app.Use(async (c, n) => {
 
                 c.Response.Headers.Add("Access-Control-Allow-Origin", "https://museum.ganjoor.net");
+                c.Response.Headers.Add("Access-Control-Allow-Origin", "https://naskban.ir");
+                c.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:5173");
                 await n.Invoke();
             });
 
