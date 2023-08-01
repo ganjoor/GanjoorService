@@ -2728,6 +2728,19 @@
             <param name="result"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetUnsyncedPDFGanjoorLinksAsync">
+            <summary>
+            ganjoor approved unsycned links
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.SynchronizePDFGanjoorLinkAsync(System.Guid)">
+            <summary>
+            synchronize ganjoor link
+            </summary>
+            <param name="linkId"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.PDFLibraryController._pdfService">
             <summary>
             PDF Service
@@ -18522,7 +18535,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.SynchronizePDFGanjoorLink(System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.SynchronizePDFGanjoorLinkAsync(System.Guid)">
             <summary>
             synchronize ganjoor link
             </summary>
@@ -19759,7 +19772,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IPDFLibraryService.SynchronizePDFGanjoorLink(System.Guid)">
+        <member name="M:RMuseum.Services.IPDFLibraryService.SynchronizePDFGanjoorLinkAsync(System.Guid)">
             <summary>
             synchronize ganjoor link
             </summary>

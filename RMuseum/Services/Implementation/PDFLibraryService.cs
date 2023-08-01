@@ -1499,7 +1499,7 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="linkId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> SynchronizePDFGanjoorLink(Guid linkId)
+        public async Task<RServiceResult<bool>> SynchronizePDFGanjoorLinkAsync(Guid linkId)
         {
             try
             {

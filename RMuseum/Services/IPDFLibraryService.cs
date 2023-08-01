@@ -382,6 +382,6 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="linkId"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> SynchronizePDFGanjoorLink(Guid linkId);
+        Task<RServiceResult<bool>> SynchronizePDFGanjoorLinkAsync(Guid linkId);
     }
 }

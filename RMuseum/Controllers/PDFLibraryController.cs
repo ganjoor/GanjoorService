@@ -1275,6 +1275,42 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// ganjoor approved unsycned links
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("ganjoor/unsynched")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PDFGanjoorLink[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetUnsyncedPDFGanjoorLinksAsync()
+        {
+            RServiceResult<PDFGanjoorLink[]> res = await _pdfService.GetUnsyncedPDFGanjoorLinksAsync();
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// synchronize ganjoor link
+        /// </summary>
+        /// <param name="linkId"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("ganjoor/sync/{linkId}")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> SynchronizePDFGanjoorLinkAsync(Guid linkId)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<bool> suggestion = await _pdfService.SynchronizePDFGanjoorLinkAsync(linkId);
+            if (!string.IsNullOrEmpty(suggestion.ExceptionString))
+                return BadRequest(suggestion.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         /// PDF Service
         /// </summary>
         protected readonly IPDFLibraryService _pdfService;
