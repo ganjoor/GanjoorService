@@ -543,5 +543,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<QueuedFTPUpload> QueuedFTPUploads { get; set; }
 
+        /// <summary>
+        /// PDF Ganjoor Links
+        /// </summary>
+        public DbSet<PDFGanjoorLink> PDFGanjoorLinks { get; set; }
+
     }
 }

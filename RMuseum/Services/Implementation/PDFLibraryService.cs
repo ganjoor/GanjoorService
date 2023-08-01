@@ -4,8 +4,11 @@ using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
 using RMuseum.Models.Artifact;
 using RMuseum.Models.Artifact.ViewModels;
+using RMuseum.Models.GanjoorIntegration.ViewModels;
+using RMuseum.Models.GanjoorIntegration;
 using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.PDFLibrary.ViewModels;
+using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Models.Image;
 using RSecurityBackend.Services;
@@ -1285,59 +1288,111 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>> SearchPDFBooksAsync(PagingParameterModel paging, string term)
         {
-            term = term.Trim().ApplyCorrectYeKe();
-
-            if (string.IsNullOrEmpty(term))
+            try
             {
-                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>((null, null), "خطای جستجوی عبارت خالی");
-            }
+                term = term.Trim().ApplyCorrectYeKe();
 
-            term = term.Replace("‌", " ");//replace zwnj with space
-
-            string searchConditions;
-            if (term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
-            {
-                searchConditions = term.Replace("\"", "").Replace("'", "");
-                searchConditions = $"\"{searchConditions}\"";
-            }
-            else
-            {
-                string[] words = term.Replace("\"", "").Replace("'", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-                searchConditions = "";
-                string emptyOrAnd = "";
-                foreach (string word in words)
+                if (string.IsNullOrEmpty(term))
                 {
-                    searchConditions += $" {emptyOrAnd} \"*{word}*\" ";
-                    emptyOrAnd = " AND ";
+                    return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>((null, null), "خطای جستجوی عبارت خالی");
                 }
+
+                term = term.Replace("‌", " ");//replace zwnj with space
+
+                string searchConditions;
+                if (term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
+                {
+                    searchConditions = term.Replace("\"", "").Replace("'", "");
+                    searchConditions = $"\"{searchConditions}\"";
+                }
+                else
+                {
+                    string[] words = term.Replace("\"", "").Replace("'", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                    searchConditions = "";
+                    string emptyOrAnd = "";
+                    foreach (string word in words)
+                    {
+                        searchConditions += $" {emptyOrAnd} \"*{word}*\" ";
+                        emptyOrAnd = " AND ";
+                    }
+                }
+                //full text catalogue should be created manually
+
+                var source =
+                    _context.PDFBooks.AsNoTracking().Include(a => a.Tags)
+                    .Where(p =>
+                           p.Status == PublishStatus.Published
+                           &&
+                           (
+                           EF.Functions.Contains(p.Title, searchConditions)
+                           ||
+                           EF.Functions.Contains(p.AuthorsLine, searchConditions)
+                           ||
+                           EF.Functions.Contains(p.TranslatorsLine, searchConditions)
+                           ||
+                           EF.Functions.Contains(p.Description, searchConditions)
+                           ||
+                           p.Tags.Where(t => EF.Functions.Contains(t.Value, searchConditions) || EF.Functions.Contains(t.ValueInEnglish, searchConditions)).Any()
+                           )
+                           ).OrderBy(i => i.Title);
+
+
+                (PaginationMetadata PagingMeta, PDFBook[] Items) paginatedResult =
+                   await QueryablePaginator<PDFBook>.Paginate(source, paging);
+
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>(paginatedResult);
             }
-            //full text catalogue should be created manually
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>((null, null), exp.ToString());
+            }
+        }
 
-            var source =
-                _context.PDFBooks.AsNoTracking().Include(a => a.Tags)
-                .Where(p =>
-                       p.Status == PublishStatus.Published
-                       &&
-                       (
-                       EF.Functions.Contains(p.Title, searchConditions)
-                       ||
-                       EF.Functions.Contains(p.AuthorsLine, searchConditions)
-                       ||
-                       EF.Functions.Contains(p.TranslatorsLine, searchConditions)
-                       ||
-                       EF.Functions.Contains(p.Description, searchConditions)
-                       ||
-                       p.Tags.Where(t => EF.Functions.Contains(t.Value, searchConditions) || EF.Functions.Contains(t.ValueInEnglish, searchConditions)).Any()
-                       )
-                       ).OrderBy(i => i.Title);
+        /// <summary>
+        /// suggest ganjoor link
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="link"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> SuggestGanjoorLink(Guid userId, PDFGanjoorLinkSuggestion link)
+        {
+            try
+            {
+                PDFBook pdfBook = await _context.PDFBooks.AsNoTracking().Where(a => a.Id == link.PDFBookId).SingleOrDefaultAsync();
 
+                PDFGanjoorLink alreadySuggest =
+                await _context.PDFGanjoorLinks.AsNoTracking().
+                    Where(l => l.GanjoorPostId == link.GanjoorPostId && l.PDFBookId == pdfBook.Id && l.PageNumber == link.PageNumber && l.ReviewResult != ReviewResult.Rejected)
+                    .SingleOrDefaultAsync();
+                if (alreadySuggest != null)
+                    return new RServiceResult<bool>(false, "این مورد پیشتر پیشنهاد شده است.");
 
-            (PaginationMetadata PagingMeta, PDFBook[] Items) paginatedResult =
-               await QueryablePaginator<PDFBook>.Paginate(source, paging);
+                PDFGanjoorLink suggestion =
+                    new PDFGanjoorLink()
+                    {
+                        GanjoorPostId = link.GanjoorPostId,
+                        GanjoorTitle = link.GanjoorTitle,
+                        GanjoorUrl = link.GanjoorUrl,
+                        PDFBookId = pdfBook.Id,
+                        PageNumber = link.PageNumber,
+                        SuggestedById = userId,
+                        SuggestionDate = DateTime.Now,
+                        ReviewResult = ReviewResult.Awaiting,
+                        ExternalThumbnailImageUrl = (await _context.PDFPages.AsNoTracking().Where(l => l.PDFBookId == link.PDFBookId && l.PageNumber == link.PageNumber).SingleAsync()).ExtenalThumbnailImageUrl,
+                        PDFPageTitle = pdfBook.Title + " - صفحهٔ " + link.PageNumber.ToString().ToPersianNumbers()
+                    };
 
+                _context.PDFGanjoorLinks.Add(suggestion);
+                await _context.SaveChangesAsync();
 
-            return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>(paginatedResult);
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
         }
 
         /// <summary>
@@ -1356,6 +1411,7 @@ namespace RMuseum.Services.Implementation
         /// ftp service
         /// </summary>
         protected readonly IQueuedFTPUploadService _ftpService;
+ 
         /// <summary>
         /// Configuration
         /// </summary>

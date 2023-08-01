@@ -3624,6 +3624,11 @@
             Queued FTP Uploads
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.PDFGanjoorLinks">
+            <summary>
+            PDF Ganjoor Links
+            </summary>
+        </member>
         <member name="T:RMuseum.Migrations.PictureFileExtUrl">
             <inheritdoc />
         </member>
@@ -6343,6 +6348,91 @@
         <member name="F:RMuseum.Models.GanjoorIntegration.LinkType.Instagram">
             <summary>
             Instagram
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink">
+            <summary>
+            PDFBook Ganjoor Link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.GanjoorPostId">
+            <summary>
+            Ganjoor Post Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.GanjoorUrl">
+            <summary>
+            ganjoor url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.GanjoorTitle">
+            <summary>
+            ganjoor title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.PDFBookId">
+            <summary>
+            pdf book id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.PageNumber">
+            <summary>
+            page number
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.SuggestedById">
+            <summary>
+            User Id who suggested the link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.SuggestionDate">
+            <summary>
+            Suggestion Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.SuggestedBy">
+            <summary>
+            User who suggested the link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.ReviewerId">
+            <summary>
+            User id who reviewed the link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.Reviewer">
+            <summary>
+            User who reviewed the link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.ReviewDate">
+            <summary>
+            Review Date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.ReviewResult">
+            <summary>
+            review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.Synchronized">
+            <summary>
+            Synchronized with ganjoor
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.IsTextOriginalSource">
+            <summary>
+            is the is the text original source?
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.PDFPageTitle">
+            <summary>
+            PDF Page Title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.ExternalThumbnailImageUrl">
+            <summary>
+            external thumbnail image url
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.PinterestLink">
@@ -12796,6 +12886,36 @@
             Book Script Type
             </summary>
         </member>
+        <member name="T:RMuseum.Models.PDFLibrary.ViewModels.PDFGanjoorLinkSuggestion">
+            <summary>
+            PDFBook Ganjoor Link Suggestion
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.PDFGanjoorLinkSuggestion.GanjoorPostId">
+            <summary>
+            Ganjoor Post Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.PDFGanjoorLinkSuggestion.GanjoorUrl">
+            <summary>
+            ganjoor url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.PDFGanjoorLinkSuggestion.GanjoorTitle">
+            <summary>
+            ganjoor title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.PDFGanjoorLinkSuggestion.PDFBookId">
+            <summary>
+            pdf book id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.PDFGanjoorLinkSuggestion.PageNumber">
+            <summary>
+            page number
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.UploadSession.UploadSession">
             <summary>
             Upload Session
@@ -18319,6 +18439,14 @@
             </summary>
             <param name="paging"></param>
             <param name="term"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.SuggestGanjoorLink(System.Guid,RMuseum.Models.PDFLibrary.ViewModels.PDFGanjoorLinkSuggestion)">
+            <summary>
+            suggest ganjoor link
+            </summary>
+            <param name="userId"></param>
+            <param name="link"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.PDFLibraryService._context">

@@ -2630,11 +2630,11 @@ namespace RMuseum.Services.Implementation
         {
             RArtifactMasterRecord artifact = await _context.Artifacts.Where(a => a.FriendlyUrl == link.ArtifactFriendlyUrl).SingleOrDefaultAsync();
 
-            GanjoorLink alreaySuggest =
+            GanjoorLink alreadySuggest =
             await _context.GanjoorLinks.
                 Where(l => l.GanjoorPostId == link.GanjoorPostId && l.ArtifactId == artifact.Id && l.ItemId == link.ItemId && l.ReviewResult != ReviewResult.Rejected)
                 .SingleOrDefaultAsync();
-            if (alreaySuggest != null)
+            if (alreadySuggest != null)
                 return new RServiceResult<GanjoorLinkViewModel>(null, "این مورد پیشتر پیشنهاد شده است.");
 
             GanjoorLink suggestion =
