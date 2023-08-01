@@ -29,5 +29,10 @@
         /// page number
         /// </summary>
         public int PageNumber { get; set; }
+
+        /// <summary>
+        /// is this the text original source?
+        /// </summary>
+        public bool IsTextOriginalSource { get; set; }
     }
 }

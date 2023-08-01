@@ -18,7 +18,7 @@ namespace RMuseum.Services
         /// <param name="srcUrl"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> StartImportingKnownSourceAsync(string srcUrl);
-        /// <summary>
+        /// <summary
         /// get pdf book by id
         /// </summary>
         /// <param name="id"></param>
@@ -338,5 +338,13 @@ namespace RMuseum.Services
         /// <param name="term"></param>
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>> SearchPDFBooksAsync(PagingParameterModel paging, string term);
+
+        /// <summary>
+        /// suggest ganjoor link
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="link"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> SuggestGanjoorLinkAsync(Guid userId, PDFGanjoorLinkSuggestion link);
     }
 }

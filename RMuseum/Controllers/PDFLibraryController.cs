@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using RMuseum.Models.Artifact;
 using RMuseum.Services.Implementation;
+using RMuseum.Models.GanjoorIntegration.ViewModels;
 
 namespace RMuseum.Controllers
 {
@@ -1194,6 +1195,25 @@ namespace RMuseum.Controllers
             HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
 
             return Ok(pagedResult.Result.Items);
+        }
+
+        /// <summary>
+        /// suggest ganjoor link
+        /// </summary>
+        /// <param name="link"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("ganjoor")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> SuggestGanjoorLinkAsync([FromBody] PDFGanjoorLinkSuggestion link)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<bool> suggestion = await _pdfService.SuggestGanjoorLinkAsync(loggedOnUserId, link);
+            if (!string.IsNullOrEmpty(suggestion.ExceptionString))
+                return BadRequest(suggestion.ExceptionString);
+            return Ok();
         }
 
         /// <summary>

@@ -1356,7 +1356,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="userId"></param>
         /// <param name="link"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> SuggestGanjoorLink(Guid userId, PDFGanjoorLinkSuggestion link)
+        public async Task<RServiceResult<bool>> SuggestGanjoorLinkAsync(Guid userId, PDFGanjoorLinkSuggestion link)
         {
             try
             {
@@ -1381,7 +1381,8 @@ namespace RMuseum.Services.Implementation
                         SuggestionDate = DateTime.Now,
                         ReviewResult = ReviewResult.Awaiting,
                         ExternalThumbnailImageUrl = (await _context.PDFPages.AsNoTracking().Where(l => l.PDFBookId == link.PDFBookId && l.PageNumber == link.PageNumber).SingleAsync()).ExtenalThumbnailImageUrl,
-                        PDFPageTitle = pdfBook.Title + " - صفحهٔ " + link.PageNumber.ToString().ToPersianNumbers()
+                        PDFPageTitle = pdfBook.Title + " - صفحهٔ " + link.PageNumber.ToString().ToPersianNumbers(),
+                        IsTextOriginalSource = link.IsTextOriginalSource,
                     };
 
                 _context.PDFGanjoorLinks.Add(suggestion);
