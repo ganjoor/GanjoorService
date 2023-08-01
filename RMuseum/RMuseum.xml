@@ -1991,6 +1991,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.SynchronizeNaskbanLinksAsync(RSecurityBackend.Models.Auth.ViewModels.LoginViewModel)">
+            <summary>
+            synchronize https:://naskban.ir links (logs in and then out to naskban.ir using auth info)
+            </summary>
+            <param name="loginViewModel"></param>
+            <returns>number of synched links</returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -6605,6 +6612,11 @@
         <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.PageNumber">
             <summary>
             page number
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.NaskbanLinkId">
+            <summary>
+            naskban link id
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.ReviewResult">
@@ -15182,6 +15194,15 @@
             <param name="ignoreSumup"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SynchronizeNaskbanLinksAsync(System.Guid,System.String,System.String)">
+            <summary>
+            synchronize naskban links
+            </summary>
+            <param name="ganjoorUserId"></param>
+            <param name="naskbanUserName"></param>
+            <param name="naskbanPassword"></param>
+            <returns>number of synched items</returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -17868,6 +17889,15 @@
             </summary>
             <param name="id"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SynchronizeNaskbanLinksAsync(System.Guid,System.String,System.String)">
+            <summary>
+            synchronize naskban links
+            </summary>
+            <param name="ganjoorUserId"></param>
+            <param name="naskbanUserName"></param>
+            <param name="naskbanPassword"></param>
+            <returns>number of synched items</returns>
         </member>
         <member name="P:RMuseum.Services.Implementation.GanjoorService.AggressiveCacheEnabled">
             <summary>

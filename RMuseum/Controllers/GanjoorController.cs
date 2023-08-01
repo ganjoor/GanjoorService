@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Audit.WebApi;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -3578,6 +3579,31 @@ namespace RMuseum.Controllers
         {
             var res =
                 await _ganjoorService.GetCatPoemGeoDateTagsAsync(id);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// synchronize https:://naskban.ir links (logs in and then out to naskban.ir using auth info)
+        /// </summary>
+        /// <param name="loginViewModel"></param>
+        /// <returns>number of synched links</returns>
+        [HttpPost]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [Route("naskban")]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> SynchronizeNaskbanLinksAsync(
+            [AuditIgnore]
+            [FromBody]
+            LoginViewModel loginViewModel
+            )
+        {
+            var userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = await _ganjoorService.SynchronizeNaskbanLinksAsync(userId, loginViewModel.Username, loginViewModel.Password);
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);

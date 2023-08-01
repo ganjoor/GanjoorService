@@ -25,6 +25,15 @@ using System.IO;
 using RSecurityBackend.Models.Image;
 using FluentFTP;
 using System.Drawing;
+using RSecurityBackend.Models.Auth.ViewModels;
+using Newtonsoft.Json;
+using System.Net;
+using System.Text;
+using RMuseum.Models.Auth.ViewModel;
+using System.Net.Http.Headers;
+using RMuseum.Models.GanjoorIntegration.ViewModels;
+using RMuseum.Models.GanjoorIntegration;
+using Microsoft.VisualBasic.ApplicationServices;
 
 namespace RMuseum.Services.Implementation
 {
@@ -1569,7 +1578,7 @@ namespace RMuseum.Services.Implementation
                  where
                  link.DisplayOnPage == true
                  &&
-                 link.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
+                 link.ReviewResult == ReviewResult.Approved
                  &&
                  poem.Id == id
                  orderby link.IsTextOriginalSource descending, link.ReviewDate
@@ -1588,17 +1597,17 @@ namespace RMuseum.Services.Implementation
                  join poem in _context.GanjoorPoems
                  on link.GanjoorPostId equals poem.Id
                  where
-                 link.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
+                 link.ReviewResult == ReviewResult.Approved
                  &&
                  poem.Id == id
                  orderby link.ReviewDate
                  select new PoemRelatedImage()
                  {
                      PoemRelatedImageType = PoemRelatedImageType.ExternalLink,
-                     ThumbnailImageUrl = link.Item.Images.First().ExternalNormalSizeImageUrl.Replace("/norm/", "/thumb/").Replace("/orig/", "/thumb/"),
+                     ThumbnailImageUrl = link.LinkType == LinkType.Naskban ? link.PinterestImageUrl : link.Item.Images.First().ExternalNormalSizeImageUrl.Replace("/norm/", "/thumb/").Replace("/orig/", "/thumb/"),
                      TargetPageUrl = link.PinterestUrl,
                      AltText = link.AltText,
-                     IsTextOriginalSource = false
+                     IsTextOriginalSource = link.IsTextOriginalSource
                  };
 
             museumImages.AddRange(await externalSrc.AsNoTracking().ToListAsync());
@@ -3615,6 +3624,79 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// synchronize naskban links
+        /// </summary>
+        /// <param name="ganjoorUserId"></param>
+        /// <param name="naskbanUserName"></param>
+        /// <param name="naskbanPassword"></param>
+        /// <returns>number of synched items</returns>
+        public async Task<RServiceResult<int>> SynchronizeNaskbanLinksAsync(Guid ganjoorUserId, string naskbanUserName, string naskbanPassword)
+        {
+            try
+            {
+                LoginViewModel loginViewModel = new LoginViewModel()
+                {
+                    Username = naskbanUserName,
+                    Password = naskbanPassword,
+                    ClientAppName = "Ganjoor API",
+                    Language = "fa-IR"
+                };
+                var loginResponse = await _httpClient.PostAsync("https://api.naskban.ir/api/users/login", new StringContent(JsonConvert.SerializeObject(loginViewModel), Encoding.UTF8, "application/json"));
+
+                if (loginResponse.StatusCode != HttpStatusCode.OK)
+                {
+                    return new RServiceResult<int>(0, "login error: " + JsonConvert.DeserializeObject<string>(await loginResponse.Content.ReadAsStringAsync()));
+                }
+                LoggedOnUserModelEx loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await loginResponse.Content.ReadAsStringAsync());
+
+                using (HttpClient secureClient = new HttpClient())
+                {
+                    secureClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loggedOnUser.Token);
+                    var unsyncedResponse = await secureClient.GetAsync("https://api.naskban.ir/api/pdf/ganjoor/unsynched");
+                    if (!unsyncedResponse.IsSuccessStatusCode)
+                    {
+                        return new RServiceResult<int>(0, "unsync error: " + JsonConvert.DeserializeObject<string>(await unsyncedResponse.Content.ReadAsStringAsync()));
+                    }
+                    var unsynchronizeds = JsonConvert.DeserializeObject<PDFGanjoorLink[]>(await unsyncedResponse.Content.ReadAsStringAsync());
+                    foreach (var unsynchronized in unsynchronizeds)
+                    {
+                        if(false == await _context.PinterestLinks.Where(p => p.NaskbanLinkId == unsynchronized.Id).AnyAsync() )
+                        {
+                            PinterestLink link = new PinterestLink()
+                            {
+                                GanjoorPostId = unsynchronized.GanjoorPostId,
+                                GanjoorTitle = unsynchronized.GanjoorTitle,
+                                GanjoorUrl = unsynchronized.GanjoorUrl,
+                                AltText = unsynchronized.PDFPageTitle,
+                                LinkType = LinkType.Naskban,
+                                PinterestUrl = $"https://naskban.ir/{unsynchronized.PDFBookId}/{unsynchronized.PageNumber}",
+                                PinterestImageUrl = unsynchronized.ExternalThumbnailImageUrl,
+                                ReviewResult = ReviewResult.Approved,
+                                SuggestionDate = DateTime.Now,
+                                SuggestedById = ganjoorUserId,
+                                Synchronized = true,
+                                ReviewerId = ganjoorUserId,
+                                IsTextOriginalSource = unsynchronized.IsTextOriginalSource,
+                                PDFBookId = unsynchronized.PDFBookId,
+                                PageNumber = unsynchronized.PageNumber,
+                                NaskbanLinkId = unsynchronized.Id
+                            };
+                            _context.PinterestLinks.Add(link);
+                        }
+                        await secureClient.PutAsync($"https://api.naskban.ir/api/pdf/ganjoor/sync/{unsynchronized.Id}", null);
+                    }
+                    var logoutUrl = $"https://api.naskban.ir/api/users/delsession?userId={loggedOnUser.User.Id}&sessionId={loggedOnUser.SessionId}";
+                    await secureClient.DeleteAsync(logoutUrl);
+                    return new RServiceResult<int>(unsynchronizeds.Length);
+                }
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<int>(0, exp.ToString());
             }
         }
 

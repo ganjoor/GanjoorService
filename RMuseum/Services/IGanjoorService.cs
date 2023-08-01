@@ -1190,5 +1190,15 @@ namespace RMuseum.Services
         /// <param name="ignoreSumup"></param>
         /// <returns></returns>
         Task<RServiceResult<PoemGeoDateTag[]>> GetCatPoemGeoDateTagsAsync(int catId, bool ignoreSumup = false);
+
+
+        /// <summary>
+        /// synchronize naskban links
+        /// </summary>
+        /// <param name="ganjoorUserId"></param>
+        /// <param name="naskbanUserName"></param>
+        /// <param name="naskbanPassword"></param>
+        /// <returns>number of synched items</returns>
+        Task<RServiceResult<int>> SynchronizeNaskbanLinksAsync(Guid ganjoorUserId, string naskbanUserName, string naskbanPassword);
     }
 }

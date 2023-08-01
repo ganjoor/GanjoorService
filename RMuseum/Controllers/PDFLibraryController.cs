@@ -1280,7 +1280,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("ganjoor/unsynched")]
-        [AllowAnonymous]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PDFGanjoorLink[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetUnsyncedPDFGanjoorLinksAsync()

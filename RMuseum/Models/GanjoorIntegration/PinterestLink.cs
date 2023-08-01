@@ -129,5 +129,10 @@ namespace RMuseum.Models.GanjoorIntegration
         /// page number
         /// </summary>
         public int PageNumber { get; set; }
+
+        /// <summary>
+        /// naskban link id
+        /// </summary>
+        public Guid? NaskbanLinkId { get; set; }
     }
 }
