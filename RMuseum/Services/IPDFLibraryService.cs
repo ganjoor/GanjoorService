@@ -370,5 +370,18 @@ namespace RMuseum.Services
         /// <param name="result"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> ReviewSuggestedLinkAsync(Guid linkId, Guid userId, ReviewResult result);
+
+        /// <summary>
+        /// get unsynced approved pdf ganjoor links
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<PDFGanjoorLink[]>> GetUnsyncedPDFGanjoorLinksAsync();
+
+        /// <summary>
+        /// synchronize ganjoor link
+        /// </summary>
+        /// <param name="linkId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> SynchronizePDFGanjoorLink(Guid linkId);
     }
 }

@@ -1457,12 +1457,62 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<int>> GetUnreviewedGanjoorLinksCountAsync()
         {
-            return new RServiceResult<int>
-                (
-                  await _context.PDFGanjoorLinks.AsNoTracking()
-                 .Where(l => l.ReviewResult == ReviewResult.Awaiting)
-                 .CountAsync()
-                 );
+            try
+            {
+                return new RServiceResult<int>
+               (
+                 await _context.PDFGanjoorLinks.AsNoTracking()
+                .Where(l => l.ReviewResult == ReviewResult.Awaiting)
+                .CountAsync()
+                );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<int>(0, exp.ToString() );
+            }
+           
+        }
+
+        /// <summary>
+        /// get unsynced approved pdf ganjoor links
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<PDFGanjoorLink[]>> GetUnsyncedPDFGanjoorLinksAsync()
+        {
+            try
+            {
+                return new RServiceResult<PDFGanjoorLink[]>
+                    (
+                    await _context.PDFGanjoorLinks.AsNoTracking()
+                            .Where(l => l.ReviewResult == ReviewResult.Approved && l.Synchronized == false)
+                            .ToArrayAsync()
+                    );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PDFGanjoorLink[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// synchronize ganjoor link
+        /// </summary>
+        /// <param name="linkId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> SynchronizePDFGanjoorLink(Guid linkId)
+        {
+            try
+            {
+                var link = await _context.PDFGanjoorLinks.Where(l => l.Id == linkId).SingleAsync();
+                link.Synchronized = true;
+                _context.PDFGanjoorLinks.Update(link);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString() );
+            }
         }
 
         /// <summary>

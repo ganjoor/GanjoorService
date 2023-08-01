@@ -18516,6 +18516,19 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetUnsyncedPDFGanjoorLinksAsync">
+            <summary>
+            get unsynced approved pdf ganjoor links
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.SynchronizePDFGanjoorLink(System.Guid)">
+            <summary>
+            synchronize ganjoor link
+            </summary>
+            <param name="linkId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.ReviewSuggestedLinkAsync(System.Guid,System.Guid,RMuseum.Models.GanjoorIntegration.ReviewResult)">
             <summary>
             Review Suggested Link
@@ -19738,6 +19751,19 @@
             <param name="linkId"></param>
             <param name="userId"></param>
             <param name="result"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetUnsyncedPDFGanjoorLinksAsync">
+            <summary>
+            get unsynced approved pdf ganjoor links
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.SynchronizePDFGanjoorLink(System.Guid)">
+            <summary>
+            synchronize ganjoor link
+            </summary>
+            <param name="linkId"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">
