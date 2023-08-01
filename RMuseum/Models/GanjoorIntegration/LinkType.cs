@@ -20,6 +20,10 @@
         /// <summary>
         /// Instagram
         /// </summary>
-        Instagram = 3
+        Instagram = 3,
+        /// <summary>
+        /// Naskban
+        /// </summary>
+        Naskban = 4,
     }
 }

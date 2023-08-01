@@ -1,4 +1,6 @@
 ﻿using RMuseum.Models.Artifact;
+using RMuseum.Models.GanjoorIntegration;
+using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.PDFLibrary.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -346,5 +348,27 @@ namespace RMuseum.Services
         /// <param name="link"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> SuggestGanjoorLinkAsync(Guid userId, PDFGanjoorLinkSuggestion link);
+
+        /// <summary>
+        /// finds what the method name suggests
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorLinkViewModel>> GetNextUnreviewedGanjoorLinkAsync(int skip);
+
+        /// <summary>
+        /// get unreviewed image count
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<int>> GetUnreviewedGanjoorLinksCountAsync();
+
+        /// <summary>
+        /// Review Suggested Link
+        /// </summary>
+        /// <param name="linkId"></param>
+        /// <param name="userId"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> ReviewSuggestedLinkAsync(Guid linkId, Guid userId, ReviewResult result);
     }
 }

@@ -9,6 +9,10 @@ namespace RMuseum.Models.GanjoorIntegration
     public class PDFGanjoorLink
     {
         /// <summary>
+        /// Id
+        /// </summary>
+        public Guid Id { get; set; }
+        /// <summary>
         /// Ganjoor Post Id
         /// </summary>
         public int GanjoorPostId { get; set; }

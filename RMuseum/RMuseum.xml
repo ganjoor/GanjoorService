@@ -2711,6 +2711,23 @@
             <param name="link"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetNextUnreviewedGanjoorLinkAsync(System.Int32)">
+            <summary>
+            finds next awaiting suggested link 
+            return value might be null (has paging-headers)
+            </summary>
+            <remarks>has paging-headers</remarks>
+            <param name="skip"></param>
+            <returns> return value might be null </returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.ReviewSuggestedLinkAsync(System.Guid,RMuseum.Models.GanjoorIntegration.ReviewResult)">
+            <summary>
+            review suggested ganjoor link
+            </summary>
+            <param name="linkId"></param>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.PDFLibraryController._pdfService">
             <summary>
             PDF Service
@@ -6357,9 +6374,19 @@
             Instagram
             </summary>
         </member>
+        <member name="F:RMuseum.Models.GanjoorIntegration.LinkType.Naskban">
+            <summary>
+            Naskban
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink">
             <summary>
             PDFBook Ganjoor Link
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.Id">
+            <summary>
+            Id
             </summary>
         </member>
         <member name="P:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink.GanjoorPostId">
@@ -6550,6 +6577,21 @@
         <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.Synchronized">
             <summary>
             Synchronized with ganjoor
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.IsTextOriginalSource">
+            <summary>
+            is the is the text original source?
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.PDFBookId">
+            <summary>
+            pdf book id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.PageNumber">
+            <summary>
+            page number
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.ReviewResult">
@@ -18461,6 +18503,28 @@
             <param name="link"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetNextUnreviewedGanjoorLinkAsync(System.Int32)">
+            <summary>
+            finds what the method name suggests
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetUnreviewedGanjoorLinksCountAsync">
+            <summary>
+            get unreviewed image count
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.ReviewSuggestedLinkAsync(System.Guid,System.Guid,RMuseum.Models.GanjoorIntegration.ReviewResult)">
+            <summary>
+            Review Suggested Link
+            </summary>
+            <param name="linkId"></param>
+            <param name="userId"></param>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.PDFLibraryService._context">
             <summary>
             Database Context
@@ -19652,6 +19716,28 @@
             </summary>
             <param name="userId"></param>
             <param name="link"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetNextUnreviewedGanjoorLinkAsync(System.Int32)">
+            <summary>
+            finds what the method name suggests
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetUnreviewedGanjoorLinksCountAsync">
+            <summary>
+            get unreviewed image count
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.ReviewSuggestedLinkAsync(System.Guid,System.Guid,RMuseum.Models.GanjoorIntegration.ReviewResult)">
+            <summary>
+            Review Suggested Link
+            </summary>
+            <param name="linkId"></param>
+            <param name="userId"></param>
+            <param name="result"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">

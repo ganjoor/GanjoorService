@@ -114,5 +114,20 @@ namespace RMuseum.Models.GanjoorIntegration
         /// Synchronized with ganjoor
         /// </summary>
         public bool Synchronized { get; set; }
+
+        /// <summary>
+        /// is the is the text original source?
+        /// </summary>
+        public bool IsTextOriginalSource { get; set; }
+
+        /// <summary>
+        /// pdf book id
+        /// </summary>
+        public int PDFBookId { get; set; }
+
+        /// <summary>
+        /// page number
+        /// </summary>
+        public int PageNumber { get; set; }
     }
 }

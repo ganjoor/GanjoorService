@@ -33,12 +33,12 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> StartImportingKnownSourceAsync(string srcUrl)
         {
-            if(srcUrl.Contains("https://sohalibrary.com/"))
+            if (srcUrl.Contains("https://sohalibrary.com/"))
             {
                 return await StartImportingSohaLibraryUrlAsync(srcUrl);
             }
             return new RServiceResult<bool>(false, "Unknown source url");
-            
+
         }
         /// <summary>
         /// get pdf book by id
@@ -62,14 +62,14 @@ namespace RMuseum.Services.Implementation
                             .SingleOrDefaultAsync();
                 if (pdfBook != null)
                 {
-                    if(pdfBook.Book != null)
+                    if (pdfBook.Book != null)
                     {
                         pdfBook.Book.PDFBooks = await _context.PDFBooks.AsNoTracking()
                             .Include(a => a.CoverImage)
                             .Where(a => a.Status == PublishStatus.Published && a.BookId == id)
                            .OrderByDescending(t => t.Title).ToArrayAsync();
                     }
-                    if(pdfBook.MultiVolumePDFCollection != null)
+                    if (pdfBook.MultiVolumePDFCollection != null)
                     {
                         pdfBook.MultiVolumePDFCollection.PDFBooks = await _context.PDFBooks.AsNoTracking()
                             .Include(a => a.CoverImage)
@@ -926,7 +926,7 @@ namespace RMuseum.Services.Implementation
                     .Include(b => b.Authors).ThenInclude(a => a.Author)
                     .Include(b => b.Tags)
                     .Where(b => b.Id == id).SingleOrDefaultAsync();
-                if(book != null)
+                if (book != null)
                 {
                     book.PDFBooks = await _context.PDFBooks.AsNoTracking()
                         .Include(a => a.CoverImage)
@@ -1120,7 +1120,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var volumes = await _context.MultiVolumePDFCollections.Include(v => v.Book).AsNoTracking().Where(x => x.Id == id).SingleOrDefaultAsync();
-                if(volumes != null)
+                if (volumes != null)
                 {
                     volumes.PDFBooks = await _context.PDFBooks.AsNoTracking()
                         .Include(a => a.CoverImage)
@@ -1397,6 +1397,128 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// finds what the method name suggests
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorLinkViewModel>> GetNextUnreviewedGanjoorLinkAsync(int skip)
+        {
+            try
+            {
+                var link = await _context.PDFGanjoorLinks.AsNoTracking()
+                 .Include(l => l.SuggestedBy)
+                 .Where(l => l.ReviewResult == ReviewResult.Awaiting)
+                 .OrderBy(l => l.SuggestionDate)
+                 .Skip(skip)
+                 .FirstOrDefaultAsync();
+                if (link != null)
+                {
+                    return new RServiceResult<GanjoorLinkViewModel>(
+                        new GanjoorLinkViewModel()
+                        {
+                            Id = link.Id,
+                            GanjoorPostId = link.GanjoorPostId,
+                            GanjoorUrl = link.GanjoorUrl,
+                            GanjoorTitle = link.GanjoorTitle,
+                            EntityName = link.PDFPageTitle,
+                            EntityFriendlyUrl = $"https://naskban.ir/{link.PDFBookId}/{link.PageNumber}",
+                            ReviewResult = link.ReviewResult,
+                            Synchronized = link.Synchronized,
+                            SuggestedBy = new PublicRAppUser()
+                            {
+                                Id = link.SuggestedBy.Id,
+                                Username = link.SuggestedBy.UserName,
+                                Email = link.SuggestedBy.Email,
+                                FirstName = link.SuggestedBy.FirstName,
+                                SureName = link.SuggestedBy.SureName,
+                                PhoneNumber = link.SuggestedBy.PhoneNumber,
+                                RImageId = link.SuggestedBy.RImageId,
+                                Status = link.SuggestedBy.Status,
+                                NickName = link.SuggestedBy.NickName,
+                                Website = link.SuggestedBy.Website,
+                                Bio = link.SuggestedBy.Bio,
+                                EmailConfirmed = link.SuggestedBy.EmailConfirmed
+                            },
+                            IsTextOriginalSource = link.IsTextOriginalSource
+                        });
+                }
+                return new RServiceResult<GanjoorLinkViewModel>(null);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorLinkViewModel>(null, exp.ToString());
+            }
+
+        }
+
+        /// <summary>
+        /// get unreviewed image count
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<int>> GetUnreviewedGanjoorLinksCountAsync()
+        {
+            return new RServiceResult<int>
+                (
+                  await _context.PDFGanjoorLinks.AsNoTracking()
+                 .Where(l => l.ReviewResult == ReviewResult.Awaiting)
+                 .CountAsync()
+                 );
+        }
+
+        /// <summary>
+        /// Review Suggested Link
+        /// </summary>
+        /// <param name="linkId"></param>
+        /// <param name="userId"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> ReviewSuggestedLinkAsync(Guid linkId, Guid userId, ReviewResult result)
+        {
+            PDFGanjoorLink link =
+            await _context.PDFGanjoorLinks
+                 .Where(l => l.Id == linkId)
+                 .SingleOrDefaultAsync();
+
+            link.ReviewResult = result;
+            link.ReviewerId = userId;
+            link.ReviewDate = DateTime.Now;
+
+            _context.PDFGanjoorLinks.Update(link);
+
+            if (link.ReviewResult == ReviewResult.Approved)
+            {
+
+                var pageInfo = await _context.PDFPages
+                                        .Include(i => i.Tags)
+                                        .ThenInclude(t => t.RTag)
+                                        .Where(i => i.PDFBookId == link.PDFBookId && i.PageNumber == link.PageNumber).SingleAsync();
+
+
+
+                RTagValue tag = await TagHandler.PrepareAttribute(_context, "Ganjoor Link", link.GanjoorTitle, 1);
+                tag.ValueSupplement = link.GanjoorUrl;
+                pageInfo.Tags.Add(tag);
+                _context.PDFPages.Update(pageInfo);
+
+
+
+
+                RTagValue toc = await TagHandler.PrepareAttribute(_context, "Title in TOC", link.GanjoorTitle, 1);
+                toc.ValueSupplement = "1";//font size
+                if (pageInfo.Tags.Where(t => t.RTag.Name == "Title in TOC" && t.Value == toc.Value).Count() == 0)
+                {
+                    toc.Order = 1 + pageInfo.Tags.Where(t => t.RTag.NameInEnglish == "Title in TOC").Count();
+                    pageInfo.Tags.Add(toc);
+                    _context.PDFPages.Update(pageInfo);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<bool>(true);
+        }
+
+        /// <summary>
         /// Database Context
         /// </summary>
         protected readonly RMuseumDbContext _context;
@@ -1412,7 +1534,7 @@ namespace RMuseum.Services.Implementation
         /// ftp service
         /// </summary>
         protected readonly IQueuedFTPUploadService _ftpService;
- 
+
         /// <summary>
         /// Configuration
         /// </summary>

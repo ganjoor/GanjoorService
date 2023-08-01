@@ -218,6 +218,7 @@ namespace RMuseum.Models.Auth.Memory
                             new SecurableItemOperation(EditTagValueOperationShortName, "اصلاح مقدار ویژگی", false),
                             new SecurableItemOperation(ToAwaitingStatusOperationShortName, "درخواست بازبینی", false),
                             new SecurableItemOperation(PublishOperationShortName, "انتشار", false),
+                            new SecurableItemOperation(ReviewGanjoorLinksOperationShortName, "بررسی شعرهای پیشنهادی گنجور", false),
                         }
                     },
                     new SecurableItem()

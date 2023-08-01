@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using RMuseum.Models.Artifact;
 using RMuseum.Services.Implementation;
 using RMuseum.Models.GanjoorIntegration.ViewModels;
+using RMuseum.Models.GanjoorIntegration;
 
 namespace RMuseum.Controllers
 {
@@ -1211,6 +1212,63 @@ namespace RMuseum.Controllers
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<bool> suggestion = await _pdfService.SuggestGanjoorLinkAsync(loggedOnUserId, link);
+            if (!string.IsNullOrEmpty(suggestion.ExceptionString))
+                return BadRequest(suggestion.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// finds next awaiting suggested link 
+        /// return value might be null (has paging-headers)
+        /// </summary>
+        /// <remarks>has paging-headers</remarks>
+        /// <param name="skip"></param>
+        /// <returns> return value might be null </returns>
+        [HttpGet]
+        [Route("ganjoor/nextunreviewed")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorLinkViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetNextUnreviewedGanjoorLinkAsync(int skip)
+        {
+            RServiceResult<GanjoorLinkViewModel> res = await _pdfService.GetNextUnreviewedGanjoorLinkAsync(skip);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            var resCount = await _pdfService.GetUnreviewedGanjoorLinksCountAsync();
+            if (!string.IsNullOrEmpty(resCount.ExceptionString))
+                return BadRequest(resCount.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers",
+                JsonConvert.SerializeObject(
+                    new PaginationMetadata()
+                    {
+                        totalCount = resCount.Result,
+                        pageSize = -1,
+                        currentPage = -1,
+                        hasNextPage = false,
+                        hasPreviousPage = false,
+                        totalPages = -1
+                    })
+                );
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// review suggested ganjoor link
+        /// </summary>
+        /// <param name="linkId"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("ganjoor/review/{linkId}/{result}")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> ReviewSuggestedLinkAsync(Guid linkId, ReviewResult result)
+        {
+            Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<bool> suggestion = await _pdfService.ReviewSuggestedLinkAsync(linkId, loggedOnUserId, result);
             if (!string.IsNullOrEmpty(suggestion.ExceptionString))
                 return BadRequest(suggestion.ExceptionString);
             return Ok();
