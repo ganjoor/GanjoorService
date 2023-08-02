@@ -56,7 +56,7 @@ namespace RMuseum.Services.Implementation
                             .Include(b => b.MultiVolumePDFCollection)
                             .Include(b => b.PDFSource)
                             .Include(b => b.Contributers)
-                            .Include(b => b.Tags)
+                            .Include(b => b.Tags).ThenInclude(t => t.RTag)
                             .Include(b => b.Pages)
                             .Where(b => statusArray.Contains(b.Status) && b.Id == id)
                             .SingleOrDefaultAsync();
