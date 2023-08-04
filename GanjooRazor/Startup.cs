@@ -31,19 +31,26 @@ namespace GanjooRazor
                 options.Conventions.AddPageRoute("/index", "{*url}");
             });
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "GanjoorCorsPolicy",
+                                  policy =>
+                                  {
+                                      policy.WithOrigins("https://museum.ganjoor.net",
+                                                          "https://naskban.ir",
+                                                          "http://localhost:5173"
+                                                          );
+                                  });
+            });
+
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            app.Use(async (c, n) => {
+        { 
 
-                c.Response.Headers.Add("Access-Control-Allow-Origin", "https://museum.ganjoor.net");
-                c.Response.Headers.Add("Access-Control-Allow-Origin", "https://naskban.ir");
-                c.Response.Headers.Add("Access-Control-Allow-Origin", "http://localhost:5173");
-                await n.Invoke();
-            });
+            app.UseCors("GanjoorCorsPolicy");
 
             app.UseExceptionHandler("/Error");
 
@@ -54,6 +61,8 @@ namespace GanjooRazor
             app.UseRouting();
 
             app.UseAuthorization();
+
+
 
             app.UseEndpoints(endpoints =>
             {
