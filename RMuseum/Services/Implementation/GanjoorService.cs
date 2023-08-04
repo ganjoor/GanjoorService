@@ -3686,9 +3686,11 @@ namespace RMuseum.Services.Implementation
                                 NaskbanLinkId = unsynchronized.Id
                             };
                             _context.PinterestLinks.Add(link);
+                            await _context.SaveChangesAsync();
                         }
                         await secureClient.PutAsync($"https://api.naskban.ir/api/pdf/ganjoor/sync/{unsynchronized.Id}", null);
                     }
+
                     var logoutUrl = $"https://api.naskban.ir/api/users/delsession?userId={loggedOnUser.User.Id}&sessionId={loggedOnUser.SessionId}";
                     await secureClient.DeleteAsync(logoutUrl);
                     return new RServiceResult<int>(unsynchronizeds.Length);
