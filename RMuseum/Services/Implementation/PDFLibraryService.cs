@@ -1569,6 +1569,72 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get next un-ocred PDF Book
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<PDFBook>> GetNextUnOCRedPDFBookAsync()
+        {
+            try
+            {
+                var pdfBook = await _context.PDFBooks.AsNoTracking()
+                            .Include(b => b.PDFFile)
+                            .Include(b => b.Pages)
+                            .Where(b => b.Status == PublishStatus.Published && b.OCRed == false)
+                            .OrderBy(b => b.Id)
+                            .FirstOrDefaultAsync();
+                return new RServiceResult<PDFBook>(pdfBook);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PDFBook>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// set pdf page ocr info (and if a book whole pages are ocred the book ocred flag is set to true)
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> SetPDFPageOCRInfoAsync(PDFPageOCRDataViewModel model)
+        {
+            try
+            {
+                var dbPage = await _context.PDFPages.Where(p => p.Id == model.Id).SingleAsync();
+                dbPage.FullResolutionImageWidth = model.FullResolutionImageWidth;
+                dbPage.FullResolutionImageHeight = model.FullResolutionImageHeight;
+                dbPage.OCRed = model.OCRed;
+                dbPage.OCRTime = DateTime.Now;
+                dbPage.PageText = model.PageText;
+                _context.Update(dbPage);
+                await _context.SaveChangesAsync();
+
+                var pdfBook = await _context.PDFBooks
+                            .Include(b => b.Pages)
+                            .Where(b => b.Id == dbPage.PDFBookId)
+                            .SingleAsync();
+                if(!pdfBook.Pages.Any(p => p.OCRed == false))
+                {
+                    pdfBook.OCRed = true;
+                    pdfBook.OCRTime = DateTime.Now;
+                    _context.Update(pdfBook);
+                    await _context.SaveChangesAsync();
+                }
+                else if(pdfBook.OCRed)
+                {
+                    pdfBook.OCRed = false;
+                    _context.Update(pdfBook);
+                    await _context.SaveChangesAsync();
+                }
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Database Context
         /// </summary>
         protected readonly RMuseumDbContext _context;

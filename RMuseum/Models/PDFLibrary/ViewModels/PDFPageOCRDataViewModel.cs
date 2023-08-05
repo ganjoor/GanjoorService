@@ -10,7 +10,7 @@ namespace RMuseum.Models.PDFLibrary.ViewModels
         /// <summary>
         ///  Id
         /// </summary>
-        public int id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// full resolution image width
@@ -26,11 +26,6 @@ namespace RMuseum.Models.PDFLibrary.ViewModels
         /// ocred
         /// </summary>
         public bool OCRed { get; set; }
-
-        /// <summary>
-        /// ocr date time
-        /// </summary>
-        public DateTime OCRTime { get; set; }
 
         /// <summary>
         /// page text

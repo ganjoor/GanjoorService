@@ -13047,7 +13047,7 @@
             PDF Page OCR Data View Model
             </summary>
         </member>
-        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.PDFPageOCRDataViewModel.id">
+        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.PDFPageOCRDataViewModel.Id">
             <summary>
              Id
             </summary>
@@ -13065,11 +13065,6 @@
         <member name="P:RMuseum.Models.PDFLibrary.ViewModels.PDFPageOCRDataViewModel.OCRed">
             <summary>
             ocred
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.PDFLibrary.ViewModels.PDFPageOCRDataViewModel.OCRTime">
-            <summary>
-            ocr date time
             </summary>
         </member>
         <member name="P:RMuseum.Models.PDFLibrary.ViewModels.PDFPageOCRDataViewModel.PageText">
@@ -18663,6 +18658,19 @@
             <param name="result"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetNextUnOCRedPDFBookAsync">
+            <summary>
+            get next un-ocred PDF Book
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.SetPDFPageOCRInfoAsync(RMuseum.Models.PDFLibrary.ViewModels.PDFPageOCRDataViewModel)">
+            <summary>
+            set pdf page ocr info (and if a book whole pages are ocred the book ocred flag is set to true)
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.PDFLibraryService._context">
             <summary>
             Database Context
@@ -19889,6 +19897,19 @@
             synchronize ganjoor link
             </summary>
             <param name="linkId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetNextUnOCRedPDFBookAsync">
+            <summary>
+            get next un-ocred PDF Book
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.SetPDFPageOCRInfoAsync(RMuseum.Models.PDFLibrary.ViewModels.PDFPageOCRDataViewModel)">
+            <summary>
+            set pdf page ocr info (and if a book whole pages are ocred the book ocred flag is set to true)
+            </summary>
+            <param name="model"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">

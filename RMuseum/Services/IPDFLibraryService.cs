@@ -383,5 +383,18 @@ namespace RMuseum.Services
         /// <param name="linkId"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> SynchronizePDFGanjoorLinkAsync(Guid linkId);
+
+        /// <summary>
+        /// get next un-ocred PDF Book
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<PDFBook>> GetNextUnOCRedPDFBookAsync();
+
+        /// <summary>
+        /// set pdf page ocr info (and if a book whole pages are ocred the book ocred flag is set to true)
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> SetPDFPageOCRInfoAsync(PDFPageOCRDataViewModel model);
     }
 }
