@@ -234,5 +234,15 @@ namespace RMuseum.Models.PDFLibrary
         /// </summary>
         [NotMapped]
         public ICollection<RTitleInContents> Contents { get; set; }
+
+        /// <summary>
+        /// ocred
+        /// </summary>
+        public bool OCRed { get; set; }
+
+        /// <summary>
+        /// ocr date time
+        /// </summary>
+        public DateTime OCRTime { get; set; }
     }
 }

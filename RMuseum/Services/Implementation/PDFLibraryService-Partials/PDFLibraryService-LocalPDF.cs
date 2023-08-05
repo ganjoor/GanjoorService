@@ -408,6 +408,8 @@ namespace RMuseum.Services.Implementation
                 }
                 using (Image img = Image.FromFile(fileName))
                 {
+                    page.FullResolutionImageWidth = img.Width;
+                    page.FullResolutionImageHeight = img.Height;
                     int imageWidth = img.Width;
                     int imageHeight = img.Height;
                     int thumbnailImageWidth = ThumbnailImageWidth;
