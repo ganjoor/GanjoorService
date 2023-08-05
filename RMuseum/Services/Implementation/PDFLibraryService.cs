@@ -1291,13 +1291,12 @@ namespace RMuseum.Services.Implementation
             try
             {
                 term = term.Trim().ApplyCorrectYeKe();
-
-                if (string.IsNullOrEmpty(term))
-                {
-                    return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>((null, null), "خطای جستجوی عبارت خالی");
-                }
-
                 term = term.Replace("‌", " ");//replace zwnj with space
+
+                if (string.IsNullOrEmpty(term) || term.Length < 2)
+                {
+                    return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>((null, null), "خطای طول عبارت جستجو");
+                }
 
                 string searchConditions;
                 if (term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
@@ -1634,6 +1633,128 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// search pdf books pages for a text
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>> SearchPDFBookForPDFPagesTextAsync(PagingParameterModel paging, string term)
+        {
+            try
+            {
+                term = term.Trim().ApplyCorrectYeKe();
+                term = term.Replace("‌", " ");//replace zwnj with space
+
+                if (string.IsNullOrEmpty(term) || term.Length < 2)
+                {
+                    return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>((null, null), "خطای طول عبارت جستجو");
+                }
+
+                string searchConditions;
+                if (term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
+                {
+                    searchConditions = term.Replace("\"", "").Replace("'", "");
+                    searchConditions = $"\"{searchConditions}\"";
+                }
+                else
+                {
+                    string[] words = term.Replace("\"", "").Replace("'", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                    searchConditions = "";
+                    string emptyOrAnd = "";
+                    foreach (string word in words)
+                    {
+                        searchConditions += $" {emptyOrAnd} \"*{word}*\" ";
+                        emptyOrAnd = " AND ";
+                    }
+                }
+                //full text catalogue should be created manually
+
+                var source =
+                    _context.PDFBooks.AsNoTracking().Include(a => a.Pages)
+                    .Where(p =>
+                           p.Status == PublishStatus.Published
+                           &&
+                           p.Pages.Where(t => EF.Functions.Contains(t.PageText, searchConditions)).Any()
+                           ).OrderBy(i => i.Title);
+
+
+                (PaginationMetadata PagingMeta, PDFBook[] Items) paginatedResult =
+                   await QueryablePaginator<PDFBook>.Paginate(source, paging);
+
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>((null, null), exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// search pdf pages
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="bookId">0 for all pdf books</param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFPage[] Items)>> SearchPDFPagesTextAsync(PagingParameterModel paging, int bookId, string term)
+        {
+            try
+            {
+                term = term.Trim().ApplyCorrectYeKe();
+                term = term.Replace("‌", " ");//replace zwnj with space
+
+                if (string.IsNullOrEmpty(term) || term.Length < 2)
+                {
+                    return new RServiceResult<(PaginationMetadata PagingMeta, PDFPage[] Items)>((null, null), "خطای طول عبارت جستجو");
+                }
+
+                string searchConditions;
+                if (term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
+                {
+                    searchConditions = term.Replace("\"", "").Replace("'", "");
+                    searchConditions = $"\"{searchConditions}\"";
+                }
+                else
+                {
+                    string[] words = term.Replace("\"", "").Replace("'", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                    searchConditions = "";
+                    string emptyOrAnd = "";
+                    foreach (string word in words)
+                    {
+                        searchConditions += $" {emptyOrAnd} \"*{word}*\" ";
+                        emptyOrAnd = " AND ";
+                    }
+                }
+                //full text catalogue should be created manually
+
+                var source =
+                    _context.PDFPages.AsNoTracking()
+                    .Where(p =>
+                           (bookId == 0 || p.PDFBookId == bookId)
+                           &&
+                           EF.Functions.Contains(p.PageText, searchConditions)
+                           ).OrderBy(i => i.PageNumber);
+
+
+                (PaginationMetadata PagingMeta, PDFPage[] Items) paginatedResult =
+                   await QueryablePaginator<PDFPage>.Paginate(source, paging);
+
+                foreach (PDFPage page in paginatedResult.Items)
+                {
+                    page.PDFBook = await _context.PDFBooks.AsNoTracking().Where(b => b.Id == page.PDFBookId).SingleAsync();
+                }
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFPage[] Items)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFPage[] Items)>((null, null), exp.ToString());
             }
         }
 

@@ -2,6 +2,7 @@
 using RSecurityBackend.Models.Image;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RMuseum.Models.PDFLibrary
 {
@@ -79,6 +80,12 @@ namespace RMuseum.Models.PDFLibrary
         /// page text
         /// </summary>
         public string PageText { get; set; }
+
+        /// <summary>
+        /// pdf book
+        /// </summary>
+        [NotMapped]
+        public PDFBook PDFBook { get; set; }
 
     }
 }

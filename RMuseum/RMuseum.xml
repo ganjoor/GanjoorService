@@ -12785,6 +12785,11 @@
             page text
             </summary>
         </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.PDFBook">
+            <summary>
+            pdf book
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.PDFLibrary.PDFSource">
             <summary>
             PDF Source (Web Sites)
@@ -18684,6 +18689,23 @@
             <param name="model"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.SearchPDFBookForPDFPagesTextAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            search pdf books pages for a text
+            </summary>
+            <param name="paging"></param>
+            <param name="term"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.SearchPDFPagesTextAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32,System.String)">
+            <summary>
+            search pdf pages
+            </summary>
+            <param name="paging"></param>
+            <param name="bookId">0 for all pdf books</param>
+            <param name="term"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.PDFLibraryService._context">
             <summary>
             Database Context
@@ -19923,6 +19945,23 @@
             set pdf page ocr info (and if a book whole pages are ocred the book ocred flag is set to true)
             </summary>
             <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.SearchPDFBookForPDFPagesTextAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+            <summary>
+            search pdf books pages for a text
+            </summary>
+            <param name="paging"></param>
+            <param name="term"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.SearchPDFPagesTextAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32,System.String)">
+            <summary>
+            search pdf pages
+            </summary>
+            <param name="paging"></param>
+            <param name="bookId">0 for all pdf books</param>
+            <param name="term"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">

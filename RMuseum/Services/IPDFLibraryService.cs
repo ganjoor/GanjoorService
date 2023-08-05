@@ -396,5 +396,22 @@ namespace RMuseum.Services
         /// <param name="model"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> SetPDFPageOCRInfoAsync(PDFPageOCRDataViewModel model);
+
+        /// <summary>
+        /// search pdf books pages for a text
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>> SearchPDFBookForPDFPagesTextAsync(PagingParameterModel paging, string term);
+
+        /// <summary>
+        /// search pdf pages
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="bookId">0 for all pdf books</param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, PDFPage[] Items)>> SearchPDFPagesTextAsync(PagingParameterModel paging, int bookId, string term);
     }
 }
