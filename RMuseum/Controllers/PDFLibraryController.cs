@@ -1199,6 +1199,55 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// search pdf book pages text
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="id"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("search/pdfbook/{id}/text")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RArtifactMasterRecord>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> SearchPDFPagesTextAsync([FromQuery] PagingParameterModel paging, int id, string term)
+        {
+            var pagedResult = await _pdfService.SearchPDFPagesTextAsync(paging, id, term);
+            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
+                return BadRequest(pagedResult.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+
+            return Ok(pagedResult.Result.Items);
+        }
+
+        /// <summary>
+        /// search pages text
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("search/pages/text")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RArtifactMasterRecord>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> SearchPDFBookForPDFPagesTextAsync([FromQuery] PagingParameterModel paging, string term)
+        {
+            var pagedResult = await _pdfService.SearchPDFBookForPDFPagesTextAsync(paging, term);
+            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
+                return BadRequest(pagedResult.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+
+            return Ok(pagedResult.Result.Items);
+        }
+
+        /// <summary>
         /// suggest ganjoor link
         /// </summary>
         /// <param name="link"></param>
