@@ -2748,6 +2748,19 @@
             <param name="linkId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetNextUnOCRedPDFBookAsync">
+            <summary>
+            next un-ocred pdf book
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.SetPDFPageOCRInfoAsync(RMuseum.Models.PDFLibrary.ViewModels.PDFPageOCRDataViewModel)">
+            <summary>
+            set page ocr info
+            </summary>
+            <param name="pdf"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.PDFLibraryController._pdfService">
             <summary>
             PDF Service

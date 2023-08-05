@@ -1601,8 +1601,11 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var dbPage = await _context.PDFPages.Where(p => p.Id == model.Id).SingleAsync();
-                dbPage.FullResolutionImageWidth = model.FullResolutionImageWidth;
-                dbPage.FullResolutionImageHeight = model.FullResolutionImageHeight;
+                if(model.FullResolutionImageWidth != 0 && model.FullResolutionImageHeight != 0)
+                {
+                    dbPage.FullResolutionImageWidth = model.FullResolutionImageWidth;
+                    dbPage.FullResolutionImageHeight = model.FullResolutionImageHeight;
+                }
                 dbPage.OCRed = model.OCRed;
                 dbPage.OCRTime = DateTime.Now;
                 dbPage.PageText = model.PageText;

@@ -1311,6 +1311,48 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// next un-ocred pdf book
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("ocr/nextunocred")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PDFBook))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetNextUnOCRedPDFBookAsync()
+        {
+            RServiceResult<PDFBook> res = await _pdfService.GetNextUnOCRedPDFBookAsync();
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+           
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// set page ocr info
+        /// </summary>
+        /// <param name="pdf"></param>
+        /// <returns></returns>
+
+        [HttpPut]
+        [Route("ocr")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> SetPDFPageOCRInfoAsync([FromBody] PDFPageOCRDataViewModel pdf)
+        {
+
+            RServiceResult<bool> res = await _pdfService.SetPDFPageOCRInfoAsync(pdf);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            return Ok();
+        }
+
+
+        /// <summary>
         /// PDF Service
         /// </summary>
         protected readonly IPDFLibraryService _pdfService;
