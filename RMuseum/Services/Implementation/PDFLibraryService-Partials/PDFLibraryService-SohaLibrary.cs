@@ -65,6 +65,10 @@ namespace RMuseum.Services.Implementation
         private async Task ImportSohaLibraryUrlAsync(string srcUrl, RMuseumDbContext context)
         {
 
+            var oldJobs = await context.ImportJobs.ToArrayAsync();
+            context.RemoveRange(oldJobs);
+            await context.SaveChangesAsync();
+
             ImportJob job = new ImportJob()
             {
                 JobType = JobType.Pdf,
@@ -103,7 +107,7 @@ namespace RMuseum.Services.Implementation
                 model.OriginalSourceUrl = srcUrl;
                 model.BookScriptType = BookScriptType.Printed;
                 model.Language = "فارسی";
-                model.SkipUpload = false;
+                model.SkipUpload = true;
 
                 string html = "";
                 using (var client = new HttpClient())
