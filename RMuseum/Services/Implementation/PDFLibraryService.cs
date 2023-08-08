@@ -1568,19 +1568,32 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// get next un-ocred PDF Book
+        /// get next un-ocred PDF Book and add it to a queue
         /// </summary>
         /// <returns></returns>
         public async Task<RServiceResult<PDFBook>> GetNextUnOCRedPDFBookAsync()
         {
             try
             {
+                var maxOCRQueuedItemId =
+                    await _context.OCRQueuedItems.AnyAsync() ?
+                    await _context.OCRQueuedItems.AsNoTracking().MaxAsync(q => q.PDFBookId)
+                    : 0;
                 var pdfBook = await _context.PDFBooks.AsNoTracking()
                             .Include(b => b.PDFFile)
                             .Include(b => b.Pages)
-                            .Where(b => b.Status == PublishStatus.Published && b.OCRed == false)
+                            .Where(b => b.Status == PublishStatus.Published && b.OCRed == false && b.Id > maxOCRQueuedItemId)
                             .OrderBy(b => b.Id)
                             .FirstOrDefaultAsync();
+                if (pdfBook != null)
+                {
+                    _context.OCRQueuedItems.Add
+                        (new OCRQueue()
+                        {
+                            PDFBookId = pdfBook.Id
+                        });
+                    await _context.SaveChangesAsync();
+                }
                 return new RServiceResult<PDFBook>(pdfBook);
 
             }

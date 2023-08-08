@@ -548,5 +548,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<PDFGanjoorLink> PDFGanjoorLinks { get; set; }
 
+        /// <summary>
+        /// OCR Queue Items
+        /// </summary>
+        public DbSet<OCRQueue> OCRQueuedItems { get; set; }
+
     }
 }
