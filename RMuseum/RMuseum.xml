@@ -18359,6 +18359,13 @@
             PDF Library Services
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.BatchImportELiteratureBookLibraryAsync(System.Int32,System.Int32)">
+            <summary>
+            batch import soha library
+            </summary>
+            <param name="ajaxPageIndexStart">from 0</param>
+            <param name="ajaxPageIndexEnd"></param>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartImportingLocalPDFAsync(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
             <summary>
             start importing local pdf file
