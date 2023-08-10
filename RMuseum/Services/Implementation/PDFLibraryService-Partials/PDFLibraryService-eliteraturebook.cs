@@ -46,18 +46,18 @@ namespace RMuseum.Services.Implementation
 
             try
             {
-                var pdfSource = await context.PDFSources.Where(s => s.Name == "سها").SingleOrDefaultAsync();
+                var pdfSource = await context.PDFSources.Where(s => s.Name == "کتابخانهٔ مجازی ادبیات").SingleOrDefaultAsync();
                 if (pdfSource == null)
                 {
                     PDFSource newSource = new PDFSource()
                     {
-                        Name = "سها",
-                        Url = "https://sohalibrary.com",
-                        Description = "سامانهٔ جستجوی یکپارچهٔ نرم‌افزار سنا"
+                        Name = "کتابخانهٔ مجازی ادبیات",
+                        Url = "https://eliteraturebook.com",
+                        Description = "کتابخانهٔ مجازی ادبیات"
                     };
                     context.PDFSources.Add(newSource);
                     await context.SaveChangesAsync();
-                    pdfSource = await context.PDFSources.Where(s => s.Name == "سها").SingleAsync();
+                    pdfSource = await context.PDFSources.Where(s => s.Name == "کتابخانهٔ مجازی ادبیات").SingleAsync();
                 }
                 NewPDFBookViewModel model = new NewPDFBookViewModel();
                 model.PDFSourceId = pdfSource.Id;
@@ -88,11 +88,11 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                if (html.IndexOf("/item/download/") == -1)
+                if (html.IndexOf("/download") == -1)
                 {
                     job.EndTime = DateTime.Now;
                     job.Status = ImportJobStatus.Failed;
-                    job.Exception = $"/item/download/ not found in html source.";
+                    job.Exception = $"/download/ not found in html source.";
                     context.Update(job);
                     await context.SaveChangesAsync();
                     return;
@@ -100,44 +100,17 @@ namespace RMuseum.Services.Implementation
 
                 List<RTagValue> meta = new List<RTagValue>();
                 int idxStart;
-                int idx = html.IndexOf("branch-link");
-                string firstHandSource = "";
-                if (idx != -1)
-                {
-                    idxStart = html.IndexOf(">", idx);
-                    if (idxStart != -1)
-                    {
-                        int idxEnd = html.IndexOf("<", idxStart);
+                meta.Add
+                             (
+                                  await TagHandler.PrepareAttribute(context, "First Hand Source", "کتابخانه تخصصی ادبیات", 1)
+                             );
 
-                        if (idxEnd != -1)
-                        {
-                            firstHandSource = html.Substring(idxStart + 1, idxEnd - idxStart - 1);
-                            meta.Add
-                            (
-                                 await TagHandler.PrepareAttribute(context, "First Hand Source", firstHandSource, 1)
-                            );
-                        }
-                    }
-                }
-
-                if (firstHandSource != "کتابخانه تخصصی ادبیات")
-                {
-                    job.EndTime = DateTime.Now;
-                    job.Status = ImportJobStatus.Failed;
-                    job.Exception = $"کتابخانه تخصصی ادبیات not found.";
-                    context.Update(job);
-                    await context.SaveChangesAsync();
-                    return;
-                }
-
-
-
-                idx = html.IndexOf("title-normal-for-book-name");
+                int idx = html.IndexOf("\"book-title\"");
                 if (idx == -1)
                 {
                     job.EndTime = DateTime.Now;
                     job.Status = ImportJobStatus.Failed;
-                    job.Exception = $"title-normal-for-book-name not found in {srcUrl}";
+                    job.Exception = $"\"book-title\" not found in {srcUrl}";
                     context.Update(job);
                     await context.SaveChangesAsync();
                     return;
@@ -154,10 +127,94 @@ namespace RMuseum.Services.Implementation
                         model.Title = model.Title.Trim();
                     }
                 }
+                string tagValue;
+                string tagName;
+
+                idx = html.IndexOf("\"author-name\"");
+                if (idx != -1)
+                {
+                    idx = html.IndexOf("ref=");
+                    idxStart = html.IndexOf(">", idx);
+                    if (idxStart != -1)
+                    {
+                        int idxEnd = html.IndexOf("<", idxStart);
+
+                        if (idxEnd != -1)
+                        {
+                            tagValue = html.Substring(idxStart + 1, idxEnd - idxStart - 1);
+                            tagValue = Regex.Replace(tagValue, "<.*?>", string.Empty).Trim();
+
+                            string tagValueCleaned = tagValue.ToPersianNumbers().ApplyCorrectYeKe();
+                            tagName = "نویسنده";
+
+                            if (tagName == "نویسنده")
+                            {
+                                model.AuthorsLine = tagValueCleaned;
+                                tagName = "Author";
+
+                                string[] authors = tagValueCleaned.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+                                for (int i = 0; i < authors.Length; i++)
+                                {
+                                    string authorTrimmed = authors[i].Trim();
+                                    var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == authorTrimmed).FirstOrDefaultAsync();
+                                    if (existingAuthor != null)
+                                    {
+                                        if (i == 0)
+                                        {
+                                            model.WriterId = existingAuthor.Id;
+                                        }
+                                        if (i == 1)
+                                        {
+                                            model.Writer2Id = existingAuthor.Id;
+                                        }
+                                        if (i == 2)
+                                        {
+                                            model.Writer3Id = existingAuthor.Id;
+                                        }
+                                        if (i == 3)
+                                        {
+                                            model.Writer4Id = existingAuthor.Id;
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        var newAuthor = new Author()
+                                        {
+                                            Name = authorTrimmed
+                                        };
+                                        context.Authors.Add(newAuthor);
+                                        await context.SaveChangesAsync();
+                                        if (i == 0)
+                                        {
+                                            model.WriterId = newAuthor.Id;
+                                        }
+                                        if (i == 1)
+                                        {
+                                            model.Writer2Id = newAuthor.Id;
+                                        }
+                                        if (i == 2)
+                                        {
+                                            model.Writer3Id = newAuthor.Id;
+                                        }
+                                        if (i == 3)
+                                        {
+                                            model.Writer4Id = newAuthor.Id;
+                                        }
+                                    }
+                                }
+
+
+                            }
+                        }
+                    }
+                }
+                
 
 
 
-                idxStart = html.IndexOf("width-150");
+                idxStart = html.IndexOf("\"part view\"");
                 while (idxStart != -1)
                 {
                     idxStart = html.IndexOf(">", idxStart);
@@ -165,80 +222,19 @@ namespace RMuseum.Services.Implementation
                     int idxEnd = html.IndexOf("<", idxStart);
                     if (idxEnd == -1) break;
 
-                    string tagName = html.Substring(idxStart + 1, idxEnd - idxStart - 1).ToPersianNumbers().ApplyCorrectYeKe().Trim();
+                    tagName = html.Substring(idxStart + 1, idxEnd - idxStart - 1).ToPersianNumbers().ApplyCorrectYeKe().Trim();
 
-                    idxStart = html.IndexOf("value-name", idxEnd);
+                    idxStart = html.IndexOf(">", idxEnd);
                     if (idxStart == -1) break;
-                    idxStart = html.IndexOf(">", idxStart);
-                    if (idxStart == -1) break;
-                    idxEnd = html.IndexOf("</span>", idxStart);
+                    idxEnd = html.IndexOf("<", idxStart);
                     if (idxEnd == -1) break;
 
-                    string tagValue = html.Substring(idxStart + 1, idxEnd - idxStart - 1);
+                    tagValue = html.Substring(idxStart + 1, idxEnd - idxStart - 1);
                     tagValue = Regex.Replace(tagValue, "<.*?>", string.Empty).Trim();
 
                     string tagValueCleaned = tagValue.ToPersianNumbers().ApplyCorrectYeKe();
 
-                    if (tagName == "نویسنده")
-                    {
-                        model.AuthorsLine = tagValueCleaned;
-                        tagName = "Author";
-
-                        string[] authors = tagValueCleaned.Split(',', StringSplitOptions.RemoveEmptyEntries);
-
-                        for (int i = 0; i < authors.Length; i++)
-                        {
-                            string authorTrimmed = authors[i].Trim();
-                            var existingAuthor = await context.Authors.AsNoTracking().Where(a => a.Name == authorTrimmed).FirstOrDefaultAsync();
-                            if (existingAuthor != null)
-                            {
-                                if (i == 0)
-                                {
-                                    model.WriterId = existingAuthor.Id;
-                                }
-                                if (i == 1)
-                                {
-                                    model.Writer2Id = existingAuthor.Id;
-                                }
-                                if (i == 2)
-                                {
-                                    model.Writer3Id = existingAuthor.Id;
-                                }
-                                if (i == 3)
-                                {
-                                    model.Writer4Id = existingAuthor.Id;
-                                }
-
-                            }
-                            else
-                            {
-                                var newAuthor = new Author()
-                                {
-                                    Name = authorTrimmed
-                                };
-                                context.Authors.Add(newAuthor);
-                                await context.SaveChangesAsync();
-                                if (i == 0)
-                                {
-                                    model.WriterId = newAuthor.Id;
-                                }
-                                if (i == 1)
-                                {
-                                    model.Writer2Id = newAuthor.Id;
-                                }
-                                if (i == 2)
-                                {
-                                    model.Writer3Id = newAuthor.Id;
-                                }
-                                if (i == 3)
-                                {
-                                    model.Writer4Id = newAuthor.Id;
-                                }
-                            }
-                        }
-
-
-                    }
+                    
                     if (tagName == "مترجم")
                     {
                         model.TranslatorsLine = tagValueCleaned;
@@ -403,7 +399,7 @@ namespace RMuseum.Services.Implementation
                             (
                                  await TagHandler.PrepareAttribute(context, tagName, tagValueCleaned, 1)
                             );
-                    idxStart = html.IndexOf("width-150", idxEnd);
+                    idxStart = html.IndexOf("\"part view\"", idxEnd);
 
                 }
 
@@ -631,7 +627,16 @@ namespace RMuseum.Services.Implementation
                                                    int endIdx = html.IndexOf("\"", idx);
                                                    string srcUrl = html.Substring(idx, endIdx - idx);
                                                    idx = html.IndexOf("https://eliteraturebook.com/books/view/", idx + 1);
-                                                   await ImportELiteratureBookLibraryUrlAsync(srcUrl, context);
+
+                                                   if (
+                                                    (await context.PDFBooks.Where(a => a.OriginalSourceUrl == srcUrl).SingleOrDefaultAsync())
+                                                    ==
+                                                    null
+                                                    )
+                                                   {
+                                                       await ImportELiteratureBookLibraryUrlAsync(srcUrl, context);
+                                                   }
+                                                   
                                                }
                                               
                                            }
