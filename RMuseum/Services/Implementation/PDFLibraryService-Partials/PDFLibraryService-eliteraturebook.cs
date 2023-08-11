@@ -596,7 +596,7 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// batch import soha library
+        /// batch import eliteraturebook.com library
         /// </summary>
         /// <param name="ajaxPageIndexStart">from 0</param>
         /// <param name="ajaxPageIndexEnd"></param>

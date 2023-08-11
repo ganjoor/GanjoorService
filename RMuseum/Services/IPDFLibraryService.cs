@@ -334,6 +334,13 @@ namespace RMuseum.Services
         void BatchImportSohaLibraryAsync(int start, int end);
 
         /// <summary>
+        /// batch import eliteraturebook.com library
+        /// </summary>
+        /// <param name="ajaxPageIndexStart">from 0</param>
+        /// <param name="ajaxPageIndexEnd"></param>
+        void BatchImportELiteratureBookLibraryAsync(int ajaxPageIndexStart, int ajaxPageIndexEnd);
+
+        /// <summary>
         /// search pdf books
         /// </summary>
         /// <param name="paging"></param>

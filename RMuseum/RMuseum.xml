@@ -2430,6 +2430,14 @@
             <param name="end"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.BatchImportELiteratureBookLibraryAsync(System.Int32,System.Int32)">
+            <summary>
+            batch import eliteraturebook.com library
+            </summary>
+            <param name="ajaxPageIndexStart">start from 0</param>
+            <param name="ajaxPageIndexEnd"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.PutPDFBookAsync(RMuseum.Models.PDFLibrary.PDFBook)">
             <summary>
             edit pdf book master record (user should have additional permissions pdf:awaiting and pdf:publish to change status of pdf book)
@@ -18361,7 +18369,7 @@
         </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.BatchImportELiteratureBookLibraryAsync(System.Int32,System.Int32)">
             <summary>
-            batch import soha library
+            batch import eliteraturebook.com library
             </summary>
             <param name="ajaxPageIndexStart">from 0</param>
             <param name="ajaxPageIndexEnd"></param>
@@ -19957,6 +19965,13 @@
             </summary>
             <param name="start"></param>
             <param name="end"></param>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.BatchImportELiteratureBookLibraryAsync(System.Int32,System.Int32)">
+            <summary>
+            batch import eliteraturebook.com library
+            </summary>
+            <param name="ajaxPageIndexStart">from 0</param>
+            <param name="ajaxPageIndexEnd"></param>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.SearchPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
             <summary>

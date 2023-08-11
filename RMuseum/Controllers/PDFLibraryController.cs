@@ -288,6 +288,23 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        
+        /// <summary>
+        /// batch import eliteraturebook.com library
+        /// </summary>
+        /// <param name="ajaxPageIndexStart">start from 0</param>
+        /// <param name="ajaxPageIndexEnd"></param>
+        /// <returns></returns>
+        [HttpPost("elit/{ajaxPageIndexStart}/{ajaxPageIndexEnd}")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult BatchImportELiteratureBookLibraryAsync(int ajaxPageIndexStart, int ajaxPageIndexEnd)
+        {
+            _pdfService.BatchImportELiteratureBookLibraryAsync(ajaxPageIndexStart, ajaxPageIndexEnd);
+            return Ok();
+        }
+
 
         /// <summary>
         /// edit pdf book master record (user should have additional permissions pdf:awaiting and pdf:publish to change status of pdf book)
