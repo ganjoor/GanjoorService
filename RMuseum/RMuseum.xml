@@ -2394,18 +2394,20 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.GetUserVisiblePDFBookAsync(System.Int32)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetUserVisiblePDFBookAsync(System.Int32,System.Boolean)">
             <summary>
             secure get a pdf book
             </summary>
             <param name="id"></param>
+            <param name="omitBookText"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.GetPDFBookByIdAsync(System.Int32)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetPDFBookByIdAsync(System.Int32,System.Boolean)">
             <summary>
             get published PDF Book by id
             </summary>
             <param name="id"></param>
+            <param name="omitBookText"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.StartImportingLocalPDFAsync(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
@@ -12779,6 +12781,11 @@
             ocr date time
             </summary>
         </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFBook.BookText">
+            <summary>
+            book text
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.PDFLibrary.PDFPage">
             <summary>
             PDF Page
@@ -18405,12 +18412,13 @@
             <param name="srcUrl"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetPDFBookByIdAsync(System.Int32,RMuseum.Models.Artifact.PublishStatus[])">
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetPDFBookByIdAsync(System.Int32,RMuseum.Models.Artifact.PublishStatus[],System.Boolean)">
             <summary>
             get pdf book by id
             </summary>
             <param name="id"></param>
             <param name="statusArray"></param>
+            <param name="omitBookText"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetAllPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Artifact.PublishStatus[])">
@@ -19656,12 +19664,13 @@
             <param name="srcUrl"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IPDFLibraryService.GetPDFBookByIdAsync(System.Int32,RMuseum.Models.Artifact.PublishStatus[])">
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetPDFBookByIdAsync(System.Int32,RMuseum.Models.Artifact.PublishStatus[],System.Boolean)">
             <summary>
             get pdf book by id
             </summary>
             <param name="id"></param>
             <param name="statusArray"></param>
+            <param name="omitBookText"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.GetAllPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Artifact.PublishStatus[])">

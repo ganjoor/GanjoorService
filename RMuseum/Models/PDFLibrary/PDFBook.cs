@@ -244,5 +244,10 @@ namespace RMuseum.Models.PDFLibrary
         /// ocr date time
         /// </summary>
         public DateTime OCRTime { get; set; }
+
+        /// <summary>
+        /// book text
+        /// </summary>
+        public string BookText { get; set; }
     }
 }

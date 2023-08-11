@@ -45,8 +45,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <param name="statusArray"></param>
+        /// <param name="omitBookText"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PDFBook>> GetPDFBookByIdAsync(int id, PublishStatus[] statusArray)
+        public async Task<RServiceResult<PDFBook>> GetPDFBookByIdAsync(int id, PublishStatus[] statusArray, bool omitBookText)
         {
             try
             {
@@ -62,6 +63,10 @@ namespace RMuseum.Services.Implementation
                             .SingleOrDefaultAsync();
                 if (pdfBook != null)
                 {
+                    if(omitBookText)
+                    {
+                        pdfBook.BookText = "";
+                    }
                     if (pdfBook.Book != null)
                     {
                         pdfBook.Book.PDFBooks = await _context.PDFBooks.AsNoTracking()
@@ -139,6 +144,10 @@ namespace RMuseum.Services.Implementation
                .AsQueryable();
                 (PaginationMetadata PagingMeta, PDFBook[] Books) paginatedResult =
                     await QueryablePaginator<PDFBook>.Paginate(source, paging);
+                foreach (var book in paginatedResult.Books)
+                {
+                    book.BookText = "";
+                }
                 return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>(paginatedResult);
             }
             catch (Exception exp)
@@ -350,7 +359,10 @@ namespace RMuseum.Services.Implementation
                     .ToArrayAsync();
 
                 foreach (PDFBook taggedItem in taggedItems)
+                {
                     taggedItem.Tags = null;
+                    taggedItem.BookText = "";
+                }
 
                 return new RServiceResult<PDFBook[]>(taggedItems);
             }
@@ -700,6 +712,10 @@ namespace RMuseum.Services.Implementation
                .AsQueryable();
                 (PaginationMetadata PagingMeta, PDFBook[] Books) paginatedResult =
                     await QueryablePaginator<PDFBook>.Paginate(source, paging);
+                foreach (var book in paginatedResult.Books)
+                {
+                    book.BookText = "";
+                }
                 return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>(paginatedResult);
             }
             catch (Exception exp)
@@ -1038,6 +1054,10 @@ namespace RMuseum.Services.Implementation
                .AsQueryable();
                 (PaginationMetadata PagingMeta, PDFBook[] Books) paginatedResult =
                     await QueryablePaginator<PDFBook>.Paginate(source, paging);
+                foreach (var book in paginatedResult.Books)
+                {
+                    book.BookText = "";
+                }
                 return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>(paginatedResult);
             }
             catch (Exception exp)
@@ -1147,10 +1167,14 @@ namespace RMuseum.Services.Implementation
             {
                 var books =
                 await _context.PDFBooks.AsNoTracking()
-                .Include(a => a.CoverImage)
-                .Where(a => a.Status == PublishStatus.Published && a.MultiVolumePDFCollectionId == volumeId)
-               .OrderBy(t => t.VolumeOrder)
-               .ToArrayAsync();
+                   .Include(a => a.CoverImage)
+                   .Where(a => a.Status == PublishStatus.Published && a.MultiVolumePDFCollectionId == volumeId)
+                   .OrderBy(t => t.VolumeOrder)
+                   .ToArrayAsync();
+                foreach (var book in books)
+                {
+                    book.BookText = "";
+                }
                 return new RServiceResult<PDFBook[]>(books);
             }
             catch (Exception exp)
@@ -1266,12 +1290,16 @@ namespace RMuseum.Services.Implementation
             {
                 var source =
                 _context.PDFBooks.AsNoTracking()
-                .Include(a => a.CoverImage)
-                .Where(a => a.Status == PublishStatus.Published && a.PDFSourceId == sourceId)
-               .OrderByDescending(t => t.Title)
-               .AsQueryable();
+                   .Include(a => a.CoverImage)
+                   .Where(a => a.Status == PublishStatus.Published && a.PDFSourceId == sourceId)
+                   .OrderByDescending(t => t.Title)
+                   .AsQueryable();
                 (PaginationMetadata PagingMeta, PDFBook[] Books) paginatedResult =
                     await QueryablePaginator<PDFBook>.Paginate(source, paging);
+                foreach (var book in paginatedResult.Books)
+                {
+                    book.BookText = "";
+                }
                 return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>(paginatedResult);
             }
             catch (Exception exp)
@@ -1339,6 +1367,11 @@ namespace RMuseum.Services.Implementation
 
                 (PaginationMetadata PagingMeta, PDFBook[] Items) paginatedResult =
                    await QueryablePaginator<PDFBook>.Paginate(source, paging);
+
+                foreach (var book in paginatedResult.Items)
+                {
+                    book.BookText = "";
+                }
 
 
                 return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>(paginatedResult);
@@ -1699,6 +1732,11 @@ namespace RMuseum.Services.Implementation
                 (PaginationMetadata PagingMeta, PDFBook[] Items) paginatedResult =
                    await QueryablePaginator<PDFBook>.Paginate(source, paging);
 
+                foreach (var book in paginatedResult.Items)
+                {
+                    book.BookText = "";
+                }
+
 
                 return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>(paginatedResult);
             }
@@ -1762,6 +1800,7 @@ namespace RMuseum.Services.Implementation
                 foreach (PDFPage page in paginatedResult.Items)
                 {
                     page.PDFBook = await _context.PDFBooks.AsNoTracking().Where(b => b.Id == page.PDFBookId).SingleAsync();
+                    page.PDFBook.BookText = "";
                 }
                 return new RServiceResult<(PaginationMetadata PagingMeta, PDFPage[] Items)>(paginatedResult);
             }

@@ -118,13 +118,14 @@ namespace RMuseum.Controllers
         /// secure get a pdf book
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="omitBookText"></param>
         /// <returns></returns>
         [HttpGet("secure/{id}")]
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PDFBook))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetUserVisiblePDFBookAsync(int id)
+        public async Task<IActionResult> GetUserVisiblePDFBookAsync(int id, bool omitBookText = true)
         {
             RServiceResult<PublishStatus[]> v = await _GetUserVisiblePDFBooksStatusSetAsync
                (
@@ -137,7 +138,7 @@ namespace RMuseum.Controllers
             RServiceResult<PDFBook> bookRes = null;
             if (visibleItems.Length == 1 && visibleItems[0] == PublishStatus.Published)
             {
-                bookRes = await _pdfService.GetPDFBookByIdAsync(id, new PublishStatus[] { PublishStatus.Published });
+                bookRes = await _pdfService.GetPDFBookByIdAsync(id, new PublishStatus[] { PublishStatus.Published }, omitBookText);
                 if (!string.IsNullOrEmpty(bookRes.ExceptionString))
                 {
                     return BadRequest(bookRes.ExceptionString);
@@ -147,7 +148,7 @@ namespace RMuseum.Controllers
             }
             if (bookRes == null)
             {
-                bookRes = await _pdfService.GetPDFBookByIdAsync(id, visibleItems);
+                bookRes = await _pdfService.GetPDFBookByIdAsync(id, visibleItems, omitBookText);
             }
 
             if (!string.IsNullOrEmpty(bookRes.ExceptionString))
@@ -207,15 +208,16 @@ namespace RMuseum.Controllers
         /// get published PDF Book by id
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="omitBookText"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PDFBook))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetPDFBookByIdAsync(int id)
+        public async Task<IActionResult> GetPDFBookByIdAsync(int id, bool omitBookText = true)
         {
-            var bookRes = await _pdfService.GetPDFBookByIdAsync(id, new PublishStatus[] { PublishStatus.Published });
+            var bookRes = await _pdfService.GetPDFBookByIdAsync(id, new PublishStatus[] { PublishStatus.Published }, omitBookText);
 
             if (!string.IsNullOrEmpty(bookRes.ExceptionString))
             {
