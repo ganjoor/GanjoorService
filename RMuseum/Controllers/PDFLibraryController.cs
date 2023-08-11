@@ -119,13 +119,14 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="omitBookText"></param>
+        /// <param name="omitPageText"></param>
         /// <returns></returns>
         [HttpGet("secure/{id}")]
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PDFBook))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetUserVisiblePDFBookAsync(int id, bool omitBookText = true)
+        public async Task<IActionResult> GetUserVisiblePDFBookAsync(int id, bool omitBookText = true, bool omitPageText = false)
         {
             RServiceResult<PublishStatus[]> v = await _GetUserVisiblePDFBooksStatusSetAsync
                (
@@ -138,7 +139,7 @@ namespace RMuseum.Controllers
             RServiceResult<PDFBook> bookRes = null;
             if (visibleItems.Length == 1 && visibleItems[0] == PublishStatus.Published)
             {
-                bookRes = await _pdfService.GetPDFBookByIdAsync(id, new PublishStatus[] { PublishStatus.Published }, omitBookText);
+                bookRes = await _pdfService.GetPDFBookByIdAsync(id, new PublishStatus[] { PublishStatus.Published }, omitBookText, omitPageText);
                 if (!string.IsNullOrEmpty(bookRes.ExceptionString))
                 {
                     return BadRequest(bookRes.ExceptionString);
@@ -148,7 +149,7 @@ namespace RMuseum.Controllers
             }
             if (bookRes == null)
             {
-                bookRes = await _pdfService.GetPDFBookByIdAsync(id, visibleItems, omitBookText);
+                bookRes = await _pdfService.GetPDFBookByIdAsync(id, visibleItems, omitBookText, omitPageText);
             }
 
             if (!string.IsNullOrEmpty(bookRes.ExceptionString))
@@ -209,15 +210,16 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="omitBookText"></param>
+        /// <param name="omitPageText"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PDFBook))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetPDFBookByIdAsync(int id, bool omitBookText = true)
+        public async Task<IActionResult> GetPDFBookByIdAsync(int id, bool omitBookText = true, bool omitPageText = false)
         {
-            var bookRes = await _pdfService.GetPDFBookByIdAsync(id, new PublishStatus[] { PublishStatus.Published }, omitBookText);
+            var bookRes = await _pdfService.GetPDFBookByIdAsync(id, new PublishStatus[] { PublishStatus.Published }, omitBookText, omitPageText);
 
             if (!string.IsNullOrEmpty(bookRes.ExceptionString))
             {

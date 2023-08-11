@@ -46,8 +46,9 @@ namespace RMuseum.Services.Implementation
         /// <param name="id"></param>
         /// <param name="statusArray"></param>
         /// <param name="omitBookText"></param>
+        /// <param name="omitPageText"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PDFBook>> GetPDFBookByIdAsync(int id, PublishStatus[] statusArray, bool omitBookText)
+        public async Task<RServiceResult<PDFBook>> GetPDFBookByIdAsync(int id, PublishStatus[] statusArray, bool omitBookText, bool omitPageText)
         {
             try
             {
@@ -66,6 +67,13 @@ namespace RMuseum.Services.Implementation
                     if(omitBookText)
                     {
                         pdfBook.BookText = "";
+                    }
+                    if(omitPageText)
+                    {
+                        foreach (var page in pdfBook.Pages)
+                        {
+                            page.PageText = "";
+                        }
                     }
                     if (pdfBook.Book != null)
                     {

@@ -26,8 +26,9 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <param name="statusArray"></param>
         /// <param name="omitBookText"></param>
+        /// <param name="omitPageText"></param>
         /// <returns></returns>
-        Task<RServiceResult<PDFBook>> GetPDFBookByIdAsync(int id, PublishStatus[] statusArray, bool omitBookText);
+        Task<RServiceResult<PDFBook>> GetPDFBookByIdAsync(int id, PublishStatus[] statusArray, bool omitBookText, bool omitPageText);
 
         /// <summary>
         /// get all pdfbooks (including CoverImage info but not pages or tagibutes info)
