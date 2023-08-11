@@ -127,6 +127,23 @@ namespace RMuseum.Services.Implementation
                         model.Title = model.Title.Trim();
                     }
                 }
+
+                idxStart = html.IndexOf("box summary-box");
+                if(idxStart != -1)
+                {
+                    idxStart = html.IndexOf("<p>", idxStart);
+                    if(idxStart != -1)
+                    {
+                        idxStart += "<p>".Length;
+                        int idxEnd = html.IndexOf("<", idxStart);
+
+                        if (idxEnd != -1)
+                        {
+                            model.Description = html.Substring(idxStart + 1, idxEnd - idxStart - 1).ApplyCorrectYeKe();
+                            model.Description = model.Description.Trim();
+                        }
+                    }
+                }
                 string tagValue;
                 string tagName;
 
