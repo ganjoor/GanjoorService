@@ -165,7 +165,7 @@ namespace RMuseum.Services.Implementation
                     {
                         model.Title = html.Substring(idxStart + 1, idxEnd - idxStart - 1);
                         //we can try to extract volume information from title here
-                        model.Title = model.Title.Trim();
+                        model.Title = model.Title.Replace("\n", "").Replace("\r", "").Trim();
                     }
                 }
 
@@ -191,7 +191,7 @@ namespace RMuseum.Services.Implementation
                 idx = html.IndexOf("\"author-name\"");
                 if (idx != -1)
                 {
-                    idx = html.IndexOf("ref=");
+                    idx = html.IndexOf("ref=", idx);
                     idxStart = html.IndexOf(">", idx);
                     if (idxStart != -1)
                     {
@@ -280,7 +280,7 @@ namespace RMuseum.Services.Implementation
                     int idxEnd = html.IndexOf("<", idxStart);
                     if (idxEnd == -1) break;
 
-                    tagName = html.Substring(idxStart + 1, idxEnd - idxStart - 1).ToPersianNumbers().ApplyCorrectYeKe().Trim();
+                    tagName = html.Substring(idxStart + 1, idxEnd - idxStart - 1).Replace(":", "").ToPersianNumbers().ApplyCorrectYeKe().Trim();
 
                     idxStart = html.IndexOf(">", idxEnd);
                     if (idxStart == -1) break;
@@ -288,9 +288,9 @@ namespace RMuseum.Services.Implementation
                     if (idxEnd == -1) break;
 
                     tagValue = html.Substring(idxStart + 1, idxEnd - idxStart - 1);
-                    tagValue = Regex.Replace(tagValue, "<.*?>", string.Empty).Trim();
+                    tagValue = Regex.Replace(tagValue, "<.*?>", string.Empty).Replace("\n", "").Replace("\r", "").Trim();
 
-                    string tagValueCleaned = tagValue.ToPersianNumbers().ApplyCorrectYeKe();
+                    string tagValueCleaned = tagValue.Replace("\n", "").Replace("\r", "").Trim().ToPersianNumbers().ApplyCorrectYeKe();
 
                     
                     if (tagName == "مترجم")
@@ -471,13 +471,14 @@ namespace RMuseum.Services.Implementation
 
                         if (idxEnd != -1)
                         {
-                            var tv = html.Substring(idxStart + 1, idxEnd - idxStart - 1).ApplyCorrectYeKe();
+                            var tv = html.Substring(idxStart + 1, idxEnd - idxStart - 1).Replace("\n", "").Replace("\r", "").Trim().ApplyCorrectYeKe();
                             meta.Add
                            (
                                 await TagHandler.PrepareAttribute(context, "Subject", tv, 1)
                            );
                         }
                     }
+                    idx = html.IndexOf("\"tag\"", idxStart);
                 }
 
                 string bookTitle = model.Title;
@@ -550,21 +551,8 @@ namespace RMuseum.Services.Implementation
                     {
                         if (result.IsSuccessStatusCode)
                         {
-                            string fileName = string.Empty;
-                            if (result.Content.Headers.ContentDisposition != null)
-                            {
-                                fileName = System.Net.WebUtility.UrlDecode(result.Content.Headers.ContentDisposition.FileName).Replace("\"", "");
-                            }
-
-                            if (string.IsNullOrEmpty(fileName) || File.Exists(Path.Combine(_imageFileService.ImageStoragePath, fileName)))
-                            {
-                                fileName = downloadUrl.Substring(downloadUrl.LastIndexOf('/') + 1) + ".pdf";
-                            }
-
-                            if (fileName.Length > 70)
-                            {
-                                fileName = Path.GetFileNameWithoutExtension(fileName).Substring(0, 64) + ".pdf";
-                            }
+                            string fileName = (1 + await context.PDFBooks.MaxAsync(p => p.Id)).ToString().PadLeft(8, '0') + ".pdf";
+                            
 
                             model.LocalImportingPDFFilePath = Path.Combine(_imageFileService.ImageStoragePath, fileName);
                             if (File.Exists(model.LocalImportingPDFFilePath))

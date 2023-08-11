@@ -193,7 +193,7 @@ namespace RMuseum.Services.Implementation
                     {
                         model.Title = html.Substring(idxStart + 1, idxEnd - idxStart - 1);
                         //we can try to extract volume information from title here
-                        model.Title = model.Title.Trim();
+                        model.Title = model.Title.Replace("\n", "").Replace("\r", "").Trim();
                     }
                 }
 
@@ -216,10 +216,10 @@ namespace RMuseum.Services.Implementation
                     idxEnd = html.IndexOf("</span>", idxStart);
                     if (idxEnd == -1) break;
 
-                    string tagValue = html.Substring(idxStart + 1, idxEnd - idxStart - 1);
-                    tagValue = Regex.Replace(tagValue, "<.*?>", string.Empty).Trim();
+                    string tagValue = html.Substring(idxStart + 1, idxEnd - idxStart - 1).Trim();
+                    tagValue = Regex.Replace(tagValue, "<.*?>", string.Empty).Replace("\n", "").Replace("\r", "").Trim();
 
-                    string tagValueCleaned = tagValue.ToPersianNumbers().ApplyCorrectYeKe();
+                    string tagValueCleaned = tagValue.Replace("\n", "").Replace("\r", "").Trim().ToPersianNumbers().ApplyCorrectYeKe();
 
                     if (tagName == "نویسنده")
                     {
