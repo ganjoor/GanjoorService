@@ -420,6 +420,25 @@ namespace RMuseum.Services.Implementation
 
                 }
 
+                idx = html.IndexOf("\"tag\"");
+                while(idx != -1)
+                {
+                    idxStart = html.IndexOf(">", idx);
+                    if (idxStart != -1)
+                    {
+                        int idxEnd = html.IndexOf("<", idxStart);
+
+                        if (idxEnd != -1)
+                        {
+                            var tv = html.Substring(idxStart + 1, idxEnd - idxStart - 1).ApplyCorrectYeKe();
+                            meta.Add
+                           (
+                                await TagHandler.PrepareAttribute(context, "Subject", tv, 1)
+                           );
+                        }
+                    }
+                }
+
                 string bookTitle = model.Title;
                 int volumeNumber = 0;
                 if (bookTitle.Contains("ـ ج"))
@@ -441,7 +460,7 @@ namespace RMuseum.Services.Implementation
                     Book newBook = new Book()
                     {
                         Name = bookTitle,
-                        Description = "",
+                        Description = model.Description,
                         LastModified = DateTime.Now,
                     };
                     context.Books.Add(newBook);
@@ -467,7 +486,7 @@ namespace RMuseum.Services.Implementation
                         {
                             Name = bookTitle,
                             BookId = model.BookId,
-                            Description = "",
+                            Description = model.Description,
                             VolumeCount = 1,
                         };
                         context.MultiVolumePDFCollections.Add(newCollection);
@@ -476,10 +495,10 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                idx = html.IndexOf("/item/download/");
+                idx = html.IndexOf("https://eliteraturebook.com/books/download");
                 int idxQuote = html.IndexOf('"', idx);
                 string downloadUrl = html.Substring(idx, idxQuote - idx);
-                downloadUrl = "https://sohalibrary.com" + downloadUrl;
+       
 
 
                 model.OriginalFileUrl = downloadUrl;
