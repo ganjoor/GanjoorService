@@ -1743,6 +1743,17 @@ namespace RMuseum.Services.Implementation
                 {
                     pdfBook.OCRed = true;
                     pdfBook.OCRTime = DateTime.Now;
+
+                    string bookText = "";
+                    foreach (var page in pdfBook.Pages.OrderBy(p => p.PageNumber))
+                    {
+                        if(!string.IsNullOrEmpty(page.PageText))
+                        {
+                            bookText += page.PageText;
+                            bookText += Environment.NewLine;
+                        }
+                    }
+                    pdfBook.BookText = bookText;
                     _context.Update(pdfBook);
                     await _context.SaveChangesAsync();
                 }
