@@ -1422,6 +1422,23 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// fill book text
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("ocr/fillbooktext")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public IActionResult StartFillingMissingBookTextsAsync()
+        {
+
+            _pdfService.StartFillingMissingBookTextsAsync();
+            return Ok();
+        }
+
+        /// <summary>
         /// page of published book by page number
         /// </summary>
         /// <param name="pdfBookId"></param>

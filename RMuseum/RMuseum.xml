@@ -2790,6 +2790,12 @@
             <param name="pdf"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.StartFillingMissingBookTextsAsync">
+            <summary>
+            fill book text
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.GetPDFPageAsync(System.Int32,System.Int32)">
             <summary>
             page of published book by page number
@@ -18814,6 +18820,11 @@
             <param name="term"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartFillingMissingBookTextsAsync">
+            <summary>
+            fill missing book texts
+            </summary>
+        </member>
         <member name="F:RMuseum.Services.Implementation.PDFLibraryService._context">
             <summary>
             Database Context
@@ -20095,6 +20106,11 @@
             <param name="pdfBookId"></param>
             <param name="pageNumber"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.StartFillingMissingBookTextsAsync">
+            <summary>
+            fill missing book texts
+            </summary>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">
             <summary>

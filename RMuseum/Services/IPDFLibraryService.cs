@@ -430,5 +430,10 @@ namespace RMuseum.Services
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         Task<RServiceResult<PDFPage>> GetPDFPageAsync(int pdfBookId, int pageNumber);
+
+        /// <summary>
+        /// fill missing book texts
+        /// </summary>
+        void StartFillingMissingBookTextsAsync();
     }
 }

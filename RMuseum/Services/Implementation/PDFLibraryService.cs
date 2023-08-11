@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using RMuseum.Models.ImportJob;
 
 namespace RMuseum.Services.Implementation
 {
@@ -68,11 +69,11 @@ namespace RMuseum.Services.Implementation
                             .SingleOrDefaultAsync();
                 if (pdfBook != null)
                 {
-                    if(omitBookText)
+                    if (omitBookText)
                     {
                         pdfBook.BookText = "";
                     }
-                    if(omitPageText)
+                    if (omitPageText)
                     {
                         foreach (var page in pdfBook.Pages)
                         {
@@ -163,7 +164,7 @@ namespace RMuseum.Services.Implementation
                 if (pdfPage != null)
                 {
                     pdfPage.PDFBook = pdfBook;
-                    
+
                     List<RArtifactTagViewModel> rArtifactTags = new List<RArtifactTagViewModel>();
                     if (pdfPage.Tags != null)
                     {
@@ -1582,9 +1583,9 @@ namespace RMuseum.Services.Implementation
             }
             catch (Exception exp)
             {
-                return new RServiceResult<int>(0, exp.ToString() );
+                return new RServiceResult<int>(0, exp.ToString());
             }
-           
+
         }
 
         /// <summary>
@@ -1625,7 +1626,7 @@ namespace RMuseum.Services.Implementation
             }
             catch (Exception exp)
             {
-                return new RServiceResult<bool>(false, exp.ToString() );
+                return new RServiceResult<bool>(false, exp.ToString());
             }
         }
 
@@ -1728,7 +1729,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var dbPage = await _context.PDFPages.Where(p => p.Id == model.Id).SingleAsync();
-                if(model.FullResolutionImageWidth != 0 && model.FullResolutionImageHeight != 0)
+                if (model.FullResolutionImageWidth != 0 && model.FullResolutionImageHeight != 0)
                 {
                     dbPage.FullResolutionImageWidth = model.FullResolutionImageWidth;
                     dbPage.FullResolutionImageHeight = model.FullResolutionImageHeight;
@@ -1743,7 +1744,7 @@ namespace RMuseum.Services.Implementation
                             .Include(b => b.Pages)
                             .Where(b => b.Id == dbPage.PDFBookId)
                             .SingleAsync();
-                if(!pdfBook.Pages.Any(p => p.OCRed == false))
+                if (!pdfBook.Pages.Any(p => p.OCRed == false))
                 {
                     pdfBook.OCRed = true;
                     pdfBook.OCRTime = DateTime.Now;
@@ -1751,7 +1752,7 @@ namespace RMuseum.Services.Implementation
                     string bookText = "";
                     foreach (var page in pdfBook.Pages.OrderBy(p => p.PageNumber))
                     {
-                        if(!string.IsNullOrEmpty(page.PageText))
+                        if (!string.IsNullOrEmpty(page.PageText))
                         {
                             bookText += page.PageText;
                             bookText += Environment.NewLine;
@@ -1761,7 +1762,7 @@ namespace RMuseum.Services.Implementation
                     _context.Update(pdfBook);
                     await _context.SaveChangesAsync();
                 }
-                else if(pdfBook.OCRed)
+                else if (pdfBook.OCRed)
                 {
                     pdfBook.OCRed = false;
                     _context.Update(pdfBook);
@@ -1901,6 +1902,57 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<(PaginationMetadata PagingMeta, PDFPage[] Items)>((null, null), exp.ToString());
             }
+        }
+
+        /// <summary>
+        /// fill missing book texts
+        /// </summary>
+        public void StartFillingMissingBookTextsAsync()
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                                   (
+                                       async token =>
+                                       {
+                                           using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
+                                           {
+                                               LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                               var job = (await jobProgressServiceEF.NewJob("StartFillingMissingBookTextsAsync", "Query data")).Result;
+
+                                               try
+                                               {
+                                                   var books = await context.PDFBooks.Where(b => b.OCRed == true && string.IsNullOrEmpty(b.BookText)).ToListAsync();
+                                                   foreach (var book in books)
+                                                   {
+                                                       var pages = await context.PDFPages.AsNoTracking().Where(p => p.PDFBookId == book.Id).OrderBy(p => p.PageText).ToArrayAsync();
+                                                       string bookText = "";
+                                                       foreach (var page in pages)
+                                                       {
+                                                           if (!string.IsNullOrEmpty(page.PageText))
+                                                           {
+                                                               bookText += page.PageText;
+                                                               bookText += Environment.NewLine;
+                                                           }
+                                                       }
+                                                       if (!string.IsNullOrEmpty(bookText))
+                                                       {
+                                                           book.BookText = bookText;
+                                                           context.Update(book);
+                                                           await context.SaveChangesAsync();
+                                                       }
+
+
+                                                   }
+
+                                                   await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                               }
+                                               catch (Exception exp)
+                                               {
+                                                   await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                               }
+                                              
+                                           }
+                                       }
+                                   );
         }
 
         /// <summary>
