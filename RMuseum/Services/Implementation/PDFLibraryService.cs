@@ -37,7 +37,11 @@ namespace RMuseum.Services.Implementation
             {
                 return await StartImportingSohaLibraryUrlAsync(srcUrl);
             }
-            return new RServiceResult<bool>(false, "Unknown source url");
+            else
+            {
+                return await StartImportingELiteratureBookUrlAsync(srcUrl);
+            }
+            //return new RServiceResult<bool>(false, "Unknown source url");
 
         }
         /// <summary>

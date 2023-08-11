@@ -1,7 +1,6 @@
 ﻿using DNTPersianUtils.Core;
 using ganjoor;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using RMuseum.DbContext;
 using RMuseum.Models.Artifact;
 using RMuseum.Models.ImportJob;
@@ -13,13 +12,55 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 namespace RMuseum.Services.Implementation
 {
     public partial class PDFLibraryService
     {
+        private async Task<RServiceResult<bool>> StartImportingELiteratureBookUrlAsync(string srcUrl)
+        {
+            try
+            {
+                if (
+                    (await _context.PDFBooks.Where(a => a.OriginalSourceUrl == srcUrl).SingleOrDefaultAsync())
+                    !=
+                    null
+                    )
+                {
+                    return new RServiceResult<bool>(false, $"duplicated srcUrl '{srcUrl}'");
+                }
+                if (
+                    (
+                    await _context.ImportJobs
+                        .Where(j => j.JobType == JobType.Pdf && j.SrcContent == ("scrapping ..." + srcUrl) && !(j.Status == ImportJobStatus.Failed || j.Status == ImportJobStatus.Aborted))
+                        .SingleOrDefaultAsync()
+                    )
+                    !=
+                    null
+                    )
+                {
+                    return new RServiceResult<bool>(false, $"Job is already scheduled or running for importing source url: {srcUrl}");
+                }
+
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                       (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
+                               {
+                                   await ImportELiteratureBookLibraryUrlAsync(srcUrl, context);
+                               }
+                           }
+                       );
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
         private async Task ImportELiteratureBookLibraryUrlAsync(string srcUrl, RMuseumDbContext context)
         {
 
