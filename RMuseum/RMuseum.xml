@@ -2790,6 +2790,14 @@
             <param name="pdf"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetPDFPageAsync(System.Int32,System.Int32)">
+            <summary>
+            page of published book by page number
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="pageNumber"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.PDFLibraryController._pdfService">
             <summary>
             PDF Service
@@ -12868,6 +12876,11 @@
             pdf book
             </summary>
         </member>
+        <member name="P:RMuseum.Models.PDFLibrary.PDFPage.ArtifactTags">
+            <summary>
+            tags view models
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.PDFLibrary.PDFSource">
             <summary>
             PDF Source (Web Sites)
@@ -18424,6 +18437,14 @@
             <param name="omitPageText"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetPDFPageAsync(System.Int32,System.Int32)">
+            <summary>
+            get page by page number
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="pageNumber"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetAllPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Artifact.PublishStatus[])">
             <summary>
             get all pdfbooks (including CoverImage info but not pages or tagibutes info)
@@ -20065,6 +20086,14 @@
             <param name="paging"></param>
             <param name="bookId">0 for all pdf books</param>
             <param name="term"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetPDFPageAsync(System.Int32,System.Int32)">
+            <summary>
+            get page by page number
+            </summary>
+            <param name="pdfBookId"></param>
+            <param name="pageNumber"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">

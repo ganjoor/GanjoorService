@@ -134,6 +134,76 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+
+        /// <summary>
+        /// get page by page number
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="pageNumber"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PDFPage>> GetPDFPageAsync(int pdfBookId, int pageNumber)
+        {
+            try
+            {
+                var pdfBook = await _context.PDFBooks.AsNoTracking().Where(b => b.Id == pdfBookId).SingleAsync();
+                if (pdfBook.Status != PublishStatus.Published)
+                {
+                    return null;
+                }
+
+                pdfBook.BookText = "";
+                var pdfPage = await _context.PDFPages.AsNoTracking()
+                            .Include(b => b.Tags).ThenInclude(t => t.RTag)
+                            .Where(b => b.PDFBookId == pdfBookId && b.PageNumber == pageNumber)
+                            .SingleOrDefaultAsync();
+                if (pdfPage != null)
+                {
+                    pdfPage.PDFBook = pdfBook;
+                    
+                    List<RArtifactTagViewModel> rArtifactTags = new List<RArtifactTagViewModel>();
+                    if (pdfPage.Tags != null)
+                    {
+                        foreach (RTagValue tag in pdfPage.Tags)
+                        {
+                            RArtifactTagViewModel related = rArtifactTags.Where(t => t.Id == tag.RTagId).SingleOrDefault();
+                            List<RTagValue> values = (related == null) ? new List<RTagValue>() : new List<RTagValue>(related.Values);
+                            if (related == null)
+                            {
+                                related =
+                                    new RArtifactTagViewModel()
+                                    {
+                                        Id = tag.RTag.Id,
+                                        Order = tag.RTag.Order,
+                                        TagType = tag.RTag.TagType,
+                                        FriendlyUrl = tag.RTag.FriendlyUrl,
+                                        Status = tag.RTag.Status,
+                                        Name = tag.RTag.Name,
+                                        NameInEnglish = tag.RTag.NameInEnglish,
+                                        GlobalValue = tag.RTag.GlobalValue,
+                                        PluralName = tag.RTag.PluralName,
+                                        PluralNameInEnglish = tag.RTag.PluralNameInEnglish
+                                    };
+                                rArtifactTags.Add(related);
+
+                            }
+                            values.Add(tag);
+                            values.Sort((a, b) => a.Order - b.Order);
+                            related.Values = values;
+                        }
+
+                        rArtifactTags.Sort((a, b) => a.Order - b.Order);
+                    }
+                    pdfPage.ArtifactTags = rArtifactTags;
+                }
+                return new RServiceResult<PDFPage>(pdfPage);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PDFPage>(null, exp.ToString());
+            }
+        }
+
         /// <summary>
         /// get all pdfbooks (including CoverImage info but not pages or tagibutes info)
         /// </summary>

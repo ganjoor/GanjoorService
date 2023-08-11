@@ -1,4 +1,5 @@
 ﻿using RMuseum.Models.Artifact;
+using RMuseum.Models.Artifact.ViewModels;
 using RSecurityBackend.Models.Image;
 using System;
 using System.Collections.Generic;
@@ -86,6 +87,12 @@ namespace RMuseum.Models.PDFLibrary
         /// </summary>
         [NotMapped]
         public PDFBook PDFBook { get; set; }
+
+        /// <summary>
+        /// tags view models
+        /// </summary>
+        [NotMapped]
+        public ICollection<RArtifactTagViewModel> ArtifactTags { get; set; }
 
     }
 }

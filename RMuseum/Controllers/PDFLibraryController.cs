@@ -1421,6 +1421,41 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// page of published book by page number
+        /// </summary>
+        /// <param name="pdfBookId"></param>
+        /// <param name="pageNumber"></param>
+        /// <returns></returns>
+        [HttpGet("{pdfBookId}/page/{pageNumber}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PDFPage))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetPDFPageAsync(int pdfBookId, int pageNumber)
+        {
+            var bookRes = await _pdfService.GetPDFPageAsync(pdfBookId, pageNumber);
+
+            if (!string.IsNullOrEmpty(bookRes.ExceptionString))
+            {
+                return BadRequest(bookRes.ExceptionString);
+            }
+            if (bookRes.Result == null)
+                return NotFound();
+
+            Response.GetTypedHeaders().LastModified = bookRes.Result.LastModified;
+
+            var requestHeaders = Request.GetTypedHeaders();
+            if (requestHeaders.IfModifiedSince.HasValue &&
+                requestHeaders.IfModifiedSince.Value >= bookRes.Result.LastModified)
+            {
+                return StatusCode(StatusCodes.Status304NotModified);
+            }
+
+
+            return Ok(bookRes.Result);
+        }
+
 
         /// <summary>
         /// PDF Service
