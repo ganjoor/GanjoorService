@@ -412,7 +412,7 @@ namespace RMuseum.Services
         /// <param name="paging"></param>
         /// <param name="term"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>> SearchPDFBookForPDFPagesTextAsync(PagingParameterModel paging, string term);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> SearchPDFBookForPDFPagesTextAsync(PagingParameterModel paging, string term);
 
         /// <summary>
         /// search pdf pages

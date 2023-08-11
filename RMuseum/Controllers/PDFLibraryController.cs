@@ -1245,7 +1245,7 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// search pages text
+        /// search book text
         /// </summary>
         /// <param name="paging"></param>
         /// <param name="term"></param>
@@ -1265,7 +1265,7 @@ namespace RMuseum.Controllers
             // Paging Header
             HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
 
-            return Ok(pagedResult.Result.Items);
+            return Ok(pagedResult.Result.Books);
         }
 
         /// <summary>

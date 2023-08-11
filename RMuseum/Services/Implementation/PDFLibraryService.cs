@@ -1782,7 +1782,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="paging"></param>
         /// <param name="term"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>> SearchPDFBookForPDFPagesTextAsync(PagingParameterModel paging, string term)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>> SearchPDFBookForPDFPagesTextAsync(PagingParameterModel paging, string term)
         {
             try
             {
@@ -1815,28 +1815,28 @@ namespace RMuseum.Services.Implementation
                 //full text catalogue should be created manually
 
                 var source =
-                    _context.PDFBooks.AsNoTracking().Include(a => a.Pages)
+                    _context.PDFBooks.AsNoTracking()
                     .Where(p =>
                            p.Status == PublishStatus.Published
                            &&
-                           p.Pages.Where(t => EF.Functions.Contains(t.PageText, searchConditions)).Any()
+                           EF.Functions.Contains(p.BookText, searchConditions)
                            ).OrderBy(i => i.Title);
 
 
-                (PaginationMetadata PagingMeta, PDFBook[] Items) paginatedResult =
+                (PaginationMetadata PagingMeta, PDFBook[] Books) paginatedResult =
                    await QueryablePaginator<PDFBook>.Paginate(source, paging);
 
-                foreach (var book in paginatedResult.Items)
+                foreach (var book in paginatedResult.Books)
                 {
                     book.BookText = "";
                 }
 
 
-                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>(paginatedResult);
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>(paginatedResult);
             }
             catch (Exception exp)
             {
-                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Items)>((null, null), exp.ToString());
+                return new RServiceResult<(PaginationMetadata PagingMeta, PDFBook[] Books)>((null, null), exp.ToString());
             }
         }
 

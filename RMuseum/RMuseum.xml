@@ -2734,7 +2734,7 @@
         </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.SearchPDFBookForPDFPagesTextAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
             <summary>
-            search pages text
+            search book text
             </summary>
             <param name="paging"></param>
             <param name="term"></param>
