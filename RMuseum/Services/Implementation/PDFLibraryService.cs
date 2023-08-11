@@ -1749,18 +1749,29 @@ namespace RMuseum.Services.Implementation
                     pdfBook.OCRed = true;
                     pdfBook.OCRTime = DateTime.Now;
 
-                    string bookText = "";
-                    foreach (var page in pdfBook.Pages.OrderBy(p => p.PageNumber))
+                    try
                     {
-                        if (!string.IsNullOrEmpty(page.PageText))
+                        string bookText = "";
+                        foreach (var page in pdfBook.Pages.OrderBy(p => p.PageNumber))
                         {
-                            bookText += page.PageText;
-                            bookText += Environment.NewLine;
+                            if (!string.IsNullOrEmpty(page.PageText))
+                            {
+                                bookText += page.PageText;
+                                bookText += Environment.NewLine;
+                            }
                         }
+                        pdfBook.BookText = bookText;
+                        _context.Update(pdfBook);
+                        await _context.SaveChangesAsync();
                     }
-                    pdfBook.BookText = bookText;
-                    _context.Update(pdfBook);
-                    await _context.SaveChangesAsync();
+                    catch //if book text exceeds field max length, is it possible?
+                    {
+                        pdfBook.BookText = "";
+                        _context.Update(pdfBook);
+                        await _context.SaveChangesAsync();
+                    }
+
+                   
                 }
                 else if (pdfBook.OCRed)
                 {
