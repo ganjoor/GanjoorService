@@ -49,14 +49,17 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <param name="statusArray"></param>
-        /// <param name="omitBookText"></param>
-        /// <param name="omitPageText"></param>
+        /// <param name="includePages"></param>
+        /// <param name="includeBookText"></param>
+        /// <param name="includePageText"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PDFBook>> GetPDFBookByIdAsync(int id, PublishStatus[] statusArray, bool omitBookText, bool omitPageText)
+        public async Task<RServiceResult<PDFBook>> GetPDFBookByIdAsync(int id, PublishStatus[] statusArray, bool includePages, bool includeBookText, bool includePageText)
         {
             try
             {
-                var pdfBook = await _context.PDFBooks.AsNoTracking()
+                var pdfBook =
+                    includePages ?
+                    await _context.PDFBooks.AsNoTracking()
                             .Include(b => b.Book)
                             .Include(b => b.PDFFile)
                             .Include(b => b.MultiVolumePDFCollection)
@@ -65,14 +68,24 @@ namespace RMuseum.Services.Implementation
                             .Include(b => b.Tags).ThenInclude(t => t.RTag)
                             .Include(b => b.Pages)
                             .Where(b => statusArray.Contains(b.Status) && b.Id == id)
+                            .SingleOrDefaultAsync()
+                    :
+                    await _context.PDFBooks.AsNoTracking()
+                            .Include(b => b.Book)
+                            .Include(b => b.PDFFile)
+                            .Include(b => b.MultiVolumePDFCollection)
+                            .Include(b => b.PDFSource)
+                            .Include(b => b.Contributers).ThenInclude(c => c.Author)
+                            .Include(b => b.Tags).ThenInclude(t => t.RTag)
+                            .Where(b => statusArray.Contains(b.Status) && b.Id == id)
                             .SingleOrDefaultAsync();
                 if (pdfBook != null)
                 {
-                    if (omitBookText)
+                    if (!includeBookText)
                     {
                         pdfBook.BookText = "";
                     }
-                    if (omitPageText)
+                    if (!includePageText && pdfBook.Pages != null)
                     {
                         foreach (var page in pdfBook.Pages)
                         {
