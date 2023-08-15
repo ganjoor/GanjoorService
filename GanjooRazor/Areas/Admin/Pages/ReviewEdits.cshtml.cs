@@ -220,24 +220,33 @@ namespace GanjooRazor.Areas.Admin.Pages
             return Page();
         }
 
+        public class PoemMoerationStructure
+        {
+            public int correctionId{ get; set; }
+            public string titleReviewResult { get; set; }
+            public string summaryReviewResult { get; set; }
+            public string rhythmReviewResult { get; set; }
+            public string rhythm2ReviewResult { get; set; }
+            public string rhymeReviewResult { get; set; }
+            public string titleReviewNote { get; set; }
+            public string[] verseReviewResult { get; set; }
+            public string[] versePosReviewResult { get; set; }
+            public string[] verseSummaryResults { get; set; }
+            public string[] verseLanguageReviewResult { get; set; }
+            public string[] verseReviewNotes { get; set; }
+            public string poemformatReviewResult { get; set; }
+            public string poemformatReviewNote { get; set; }
+        }
+
         
 
-        public async Task<IActionResult> OnPostSendCorrectionsModerationAsync(int correctionId, 
-            string titleReviewResult, string summaryReviewResult, string rhythmReviewResult, string rhythm2ReviewResult, string rhymeReviewResult,
-            string titleReviewNote, string[] verseReviewResult,
-            string[] versePosReviewResult,
-            string[] verseSummaryResults,
-            string[] verseLanguageReviewResult,
-            string[] verseReviewNotes,
-            string poemformatReviewResult,
-            string poemformatReviewNote
-            )
+        public async Task<IActionResult> OnPostSendCorrectionsModerationAsync([FromBody] PoemMoerationStructure pms)
         {
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var correctionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/correction/{correctionId}");
+                    var correctionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/correction/{pms.correctionId}");
                     if (!correctionResponse.IsSuccessStatusCode)
                     {
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await correctionResponse.Content.ReadAsStringAsync()));
@@ -247,83 +256,83 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                     if (Correction.Title != null)
                     {
-                        if(titleReviewResult == null)
+                        if(pms.titleReviewResult == null)
                         {
                             return new BadRequestObjectResult("لطفاً تغییر عنوان را بازبینی کنید.");
                         }
                         else
                         {
-                            Correction.Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), titleReviewResult);
-                            Correction.ReviewNote = titleReviewNote;
+                            Correction.Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.titleReviewResult);
+                            Correction.ReviewNote = pms.titleReviewNote;
                         }
                     }
 
                     if (Correction.PoemSummary != null)
                     {
-                        if (summaryReviewResult == null)
+                        if (pms.summaryReviewResult == null)
                         {
                             return new BadRequestObjectResult("لطفاً تغییر خلاصه را بازبینی کنید.");
                         }
                         else
                         {
-                            Correction.SummaryReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), summaryReviewResult);
-                            Correction.ReviewNote = titleReviewNote;
+                            Correction.SummaryReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.summaryReviewResult);
+                            Correction.ReviewNote = pms.titleReviewNote;
                         }
                     }
 
                     if (Correction.Rhythm != null)
                     {
-                        if(rhythmReviewResult == null)
+                        if(pms.rhythmReviewResult == null)
                         {
                             return new BadRequestObjectResult("لطفاً تغییر وزن را بازبینی کنید.");
                         }
                         else
                         {
-                            Correction.RhythmResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), rhythmReviewResult);
-                            Correction.ReviewNote = titleReviewNote;
+                            Correction.RhythmResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.rhythmReviewResult);
+                            Correction.ReviewNote = pms.titleReviewNote;
                         }
                     }
 
                     if (Correction.Rhythm2 != null)
                     {
-                        if (rhythm2ReviewResult == null)
+                        if (pms.rhythm2ReviewResult == null)
                         {
                             return new BadRequestObjectResult("لطفاً تغییر وزن دوم را بازبینی کنید.");
                         }
                         else
                         {
-                            Correction.Rhythm2Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), rhythm2ReviewResult);
-                            Correction.ReviewNote = titleReviewNote;
+                            Correction.Rhythm2Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.rhythm2ReviewResult);
+                            Correction.ReviewNote = pms.titleReviewNote;
                         }
                     }
 
                     if (Correction.RhymeLetters != null)
                     {
-                        if (rhymeReviewResult == null)
+                        if (pms.rhymeReviewResult == null)
                         {
                             return new BadRequestObjectResult("لطفا تغییر قافیه را بازبینی کنید.");
                         }
                         else
                         {
-                            Correction.RhymeLettersReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), rhymeReviewResult);
-                            Correction.ReviewNote = titleReviewNote;
+                            Correction.RhymeLettersReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.rhymeReviewResult);
+                            Correction.ReviewNote = pms.titleReviewNote;
                         }
                     }
 
                     if (Correction.PoemFormat != null)
                     {
-                        if (poemformatReviewResult == null)
+                        if (pms.poemformatReviewResult == null)
                         {
                             return new BadRequestObjectResult("لطفاً تغییر قالب شعری را بازبینی کنید.");
                         }
                         else
                         {
-                            Correction.PoemFormatReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), poemformatReviewResult);
-                            Correction.ReviewNote = poemformatReviewNote;
+                            Correction.PoemFormatReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.poemformatReviewResult);
+                            Correction.ReviewNote = pms.poemformatReviewNote;
                         }
                     }
 
-                    if (verseReviewResult.Length != Correction.VerseOrderText.Length)
+                    if (pms.verseReviewResult.Length != Correction.VerseOrderText.Length)
                     {
                         return new BadRequestObjectResult("لطفاً تکلیف بررسی تمام مصرعهای پیشنهادی را مشخص کنید.");
                     }
@@ -333,19 +342,19 @@ namespace GanjooRazor.Areas.Admin.Pages
                         {
                             if (Correction.VerseOrderText[i].MarkForDelete)
                             {
-                                Correction.VerseOrderText[i].MarkForDeleteResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseReviewResult[i]);
+                                Correction.VerseOrderText[i].MarkForDeleteResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.verseReviewResult[i]);
                             }
                             else
                             if (Correction.VerseOrderText[i].NewVerse)
                             {
-                                Correction.VerseOrderText[i].NewVerseResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseReviewResult[i]);
+                                Correction.VerseOrderText[i].NewVerseResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.verseReviewResult[i]);
                             }
                             else
                             {
-                                Correction.VerseOrderText[i].Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseReviewResult[i]);
+                                Correction.VerseOrderText[i].Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.verseReviewResult[i]);
                                 if (Correction.VerseOrderText[i].VersePosition != null)
                                 {
-                                    if( i >= versePosReviewResult.Length)
+                                    if( i >= pms.versePosReviewResult.Length)
                                     {
                                         if (Correction.VerseOrderText[i].Result != CorrectionReviewResult.Approved)
                                         {
@@ -357,20 +366,20 @@ namespace GanjooRazor.Areas.Admin.Pages
                                         }
                                     }
                                     else
-                                    if (versePosReviewResult[i] == null)
+                                    if (pms.versePosReviewResult[i] == null)
                                     {
                                         return new BadRequestObjectResult("لطفاً تکلیف بررسی تمام مصرعهای پیشنهادی را مشخص کنید.");
                                     }
                                     else
                                     {
-                                        Correction.VerseOrderText[i].VersePositionResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), versePosReviewResult[i]);
+                                        Correction.VerseOrderText[i].VersePositionResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.versePosReviewResult[i]);
                                     }
                                     
                                 }
 
                                 if (Correction.VerseOrderText[i].LanguageId != null)
                                 {
-                                    if (i >= verseLanguageReviewResult.Length)
+                                    if (i >= pms.verseLanguageReviewResult.Length)
                                     {
                                         if (Correction.VerseOrderText[i].Result != CorrectionReviewResult.Approved)
                                         {
@@ -382,31 +391,31 @@ namespace GanjooRazor.Areas.Admin.Pages
                                         }
                                     }
                                     else
-                                    if (verseLanguageReviewResult[i] == null)
+                                    if (pms.verseLanguageReviewResult[i] == null)
                                     {
                                         return new BadRequestObjectResult("لطفاً تکلیف بررسی تمام مصرعهای پیشنهادی را مشخص کنید.");
                                     }
                                     else
                                     {
-                                        Correction.VerseOrderText[i].LanguageReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseLanguageReviewResult[i]);
+                                        Correction.VerseOrderText[i].LanguageReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.verseLanguageReviewResult[i]);
                                     }
 
                                 }
 
                                 if (Correction.VerseOrderText[i].CoupletSummary != null)
                                 {
-                                    if (verseSummaryResults[i] == null)
+                                    if (pms.verseSummaryResults[i] == null)
                                     {
                                         return new BadRequestObjectResult("لطفاً تکلیف بررسی تمام مصرعهای پیشنهادی را مشخص کنید.");
                                     }
                                     else
                                     {
-                                        Correction.VerseOrderText[i].SummaryReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), verseSummaryResults[i]);
+                                        Correction.VerseOrderText[i].SummaryReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.verseSummaryResults[i]);
                                     }
 
                                 }
                             }
-                            Correction.VerseOrderText[i].ReviewNote = verseReviewNotes[i];
+                            Correction.VerseOrderText[i].ReviewNote = pms.verseReviewNotes[i];
                         }
                     }
 

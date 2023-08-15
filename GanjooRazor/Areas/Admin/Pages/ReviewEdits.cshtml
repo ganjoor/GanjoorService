@@ -130,25 +130,29 @@
 
         var url = '?handler=SendCorrectionsModeration';
 
+        var pms = {};
+
+        pms.correctionId= correctionId;
+        pms.titleReviewResult= titleReviewResult;
+        pms.summaryReviewResult= summaryReviewResult;
+        pms.rhythmReviewResult= rhythmReviewResult;
+        pms.rhythm2ReviewResult= rhythm2ReviewResult;
+        pms.rhymeReviewResult= rhymeReviewResult;
+        pms.titleReviewNote= $('#title_review_note') == null ? null : $('#title_review_note').val();
+        pms.verseReviewResult= verseReviewResult;
+        pms.versePosReviewResult= versePosReviewResult;
+        pms.verseSummaryResults= verseSummaryResults;
+        pms.verseLanguageReviewResult= verseLanguageReviewResult;
+        pms.verseReviewNotes= verseReviewNotes;
+        pms.poemformatReviewResult= poemformatReviewResult;
+        pms.poemformatReviewNote= $('#poemformat_review_note') == null ? null : $('#poemformat_review_note').val();
+
         $.ajax({
             type: "POST",
             url: url,
-            data: {
-                correctionId: correctionId,
-                titleReviewResult: titleReviewResult,
-                summaryReviewResult: summaryReviewResult,
-                rhythmReviewResult: rhythmReviewResult,
-                rhythm2ReviewResult: rhythm2ReviewResult,
-                rhymeReviewResult: rhymeReviewResult,
-                titleReviewNote: $('#title_review_note') == null ? null : $('#title_review_note').val(),
-                verseReviewResult: verseReviewResult,
-                versePosReviewResult: versePosReviewResult,
-                verseSummaryResults: verseSummaryResults,
-                verseLanguageReviewResult: verseLanguageReviewResult,
-                verseReviewNotes: verseReviewNotes,
-                poemformatReviewResult: poemformatReviewResult,
-                poemformatReviewNote: $('#poemformat_review_note') == null ? null : $('#poemformat_review_note').val(),
-            },
+            data: JSON.stringify(pms),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
             success: function() {
                 location.reload(true);
             },
