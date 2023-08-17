@@ -1424,6 +1424,22 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// reset ocr queue
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("ocr/queue")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> ResetOCRQueueAsync()
+        {
+            var res = await _pdfService.ResetOCRQueueAsync();
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         /// fill book text
         /// </summary>
         /// <returns></returns>

@@ -2792,6 +2792,12 @@
             <param name="pdf"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.ResetOCRQueueAsync">
+            <summary>
+            reset ocr queue
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.StartFillingMissingBookTextsAsync">
             <summary>
             fill book text
@@ -18811,6 +18817,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.ResetOCRQueueAsync">
+            <summary>
+            reset OCR Queue (remove queued items)
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.SetPDFPageOCRInfoAsync(RMuseum.Models.PDFLibrary.ViewModels.PDFPageOCRDataViewModel)">
             <summary>
             set pdf page ocr info (and if a book whole pages are ocred the book ocred flag is set to true)
@@ -20088,6 +20100,12 @@
         <member name="M:RMuseum.Services.IPDFLibraryService.GetNextUnOCRedPDFBookAsync">
             <summary>
             get next un-ocred PDF Book
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.ResetOCRQueueAsync">
+            <summary>
+            reset OCR Queue (remove queued items)
             </summary>
             <returns></returns>
         </member>

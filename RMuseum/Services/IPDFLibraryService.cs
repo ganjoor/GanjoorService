@@ -401,6 +401,12 @@ namespace RMuseum.Services
         Task<RServiceResult<PDFBook>> GetNextUnOCRedPDFBookAsync();
 
         /// <summary>
+        /// reset OCR Queue (remove queued items)
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> ResetOCRQueueAsync();
+
+        /// <summary>
         /// set pdf page ocr info (and if a book whole pages are ocred the book ocred flag is set to true)
         /// </summary>
         /// <param name="model"></param>

@@ -1732,6 +1732,29 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// reset OCR Queue (remove queued items)
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> ResetOCRQueueAsync()
+        {
+            try
+            {
+                var ocrQueuedItems = await _context.OCRQueuedItems.ToListAsync();
+                if(ocrQueuedItems.Count > 0)
+                {
+                    _context.RemoveRange(ocrQueuedItems);
+                    await _context.SaveChangesAsync();
+                }
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+                throw;
+            }
+        }
+
+        /// <summary>
         /// set pdf page ocr info (and if a book whole pages are ocred the book ocred flag is set to true)
         /// </summary>
         /// <param name="model"></param>
