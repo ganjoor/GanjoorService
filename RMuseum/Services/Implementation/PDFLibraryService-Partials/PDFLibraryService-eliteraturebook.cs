@@ -638,7 +638,7 @@ namespace RMuseum.Services.Implementation
                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                {
                                    string ajaxPageUrl = "https://eliteraturebook.com/index";
-                                   for (int nAjaxPageIndex = ajaxPageIndexStart; nAjaxPageIndex <= ajaxPageIndexEnd; nAjaxPageIndex++)
+                                   for (int nAjaxPageIndex = ajaxPageIndexEnd; nAjaxPageIndex >= ajaxPageIndexStart; nAjaxPageIndex--)
                                    {
                                        try
                                        {
