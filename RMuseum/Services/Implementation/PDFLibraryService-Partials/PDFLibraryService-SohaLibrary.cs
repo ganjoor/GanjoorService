@@ -162,17 +162,6 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                if(firstHandSource != "کتابخانه تخصصی ادبیات")
-                {
-                    job.EndTime = DateTime.Now;
-                    job.Status = ImportJobStatus.Failed;
-                    job.Exception = $"کتابخانه تخصصی ادبیات not found.";
-                    context.Update(job);
-                    await context.SaveChangesAsync();
-                    return;
-                }
-
-
 
                 idx = html.IndexOf("title-normal-for-book-name");
                 if (idx == -1)
