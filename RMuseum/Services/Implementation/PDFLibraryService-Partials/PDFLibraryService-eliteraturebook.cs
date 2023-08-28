@@ -63,10 +63,11 @@ namespace RMuseum.Services.Implementation
         }
         private async Task ImportELiteratureBookLibraryUrlAsync(string srcUrl, RMuseumDbContext context)
         {
-
+            /*
             var oldJobs = await context.ImportJobs.ToArrayAsync();
             context.RemoveRange(oldJobs);
             await context.SaveChangesAsync();
+            */
 
             ImportJob job = new ImportJob()
             {
