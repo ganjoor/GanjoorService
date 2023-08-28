@@ -552,7 +552,7 @@ namespace RMuseum.Services.Implementation
                     {
                         if (result.IsSuccessStatusCode)
                         {
-                            string fileName = (1 + await context.PDFBooks.MaxAsync(p => p.Id)).ToString().PadLeft(8, '0') + "-eliteraturebook..pdf";
+                            string fileName = (1 + await context.PDFBooks.MaxAsync(p => p.Id)).ToString().PadLeft(8, '0') + "-eliteraturebook.pdf";
                             
 
                             model.LocalImportingPDFFilePath = Path.Combine(_imageFileService.ImageStoragePath, fileName);
