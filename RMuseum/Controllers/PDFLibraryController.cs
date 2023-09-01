@@ -283,14 +283,15 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="start"></param>
         /// <param name="end"></param>
+        /// <param name="finalizeDownload"></param>
         /// <returns></returns>
         [HttpPost("soha/{start}/{end}")]
         [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult BatchImportSohaLibraryAsync(int start, int end)
+        public IActionResult BatchImportSohaLibraryAsync(int start, int end, bool finalizeDownload)
         {
-            _pdfService.BatchImportSohaLibraryAsync(start, end);
+            _pdfService.BatchImportSohaLibraryAsync(start, end, finalizeDownload);
             return Ok();
         }
 

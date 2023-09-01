@@ -334,7 +334,8 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        void BatchImportSohaLibraryAsync(int start, int end);
+        /// <param name="finalizeDownload"></param>
+        void BatchImportSohaLibraryAsync(int start, int end, bool finalizeDownload);
 
         /// <summary>
         /// batch import eliteraturebook.com library

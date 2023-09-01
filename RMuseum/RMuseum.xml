@@ -2428,12 +2428,13 @@
             <param name="srcUrl"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.BatchImportSohaLibraryAsync(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.BatchImportSohaLibraryAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
             batch import soha library
             </summary>
             <param name="start"></param>
             <param name="end"></param>
+            <param name="finalizeDownload"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.BatchImportELiteratureBookLibraryAsync(System.Int32,System.Int32)">
@@ -18504,12 +18505,13 @@
             طول تصویر بندانگشتی
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.BatchImportSohaLibraryAsync(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.BatchImportSohaLibraryAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
             batch import soha library
             </summary>
             <param name="start"></param>
             <param name="end"></param>
+            <param name="finalizeDownload"></param>
         </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartImportingKnownSourceAsync(System.String)">
             <summary>
@@ -20097,12 +20099,13 @@
             <param name="sourceId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IPDFLibraryService.BatchImportSohaLibraryAsync(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.IPDFLibraryService.BatchImportSohaLibraryAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
             batch import soha library
             </summary>
             <param name="start"></param>
             <param name="end"></param>
+            <param name="finalizeDownload"></param>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.BatchImportELiteratureBookLibraryAsync(System.Int32,System.Int32)">
             <summary>
