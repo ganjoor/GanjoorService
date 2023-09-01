@@ -66,6 +66,12 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                var processed = await _context.QueuedPDFBooks.Where(t => t.Processed).ToListAsync();
+                if(processed.Count > 0)
+                {
+                    _context.RemoveRange(processed);
+                    await _context.SaveChangesAsync();
+                }
                 var qSoha = await _context.QueuedPDFBooks.Where(t => t.OriginalSourceUrl.Contains("https://sohalibrary.com")).OrderBy(t => t.DownloadOrder).ToListAsync();
                 var qElit = await _context.QueuedPDFBooks.Where(t => !t.OriginalSourceUrl.Contains("https://sohalibrary.com")).OrderBy(t => t.DownloadOrder).ToListAsync();
 
@@ -114,10 +120,13 @@ namespace RMuseum.Services.Implementation
                           {
                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                               {
-                                  var q = await context.QueuedPDFBooks.AsNoTracking().OrderBy(i => i.DownloadOrder).ToListAsync();
+                                  var q = await context.QueuedPDFBooks.Where(i => i.Processed == false).OrderBy(i => i.DownloadOrder).ToListAsync();
                                   foreach (var item in q)
                                   {
                                       await StartImportingKnownSourceAsync(item.OriginalSourceUrl);
+                                      item.Processed = true;
+                                      context.Update(item);
+                                      await context.SaveChangesAsync();
                                   }
                               }
                           }

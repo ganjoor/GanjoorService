@@ -562,6 +562,7 @@ namespace RMuseum.Services.Implementation
                             OriginalSourceName = model.OriginalSourceName,
                             OriginalSourceUrl = model.OriginalSourceUrl,
                             OriginalFileUrl = model.OriginalFileUrl,
+                            Processed = false,
                         }
                         );
                     await context.SaveChangesAsync();

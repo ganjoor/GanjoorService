@@ -61,5 +61,10 @@ namespace RMuseum.Models.PDFLibrary
         /// original file url
         /// </summary>
         public string OriginalFileUrl { get; set; }
+
+        /// <summary>
+        /// processed
+        /// </summary>
+        public bool Processed { get; set; }
     }
 }
