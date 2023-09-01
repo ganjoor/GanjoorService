@@ -553,5 +553,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<OCRQueue> OCRQueuedItems { get; set; }
 
+        /// <summary>
+        /// PDF Download Queue
+        /// </summary>
+        public DbSet<QueuedPDFBook> QueuedPDFBooks { get; set; }
+
     }
 }

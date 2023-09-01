@@ -3742,6 +3742,11 @@
             OCR Queue Items
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.QueuedPDFBooks">
+            <summary>
+            PDF Download Queue
+            </summary>
+        </member>
         <member name="T:RMuseum.Migrations.PictureFileExtUrl">
             <inheritdoc />
         </member>
