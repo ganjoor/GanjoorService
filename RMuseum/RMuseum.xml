@@ -2814,6 +2814,13 @@
             <param name="pageNumber"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.GetQueuedPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            queued downloding pdf books
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.StartProcessingQueuedPDFBooks">
             <summary>
             start processing queue pdf books

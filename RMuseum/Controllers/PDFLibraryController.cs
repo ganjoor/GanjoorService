@@ -15,7 +15,6 @@ using RSecurityBackend.Services;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using RMuseum.Models.Artifact;
-using RMuseum.Services.Implementation;
 using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RMuseum.Models.GanjoorIntegration;
 
@@ -1491,6 +1490,31 @@ namespace RMuseum.Controllers
 
 
             return Ok(bookRes.Result);
+        }
+
+        /// <summary>
+        /// queued downloding pdf books
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        [HttpGet("q")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<QueuedPDFBook>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetQueuedPDFBooksAsync([FromQuery] PagingParameterModel paging)
+        {
+            var pdfBooksInfo = await _pdfService.GetQueuedPDFBooksAsync(paging);
+            if (!string.IsNullOrEmpty(pdfBooksInfo.ExceptionString))
+            {
+                return BadRequest(pdfBooksInfo.ExceptionString);
+            }
+
+
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pdfBooksInfo.Result.PagingMeta));
+
+            return Ok(pdfBooksInfo.Result.Books);
         }
 
         /// <summary>
