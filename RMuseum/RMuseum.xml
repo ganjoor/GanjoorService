@@ -2814,6 +2814,12 @@
             <param name="pageNumber"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.StartProcessingQueuedPDFBooks">
+            <summary>
+            start processing queue pdf books
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.PDFLibraryController._pdfService">
             <summary>
             PDF Service
@@ -18528,6 +18534,11 @@
             <param name="step"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartProcessingQueuedPDFBooks">
+            <summary>
+            start processing queue pdf books
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.BatchImportSohaLibraryAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
             batch import soha library
@@ -20258,6 +20269,11 @@
             </summary>
             <param name="step"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.StartProcessingQueuedPDFBooks">
+            <summary>
+            start processing queue pdf books
+            </summary>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">
             <summary>
