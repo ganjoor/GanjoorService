@@ -12932,6 +12932,66 @@
             Description
             </summary>
         </member>
+        <member name="T:RMuseum.Models.PDFLibrary.QueuedPDFBook">
+            <summary>
+            a fake PDFBook for scheduling downloads
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.QueuedPDFBook.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.QueuedPDFBook.DownloadOrder">
+            <summary>
+            Download Order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.QueuedPDFBook.Title">
+            <summary>
+            Title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.QueuedPDFBook.AuthorsLine">
+            <summary>
+            authors (descriptive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.QueuedPDFBook.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.QueuedPDFBook.Language">
+            <summary>
+            language
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.QueuedPDFBook.IsTranslation">
+            <summary>
+            is translation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.QueuedPDFBook.TranslatorsLine">
+            <summary>
+            translators (descriptive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.QueuedPDFBook.OriginalSourceName">
+            <summary>
+            original source name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.QueuedPDFBook.OriginalSourceUrl">
+            <summary>
+            original source url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.QueuedPDFBook.OriginalFileUrl">
+            <summary>
+            original file url
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.PDFLibrary.ViewModels.AuthorRoleCount">
             <summary>
             Author Role Count
