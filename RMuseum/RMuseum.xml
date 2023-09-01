@@ -2828,7 +2828,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.MixuQueuedPDFBooksAsync(System.Int32)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.MixQueuedPDFBooksAsync(System.Int32)">
             <summary>
             mix queued pdf books 
             </summary>
@@ -18548,7 +18548,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.MixuQueuedPDFBooksAsync(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.MixQueuedPDFBooksAsync(System.Int32)">
             <summary>
             mix queued pdf books 
             </summary>
@@ -20284,7 +20284,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IPDFLibraryService.MixuQueuedPDFBooksAsync(System.Int32)">
+        <member name="M:RMuseum.Services.IPDFLibraryService.MixQueuedPDFBooksAsync(System.Int32)">
             <summary>
             mix queued pdf books 
             </summary>

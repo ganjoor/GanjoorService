@@ -464,7 +464,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="step"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> MixuQueuedPDFBooksAsync(int step);
+        Task<RServiceResult<bool>> MixQueuedPDFBooksAsync(int step);
 
         /// <summary>
         /// start processing queue pdf books

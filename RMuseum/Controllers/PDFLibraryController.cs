@@ -1549,10 +1549,10 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> MixuQueuedPDFBooksAsync(int step = 10)
+        public async Task<IActionResult> MixQueuedPDFBooksAsync(int step = 10)
         {
 
-            var res = await _pdfService.MixuQueuedPDFBooksAsync(step);
+            var res = await _pdfService.MixQueuedPDFBooksAsync(step);
             if (!string.IsNullOrEmpty(res.ExceptionString))
             {
                 return BadRequest(res.ExceptionString);
