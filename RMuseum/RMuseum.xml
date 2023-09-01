@@ -18514,6 +18514,20 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.DeleteQueuedPDFBookAsync(System.Guid)">
+            <summary>
+            delete queued books
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.MixuQueuedPDFBooksAsync(System.Int32)">
+            <summary>
+            mix queued pdf books 
+            </summary>
+            <param name="step"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.BatchImportSohaLibraryAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
             batch import soha library
@@ -20229,6 +20243,20 @@
             queued downloding pdf books
             </summary>
             <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.DeleteQueuedPDFBookAsync(System.Guid)">
+            <summary>
+            delete queued books
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.MixuQueuedPDFBooksAsync(System.Int32)">
+            <summary>
+            mix queued pdf books 
+            </summary>
+            <param name="step"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">

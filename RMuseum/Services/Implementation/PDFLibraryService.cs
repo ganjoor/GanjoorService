@@ -33,7 +33,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> StartImportingKnownSourceAsync(string srcUrl)
         {
-            if (srcUrl.Contains("https://sohalibrary.com/"))
+            if (srcUrl.Contains("https://sohalibrary.com"))
             {
                 return await StartImportingSohaLibraryUrlAsync(srcUrl);
             }

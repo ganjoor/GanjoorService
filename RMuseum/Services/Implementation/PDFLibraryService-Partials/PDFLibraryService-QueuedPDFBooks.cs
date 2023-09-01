@@ -56,5 +56,51 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }
+
+        /// <summary>
+        /// mix queued pdf books 
+        /// </summary>
+        /// <param name="step"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> MixuQueuedPDFBooksAsync(int step)
+        {
+            try
+            {
+                var qSoha = await _context.QueuedPDFBooks.Where(t => t.OriginalSourceUrl.Contains("https://sohalibrary.com")).OrderBy(t => t.DownloadOrder).ToListAsync();
+                var qElit = await _context.QueuedPDFBooks.Where(t => !t.OriginalSourceUrl.Contains("https://sohalibrary.com")).OrderBy(t => t.DownloadOrder).ToListAsync();
+
+                int downloadOrder = 0;
+                int e  = 0;
+                for (var i = 0; i < qSoha.Count; i++)
+                {
+                    qSoha[i].DownloadOrder = downloadOrder;
+                    downloadOrder++;
+                    if(i % step  == 0)
+                    {
+                        if(e < qElit.Count)
+                        {
+                            qElit[e].DownloadOrder = downloadOrder;
+                            downloadOrder++;
+                            e++;
+                        }
+                    }
+                }    
+
+                for (var i = e;e < qElit.Count;e++)
+                {
+                    qElit[e].DownloadOrder = downloadOrder;
+                    downloadOrder++;
+                }
+
+                _context.UpdateRange(qSoha);
+                _context.UpdateRange(qElit);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
     }
 }

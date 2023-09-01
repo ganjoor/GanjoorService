@@ -458,5 +458,12 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> DeleteQueuedPDFBookAsync(Guid id);
+
+        /// <summary>
+        /// mix queued pdf books 
+        /// </summary>
+        /// <param name="step"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> MixuQueuedPDFBooksAsync(int step);
     }
 }
