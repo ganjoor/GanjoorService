@@ -18507,6 +18507,13 @@
             طول تصویر بندانگشتی
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.GetQueuedPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            queued downloding pdf books
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.BatchImportSohaLibraryAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
             batch import soha library
@@ -20216,6 +20223,13 @@
             <summary>
             fill missing book texts
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.IPDFLibraryService.GetQueuedPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            queued downloding pdf books
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">
             <summary>

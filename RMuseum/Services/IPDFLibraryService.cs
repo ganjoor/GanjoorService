@@ -444,5 +444,12 @@ namespace RMuseum.Services
         /// fill missing book texts
         /// </summary>
         void StartFillingMissingBookTextsAsync();
+
+        /// <summary>
+        /// queued downloding pdf books
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, QueuedPDFBook[] Books)>> GetQueuedPDFBooksAsync(PagingParameterModel paging);
     }
 }
