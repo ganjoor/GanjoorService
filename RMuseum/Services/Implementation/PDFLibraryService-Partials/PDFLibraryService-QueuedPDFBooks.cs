@@ -28,7 +28,7 @@ namespace RMuseum.Services.Implementation
                .AsQueryable();
                 (PaginationMetadata PagingMeta, QueuedPDFBook[] Books) paginatedResult =
                     await QueryablePaginator<QueuedPDFBook>.Paginate(source, paging);
-               
+
                 return new RServiceResult<(PaginationMetadata PagingMeta, QueuedPDFBook[] Books)>(paginatedResult);
             }
             catch (Exception exp)
@@ -70,23 +70,23 @@ namespace RMuseum.Services.Implementation
                 var qElit = await _context.QueuedPDFBooks.Where(t => !t.OriginalSourceUrl.Contains("https://sohalibrary.com")).OrderBy(t => t.DownloadOrder).ToListAsync();
 
                 int downloadOrder = 0;
-                int e  = 0;
+                int e = 0;
                 for (var i = 0; i < qSoha.Count; i++)
                 {
                     qSoha[i].DownloadOrder = downloadOrder;
                     downloadOrder++;
-                    if(i % step  == 0)
+                    if (i % step == 0)
                     {
-                        if(e < qElit.Count)
+                        if (e < qElit.Count)
                         {
                             qElit[e].DownloadOrder = downloadOrder;
                             downloadOrder++;
                             e++;
                         }
                     }
-                }    
+                }
 
-                for (var i = e;e < qElit.Count;e++)
+                for (var i = e; e < qElit.Count; e++)
                 {
                     qElit[e].DownloadOrder = downloadOrder;
                     downloadOrder++;
@@ -101,6 +101,27 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
+        }
+
+        /// <summary>
+        /// start processing queue pdf books
+        /// </summary>
+        public void StartProcessingQueuedPDFBooks()
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                      (
+                          async token =>
+                          {
+                              using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
+                              {
+                                  var q = await context.QueuedPDFBooks.AsNoTracking().OrderBy(i => i.DownloadOrder).ToListAsync();
+                                  foreach (var item in q)
+                                  {
+                                      await StartImportingKnownSourceAsync(item.OriginalSourceUrl);
+                                  }
+                              }
+                          }
+                      );
         }
     }
 }
