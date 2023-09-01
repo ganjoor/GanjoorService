@@ -342,7 +342,8 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="ajaxPageIndexStart">from 0</param>
         /// <param name="ajaxPageIndexEnd"></param>
-        void BatchImportELiteratureBookLibraryAsync(int ajaxPageIndexStart, int ajaxPageIndexEnd);
+        /// <param name="finalizeDownload"></param>
+        void BatchImportELiteratureBookLibraryAsync(int ajaxPageIndexStart, int ajaxPageIndexEnd, bool finalizeDownload);
 
         /// <summary>
         /// search pdf books

@@ -301,14 +301,15 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="ajaxPageIndexStart">start from 0</param>
         /// <param name="ajaxPageIndexEnd"></param>
+        /// <param name="finalizeDownload"></param>
         /// <returns></returns>
         [HttpPost("elit/{ajaxPageIndexStart}/{ajaxPageIndexEnd}")]
         [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.AddOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult BatchImportELiteratureBookLibraryAsync(int ajaxPageIndexStart, int ajaxPageIndexEnd)
+        public IActionResult BatchImportELiteratureBookLibraryAsync(int ajaxPageIndexStart, int ajaxPageIndexEnd, bool finalizeDownload)
         {
-            _pdfService.BatchImportELiteratureBookLibraryAsync(ajaxPageIndexStart, ajaxPageIndexEnd);
+            _pdfService.BatchImportELiteratureBookLibraryAsync(ajaxPageIndexStart, ajaxPageIndexEnd, finalizeDownload);
             return Ok();
         }
 

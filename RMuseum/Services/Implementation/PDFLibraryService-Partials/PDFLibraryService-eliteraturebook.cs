@@ -49,7 +49,7 @@ namespace RMuseum.Services.Implementation
                            {
                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                                {
-                                   await ImportELiteratureBookLibraryUrlAsync(srcUrl, context);
+                                   await ImportELiteratureBookLibraryUrlAsync(srcUrl, context, true);
                                }
                            }
                        );
@@ -61,7 +61,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }
-        private async Task ImportELiteratureBookLibraryUrlAsync(string srcUrl, RMuseumDbContext context)
+        private async Task ImportELiteratureBookLibraryUrlAsync(string srcUrl, RMuseumDbContext context, bool finalizeDownload)
         {
             /*
             var oldJobs = await context.ImportJobs.ToArrayAsync();
@@ -546,6 +546,32 @@ namespace RMuseum.Services.Implementation
 
                 model.OriginalFileUrl = downloadUrl;
 
+                if (!finalizeDownload)
+                {
+                    context.QueuedPDFBooks.Add
+                        (
+                        new QueuedPDFBook()
+                        {
+                            Title = model.Title,
+                            DownloadOrder = await context.QueuedPDFBooks.CountAsync(),
+                            AuthorsLine = model.AuthorsLine,
+                            Description = model.Description,
+                            Language = model.Language,
+                            IsTranslation = model.IsTranslation,
+                            TranslatorsLine = model.TranslatorsLine,
+                            OriginalSourceName = model.OriginalSourceName,
+                            OriginalSourceUrl = model.OriginalSourceUrl,
+                            OriginalFileUrl = model.OriginalFileUrl,
+                        }
+                        );
+                    await context.SaveChangesAsync();
+                    job.EndTime = DateTime.Now;
+                    job.Status = ImportJobStatus.Succeeded;
+                    context.Update(job);
+                    await context.SaveChangesAsync();
+                    return;
+                }
+
                 using (var client = new HttpClient())
                 {
                     using (var result = await client.GetAsync(downloadUrl))
@@ -630,7 +656,8 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="ajaxPageIndexStart">from 0</param>
         /// <param name="ajaxPageIndexEnd"></param>
-        public void BatchImportELiteratureBookLibraryAsync(int ajaxPageIndexStart, int ajaxPageIndexEnd)
+        /// <param name="finalizeDownload"></param>
+        public void BatchImportELiteratureBookLibraryAsync(int ajaxPageIndexStart, int ajaxPageIndexEnd, bool finalizeDownload)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
                        (
@@ -700,7 +727,7 @@ namespace RMuseum.Services.Implementation
                                                     null
                                                     )
                                                    {
-                                                       await ImportELiteratureBookLibraryUrlAsync(srcUrl, context);
+                                                       await ImportELiteratureBookLibraryUrlAsync(srcUrl, context, finalizeDownload);
                                                    }
                                                    
                                                }

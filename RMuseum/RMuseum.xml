@@ -2437,12 +2437,13 @@
             <param name="finalizeDownload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.BatchImportELiteratureBookLibraryAsync(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.BatchImportELiteratureBookLibraryAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
             batch import eliteraturebook.com library
             </summary>
             <param name="ajaxPageIndexStart">start from 0</param>
             <param name="ajaxPageIndexEnd"></param>
+            <param name="finalizeDownload"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.PutPDFBookAsync(RMuseum.Models.PDFLibrary.PDFBook)">
@@ -18481,12 +18482,13 @@
             PDF Library Services
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.BatchImportELiteratureBookLibraryAsync(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.BatchImportELiteratureBookLibraryAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
             batch import eliteraturebook.com library
             </summary>
             <param name="ajaxPageIndexStart">from 0</param>
             <param name="ajaxPageIndexEnd"></param>
+            <param name="finalizeDownload"></param>
         </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartImportingLocalPDFAsync(RMuseum.Models.PDFLibrary.ViewModels.NewPDFBookViewModel)">
             <summary>
@@ -20107,12 +20109,13 @@
             <param name="end"></param>
             <param name="finalizeDownload"></param>
         </member>
-        <member name="M:RMuseum.Services.IPDFLibraryService.BatchImportELiteratureBookLibraryAsync(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.IPDFLibraryService.BatchImportELiteratureBookLibraryAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
             batch import eliteraturebook.com library
             </summary>
             <param name="ajaxPageIndexStart">from 0</param>
             <param name="ajaxPageIndexEnd"></param>
+            <param name="finalizeDownload"></param>
         </member>
         <member name="M:RMuseum.Services.IPDFLibraryService.SearchPDFBooksAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
             <summary>
