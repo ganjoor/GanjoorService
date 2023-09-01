@@ -2828,6 +2828,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.PDFLibraryController.MixuQueuedPDFBooksAsync(System.Int32)">
+            <summary>
+            mix queued pdf books 
+            </summary>
+            <param name="step"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.PDFLibraryController.StartProcessingQueuedPDFBooks">
             <summary>
             start processing queue pdf books
