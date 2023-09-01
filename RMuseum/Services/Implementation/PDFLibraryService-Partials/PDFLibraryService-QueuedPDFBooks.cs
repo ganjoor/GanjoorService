@@ -36,5 +36,25 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<(PaginationMetadata PagingMeta, QueuedPDFBook[] Books)>((null, null), exp.ToString());
             }
         }
+
+        /// <summary>
+        /// delete queued books
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteQueuedPDFBookAsync(Guid id)
+        {
+            try
+            {
+                var qb = await _context.QueuedPDFBooks.Where(t => t.Id == id).SingleAsync();
+                _context.Remove(qb);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
     }
 }

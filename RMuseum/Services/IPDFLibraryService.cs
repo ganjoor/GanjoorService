@@ -451,5 +451,12 @@ namespace RMuseum.Services
         /// <param name="paging"></param>
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, QueuedPDFBook[] Books)>> GetQueuedPDFBooksAsync(PagingParameterModel paging);
+
+        /// <summary>
+        /// delete queued books
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteQueuedPDFBookAsync(Guid id);
     }
 }
