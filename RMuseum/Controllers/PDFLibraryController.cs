@@ -1539,6 +1539,28 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// mix queued pdf books 
+        /// </summary>
+        /// <param name="step"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("q/mix/{step}")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> MixuQueuedPDFBooksAsync(int step = 10)
+        {
+
+            var res = await _pdfService.MixuQueuedPDFBooksAsync(step);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            return Ok();
+        }
+
+        /// <summary>
         /// start processing queue pdf books
         /// </summary>
         /// <returns></returns>
