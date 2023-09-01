@@ -1518,6 +1518,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// delete queued books
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+
+        [HttpDelete("q")]
+        [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.DeleteOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> DeleteQueuedPDFBookAsync(Guid id)
+        {
+            RServiceResult<bool> res = await _pdfService.DeleteQueuedPDFBookAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// start processing queue pdf books
         /// </summary>
         /// <returns></returns>
