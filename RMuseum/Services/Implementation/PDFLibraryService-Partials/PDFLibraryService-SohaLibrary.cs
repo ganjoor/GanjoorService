@@ -18,12 +18,12 @@ namespace RMuseum.Services.Implementation
 {
     public partial class PDFLibraryService
     {
-        private async Task<RServiceResult<bool>> StartImportingSohaLibraryUrlAsync(string srcUrl)
+        private async Task<RServiceResult<bool>> StartImportingSohaLibraryUrlAsync(RMuseumDbContext ctx, string srcUrl)
         {
             try
             {
                 if (
-                    (await _context.PDFBooks.Where(a => a.OriginalSourceUrl == srcUrl).SingleOrDefaultAsync())
+                    (await ctx.PDFBooks.Where(a => a.OriginalSourceUrl == srcUrl).SingleOrDefaultAsync())
                     !=
                     null
                     )
@@ -32,7 +32,7 @@ namespace RMuseum.Services.Implementation
                 }
                 if (
                     (
-                    await _context.ImportJobs
+                    await ctx.ImportJobs
                         .Where(j => j.JobType == JobType.Pdf && j.SrcContent == ("scrapping ..." + srcUrl) && !(j.Status == ImportJobStatus.Failed || j.Status == ImportJobStatus.Aborted))
                         .SingleOrDefaultAsync()
                     )

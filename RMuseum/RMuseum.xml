@@ -18587,8 +18587,16 @@
         </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartImportingKnownSourceAsync(System.String)">
             <summary>
+            import from uknown sources
+            </summary>
+            <param name="srcUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartImportingKnownSourceAsync(RMuseum.DbContext.RMuseumDbContext,System.String)">
+            <summary>
             import from known sources
             </summary>
+            <param name="context"></param>
             <param name="srcUrl"></param>
             <returns></returns>
         </member>

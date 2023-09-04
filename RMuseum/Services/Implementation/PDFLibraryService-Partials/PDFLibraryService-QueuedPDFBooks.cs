@@ -126,7 +126,7 @@ namespace RMuseum.Services.Implementation
                                   var q = await context.QueuedPDFBooks.Where(i => i.Processed == false).OrderBy(i => i.DownloadOrder).ToListAsync();
                                   foreach (var item in q)
                                   {
-                                      await StartImportingKnownSourceAsync(item.OriginalSourceUrl);
+                                      await StartImportingKnownSourceAsync(context, item.OriginalSourceUrl);
                                       item.Processed = true;
                                       context.Update(item);
                                       await context.SaveChangesAsync();
