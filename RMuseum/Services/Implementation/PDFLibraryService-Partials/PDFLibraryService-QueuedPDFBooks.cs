@@ -1,8 +1,5 @@
-﻿using ganjoor;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
-using RMuseum.Models.Artifact;
-using RMuseum.Models.ImportJob;
 using RMuseum.Models.PDFLibrary;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
