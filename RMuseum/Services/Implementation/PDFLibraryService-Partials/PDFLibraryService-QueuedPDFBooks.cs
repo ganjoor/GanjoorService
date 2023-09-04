@@ -112,7 +112,8 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// start processing queue pdf books
         /// </summary>
-        public void StartProcessingQueuedPDFBooks()
+        /// <param name="count"></param>
+        public void StartProcessingQueuedPDFBooks(int count)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
                       (
@@ -123,7 +124,7 @@ namespace RMuseum.Services.Implementation
                                   var jobs = await context.ImportJobs.ToListAsync();
                                   context.RemoveRange(jobs);
                                   await context.SaveChangesAsync();
-                                  var q = await context.QueuedPDFBooks.Where(i => i.Processed == false).OrderBy(i => i.DownloadOrder).ToListAsync();
+                                  var q = await context.QueuedPDFBooks.Where(i => i.Processed == false).OrderBy(i => i.DownloadOrder).Take(count).ToListAsync();
                                   foreach (var item in q)
                                   {
                                       await StartImportingKnownSourceAsync(context, item.OriginalSourceUrl);

@@ -1563,17 +1563,18 @@ namespace RMuseum.Controllers
         /// <summary>
         /// start processing queue pdf books
         /// </summary>
+        /// <param name="count"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route("q/process")]
+        [Route("q/process/{count}")]
         [Authorize(Policy = RMuseumSecurableItem.PDFLibraryEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public IActionResult StartProcessingQueuedPDFBooks()
+        public IActionResult StartProcessingQueuedPDFBooks(int count = 1000)
         {
 
-            _pdfService.StartProcessingQueuedPDFBooks();
+            _pdfService.StartProcessingQueuedPDFBooks(count);
             return Ok();
         }
 

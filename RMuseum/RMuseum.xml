@@ -2835,10 +2835,11 @@
             <param name="step"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.PDFLibraryController.StartProcessingQueuedPDFBooks">
+        <member name="M:RMuseum.Controllers.PDFLibraryController.StartProcessingQueuedPDFBooks(System.Int32)">
             <summary>
             start processing queue pdf books
             </summary>
+            <param name="count"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Controllers.PDFLibraryController._pdfService">
@@ -18572,10 +18573,11 @@
             <param name="step"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartProcessingQueuedPDFBooks">
+        <member name="M:RMuseum.Services.Implementation.PDFLibraryService.StartProcessingQueuedPDFBooks(System.Int32)">
             <summary>
             start processing queue pdf books
             </summary>
+            <param name="count"></param>
         </member>
         <member name="M:RMuseum.Services.Implementation.PDFLibraryService.BatchImportSohaLibraryAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
@@ -20316,10 +20318,11 @@
             <param name="step"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IPDFLibraryService.StartProcessingQueuedPDFBooks">
+        <member name="M:RMuseum.Services.IPDFLibraryService.StartProcessingQueuedPDFBooks(System.Int32)">
             <summary>
             start processing queue pdf books
             </summary>
+            <param name="count"></param>
         </member>
         <member name="T:RMuseum.Services.IPictureFileService">
             <summary>

@@ -469,6 +469,7 @@ namespace RMuseum.Services
         /// <summary>
         /// start processing queue pdf books
         /// </summary>
-        void StartProcessingQueuedPDFBooks();
+        /// <param name="count"></param>
+        void StartProcessingQueuedPDFBooks(int count);
     }
 }
