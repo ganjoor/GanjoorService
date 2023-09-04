@@ -120,6 +120,9 @@ namespace RMuseum.Services.Implementation
                           {
                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                               {
+                                  var jobs = await context.ImportJobs.ToListAsync();
+                                  context.RemoveRange(jobs);
+                                  await context.SaveChangesAsync();
                                   var q = await context.QueuedPDFBooks.Where(i => i.Processed == false).OrderBy(i => i.DownloadOrder).ToListAsync();
                                   foreach (var item in q)
                                   {
