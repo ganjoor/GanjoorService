@@ -21,7 +21,7 @@ namespace RMuseum.Services.Implementation
             {
                 var source =
                 _context.QueuedPDFBooks.AsNoTracking()
-               .OrderBy(t => t.Id)
+               .OrderBy(t => t.DownloadOrder)
                .AsQueryable();
                 (PaginationMetadata PagingMeta, QueuedPDFBook[] Books) paginatedResult =
                     await QueryablePaginator<QueuedPDFBook>.Paginate(source, paging);
