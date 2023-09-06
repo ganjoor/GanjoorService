@@ -19,7 +19,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="srcUrl"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartImportingKnownSourceAsync(string srcUrl);
+        void StartImportingKnownSourceAsync(string srcUrl);
         /// <summary>
         /// get pdf book by id
         /// </summary>

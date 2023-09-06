@@ -271,9 +271,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public IActionResult StartImportingKnownSourceAsync([FromBody]string srcUrl)
         {
-            var res = _pdfService.StartImportingKnownSourceAsync(srcUrl);
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
+            _pdfService.StartImportingKnownSourceAsync(srcUrl);
             return Ok();
         }
 

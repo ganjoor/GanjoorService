@@ -31,7 +31,7 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="srcUrl"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartImportingKnownSourceAsync(string srcUrl)
+        public void StartImportingKnownSourceAsync(string srcUrl)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
                       (
