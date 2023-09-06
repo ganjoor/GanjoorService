@@ -28,7 +28,7 @@ namespace RMuseum.Services.Implementation
                     null
                     )
                 {
-                    return new RServiceResult<int>(0, $"duplicated srcUrl '{srcUrl}'");
+                    return new RServiceResult<int>(-1, $"duplicated srcUrl '{srcUrl}'");
                 }
                 if (
                     (
