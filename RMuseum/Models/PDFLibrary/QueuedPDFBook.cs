@@ -71,5 +71,10 @@ namespace RMuseum.Models.PDFLibrary
         /// process result
         /// </summary>
         public string ProcessResult { get; set; }
+
+        /// <summary>
+        /// result id
+        /// </summary>
+        public int ResultId { get; set; }
     }
 }

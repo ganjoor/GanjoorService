@@ -63,7 +63,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var processed = await _context.QueuedPDFBooks.Where(t => t.Processed).ToListAsync();
+                var processed = await _context.QueuedPDFBooks.Where(t => t.ResultId != 0).ToListAsync();
                 if(processed.Count > 0)
                 {
                     _context.RemoveRange(processed);
@@ -77,12 +77,14 @@ namespace RMuseum.Services.Implementation
                 for (var i = 0; i < qSoha.Count; i++)
                 {
                     qSoha[i].DownloadOrder = downloadOrder;
+                    qSoha[i].Processed = false;
                     downloadOrder++;
                     if (i % step == 0)
                     {
                         if (e < qElit.Count)
                         {
                             qElit[e].DownloadOrder = downloadOrder;
+                            qElit[e].Processed = false;
                             downloadOrder++;
                             e++;
                         }
@@ -92,6 +94,7 @@ namespace RMuseum.Services.Implementation
                 for (var i = e; e < qElit.Count; e++)
                 {
                     qElit[e].DownloadOrder = downloadOrder;
+                    qElit[e].Processed = false;
                     downloadOrder++;
                 }
 
@@ -127,6 +130,7 @@ namespace RMuseum.Services.Implementation
                                       var res = await ImportfFromKnownSourceAsync(context, item.OriginalSourceUrl);
                                       item.Processed = true;
                                       item.ProcessResult = res.ExceptionString;
+                                      item.ResultId = res.Result;
                                       context.Update(item);
                                       await context.SaveChangesAsync();
                                   }
