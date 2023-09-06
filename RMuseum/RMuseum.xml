@@ -13044,6 +13044,11 @@
             processed
             </summary>
         </member>
+        <member name="P:RMuseum.Models.PDFLibrary.QueuedPDFBook.ProcessResult">
+            <summary>
+            process result
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.PDFLibrary.ViewModels.AuthorRoleCount">
             <summary>
             Author Role Count

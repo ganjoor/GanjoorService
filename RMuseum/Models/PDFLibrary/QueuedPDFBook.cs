@@ -66,5 +66,10 @@ namespace RMuseum.Models.PDFLibrary
         /// processed
         /// </summary>
         public bool Processed { get; set; }
+
+        /// <summary>
+        /// process result
+        /// </summary>
+        public string ProcessResult { get; set; }
     }
 }
