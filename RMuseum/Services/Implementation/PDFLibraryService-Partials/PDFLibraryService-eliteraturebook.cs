@@ -619,6 +619,11 @@ namespace RMuseum.Services.Implementation
                                     return new RServiceResult<int>(0, "ImportLocalPDFFileAsync result was null");
                                 }
 
+                                if(res.ExceptionString.Contains("duplicated pdf with checksum"))
+                                {
+                                    return new RServiceResult<int>(-2, res.ExceptionString);
+                                }
+
                                 return new RServiceResult<int>(0, res.ExceptionString);
                             }
 
