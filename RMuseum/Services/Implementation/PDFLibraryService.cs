@@ -50,7 +50,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="context"></param>
         /// <param name="srcUrl"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> ImportfFromKnownSourceAsync(RMuseumDbContext context, string srcUrl)
+        private async Task<RServiceResult<int>> ImportfFromKnownSourceAsync(RMuseumDbContext context, string srcUrl)
         {
             if (srcUrl.Contains("https://sohalibrary.com"))
             {

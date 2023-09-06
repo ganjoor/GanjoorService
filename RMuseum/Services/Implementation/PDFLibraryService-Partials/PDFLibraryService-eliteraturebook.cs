@@ -18,7 +18,7 @@ namespace RMuseum.Services.Implementation
 {
     public partial class PDFLibraryService
     {
-        private async Task<RServiceResult<bool>> StartImportingELiteratureBookUrlAsync(RMuseumDbContext ctx, string srcUrl)
+        private async Task<RServiceResult<int>> StartImportingELiteratureBookUrlAsync(RMuseumDbContext ctx, string srcUrl)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace RMuseum.Services.Implementation
                     null
                     )
                 {
-                    return new RServiceResult<bool>(false, $"duplicated srcUrl '{srcUrl}'");
+                    return new RServiceResult<int>(0, $"duplicated srcUrl '{srcUrl}'");
                 }
                 if (
                     (
@@ -40,17 +40,17 @@ namespace RMuseum.Services.Implementation
                     null
                     )
                 {
-                    return new RServiceResult<bool>(false, $"Job is already scheduled or running for importing source url: {srcUrl}");
+                    return new RServiceResult<int>(0, $"Job is already scheduled or running for importing source url: {srcUrl}");
                 }
 
                 return await ImportELiteratureBookLibraryUrlAsync(srcUrl, ctx, true);
             }
             catch (Exception exp)
             {
-                return new RServiceResult<bool>(false, exp.ToString());
+                return new RServiceResult<int>(0, exp.ToString());
             }
         }
-        private async Task<RServiceResult<bool>> ImportELiteratureBookLibraryUrlAsync(string srcUrl, RMuseumDbContext context, bool finalizeDownload)
+        private async Task<RServiceResult<int>> ImportELiteratureBookLibraryUrlAsync(string srcUrl, RMuseumDbContext context, bool finalizeDownload)
         {
             /*
             var oldJobs = await context.ImportJobs.ToArrayAsync();
@@ -114,7 +114,7 @@ namespace RMuseum.Services.Implementation
                             job.Exception = $"Http result is not ok ({result.StatusCode}) for {srcUrl}";
                             context.Update(job);
                             await context.SaveChangesAsync();
-                            return new RServiceResult<bool>(false, job.Exception);
+                            return new RServiceResult<int>(0, job.Exception);
                         }
                     }
                 }
@@ -126,7 +126,7 @@ namespace RMuseum.Services.Implementation
                     job.Exception = $"/download/ not found in html source.";
                     context.Update(job);
                     await context.SaveChangesAsync();
-                    return new RServiceResult<bool>(false, job.Exception);
+                    return new RServiceResult<int>(0, job.Exception);
                 }
 
                 List<RTagValue> meta = new List<RTagValue>();
@@ -144,7 +144,7 @@ namespace RMuseum.Services.Implementation
                     job.Exception = $"\"book-title\" not found in {srcUrl}";
                     context.Update(job);
                     await context.SaveChangesAsync();
-                    return new RServiceResult<bool>(false, job.Exception);
+                    return new RServiceResult<int>(0, job.Exception);
                 }
                 idxStart = html.IndexOf(">", idx);
                 if (idxStart != -1)
@@ -397,7 +397,7 @@ namespace RMuseum.Services.Implementation
                             job.Exception = "Language is not فارسی";
                             context.Update(job);
                             await context.SaveChangesAsync();
-                            return new RServiceResult<bool>(false, job.Exception);
+                            return new RServiceResult<int>(0, job.Exception);
                         }
                     }
                     if (tagName == "شماره جلد")
@@ -559,7 +559,7 @@ namespace RMuseum.Services.Implementation
                     job.Status = ImportJobStatus.Succeeded;
                     context.Update(job);
                     await context.SaveChangesAsync();
-                    return new RServiceResult<bool>(false, job.Exception);
+                    return new RServiceResult<int>(0, job.Exception);
                 }
 
                 using (var client = new HttpClient())
@@ -610,6 +610,16 @@ namespace RMuseum.Services.Implementation
 
                                 context.Update(pdf);
                                 await context.SaveChangesAsync();
+                                return new RServiceResult<int>(res.Result.Id);
+                            }
+                            else
+                            {
+                                if (string.IsNullOrEmpty(res.ExceptionString))
+                                {
+                                    return new RServiceResult<int>(0, "ImportLocalPDFFileAsync result was null");
+                                }
+
+                                return new RServiceResult<int>(0, res.ExceptionString);
                             }
 
                         }
@@ -620,7 +630,7 @@ namespace RMuseum.Services.Implementation
                             job.Exception = $"Http result is not ok ({result.StatusCode}) for {downloadUrl}";
                             context.Update(job);
                             await context.SaveChangesAsync();
-                            return new RServiceResult<bool>(false, job.Exception);
+                            return new RServiceResult<int>(0, job.Exception);
                         }
                     }
                 }
@@ -636,11 +646,8 @@ namespace RMuseum.Services.Implementation
                 job.EndTime = DateTime.Now;
                 context.Update(job);
                 await context.SaveChangesAsync();
-                return new RServiceResult<bool>(false, job.Exception);
+                return new RServiceResult<int>(0, job.Exception);
             }
-
-            return new RServiceResult<bool>(true);
-
 
         }
 
