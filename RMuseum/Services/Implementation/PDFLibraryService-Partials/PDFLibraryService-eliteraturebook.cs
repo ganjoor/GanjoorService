@@ -43,25 +43,14 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<bool>(false, $"Job is already scheduled or running for importing source url: {srcUrl}");
                 }
 
-                _backgroundTaskQueue.QueueBackgroundWorkItem
-                       (
-                           async token =>
-                           {
-                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
-                               {
-                                   await ImportELiteratureBookLibraryUrlAsync(srcUrl, context, true);
-                               }
-                           }
-                       );
-
-                return new RServiceResult<bool>(true);
+                return await ImportELiteratureBookLibraryUrlAsync(srcUrl, ctx, true);
             }
             catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }
-        private async Task ImportELiteratureBookLibraryUrlAsync(string srcUrl, RMuseumDbContext context, bool finalizeDownload)
+        private async Task<RServiceResult<bool>> ImportELiteratureBookLibraryUrlAsync(string srcUrl, RMuseumDbContext context, bool finalizeDownload)
         {
             /*
             var oldJobs = await context.ImportJobs.ToArrayAsync();
@@ -125,7 +114,7 @@ namespace RMuseum.Services.Implementation
                             job.Exception = $"Http result is not ok ({result.StatusCode}) for {srcUrl}";
                             context.Update(job);
                             await context.SaveChangesAsync();
-                            return;
+                            return new RServiceResult<bool>(false, job.Exception);
                         }
                     }
                 }
@@ -137,7 +126,7 @@ namespace RMuseum.Services.Implementation
                     job.Exception = $"/download/ not found in html source.";
                     context.Update(job);
                     await context.SaveChangesAsync();
-                    return;
+                    return new RServiceResult<bool>(false, job.Exception);
                 }
 
                 List<RTagValue> meta = new List<RTagValue>();
@@ -155,7 +144,7 @@ namespace RMuseum.Services.Implementation
                     job.Exception = $"\"book-title\" not found in {srcUrl}";
                     context.Update(job);
                     await context.SaveChangesAsync();
-                    return;
+                    return new RServiceResult<bool>(false, job.Exception);
                 }
                 idxStart = html.IndexOf(">", idx);
                 if (idxStart != -1)
@@ -408,7 +397,7 @@ namespace RMuseum.Services.Implementation
                             job.Exception = "Language is not فارسی";
                             context.Update(job);
                             await context.SaveChangesAsync();
-                            return;
+                            return new RServiceResult<bool>(false, job.Exception);
                         }
                     }
                     if (tagName == "شماره جلد")
@@ -570,7 +559,7 @@ namespace RMuseum.Services.Implementation
                     job.Status = ImportJobStatus.Succeeded;
                     context.Update(job);
                     await context.SaveChangesAsync();
-                    return;
+                    return new RServiceResult<bool>(false, job.Exception);
                 }
 
                 using (var client = new HttpClient())
@@ -631,7 +620,7 @@ namespace RMuseum.Services.Implementation
                             job.Exception = $"Http result is not ok ({result.StatusCode}) for {downloadUrl}";
                             context.Update(job);
                             await context.SaveChangesAsync();
-                            return;
+                            return new RServiceResult<bool>(false, job.Exception);
                         }
                     }
                 }
@@ -647,7 +636,10 @@ namespace RMuseum.Services.Implementation
                 job.EndTime = DateTime.Now;
                 context.Update(job);
                 await context.SaveChangesAsync();
+                return new RServiceResult<bool>(false, job.Exception);
             }
+
+            return new RServiceResult<bool>(true);
 
 
         }

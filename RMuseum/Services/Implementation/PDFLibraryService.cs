@@ -31,9 +31,18 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="srcUrl"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> StartImportingKnownSourceAsync(string srcUrl)
+        public RServiceResult<bool> StartImportingKnownSourceAsync(string srcUrl)
         {
-            return await StartImportingKnownSourceAsync(_context, srcUrl);
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                      (
+                          async token =>
+                          {
+                              using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
+                              {
+                                  await ImportfFromKnownSourceAsync(_context, srcUrl);
+                              }
+                          }
+                      );
         }
         /// <summary>
         /// import from known sources
@@ -41,7 +50,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="context"></param>
         /// <param name="srcUrl"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> StartImportingKnownSourceAsync(RMuseumDbContext context, string srcUrl)
+        private async Task<RServiceResult<bool>> ImportfFromKnownSourceAsync(RMuseumDbContext context, string srcUrl)
         {
             if (srcUrl.Contains("https://sohalibrary.com"))
             {
@@ -51,8 +60,6 @@ namespace RMuseum.Services.Implementation
             {
                 return await StartImportingELiteratureBookUrlAsync(context, srcUrl);
             }
-            //return new RServiceResult<bool>(false, "Unknown source url");
-
         }
         /// <summary>
         /// get pdf book by id
