@@ -390,7 +390,7 @@ namespace RMuseum.Services.Implementation
                         model.Language = tagValueCleaned;
                         tagName = "Language";
 
-                        if (tagValueCleaned != "فارسی")
+                        if (!tagValueCleaned.Contains("فارسی"))
                         {
                             job.EndTime = DateTime.Now;
                             job.Status = ImportJobStatus.Failed;

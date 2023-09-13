@@ -367,7 +367,7 @@ namespace RMuseum.Services.Implementation
                         model.Language = tagValueCleaned;
                         tagName = "Language";
 
-                        if (tagValueCleaned != "فارسی")
+                        if (!tagValueCleaned.Contains("فارسی"))
                         {
                             job.EndTime = DateTime.Now;
                             job.Status = ImportJobStatus.Failed;
@@ -525,6 +525,8 @@ namespace RMuseum.Services.Implementation
                     {
                         if (result.IsSuccessStatusCode)
                         {
+                            string fileName = (1 + await context.PDFBooks.MaxAsync(p => p.Id)).ToString().PadLeft(8, '0') + "-soha.pdf";
+                            /*
                             string fileName = string.Empty;
                             if (result.Content.Headers.ContentDisposition != null)
                             {
@@ -540,7 +542,7 @@ namespace RMuseum.Services.Implementation
                             {
                                 fileName = Path.GetFileNameWithoutExtension(fileName).Substring(0, 64) + ".pdf";
                             }
-
+                            */
                             model.LocalImportingPDFFilePath = Path.Combine(_imageFileService.ImageStoragePath, fileName);
                             if (File.Exists(model.LocalImportingPDFFilePath))
                                 File.Delete(model.LocalImportingPDFFilePath);

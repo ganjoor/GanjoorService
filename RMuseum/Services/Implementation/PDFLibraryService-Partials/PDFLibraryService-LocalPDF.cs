@@ -367,7 +367,15 @@ namespace RMuseum.Services.Implementation
             List<PDFPage> pages = new List<PDFPage>();
             string pdfFilePath = job.ResourceNumber;
             string intermediateFolder = Path.Combine(Path.GetDirectoryName(pdfFilePath), Path.GetFileNameWithoutExtension(pdfFilePath));
-            Directory.CreateDirectory(intermediateFolder);
+            try
+            {
+                Directory.CreateDirectory(intermediateFolder);
+            }
+            catch
+            {
+                intermediateFolder = Path.Combine(Path.GetDirectoryName(pdfFilePath), $"{pdfBook.Id}-catch");
+            }
+
             List<string> fileNames = new List<string>();
             int imageOrder = 1;
             using (FileStream fs = File.OpenRead(pdfFilePath))
