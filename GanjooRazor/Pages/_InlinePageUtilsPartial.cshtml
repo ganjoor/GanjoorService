@@ -201,6 +201,16 @@
                     <span class="w3tooltiptext">بعدی</span>
                 </a>
             }
+
+            @if (Model.CanTranslate)
+            {
+                <a href="/Trans?p=@Model.GanjoorPage.Id&lang=8" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button translate-button"></i>
+                    </div>
+                    <span class="w3tooltiptext">واج‌نویسی</span>
+                </a>
+            }
         </div>
     }
 

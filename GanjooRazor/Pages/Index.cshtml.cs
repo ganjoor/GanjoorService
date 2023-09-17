@@ -296,6 +296,8 @@ namespace GanjooRazor.Pages
         /// </summary>
         public bool KeepHistory { get; set; }
 
+
+
         /// <summary>
         /// pinterest url
         /// </summary>
@@ -635,6 +637,7 @@ namespace GanjooRazor.Pages
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
             CanEdit = Request.Cookies["CanEdit"] == "True";
             KeepHistory = Request.Cookies["KeepHistory"] == "True";
+            CanTranslate = Request.Cookies["CanTranslate"] == "True";
             IsPoetPage = false;
             IsCatPage = false;
             IsPoemPage = false;

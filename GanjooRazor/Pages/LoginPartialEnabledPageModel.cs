@@ -44,6 +44,8 @@ namespace GanjooRazor.Pages
 
         public string PreviousTitle { get; set; }
 
+        public bool CanTranslate { get; set; }
+
         public List<GanjoorPoemSection> SectionsWithRelated { get; set; }
 
         public List<GanjoorPoemSection> SectionsWithMetreAndRhymes { get; set; }
@@ -81,7 +83,7 @@ namespace GanjooRazor.Pages
             {
                 Expires = DateTime.Now.AddDays(-1)
             };
-            foreach (var cookieName in new string[] { "UserId", "SessionId", "Token", "Username", "Name", "NickName", "CanEdit", "KeepHistory" })
+            foreach (var cookieName in new string[] { "UserId", "SessionId", "Token", "Username", "Name", "NickName", "CanEdit", "KeepHistory", "CanTranslate" })
             {
                 if (Request.Cookies[cookieName] != null)
                 {
@@ -143,6 +145,17 @@ namespace GanjooRazor.Pages
             }
 
             Response.Cookies.Append("CanEdit", canEditContent.ToString(), cookieOption);
+
+            bool canTranlate = false;
+            if (ganjoorEntity != null)
+            {
+                var op = ganjoorEntity.Operations.Where(o => o.ShortName == RMuseumSecurableItem.Translations).SingleOrDefault();
+                if (op != null)
+                {
+                    canTranlate = op.Status;
+                }
+            }
+            Response.Cookies.Append("CanTranslate", canTranlate.ToString(), cookieOption);
 
 
             return Redirect(Request.Path);
