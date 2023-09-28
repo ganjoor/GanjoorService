@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentFTP;
 
 namespace RMuseum.Services.Implementation
 {
@@ -386,6 +387,11 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        private void FtpClient_ValidateCertificate(FluentFTP.Client.BaseClient.BaseFtpClient control, FtpSslValidationEventArgs e)
+        {
+            e.Accept = true;
+        }
+
         /// <summary>
         /// an incomplete prototype for removing PDF books
         /// </summary>
@@ -407,7 +413,23 @@ namespace RMuseum.Services.Implementation
                 }
                 if (record.Status == PublishStatus.Published)
                 {
-                    return new RServiceResult<bool>(false, "Can not delete published pdf book");
+                    var ftpClient = new AsyncFtpClient
+                    (
+                        Configuration.GetSection("ExternalFTPServer")["Host"],
+                        Configuration.GetSection("ExternalFTPServer")["Username"],
+                        Configuration.GetSection("ExternalFTPServer")["Password"]
+                    );
+                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                    await ftpClient.AutoConnect();
+                    ftpClient.Config.RetryAttempts = 3;
+
+
+                    if (true == await ftpClient.DirectoryExists($"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/pdf/{record.StorageFolderName}"))
+                    {
+                        await ftpClient.DeleteDirectory($"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/pdf/{record.StorageFolderName}");
+                    }
+
+                    await ftpClient.Disconnect();
                 }
 
 
@@ -424,7 +446,7 @@ namespace RMuseum.Services.Implementation
                 _context.Remove(record);
                 await _context.SaveChangesAsync();
 
-                if (!string.IsNullOrEmpty(artifactFolder))
+                if (!string.IsNullOrEmpty(artifactFolder) && Directory.Exists(artifactFolder))
                 {
                     try
                     {
