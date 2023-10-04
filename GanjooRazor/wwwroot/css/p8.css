@@ -983,21 +983,21 @@ ol {
     bottom: 25% !important;
 }
 
-    .w3tooltip .w3tooltiptext::after {
-        content: "";
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        margin-left: -5px;
-        border-width: 5px;
-        border-style: solid;
-        border-color: #555 transparent transparent transparent;
-    }
+.w3tooltip .w3tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
 
-    .w3tooltip:hover .w3tooltiptext {
-        visibility: visible;
-        opacity: 1;
-    }
+.w3tooltip:hover .w3tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
 
 .w3tooltiptext {
     font-family: Vazir;
@@ -1823,9 +1823,9 @@ fieldset {
         background-color: darkred;
     }
 
-.utilbar{
-    background:none;
-    border:none;
+.utilbar {
+    background: none;
+    border: none;
 }
 /* The sticky class is added to the navbar with JS when it reaches its scroll position */
 .sticky {
@@ -2024,3 +2024,77 @@ fieldset {
     .book img {
         border: 1px solid black;
     }
+
+@media(prefers-color-scheme: dark) {
+    * {
+        color: bisque !important;
+    }
+
+
+    body {
+        background: rgba(0, 0, 0, 0.9) !important;
+    }
+
+    
+    #main, .poem, .sitem, .related-images-frame, .comments-like-div {
+        background: rgba(27, 27, 27, 0.6) url('/image/pbk-b.jpg') top center repeat scroll;
+        border-color: darkgray !important;
+        background-blend-mode: multiply;
+    }
+
+    .comments-like-div{
+        background-image: none;
+    }
+
+    div {
+        border-color: burlywood !important;
+        border-width: 1px !important;
+    }
+
+    .clear-both,
+    .tooltip {
+        background-color: black !important;
+    }
+
+    a {
+        -webkit-text-fill-color: burlywood !important;
+    }
+
+    .clear-both.utilbar {
+        background: none !important;
+    }
+
+    
+
+    .noborder-btn, #comments {
+        background: none !important;
+        background-color: none !important;
+    }
+
+    #rpoems > div.century {
+        background-color: rgb(0, 27, 13) !important;
+    }
+
+    #rpoems {
+        background-color: none !important;
+    }
+
+    select, input {
+        color: rgb(5, 173, 145) !important;
+        background: black !important;
+        border-color: burlywood !important;
+        border-width: 1px !important;
+    }
+
+    .notice, td, .commentquote {
+        background: rgba(0, 0, 0, 0.763) !important;
+    }
+
+    .bnum {
+        mix-blend-mode: hard-light !important;
+    }
+
+    .clear-both {
+        background: none !important;
+    }
+}
