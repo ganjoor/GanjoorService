@@ -1939,15 +1939,13 @@ fieldset {
     }
 
 @media(prefers-color-scheme: dark) {
-    * {
-        color: bisque;
-    }
-
-
     body {
         background: rgba(0, 0, 0, 0.9);
     }
 
+    p{
+        color: bisque;
+    }
     
     #main, .poem, .sitem, .related-images-frame, .comments-like-div {
         background: rgba(27, 27, 27, 0.6) url('/image/pbk-b.jpg') top center repeat scroll;
@@ -1970,7 +1968,7 @@ fieldset {
     }
 
     a {
-        -webkit-text-fill-color: burlywood;
+        -webkit-text-fill-color: whitesmoke;
     }
 
     .clear-both.utilbar {
@@ -2009,5 +2007,9 @@ fieldset {
 
     .clear-both {
         background: none;
+    }
+
+    #commentsp p, #comments p {
+        color: beige;
     }
 }
