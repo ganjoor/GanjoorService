@@ -202,7 +202,7 @@
                 </a>
             }
 
-            @if (Model.CanTranslate)
+            @if (Model.CanTranslate && Model.GanjoorPage.Poem != null)
             {
                 <a href="/Trans?p=@Model.GanjoorPage.Id&lang=8" role="button" class="w3tooltip cursor-pointer">
                     <div class="circled-number">
