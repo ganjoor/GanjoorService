@@ -1953,13 +1953,8 @@ fieldset {
         background-blend-mode: multiply;
     }
 
-    .comments-like-div{
-        background-image: none;
-    }
-
-    div {
-        border-color: burlywood;
-        border-width: 1px;
+    .comments-like-div {
+        background: transparent url('/image/cbk.jpg') top center repeat scroll;
     }
 
     .clear-both,
@@ -1971,13 +1966,9 @@ fieldset {
         -webkit-text-fill-color: whitesmoke;
     }
 
-    .clear-both.utilbar {
-        background: none;
-    }
-
     
 
-    .noborder-btn, #comments {
+    #comments {
         background: none;
         background-color: none;
     }
