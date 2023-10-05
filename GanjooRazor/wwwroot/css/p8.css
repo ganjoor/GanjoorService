@@ -1,10 +1,3 @@
-/*
-Theme Name:ganjoor.net theme
-Theme URI:http://www.gozir.com/
-Description:Designed to be used in ganjoor.net (based on gozir.com them)
-Version:1.0
-Author:gozir.com
-*/
 @font-face {
     font-family: Vazir;
     src: url('Vazir-Regular.eot');
@@ -912,7 +905,7 @@ ol {
     src: url(https://fonts.gstatic.com/s/materialicons/v107/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
 }
 
-.material-icons, .pageicons, .inlinebutton, .info-buttons, .recitation-icons, .ringmenu-icon, .noindent-info-button {
+.material-icons, .pageicons, .inlinebutton, .info-buttons, .recitation-icons, .noindent-info-button {
     font-family: 'Material Icons';
     font-weight: normal;
     font-style: normal;
@@ -1501,86 +1494,6 @@ audio {
     max-width: none;
 }
 
-
-.ring-menucircle,
-.ring {
-    height: 256px;
-    position: relative;
-    width: 256px;
-}
-
-.ring-menucircle {
-    margin: 0 auto;
-    clear: both;
-}
-
-.ring {
-    background-color: rgba(0,0,0,0.5);
-    border-radius: 50%;
-    opacity: 0;
-    -webkit-transform-origin: 50% 50%;
-    -moz-transform-origin: 50% 50%;
-    transform-origin: 50% 50%;
-    -webkit-transform: scale(0.1) rotate(-270deg);
-    -moz-transform: scale(0.1) rotate(-270deg);
-    -transform: scale(0.1) rotate(-270deg);
-    -webkit-transition: all 0.4s ease-out;
-    -moz-transition: all 0.4s ease-out;
-    transition: all 0.4s ease-out;
-}
-
-.open .ring {
-    opacity: 1;
-    -webkit-transform: scale(1) rotate(0);
-    -moz-transform: scale(1) rotate(0);
-    transform: scale(1) rotate(0);
-}
-
-.ringmenu-center {
-    background-color: rgba(255,255,255,0.3);
-    border-radius: 50%;
-    border: 2px solid #ffffff;
-    bottom: 0;
-    color: white;
-    height: 80px;
-    left: 0;
-    line-height: 80px;
-    margin: auto;
-    position: absolute;
-    right: 0;
-    text-align: center;
-    top: 0;
-    width: 80px;
-    -webkit-transition: all 0.4s ease-out;
-    -moz-transition: all 0.4s ease-out;
-    transition: all 0.4s ease-out;
-}
-
-.open .ringmenu-center {
-    border-color: #aaaaaa;
-}
-
-.menuItem {
-    border-radius: 50%;
-    color: #eeeeee;
-    display: block;
-    height: 40px;
-    line-height: 40px;
-    margin-left: -20px;
-    margin-top: -20px;
-    position: absolute;
-    text-align: center;
-    width: 40px;
-}
-
-#fa .ring-menucircle a {
-    color: white;
-}
-
-.ringmenu-icon {
-    font-size: 2em;
-}
-
 .recitation-listen::after {
     content: 'hearing';
 }
@@ -2027,18 +1940,18 @@ fieldset {
 
 @media(prefers-color-scheme: dark) {
     * {
-        color: bisque !important;
+        color: bisque;
     }
 
 
     body {
-        background: rgba(0, 0, 0, 0.9) !important;
+        background: rgba(0, 0, 0, 0.9);
     }
 
     
     #main, .poem, .sitem, .related-images-frame, .comments-like-div {
         background: rgba(27, 27, 27, 0.6) url('/image/pbk-b.jpg') top center repeat scroll;
-        border-color: darkgray !important;
+        border-color: darkgray;
         background-blend-mode: multiply;
     }
 
@@ -2047,54 +1960,54 @@ fieldset {
     }
 
     div {
-        border-color: burlywood !important;
-        border-width: 1px !important;
+        border-color: burlywood;
+        border-width: 1px;
     }
 
     .clear-both,
     .tooltip {
-        background-color: black !important;
+        background-color: black;
     }
 
     a {
-        -webkit-text-fill-color: burlywood !important;
+        -webkit-text-fill-color: burlywood;
     }
 
     .clear-both.utilbar {
-        background: none !important;
+        background: none;
     }
 
     
 
     .noborder-btn, #comments {
-        background: none !important;
-        background-color: none !important;
+        background: none;
+        background-color: none;
     }
 
     #rpoems > div.century {
-        background-color: rgb(0, 27, 13) !important;
+        background-color: rgb(0, 27, 13);
     }
 
     #rpoems {
-        background-color: none !important;
+        background-color: none;
     }
 
     select, input {
-        color: rgb(5, 173, 145) !important;
-        background: black !important;
-        border-color: burlywood !important;
-        border-width: 1px !important;
+        color: rgb(5, 173, 145);
+        background: black;
+        border-color: burlywood;
+        border-width: 1px;
     }
 
     .notice, td, .commentquote {
-        background: rgba(0, 0, 0, 0.763) !important;
+        background: rgba(0, 0, 0, 0.763);
     }
 
     .bnum {
-        mix-blend-mode: hard-light !important;
+        mix-blend-mode: hard-light;
     }
 
     .clear-both {
-        background: none !important;
+        background: none;
     }
 }
