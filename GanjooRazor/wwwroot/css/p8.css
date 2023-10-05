@@ -380,6 +380,10 @@ div.n, div.l {
     text-align: center;
 }
 
+.m1 p, .m2 p, .b2 p, .n p{
+    color: inherit;
+}
+
 .item {
     padding-top: 20px;
 }
@@ -664,6 +668,7 @@ td.c2 {
 .b, .b1, .n {
     scroll-margin-top: 43px;
 }
+
 
 .normalbnum {
     float: right;
@@ -1943,7 +1948,7 @@ fieldset {
         background: rgba(0, 0, 0, 0.9);
     }
 
-    p{
+    *{
         color: bisque;
     }
     
