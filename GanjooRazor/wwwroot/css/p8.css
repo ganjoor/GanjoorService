@@ -2051,5 +2051,7 @@ fieldset {
         border-color: burlywood;
     }
 
-
+    .bg-white{
+        background-color: darkgray !important;
+    }
 }
