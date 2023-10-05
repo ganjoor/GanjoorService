@@ -149,7 +149,7 @@
                                 hilightverse(verseIndex[i], "red", true, playerScrollLock);
 
                                 if (nLastHighlight != verseIndex[i] && nLastHighlight != -1)
-                                    hilightverse(nLastHighlight, "black", false, false);
+                                    hilightverse(nLastHighlight, "", false, false);//reset color
                                 nLastHighlight = verseIndex[i];
                                 break;
                             }
