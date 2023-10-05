@@ -907,7 +907,7 @@ ol {
     font-family: 'Material Icons';
     font-style: normal;
     font-weight: 400;
-    src: url(https://fonts.gstatic.com/s/materialicons/v107/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+    src: url('materialsymbolsoutlined-v138.woff2') format('woff2');
 }
 
 .material-icons, .pageicons, .inlinebutton, .info-buttons, .recitation-icons, .noindent-info-button {
@@ -924,6 +924,10 @@ ol {
     direction: ltr;
     -moz-font-feature-settings: 'liga';
     -moz-osx-font-smoothing: grayscale;
+}
+
+.footer-contents .material-icons{
+    font-size: 12px;
 }
 
 .info-buttons {
@@ -1181,6 +1185,7 @@ ol {
 
 .footer-contents {
     display: grid;
+    grid-gap: 50px;
     margin-top: 5px;
     margin-bottom: 5px;
 }
@@ -1951,16 +1956,28 @@ fieldset {
     *{
         color: bisque;
     }
-    
+
+    div {
+        border-color: bisque;
+        border-width: 1px;
+    }
+
+    .circled-number{
+        border-color: burlywood;
+        border-width: 1px;
+    }
+
+    a .circled-number, a .noborder-btn {
+        -webkit-text-fill-color: burlywood;
+    }
+
     #main, .poem, .sitem, .related-images-frame, .comments-like-div {
         background: rgba(27, 27, 27, 0.6) url('/image/pbk-b.jpg') top center repeat scroll;
         border-color: darkgray;
         background-blend-mode: multiply;
     }
 
-    .comments-like-div {
-        background: transparent url('/image/cbk.jpg') top center repeat scroll;
-    }
+   
 
     .clear-both,
     .tooltip {
@@ -1971,12 +1988,16 @@ fieldset {
         -webkit-text-fill-color: whitesmoke;
     }
 
-    
 
-    #comments {
+    #comments, #profile, .comments-like-div, .bnumdiv {
         background: none;
         background-color: none;
     }
+
+    .comment-author{
+        background-color: brown;
+    }
+
 
     #rpoems > div.century {
         background-color: rgb(0, 27, 13);
@@ -1993,8 +2014,12 @@ fieldset {
         border-width: 1px;
     }
 
-    .notice, td, .commentquote {
+    .notice, .commentquote, .c p {
         background: rgba(0, 0, 0, 0.763);
+    }
+
+    td {
+        background: rgba(0, 0, 0, 0.763) !important;
     }
 
     .bnum {
@@ -2008,4 +2033,23 @@ fieldset {
     #commentsp p, #comments p {
         color: beige;
     }
+
+    #footer li a:hover {
+        border-bottom: 2px solid whitesmoke;
+    }
+
+    #footer a {
+        -webkit-text-fill-color: bisque;
+    }
+
+    .mce-content-body {
+        background-color: black;
+        color: bisque;
+    }
+
+    #main-navbar{
+        border-color: burlywood;
+    }
+
+
 }
