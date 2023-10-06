@@ -404,6 +404,7 @@ namespace RMuseum.Services.Implementation
                 PDFBook record = await _context.PDFBooks
                         .Include(a => a.Pages).ThenInclude(i => i.ThumbnailImage)
                         .Include(a => a.Pages).ThenInclude(i => i.Tags)
+                        .Include(a => a.Contributers)
                         .Include(a => a.Tags)
                         .Where(a => a.Id == pdfBookId)
                         .SingleOrDefaultAsync();
