@@ -1207,7 +1207,10 @@ ol {
 
 #footer {
     max-width: 752px;
-    margin: auto;
+    margin-left: auto;
+    margin-top: auto;
+    margin-right: auto;
+    margin-bottom: 50px;
     text-align: center;
     display: block;
     clear: both;
