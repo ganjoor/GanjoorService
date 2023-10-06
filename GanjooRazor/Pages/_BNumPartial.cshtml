@@ -118,6 +118,8 @@
             paste_remove_styles_if_webkit: true,
             paste_strip_class_attributes: true,
             a11y_advanced_options: true,
+            skin: (window.matchMedia("(prefers-color-scheme: dark)").matches ? "oxide-dark" : ""),
+            content_css: (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : ""),
             setup: function(editor) {
             editor.on('tap', function(e) {
                 if(userNotifiedOnEditInsteadOfComment == false){

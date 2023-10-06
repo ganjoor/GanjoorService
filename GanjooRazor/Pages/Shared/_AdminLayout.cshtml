@@ -29,7 +29,9 @@
             paste_remove_styles_if_webkit: true,
             paste_strip_class_attributes: true,
             smart_paste: false,
-            a11y_advanced_options: true
+            a11y_advanced_options: true,
+            skin: (window.matchMedia("(prefers-color-scheme: dark)").matches ? "oxide-dark" : ""),
+            content_css: (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "")
         });
     </script>
 
