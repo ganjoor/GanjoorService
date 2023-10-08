@@ -3345,6 +3345,21 @@
             <param name="translation"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.TranslationController.GetAllPoemsTranslations(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
+            <summary>
+            get all poem translations (for export utility)
+            </summary>
+            <param name="paging"></param>
+            <param name="lang"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.TranslationController.GetPoemTranslationById(System.Int32)">
+            <summary>
+            get translation by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.TranslationController.ReadOnlyMode">
             <summary>
             readonly mode

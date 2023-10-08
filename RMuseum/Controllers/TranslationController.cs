@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services;
+using RSecurityBackend.Models.Generic;
 using System;
 using System.Linq;
 using System.Net;
@@ -198,6 +200,45 @@ namespace RMuseum.Controllers
                 return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
             Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             var res = await _translationService.AddPoemTranslation(userId, translation);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// get all poem translations (for export utility)
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="lang"></param>
+        /// <returns></returns>
+
+        [HttpGet("all/{lang}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Translations)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemTranslationViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetAllPoemsTranslations([FromQuery] PagingParameterModel paging, int lang)
+        {
+            var res = await _translationService.GetAllPoemsTranslations(paging, lang);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            // Paging Header
+            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            return Ok(res.Result.Translations);
+        }
+
+        /// <summary>
+        /// get translation by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.Translations)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemTranslationViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoemTranslationById(int id)
+        {
+            var res = await _translationService.GetPoemTranslationById(id);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
