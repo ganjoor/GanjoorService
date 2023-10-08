@@ -114,6 +114,7 @@ a {
     font-weight: 300;
     font-size: 1em;
     background: transparent url(/image/bk.png) top center repeat scroll;
+    padding-bottom: 50px;
 }
 
     #fa a {
