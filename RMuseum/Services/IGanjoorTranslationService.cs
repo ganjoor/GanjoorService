@@ -72,5 +72,22 @@ namespace RMuseum.Services
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorLanguage>> GetLastUserContributedLanguage(Guid userId);
+
+        /// <summary>
+        /// get translation by id
+        /// </summary>
+        ///<param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPoemTranslationViewModel>> GetPoemTranslationById(int id);
+
+        /// <summary>
+        /// get all poem translations (for export utility)
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="langId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemTranslationViewModel[] Translations)>> GetAllPoemsTranslations(PagingParameterModel paging, int langId);
+
+
     }
 }
