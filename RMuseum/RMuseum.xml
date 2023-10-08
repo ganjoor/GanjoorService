@@ -18375,6 +18375,21 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.GetAllPoemsTranslations(RSecurityBackend.Models.Generic.PagingParameterModel,System.Int32)">
+            <summary>
+            get all poem translations (for export utility)
+            </summary>
+            <param name="paging"></param>
+            <param name="langId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.GetPoemTranslationById(System.Int32)">
+             <summary>
+             get translation by id
+             </summary>
+            <param name="id"></param>
+             <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorTranslationService.GetPoemTranslationsAsync(System.Int32,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             get translation

@@ -2,7 +2,9 @@
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RMuseum.Models.PDFLibrary;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -201,6 +203,102 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorLanguage>(null);
             return await GetLanguageAsync(dbTranslation.LanguageId);
 
+        }
+
+        /// <summary>
+        /// get all poem translations (for export utility)
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="langId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemTranslationViewModel[] Translations)>> GetAllPoemsTranslations(PagingParameterModel paging, int langId)
+        {
+            try
+            {
+                var source = _context.GanjoorPoemTranslations.AsNoTracking()
+                            .Where(t => t.LanguageId == langId)
+                            .Include(t => t.Language).Include(t => t.User)
+                            .OrderBy(t => t.PoemId).ThenByDescending(t => t.Id)
+                            .Select(
+                    dbTranslation =>
+                    new GanjoorPoemTranslationViewModel()
+                    {
+                        Id = dbTranslation.Id,
+                        Language = dbTranslation.Language,
+                        PoemId = dbTranslation.PoemId,
+                        Title = dbTranslation == null ? null : dbTranslation.Title,
+                        Description = dbTranslation.Description,
+                        Published = dbTranslation.Published,
+                        ContributerName = string.IsNullOrEmpty(dbTranslation.User.NickName) ? dbTranslation.User.Id.ToString() : dbTranslation.User.NickName,
+                        ContributerId = dbTranslation.UserId,
+                        DateTime = dbTranslation.DateTime,
+                    }) 
+                            .AsQueryable();
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemTranslationViewModel[] Translations)>
+                    (await QueryablePaginator<GanjoorPoemTranslationViewModel>.Paginate(source, paging));
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemTranslationViewModel[] Translations)>((null, null), exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get translation by id
+        /// </summary>
+        ///<param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPoemTranslationViewModel>> GetPoemTranslationById(int id)
+        {
+            try
+            {
+                var dbTranslation = await _context.GanjoorPoemTranslations.Include(t => t.Verses).Where(t => t.Id == id).Include(t => t.Language).Include(t => t.User).OrderByDescending(t => t.Id).SingleAsync();
+                var verses = await _context.GanjoorVerses.Where(v => v.PoemId == dbTranslation.PoemId).ToListAsync();
+                var verseIds = verses.Select(v => v.Id).ToList();
+               
+                return new RServiceResult<GanjoorPoemTranslationViewModel>
+                    (
+                    new GanjoorPoemTranslationViewModel()
+                    {
+                        Id = dbTranslation.Id,
+                        Language = dbTranslation.Language,
+                        PoemId = dbTranslation.PoemId,
+                        Title = dbTranslation == null ? null : dbTranslation.Title,
+                        Description = dbTranslation.Description,
+                        Published = dbTranslation.Published,
+                        ContributerName =  string.IsNullOrEmpty(dbTranslation.User.NickName) ? dbTranslation.User.Id.ToString() : dbTranslation.User.NickName,
+                        ContributerId = dbTranslation.UserId,
+                        DateTime = dbTranslation.DateTime,
+                        TranslatedVerses = dbTranslation.Verses.Select(v =>
+                        new GanjoorVerseTranslationViewModel()
+                        {
+                            Verse = verses.Where(pv => pv.Id == v.VerseId)
+                                .Select(pv =>
+                                new GanjoorVerseViewModel()
+                                {
+                                    Id = pv.Id,
+                                    VersePosition = pv.VersePosition,
+                                    CoupletIndex = pv.CoupletIndex,
+                                    VOrder = pv.VOrder,
+                                    Text = pv.Text,
+                                    SectionIndex1 = pv.SectionIndex1,
+                                    SectionIndex2 = pv.SectionIndex2,
+                                    SectionIndex3 = pv.SectionIndex3,
+                                    SectionIndex4 = pv.SectionIndex4,
+                                }
+                                ).Single(),
+                            TText = v.TText
+                        }
+                            ).ToArray()
+                    }
+                    );
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPoemTranslationViewModel>(null, exp.ToString());
+            }
         }
 
         /// <summary>
