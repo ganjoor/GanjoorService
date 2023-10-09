@@ -218,7 +218,7 @@ namespace RMuseum.Services.Implementation
                 var source = _context.GanjoorPoemTranslations.AsNoTracking()
                             .Where(t => t.LanguageId == langId)
                             .Include(t => t.Language).Include(t => t.User)
-                            .OrderBy(t => t.PoemId).ThenByDescending(t => t.Id)
+                            .OrderBy(t => t.Id)
                             .Select(
                     dbTranslation =>
                     new GanjoorPoemTranslationViewModel()
