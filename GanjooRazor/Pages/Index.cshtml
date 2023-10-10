@@ -235,8 +235,8 @@
                 paste_remove_styles_if_webkit: true,
                 paste_strip_class_attributes: true,
                 a11y_advanced_options: true,
-                skin: (window.matchMedia("(prefers-color-scheme: dark)").matches ? "oxide-dark" : ""),
-                content_css: (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : ""),
+                skin: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "oxide-dark" : ""),
+                content_css: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "dark" : ""),
                 setup: function (editor) {
                     editor.on('tap', function (e, f) {
                         var editor_id = e.view.frameElement.id.slice(0, -4);
