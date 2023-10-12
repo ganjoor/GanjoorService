@@ -30,8 +30,8 @@
             paste_strip_class_attributes: true,
             smart_paste: false,
             a11y_advanced_options: true,
-            skin: (window.matchMedia("(prefers-color-scheme: dark)").matches ? "oxide-dark" : ""),
-            content_css: (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "")
+            skin: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "oxide-dark" : localStorage.getItem("scheme") == "dark" ? "oxide-dark" : ""),
+            content_css: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "dark" : localStorage.getItem("scheme") == "dark" ? "dark" : ""),
         });
     </script>
 
@@ -327,5 +327,9 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        applyPreferredColorScheme(getPreferredColorScheme());
+    </script>
 </body>
 </html>
