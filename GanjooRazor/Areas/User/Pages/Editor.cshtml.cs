@@ -410,7 +410,7 @@ namespace GanjooRazor.Areas.User.Pages
                                     Text = null,
                                     MarkForDelete = false,
                                     VersePosition = null,
-                                    CoupletSummary = vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک"),
+                                    CoupletSummary = vParts.Length > 1 ? vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک") :  "",
                                 }
                                 );
                             }
