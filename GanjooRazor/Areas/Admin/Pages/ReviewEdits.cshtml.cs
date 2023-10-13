@@ -53,6 +53,8 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public GanjoorLanguage[] Languages { get; set; }
 
+        public bool ApproveVersePositionChanges { get; set; }
+
         private async Task ReadLanguagesAsync(HttpClient secureClient)
         {
             HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
@@ -74,6 +76,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             TotalCount = 0;
             Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
             OnlyUserCorrections = string.IsNullOrEmpty(Request.Query["onlyUserCorrections"]) ? true : bool.Parse(Request.Query["onlyUserCorrections"]);
+            ApproveVersePositionChanges = string.IsNullOrEmpty(Request.Query["posok"]) ? false : bool.Parse(Request.Query["posok"]);
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))

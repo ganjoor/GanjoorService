@@ -235,6 +235,12 @@ else
 
         <tr>
             <td colspan=2>
+                <a role="button" href="/Admin/ReviewEdits/?posok=true" class="pagebutton">تغییر مصرع‌ها درست است</a>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan=2>
                 <a role="button" href="/Admin/ReviewEdits/?onlyUserCorrections=false" class="pagebutton">پیشنهادهای سیستمی</a>
             </td>
         </tr>
@@ -745,7 +751,14 @@ else
                         </tr>
                         <tr>
                             <td colspan="2">
-                                <input type="radio" id="verse-position@(verse.VORder)_review_result_Approved" name="verse-position@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+                                @if(Model.ApproveVersePositionChanges)
+                                {
+                                    <input type="radio" id="verse-position@(verse.VORder)_review_result_Approved" name="verse-position@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
+                                }
+                                else
+                                {
+                                    <input type="radio" id="verse-position@(verse.VORder)_review_result_Approved" name="verse-position@(verse.VORder)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+                                }
                                 <label for="verse-position@(verse.VORder)_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
                                 <br>
                                 @if (verse.VersePositionResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
