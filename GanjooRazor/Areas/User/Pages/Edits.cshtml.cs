@@ -240,7 +240,7 @@ namespace GanjooRazor.Areas.User.Pages
                                    LanguageId = verseOrderText.LanguageReviewResult == CorrectionReviewResult.Approved && verseOrderText.LanguageId != null ? verseOrderText.OriginalLanguageId : null,
                                    OriginalLanguageId = verseOrderText.LanguageReviewResult == CorrectionReviewResult.Approved && verseOrderText.LanguageId != null ? verseOrderText.LanguageId : null,
                                    CoupletIndex = verseOrderText.CoupletIndex,
-                                   CoupletSummary = verseOrderText.SummaryReviewResult == CorrectionReviewResult.Approved && verseOrderText.CoupletSummary != null ? verseOrderText.OriginalCoupletSummary : null,
+                                   CoupletSummary = verseOrderText.SummaryReviewResult == CorrectionReviewResult.Approved && verseOrderText.CoupletSummary != null ? verseOrderText.OriginalCoupletSummary ?? "" : null,
                                    OriginalCoupletSummary = verseOrderText.SummaryReviewResult == CorrectionReviewResult.Approved && verseOrderText.CoupletSummary != null ? verseOrderText.CoupletSummary : null,
 
                                });
@@ -250,18 +250,33 @@ namespace GanjooRazor.Areas.User.Pages
 
                     }
                     correction.VerseOrderText = vOrderTexts.ToArray();
-                    correction.Rhythm = currentCorrection.RhythmResult == CorrectionReviewResult.Approved && currentCorrection.Rhythm != null ? currentCorrection.OriginalRhythm : null;
+                    correction.Rhythm = currentCorrection.RhythmResult == CorrectionReviewResult.Approved && currentCorrection.Rhythm != null ? currentCorrection.OriginalRhythm ?? "" : null;
                     correction.OriginalRhythm = currentCorrection.RhythmResult == CorrectionReviewResult.Approved && currentCorrection.Rhythm != null ? currentCorrection.Rhythm : null;
 
-                    correction.Rhythm2 = currentCorrection.Rhythm2Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm2 != null ? currentCorrection.OriginalRhythm2 : null;
+                    correction.Rhythm2 = currentCorrection.Rhythm2Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm2 != null ? currentCorrection.OriginalRhythm2 ?? "" : null;
                     correction.OriginalRhythm2 = currentCorrection.Rhythm2Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm2 != null ? currentCorrection.Rhythm2 : null;
 
-                    correction.Rhythm3 = currentCorrection.Rhythm3Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm3 != null ? currentCorrection.OriginalRhythm3 : null;
+                    correction.Rhythm3 = currentCorrection.Rhythm3Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm3 != null ? currentCorrection.OriginalRhythm3 ?? "" : null;
                     correction.OriginalRhythm3 = currentCorrection.Rhythm3Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm3 != null ? currentCorrection.Rhythm3 : null;
 
-                    correction.Rhythm4 = currentCorrection.Rhythm4Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm4 != null ? currentCorrection.OriginalRhythm4 : null;
+                    correction.Rhythm4 = currentCorrection.Rhythm4Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm4 != null ? currentCorrection.OriginalRhythm4 ?? "" : null;
                     correction.OriginalRhythm4 = currentCorrection.Rhythm4Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm4 != null ? currentCorrection.Rhythm4 : null;
 
+                    correction.PoemFormat = currentCorrection.PoemFormatReviewResult == CorrectionReviewResult.Approved && currentCorrection.PoemFormat != null ? currentCorrection.OriginalPoemFormat : null;
+                    correction.OriginalPoemFormat = currentCorrection.PoemFormatReviewResult == CorrectionReviewResult.Approved && currentCorrection.PoemFormat != null ? currentCorrection.PoemFormat : null;
+
+                    correction.RhymeLetters = currentCorrection.RhymeLettersReviewResult == CorrectionReviewResult.Approved && currentCorrection.RhymeLetters != null ? currentCorrection.OriginalRhymeLetters ?? "" : null;
+                    correction.OriginalRhymeLetters = currentCorrection.RhymeLettersReviewResult == CorrectionReviewResult.Approved && currentCorrection.RhymeLetters != null ? currentCorrection.RhymeLetters : null;
+
+                    correction.PoemSummary = currentCorrection.SummaryReviewResult == CorrectionReviewResult.Approved && currentCorrection.PoemSummary != null ? currentCorrection.OriginalPoemSummary ?? "" : null;
+                    correction.OriginalPoemSummary = currentCorrection.SummaryReviewResult == CorrectionReviewResult.Approved && currentCorrection.PoemSummary != null ? currentCorrection.PoemSummary : null;
+
+                    correction.Note = $"برگشت تصحیح با کد {correctionId}";
+                    if(!string.IsNullOrEmpty(currentCorrection.Note))
+                    {
+                        correction.Note += " - یادداشت تصحیح قبلی - ";
+                        correction.Note += currentCorrection.Note;
+                    }
 
                     HttpResponseMessage response = await secureClient.PostAsync(
                         $"{APIRoot.Url}/api/ganjoor/poem/correction",
