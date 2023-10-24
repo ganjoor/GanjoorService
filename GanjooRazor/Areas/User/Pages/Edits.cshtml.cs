@@ -207,15 +207,16 @@ namespace GanjooRazor.Areas.User.Pages
                     var currentCorrection = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await correctionResponse.Content.ReadAsStringAsync());
                     GanjoorPoemCorrectionViewModel correction = new GanjoorPoemCorrectionViewModel();
                     correction.PoemId = currentCorrection.PoemId;
-                    if (currentCorrection.Title != null)
+                    if (currentCorrection.Title != null && currentCorrection.Result == CorrectionReviewResult.Approved)
                     {
                         correction.OriginalTitle = currentCorrection.Title;
                         correction.Title = currentCorrection.OriginalTitle;
                     }
 
+                    List<GanjoorVerseVOrderText> vOrderTexts = new List<GanjoorVerseVOrderText>();
                     if (currentCorrection.VerseOrderText != null)
                     {
-                        List<GanjoorVerseVOrderText> vOrderTexts = new List<GanjoorVerseVOrderText>();
+
                         foreach (var verseOrderText in currentCorrection.VerseOrderText)
                         {
                             if (
@@ -234,8 +235,8 @@ namespace GanjooRazor.Areas.User.Pages
                                    VORder = verseOrderText.VORder,
                                    OriginalText = verseOrderText.Text,
                                    Text = verseOrderText.OriginalText,
-                                   VersePosition = verseOrderText.VersePositionResult == CorrectionReviewResult.Approved &&  verseOrderText.VersePosition != null ? verseOrderText.OriginalVersePosition : null,
-                                   OriginalVersePosition  = verseOrderText.VersePositionResult == CorrectionReviewResult.Approved && verseOrderText.VersePosition != null ? verseOrderText.VersePosition : null,
+                                   VersePosition = verseOrderText.VersePositionResult == CorrectionReviewResult.Approved && verseOrderText.VersePosition != null ? verseOrderText.OriginalVersePosition : null,
+                                   OriginalVersePosition = verseOrderText.VersePositionResult == CorrectionReviewResult.Approved && verseOrderText.VersePosition != null ? verseOrderText.VersePosition : null,
                                    LanguageId = verseOrderText.LanguageReviewResult == CorrectionReviewResult.Approved && verseOrderText.LanguageId != null ? verseOrderText.OriginalLanguageId : null,
                                    OriginalLanguageId = verseOrderText.LanguageReviewResult == CorrectionReviewResult.Approved && verseOrderText.LanguageId != null ? verseOrderText.LanguageId : null,
                                    CoupletIndex = verseOrderText.CoupletIndex,
@@ -244,9 +245,23 @@ namespace GanjooRazor.Areas.User.Pages
 
                                });
                             }
-                           
+
                         }
+
                     }
+                    correction.VerseOrderText = vOrderTexts.ToArray();
+                    correction.Rhythm = currentCorrection.RhythmResult == CorrectionReviewResult.Approved && currentCorrection.Rhythm != null ? currentCorrection.OriginalRhythm : null;
+                    correction.OriginalRhythm = currentCorrection.RhythmResult == CorrectionReviewResult.Approved && currentCorrection.Rhythm != null ? currentCorrection.Rhythm : null;
+
+                    correction.Rhythm2 = currentCorrection.Rhythm2Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm2 != null ? currentCorrection.OriginalRhythm2 : null;
+                    correction.OriginalRhythm2 = currentCorrection.Rhythm2Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm2 != null ? currentCorrection.Rhythm2 : null;
+
+                    correction.Rhythm3 = currentCorrection.Rhythm3Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm3 != null ? currentCorrection.OriginalRhythm3 : null;
+                    correction.OriginalRhythm3 = currentCorrection.Rhythm3Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm3 != null ? currentCorrection.Rhythm3 : null;
+
+                    correction.Rhythm4 = currentCorrection.Rhythm4Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm4 != null ? currentCorrection.OriginalRhythm4 : null;
+                    correction.OriginalRhythm4 = currentCorrection.Rhythm4Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm4 != null ? currentCorrection.Rhythm4 : null;
+
 
                     HttpResponseMessage response = await secureClient.PostAsync(
                         $"{APIRoot.Url}/api/ganjoor/poem/correction",
