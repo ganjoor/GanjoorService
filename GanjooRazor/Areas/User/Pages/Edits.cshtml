@@ -20,7 +20,7 @@ else
     {
         @if (Model.Profile != null)
         {
-          
+
             <div id="profile">
                 <p>
                     <a href="/hashieha?userId=@Model.Profile.Id">@Model.Profile.NickName</a>
@@ -30,7 +30,7 @@ else
                         <a href="@Model.Profile.Website">🌐</a>
                     }
 
-                    
+
                 </p>
 
                 @if (!string.IsNullOrEmpty(Model.Profile.Bio))
@@ -48,7 +48,34 @@ else
                 </p>
             </div>
         }
-       
+
+        <script>
+            function rollBackCorrection(correctionId){
+                if (!confirm('ویرایش معکوس ایجاد شود؟')) {
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    url: '?handler=RollBackCorrection',
+                    data: {
+                        correctionId: correctionId,
+                    },
+                    success: function () {
+                        alert('انجام شد.');
+                        location.reload(true);     
+                    },
+                    error: function (e) {
+                        if (e.responseText == null)
+                            alert(e);
+                        else
+                            alert(e.responseText);
+                       
+                    }
+
+                });
+            }
+        </script>
+
     }
 
     @if (Model.Corrections.Count == 0)
@@ -544,12 +571,12 @@ else
                     </td>
                 </tr>
 
-                @if(correction.Reviewed && Model.CanEdit)
+                @if (correction.Reviewed)
                 {
                     <tr>
-                    <td colspan="3">
+                        <td colspan="3">
                             <a role="button" style="cursor:pointer;width:100%;color:white;background-color:orange;display:block" onclick="rollBackCorrection(@correction.Id)">برگشت به وضعیت قبل از این ویرایش</a>
-                    </td>
+                        </td>
                     </tr>
                 }
 
