@@ -17,6 +17,32 @@
 }
 else
 {
+    <script>
+        function rollBackCorrection(correctionId) {
+            if (!confirm('ویرایش معکوس ایجاد شود؟')) {
+                return;
+            }
+            $.ajax({
+                type: "POST",
+                url: '?handler=RollBackCorrection',
+                data: {
+                    correctionId: correctionId,
+                },
+                success: function () {
+                    alert('انجام شد.');
+                   
+                },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+
+                }
+
+            });
+        }
+    </script>
     <p style="text-align:center">
         @foreach (var paginationLink in Model.PaginationLinks)
         {
@@ -34,7 +60,7 @@ else
     @foreach (var correction in Model.Corrections)
     {
         if (color == "gray")
-            color = "darkslategray";
+            color = "lightsteelblue";
         else
             color = "gray";
 
@@ -232,6 +258,12 @@ else
                             <tr><td colspan="2" style="background-color:black">&nbsp;</td></tr>
                         }
                     }
+
+                <tr>
+                    <td colspan="2">
+                        <a role="button" style="cursor:pointer;width:100%;color:white;background-color:orange;display:block" onclick="rollBackCorrection(@correction.Id)">برگشت به وضعیت قبل از این ویرایش</a>
+                    </td>
+                </tr>
 
             </table>
 

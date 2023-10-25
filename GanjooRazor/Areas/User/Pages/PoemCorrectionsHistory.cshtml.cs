@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using DNTPersianUtils.Core;
 using GanjooRazor.Utils;
@@ -15,6 +16,7 @@ using RSecurityBackend.Models.Generic;
 
 namespace GanjooRazor.Areas.User.Pages
 {
+    [IgnoreAntiforgeryToken(Order = 1001)]
     public class PoemCorrectionsHistoryModel : PageModel
     {
         /// <summary>
@@ -153,5 +155,109 @@ namespace GanjooRazor.Areas.User.Pages
                 }
             return Page();
         }
+
+        public async Task<IActionResult> OnPostRollBackCorrectionAsync(int correctionId)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var correctionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/correction/{correctionId}");
+                    if (!correctionResponse.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await correctionResponse.Content.ReadAsStringAsync()));
+                    }
+
+                    var currentCorrection = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await correctionResponse.Content.ReadAsStringAsync());
+                    GanjoorPoemCorrectionViewModel correction = new GanjoorPoemCorrectionViewModel();
+                    correction.PoemId = currentCorrection.PoemId;
+                    if (currentCorrection.Title != null && currentCorrection.Result == CorrectionReviewResult.Approved)
+                    {
+                        correction.OriginalTitle = currentCorrection.Title;
+                        correction.Title = currentCorrection.OriginalTitle;
+                    }
+
+                    List<GanjoorVerseVOrderText> vOrderTexts = new List<GanjoorVerseVOrderText>();
+                    if (currentCorrection.VerseOrderText != null)
+                    {
+
+                        foreach (var verseOrderText in currentCorrection.VerseOrderText)
+                        {
+                            if (
+                                verseOrderText.Result == CorrectionReviewResult.Approved
+                                ||
+                                verseOrderText.VersePositionResult == CorrectionReviewResult.Approved
+                                ||
+                                verseOrderText.LanguageReviewResult == CorrectionReviewResult.Approved
+                                ||
+                                verseOrderText.SummaryReviewResult == CorrectionReviewResult.Approved
+                                )
+                            {
+                                vOrderTexts.Add(
+                               new GanjoorVerseVOrderText()
+                               {
+                                   VORder = verseOrderText.VORder,
+                                   OriginalText = verseOrderText.Text,
+                                   Text = verseOrderText.OriginalText,
+                                   VersePosition = verseOrderText.VersePositionResult == CorrectionReviewResult.Approved && verseOrderText.VersePosition != null ? verseOrderText.OriginalVersePosition : null,
+                                   OriginalVersePosition = verseOrderText.VersePositionResult == CorrectionReviewResult.Approved && verseOrderText.VersePosition != null ? verseOrderText.VersePosition : null,
+                                   LanguageId = verseOrderText.LanguageReviewResult == CorrectionReviewResult.Approved && verseOrderText.LanguageId != null ? verseOrderText.OriginalLanguageId : null,
+                                   OriginalLanguageId = verseOrderText.LanguageReviewResult == CorrectionReviewResult.Approved && verseOrderText.LanguageId != null ? verseOrderText.LanguageId : null,
+                                   CoupletIndex = verseOrderText.CoupletIndex,
+                                   CoupletSummary = verseOrderText.SummaryReviewResult == CorrectionReviewResult.Approved && verseOrderText.CoupletSummary != null ? verseOrderText.OriginalCoupletSummary ?? "" : null,
+                                   OriginalCoupletSummary = verseOrderText.SummaryReviewResult == CorrectionReviewResult.Approved && verseOrderText.CoupletSummary != null ? verseOrderText.CoupletSummary : null,
+
+                               });
+                            }
+
+                        }
+
+                    }
+                    correction.VerseOrderText = vOrderTexts.ToArray();
+                    correction.Rhythm = currentCorrection.RhythmResult == CorrectionReviewResult.Approved && currentCorrection.Rhythm != null ? currentCorrection.OriginalRhythm ?? "" : null;
+                    correction.OriginalRhythm = currentCorrection.RhythmResult == CorrectionReviewResult.Approved && currentCorrection.Rhythm != null ? currentCorrection.Rhythm : null;
+
+                    correction.Rhythm2 = currentCorrection.Rhythm2Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm2 != null ? currentCorrection.OriginalRhythm2 ?? "" : null;
+                    correction.OriginalRhythm2 = currentCorrection.Rhythm2Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm2 != null ? currentCorrection.Rhythm2 : null;
+
+                    correction.Rhythm3 = currentCorrection.Rhythm3Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm3 != null ? currentCorrection.OriginalRhythm3 ?? "" : null;
+                    correction.OriginalRhythm3 = currentCorrection.Rhythm3Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm3 != null ? currentCorrection.Rhythm3 : null;
+
+                    correction.Rhythm4 = currentCorrection.Rhythm4Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm4 != null ? currentCorrection.OriginalRhythm4 ?? "" : null;
+                    correction.OriginalRhythm4 = currentCorrection.Rhythm4Result == CorrectionReviewResult.Approved && currentCorrection.Rhythm4 != null ? currentCorrection.Rhythm4 : null;
+
+                    correction.PoemFormat = currentCorrection.PoemFormatReviewResult == CorrectionReviewResult.Approved && currentCorrection.PoemFormat != null ? currentCorrection.OriginalPoemFormat : null;
+                    correction.OriginalPoemFormat = currentCorrection.PoemFormatReviewResult == CorrectionReviewResult.Approved && currentCorrection.PoemFormat != null ? currentCorrection.PoemFormat : null;
+
+                    correction.RhymeLetters = currentCorrection.RhymeLettersReviewResult == CorrectionReviewResult.Approved && currentCorrection.RhymeLetters != null ? currentCorrection.OriginalRhymeLetters ?? "" : null;
+                    correction.OriginalRhymeLetters = currentCorrection.RhymeLettersReviewResult == CorrectionReviewResult.Approved && currentCorrection.RhymeLetters != null ? currentCorrection.RhymeLetters : null;
+
+                    correction.PoemSummary = currentCorrection.SummaryReviewResult == CorrectionReviewResult.Approved && currentCorrection.PoemSummary != null ? currentCorrection.OriginalPoemSummary ?? "" : null;
+                    correction.OriginalPoemSummary = currentCorrection.SummaryReviewResult == CorrectionReviewResult.Approved && currentCorrection.PoemSummary != null ? currentCorrection.PoemSummary : null;
+
+                    correction.Note = $"برگشت تصحیح با کد {correctionId}";
+                    if (!string.IsNullOrEmpty(currentCorrection.Note))
+                    {
+                        correction.Note += " - یادداشت تصحیح قبلی - ";
+                        correction.Note += currentCorrection.Note;
+                    }
+
+                    HttpResponseMessage response = await secureClient.PostAsync(
+                        $"{APIRoot.Url}/api/ganjoor/poem/correction",
+                        new StringContent(JsonConvert.SerializeObject(correction),
+                        Encoding.UTF8,
+                        "application/json"));
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+
+
+                    return new OkObjectResult(true);
+                }
+            }
+            return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+        }
+
     }
 }
