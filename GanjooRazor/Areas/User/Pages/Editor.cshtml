@@ -23,6 +23,19 @@
         alert('انجام شد.');
     }
 
+    function tarkib4VersePositions(verseCount) {
+        var index = 1;
+        for (var i = 1; i <= verseCount; i++) {
+            var newVersePosition = 'versepostion-' + i.toString();
+            document.getElementById(newVersePosition).value = index == 1 ? 'Right' : index == 2 ? 'Left' : index == 3 ? 'CenteredVerse1' : 'CenteredVerse2';
+            index++;
+            if(index == 5){
+                index = 1;
+            }
+        }
+        alert('انجام شد.');
+    }
+
 
 
     function savePoemCorrections(id, verseCount) {
@@ -1521,6 +1534,10 @@ else
 
         <tr>
             <td><a role="button" onclick="resetVersePositions(@Model.PageInformation.Poem.Verses.Length)" class="pagebutton">چینش پیش‌فرض نوع مصرع‌ها</a></td>
+        </tr>
+
+        <tr>
+            <td><a role="button" onclick="tarkib4VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="pagebutton">چینش مربعی</a></td>
         </tr>
 
         <tr>
