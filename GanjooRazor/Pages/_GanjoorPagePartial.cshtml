@@ -625,7 +625,7 @@
                                                             @Html.Raw(s.Top6RelatedSections[i].HtmlExcerpt)
                                                         </div>
 
-                                                        @if (s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount > 0)
+                                                        @if (s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount > 0 && s.GanjoorMetre != null)
                                                         {
                                                             @if (s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount > 20)
                                                             {
@@ -644,7 +644,7 @@
                                                     }
                                                 }
 
-                                                @if (s.Top6RelatedSections.Length == 6)
+                                                @if (s.Top6RelatedSections.Length == 6 && s.GanjoorMetre != null)
                                                 {
                                                     <div id="more-related-placeholder-@s.Index"></div>
                                                     <div id="load-more-related-@s.Index">
