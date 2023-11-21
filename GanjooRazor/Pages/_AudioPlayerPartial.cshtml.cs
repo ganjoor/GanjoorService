@@ -13,7 +13,7 @@ namespace GanjooRazor.Pages
         public string getAudioDesc(PublicRecitationViewModel recitation, bool contributionLink = false)
         {
             string audiodesc = "به خوانش ";
-            if (!string.IsNullOrEmpty(recitation.AudioArtistUrl))
+            if (!string.IsNullOrEmpty(recitation.AudioArtistUrl) && recitation.AudioArtistUrl.StartsWith("http"))
             {
                 audiodesc += $"<a href='{recitation.AudioArtistUrl}'>{recitation.AudioArtist}</a>";
             }
@@ -22,16 +22,9 @@ namespace GanjooRazor.Pages
                 audiodesc += $"{recitation.AudioArtist}";
             }
 
-            if (!string.IsNullOrEmpty(recitation.AudioSrc))
+            if (!string.IsNullOrEmpty(recitation.AudioSrc) && !string.IsNullOrEmpty(recitation.AudioSrcUrl) && recitation.AudioSrcUrl.StartsWith("http"))
             {
-                if (!string.IsNullOrEmpty(recitation.AudioSrcUrl))
-                {
-                    audiodesc += $" <a href='{recitation.AudioSrcUrl}'>{recitation.AudioSrc}</a>";
-                }
-                else
-                {
-                    audiodesc += $" {recitation.AudioSrc}";
-                }
+                audiodesc += $" نقل از <a href='{recitation.AudioSrcUrl}'>{recitation.AudioSrc}</a>";
             }
 
             if (contributionLink)
