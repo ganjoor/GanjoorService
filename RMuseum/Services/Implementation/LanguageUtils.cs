@@ -16,7 +16,7 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// Persian Alphabet
         /// </summary>
-        public const string PersianAlphabet = "آابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیئؤ";
+        public const string PersianAlphabet = "آابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیئؤء";
 
         /// <summary>
         /// English Alphabet
