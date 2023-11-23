@@ -303,8 +303,6 @@ namespace RMuseum
             //faq service
             services.AddTransient<IFAQService, FAQService>();
 
-            //PDF library service
-            services.AddTransient<IPDFLibraryService, PDFLibraryService>();
 
             //Queued FTP Upload Service
             services.AddTransient<IQueuedFTPUploadService, QueuedFTPUploadService>();

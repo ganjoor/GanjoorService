@@ -1,4 +1,7 @@
-﻿using ganjoor;
+﻿/*
+ * removed
+
+using ganjoor;
 using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Artifact;
@@ -309,3 +312,4 @@ namespace RMuseum.Services.Implementation
     }
 }
 
+*/
