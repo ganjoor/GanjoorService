@@ -303,6 +303,11 @@ namespace RMuseum
             //faq service
             services.AddTransient<IFAQService, FAQService>();
 
+            //workspace service
+            services.AddTransient<IWorkspaceService, WorkspaceService>();
+
+            //workspace role service
+            services.AddTransient<IWorkspaceRolesService, WorkspaceRolesServiceBase>();
 
             //Queued FTP Upload Service
             services.AddTransient<IQueuedFTPUploadService, QueuedFTPUploadService>();
