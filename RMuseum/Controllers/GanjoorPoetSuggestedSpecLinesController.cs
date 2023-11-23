@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
@@ -75,7 +76,7 @@ namespace RMuseum.Controllers
                 return BadRequest(resCount.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers",
+            HttpContext.Response.Headers.Append("paging-headers",
                 JsonConvert.SerializeObject(
                     new PaginationMetadata()
                     {

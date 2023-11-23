@@ -1371,7 +1371,7 @@ namespace RMuseum.Controllers
                 await _ganjoorService.GetUserCorrections(userId, paging);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -1396,7 +1396,7 @@ namespace RMuseum.Controllers
                 await _ganjoorService.GetUserCorrections(userId ?? Guid.Empty, paging);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -1422,7 +1422,7 @@ namespace RMuseum.Controllers
                 await _ganjoorService.GetPoemEffectiveCorrections(id, paging);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -1476,7 +1476,7 @@ namespace RMuseum.Controllers
                 return BadRequest(resCount.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers",
+            HttpContext.Response.Headers.Append("paging-headers",
                 JsonConvert.SerializeObject(
                     new PaginationMetadata()
                     {
@@ -1617,7 +1617,7 @@ namespace RMuseum.Controllers
                 return BadRequest(resCount.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers",
+            HttpContext.Response.Headers.Append("paging-headers",
                 JsonConvert.SerializeObject(
                     new PaginationMetadata()
                     {
@@ -1694,7 +1694,7 @@ namespace RMuseum.Controllers
                 await _ganjoorService.GetUserSuggestedSongs(userId, paging);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -1852,7 +1852,7 @@ namespace RMuseum.Controllers
             }
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(comments.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(comments.Result.PagingMeta));
 
             return Ok(comments.Result.Items);
         }
@@ -1888,7 +1888,7 @@ namespace RMuseum.Controllers
             }
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(comments.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(comments.Result.PagingMeta));
 
             return Ok(comments.Result.Items);
         }
@@ -1914,7 +1914,7 @@ namespace RMuseum.Controllers
             }
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(comments.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(comments.Result.PagingMeta));
 
             return Ok(comments.Result.Items);
         }
@@ -2190,7 +2190,7 @@ namespace RMuseum.Controllers
             }
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(comments.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(comments.Result.PagingMeta));
 
             return Ok(comments.Result.Items);
         }
@@ -2382,7 +2382,7 @@ namespace RMuseum.Controllers
                 return BadRequest(pagedResult.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
 
             return Ok(pagedResult.Result.Items);
         }
@@ -2407,7 +2407,7 @@ namespace RMuseum.Controllers
                 return BadRequest(pagedResult.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
 
             return Ok(pagedResult.Result.Items);
         }
@@ -2433,7 +2433,7 @@ namespace RMuseum.Controllers
                 return BadRequest(pagedResult.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
 
             return Ok(pagedResult.Result.Items);
         }
@@ -2875,7 +2875,7 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
             return Ok(res.Result.Bookmarks);
         }
 
@@ -2938,7 +2938,7 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
             return Ok(res.Result.Items);
         }
 
@@ -3371,7 +3371,7 @@ namespace RMuseum.Controllers
                 return BadRequest(resCount.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers",
+            HttpContext.Response.Headers.Append("paging-headers",
                 JsonConvert.SerializeObject(
                     new PaginationMetadata()
                     {
@@ -3406,7 +3406,7 @@ namespace RMuseum.Controllers
                 await _ganjoorService.GetUserSectionCorrections(userId, paging);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -3430,7 +3430,7 @@ namespace RMuseum.Controllers
                 await _ganjoorService.GetUserSectionCorrections(Guid.Empty, paging);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -3456,7 +3456,7 @@ namespace RMuseum.Controllers
                 await _ganjoorService.GetSectionEffectiveCorrections(id, paging);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);

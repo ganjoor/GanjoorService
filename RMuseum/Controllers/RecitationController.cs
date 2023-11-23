@@ -46,7 +46,7 @@ namespace RMuseum.Controllers
                 return BadRequest(res.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             return Ok(res.Result.Items);
         }
@@ -127,6 +127,7 @@ namespace RMuseum.Controllers
                      (
                          loggedOnUserId,
                          sessionId,
+                         User.Claims.Any(c => c.Type == "Language") ? User.Claims.First(c => c.Type == "Language").Value : "fa-IR",
                          RMuseumSecurableItem.AudioRecitationEntityShortName,
                          RMuseumSecurableItem.ModerateOperationShortName
                          );
@@ -142,10 +143,10 @@ namespace RMuseum.Controllers
                 return BadRequest(res.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             //adding audio upload enabled header to reduce need for a separate query
-            HttpContext.Response.Headers.Add("audio-upload-enabled", JsonConvert.SerializeObject(_audioService.UploadEnabled));
+            HttpContext.Response.Headers.Append("audio-upload-enabled", JsonConvert.SerializeObject(_audioService.UploadEnabled));
 
             return Ok(res.Result.Items);
         }
@@ -187,7 +188,7 @@ namespace RMuseum.Controllers
                 return StatusCode(StatusCodes.Status304NotModified);
             }
 
-            HttpContext.Response.Headers.Add("Accept-Ranges", "bytes");
+            HttpContext.Response.Headers.Append("Accept-Ranges", "bytes");
 
             return new FileStreamResult(new FileStream(narration.Result.LocalMp3FilePath, FileMode.Open, FileAccess.Read), "audio/mpeg");
         }
@@ -328,6 +329,7 @@ namespace RMuseum.Controllers
                      (
                          loggedOnUserId,
                          sessionId,
+                         User.Claims.Any(c => c.Type == "Language") ? User.Claims.First(c => c.Type == "Language").Value : "fa-IR",
                          RMuseumSecurableItem.AudioRecitationEntityShortName,
                          RMuseumSecurableItem.ModerateOperationShortName
                          );
@@ -394,6 +396,7 @@ namespace RMuseum.Controllers
                      (
                          loggedOnUserId,
                          sessionId,
+                         User.Claims.Any(c => c.Type == "Language") ? User.Claims.First(c => c.Type == "Language").Value : "fa-IR",
                          RMuseumSecurableItem.AudioRecitationEntityShortName,
                          RMuseumSecurableItem.ModerateOperationShortName
                          );
@@ -470,6 +473,7 @@ namespace RMuseum.Controllers
                      (
                          loggedOnUserId,
                          sessionId,
+                         User.Claims.Any(c => c.Type == "Language") ? User.Claims.First(c => c.Type == "Language").Value : "fa-IR",
                          RMuseumSecurableItem.AudioRecitationEntityShortName,
                          RMuseumSecurableItem.ModerateOperationShortName
                          );
@@ -485,10 +489,10 @@ namespace RMuseum.Controllers
                 return BadRequest(res.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             //adding audio upload enabled header to reduce need for a separate query
-            HttpContext.Response.Headers.Add("audio-upload-enabled", JsonConvert.SerializeObject(_audioService.UploadEnabled));
+            HttpContext.Response.Headers.Append("audio-upload-enabled", JsonConvert.SerializeObject(_audioService.UploadEnabled));
 
             return Ok(res.Result.Items);
         }
@@ -690,6 +694,7 @@ namespace RMuseum.Controllers
                      (
                          loggedOnUserId,
                          sessionId,
+                         User.Claims.Any(c => c.Type == "Language") ? User.Claims.First(c => c.Type == "Language").Value : "fa-IR",
                          RMuseumSecurableItem.AudioRecitationEntityShortName,
                          RMuseumSecurableItem.ModerateOperationShortName
                          );
@@ -700,7 +705,7 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             return Ok(res.Result.Items);
         }
@@ -754,6 +759,7 @@ namespace RMuseum.Controllers
                      (
                          loggedOnUserId,
                          sessionId,
+                         User.Claims.Any(c => c.Type == "Language") ? User.Claims.First(c => c.Type == "Language").Value : "fa-IR",
                          RMuseumSecurableItem.AudioRecitationEntityShortName,
                          RMuseumSecurableItem.ModerateOperationShortName
                          );
@@ -806,7 +812,7 @@ namespace RMuseum.Controllers
             }
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(reports.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(reports.Result.PagingMeta));
 
             return Ok(reports.Result.Items);
         }
@@ -977,7 +983,7 @@ namespace RMuseum.Controllers
                 return BadRequest(res.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
 
             return Ok(res.Result.Items);
         }

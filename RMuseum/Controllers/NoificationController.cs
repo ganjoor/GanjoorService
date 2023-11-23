@@ -9,7 +9,7 @@ namespace RMuseum.Controllers
     /// </summary>
     [Produces("application/json")]
     [Route("api/notifications")]
-    public class NoificationController : NoificationControllerBase
+    public class NoificationController : NotificationControllerBase
     {
         /// <summary>
         /// constructor

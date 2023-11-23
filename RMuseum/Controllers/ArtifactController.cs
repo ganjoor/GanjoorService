@@ -69,7 +69,7 @@ namespace RMuseum.Controllers
             }
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(itemsInfo.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(itemsInfo.Result.PagingMeta));
 
             return Ok(itemsInfo.Result.Items);
         }
@@ -88,6 +88,7 @@ namespace RMuseum.Controllers
                     (
                         loggedOnUserId,
                         sessionId,
+                        User.Claims.Any(c => c.Type == "Language") ? User.Claims.First(c => c.Type == "Language").Value : "fa-IR",
                         RMuseumSecurableItem.ArtifactEntityShortName,
                         RMuseumSecurableItem.ViewDraftOperationShortName
                         );
@@ -160,7 +161,7 @@ namespace RMuseum.Controllers
             }
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(itemsInfo.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(itemsInfo.Result.PagingMeta));
 
             return Ok(itemsInfo.Result.Items);
         }
@@ -467,6 +468,7 @@ namespace RMuseum.Controllers
                     (
                         loggedOnUserId,
                         sessionId,
+                        User.Claims.Any(c => c.Type == "Language") ? User.Claims.First(c => c.Type == "Language").Value : "fa-IR",
                         RMuseumSecurableItem.ArtifactEntityShortName,
                         RMuseumSecurableItem.ToAwaitingStatusOperationShortName
                         );
@@ -479,6 +481,7 @@ namespace RMuseum.Controllers
                     (
                         loggedOnUserId,
                         sessionId,
+                        User.Claims.Any(c => c.Type == "Language") ? User.Claims.First(c => c.Type == "Language").Value : "fa-IR",
                         RMuseumSecurableItem.ArtifactEntityShortName,
                         RMuseumSecurableItem.PublishOperationShortName
                         );
@@ -599,7 +602,7 @@ namespace RMuseum.Controllers
                 return BadRequest(itemsInfo.ExceptionString);
             }
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(itemsInfo.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(itemsInfo.Result.PagingMeta));
 
             return Ok(itemsInfo.Result.Items);
         }
@@ -1164,7 +1167,7 @@ namespace RMuseum.Controllers
                 return BadRequest(itemsInfo.ExceptionString);
             }
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(itemsInfo.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(itemsInfo.Result.PagingMeta));
 
             return Ok(itemsInfo.Result.Items);
         }
@@ -1328,7 +1331,7 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
             return Ok(res.Result.Bookmarks);
         }
 
@@ -1357,7 +1360,7 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
             return Ok(res.Result.Bookmarks);
         }
 
@@ -1424,6 +1427,7 @@ namespace RMuseum.Controllers
                     (
                         loggedOnUserId,
                         new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value),
+                        User.Claims.Any(c => c.Type == "Language") ? User.Claims.First(c => c.Type == "Language").Value : "fa-IR",
                         RMuseumSecurableItem.NoteEntityShortName,
                         RMuseumSecurableItem.ModerateOperationShortName
                         );
@@ -1461,6 +1465,7 @@ namespace RMuseum.Controllers
                     (
                         loggedOnUserId,
                         new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value),
+                        User.Claims.Any(c => c.Type == "Language") ? User.Claims.First(c => c.Type == "Language").Value : "fa-IR",
                         RMuseumSecurableItem.NoteEntityShortName,
                         RMuseumSecurableItem.ModerateOperationShortName
                         );
@@ -1578,7 +1583,7 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
             return Ok(res.Result.Notes);
         }
 
@@ -1608,7 +1613,7 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
             return Ok(res.Result.Notes);
         }
 
@@ -1627,7 +1632,7 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
             return Ok(res.Result.Notes);
         }
 
@@ -1684,7 +1689,7 @@ namespace RMuseum.Controllers
             }
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(notes.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(notes.Result.PagingMeta));
 
             return Ok(notes.Result.Items);
         }
@@ -1802,7 +1807,7 @@ namespace RMuseum.Controllers
                 return BadRequest(resCount.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers",
+            HttpContext.Response.Headers.Append("paging-headers",
                 JsonConvert.SerializeObject(
                     new PaginationMetadata()
                     {
@@ -2021,7 +2026,7 @@ namespace RMuseum.Controllers
                 return BadRequest(pagedResult.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
 
             return Ok(pagedResult.Result.Items);
         }
@@ -2045,7 +2050,7 @@ namespace RMuseum.Controllers
                 return BadRequest(pagedResult.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
 
             return Ok(pagedResult.Result.Items);
         }

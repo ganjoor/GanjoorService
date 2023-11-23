@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using RMuseum.Models.ExternalFTPUpload;
 using RSecurityBackend.Models.Generic;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
 
 namespace RMuseum.Controllers
 {
@@ -34,7 +35,7 @@ namespace RMuseum.Controllers
             }
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers", JsonConvert.SerializeObject(itemsInfo.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(itemsInfo.Result.PagingMeta));
 
             return Ok(itemsInfo.Result.Items);
         }

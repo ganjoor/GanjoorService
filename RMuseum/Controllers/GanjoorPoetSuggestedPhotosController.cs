@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace RMuseum.Controllers
 {
@@ -75,7 +76,7 @@ namespace RMuseum.Controllers
                 return BadRequest(resCount.ExceptionString);
 
             // Paging Header
-            HttpContext.Response.Headers.Add("paging-headers",
+            HttpContext.Response.Headers.Append("paging-headers",
                 JsonConvert.SerializeObject(
                     new PaginationMetadata()
                     {
