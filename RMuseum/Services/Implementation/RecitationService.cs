@@ -1771,12 +1771,6 @@ namespace RMuseum.Services.Implementationa
                 return $"نام خوانشگر فقط باید شامل حروف فارسی و فاصله باشد. اولین حرف غیرمجاز = {s}";
             }
 
-            s = LanguageUtils.GetFirstNotMatchingCharacter(p.ArtistUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/._-0123456789%");
-            if (s != "")
-            {
-                return $"نشانی خوانشگر فقط می‌تواند از حروف کوچک انگلیسی تشکیل شود. اولین حرف غیر مجاز = {s}";
-            }
-
             if (!string.IsNullOrEmpty(p.ArtistUrl))
             {
                 bool result = Uri.TryCreate(p.ArtistUrl, UriKind.Absolute, out Uri uriResult)
@@ -1785,13 +1779,6 @@ namespace RMuseum.Services.Implementationa
                 {
                     return $"نشانی وب خوانشگر نامعتبر است.";
                 }
-            }
-
-
-            s = LanguageUtils.GetFirstNotMatchingCharacter(p.AudioSrcUrl, LanguageUtils.EnglishLowerCaseAlphabet, LanguageUtils.EnglishLowerCaseAlphabet.ToUpper() + @":/._-0123456789%");
-            if (s != "")
-            {
-                return $"نشانی منبع فقط می‌تواند از حروف کوچک انگلیسی تشکیل شود. اولین حرف غیر مجاز = {s}";
             }
 
 
@@ -1809,7 +1796,7 @@ namespace RMuseum.Services.Implementationa
 
             if (s != "")
             {
-                return $"پسوند فقط می‌تواند از حروف کوچک انگلیسی تشکیل شود. اولین حرف غیر مجاز = {s}";
+                return $"پسوند فقط می‌تواند از حروف کوچک انگلیسی تشکیل شود. اولین حرف غیرمجاز = {s}";
             }
 
             return "";
