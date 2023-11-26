@@ -177,10 +177,21 @@ else
                             {
                                 <tr>
                                     <td>
-                                        <p style="color:red">@verse.OriginalText</p>
+                                        <p id="verse-original-@correction.Id-edit-@verse.VORder" style="color:red">@verse.OriginalText</p>
                                     </td>
                                     <td>
-                                        <p style="color:green">@verse.Text</p>
+                                        <p id="verse-edited-@correction.Id-edit-@verse.VORder"  style="color:green">@verse.Text</p>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <p id="verse-compare-@correction.Id-edit-@verse.VORder">@verse.OriginalText</p>
+                                        <script>
+                                            $(document).ready(function () {
+                                                compareCorrectionBlocks('verse-original-@correction.Id-edit-@verse.VORder', 'verse-edited-@correction.Id-edit-@verse.VORder', 'verse-compare-@correction.Id-edit-@verse.VORder');
+                                            });
+                                        </script>
                                     </td>
 
                                 </tr>

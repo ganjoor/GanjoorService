@@ -33,6 +33,41 @@
     </script>
     <script src="/lib/diff.js"></script>
     <script src="/js/bk.js?version=41"></script>
+    <script>
+        function compareCorrectionBlocks(originalElemenyId, editedElementId, resultElementId) {
+            var a = document.getElementById(originalElemenyId);
+            var b = document.getElementById(editedElementId);
+            var result = document.getElementById(resultElementId);
+            var diff = JsDiff.diffChars(a.textContent, b.textContent);
+            var fragment = document.createDocumentFragment();
+            for (var i = 0; i < diff.length; i++) {
+
+                if (diff[i].added && diff[i + 1] && diff[i + 1].removed) {
+                    var swap = diff[i];
+                    diff[i] = diff[i + 1];
+                    diff[i + 1] = swap;
+                }
+
+                var node;
+                if (diff[i].removed) {
+                    node = document.createElement('del');
+                    node.style.color = 'red';
+                    node.appendChild(document.createTextNode(diff[i].value));
+                } else if (diff[i].added) {
+                    node = document.createElement('span');
+                    node.style.color = 'white';
+                    node.style.backgroundColor = 'green';
+                    node.appendChild(document.createTextNode(diff[i].value));
+                } else {
+                    node = document.createTextNode(diff[i].value);
+                }
+                fragment.appendChild(node);
+            }
+
+            result.textContent = '';
+            result.appendChild(fragment);
+        }
+    </script>
 </head>
 
 <body>
