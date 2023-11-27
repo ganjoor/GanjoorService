@@ -226,10 +226,21 @@ else
                                 </tr>
                                 <tr>
                                     <td>
-                                        معنی: <p style="color:red">@verse.OriginalCoupletSummary</p>
+                                        معنی: <p style="color:red" id="versesummary-original-@correction.Id-edit-@verse.VORder">@verse.OriginalCoupletSummary</p>
                                     </td>
                                     <td>
-                                        <p style="color:green">@verse.CoupletSummary</p>
+                                        <p style="color:green" id="versesummary-edited-@correction.Id-edit-@verse.VORder">@verse.CoupletSummary</p>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <p id="versesummary-compare-@correction.Id-edit-@verse.VORder">@verse.OriginalText</p>
+                                        <script>
+                                            $(document).ready(function () {
+                                                compareCorrectionBlocks('versesummary-original-@correction.Id-edit-@verse.VORder', 'versesummary-edited-@correction.Id-edit-@verse.VORder', 'versesummary-compare-@correction.Id-edit-@verse.VORder');
+                                            });
+                                        </script>
                                     </td>
 
                                 </tr>
