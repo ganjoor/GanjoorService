@@ -96,17 +96,26 @@ else
                                 });
                             </script>
                         </td>
-
                     </tr>
                 }
                 @if (correction.PoemSummary != null && correction.SummaryReviewResult == CorrectionReviewResult.Approved)
                 {
                     <tr>
                         <td>
-                            خلاصه: <p style="color:red">@correction.OriginalPoemSummary</p>
+                            خلاصه: <p style="color:red" id="summary-original-@correction.Id">@correction.OriginalPoemSummary</p>
                         </td>
                         <td>
-                            <p style="color:green">@correction.PoemSummary</p>
+                            <p style="color:green" id="summary-edited-@correction.Id">@correction.PoemSummary</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <p id="summary-compare-@correction.Id">@correction.OriginalPoemSummary</p>
+                            <script>
+                                $(document).ready(function () {
+                                    compareCorrectionBlocks('summary-original-@correction.Id', 'summary-edited-@correction.Id', 'summary-compare-@correction.Id');
+                                });
+                            </script>
                         </td>
                     </tr>
                 }
