@@ -169,6 +169,7 @@ else
                             </td>
                         </tr>
                     }
+                    <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                 }
                 @if (correction.Rhythm != null)
                 {
@@ -203,6 +204,7 @@ else
                             </td>
                         </tr>
                     }
+                    <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                 }
 
                 @if (correction.PoemSummary != null)
@@ -248,6 +250,7 @@ else
                             </td>
                         </tr>
                     }
+                    <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                 }
 
                 @if (correction.RhymeLetters != null)
@@ -283,6 +286,7 @@ else
                             </td>
                         </tr>
                     }
+                    <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                 }
 
 
@@ -324,6 +328,7 @@ else
                             </td>
                         </tr>
                     }
+                    <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                 }
 
                 @if (correction.PoemFormat != null)
@@ -364,6 +369,7 @@ else
                             </td>
                         </tr>
                     }
+                    <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                 }
 
 
@@ -395,6 +401,7 @@ else
                                     }
                                 </td>
                             </tr>
+                            <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                         }
                         else if (verse.NewVerse)
                         {
@@ -422,6 +429,7 @@ else
                                     }
                                 </td>
                             </tr>
+                            <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                         }
                         else if (verse.Text != null)
                         {
@@ -458,6 +466,7 @@ else
                                     </script>
                                 </td>
                             </tr>
+                            <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                         }
                         @if (verse.CoupletSummary != null)
                         {
@@ -499,6 +508,7 @@ else
                                     </script>
                                 </td>
                             </tr>
+                            <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                         }
                         @if (verse.VersePosition != null && !verse.NewVerse && verse.VersePositionResult != CorrectionReviewResult.NotSuggestedByUser)
                         {
@@ -533,6 +543,7 @@ else
                                     }
                                 </td>
                             </tr>
+                            <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                         }
                         @if (verse.LanguageId != null && !verse.NewVerse && verse.LanguageReviewResult != CorrectionReviewResult.NotSuggestedByUser)
                         {
@@ -578,6 +589,7 @@ else
                                     }
                                 </td>
                             </tr>
+                            <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                         }
                         @if (!string.IsNullOrEmpty(verse.ReviewNote))
                         {
@@ -586,6 +598,7 @@ else
                                     <p>@verse.ReviewNote</p>
                                 </td>
                             </tr>
+                            <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                         }
                     }
                 @if (!string.IsNullOrEmpty(correction.Note))
@@ -596,6 +609,7 @@ else
                             @correction.Note
                         </td>
                     </tr>
+                    <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                 }
 
                 <tr>
