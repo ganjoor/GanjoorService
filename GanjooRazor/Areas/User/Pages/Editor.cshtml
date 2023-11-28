@@ -446,10 +446,20 @@ else
                 </tr>
                 <tr>
                     <td>
-                        <p class="red-color">@Model.MyLastEdit.OriginalTitle</p>
+                        <p class="red-color" id="title-lastedit-original">@Model.MyLastEdit.OriginalTitle</p>
                     </td>
                     <td>
-                        <p class="green-color">@Model.MyLastEdit.Title</p>
+                        <p class="green-color" id="title-lastedit-edited">@Model.MyLastEdit.Title</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <p id="title-lastedit-compare">@Model.MyLastEdit.OriginalTitle</p>
+                        <script>
+                            $(document).ready(function () {
+                                compareCorrectionBlocks('title-lastedit-original', 'title-lastedit-edited', 'title-lastedit-compare');
+                            });
+                        </script>
                     </td>
                 </tr>
             }
