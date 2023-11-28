@@ -222,12 +222,22 @@ else
                             else
                             @if (correction.SummaryReviewResult == CorrectionReviewResult.Approved)
                             {
-                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.SummaryReviewResult)</p>
+                                <p style="color:green" id="summary-original-@correction.Id">@CorrectionReviewResultConvertor.GetString(correction.SummaryReviewResult)</p>
                             }
                             else
                             {
-                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.SummaryReviewResult)</p>
+                                <p style="color:red" id="summary-edited-@correction.Id">@CorrectionReviewResultConvertor.GetString(correction.SummaryReviewResult)</p>
                             }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <p id="summary-compare-@correction.Id">@correction.OriginalTitle</p>
+                            <script>
+                                $(document).ready(function () {
+                                    compareCorrectionBlocks('summary-original-@correction.Id', 'summary-edited-@correction.Id', 'summary-compare-@correction.Id');
+                                });
+                            </script>
                         </td>
                     </tr>
                     @if (!string.IsNullOrEmpty(correction.ReviewNote))
