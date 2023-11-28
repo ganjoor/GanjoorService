@@ -534,10 +534,20 @@ else
                 </tr>
                 <tr>
                     <td>
-                        <p class="red-color">@Model.MyLastEdit.OriginalPoemSummary</p>
+                        <p class="red-color" id="summary-lastedit-original">@Model.MyLastEdit.OriginalPoemSummary</p>
                     </td>
                     <td>
-                        <p class="green-color">@Model.MyLastEdit.PoemSummary</p>
+                        <p class="green-color" id="summary-lastedit-edited">@Model.MyLastEdit.PoemSummary</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <p id="summary-lastedit-compare">@Model.MyLastEdit.OriginalPoemSummary</p>
+                        <script>
+                            $(document).ready(function () {
+                                compareCorrectionBlocks('summary-lastedit-original', 'summary-lastedit-edited', 'summary-lastedit-compare');
+                            });
+                        </script>
                     </td>
                 </tr>
             }
