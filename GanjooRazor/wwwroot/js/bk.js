@@ -1200,6 +1200,7 @@ function applyPreferredColorScheme(scheme) {
         document.getElementById("icon-sun").style.display = 'inline';
         document.getElementById("icon-moon").style.display = 'none';
     } else {
+        if (document.getElementById("icon-sun") != null) {
         document.getElementById("icon-moon").style.display = 'inline';
         document.getElementById("icon-sun").style.display = 'none';
     }
