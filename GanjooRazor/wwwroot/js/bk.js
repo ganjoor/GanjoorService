@@ -1197,12 +1197,16 @@ function applyPreferredColorScheme(scheme) {
 
     // Change the toggle button to be the opposite of the current scheme
     if (scheme === "dark") {
-        document.getElementById("icon-sun").style.display = 'inline';
-        document.getElementById("icon-moon").style.display = 'none';
+        if (document.getElementById("icon-sun") != null) {
+            document.getElementById("icon-sun").style.display = 'inline';
+            document.getElementById("icon-moon").style.display = 'none';
+        }
+
     } else {
         if (document.getElementById("icon-sun") != null) {
-        document.getElementById("icon-moon").style.display = 'inline';
-        document.getElementById("icon-sun").style.display = 'none';
+            document.getElementById("icon-moon").style.display = 'inline';
+            document.getElementById("icon-sun").style.display = 'none';
+        }
     }
 }
 
