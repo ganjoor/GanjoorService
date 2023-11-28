@@ -209,10 +209,10 @@ else
                 {
                     <tr>
                         <td>
-                            خلاصه: <p style="color:red">@correction.OriginalPoemSummary</p>
+                            خلاصه: <p style="color:red" id="summary-original-@correction.Id">@correction.OriginalPoemSummary</p>
                         </td>
                         <td>
-                            <p style="color:green">@correction.PoemSummary</p>
+                            <p style="color:green" id="summary-edited-@correction.Id">@correction.PoemSummary</p>
                         </td>
                         <td>
                             @if (correction.SummaryReviewResult == CorrectionReviewResult.NotReviewed)
@@ -232,7 +232,7 @@ else
                     </tr>
                     <tr>
                         <td colspan="3">
-                            <p id="summary-compare-@correction.Id">@correction.OriginalTitle</p>
+                            <p id="summary-compare-@correction.Id">@correction.OriginalPoemSummary</p>
                             <script>
                                 $(document).ready(function () {
                                     compareCorrectionBlocks('summary-original-@correction.Id', 'summary-edited-@correction.Id', 'summary-compare-@correction.Id');
@@ -427,10 +427,10 @@ else
                         {
                             <tr>
                                 <td>
-                                    <p style="color:red" id="verse@verse.Id-original-@correction.Id">@verse.OriginalText</p>
+                                    <p style="color:red" id="verse-@verse.Id-original-@correction.Id">@verse.OriginalText</p>
                                 </td>
                                 <td>
-                                    <p style="color:green" id="verse@verse.Id-edited-@correction.Id">@verse.Text</p>
+                                    <p style="color:green" id="verse-@verse.Id-edited-@correction.Id">@verse.Text</p>
                                 </td>
                                 <td>
                                     @if (verse.Result == CorrectionReviewResult.NotReviewed)
@@ -450,10 +450,10 @@ else
                             </tr>
                             <tr>
                                 <td colspan="3">
-                                    <p id="verse@verse.Id-compare-@correction.Id">@correction.OriginalTitle</p>
+                                    <p id="verse-@verse.Id-compare-@correction.Id">@verse.OriginalText</p>
                                     <script>
                                         $(document).ready(function () {
-                                            compareCorrectionBlocks('verse@verse.Id-original-@correction.Id', 'verse@verse.Id-edited-@correction.Id', 'verse@verse.Id-compare-@correction.Id');
+                                            compareCorrectionBlocks('verse-@verse.Id-original-@correction.Id', 'verse-@verse.Id-edited-@correction.Id', 'verse-@verse.Id-compare-@correction.Id');
                                         });
                                     </script>
                                 </td>
@@ -468,10 +468,10 @@ else
                             </tr>
                             <tr>
                                 <td>
-                                    معنی: <p style="color:red" id="verse-summary@verse.Id-original-@correction.Id">@verse.OriginalCoupletSummary</p>
+                                    معنی: <p style="color:red" id="verse-summary-@verse.Id-original-@correction.Id">@verse.OriginalCoupletSummary</p>
                                 </td>
                                 <td>
-                                    <p style="color:green" id="verse-summary@verse.Id-edited-@correction.Id">@verse.CoupletSummary</p>
+                                    <p style="color:green" id="verse-summary-@verse.Id-edited-@correction.Id">@verse.CoupletSummary</p>
                                 </td>
                                 <td>
                                     @if (verse.SummaryReviewResult == CorrectionReviewResult.NotReviewed)
@@ -491,10 +491,10 @@ else
                             </tr>
                             <tr>
                                 <td colspan="3">
-                                    <p id="verse-summary@verse.Id-compare-@correction.Id">@correction.OriginalTitle</p>
+                                    <p id="verse-summary-@verse.Id-compare-@correction.Id">@verse.OriginalCoupletSummary</p>
                                     <script>
                                         $(document).ready(function () {
-                                            compareCorrectionBlocks('verse-summary@verse.Id-original-@correction.Id', 'verse-summary@verse.Id-edited-@correction.Id', 'verse-summary@verse.Id-compare-@correction.Id');
+                                            compareCorrectionBlocks('verse-summary-@verse.Id-original-@correction.Id', 'verse-summary-@verse.Id-edited-@correction.Id', 'verse-summary-@verse.Id-compare-@correction.Id');
                                         });
                                     </script>
                                 </td>
