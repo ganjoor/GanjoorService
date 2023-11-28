@@ -130,10 +130,10 @@ else
                 {
                     <tr>
                         <td>
-                            <p style="color:red">@correction.OriginalTitle</p>
+                            <p style="color:red" id="title-original-@correction.Id">@correction.OriginalTitle</p>
                         </td>
                         <td>
-                            <p style="color:green">@correction.Title</p>
+                            <p style="color:green" id="title-edited-@correction.Id">@correction.Title</p>
                         </td>
                         <td>
                             @if (correction.Result == CorrectionReviewResult.NotReviewed)
@@ -149,6 +149,16 @@ else
                             {
                                 <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
                             }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <p id="title-compare-@correction.Id">@correction.OriginalTitle</p>
+                            <script>
+                                $(document).ready(function () {
+                                    compareCorrectionBlocks('title-original-@correction.Id', 'title-edited-@correction.Id', 'title-compare-@correction.Id');
+                                });
+                            </script>
                         </td>
                     </tr>
                     @if (!string.IsNullOrEmpty(correction.ReviewNote))
