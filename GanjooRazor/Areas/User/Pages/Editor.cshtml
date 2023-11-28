@@ -602,10 +602,20 @@ else
                             </tr>
                             <tr>
                                 <td>
-                                    <p class="red-color">@verse.OriginalText</p>
+                                    <p class="red-color" id="verse@verse.Id-lastedit-original">@verse.OriginalText</p>
                                 </td>
                                 <td>
-                                    <p class="green-color">@verse.Text</p>
+                                    <p class="green-color" id="verse@verse.Id-lastedit-edited">@verse.Text</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <p id="verse@verse.Id-lastedit-compare">@verse.OriginalText</p>
+                                    <script>
+                                        $(document).ready(function () {
+                                            compareCorrectionBlocks('verse@verse.Id-lastedit-original', 'verse@verse.Id-lastedit-edited', 'verse@verse.Id-lastedit-compare');
+                                        });
+                                    </script>
                                 </td>
                             </tr>
                         }
@@ -642,10 +652,21 @@ else
                             </tr>
                             <tr>
                                 <td>
-                                    <p class="red-color">@verse.OriginalCoupletSummary</p>
+                                    <p class="red-color" id="verse-summary@verse.Id-lastedit-original">@verse.OriginalCoupletSummary</p>
                                 </td>
                                 <td>
-                                    <p class="green-color">@verse.CoupletSummary</p>
+                                    <p class="green-color" id="verse-summary@verse.Id-lastedit-edited">@verse.CoupletSummary</p>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2">
+                                    <p id="verse-summary@verse.Id-lastedit-compare">@verse.OriginalText</p>
+                                    <script>
+                                        $(document).ready(function () {
+                                            compareCorrectionBlocks('verse-summary@verse.Id-lastedit-original', 'verse-summary@verse.Id-lastedit-edited', 'verse-summary@verse.Id-lastedit-compare');
+                                        });
+                                    </script>
                                 </td>
                             </tr>
                         }
