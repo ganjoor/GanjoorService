@@ -33,6 +33,36 @@ document.addEventListener('selectionchange', function() {
 		return
 	}
 
+	text = text.replaceAll("‌", " ")
+		.replaceAll("‌", " ")//replace zwnj with space
+		.replaceAll("ّ", "")//tashdid
+		.replaceAll("َ", "")//a
+		.replaceAll("ِ", "")//e
+		.replaceAll("ُ", "")//o
+		.replaceAll("ً", "")//an
+		.replaceAll("ٍ", "")//en
+		.replaceAll("ٌ", "")//on
+		.replaceAll(".", "")//dot
+		.replaceAll("،", "")//virgool
+		.replaceAll("!", "")
+		.replaceAll("؟", "")
+		.replaceAll("ٔ", "")//ye
+		.replaceAll(":", "")
+		.replaceAll("ئ", "ی")
+		.replaceAll("؛", "")
+		.replaceAll(";", "")
+		.replaceAll("*", "")
+		.replaceAll(")", "")
+		.replaceAll("(", "")
+		.replaceAll("[", "")
+		.replaceAll("]", "")
+		.replaceAll("\"", "")
+		.replaceAll("'", "")
+		.replaceAll("«", "")
+		.replaceAll("»", "")
+		.replaceAll("ْ", "")//sokoon
+		;
+
 	
 	$meaning.attr({
 		href: 'https://www.vajehyab.com/?q=' + encodeURI(text),
