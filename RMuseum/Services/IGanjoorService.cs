@@ -1027,7 +1027,7 @@ namespace RMuseum.Services
         /// start band couplets fix
         /// </summary>
         /// <returns></returns>
-        RServiceResult<bool> StartOnTimeBandCoupletsFix();
+        RServiceResult<bool> StartOneTimeBandCoupletsFix();
 
         /// <summary>
         /// get couplet sections

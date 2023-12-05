@@ -816,7 +816,7 @@ namespace RMuseum.Services.Implementation
         /// start band couplets fix
         /// </summary>
         /// <returns></returns>
-        public RServiceResult<bool> StartOnTimeBandCoupletsFix()
+        public RServiceResult<bool> StartOneTimeBandCoupletsFix()
         {
             try
             {

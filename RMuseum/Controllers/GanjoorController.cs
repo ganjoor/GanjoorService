@@ -3211,7 +3211,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public IActionResult StartOnTimeBandCoupletsFix()
         {
-            var res = _ganjoorService.StartOnTimeBandCoupletsFix();
+            var res = _ganjoorService.StartOneTimeBandCoupletsFix();
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok();
