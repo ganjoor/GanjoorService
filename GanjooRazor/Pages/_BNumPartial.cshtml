@@ -88,6 +88,28 @@
 
 </div>
 
+<div id="letters-stat-@Model.CoupletIndex">
+    
+    @{
+        var coupletText = "";
+        foreach (var verse in Model.Verses)
+        {
+            coupletText += RMuseum.Services.Implementation.LanguageUtils.MakeTextSearchable(verse.Text);
+            coupletText += " ";
+        }
+        coupletText = coupletText.Trim();
+    }
+    <div class="century">
+        شمار نویسه‌ها (از @coupletText.Replace(" ", "").Length.ToPersianNumbers() نویسه)
+    </div>
+    <div id="letters-stat-sourceStringContainer-@Model.CoupletIndex">@coupletText</div>
+    <div id="letters-stat-resultTableContainer-@Model.CoupletIndex" class="charContainer"></div>
+    <script>
+        countAndDisplayCharacters('@coupletText', 'letters-stat-resultTableContainer-@Model.CoupletIndex', 'letters-stat-sourceStringContainer-@Model.CoupletIndex');
+       
+    </script>
+</div>
+
 
 <div id="comments-block-@Model.CoupletIndex" class="clear-both">
     @foreach (var comment in Model.Comments)

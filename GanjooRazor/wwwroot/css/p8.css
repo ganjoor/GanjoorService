@@ -1965,6 +1965,19 @@ fieldset {
     display: none;
 }
 
+.charContainer {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction:row;
+}
+
+.charCell {
+    border: 1px solid black;
+    padding: 8px;
+    margin: 4px;
+    cursor: pointer;
+}
+
 @media(prefers-color-scheme: dark) {
     body {
         background: rgba(0, 0, 0, 0.9);

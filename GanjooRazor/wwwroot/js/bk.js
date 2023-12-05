@@ -1210,3 +1210,86 @@ function applyPreferredColorScheme(scheme) {
     }
 }
 
+function countAndSortCharacters(inputString) {
+    // Initialize an empty map to store character counts
+    const charCountMap = new Map();
+
+    // Iterate through each character in the input string
+    for (const char of inputString) {
+        if (char == ' ') continue;
+        // Check if the character is already in the map
+        if (charCountMap.has(char)) {
+            // If yes, increment the count
+            charCountMap.set(char, charCountMap.get(char) + 1);
+        } else {
+            // If not, add the character to the map with a count of 1
+            charCountMap.set(char, 1);
+        }
+    }
+
+    // Sort the map by character counts in descending order
+    const sortedCharCount = new Map([...charCountMap.entries()].sort((a, b) => b[1] - a[1]));
+
+    // Return the sorted map
+    return sortedCharCount;
+}
+
+function countAndDisplayCharacters(inputString, resultTableId, sourceStringId) {
+    const result = countAndSortCharacters(inputString);
+
+    
+    const container = document.getElementById(resultTableId);
+
+    let highlightedCharDiv = null; // To keep track of the previously clicked charDiv
+
+
+
+    // Populate the row with cells for each character and its frequency
+    result.forEach((count, char) => {
+        const charDiv = document.createElement('div');
+        charDiv.textContent = `${char}: ${persianizeNumerals(count.toString())}`;
+        charDiv.className = 'charCell';
+
+        // Add a click event listener to highlight the character in the source string
+        charDiv.addEventListener('click', (event) => {
+            if (event.target.classList.contains('charCell')) {
+                // Roll back the color of the previously clicked charDiv
+                if (highlightedCharDiv) {
+                    highlightedCharDiv.classList.remove('background-red');
+                }
+
+                const sourceStringDiv = document.getElementById(sourceStringId);
+                const highlightedString = highlightCharacter(inputString, char, sourceStringDiv.innerHTML);
+                sourceStringDiv.innerHTML = highlightedString;
+
+                // Toggle the color of the clicked charDiv
+                charDiv.classList.toggle('background-red');
+                highlightedCharDiv = charDiv; // Update the reference to the clicked charDiv
+            }
+        });
+
+        // Append the div to the container
+        container.appendChild(charDiv);
+    });
+
+
+}
+
+function highlightCharacter(previousHighlightedString, charToHighlight) {
+    // Escape special characters in the regex pattern
+    const escapedChar = charToHighlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    // Create a regular expression to match the specified character
+    const regex = new RegExp(escapedChar, 'g');
+
+    // Remove previous highlighting
+    const unhighlightedString = previousHighlightedString.replace(/<span style="color: red;">|<\/span>/g, '');
+
+    // Replace the matched character with the HTML code for red color
+    const highlightedString = unhighlightedString.replace(regex, `<span style="color: red;">$&</span>`);
+
+    return highlightedString;
+}
+
+
+
