@@ -38,7 +38,7 @@ namespace RMuseum.Services.Implementation
                                    int progress = 0;
                                    try
                                    {
-                                       var sections = await context.GanjoorPoemSections.Where(s => s.SectionType == PoemSectionType.WholePoem && (s.PoemFormat == null || s.PoemFormat == GanjoorPoemFormat.Unknown)).ToListAsync();
+                                       var sections = await context.GanjoorPoemSections.Where(s => s.SectionType == PoemSectionType.WholePoem).ToListAsync();
                                        int count = sections.Count;
 
                                        int updatedSectionsCount = 0;
@@ -46,7 +46,8 @@ namespace RMuseum.Services.Implementation
                                        for (int i = 0; i < count; i++)
                                        {
                                            var mainSection = sections[i];
-                                           var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == mainSection.Id).SingleOrDefaultAsync();
+                                           mainSection.PoemFormat = null;
+                                           var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == mainSection.PoemId).SingleOrDefaultAsync();
                                            if (poem == null)
                                                continue;
                                            if(poem.FullTitle.Contains("شاهنامه") || poem.FullTitle.Contains("مثنوی"))
