@@ -1245,6 +1245,7 @@ function countAndDisplayCharacters(inputString, resultTableId, sourceStringId) {
 
 
     // Populate the row with cells for each character and its frequency
+    var first = true;
     result.forEach((count, char) => {
         const charDiv = document.createElement('div');
         charDiv.textContent = `${char}: ${persianizeNumerals(count.toString())}`;
@@ -1267,6 +1268,16 @@ function countAndDisplayCharacters(inputString, resultTableId, sourceStringId) {
                 highlightedCharDiv = charDiv; // Update the reference to the clicked charDiv
             }
         });
+
+        // Highlight the first character by default
+        if (first) {
+            first = false;
+            charDiv.classList.add('background-red');
+            highlightedCharDiv = charDiv;
+            const sourceStringDiv = document.getElementById(sourceStringId);
+            const highlightedString = highlightCharacter(inputString, char, sourceStringDiv.innerHTML);
+            sourceStringDiv.innerHTML = highlightedString;
+        }
 
         // Append the div to the container
         container.appendChild(charDiv);

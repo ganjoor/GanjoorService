@@ -102,7 +102,7 @@
     <div class="century">
         شمار نویسه‌ها (از @coupletText.Replace(" ", "").Length.ToPersianNumbers() نویسه)
     </div>
-    <div id="letters-stat-sourceStringContainer-@Model.CoupletIndex">@coupletText</div>
+    <div id="letters-stat-sourceStringContainer-@Model.CoupletIndex" class="notice">@coupletText</div>
     <div id="letters-stat-resultTableContainer-@Model.CoupletIndex" class="charContainer"></div>
     <script>
         countAndDisplayCharacters('@coupletText', 'letters-stat-resultTableContainer-@Model.CoupletIndex', 'letters-stat-sourceStringContainer-@Model.CoupletIndex');
