@@ -1072,6 +1072,12 @@
             <param name="poemformat"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartFillingSectionsPoemFormats">
+            <summary>
+            fill missing poem formats
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.FindCategoryPoemsRhythms(System.Int32,System.Boolean,System.String)">
             <summary>
             start assigning poem rhythms
@@ -14936,7 +14942,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.StartOnTimeBandCoupletsFix">
+        <member name="M:RMuseum.Services.IGanjoorService.StartOneTimeBandCoupletsFix">
             <summary>
             start band couplets fix
             </summary>
@@ -15108,6 +15114,12 @@
             <param name="naskbanUserName"></param>
             <param name="naskbanPassword"></param>
             <returns>number of synched items</returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartFillingSectionsPoemFormats">
+            <summary>
+            filling poem formats
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
@@ -16987,6 +16999,12 @@
             <param name="ignoreSumup"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFillingSectionsPoemFormats">
+            <summary>
+            filling poem formats
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFillingPoemSectionsCoupletIndex">
             <summary>
             sectionizing poems
@@ -17039,7 +17057,7 @@
             <param name="convertVerses"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartOnTimeBandCoupletsFix">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartOneTimeBandCoupletsFix">
             <summary>
             start band couplets fix
             </summary>

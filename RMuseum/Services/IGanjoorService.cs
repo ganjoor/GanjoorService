@@ -1200,5 +1200,11 @@ namespace RMuseum.Services
         /// <param name="naskbanPassword"></param>
         /// <returns>number of synched items</returns>
         Task<RServiceResult<int>> SynchronizeNaskbanLinksAsync(Guid ganjoorUserId, string naskbanUserName, string naskbanPassword);
+
+        /// <summary>
+        /// filling poem formats
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartFillingSectionsPoemFormats();
     }
 }

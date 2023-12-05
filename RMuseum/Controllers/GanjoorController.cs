@@ -657,6 +657,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// fill missing poem formats
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("poemformats/fillmissing")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartFillingSectionsPoemFormats()
+        {
+            var res = _ganjoorService.StartFillingSectionsPoemFormats();
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok();
+        }
+
+        /// <summary>
         /// start assigning poem rhythms
         /// </summary>
         /// <param name="id"></param>

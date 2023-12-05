@@ -9,8 +9,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RSecurityBackend.Models.Generic.Db;
-using Azure;
-using System.Data.Common;
+
 
 namespace RMuseum.Services.Implementation
 {
@@ -19,6 +18,142 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+        /// <summary>
+        /// filling poem formats
+        /// </summary>
+        /// <returns></returns>
+        public RServiceResult<bool> StartFillingSectionsPoemFormats()
+        {
+            try
+            {
+
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                           (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                               {
+                                   LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                   var job = (await jobProgressServiceEF.NewJob("StartFillingSectionsPoemFormats", "Query data")).Result;
+                                   int progress = 0;
+                                   try
+                                   {
+                                       var sections = await context.GanjoorPoemSections.Where(s => s.SectionType == PoemSectionType.WholePoem && (s.PoemFormat == null || s.PoemFormat == GanjoorPoemFormat.Unknown)).ToListAsync();
+                                       int count = sections.Count;
+
+                                       int updatedSectionsCount = 0;
+
+                                       for (int i = 0; i < count; i++)
+                                       {
+                                           var mainSection = sections[i];
+                                           var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == mainSection.Id).SingleOrDefaultAsync();
+                                           if (poem == null)
+                                               continue;
+                                           if(poem.FullTitle.Contains("شاهنامه") || poem.FullTitle.Contains("مثنوی"))
+                                           {
+                                               mainSection.PoemFormat = GanjoorPoemFormat.Masnavi;
+                                               context.Update(mainSection);
+                                               await context.SaveChangesAsync();
+                                               updatedSectionsCount++;
+                                               continue;
+                                           }
+                                           var nonCommentVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id && v.VersePosition != VersePosition.Comment && v.SectionIndex1 == mainSection.Index).OrderBy(v => v.VOrder).ToListAsync();
+                                           if (!nonCommentVerses.Any())
+                                               continue;
+                                           bool multiBand = false;
+                                           if (!nonCommentVerses.Where(v => v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single).Any())
+                                           {
+                                               if (nonCommentVerses.Where(v =>
+                                                   v.VersePosition == VersePosition.CenteredVerse1
+                                                   ||
+                                                   v.VersePosition == VersePosition.CenteredVerse2
+                                                  ).Any())
+                                               {
+                                                   multiBand = true;
+                                               }
+                                           }
+
+                                           if (multiBand)
+                                           {
+                                               mainSection.PoemFormat = GanjoorPoemFormat.MultiBand;
+                                               if (poem.FullTitle.Contains("ترجیع"))
+                                                   mainSection.PoemFormat = GanjoorPoemFormat.TarjeeBand;
+                                               if (poem.FullTitle.Contains("ترکیب"))
+                                                   mainSection.PoemFormat = GanjoorPoemFormat.TarkibBand;
+                                               if (poem.FullTitle.Contains("مسمط"))
+                                                   mainSection.PoemFormat = GanjoorPoemFormat.Mosammat;
+                                               if (poem.FullTitle.Contains("مخمس"))
+                                                   mainSection.PoemFormat = GanjoorPoemFormat.Mosammat5;
+                                               if (poem.FullTitle.Contains("مسدس"))
+                                                   mainSection.PoemFormat = GanjoorPoemFormat.Mosammat6;
+                                               if (poem.FullTitle.Contains("چهارپاره"))
+                                                   mainSection.PoemFormat = GanjoorPoemFormat.ChaharPare;
+                                           }
+                                           else
+                                           {
+                                               if (!string.IsNullOrEmpty(mainSection.RhymeLetters))
+                                               {
+                                                   mainSection.PoemFormat = GanjoorPoemFormat.Generic;
+                                                   if (poem.FullTitle.Contains("رباعی"))
+                                                       mainSection.PoemFormat = GanjoorPoemFormat.Robaee;
+                                                   else
+                                                   if (poem.FullTitle.Contains("غزل"))
+                                                       mainSection.PoemFormat = GanjoorPoemFormat.Ghazal;
+                                                   else
+                                                   if (poem.FullTitle.Contains("قصاید") || poem.FullTitle.Contains("قصید"))
+                                                       mainSection.PoemFormat = GanjoorPoemFormat.Ghaside;
+                                                   else
+                                                   if (poem.FullTitle.Contains("قطعات") || poem.FullTitle.Contains("قطعه"))
+                                                       mainSection.PoemFormat = GanjoorPoemFormat.Ghete;
+
+                                                   if(nonCommentVerses.Count == 4)
+                                                   {
+                                                       if (mainSection.GanjoorMetreId == 24) //id for robaee from database
+                                                           mainSection.PoemFormat = GanjoorPoemFormat.Robaee;
+                                                       else
+                                                       if (mainSection.GanjoorMetreId == 12) //id for dobeyti from database
+                                                           mainSection.PoemFormat = GanjoorPoemFormat.Dobeyti;
+                                                   }
+                                                  
+
+
+                                               }
+                                               else
+                                                   if (_IsMasnavi(nonCommentVerses))
+                                               {
+                                                   mainSection.PoemFormat = GanjoorPoemFormat.Masnavi;
+                                               }
+                                           }
+
+                                           if(mainSection.PoemFormat != null)
+                                           {
+                                               updatedSectionsCount++;
+                                               context.Update(mainSection);
+                                               await context.SaveChangesAsync();
+                                           }
+
+                                           if ((i * 100 / count) > progress)
+                                           {
+                                               progress = i * 100 / count;
+                                               await jobProgressServiceEF.UpdateJob(job.Id, progress, $"{updatedSectionsCount} sections updated");
+                                           }
+                                       }
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                   }
+                                   catch (Exception exp)
+                                   {
+                                       await jobProgressServiceEF.UpdateJob(job.Id, progress, "", false, exp.ToString());
+                                   }
+
+                               }
+                           });
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
         /// <summary>
         /// sectionizing poems
         /// </summary>
@@ -94,7 +229,7 @@ namespace RMuseum.Services.Implementation
         {
             if (verses.Count % 2 != 0)
                 return false;
-            if(bandCouplet)
+            if (bandCouplet)
             {
                 if (verses.Any(v => v.VersePosition != VersePosition.CenteredVerse1 && v.VersePosition != VersePosition.CenteredVerse2))
                     return false;
@@ -104,12 +239,12 @@ namespace RMuseum.Services.Implementation
                 if (verses.Any(v => v.VersePosition != VersePosition.Right && v.VersePosition != VersePosition.Left))
                     return false;
             }
-           
+
             int rhymingCouplets = 0;
             for (int i = 0; i < verses.Count; i += 2)
             {
                 var rightVerse = verses[i];
-                if(bandCouplet)
+                if (bandCouplet)
                 {
                     if (rightVerse.VersePosition != VersePosition.CenteredVerse1)
                         return false;
@@ -119,10 +254,10 @@ namespace RMuseum.Services.Implementation
                     if (rightVerse.VersePosition != VersePosition.Right)
                         return false;
                 }
-               
-                
+
+
                 var leftVerse = verses[i + 1];
-                if(bandCouplet)
+                if (bandCouplet)
                 {
                     if (leftVerse.VersePosition != VersePosition.CenteredVerse2)
                         return false;
@@ -132,7 +267,7 @@ namespace RMuseum.Services.Implementation
                     if (leftVerse.VersePosition != VersePosition.Left)
                         return false;
                 }
-                
+
                 List<GanjoorVerse> coupletVerses = new List<GanjoorVerse>();
                 coupletVerses.Add(rightVerse);
                 coupletVerses.Add(leftVerse);
@@ -329,7 +464,7 @@ namespace RMuseum.Services.Implementation
             if (poem.FullTitle.Contains("چهارپاره"))
                 mainSection.PoemFormat = GanjoorPoemFormat.ChaharPare;
 
-            
+
             index++;
             List<GanjoorVerse> currentBandVerses = new List<GanjoorVerse>();
             GanjoorPoemSection currentBandSection = new GanjoorPoemSection()
@@ -413,9 +548,9 @@ namespace RMuseum.Services.Implementation
             {
                 bandVerse.SectionIndex2 = bandSection.Index;
             }
-            if(_IsMasnavi(bandVerses, true))
+            if (_IsMasnavi(bandVerses, true))
             {
-                if(mainSection.PoemFormat == GanjoorPoemFormat.MultiBand)
+                if (mainSection.PoemFormat == GanjoorPoemFormat.MultiBand)
                 {
                     mainSection.PoemFormat = GanjoorPoemFormat.TarkibBand;
                 }
@@ -430,7 +565,7 @@ namespace RMuseum.Services.Implementation
                     coupletVerses.Add(rightVerse);
                     coupletVerses.Add(leftVerse);
                     var res = LanguageUtils.FindRhyme(coupletVerses, false, true, true);
-                    if(string.IsNullOrEmpty(res.Rhyme))
+                    if (string.IsNullOrEmpty(res.Rhyme))
                     {
                         res = LanguageUtils.FindRhyme(coupletVerses, false, true, false);
                     }
@@ -453,7 +588,7 @@ namespace RMuseum.Services.Implementation
                     leftVerse.SectionIndex3 = verseSection.Index;
 
                     context.Update(rightVerse);
-                                                   context.Update(leftVerse);
+                    context.Update(leftVerse);
 
                     var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
                     verseSection.HtmlText = PrepareHtmlText(rl);
@@ -660,19 +795,19 @@ namespace RMuseum.Services.Implementation
                 _context.RemoveRange(sections);
                 await _context.SaveChangesAsync();
                 var poem = await _context.GanjoorPoems.Include(p => p.Cat).AsNoTracking().SingleAsync(p => p.Id == id);
-               
+
                 await _SectionizePoem(_context, poem, jobProgressServiceEF, job);
 
-                if(meterId != null)
+                if (meterId != null)
                 {
                     List<string> rhymes = new List<string>();
                     var newSections = await _context.GanjoorPoemSections.Where(s => s.PoemId == id).ToListAsync();
                     foreach (var section in newSections)
                     {
                         section.GanjoorMetreId = meterId;
-                        if(!string.IsNullOrEmpty(section.RhymeLetters))
+                        if (!string.IsNullOrEmpty(section.RhymeLetters))
                         {
-                            if(!rhymes.Contains(section.RhymeLetters))
+                            if (!rhymes.Contains(section.RhymeLetters))
                             {
                                 rhymes.Add(section.RhymeLetters);
                             }
@@ -698,7 +833,7 @@ namespace RMuseum.Services.Implementation
                            }
                            );
                     }
-                   
+
                 }
 
                 await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
@@ -735,7 +870,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var section = await _context.GanjoorPoemSections.Where(s => s.PoemId == poemId && s.Index == sectionIndex ).FirstOrDefaultAsync();
+                var section = await _context.GanjoorPoemSections.Where(s => s.PoemId == poemId && s.Index == sectionIndex).FirstOrDefaultAsync();
                 if (section == null)
                 {
                     return new RServiceResult<bool>(false);//Not found
@@ -790,7 +925,7 @@ namespace RMuseum.Services.Implementation
 
                 await _context.SaveChangesAsync();
 
-                if(regenPageHtml)
+                if (regenPageHtml)
                 {
                     var poemVerses = await _context.GanjoorVerses.AsNoTracking().Where(p => p.PoemId == poemId).OrderBy(v => v.VOrder).ToListAsync();
                     var dbPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleAsync();
@@ -843,7 +978,7 @@ namespace RMuseum.Services.Implementation
                                            var verses = await context.GanjoorVerses.Where(v => v.PoemId == section.PoemId).OrderBy(v => v.VOrder).ToListAsync();
                                            var bandVerses = FilterSectionVerses(section, verses);
                                            var resRetry = LanguageUtils.FindRhyme(bandVerses, false, true, true);
-                                           if(string.IsNullOrEmpty(resRetry.Rhyme))
+                                           if (string.IsNullOrEmpty(resRetry.Rhyme))
                                                resRetry = LanguageUtils.FindRhyme(bandVerses, false, true, false);
                                            if (!string.IsNullOrEmpty(resRetry.Rhyme) && section.OldRhymeLetters != resRetry.Rhyme)
                                            {
@@ -852,7 +987,7 @@ namespace RMuseum.Services.Implementation
                                                await jobProgressServiceEF.UpdateJob(job.Id, progress);
                                                if (section.GanjoorMetreId != null && section.OldRhymeLetters != resRetry.Rhyme)
                                                {
-                                                   if(!string.IsNullOrEmpty(section.OldRhymeLetters))
+                                                   if (!string.IsNullOrEmpty(section.OldRhymeLetters))
                                                    {
                                                        await _UpdateRelatedSections(context, (int)section.GanjoorMetreId, section.OldRhymeLetters);
                                                    }
@@ -911,7 +1046,7 @@ namespace RMuseum.Services.Implementation
                                                        CachedFirstCoupletIndex = (int)rightVerse.CoupletIndex,
                                                    };
 
-                                                   if(verseType == VersePoemSectionType.Third)
+                                                   if (verseType == VersePoemSectionType.Third)
                                                    {
                                                        rightVerse.SectionIndex3 = verseSection.Index;
                                                        leftVerse.SectionIndex3 = verseSection.Index;
@@ -924,7 +1059,7 @@ namespace RMuseum.Services.Implementation
 
                                                    context.Update(rightVerse);
                                                    context.Update(leftVerse);
-                                                   
+
 
                                                    var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
                                                    verseSection.HtmlText = PrepareHtmlText(rl);
@@ -934,7 +1069,7 @@ namespace RMuseum.Services.Implementation
 
                                                    await jobProgressServiceEF.UpdateJob(job.Id, progress);
 
-                                                   if(verseSection.GanjoorMetreId != null && !string.IsNullOrEmpty(verseSection.RhymeLetters) && preRhymeLetters != verseSection.RhymeLetters)
+                                                   if (verseSection.GanjoorMetreId != null && !string.IsNullOrEmpty(verseSection.RhymeLetters) && preRhymeLetters != verseSection.RhymeLetters)
                                                    {
                                                        preRhymeLetters = verseSection.RhymeLetters;
                                                        await _UpdateRelatedSections(context, (int)verseSection.GanjoorMetreId, verseSection.RhymeLetters);
@@ -942,7 +1077,7 @@ namespace RMuseum.Services.Implementation
                                                }
                                            }
 
-                                          
+
                                        }
                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                    }
