@@ -14409,6 +14409,15 @@
             <param name="poetId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemSectionsByPoemFormat(RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Ganjoor.GanjoorPoemFormat,System.Nullable{System.Int32})">
+            <summary>
+            Get Poem sections based on poem format
+            </summary>
+            <param name="paging"></param>
+            <param name="format"></param>
+            <param name="poetId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetLanguageTaggedPoemSections(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Nullable{System.Int32})">
             <summary>
             language tagged poem sections
@@ -17642,6 +17651,15 @@
             <param name="paging"></param>
             <param name="metre"></param>
             <param name="rhyme"></param>
+            <param name="poetId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemSectionsByPoemFormat(RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Ganjoor.GanjoorPoemFormat,System.Nullable{System.Int32})">
+            <summary>
+            Get Poem sections based on poem format
+            </summary>
+            <param name="paging"></param>
+            <param name="format"></param>
             <param name="poetId"></param>
             <returns></returns>
         </member>
