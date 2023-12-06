@@ -2431,6 +2431,30 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// Get Poem sections based on poem format
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="format"></param>
+        /// <param name="poetId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("sections/tagged/format")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCompleteViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPoemSectionsByPoemFormat([FromQuery] PagingParameterModel paging, GanjoorPoemFormat format, int poetId = 0)
+        {
+            var pagedResult = await _ganjoorService.GetPoemSectionsByPoemFormat(paging, format, poetId == 0 ? (int?)null : poetId);
+            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
+                return BadRequest(pagedResult.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+
+            return Ok(pagedResult.Result.Items);
+        }
+
+        /// <summary>
         /// search
         /// </summary>
         /// <param name="paging"></param>

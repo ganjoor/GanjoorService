@@ -1614,6 +1614,15 @@
             <param name="poetId">0 means all poets</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemSectionsByPoemFormat(RSecurityBackend.Models.Generic.PagingParameterModel,RMuseum.Models.Ganjoor.GanjoorPoemFormat,System.Int32)">
+            <summary>
+            Get Poem sections based on poem format
+            </summary>
+            <param name="paging"></param>
+            <param name="format"></param>
+            <param name="poetId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.Search(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Int32,System.Int32)">
             <summary>
             search
