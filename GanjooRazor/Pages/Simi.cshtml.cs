@@ -339,9 +339,11 @@ namespace GanjooRazor.Pages
                     foreach (var parentCat  in cat.Cat.Ancestors)
                     {
                         CatFullTitle += parentCat.Title;
-                        CatFullTitle += " &raquo";
+                        CatFullTitle += " »";
                     }
-                    CatFullTitle += cat.Cat.Title;
+                    CatFullTitle += " " + cat.Cat.Title;
+
+                    title += $" در بخش {CatFullTitle}";
                 }
             }
             else
@@ -350,7 +352,7 @@ namespace GanjooRazor.Pages
                 CatFullTitle = "";
             }
 
-            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={Metre}&rhyme={Rhyme}&poetId={PoetId}&language={Language}&format={(int)Format}";
+            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={Metre}&rhyme={Rhyme}&poetId={PoetId}&catId={CatId}&language={Language}&format={(int)Format}";
             var response = await _httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
@@ -374,6 +376,10 @@ namespace GanjooRazor.Pages
             {
                 htmlText = $"<div>{Environment.NewLine}";
                 string authorParam = PoetId != 0 ? $"&amp;a={PoetId}" : "";
+                if(authorParam != "" && CatId != 0)
+                {
+                    authorParam += $"&amp;c={CatId}";
+                }
                 title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
                 if (paginationMetadata.currentPage > 3)
                 {

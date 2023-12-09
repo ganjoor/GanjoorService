@@ -212,7 +212,7 @@ namespace GanjooRazor.Pages
                         CatFullTitle += parentCat.Title;
                         CatFullTitle += " »";
                     }
-                    CatFullTitle += cat.Cat.Title;
+                    CatFullTitle += " " + cat.Cat.Title;
                 }
             }
             else

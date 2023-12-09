@@ -236,6 +236,13 @@
                                 }
                             </select>
 
+                            @if(Model.CatId != 0)
+                            {
+                                <div class="width-100per">
+                                    تنها در بخش <a href="@Model.CatFullUrl">@Model.CatFullTitle</a>
+                                </div>
+                            }
+
                             <input type="submit" class="width-100per margin-top-5px" value="اعمال ورودی‌ها" />
 
                             @if (Model.CanEdit)
