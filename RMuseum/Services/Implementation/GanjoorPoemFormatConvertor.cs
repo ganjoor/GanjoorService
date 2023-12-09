@@ -65,6 +65,8 @@ namespace RMuseum.Services.Implementation
                     return "چند بندی";
                 case GanjoorPoemFormat.BahreTavil:
                     return "بحر طویل";
+                case GanjoorPoemFormat.Unknown:
+                    return "نامشخص";
             }
             return "";
         }
