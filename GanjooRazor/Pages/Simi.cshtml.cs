@@ -7,6 +7,7 @@ using DNTPersianUtils.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using NAudio.Gui;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
@@ -65,9 +66,11 @@ namespace GanjooRazor.Pages
 
         public List<GanjoorPoetViewModel> Poets { get; set; }
         public int PoetId { get; set; }
+        public int CatId { get; set; }
+        public string CatFullTitle { get; set; }
+        public string CatFullUrl { get; set; }
         public string Metre { get; set; }
         public string Rhyme { get; set; }
-
         public GanjoorLanguage[] Languages { get; set; }
         public GanjoorPoetCompleteViewModel Poet { get; set; }
         public List<GanjoorPoemCompleteViewModel> Poems { get; set; }
@@ -185,6 +188,8 @@ namespace GanjooRazor.Pages
             CanEdit = Request.Cookies["CanEdit"] == "True";
 
             PoetId = string.IsNullOrEmpty(Request.Query["a"]) ? 0 : int.Parse(Request.Query["a"]);
+            
+            CatId = string.IsNullOrEmpty(Request.Query["c"]) ? 0 : int.Parse(Request.Query["c"]);
 
             anyParamsGiven |= PoetId != 0;
 
@@ -316,6 +321,33 @@ namespace GanjooRazor.Pages
             if(Format != GanjoorPoemFormat.Unknown)
             {
                 title += $" در قالب شعری «{GanjoorPoemFormatConvertor.GetString(Format)}»";
+            }
+
+            if(CatId != 0)
+            {
+                var catResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{CatId}?poems=false&mainSections=false");
+                if (!catResponse.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await catResponse.Content.ReadAsStringAsync());
+                    return Page();
+                }
+                else
+                {
+                    var cat = JObject.Parse(await catResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
+                    CatFullUrl = cat.Cat.FullUrl;
+                    CatFullTitle = "";
+                    foreach (var parentCat  in cat.Cat.Ancestors)
+                    {
+                        CatFullTitle += parentCat.Title;
+                        CatFullTitle += " &raquo";
+                    }
+                    CatFullTitle += cat.Cat.Title;
+                }
+            }
+            else
+            {
+                CatFullUrl = "";
+                CatFullTitle = "";
             }
 
             string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={Metre}&rhyme={Rhyme}&poetId={PoetId}&language={Language}&format={(int)Format}";

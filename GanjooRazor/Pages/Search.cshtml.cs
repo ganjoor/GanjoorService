@@ -68,6 +68,8 @@ namespace GanjooRazor.Pages
         public string Query { get; set; }
         public int PoetId { get; set; }
         public int CatId { get; set; }
+        public string CatFullTitle { get; set; }
+        public string CatFullUrl { get; set; }
         public GanjoorPoetCompleteViewModel Poet { get; set; }
         public List<GanjoorPoemCompleteViewModel> Poems { get; set; }
         public PaginationMetadata PaginationMetadata { get; set; }
@@ -192,6 +194,33 @@ namespace GanjooRazor.Pages
             PoetId = string.IsNullOrEmpty(Request.Query["author"]) ? 0 : int.Parse(Request.Query["author"]);
             CatId = string.IsNullOrEmpty(Request.Query["cat"]) ? 0 : int.Parse(Request.Query["cat"]);
 
+            if (CatId != 0)
+            {
+                var catResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{CatId}?poems=false&mainSections=false");
+                if (!catResponse.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await catResponse.Content.ReadAsStringAsync());
+                    return Page();
+                }
+                else
+                {
+                    var cat = JObject.Parse(await catResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
+                    CatFullUrl = cat.Cat.FullUrl;
+                    CatFullTitle = "";
+                    foreach (var parentCat in cat.Cat.Ancestors)
+                    {
+                        CatFullTitle += parentCat.Title;
+                        CatFullTitle += " »";
+                    }
+                    CatFullTitle += cat.Cat.Title;
+                }
+            }
+            else
+            {
+                CatFullUrl = "";
+                CatFullTitle = "";
+            }
+
             ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
 
             //todo: use html master layout or make it partial
@@ -202,7 +231,14 @@ namespace GanjooRazor.Pages
             var poetName = Poets.SingleOrDefault(p => p.Id == PoetId);
             if (poetName != null)
             {
-                ViewData["Title"] = $"گنجور » نتایج جستجو برای {Query} در آثار {poetName?.Name}";
+                if(CatFullTitle != "")
+                {
+                    ViewData["Title"] = $"گنجور » نتایج جستجو برای {Query} در بخش {CatFullTitle}";
+                }
+                else
+                {
+                    ViewData["Title"] = $"گنجور » نتایج جستجو برای {Query} در آثار {poetName?.Name}";
+                }
             }
             else
             {
