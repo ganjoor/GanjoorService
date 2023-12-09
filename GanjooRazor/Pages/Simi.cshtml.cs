@@ -66,10 +66,14 @@ namespace GanjooRazor.Pages
         public int PoetId { get; set; }
         public string Metre { get; set; }
         public string Rhyme { get; set; }
+
+        public GanjoorLanguage[] Languages { get; set; }
         public GanjoorPoetCompleteViewModel Poet { get; set; }
         public List<GanjoorPoemCompleteViewModel> Poems { get; set; }
         public string PagingToolsHtml { get; set; }
         public string LastError { get; set; }
+
+        public string Language { get; set; }
 
 
         /// <summary>
@@ -96,6 +100,8 @@ namespace GanjooRazor.Pages
             }
 
             Poets = poets;
+
+            await ReadLanguagesAsync();
             return true;
         }
 
@@ -119,6 +125,18 @@ namespace GanjooRazor.Pages
 
             Poet = poet;
             return true;
+        }
+
+        private async Task ReadLanguagesAsync()
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
+            if (!response.IsSuccessStatusCode)
+            {
+                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return;
+            }
+
+            Languages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await response.Content.ReadAsStringAsync());
         }
 
         /// <summary>
@@ -159,11 +177,21 @@ namespace GanjooRazor.Pages
                 return StatusCode(503);
             }
 
+            bool anyParamsGiven = false;
+
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
             CanEdit = Request.Cookies["CanEdit"] == "True";
 
             PoetId = string.IsNullOrEmpty(Request.Query["a"]) ? 0 : int.Parse(Request.Query["a"]);
+
+            anyParamsGiven |= PoetId != 0;
+
+            Language = Request.Query["l"];
+
+            anyParamsGiven |= Language != null;
+
+            Language ??= "fa-IR";
 
             ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
 
@@ -215,11 +243,20 @@ namespace GanjooRazor.Pages
             Metre = Request.Query["v"];
             Rhyme = Request.Query["g"];
 
+            anyParamsGiven |= Metre != null;
+            anyParamsGiven |= Rhyme != null;
+
             Metre ??= "";
             Rhyme ??= "";
 
 
-            if (string.IsNullOrEmpty(Metre) && string.IsNullOrEmpty(Rhyme))
+            if (!string.IsNullOrEmpty(Rhyme))
+            {
+                Rhyme = Rhyme.Replace(" ", "");
+            }
+
+
+            if (!anyParamsGiven)
             {
                 ViewData["Title"] = $"گنجور » شعر‌ها یا ابیات مشابه";
                 return Page();
@@ -227,10 +264,6 @@ namespace GanjooRazor.Pages
 
 
 
-            if (!string.IsNullOrEmpty(Rhyme))
-            {
-                Rhyme = Rhyme.Replace(" ", "");
-            }
 
             string title = "شعرها یا ابیات ";
 
@@ -260,7 +293,16 @@ namespace GanjooRazor.Pages
                 title += $" حروف قافیهٔ «{Rhyme}»";
             }
 
-            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={Metre}&rhyme={Rhyme}&poetId={PoetId}";
+            if(Language != "fa-IR")
+            {
+                var langModel = Languages.Where(l => l.Code == Language).FirstOrDefault();
+                if (langModel != null)
+                {
+                    title += $"با زبان غالب «{langModel.Name}»";
+                }
+            }
+
+            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={Metre}&rhyme={Rhyme}&poetId={PoetId}&language={Language}";
             var response = await _httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
@@ -287,7 +329,7 @@ namespace GanjooRazor.Pages
                 title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
                 if (paginationMetadata.currentPage > 3)
                 {
-                    htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page=1{authorParam}\"><div class=\"circled-number\">۱</div></a> …";
+                    htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page=1{authorParam}&amp;language={Language}\"><div class=\"circled-number\">۱</div></a> …";
                 }
                 for (int i = paginationMetadata.currentPage - 2; i <= (paginationMetadata.currentPage + 2); i++)
                 {
@@ -299,13 +341,13 @@ namespace GanjooRazor.Pages
                         }
                         else
                         {
-                            htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={i}{authorParam}\"><div class=\"circled-number\">{i.ToPersianNumbers()}</div></a>{Environment.NewLine}";
+                            htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={i}{authorParam}&amp;language={Language}\"><div class=\"circled-number\">{i.ToPersianNumbers()}</div></a>{Environment.NewLine}";
                         }
                     }
                 }
                 if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
                 {
-                    htmlText += $"… <a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={paginationMetadata.totalPages}{authorParam}\"><div class=\"circled-number\">{paginationMetadata.totalPages.ToPersianNumbers()}</div></a>{Environment.NewLine}";
+                    htmlText += $"… <a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={paginationMetadata.totalPages}{authorParam}&amp;language={Language}\"><div class=\"circled-number\">{paginationMetadata.totalPages.ToPersianNumbers()}</div></a>{Environment.NewLine}";
                 }
                 htmlText += $"</div>{Environment.NewLine}";
             }

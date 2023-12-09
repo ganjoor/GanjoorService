@@ -171,6 +171,24 @@
                             <label for="g" class="width-100per">قافیه:</label>
                             <input type="text" name="g" id="g" class="width-100per" value="@Model.Rhyme" placeholder="حروف قافیه" />
 
+
+                            <label for="v" class="width-100per">زبان غالب:</label>
+                           
+                            <select id="l" name="l" class="width-100per">
+                                @foreach (var language in Model.Languages)
+                                {
+                                    if (Model.Language == language.Code)
+                                    {
+                                        <option value="@language.Code" selected>@language.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@language.Code">@language.Name</option>
+                                    }
+
+                                }
+                            </select>
+
                             <input type="submit" class="width-100per margin-top-5px" value="اعمال ورودی‌ها" />
 
                             @if (Model.CanEdit)
