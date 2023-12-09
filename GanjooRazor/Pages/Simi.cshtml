@@ -204,6 +204,38 @@
                                 }
                             </select>
 
+                            <label for="f" class="width-100per">قالب شعر:</label>
+
+                            <select id="f" name="f" class="width-100per">
+                                @foreach (var poemFormat in System.Enum.GetValues(typeof(RMuseum.Models.Ganjoor.GanjoorPoemFormat)))
+                                {
+                                    if ((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat == RMuseum.Models.Ganjoor.GanjoorPoemFormat.Unknown)
+                                    {
+                                        if (RMuseum.Models.Ganjoor.GanjoorPoemFormat.Unknown == Model.Format)
+                                        {
+                                            <option value="@((int)poemFormat)" selected>همهٔ قالب‌ها</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@((int)poemFormat)">همهٔ قالب‌ها</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat == Model.Format)
+                                        {
+                                            <option value="@((int)poemFormat)" selected>@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@((int)poemFormat)">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
+                                        }
+                                        
+                                    }
+                                    
+                                }
+                            </select>
+
                             <input type="submit" class="width-100per margin-top-5px" value="اعمال ورودی‌ها" />
 
                             @if (Model.CanEdit)

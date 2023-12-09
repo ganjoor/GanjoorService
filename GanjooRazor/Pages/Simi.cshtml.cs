@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RMuseum.Services.Implementation;
 using RMuseum.Utils;
 using RSecurityBackend.Models.Generic;
 
@@ -72,8 +73,8 @@ namespace GanjooRazor.Pages
         public List<GanjoorPoemCompleteViewModel> Poems { get; set; }
         public string PagingToolsHtml { get; set; }
         public string LastError { get; set; }
-
         public string Language { get; set; }
+        public GanjoorPoemFormat Format { get; set; }
 
 
         /// <summary>
@@ -193,6 +194,16 @@ namespace GanjooRazor.Pages
 
             Language ??= "fa-IR";
 
+            string f = Request.Query["f"];
+            anyParamsGiven |= f != null;
+
+            Format = GanjoorPoemFormat.Unknown;
+            if(f != null)
+            {
+                Format = (GanjoorPoemFormat)int.Parse(f);
+            }
+
+
             ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
 
             //todo: use html master layout or make it partial
@@ -298,11 +309,16 @@ namespace GanjooRazor.Pages
                 var langModel = Languages.Where(l => l.Code == Language).FirstOrDefault();
                 if (langModel != null)
                 {
-                    title += $"با زبان غالب «{langModel.Name}»";
+                    title += $" با زبان غالب «{langModel.Name}»";
                 }
             }
 
-            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={Metre}&rhyme={Rhyme}&poetId={PoetId}&language={Language}";
+            if(Format != GanjoorPoemFormat.Unknown)
+            {
+                title += $" در قالب شعری «{GanjoorPoemFormatConvertor.GetString(Format)}»";
+            }
+
+            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={Metre}&rhyme={Rhyme}&poetId={PoetId}&language={Language}&format={(int)Format}";
             var response = await _httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
@@ -329,7 +345,7 @@ namespace GanjooRazor.Pages
                 title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
                 if (paginationMetadata.currentPage > 3)
                 {
-                    htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page=1{authorParam}&amp;l={Language}\"><div class=\"circled-number\">۱</div></a> …";
+                    htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page=1{authorParam}&amp;l={Language}&amp;f={(int)Format}\"><div class=\"circled-number\">۱</div></a> …";
                 }
                 for (int i = paginationMetadata.currentPage - 2; i <= (paginationMetadata.currentPage + 2); i++)
                 {
@@ -341,13 +357,13 @@ namespace GanjooRazor.Pages
                         }
                         else
                         {
-                            htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={i}{authorParam}&amp;l={Language}\"><div class=\"circled-number\">{i.ToPersianNumbers()}</div></a>{Environment.NewLine}";
+                            htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={i}{authorParam}&amp;l={Language}&amp;f={(int)Format}\"><div class=\"circled-number\">{i.ToPersianNumbers()}</div></a>{Environment.NewLine}";
                         }
                     }
                 }
                 if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
                 {
-                    htmlText += $"… <a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={paginationMetadata.totalPages}{authorParam}&amp;l={Language}\"><div class=\"circled-number\">{paginationMetadata.totalPages.ToPersianNumbers()}</div></a>{Environment.NewLine}";
+                    htmlText += $"… <a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={paginationMetadata.totalPages}{authorParam}&amp;l={Language}&amp;f={(int)Format}\"><div class=\"circled-number\">{paginationMetadata.totalPages.ToPersianNumbers()}</div></a>{Environment.NewLine}";
                 }
                 htmlText += $"</div>{Environment.NewLine}";
             }
