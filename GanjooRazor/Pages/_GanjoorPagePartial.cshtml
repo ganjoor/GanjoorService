@@ -191,10 +191,10 @@
                                                     </a>
                                                 </h2>
 
-                                                @if(Model.HtmlLanguage == "azb")
+                                                @if (Model.HtmlLanguage == "azb")
                                                 {
                                                     <div class="notice">
-                                                       مجموعه‌ای کامل‌تر و معتبرتر از اشعار ترکی را در وبگاه <a href="https://minsoz.ir">مین سؤز</a> خواهید یافت.
+                                                        مجموعه‌ای کامل‌تر و معتبرتر از اشعار ترکی را در وبگاه <a href="https://minsoz.ir">مین سؤز</a> خواهید یافت.
                                                     </div>
                                                 }
                                             }
@@ -287,7 +287,7 @@
                             {
                                 @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
                             }
-                                                                                                                                                                                                                                                                                                                                                                                                                            ]).addTo(map);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        ]).addTo(map);
 
                                 for (var i = 0; i < poemGeoTags.length; i++) {
                                     var poemGeoTag = poemGeoTags[i];
@@ -465,7 +465,7 @@
                                                                     وزن:
                                                                 </td>
                                                                 <td>
-                                                                    <a href="@Html.Raw($"/vazn/?v={Uri.EscapeDataString(s.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@s.GanjoorMetre.Rhythm</a>
+                                                                    <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(s.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@s.GanjoorMetre.Rhythm</a>
                                                                 </td>
                                                             </tr>
                                                         }
@@ -476,7 +476,9 @@
                                                                     قالب شعری:
                                                                 </td>
                                                                 <td>
-                                                                    @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)s.PoemFormat)
+                                                                    <a href="/simi/?a=@Model.GanjoorPage.PoetOrCat.Poet.Id&amp;f=@((int)s.PoemFormat)">
+                                                                        @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)s.PoemFormat)
+                                                                    </a>
                                                                 </td>
                                                             </tr>
                                                         }
