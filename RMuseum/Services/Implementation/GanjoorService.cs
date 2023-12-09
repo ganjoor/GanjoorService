@@ -273,7 +273,12 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id, bool poems = false, bool mainSections = false)
         {
-            var cat = await _context.GanjoorCategories.Include(c => c.Poet).Include(c => c.Parent).Where(c => c.Id == id).AsNoTracking().FirstOrDefaultAsync();
+            return await _GetCatById(_context, id, poems, mainSections);
+        }
+
+        private async Task<RServiceResult<GanjoorPoetCompleteViewModel>> _GetCatById(RMuseumDbContext context, int id, bool poems = false, bool mainSections = false)
+        {
+            var cat = await context.GanjoorCategories.Include(c => c.Poet).Include(c => c.Parent).Where(c => c.Id == id).AsNoTracking().FirstOrDefaultAsync();
             if (cat == null)
                 return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
 
@@ -300,16 +305,16 @@ namespace RMuseum.Services.Implementation
                     MapName = parent.MapName,
                 });
 
-                parent = await _context.GanjoorCategories.Where(c => c.Id == parent.ParentId).AsNoTracking().FirstOrDefaultAsync();
+                parent = await context.GanjoorCategories.Where(c => c.Id == parent.ParentId).AsNoTracking().FirstOrDefaultAsync();
             }
 
 
             int nextCatId =
-                await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id > id).AnyAsync() ?
-                await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id > id).MinAsync(c => c.Id)
+                await context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id > id).AnyAsync() ?
+                await context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id > id).MinAsync(c => c.Id)
                 :
                 0;
-            var nextCat = nextCatId == 0 ? null : await _context
+            var nextCat = nextCatId == 0 ? null : await context
                                         .GanjoorCategories
                                         .Where(c => c.Id == nextCatId)
                                         .Select
@@ -336,11 +341,11 @@ namespace RMuseum.Services.Implementation
                                         ).AsNoTracking().SingleOrDefaultAsync();
 
             int preCatId =
-                 await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id < id).AnyAsync() ?
-                await _context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id < id).MaxAsync(c => c.Id)
+                 await context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id < id).AnyAsync() ?
+                await context.GanjoorCategories.Where(c => c.PoetId == cat.PoetId && c.ParentId == cat.ParentId && c.Id < id).MaxAsync(c => c.Id)
                 :
                 0;
-            var preCat = preCatId == 0 ? null : await _context
+            var preCat = preCatId == 0 ? null : await context
                                         .GanjoorCategories
                                         .Where(c => c.Id == preCatId)
                                         .Select
@@ -385,7 +390,7 @@ namespace RMuseum.Services.Implementation
                 Next = nextCat,
                 Previous = preCat,
                 Ancestors = ancetors,
-                Children = await _context.GanjoorCategories.Where(c => c.ParentId == cat.Id).OrderBy(cat => cat.Id).Select
+                Children = await context.GanjoorCategories.Where(c => c.ParentId == cat.Id).OrderBy(cat => cat.Id).Select
                  (
                  c => new GanjoorCatViewModel()
                  {
@@ -397,7 +402,7 @@ namespace RMuseum.Services.Implementation
                      Published = c.Published,
                  }
                  ).AsNoTracking().ToListAsync(),
-                Poems = poems ? await _context.GanjoorPoems
+                Poems = poems ? await context.GanjoorPoems
                 .Where(p => p.CatId == cat.Id).OrderBy(p => p.Id).Select
                  (
                      p => new GanjoorPoemSummaryViewModel()
@@ -405,7 +410,7 @@ namespace RMuseum.Services.Implementation
                          Id = p.Id,
                          Title = p.Title,
                          UrlSlug = p.UrlSlug,
-                         Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text,
+                         Excerpt = context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text,
                      }
                  ).AsNoTracking().ToListAsync()
                  :
@@ -416,10 +421,10 @@ namespace RMuseum.Services.Implementation
             {
                 foreach (var poem in catViewModel.Poems)
                 {
-                    poem.MainSections = await _context.GanjoorPoemSections.AsNoTracking().Include(s => s.GanjoorMetre).Where(s => s.PoemId == poem.Id && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First).OrderBy(s => s.Index).ToArrayAsync();
+                    poem.MainSections = await context.GanjoorPoemSections.AsNoTracking().Include(s => s.GanjoorMetre).Where(s => s.PoemId == poem.Id && s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.First).OrderBy(s => s.Index).ToArrayAsync();
                     foreach (var section in poem.MainSections)
                     {
-                        var firstVerse = await _context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId &&
+                        var firstVerse = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId &&
                             (
                             (section.VerseType == VersePoemSectionType.First && v.SectionIndex1 == section.Index)
                             ||
@@ -439,17 +444,17 @@ namespace RMuseum.Services.Implementation
                (
                new GanjoorPoetCompleteViewModel()
                {
-                   Poet = await _context.GanjoorPoets.Include(p => p.BirthLocation).Include(p => p.DeathLocation).Where(p => p.Id == cat.PoetId)
+                   Poet = await context.GanjoorPoets.Include(p => p.BirthLocation).Include(p => p.DeathLocation).Where(p => p.Id == cat.PoetId)
                                         .Select(poet => new GanjoorPoetViewModel()
                                         {
                                             Id = poet.Id,
                                             Name = poet.Name,
                                             Description = poet.Description,
-                                            FullUrl = _context.GanjoorCategories.Where(c => c.PoetId == poet.Id && c.ParentId == null).Single().FullUrl,
-                                            RootCatId = _context.GanjoorCategories.Where(c => c.PoetId == poet.Id && c.ParentId == null).Single().Id,
+                                            FullUrl = context.GanjoorCategories.Where(c => c.PoetId == poet.Id && c.ParentId == null).Single().FullUrl,
+                                            RootCatId = context.GanjoorCategories.Where(c => c.PoetId == poet.Id && c.ParentId == null).Single().Id,
                                             Nickname = poet.Nickname,
                                             Published = poet.Published,
-                                            ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{_context.GanjoorCategories.Where(c => c.PoetId == poet.Id && c.ParentId == null).Single().FullUrl}.gif",
+                                            ImageUrl = poet.RImageId == null ? "" : $"/api/ganjoor/poet/image{context.GanjoorCategories.Where(c => c.PoetId == poet.Id && c.ParentId == null).Single().FullUrl}.gif",
                                             BirthYearInLHijri = poet.BirthYearInLHijri,
                                             DeathYearInLHijri = poet.DeathYearInLHijri,
                                             ValidBirthDate = poet.ValidBirthDate,
@@ -2481,7 +2486,7 @@ namespace RMuseum.Services.Implementation
             if (catId != null)
             {
                 catIdList.Add((int)catId);
-                await _populateCategoryChildren((int)catId, catIdList);
+                await _populateCategoryChildren(_context, (int)catId, catIdList);
             }
             var source =
                 _context.GanjoorPoemSections.Include(s => s.Poem).Include(s => s.Poet).Include(s => s.GanjoorMetre)
@@ -2553,13 +2558,13 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(paginatedResult);
         }
 
-        private async Task _populateCategoryChildren(int catId, List<int> catListId)
+        private async Task _populateCategoryChildren(RMuseumDbContext context, int catId, List<int> catListId)
         {
-            var catRes = await GetCatById(catId, false);
+            var catRes = await _GetCatById(context, catId, false);
             foreach (var c in catRes.Result.Cat.Children)
             {
                 catListId.Add(c.Id);
-                await _populateCategoryChildren(c.Id, catListId);
+                await _populateCategoryChildren(context, c.Id, catListId);
             }
         }
 
@@ -2703,7 +2708,7 @@ namespace RMuseum.Services.Implementation
             if (catId != null)
             {
                 catIdList.Add((int)catId);
-                await _populateCategoryChildren((int)catId, catIdList);
+                await _populateCategoryChildren(_context, (int)catId, catIdList);
             }
 
             var source =

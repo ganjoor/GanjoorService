@@ -153,7 +153,7 @@ namespace RMuseum.Services.Implementation
                 {
                     List<PoemGeoDateTag> summedTags = new List<PoemGeoDateTag>(tags);
                     List<int> catIdList = new List<int>();
-                    await _populateCategoryChildren(catId, catIdList);
+                    await _populateCategoryChildren(_context, catId, catIdList);
 
                     foreach (var childCatId in catIdList)
                     {

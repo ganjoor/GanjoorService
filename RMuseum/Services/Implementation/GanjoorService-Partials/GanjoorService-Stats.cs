@@ -335,6 +335,275 @@ namespace RMuseum.Services.Implementation
 
         }
 
+
+        private async Task<string> _GetCategoryStatsPage( int poetId, int catId, List<GanjoorMetre> rhythms, RMuseumDbContext context)
+        {
+            List<int> catIdList = new List<int>();
+            await _populateCategoryChildren(context, catId, catIdList);
+
+           
+            var catsCoupletCounts =
+                                                   await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
+                                                   .Where(v =>
+                                                   v.Poem.Cat.Poet.Published
+                                                   &&
+                                                   (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
+                                                   &&
+                                                   catIdList.Contains(v.Poem.CatId)
+                                                   )
+                                                   .GroupBy(v => new { v.Poem.Cat.PoetId })
+                                                   .Select(g => new { g.Key.PoetId, Count = g.Count() })
+                                                   .ToListAsync();
+
+            if (catsCoupletCounts.Count != 1)
+                return "";
+
+            int wholeCoupletsCount = catsCoupletCounts[0].Count;
+
+            var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
+                                                .Where(s => catIdList.Contains(s.Poem.CatId) && (string.IsNullOrEmpty(s.Language) || s.Language == "fa-IR") && s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem)
+                                                .Select(s => new { s.PoemId, s.Index, s.GanjoorMetreId, Versetype = s.VerseType })
+                                                .ToListAsync();
+
+            Dictionary<int?, int> metreCounts = new Dictionary<int?, int>();
+            int secondMetreCoupletCount = 0;
+            foreach (var section in wholePoemSections)
+            {
+                int coupletCount = await context.GanjoorVerses.AsNoTracking()
+                    .Where(v =>
+                        v.PoemId == section.PoemId
+                        &&
+                        (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
+                        &&
+                         (
+                            (section.Versetype == VersePoemSectionType.First && v.SectionIndex1 == section.Index)
+                            ||
+                            (section.Versetype == VersePoemSectionType.Second && v.SectionIndex2 == section.Index)
+                            ||
+                            (section.Versetype == VersePoemSectionType.Third && v.SectionIndex3 == section.Index)
+                            ||
+                            (section.Versetype == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index)
+                         )
+                        ).CountAsync();
+                var metreId = section.GanjoorMetreId == null ? 0 : (int)section.GanjoorMetreId;
+                if (metreCounts.TryGetValue(metreId, out int sectionCoupletCount))
+                {
+                    sectionCoupletCount += coupletCount;
+                }
+                else
+                {
+                    sectionCoupletCount = coupletCount;
+                }
+                metreCounts[metreId] = sectionCoupletCount;
+                if (metreId != 0 && section.Versetype != VersePoemSectionType.First)
+                {
+                    secondMetreCoupletCount += coupletCount;
+                }
+            }
+
+
+            List<RhythmCoupletCount> rhythmsCoupletCounts = new List<RhythmCoupletCount>();
+            foreach (var metreCount in metreCounts)
+            {
+                int? metreId = metreCount.Key == 0 ? null : metreCount.Key;
+                rhythmsCoupletCounts.Add(new RhythmCoupletCount() { GanjoorMetreId = metreId, Count = metreCount.Value });
+            }
+            rhythmsCoupletCounts.Sort((a, b) => b.Count - a.Count);
+
+            int sumRhythmsCouplets = rhythmsCoupletCounts.Sum(c => c.Count);
+
+            string stats = "";
+            if ((sumRhythmsCouplets - secondMetreCoupletCount) != wholeCoupletsCount)
+            {
+                stats = $"{LanguageUtils.FormatMoney(sumRhythmsCouplets - secondMetreCoupletCount)} بیت شعر فارسی از کل {LanguageUtils.FormatMoney(wholeCoupletsCount)} بیت شعر موجود";
+            }
+            else
+            {
+                stats = $"{LanguageUtils.FormatMoney(sumRhythmsCouplets - secondMetreCoupletCount)} بیت شعر موجود";
+            }
+
+            string htmlText = $"<div class=\"part-title-block-alt\" id=\"stats-{catId}\">{Environment.NewLine}";
+            htmlText += $"آمار{Environment.NewLine}";
+            htmlText += $"</div>{Environment.NewLine}";
+
+            htmlText = $"<p>این آمار از میان {stats} در گنجور از اشعار این بخش استخراج شده است.</p>{Environment.NewLine}";
+            htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در سایت (مثل آثار خیام) و همینطور یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمس‌ها تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
+            htmlText += $"<p>آمار همهٔ شعرهای گنجور را <a href=\"/vazn\">اینجا</a> ببینید.</p>{Environment.NewLine}";
+            htmlText += $"<p>وزن‌یابی دستی در بیشتر موارد با ملاحظهٔ تنها یک مصرع از شعر صورت گرفته و امکان وجود اشکال در آن (مخصوصاً اشتباه در تشخیص وزنهای قابل تبدیل از قبیل وزن مثنوی مولوی به جای وزن عروضی سریع مطوی مکشوف) وجود دارد. وزن‌یابی ماشینی نیز که جدیداً با استفاده از امکانات <a href=\"http://www.sorud.info/\">تارنمای سرود</a> اضافه شده بعضاً خطا دارد. برخی از بخشها شامل اشعاری با بیش از یک وزن هستند که در این صورت عمدتاً وزن ابیات آغازین و برای بعضی منظومه‌ها وزن غالب منظومه به عنوان وزن آن بخش منظور شده است.</p>{Environment.NewLine}";
+            if (secondMetreCoupletCount > 0)
+            {
+                htmlText += $"<p>در {LanguageUtils.FormatMoney(secondMetreCoupletCount)} مورد ابیات به لحاظ چند وزنی بودن در جدول اوزان بیش از یک بار محاسبه شده‌اند و جمع آمار ناخالص ابیات با احتساب چندبارهٔ ابیات چندوزنی در جمع فهرست اوزان برابر {LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت است که در محاسبهٔ نسبت درصد از کل استفاده شده است):</p>";
+            }
+            htmlText += $"<table>{Environment.NewLine}" +
+                                            $"<tr class=\"h\">{Environment.NewLine}" +
+                                            $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
+                                            $"<td class=\"c2\">وزن</td>{Environment.NewLine}" +
+                                            $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
+                                            $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                                            $"</tr>{Environment.NewLine}";
+
+            for (int i = 0; i < rhythmsCoupletCounts.Count; i++)
+            {
+                if (i % 2 == 0)
+                    htmlText += $"<tr class=\"e\">{Environment.NewLine}";
+                else
+                    htmlText += $"<tr>{Environment.NewLine}";
+
+                htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
+                string rhythm = rhythmsCoupletCounts[i].GanjoorMetreId == null
+                    ?
+                    $"<a href=\"/simi/?v=null&amp;a={poetId}&amp;c={catId}\">وزن‌یابی نشده</a>" :
+                                $"<a href=\"/simi/?v={Uri.EscapeDataString(rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm)}&amp;a={poetId}&amp;c={catId}\">{rhythms.Where(r => r.Id == rhythmsCoupletCounts[i].GanjoorMetreId).Single().Rhythm}</a>";
+                htmlText += $"<td class=\"c2\">{rhythm}</td>{Environment.NewLine}";
+                htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(rhythmsCoupletCounts[i].Count)}</td>{Environment.NewLine}";
+                htmlText += $"<td class=\"c4\">{(rhythmsCoupletCounts[i].Count * 100.0 / sumRhythmsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+
+                htmlText += $"</tr>{Environment.NewLine}";
+            }
+            htmlText += $"</table>{Environment.NewLine}";
+
+            if (sumRhythmsCouplets != wholeCoupletsCount)
+            {
+                var linqResult = await (from v in context.GanjoorVerses.AsNoTracking().Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet)
+                                        from s in context.GanjoorPoemSections
+                                        where v.PoemId == s.PoemId && v.SectionIndex1 == s.Index && s.SectionType == PoemSectionType.WholePoem
+                                        &&
+                                        v.Poem.Cat.Poet.Published
+                                        &&
+                                        (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
+                                        &&
+                                        catIdList.Contains(v.Poem.CatId)
+                                        group s.Language by s.Language into g
+                                        select new { Language = g.Key, Count = g.Count() }).ToListAsync();
+
+                List<LanguageCoupletCount> languagesCoupletsCountsUnprocessed = new List<LanguageCoupletCount>
+                {
+                    new LanguageCoupletCount()
+                    {
+                        Language = "fa-IR",
+                        Count = 0
+                    }
+                };
+                foreach (var item in linqResult)
+                {
+                    if (item.Language == "fa-IR" || string.IsNullOrEmpty(item.Language))
+                    {
+                        var fa = languagesCoupletsCountsUnprocessed.Where(l => l.Language == "fa-IR").Single();
+                        fa.Count += item.Count;
+                    }
+                    else
+                        languagesCoupletsCountsUnprocessed.Add(new LanguageCoupletCount()
+                        {
+                            Language = item.Language,
+                            Count = item.Count
+                        });
+                }
+
+                languagesCoupletsCountsUnprocessed.Sort((a, b) => b.Count - a.Count);
+
+                if (languagesCoupletsCountsUnprocessed.Count > 1)
+                {
+                    htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ این بخش با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
+
+                    htmlText += $"<table>{Environment.NewLine}" +
+                        $"<tr class=\"h\">{Environment.NewLine}" +
+                        $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
+                        $"<td class=\"c2\">زبان</td>{Environment.NewLine}" +
+                        $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
+                        $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                        $"</tr>{Environment.NewLine}";
+
+                    for (int i = 0; i < languagesCoupletsCountsUnprocessed.Count; i++)
+                    {
+                        if (i % 2 == 0)
+                            htmlText += $"<tr class=\"e\">{Environment.NewLine}";
+                        else
+                            htmlText += $"<tr>{Environment.NewLine}";
+
+                        htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
+                        var langModel = await context.GanjoorLanguages.AsNoTracking().Where(l => l.Code == languagesCoupletsCountsUnprocessed[i].Language).SingleAsync();
+                        string language = langModel.Name;
+                        htmlText += $"<td class=\"c2\"><a href=\"/simi/?l={Uri.EscapeDataString(langModel.Code)}&amp;a={poetId}&amp;c={catId}\">{language}</a></td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(languagesCoupletsCountsUnprocessed[i].Count)}</td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"c4\">{(languagesCoupletsCountsUnprocessed[i].Count * 100.0 / wholeCoupletsCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+
+                        htmlText += $"</tr>{Environment.NewLine}";
+                    }
+                    htmlText += $"</table>{Environment.NewLine}";
+                }
+            }
+
+
+            var formatsResult = await (from v in context.GanjoorVerses.AsNoTracking().Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet)
+                                       from s in context.GanjoorPoemSections
+                                       where v.PoemId == s.PoemId && v.SectionIndex1 == s.Index && s.SectionType == PoemSectionType.WholePoem
+                                       &&
+                                       v.Poem.Cat.Poet.Published
+                                       &&
+                                       catIdList.Contains(v.Poem.CatId)
+                                       &&
+                                       (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
+                                       group s.PoemFormat by s.PoemFormat into g
+                                       select new { PoemFormat = g.Key, Count = g.Count() }).ToListAsync();
+
+
+            List<PoemFormatCoupletCount> formatCoupletsCountsUnprocessed = new List<PoemFormatCoupletCount>
+                                        {
+                                            new PoemFormatCoupletCount()
+                                            {
+                                                Format = GanjoorPoemFormat.Unknown,
+                                                Count = 0
+                                            }
+                                        };
+            foreach (var item in formatsResult)
+            {
+                if (item.PoemFormat == null || item.PoemFormat == GanjoorPoemFormat.Unknown)
+                {
+                    var fa = formatCoupletsCountsUnprocessed.Where(l => l.Format == GanjoorPoemFormat.Unknown).Single();
+                    fa.Count += item.Count;
+                }
+                else
+                    formatCoupletsCountsUnprocessed.Add(new PoemFormatCoupletCount()
+                    {
+                        Format = (GanjoorPoemFormat)item.PoemFormat,
+                        Count = item.Count
+                    });
+            }
+
+
+            formatCoupletsCountsUnprocessed.Sort((a, b) => b.Count - a.Count);
+
+            htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ این بخش با زبان غالب شعر بخش در گنجور به شرح زیر است:</p>{Environment.NewLine}";
+
+            htmlText += $"<table>{Environment.NewLine}" +
+                $"<tr class=\"h\">{Environment.NewLine}" +
+                $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
+                $"<td class=\"c2\">قالب شعری</td>{Environment.NewLine}" +
+                $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
+                $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                $"</tr>{Environment.NewLine}";
+
+            for (int i = 0; i < formatCoupletsCountsUnprocessed.Count; i++)
+            {
+                if (formatCoupletsCountsUnprocessed[i].Count == 0) continue;
+                if (i % 2 == 0)
+                    htmlText += $"<tr class=\"e\">{Environment.NewLine}";
+                else
+                    htmlText += $"<tr>{Environment.NewLine}";
+
+                htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
+                htmlText += $"<td class=\"c2\"><a href=\"/simi/?f={(int)formatCoupletsCountsUnprocessed[i].Format}&amp;a={poetId}&amp;c={catId}\">{GanjoorPoemFormatConvertor.GetString(formatCoupletsCountsUnprocessed[i].Format)}</a></td>{Environment.NewLine}";
+                htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(formatCoupletsCountsUnprocessed[i].Count)}</td>{Environment.NewLine}";
+                htmlText += $"<td class=\"c4\">{(formatCoupletsCountsUnprocessed[i].Count * 100.0 / wholeCoupletsCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+
+                htmlText += $"</tr>{Environment.NewLine}";
+            }
+            htmlText += $"</table>{Environment.NewLine}";
+
+            return htmlText;
+
+
+        }
         /// <summary>
         /// start updating stats page
         /// </summary>

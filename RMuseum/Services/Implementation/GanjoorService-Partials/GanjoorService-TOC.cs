@@ -309,12 +309,12 @@ namespace RMuseum.Services.Implementation
                             html += $"</div>{Environment.NewLine}";
                         }
                     }
-
+                    var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == cat.PoetId).SingleAsync();
                     if (cat.ParentId == null)
                     {
                         //poet page
                         var poetPage = await context.GanjoorPages.AsNoTracking().Where(p => p.ParentId == null && p.PoetId == cat.PoetId && p.GanjoorPageType == GanjoorPageType.PoetPage).SingleAsync();
-                        var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == cat.PoetId).SingleAsync();
+                        
                         html += $"<p>دیگر صفحات مرتبط با {poet.Nickname} در این پایگاه:</p>{Environment.NewLine}";
                         var statsPage = await context.GanjoorPages.AsNoTracking()
                                 .Where(p => p.FullUrl == $"{poetPage.FullUrl}/vazn").SingleOrDefaultAsync();
@@ -347,6 +347,11 @@ namespace RMuseum.Services.Implementation
                         html += $"<a href=\"/photos?p={cat.UrlSlug}\">تصاویر پیشنهادی برای {poet.Nickname}</a>{Environment.NewLine}";
                         html += $"</div>{Environment.NewLine}";
                     }
+
+                    var rhythms = await context.GanjoorMetres.ToListAsync();
+                    string statsHtml = await _GetCategoryStatsPage(poet.Id, catId, rhythms, context);
+
+                    html += statsHtml;
 
                     return new RServiceResult<string>(html);
                 }
