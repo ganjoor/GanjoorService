@@ -2385,6 +2385,8 @@ namespace RMuseum.Controllers
         /// <param name="metre">cannot be empty</param>
         /// <param name="rhyme">can be empty</param>
         /// <param name="poetId">send 0 for all</param>
+        /// <param name="language"></param>
+        /// <param name="format"></param>
         /// <returns>return value is not complete or valid for some parts, you should use only the valid parts!</returns>
 
         [HttpGet]
@@ -2393,9 +2395,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCompleteViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
-        public async Task<IActionResult> GetSimilarPoems([FromQuery]PagingParameterModel paging, string metre, string rhyme, int poetId = 0)
+        public async Task<IActionResult> GetSimilarPoems([FromQuery]PagingParameterModel paging, string metre, string rhyme, int poetId = 0, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown)
         {
-            var pagedResult = await _ganjoorService.GetSimilarPoems(paging, metre, rhyme, poetId == 0 ? (int?) null : poetId);
+            var pagedResult = await _ganjoorService.GetSimilarPoems(paging, metre, rhyme, poetId == 0 ? (int?) null : poetId, language, format);
             if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
                 return BadRequest(pagedResult.ExceptionString);
 
@@ -2430,29 +2432,6 @@ namespace RMuseum.Controllers
             return Ok(pagedResult.Result.Items);
         }
 
-        /// <summary>
-        /// Get Poem sections based on poem format
-        /// </summary>
-        /// <param name="paging"></param>
-        /// <param name="format"></param>
-        /// <param name="poetId"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("sections/tagged/format")]
-        [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCompleteViewModel>))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetPoemSectionsByPoemFormat([FromQuery] PagingParameterModel paging, GanjoorPoemFormat format, int poetId = 0)
-        {
-            var pagedResult = await _ganjoorService.GetPoemSectionsByPoemFormat(paging, format, poetId == 0 ? (int?)null : poetId);
-            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
-                return BadRequest(pagedResult.ExceptionString);
-
-            // Paging Header
-            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
-
-            return Ok(pagedResult.Result.Items);
-        }
 
         /// <summary>
         /// search

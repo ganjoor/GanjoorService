@@ -2467,90 +2467,23 @@ namespace RMuseum.Services.Implementation
         /// <param name="metre"></param>
         /// <param name="rhyme"></param>
         /// <param name="poetId"></param>
+        /// <param name="language"></param>
+        /// <param name="format"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoems(PagingParameterModel paging, string metre, string rhyme, int? poetId)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoems(PagingParameterModel paging, string metre, string rhyme, int? poetId, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown)
         {
             var source =
                 _context.GanjoorPoemSections.Include(s => s.Poem).Include(s => s.Poet).Include(s => s.GanjoorMetre)
                 .Where(s =>
                         (poetId == null || s.PoetId == poetId)
                         &&
-                        (string.IsNullOrEmpty(s.Language) || s.Language == "fa-IR")
+                        ((language == "fa-IR" && string.IsNullOrEmpty(s.Language)) || s.Language == language)
                         &&
                         (string.IsNullOrEmpty(metre) || (metre == "null" && s.GanjoorMetreId == null) || (!string.IsNullOrEmpty(metre) && s.GanjoorMetre.Rhythm == metre))
                         &&
                         ((string.IsNullOrEmpty(rhyme) && s.SectionType == PoemSectionType.WholePoem) || (!string.IsNullOrEmpty(rhyme) && s.RhymeLetters == rhyme))
-                        )
-                .OrderBy(p => p.Poet.BirthYearInLHijri).ThenBy(p => p.Poet.Nickname).ThenBy(p => p.SectionType).ThenBy(p => p.Poem.Id)
-                .Select
-                (
-                    section =>
-                    new GanjoorPoemCompleteViewModel()
-                    {
-                        Id = section.Poem.Id,
-                        Title = section.Poem.Title,
-                        FullTitle = section.Poem.FullTitle,
-                        FullUrl = section.CachedFirstCoupletIndex == 0 ? section.Poem.FullUrl : section.Poem.FullUrl + "#bn" + (section.CachedFirstCoupletIndex + 1).ToString(),
-                        UrlSlug = section.Poem.UrlSlug,
-                        HtmlText = section.HtmlText,
-                        PlainText = section.PlainText,
-                        MixedModeOrder = section.Poem.MixedModeOrder,
-                        Published = section.Poem.Published,
-                        Language = section.Poem.Language,
-                        PoemSummary = section.Poem.PoemSummary,
-                        Category = new GanjoorPoetCompleteViewModel()
-                        {
-                            Poet = new GanjoorPoetViewModel()
-                            {
-                                Id = section.Poet.Id,
-                            }
-                        },
-                        SectionIndex = section.Index
-
-                    }
-                ).AsNoTracking();
-
-
-            (PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items) paginatedResult =
-               await QueryablePaginator<GanjoorPoemCompleteViewModel>.Paginate(source, paging);
-
-
-            Dictionary<int, GanjoorPoetCompleteViewModel> cachedPoets = new Dictionary<int, GanjoorPoetCompleteViewModel>();
-
-            foreach (var item in paginatedResult.Items)
-            {
-                if (cachedPoets.TryGetValue(item.Category.Poet.Id, out GanjoorPoetCompleteViewModel poet))
-                {
-                    item.Category = poet;
-                }
-                else
-                {
-                    poet = (await GetPoetById(item.Category.Poet.Id)).Result;
-
-                    cachedPoets.Add(item.Category.Poet.Id, poet);
-
-                    item.Category = poet;
-                }
-            }
-
-            return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(paginatedResult);
-        }
-
-        /// <summary>
-        /// Get Poem sections based on poem format
-        /// </summary>
-        /// <param name="paging"></param>
-        /// <param name="format"></param>
-        /// <param name="poetId"></param>
-        /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetPoemSectionsByPoemFormat(PagingParameterModel paging, GanjoorPoemFormat format, int? poetId)
-        {
-            var source =
-                _context.GanjoorPoemSections.Include(s => s.Poem).Include(s => s.Poet).Include(s => s.GanjoorMetre)
-                .Where(s =>
-                        (poetId == null || s.PoetId == poetId)
                         &&
-                        s.PoemFormat == format
+                        (format == GanjoorPoemFormat.Unknown || s.PoemFormat == format)
                         )
                 .OrderBy(p => p.Poet.BirthYearInLHijri).ThenBy(p => p.Poet.Nickname).ThenBy(p => p.SectionType).ThenBy(p => p.Poem.Id)
                 .Select
@@ -2606,6 +2539,7 @@ namespace RMuseum.Services.Implementation
 
             return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(paginatedResult);
         }
+
         private async Task _populateCategoryChildren(int catId, List<int> catListId)
         {
             var catRes = await GetCatById(catId, false);
