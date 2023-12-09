@@ -1032,7 +1032,7 @@ function doSearchInRhythmsCombo(selectSearchId, rhythmnewId) {
     var value = document.getElementById(selectSearchId).value;
     var options = document.getElementById(rhythmnewId).options
     for (var i = 0; i < options.length; i++) {
-        if (options[i].value.indexOf(value) != -1) {
+        if (options[i].text.indexOf(value) != -1) {
             document.getElementById(rhythmnewId).value = options[i].value;
             break;
         }

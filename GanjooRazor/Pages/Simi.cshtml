@@ -115,7 +115,22 @@
                 <div class="sitem actionbox">
                     <div class="related-images-frame">
                         <form method="get" id="simiform">
-
+                            <label for="a" class="width-100per">سخنور:</label>
+                            <script>
+                                function syncInputs(){
+                                    document.getElementById('poets-search').value = document.getElementById('fake-poet-search').value;
+                                    doSearchInRhythmsCombo('poets-search', 'a');
+                                }
+                            </script>
+                            <input class="width-100per" type="text" id="fake-poet-search" placeholder="جستجوی سخنور" oninput="syncInputs()" autocomplete="off" size="50" />
+                            <input type="hidden" id="poets-search" placeholder="جستجوی سخنور"  list="inputPoets" autocomplete="off" size="50" />
+                            <datalist id="inputPoets">
+                                @if (Model.Poets != null)
+                                    @foreach (var poet in Model.Poets)
+                                    {
+                                        <option value="@poet.Id">@poet.Nickname</option>
+                                    }
+                            </datalist>
                             <select name="a" id="a" class="width-100per">
                                 @{
                                     if (Model.PoetId != 0)
