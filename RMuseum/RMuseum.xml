@@ -1595,7 +1595,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetSimilarPoems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Int32,System.String,RMuseum.Models.Ganjoor.GanjoorPoemFormat)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetSimilarPoems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Int32,System.Int32,System.String,RMuseum.Models.Ganjoor.GanjoorPoemFormat)">
             <summary>
             Get Similar Poems accroding to prosody and rhyme informations
             </summary>
@@ -1603,6 +1603,7 @@
             <param name="metre">cannot be empty</param>
             <param name="rhyme">can be empty</param>
             <param name="poetId">send 0 for all</param>
+            <param name="catId">send 0 for all</param>
             <param name="language"></param>
             <param name="format"></param>
             <returns>return value is not complete or valid for some parts, you should use only the valid parts!</returns>
@@ -14401,7 +14402,7 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetSimilarPoems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Nullable{System.Int32},System.String,RMuseum.Models.Ganjoor.GanjoorPoemFormat)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetSimilarPoems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,RMuseum.Models.Ganjoor.GanjoorPoemFormat)">
             <summary>
             Get Similar Poems accroding to prosody and rhyme informations
             </summary>
@@ -14409,6 +14410,7 @@
             <param name="metre"></param>
             <param name="rhyme"></param>
             <param name="poetId"></param>
+            <param name="catId"></param>
             <param name="language"></param>
             <param name="format"></param>
             <returns></returns>
@@ -17639,7 +17641,7 @@
             <param name="recitation"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetSimilarPoems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Nullable{System.Int32},System.String,RMuseum.Models.Ganjoor.GanjoorPoemFormat)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetSimilarPoems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,RMuseum.Models.Ganjoor.GanjoorPoemFormat)">
             <summary>
             Get Similar Poems accroding to prosody and rhyme informations
             </summary>
@@ -17649,6 +17651,7 @@
             <param name="poetId"></param>
             <param name="language"></param>
             <param name="format"></param>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLanguageTaggedPoemSections(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Nullable{System.Int32})">

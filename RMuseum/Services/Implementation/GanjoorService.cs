@@ -2469,9 +2469,20 @@ namespace RMuseum.Services.Implementation
         /// <param name="poetId"></param>
         /// <param name="language"></param>
         /// <param name="format"></param>
+        /// <param name="catId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoems(PagingParameterModel paging, string metre, string rhyme, int? poetId, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoems(PagingParameterModel paging, string metre, string rhyme, int? poetId, int? catId, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown)
         {
+            if (poetId == null)
+            {
+                catId = null;
+            }
+            List<int> catIdList = new List<int>();
+            if (catId != null)
+            {
+                catIdList.Add((int)catId);
+                await _populateCategoryChildren((int)catId, catIdList);
+            }
             var source =
                 _context.GanjoorPoemSections.Include(s => s.Poem).Include(s => s.Poet).Include(s => s.GanjoorMetre)
                 .Where(s =>
@@ -2484,6 +2495,8 @@ namespace RMuseum.Services.Implementation
                         ((string.IsNullOrEmpty(rhyme) && s.SectionType == PoemSectionType.WholePoem) || (!string.IsNullOrEmpty(rhyme) && s.RhymeLetters == rhyme))
                         &&
                         (format == GanjoorPoemFormat.Unknown || s.PoemFormat == format)
+                        &&
+                        (catId == null || catIdList.Contains(s.Poem.CatId))
                         )
                 .OrderBy(p => p.Poet.BirthYearInLHijri).ThenBy(p => p.Poet.Nickname).ThenBy(p => p.SectionType).ThenBy(p => p.Poem.Id)
                 .Select

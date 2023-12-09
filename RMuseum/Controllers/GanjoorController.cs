@@ -2385,6 +2385,7 @@ namespace RMuseum.Controllers
         /// <param name="metre">cannot be empty</param>
         /// <param name="rhyme">can be empty</param>
         /// <param name="poetId">send 0 for all</param>
+        /// <param name="catId">send 0 for all</param>
         /// <param name="language"></param>
         /// <param name="format"></param>
         /// <returns>return value is not complete or valid for some parts, you should use only the valid parts!</returns>
@@ -2395,9 +2396,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCompleteViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
-        public async Task<IActionResult> GetSimilarPoems([FromQuery]PagingParameterModel paging, string metre, string rhyme, int poetId = 0, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown)
+        public async Task<IActionResult> GetSimilarPoems([FromQuery]PagingParameterModel paging, string metre, string rhyme, int poetId = 0, int catId = 0, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown)
         {
-            var pagedResult = await _ganjoorService.GetSimilarPoems(paging, metre, rhyme, poetId == 0 ? (int?) null : poetId, language, format);
+            var pagedResult = await _ganjoorService.GetSimilarPoems(paging, metre, rhyme, poetId == 0 ?  null : poetId, catId == 0 ? null : catId, language, format);
             if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
                 return BadRequest(pagedResult.ExceptionString);
 
