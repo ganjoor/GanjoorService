@@ -230,6 +230,73 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
+            
+            var formatsResult = await (from v in context.GanjoorVerses.AsNoTracking().Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet)
+                                       from s in context.GanjoorPoemSections
+                                       where v.PoemId == s.PoemId && v.SectionIndex1 == s.Index && s.SectionType == PoemSectionType.WholePoem
+                                       &&
+                                       v.Poem.Cat.Poet.Published
+                                       &&
+                                       v.Poem.Cat.PoetId == poet.Id
+                                       &&
+                                       (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
+                                       group s.PoemFormat by s.PoemFormat into g
+                                       select new { PoemFormat = g.Key, Count = g.Count() }).ToListAsync();
+
+
+            List<PoemFormatCoupletCount> formatCoupletsCountsUnprocessed = new List<PoemFormatCoupletCount>
+                                        {
+                                            new PoemFormatCoupletCount()
+                                            {
+                                                Format = GanjoorPoemFormat.Unknown,
+                                                Count = 0
+                                            }
+                                        };
+            foreach (var item in formatsResult)
+            {
+                if (item.PoemFormat == null || item.PoemFormat == GanjoorPoemFormat.Unknown)
+                {
+                    var fa = formatCoupletsCountsUnprocessed.Where(l => l.Format == GanjoorPoemFormat.Unknown).Single();
+                    fa.Count += item.Count;
+                }
+                else
+                    formatCoupletsCountsUnprocessed.Add(new PoemFormatCoupletCount()
+                    {
+                        Format = (GanjoorPoemFormat)item.PoemFormat,
+                        Count = item.Count
+                    });
+            }
+
+
+            formatCoupletsCountsUnprocessed.Sort((a, b) => b.Count - a.Count);
+
+            htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ {poet.Nickname} با قالب شعری در گنجور به شرح زیر است:</p>{Environment.NewLine}";
+
+            htmlText += $"<table>{Environment.NewLine}" +
+                $"<tr class=\"h\">{Environment.NewLine}" +
+                $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
+                $"<td class=\"c2\">قالب شعری</td>{Environment.NewLine}" +
+                $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
+                $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                $"</tr>{Environment.NewLine}";
+
+            for (int i = 0; i < formatCoupletsCountsUnprocessed.Count; i++)
+            {
+                if (formatCoupletsCountsUnprocessed[i].Count == 0) continue;
+                if (i % 2 == 0)
+                    htmlText += $"<tr class=\"e\">{Environment.NewLine}";
+                else
+                    htmlText += $"<tr>{Environment.NewLine}";
+
+                htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
+                htmlText += $"<td class=\"c2\"><a href=\"/simi/?f={(int)formatCoupletsCountsUnprocessed[i].Format}&amp;a={poet.Id}\">{GanjoorPoemFormatConvertor.GetString(formatCoupletsCountsUnprocessed[i].Format)}</a></td>{Environment.NewLine}";
+                htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(formatCoupletsCountsUnprocessed[i].Count)}</td>{Environment.NewLine}";
+                htmlText += $"<td class=\"c4\">{(formatCoupletsCountsUnprocessed[i].Count * 100.0 / wholeCoupletsCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+
+                htmlText += $"</tr>{Environment.NewLine}";
+            }
+            htmlText += $"</table>{Environment.NewLine}";
+
             var poetUrl = (await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == null && c.PoetId == poet.Id).SingleAsync()).FullUrl;
 
             var pageUrl = $"{poetUrl}/vazn";
@@ -502,6 +569,7 @@ namespace RMuseum.Services.Implementation
 
                                         for (int i = 0; i < formatCoupletsCountsUnprocessed.Count; i++)
                                         {
+                                            if (formatCoupletsCountsUnprocessed[i].Count == 0) continue;
                                             if (i % 2 == 0)
                                                 htmlText += $"<tr class=\"e\">{Environment.NewLine}";
                                             else
