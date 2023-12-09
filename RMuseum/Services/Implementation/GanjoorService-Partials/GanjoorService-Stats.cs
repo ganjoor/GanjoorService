@@ -213,7 +213,7 @@ namespace RMuseum.Services.Implementation
                         htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
                         var langModel = await context.GanjoorLanguages.AsNoTracking().Where(l => l.Code == languagesCoupletsCountsUnprocessed[i].Language).SingleAsync();
                         string language = langModel.Name;
-                        htmlText += $"<td class=\"c2\"><a href=\"/tagged/?l={Uri.EscapeDataString(langModel.Code)}&amp;a={poet.Id}\">{language}</a></td>{Environment.NewLine}";
+                        htmlText += $"<td class=\"c2\"><a href=\"/simi/?l={Uri.EscapeDataString(langModel.Code)}&amp;a={poet.Id}\">{language}</a></td>{Environment.NewLine}";
                         htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(languagesCoupletsCountsUnprocessed[i].Count)}</td>{Environment.NewLine}";
                         htmlText += $"<td class=\"c4\">{(languagesCoupletsCountsUnprocessed[i].Count * 100.0 / wholeCoupletsCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
 
@@ -436,7 +436,7 @@ namespace RMuseum.Services.Implementation
                                             htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
                                             var langModel = await context.GanjoorLanguages.AsNoTracking().Where(l => l.Code == languagesCoupletsCountsUnprocessed[i].Language).SingleAsync();
                                             string language = langModel.Description;  
-                                            htmlText += $"<td class=\"c2\"><a href=\"/tagged/?l={Uri.EscapeDataString(langModel.Code)}\">{language}</a></td>{Environment.NewLine}";
+                                            htmlText += $"<td class=\"c2\"><a href=\"/simi/?l={Uri.EscapeDataString(langModel.Code)}\">{language}</a></td>{Environment.NewLine}";
                                             htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(languagesCoupletsCountsUnprocessed[i].Count)}</td>{Environment.NewLine}";
                                             htmlText += $"<td class=\"c4\">{(languagesCoupletsCountsUnprocessed[i].Count * 100.0 / sumPoetsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
 
