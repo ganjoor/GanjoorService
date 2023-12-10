@@ -227,6 +227,8 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
+                var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == cat.PoetId).SingleAsync();
+                var rhythms = await context.GanjoorMetres.ToListAsync();
                 string html = string.IsNullOrEmpty(cat.DescriptionHtml) ? "" : $"{cat.DescriptionHtml.Replace("../", "https://ganjoor.net/") }{Environment.NewLine}";
                 var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).OrderBy(c => c.MixedModeOrder).ThenBy(c => c.Id).ToListAsync();
                 var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).OrderBy(p => p.MixedModeOrder).ThenBy(p => p.Id).ToListAsync();
@@ -309,7 +311,7 @@ namespace RMuseum.Services.Implementation
                             html += $"</div>{Environment.NewLine}";
                         }
                     }
-                    var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == cat.PoetId).SingleAsync();
+
                     if (cat.ParentId == null)
                     {
                         //poet page
@@ -348,10 +350,9 @@ namespace RMuseum.Services.Implementation
                         html += $"</div>{Environment.NewLine}";
                     }
 
-                    var rhythms = await context.GanjoorMetres.ToListAsync();
-                    string statsHtml = await _GetCategoryStatsPage(poet.Id, catId, rhythms, context);
 
-                    html += statsHtml;
+
+                    html += await _GetCategoryStatsPage(poet.Id, catId, rhythms, context); ;
 
                     return new RServiceResult<string>(html);
                 }
@@ -526,6 +527,9 @@ namespace RMuseum.Services.Implementation
 
                     html += $"</p>{Environment.NewLine}";
                 }
+
+                html += await _GetCategoryStatsPage(poet.Id, catId, rhythms, context); ;
+
                 return new RServiceResult<string>(html);
             }
             catch (Exception exp)
