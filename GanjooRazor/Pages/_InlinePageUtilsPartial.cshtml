@@ -182,6 +182,18 @@
                 </a>
             }
 
+            @if(Model.GanjoorPage.Poem == null)
+            {
+                <a href="#cat-stats" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button query_stats"></i>
+                    </div>
+                    <span class="w3tooltiptext">
+                        آمار
+                    </span>
+                </a>
+            }
+
             @if (!string.IsNullOrEmpty(Model.PreviousUrl))
             {
                 <a href="@Html.Raw(Model.PreviousUrl)" role="button" class="w3tooltip cursor-pointer">

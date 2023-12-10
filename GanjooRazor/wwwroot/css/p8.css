@@ -1571,6 +1571,10 @@ audio {
     content: 'public';
 }
 
+.query_stats::after {
+    content: 'query_stats';
+}
+
 
 #findpoet {
     margin-top: 10px;
