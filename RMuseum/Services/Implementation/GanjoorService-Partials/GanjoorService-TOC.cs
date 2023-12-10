@@ -270,7 +270,7 @@ namespace RMuseum.Services.Implementation
                              options == GanjoorTOC.TitlesAndFirstCenteredVerse
                              )
                             {
-                                html += await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options);
+                                html = await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options); //this is correct 3
                             }
                             html += $"</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
@@ -305,7 +305,7 @@ namespace RMuseum.Services.Implementation
                              options == GanjoorTOC.TitlesAndFirstCenteredVerse
                              )
                             {
-                                html += await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options);
+                                html = await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options);//this is correct 1
                             }
                             html += $"</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
@@ -523,7 +523,7 @@ namespace RMuseum.Services.Implementation
 
                     html += $"<p class=\"poem-excerpt\" data-value=\"{@poem.Title} { await _AdditionalTableOfContentsAnchorTitleForPoem("", context, poem, options)}\"><a href=\"{poem.FullUrl}\">{poem.Title}</a>";
 
-                    html += await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options);
+                    html = await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options); //this is correct 2 ;)
 
                     html += $"</p>{Environment.NewLine}";
                 }
