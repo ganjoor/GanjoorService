@@ -338,7 +338,7 @@ namespace RMuseum.Services.Implementation
 
         private async Task<string> _GetCategoryStatsPage( int poetId, int catId, List<GanjoorMetre> rhythms, RMuseumDbContext context)
         {
-            List<int> catIdList = new List<int>();
+            List<int> catIdList = [catId];
             await _populateCategoryChildren(context, catId, catIdList);
 
            

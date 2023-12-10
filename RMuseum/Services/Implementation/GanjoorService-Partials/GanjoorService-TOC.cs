@@ -270,7 +270,7 @@ namespace RMuseum.Services.Implementation
                              options == GanjoorTOC.TitlesAndFirstCenteredVerse
                              )
                             {
-                                html = await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options);
+                                html += await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options);
                             }
                             html += $"</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
@@ -305,7 +305,7 @@ namespace RMuseum.Services.Implementation
                              options == GanjoorTOC.TitlesAndFirstCenteredVerse
                              )
                             {
-                                html = await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options);
+                                html += await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options);
                             }
                             html += $"</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
@@ -352,7 +352,7 @@ namespace RMuseum.Services.Implementation
 
 
 
-                    html += await _GetCategoryStatsPage(poet.Id, catId, rhythms, context); ;
+                    html += await _GetCategoryStatsPage(poet.Id, catId, rhythms, context);
 
                     return new RServiceResult<string>(html);
                 }
@@ -523,12 +523,12 @@ namespace RMuseum.Services.Implementation
 
                     html += $"<p class=\"poem-excerpt\" data-value=\"{@poem.Title} { await _AdditionalTableOfContentsAnchorTitleForPoem("", context, poem, options)}\"><a href=\"{poem.FullUrl}\">{poem.Title}</a>";
 
-                    html = await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options);
+                    html += await _AdditionalTableOfContentsAnchorTitleForPoem(html, context, poem, options);
 
                     html += $"</p>{Environment.NewLine}";
                 }
 
-                html += await _GetCategoryStatsPage(poet.Id, catId, rhythms, context); ;
+                html += await _GetCategoryStatsPage(poet.Id, catId, rhythms, context);
 
                 return new RServiceResult<string>(html);
             }
