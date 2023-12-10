@@ -583,7 +583,7 @@ namespace RMuseum.Services.Implementation
 
             formatCoupletsCountsUnprocessed.Sort((a, b) => b.Count - a.Count);
 
-            htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ این بخش با زبان غالب شعر بخش در گنجور به شرح زیر است:</p>{Environment.NewLine}";
+            htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ این بخش با قالب شعری در گنجور به شرح زیر است:</p>{Environment.NewLine}";
 
             htmlText += $"<table>{Environment.NewLine}" +
                 $"<tr class=\"h\">{Environment.NewLine}" +
