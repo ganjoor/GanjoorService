@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -93,12 +94,12 @@ namespace GanjooRazor.Pages
             };
         }
 
-        public _AudioPlayerPartialModel GetRecitationsModel(PublicRecitationViewModel[] recitations, bool minimumControls)
+        public _AudioPlayerPartialModel GetRecitationsModel(PublicRecitationViewModel[] recitations, bool minimumControls, RecitationType recitationType)
         {
             return new _AudioPlayerPartialModel()
             {
                 LoggedIn = LoggedIn,
-                Recitations = recitations,
+                Recitations = recitations.Where(a => a.RecitationType == recitationType).ToArray(),
                 ShowAllRecitaions = minimumControls ? true : ShowAllRecitaions,
                 CategoryMode = minimumControls
             };
