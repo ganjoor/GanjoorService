@@ -37,42 +37,8 @@ namespace RMuseum.Services.Implementation
                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                                {
                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                                   var job = (await jobProgressServiceEF.NewJob("StartRegeneratingTOCs", "Query data")).Result;
-                                   try
-                                   {
-                                       var cats = await context.GanjoorCategories.AsNoTracking().ToListAsync();
 
-                                       foreach (var cat in cats)
-                                       {
-                                           var page =
-                                                    await context.GanjoorPages.AsNoTracking()
-                                                    .Where(p => (p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == cat.PoetId && cat.ParentId == null) || (p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == cat.Id)).SingleOrDefaultAsync();
-                                           if (page == null) continue;
-                                           await jobProgressServiceEF.UpdateJob(job.Id, 0, page.FullTitle);
-                                           if(cat.TableOfContentsStyle == GanjoorTOC.Analyse)
-                                           {
-                                               var hasChild = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == cat.Id).AnyAsync(); 
-                                               if (cat.ParentId == null || hasChild)
-                                                   cat.TableOfContentsStyle = GanjoorTOC.OnlyTitles;
-                                               else
-                                                   cat.TableOfContentsStyle = GanjoorTOC.TitlesAndFirstVerse;
-                                               var catToUpdate = await context.GanjoorCategories.Where(c => c.Id == cat.Id).SingleAsync();
-                                               catToUpdate.TableOfContentsStyle = cat.TableOfContentsStyle;
-                                               context.Update(catToUpdate);
-                                               await context.SaveChangesAsync();
-                                           }
-                                           await _DirectInsertGeneratedTableOfContents(context,cat.Id, userId, cat.TableOfContentsStyle);
-
-                                           await context.SaveChangesAsync();
-                                       }
-
-                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
-                                   }
-                                   catch (Exception exp)
-                                   {
-                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
-                                   }
-
+                                   await _RegenerateTOCs(userId, context, jobProgressServiceEF);
                                }
                            });
                 return new RServiceResult<bool>(true);
@@ -80,6 +46,45 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        private async Task _RegenerateTOCs(Guid userId, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF)
+        {
+            var job = (await jobProgressServiceEF.NewJob("StartRegeneratingTOCs", "Query data")).Result;
+            try
+            {
+                var cats = await context.GanjoorCategories.AsNoTracking().ToListAsync();
+
+                foreach (var cat in cats)
+                {
+                    var page =
+                             await context.GanjoorPages.AsNoTracking()
+                             .Where(p => (p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == cat.PoetId && cat.ParentId == null) || (p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == cat.Id)).SingleOrDefaultAsync();
+                    if (page == null) continue;
+                    await jobProgressServiceEF.UpdateJob(job.Id, 0, page.FullTitle);
+                    if (cat.TableOfContentsStyle == GanjoorTOC.Analyse)
+                    {
+                        var hasChild = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == cat.Id).AnyAsync();
+                        if (cat.ParentId == null || hasChild)
+                            cat.TableOfContentsStyle = GanjoorTOC.OnlyTitles;
+                        else
+                            cat.TableOfContentsStyle = GanjoorTOC.TitlesAndFirstVerse;
+                        var catToUpdate = await context.GanjoorCategories.Where(c => c.Id == cat.Id).SingleAsync();
+                        catToUpdate.TableOfContentsStyle = cat.TableOfContentsStyle;
+                        context.Update(catToUpdate);
+                        await context.SaveChangesAsync();
+                    }
+                    await _DirectInsertGeneratedTableOfContents(context, cat.Id, userId, cat.TableOfContentsStyle);
+
+                    await context.SaveChangesAsync();
+                }
+
+                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+            }
+            catch (Exception exp)
+            {
+                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
             }
         }
 
