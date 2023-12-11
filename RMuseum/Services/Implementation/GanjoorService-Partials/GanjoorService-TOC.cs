@@ -38,7 +38,7 @@ namespace RMuseum.Services.Implementation
                                {
                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
 
-                                   await _RegenerateTOCs(userId, context, jobProgressServiceEF);
+                                   await _RegenerateTOCsAsync(userId, context, jobProgressServiceEF);
                                }
                            });
                 return new RServiceResult<bool>(true);
@@ -49,7 +49,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task _RegenerateTOCs(Guid userId, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF)
+        private async Task _RegenerateTOCsAsync(Guid userId, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF)
         {
             var job = (await jobProgressServiceEF.NewJob("StartRegeneratingTOCs", "Query data")).Result;
             try

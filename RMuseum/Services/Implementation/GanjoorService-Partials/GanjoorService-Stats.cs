@@ -921,6 +921,8 @@ namespace RMuseum.Services.Implementation
                                         }
 
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+
+                                        await _RegenerateTOCsAsync(editingUserId, context, jobProgressServiceEF);
                                     }
                                     catch (Exception exp)
                                     {
