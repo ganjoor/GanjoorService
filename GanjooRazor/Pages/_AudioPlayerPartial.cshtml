@@ -93,7 +93,7 @@
 
         @if (!Model.ShowAllRecitaions && nRecitationIndex == 4 && Model.Recitations.Length > 5)
         {
-            <a role="button" class="pagebutton" id="load-all-recitations-@Model.RecitationType" onclick="showAllRecitations('load-all-recitations-@Model.RecitationType')">همهٔ خوانش‌ها<i class="info-buttons">autorenew</i></a>
+            <a role="button" class="pagebutton load-all-recitations" onclick="showAllRecitations()">همهٔ خوانش‌ها<i class="info-buttons">autorenew</i></a>
         }
     }
     <script>

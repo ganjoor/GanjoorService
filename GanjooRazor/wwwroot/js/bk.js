@@ -905,12 +905,17 @@ function loadMoreRelatedFromPoet(poetId, rhythm, rhymeLetters, skipPoemFullUrl1,
     });
 }
 
-function showAllRecitations(buttonId) {
+function showAllRecitations() {
     const hiddenRecitations = document.querySelectorAll('.hidden-recitation');
     hiddenRecitations.forEach(function (recitation) {
         recitation.className = 'audio-player';
     });
-    document.getElementById(buttonId).style.display = 'none';
+
+    const showRecitationsButtons = document.querySelectorAll('.load-all-recitations');
+    showRecitationsButtons.forEach(function (btn) {
+        btn.style.display = 'none';
+    });
+   
 }
 
 function switch_section(sectionId, buttonId) {
