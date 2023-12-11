@@ -61,6 +61,16 @@ namespace RMuseum.Services.Implementation
 
         private async Task _UpdatePoetStatsPage(Guid editingUserId, GanjoorPoet poet, List<GanjoorMetre> rhythms, RMuseumDbContext context, int wholeCoupletsCount)
         {
+            var poetUrl = (await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == null && c.PoetId == poet.Id).SingleAsync()).FullUrl;
+
+            var pageUrl = $"{poetUrl}/vazn";
+
+            var dbPage = await context.GanjoorPages.Where(p => p.FullUrl == pageUrl).SingleOrDefaultAsync();
+            if (dbPage == null) return;//do not create another vazn page
+
+
+
+
             var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
                                                 .Where(s => s.PoetId == poet.Id && (string.IsNullOrEmpty(s.Language) || s.Language == "fa-IR") && s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem)
                                                 .Select(s => new { s.PoemId, s.Index, s.GanjoorMetreId, Versetype = s.VerseType })
@@ -297,41 +307,9 @@ namespace RMuseum.Services.Implementation
             }
             htmlText += $"</table>{Environment.NewLine}";
 
-            var poetUrl = (await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == null && c.PoetId == poet.Id).SingleAsync()).FullUrl;
 
-            var pageUrl = $"{poetUrl}/vazn";
-
-            var dbPage = await context.GanjoorPages.Where(p => p.FullUrl == pageUrl).SingleOrDefaultAsync();
-
-            if (dbPage != null)
-            {
-                await _UpdatePageHtmlText(context, editingUserId, dbPage, "به روزرسانی خودکار صفحهٔ آمار وزنها", htmlText);
-            }
-            else
-            {
-                var maxPageId = await context.GanjoorPoems.MaxAsync(p => p.Id);
-                if (await context.GanjoorPages.MaxAsync(p => p.Id) > maxPageId)
-                    maxPageId = await context.GanjoorPages.MaxAsync(p => p.Id);
-                var pageId = 1 + maxPageId;
-                GanjoorPage dbPoemPage = new GanjoorPage()
-                {
-                    Id = pageId,
-                    GanjoorPageType = GanjoorPageType.ProsodyAndStats,
-                    Published = true,
-                    PageOrder = -1,
-                    Title = "آمار اوزان عروضی",
-                    FullTitle = $"{poet.Nickname} » آمار اوزان عروضی",
-                    UrlSlug = "vazn",
-                    FullUrl = pageUrl,
-                    HtmlText = htmlText,
-                    PoetId = poet.Id,
-                    PostDate = DateTime.Now,
-                    ParentId = (await context.GanjoorPages.Where(p => p.FullUrl == poetUrl).SingleAsync()).Id
-                };
-                context.GanjoorPages.Add(dbPoemPage);
-                await context.SaveChangesAsync();
-            }
-
+            await _UpdatePageHtmlText(context, editingUserId, dbPage, "به روزرسانی خودکار صفحهٔ آمار وزنها", htmlText);
+            
 
         }
 
@@ -806,7 +784,7 @@ namespace RMuseum.Services.Implementation
                                                 htmlText += $"<tr>{Environment.NewLine}";
 
                                             htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
-                                            htmlText += $"<td class=\"c2\"><a href=\"{(await context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == poetsCoupletCounts[i].PoetId).SingleAsync()).FullUrl}/vazn\">{poets.Where(p => p.Id == poetsCoupletCounts[i].PoetId).Single().Nickname}</a></td>{Environment.NewLine}";
+                                            htmlText += $"<td class=\"c2\"><a href=\"{(await context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == poetsCoupletCounts[i].PoetId).SingleAsync()).FullUrl}\">{poets.Where(p => p.Id == poetsCoupletCounts[i].PoetId).Single().Nickname}</a></td>{Environment.NewLine}";
                                             htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(poetsCoupletCounts[i].Count)}</td>{Environment.NewLine}";
                                             htmlText += $"<td class=\"c4\">{(poetsCoupletCounts[i].Count * 100.0 / sumPoetsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
 
