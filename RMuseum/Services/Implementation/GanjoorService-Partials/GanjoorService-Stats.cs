@@ -405,7 +405,7 @@ namespace RMuseum.Services.Implementation
             htmlText += $"آمار{Environment.NewLine}";
             htmlText += $"</div>{Environment.NewLine}";
 
-            htmlText += $"<div id=\"stats-section\" style=\"display:none\">{Environment.NewLine}";
+            htmlText += $"<div id=\"stats-section\">{Environment.NewLine}";
 
             
 
