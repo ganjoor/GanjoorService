@@ -186,5 +186,15 @@ namespace RMuseum.Models.GanjoorAudio
         /// initial score for ordering recitations
         /// </summary>
         public int InitialScore { get; set; }
+
+        /// <summary>
+        /// Recitation Type
+        /// </summary>
+        public RecitationType RecitationType { get; set; }
+
+        /// <summary>
+        /// in sync with text
+        /// </summary>
+        public bool InSyncWithText { get; set; }
     }
 }

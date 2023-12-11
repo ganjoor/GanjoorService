@@ -5166,6 +5166,16 @@
             initial score for ordering recitations
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.RecitationType">
+            <summary>
+            Recitation Type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.Recitation.InSyncWithText">
+            <summary>
+            in sync with text
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorAudio.RecitationApprovedMistake">
             <summary>
             Recitation approved mistake
@@ -5309,6 +5319,21 @@
         <member name="P:RMuseum.Models.GanjoorAudio.RecitationPublishingTracker.LastException">
             <summary>
             Last Excecption
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.GanjoorAudio.RecitationType">
+            <summary>
+            recitation type
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.RecitationType.Normal">
+            <summary>
+            normal recitations
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.RecitationType.Commentary">
+            <summary>
+            commantaries
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.RecitationUserUpVote">
