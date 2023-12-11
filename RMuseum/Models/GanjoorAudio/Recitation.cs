@@ -195,6 +195,6 @@ namespace RMuseum.Models.GanjoorAudio
         /// <summary>
         /// in sync with text
         /// </summary>
-        public bool InSyncWithText { get; set; }
+        public bool InSyncWithText { get; set; } = true;
     }
 }
