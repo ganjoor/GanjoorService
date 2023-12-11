@@ -113,9 +113,10 @@ namespace RMuseum.Services
         /// finalize upload session (add files)
         /// </summary>
         /// <param name="session"></param>
+        /// <param name="recitationType"></param>
         /// <param name="files"></param>
         /// <returns></returns>
-        Task<RServiceResult<UploadSession>> FinalizeNewUploadSession(UploadSession session, UploadSessionFile[] files);
+        Task<RServiceResult<UploadSession>> FinalizeNewUploadSession(UploadSession session, RecitationType recitationType, UploadSessionFile[] files);
 
         /// <summary>
         /// Moderate pending narration

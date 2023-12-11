@@ -834,9 +834,10 @@ namespace RMuseum.Services.Implementationa
         /// finalize upload session (add files)
         /// </summary>
         /// <param name="session"></param>
+        /// <param name="recitationType"></param>
         /// <param name="files"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<UploadSession>> FinalizeNewUploadSession(UploadSession session, UploadSessionFile[] files)
+        public async Task<RServiceResult<UploadSession>> FinalizeNewUploadSession(UploadSession session, RecitationType recitationType, UploadSessionFile[] files)
         {
             session.UploadedFiles = files;
             session.UploadEndTime = DateTime.Now;
@@ -972,7 +973,7 @@ namespace RMuseum.Services.Implementationa
                                     else
                                     {
                                         bool overCrowdedPoem = false;
-                                        if (maxRecitationsPerPoem != 0 && maxRecitationsPerPoem <= (await context.Recitations.AsNoTracking().CountAsync(r => r.GanjoorPostId == audio.PoemId && r.ReviewStatus == AudioReviewStatus.Approved)))
+                                        if (maxRecitationsPerPoem != 0 && maxRecitationsPerPoem <= (await context.Recitations.AsNoTracking().CountAsync(r => r.GanjoorPostId == audio.PoemId && r.ReviewStatus == AudioReviewStatus.Approved && r.RecitationType == recitationType)))
                                         {
                                             if
                                             (
@@ -1094,7 +1095,10 @@ namespace RMuseum.Services.Implementationa
                                                     LocalMp3FilePath = localMp3FilePath,
                                                     LocalXmlFilePath = localXmlFilePath,
                                                     AudioSyncStatus = AudioSyncStatus.NewItem,
-                                                    ReviewStatus = AudioReviewStatus.Draft
+                                                    ReviewStatus = AudioReviewStatus.Draft,
+                                                    InitialScore = 0,
+                                                    InSyncWithText = true,
+                                                    RecitationType = recitationType,
                                                 };
 
                                                 if (narration.AudioTitle.IndexOf("فایل صوتی") == 0) //no modification on title

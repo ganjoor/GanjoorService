@@ -520,6 +520,7 @@ namespace RMuseum.Controllers
         /// if you send true to replace parameter, if there is an existing recitation for the poem from the user with the same Audio Artist name
         /// corresponding mp3+xml files are replaced an no other changes is applied (no new post, preserving recitation position)
         /// </param>
+        /// <param name="recitationType"></param>
         /// <returns></returns>
         [HttpPost]
         [Authorize]
@@ -527,7 +528,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
-        public async Task<IActionResult> UploadReciation(bool replace = false)
+        public async Task<IActionResult> UploadReciation(bool replace = false, RecitationType recitationType = RecitationType.Normal)
         {
             try
             {
@@ -547,7 +548,7 @@ namespace RMuseum.Controllers
                     }
                     files.Add(rsFileResult.Result);
                 }
-                resSession = await _audioService.FinalizeNewUploadSession(resSession.Result, files.ToArray());
+                resSession = await _audioService.FinalizeNewUploadSession(resSession.Result, recitationType, files.ToArray());
 
                 return Ok(resSession.Result);
             }

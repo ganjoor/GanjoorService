@@ -2510,7 +2510,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.UploadReciation(System.Boolean)">
+        <member name="M:RMuseum.Controllers.RecitationController.UploadReciation(System.Boolean,RMuseum.Models.GanjoorAudio.RecitationType)">
             <summary>
             Reciation Upload
             </summary>
@@ -2518,6 +2518,7 @@
             if you send true to replace parameter, if there is an existing recitation for the poem from the user with the same Audio Artist name
             corresponding mp3+xml files are replaced an no other changes is applied (no new post, preserving recitation position)
             </param>
+            <param name="recitationType"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetUserNarrationProfiles(System.String)">
@@ -18744,11 +18745,12 @@
             <param name="uploadedFile"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementationa.RecitationService.FinalizeNewUploadSession(RMuseum.Models.UploadSession.UploadSession,RMuseum.Models.UploadSession.UploadSessionFile[])">
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.FinalizeNewUploadSession(RMuseum.Models.UploadSession.UploadSession,RMuseum.Models.GanjoorAudio.RecitationType,RMuseum.Models.UploadSession.UploadSessionFile[])">
             <summary>
             finalize upload session (add files)
             </summary>
             <param name="session"></param>
+            <param name="recitationType"></param>
             <param name="files"></param>
             <returns></returns>
         </member>
@@ -19295,11 +19297,12 @@
             <param name="uploadedFile"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IRecitationService.FinalizeNewUploadSession(RMuseum.Models.UploadSession.UploadSession,RMuseum.Models.UploadSession.UploadSessionFile[])">
+        <member name="M:RMuseum.Services.IRecitationService.FinalizeNewUploadSession(RMuseum.Models.UploadSession.UploadSession,RMuseum.Models.GanjoorAudio.RecitationType,RMuseum.Models.UploadSession.UploadSessionFile[])">
             <summary>
             finalize upload session (add files)
             </summary>
             <param name="session"></param>
+            <param name="recitationType"></param>
             <param name="files"></param>
             <returns></returns>
         </member>
