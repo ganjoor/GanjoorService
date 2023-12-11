@@ -424,7 +424,7 @@ namespace RMuseum.Services.Implementation
 
             string htmlText = "<div class=\"related-images-frame\" id=\"cat-stats\">";
             htmlText += $"<div class=\"century\">{Environment.NewLine}";
-            htmlText += $" آمار <a role=\"button\" class=\"w3tooltip cursor-pointer\" onclick=\"switch_section('stats-section', 'stats-collapse-button')\"><i class=\"info-buttons expand_circle_down\" id=\"stats-collapse-button\"></i><span class=\"w3tooltiptext\">جمع شود / باز شود</span></a>{Environment.NewLine}";
+            htmlText += $"آمار{Environment.NewLine}";
             htmlText += $"</div>{Environment.NewLine}";
 
             htmlText += $"<div id=\"stats-section\" style=\"display:none\">{Environment.NewLine}";
