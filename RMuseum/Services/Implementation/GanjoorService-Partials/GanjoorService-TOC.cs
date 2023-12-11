@@ -322,7 +322,10 @@ namespace RMuseum.Services.Implementation
                         //poet page
                         var poetPage = await context.GanjoorPages.AsNoTracking().Where(p => p.ParentId == null && p.PoetId == cat.PoetId && p.GanjoorPageType == GanjoorPageType.PoetPage).SingleAsync();
                         
+                        
                         html += $"<p>دیگر صفحات مرتبط با {poet.Nickname} در این پایگاه:</p>{Environment.NewLine}";
+                        /*
+                        // do not include stats pages
                         var statsPage = await context.GanjoorPages.AsNoTracking()
                                 .Where(p => p.FullUrl == $"{poetPage.FullUrl}/vazn").SingleOrDefaultAsync();
                         if (statsPage != null)
@@ -331,6 +334,7 @@ namespace RMuseum.Services.Implementation
                             html += $"<a href=\"{statsPage.FullUrl}\">اوزان اشعار {poet.Nickname}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                         }
+                        */
                         var thisPoetsSimilars = await context.GanjoorPages.AsNoTracking()
                                .Where(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == poet.Id).ToListAsync();
 
