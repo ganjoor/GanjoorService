@@ -96,7 +96,7 @@ namespace RMuseum.Services.Implementation
                                            string poetSitemap = Path.Combine(dir, $"{poet.Id}.xml");
 
                                            WriteSitemap(poetSitemap,
-                                               await context.GanjoorPages.Where(p => p.PoetId == poet.Id).OrderBy(p => p.Id).Select(p => p.FullUrl).ToListAsync()
+                                               await context.GanjoorPages.Where(p => p.PoetId == poet.Id && p.UrlSlug != "vazn").OrderBy(p => p.Id).Select(p => p.FullUrl).ToListAsync()
                                                );
 
                                            sitemaps.Add(poetSitemap);
