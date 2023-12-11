@@ -606,11 +606,11 @@
 
                                     if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
                                     {
-                                        <div class="related-images-frame" id="commantaries">
+                                        <div class="related-images-frame" id="commentaries">
                                             <div class="century">
-                                                @(Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Count() > 1 ? "شرح‌‌های صوتی" : "شرح صوتی") <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('commantaries-section', 'commantaries-collapse-button')"><i class="info-buttons expand_circle_down" id="commantaries-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                                @(Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Count() > 1 ? "شرح‌‌های صوتی" : "شرح صوتی") <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('commentaries-section', 'commentaries-collapse-button')"><i class="info-buttons expand_circle_down" id="commentaries-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                             </div>
-                                            <div id="commantaries-section">
+                                            <div id="commentaries-section">
                                                 <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Commentary) />
                                             </div>
                                         </div>

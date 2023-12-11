@@ -101,7 +101,8 @@ namespace GanjooRazor.Pages
                 LoggedIn = LoggedIn,
                 Recitations = recitations.Where(a => a.RecitationType == recitationType).ToArray(),
                 ShowAllRecitaions = minimumControls ? true : ShowAllRecitaions,
-                CategoryMode = minimumControls
+                CategoryMode = minimumControls,
+                RecitationType = recitationType,
             };
         }
 

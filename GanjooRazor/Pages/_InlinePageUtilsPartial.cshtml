@@ -141,7 +141,7 @@
 
             @if 
             (
-                (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null && Model.GanjoorPage.Poem.Recitations.Length > 0)
+                (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null && Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
                 ||
                 (Model.CategoryHasRecitations)
             )
@@ -151,6 +151,19 @@
                         <i class="noindent-info-button recitation-listen"></i>
                     </div>
                     <span class="w3tooltiptext">خوانش‌ها</span>
+                </a>
+            }
+
+            @if
+           (
+           Model.GanjoorPage != null && Model.GanjoorPage.Poem != null && Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any()
+           )
+            {
+                <a href="#commentaries" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button commentary-listen"></i>
+                    </div>
+                    <span class="w3tooltiptext">شرح‌های صوتی</span>
                 </a>
             }
 

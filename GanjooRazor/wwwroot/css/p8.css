@@ -1513,6 +1513,10 @@ audio {
     content: 'hearing';
 }
 
+.commentary-listen::after {
+    content: 'spatial_audio_off';
+}
+
 .recitation-comments::after {
     content: 'question_answer';
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 
 namespace GanjooRazor.Pages
@@ -9,6 +10,7 @@ namespace GanjooRazor.Pages
         public PublicRecitationViewModel[] Recitations { get; set; }
         public bool ShowAllRecitaions { get; set; }
         public bool CategoryMode { get; set; }
+        public RecitationType RecitationType { get; set; }
 
         public string getAudioDesc(PublicRecitationViewModel recitation, bool contributionLink = false)
         {
