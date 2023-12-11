@@ -760,6 +760,8 @@ namespace RMuseum.Services.Implementation
                      PlainText = "", //poem.PlainText 
                      HtmlText = "",//poem.HtmlText
                      AudioOrder = audio.AudioOrder,
+                     RecitationType = audio.RecitationType,
+                     InSyncWithText = audio.InSyncWithText,
                      UpVotedByUser = false,
                  };
             var recitations = await source.AsNoTracking().ToArrayAsync();

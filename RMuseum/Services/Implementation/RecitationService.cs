@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic.Devices;
 using RMuseum.DbContext;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
@@ -152,6 +153,8 @@ namespace RMuseum.Services.Implementationa
                                      PlainText = poem.PlainText,
                                      HtmlText = poem.HtmlText,
                                      AudioOrder = audio.AudioOrder,
+                                     RecitationType = audio.RecitationType,
+                                     InSyncWithText = audio.InSyncWithText,
                                      UpVotedByUser = false,
                                  };
 
@@ -209,6 +212,8 @@ namespace RMuseum.Services.Implementationa
                                      PlainText = poem.PlainText,
                                      HtmlText = poem.HtmlText,
                                      AudioOrder = audio.AudioOrder,
+                                     RecitationType = audio.RecitationType,
+                                     InSyncWithText = audio.InSyncWithText,
                                      UpVotedByUser = false,
                                  };
 
@@ -265,6 +270,8 @@ namespace RMuseum.Services.Implementationa
                                      PlainText = poem.PlainText,
                                      HtmlText = poem.HtmlText,
                                      AudioOrder = audio.AudioOrder,
+                                     RecitationType = audio.RecitationType,
+                                     InSyncWithText = audio.InSyncWithText,
                                      UpVotedByUser = false,
                                  };
 
@@ -292,7 +299,7 @@ namespace RMuseum.Services.Implementationa
                                                .Take(1)
                                                .DefaultIfEmpty()
                              where
-                             poem.CatId == catId && audio != null
+                             poem.CatId == catId && audio != null && audio.RecitationType == RecitationType.Normal
                              orderby poem.Id
                              select new PublicRecitationViewModel()
                              {
@@ -315,6 +322,8 @@ namespace RMuseum.Services.Implementationa
                                  PlainText = includePoemText ? poem.PlainText : "",
                                  HtmlText = includePoemText ? poem.HtmlText : "",
                                  AudioOrder = audio.AudioOrder,
+                                 RecitationType = audio.RecitationType,
+                                 InSyncWithText = audio.InSyncWithText,
                                  UpVotedByUser = false,
                              };
 
@@ -385,6 +394,8 @@ namespace RMuseum.Services.Implementationa
                      PlainText = poem.PlainText,
                      HtmlText = poem.HtmlText,
                      AudioOrder = audio.AudioOrder,
+                     RecitationType = audio.RecitationType,
+                     InSyncWithText = audio.InSyncWithText,
                      UpVotedByUser = false,
                  };
 
@@ -2637,6 +2648,8 @@ namespace RMuseum.Services.Implementationa
                      PlainText = poem.PlainText,
                      HtmlText = poem.HtmlText,
                      AudioOrder = upvote.Recitation.AudioOrder,
+                     RecitationType = upvote.Recitation.RecitationType,
+                     InSyncWithText = upvote.Recitation.InSyncWithText,
                      UpVotedByUser = true,
                  };
 

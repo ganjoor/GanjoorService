@@ -5566,6 +5566,16 @@
             This determines where an audio is displayed between a list of sounds related to a specfic poem
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.RecitationType">
+            <summary>
+            Recitation Type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.InSyncWithText">
+            <summary>
+            in sync with text
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.UpVotedByUser">
             <summary>
             upvoted by current user (filled at client)

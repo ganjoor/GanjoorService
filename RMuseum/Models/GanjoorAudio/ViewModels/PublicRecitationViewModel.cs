@@ -108,9 +108,21 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         public int AudioOrder { get; set; }
 
         /// <summary>
+        /// Recitation Type
+        /// </summary>
+        public RecitationType RecitationType { get; set; }
+
+        /// <summary>
+        /// in sync with text
+        /// </summary>
+        public bool InSyncWithText { get; set; }
+
+        /// <summary>
         /// upvoted by current user (filled at client)
         /// </summary>
         public bool UpVotedByUser { get; set; }
+
+
 
     }
 }
