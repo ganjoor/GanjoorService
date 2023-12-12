@@ -738,7 +738,7 @@ namespace RMuseum.Services.Implementation
                  audio.ReviewStatus == AudioReviewStatus.Approved
                  &&
                  poem.Id == id
-                 orderby audio.AudioOrder
+                 orderby audio.RecitationType, audio.AudioOrder
                  select new PublicRecitationViewModel()
                  {
                      Id = audio.Id,
