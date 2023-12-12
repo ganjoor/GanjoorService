@@ -210,6 +210,10 @@ namespace GanjooRazor.Areas.User.Pages
                     {
                         PoemFormat = PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && s.PoemFormat != null).OrderBy(s => s.VerseType).First().PoemFormat;
                     }
+                    else
+                    {
+                        PoemFormat = GanjoorPoemFormat.Unknown;
+                    }
 
                     if (PageInformation.Poem.Images.Where(i => i.IsTextOriginalSource).Any())
                     {

@@ -520,10 +520,10 @@ else
                 </tr>
                 <tr>
                     <td>
-                        <p class="red-color"> @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat?)Model.MyLastEdit.OriginalPoemFormat)</p>
+                        <p class="red-color"> @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(Model.MyLastEdit.OriginalPoemFormat)</p>
                     </td>
                     <td>
-                        <p class="green-color"> @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat?)Model.MyLastEdit.PoemFormat)</p>
+                        <p class="green-color"> @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(Model.MyLastEdit.PoemFormat)</p>
                     </td>
                 </tr>
             }
@@ -1254,7 +1254,7 @@ else
 
             <tr>
                 <td>
-                    @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)Model.PoemFormat)
+                    @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(Model.PoemFormat)
                     <div id="poemformat-old" class="hidden-recitation">@Model.PoemFormat</div>
                 </td>
             </tr>
