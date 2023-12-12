@@ -94,7 +94,7 @@ namespace GanjooRazor.Pages
             };
         }
 
-        public _AudioPlayerPartialModel GetRecitationsModel(PublicRecitationViewModel[] recitations, bool minimumControls, RecitationType recitationType)
+        public _AudioPlayerPartialModel GetRecitationsModel(PublicRecitationViewModel[] recitations, bool minimumControls, RecitationType recitationType, bool isAdmin)
         {
             return new _AudioPlayerPartialModel()
             {
@@ -103,6 +103,7 @@ namespace GanjooRazor.Pages
                 ShowAllRecitaions = minimumControls ? true : ShowAllRecitaions,
                 CategoryMode = minimumControls,
                 RecitationType = recitationType,
+                IsAdmin = isAdmin,
             };
         }
 
@@ -1095,6 +1096,27 @@ namespace GanjooRazor.Pages
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{id}", new StringContent(JsonConvert.SerializeObject(note), Encoding.UTF8, "application/json"));
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+            return new JsonResult(true);
+        }
+
+        public async Task<IActionResult> OnDeleteMistakeAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/audio/errors/approved/{id}");
+
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));

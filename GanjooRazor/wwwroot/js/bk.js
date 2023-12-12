@@ -755,6 +755,27 @@ function deleteMyComment(commentId, coupletIndex) {
     });
 
 }
+function deleteMistake(mistakeId) {
+    if (!confirm('آیا از حذف این اشکال اطمینان دارید؟'))
+        return;
+
+    var url = '?handler=Mistake';
+
+    $.ajax({
+        type: "DELETE",
+        url: url,
+        data: {
+            id: mistakeId
+        },
+        success: function () {
+            var commentBlockId = '#mistake-' + mistakeId;
+            if ($(commentBlockId) != null) {
+                $(commentBlockId).remove();
+            }
+        },
+    });
+
+}
 
 function editMyComment(commentId, coupletIndex) {
     var commentTextBlockId = '#comment-text-' + commentId;

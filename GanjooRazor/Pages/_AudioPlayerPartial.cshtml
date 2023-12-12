@@ -58,7 +58,7 @@
                         </div>
                         @foreach (var mistake in recitaion.Mistakes)
                         {
-                            <div class="recitaion-mistake">
+                            <div class="recitaion-mistake" id="mistake-@mistake.Id">
                                 <p>
                                     @if (mistake.CoupletIndex != -1)
                                     {
@@ -66,6 +66,10 @@
                                     }
                                     @Html.Raw(mistake.Mistake.Replace("\r\n", "<br>"))
                                 </p>
+                                @if(Model.IsAdmin)
+                                {
+                                    <a role="button" onclick="deleteMistake(@mistake.Id)" class="w3tooltip"><i class="pageicons">delete</i><span class="w3tooltiptext">حذف خطا</span></a>
+                                }
                             </div>
                         }
                     </div>

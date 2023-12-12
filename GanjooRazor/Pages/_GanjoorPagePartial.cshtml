@@ -599,7 +599,7 @@
                                                 @(Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Count() > 1 ? "خوانش‌ها" : "خوانش") <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('recitations-section', 'recitations-collapse-button')"><i class="info-buttons expand_circle_down" id="recitations-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                             </div>
                                             <div id="recitations-section">
-                                                <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Normal) />
+                                                <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Normal, Model.CanEdit) />
                                             </div>
                                         </div>
                                     }
@@ -611,7 +611,7 @@
                                                 @(Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Count() > 1 ? "شرح‌‌های صوتی" : "شرح صوتی") <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('commentaries-section', 'commentaries-collapse-button')"><i class="info-buttons expand_circle_down" id="commentaries-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                             </div>
                                             <div id="commentaries-section">
-                                                <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Commentary) />
+                                                <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Commentary, Model.CanEdit) />
                                             </div>
                                         </div>
                                     }
