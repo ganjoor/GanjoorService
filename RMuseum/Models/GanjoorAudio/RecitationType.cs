@@ -14,5 +14,9 @@
         /// </summary>
         Commentary = 1,
 
+        /// <summary>
+        /// unfiltered
+        /// </summary>
+        Unfiltered = 1000,
     }
 }

@@ -2412,7 +2412,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.RecitationController.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String,System.Boolean)">
+        <member name="M:RMuseum.Controllers.RecitationController.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String,System.Boolean,RMuseum.Models.GanjoorAudio.RecitationType)">
             <summary>
             Gets audio narrations, user must have recitation::moderate permission to be able to see all users narrations
             </summary>
@@ -2421,6 +2421,7 @@
             <param name="status">default: -1, unfiltered</param>
             <param name="searchTerm"></param>
             <param name="mistakes"></param>
+            <param name="recitationType"></param>
             <remarks>additional headers: paging-headers, audio-upload-enabled</remarks>
             <returns></returns>
         </member>
@@ -5347,6 +5348,11 @@
         <member name="F:RMuseum.Models.GanjoorAudio.RecitationType.Commentary">
             <summary>
             commantaries
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.GanjoorAudio.RecitationType.Unfiltered">
+            <summary>
+            unfiltered
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorAudio.RecitationUserUpVote">
@@ -18653,7 +18659,7 @@
             Audio Narration Service Implementation
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementationa.RecitationService.SecureGetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.SecureGetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String,System.Boolean,RMuseum.Models.GanjoorAudio.RecitationType)">
             <summary>
             returns list of narrations
             </summary>
@@ -18662,6 +18668,7 @@
             <param name="status"></param>
             <param name="searchTerm"></param>
             <param name="mistakes"></param>
+            <param name="recitationType"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPublishedRecitations(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Int32,System.Int32)">
@@ -19212,7 +19219,7 @@
             Audio Narration Service
             </summary>
         </member>
-        <member name="M:RMuseum.Services.IRecitationService.SecureGetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String,System.Boolean)">
+        <member name="M:RMuseum.Services.IRecitationService.SecureGetAll(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RMuseum.Models.GanjoorAudio.AudioReviewStatus,System.String,System.Boolean,RMuseum.Models.GanjoorAudio.RecitationType)">
             <summary>
             returns list of narrations
             </summary>
@@ -19221,6 +19228,7 @@
             <param name="status"></param>
             <param name="searchTerm"></param>
             <param name="mistakes"></param>
+            <param name="recitationType"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.GetPublishedRecitations(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Int32,System.Int32)">

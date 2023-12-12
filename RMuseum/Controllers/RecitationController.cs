@@ -107,6 +107,7 @@ namespace RMuseum.Controllers
         /// <param name="status">default: -1, unfiltered</param>
         /// <param name="searchTerm"></param>
         /// <param name="mistakes"></param>
+        /// <param name="recitationType"></param>
         /// <remarks>additional headers: paging-headers, audio-upload-enabled</remarks>
         /// <returns></returns>
         [HttpGet]
@@ -114,7 +115,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<RecitationViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Forbidden, Type = typeof(string))]
-        public async Task<IActionResult> Get([FromQuery] PagingParameterModel paging, bool allUsers = false, AudioReviewStatus status = AudioReviewStatus.All, string searchTerm = "", bool mistakes = false)
+        public async Task<IActionResult> Get([FromQuery] PagingParameterModel paging, bool allUsers = false, AudioReviewStatus status = AudioReviewStatus.All, string searchTerm = "", bool mistakes = false, RecitationType recitationType = RecitationType.Unfiltered)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
@@ -138,7 +139,7 @@ namespace RMuseum.Controllers
                     return StatusCode((int)HttpStatusCode.Forbidden);
             }
 
-            var res = await _audioService.SecureGetAll(paging, allUsers ? Guid.Empty : loggedOnUserId, status, searchTerm, mistakes);
+            var res = await _audioService.SecureGetAll(paging, allUsers ? Guid.Empty : loggedOnUserId, status, searchTerm, mistakes, recitationType);
             if(!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 

@@ -43,8 +43,9 @@ namespace RMuseum.Services.Implementationa
         /// <param name="status"></param>
         /// <param name="searchTerm"></param>
         /// <param name="mistakes"></param>
+        /// <param name="recitationType"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> SecureGetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status, string searchTerm, bool mistakes)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, RecitationViewModel[] Items)>> SecureGetAll(PagingParameterModel paging, Guid filteredUserId, AudioReviewStatus status, string searchTerm, bool mistakes, RecitationType recitationType)
         {
             if (!mistakes)
             {
@@ -61,6 +62,8 @@ namespace RMuseum.Services.Implementationa
                      (string.IsNullOrEmpty(searchTerm) ||
                      (!string.IsNullOrEmpty(searchTerm) && (audio.AudioArtist.Contains(searchTerm) || audio.AudioTitle.Contains(searchTerm) || poem.FullTitle.Contains(searchTerm)))
                      )
+                     &&
+                     (recitationType == RecitationType.Unfiltered || audio.RecitationType == recitationType)
                      orderby audio.UploadDate descending
                      select new RecitationViewModel(audio, audio.Owner, poem, "");
 
