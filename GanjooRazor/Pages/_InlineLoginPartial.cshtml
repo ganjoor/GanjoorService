@@ -224,7 +224,10 @@
                     روخوانی‌های شعر
                 </a>
             </div>
+        }
 
+        @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
+        {
             <div class="w3-bar-item w3-button">
                 <a onclick="w3_close()" href="#commentaries" role="button" class="cursor-pointer">
                     <div class="circled-number">
@@ -233,7 +236,11 @@
                     شرح‌های صوتی
                 </a>
             </div>
+        }
 
+        @if (Model.GanjoorPage.Poem.Recitations.Any())
+        {
+            
             <div class="w3-bar-item w3-button">
                 <a onclick="switchPlayerScrollLock()" role="button" class="cursor-pointer">
                     <div class="circled-number">
