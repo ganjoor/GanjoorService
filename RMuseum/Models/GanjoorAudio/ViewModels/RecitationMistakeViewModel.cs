@@ -6,6 +6,10 @@
     public class RecitationMistakeViewModel
     {
         /// <summary>
+        /// id
+        /// </summary>
+        public int Id { get; set; }
+        /// <summary>
         /// mistake
         /// </summary>
         public string Mistake { get; set; }

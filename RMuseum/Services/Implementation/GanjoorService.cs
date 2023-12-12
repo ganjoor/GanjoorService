@@ -772,6 +772,7 @@ namespace RMuseum.Services.Implementation
                           .Where(m => m.RecitationId == recitation.Id)
                           .Select(m => new RecitationMistakeViewModel()
                           {
+                              Id = m.Id,
                               Mistake = m.Mistake,
                               NumberOfLinesAffected = m.NumberOfLinesAffected,
                               CoupletIndex = m.CoupletIndex

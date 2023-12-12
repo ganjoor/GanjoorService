@@ -5632,6 +5632,11 @@
             approved mistake view model
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationMistakeViewModel.Id">
+            <summary>
+            id
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.RecitationMistakeViewModel.Mistake">
             <summary>
             mistake
