@@ -2614,6 +2614,13 @@
             <param name="report"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.RemoveApprovedMistakeAsync(System.Int32)">
+            <summary>
+            remove approved mistake
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.UpVoteRecitationAsync(System.Int32)">
             <summary>
             up vote a recitation
@@ -18928,6 +18935,13 @@
             <param name="report"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.RemoveApprovedMistakeAsync(System.Int32)">
+            <summary>
+            remove approved mistake
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.ComputePoemRecitationsOrdersAsync(System.Int32,System.Boolean)">
             <summary>
             compute poem recitations order
@@ -19467,6 +19481,13 @@
             accepts a reported error for recitations, add mistake to approve the mistake and notify the reporter and recitation owner (and deletes the report)
             </summary>
             <param name="report"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.RemoveApprovedMistakeAsync(System.Int32)">
+            <summary>
+            remove approved mistake
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.ComputePoemRecitationsOrdersAsync(System.Int32,System.Boolean)">

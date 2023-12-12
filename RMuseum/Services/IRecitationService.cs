@@ -250,6 +250,13 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> AddReportToTheApprovedMistakesAsync(RecitationErrorReportViewModel report);
 
         /// <summary>
+        /// remove approved mistake
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> RemoveApprovedMistakeAsync(int id);
+
+        /// <summary>
         /// compute poem recitations order
         /// </summary>
         /// <param name="poemId"></param>

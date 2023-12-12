@@ -2431,6 +2431,32 @@ namespace RMuseum.Services.Implementationa
         }
 
         /// <summary>
+        /// remove approved mistake
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> RemoveApprovedMistakeAsync(int id)
+        {
+            try
+            {
+                var mistake = await _context.RecitationApprovedMistakes.Where(m => m.Id == id).SingleAsync();
+                var recitation = await _context.Recitations.AsNoTracking().Where(r => r.Id == mistake.RecitationId).SingleAsync();
+                _context.Remove(mistake);
+                await _context.SaveChangesAsync();
+
+
+                await ComputePoemRecitationsOrdersAsync(recitation.GanjoorPostId);
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// compute poem recitations order
         /// </summary>
         /// <param name="poemId"></param>
