@@ -624,11 +624,12 @@ namespace RMuseum.Services.Implementationa
                 {
                     foreach (var moderator in moderators.Result)
                     {
+                        string section = narration.RecitationType == RecitationType.Commentary ? "شرح‌های صوتی" : "خوانش‌های";
                         await _notificationService.PushNotification
                                         (
                                             (Guid)moderator.Id,
                                             "درخواست بررسی خوانش",
-                                            $"درخواستی برای بررسی خوانشی از «{narration.AudioArtist}» ثبت شده است. در صورت تمایل به بررسی، بخش «خوانش‌های در انتظار تأیید» را ببینید.{Environment.NewLine}" +
+                                            $"درخواستی برای بررسی خوانشی از «{narration.AudioArtist}» ثبت شده است. در صورت تمایل به بررسی، بخش «${section} در انتظار تأیید» را ببینید.{Environment.NewLine}" +
                                             $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی خوانش‌هاست پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
                                         );
                     }
