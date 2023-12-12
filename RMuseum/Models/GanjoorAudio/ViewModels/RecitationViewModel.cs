@@ -72,6 +72,8 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
                 ReviewMsg = src.ReviewMsg;
             else
                 ReviewMsg = mistake;
+            RecitationType = src.RecitationType;
+            InSyncWithText = src.InSyncWithText;
         }
 
         /// <summary>
@@ -249,5 +251,16 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// Review Message
         /// </summary>
         public string ReviewMsg { get; set; }
+
+
+        /// <summary>
+        /// Recitation Type
+        /// </summary>
+        public RecitationType RecitationType { get; set; }
+
+        /// <summary>
+        /// in sync with text
+        /// </summary>
+        public bool InSyncWithText { get; set; }
     }
 }
