@@ -294,12 +294,12 @@ namespace RMuseum.Services.Implementationa
             {
                 var source = from poem in _context.GanjoorPoems.AsNoTracking()
                              from audio in _context.Recitations
-                                               .Where(a => a.GanjoorPostId == poem.Id && a.ReviewStatus == AudioReviewStatus.Approved)
+                                               .Where(a => a.GanjoorPostId == poem.Id && a.ReviewStatus == AudioReviewStatus.Approved && a.RecitationType == RecitationType.Normal)
                                                .OrderBy(a => a.AudioOrder)
                                                .Take(1)
                                                .DefaultIfEmpty()
                              where
-                             poem.CatId == catId && audio != null && audio.RecitationType == RecitationType.Normal
+                             poem.CatId == catId && audio != null
                              orderby poem.Id
                              select new PublicRecitationViewModel()
                              {
