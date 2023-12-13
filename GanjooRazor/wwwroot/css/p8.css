@@ -1996,6 +1996,7 @@ fieldset {
 .inline-small{
     display:inline;
     font-size:small;
+    color: gold;
 }
 
 

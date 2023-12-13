@@ -87,7 +87,16 @@
 
     </div>
 
-    
+    @if (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null)
+    {
+        <div class="clear-both margin-15px" id="main-inline-div" style="display:none">
+            <input type="search" name="inline-search" id="inline-search" class="text-align-center" placeholder="جستجو در متن" size="35" value="" onkeyup="inlineHighlight()">
+            <a onclick="inlineUnHighlight()" role="button" class="cursor-pointer">
+                <i class="noindent-info-button close-button"></i>
+            </a>
+            <div id="inline-search-matches" class="inline-small"></div>
+        </div>
+    }
 
 </div>
 

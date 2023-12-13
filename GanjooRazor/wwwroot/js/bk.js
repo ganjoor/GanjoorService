@@ -1363,10 +1363,25 @@ function inlineHighlight() {
 
 function inlineUnHighlight() {
     document.getElementById('inline-search').value = '';
+    document.getElementById('fake-inline-div').value = '';
     document.getElementById('inline-search').classList.remove("background-red");
     $('#inline-search-matches').text('');
     var context = document.getElementById('garticle');
     $(context).unmark();
+
+    document.getElementById('fake-inline-div').style.display = 'block';
+    document.getElementById('main-inline-div').style.display = 'none';
+    document.getElementById('fake-inline-search').value = '';
+    document.getElementById('fake-inline-search').focus();
+}
+
+function displayMainInlineSearch() {
+    document.getElementById('fake-inline-div').style.display = 'none';
+    document.getElementById('main-inline-div').style.display = 'block';
+    var txt = document.getElementById('fake-inline-search').value;
+    document.getElementById('inline-search').value = txt;
+    document.getElementById('inline-search').setSelectionRange(txt.length, txt.length);
+    document.getElementById('inline-search').focus();
 }
 
 
