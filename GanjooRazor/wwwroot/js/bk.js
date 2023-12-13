@@ -413,7 +413,7 @@ function playCouplet(coupletIndex) {
 function editCouplet(poemId, coupletIndex, blockId) {
 
     var vIndex = getVerseIndexFromCoupleIndex(coupletIndex);
-    location.href = '/User/Editor?id=' + poemId + '#' + blockId  + '-' + String(vIndex + 1);
+    location.href = '/User/Editor?id=' + poemId + '#' + blockId + '-' + String(vIndex + 1);
 }
 
 function switchBookmark(poemId, coupletIndex, divSuffix) {
@@ -936,7 +936,7 @@ function showAllRecitations() {
     showRecitationsButtons.forEach(function (btn) {
         btn.style.display = 'none';
     });
-   
+
 }
 
 function switch_section(sectionId, buttonId) {
@@ -1116,13 +1116,13 @@ function loadCatRecitations(catId) {
 
     var loadButton = document.getElementById("load-cat-recitations");
     if (loadButton == null) {
-        
+
         return;
     }
 
     var divParent = document.getElementById('recitations-section');
     var imgElementId = 'loadingimg';
-   divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="remove-this"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
+    divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="remove-this"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
     $.ajax({
         type: "GET",
         url: '?Handler=CategoryRecitations&catId=' + String(catId),
@@ -1263,7 +1263,7 @@ function countAndSortCharacters(inputString) {
 function countAndDisplayCharacters(inputString, resultTableId, sourceStringId) {
     const result = countAndSortCharacters(inputString);
 
-    
+
     const container = document.getElementById(resultTableId);
 
     let highlightedCharDiv = null; // To keep track of the previously clicked charDiv
@@ -1346,7 +1346,16 @@ function inlineHighlight() {
                     "#poet-image *",
                     "#page-hierarchy *",
                     "#utils-navbar *",
-                ]
+                ],
+                done: function (markCount) {
+                    if (markCount == 0) {
+                        document.getElementById('inline-search').classList.add("background-red");
+                    }
+                    else {
+                        document.getElementById('inline-search').classList.remove("background-red");
+                    }
+                    $('#inline-search-matches').text(persianizeNumerals(markCount.toString()) + ' مورد');
+                }
             });
         }
     });
@@ -1354,6 +1363,8 @@ function inlineHighlight() {
 
 function inlineUnHighlight() {
     document.getElementById('inline-search').value = '';
+    document.getElementById('inline-search').classList.remove("background-red");
+    $('#inline-search-matches').text('');
     var context = document.getElementById('garticle');
     $(context).unmark();
 }

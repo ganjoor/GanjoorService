@@ -1993,6 +1993,11 @@ fieldset {
     margin: 15px !important;
 }
 
+.inline-small{
+    display:inline;
+    font-size:small;
+}
+
 @media(prefers-color-scheme: dark) {
     body {
         background: rgba(0, 0, 0, 0.9);
