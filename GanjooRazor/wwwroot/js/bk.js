@@ -1348,13 +1348,16 @@ function inlineHighlight() {
                     "#utils-navbar *",
                 ],
                 done: function (markCount) {
+                    inlineSearchResultIndex = 0;
                     if (markCount == 0) {
                         document.getElementById('inline-search').classList.add("background-red");
                     }
                     else {
                         document.getElementById('inline-search').classList.remove("background-red");
+                        inlineSearchResults = $("#garticle").find("mark");
+                        jumpToInlineSearchResult();
                     }
-                    $('#inline-search-matches').text(persianizeNumerals(markCount.toString()) + ' مورد');
+                    $('#inline-search-matches').text(persianizeNumerals((inlineSearchResultIndex + 1).toString()) +' از '+ persianizeNumerals(markCount.toString()));
                 }
             });
         }
@@ -1383,6 +1386,35 @@ function displayMainInlineSearch() {
     document.getElementById('inline-search').setSelectionRange(txt.length, txt.length);
     document.getElementById('inline-search').focus();
 }
+
+function jumpToInlineSearchResult() {
+    if (inlineSearchResults.length) {
+        var position,
+            $current = inlineSearchResults.eq(inlineSearchResultIndex);
+        inlineSearchResults.removeClass(currentClass);
+        if ($current.length) {
+            $current.addClass(currentClass);
+            position = $current.offset().top - offsetTop;
+            window.scrollTo(0, position);
+            $('#inline-search-matches').text(persianizeNumerals((inlineSearchResultIndex + 1).toString()) + ' از ' + persianizeNumerals(inlineSearchResults.length.toString()));
+        }
+    }
+}
+
+function nextInlineSearchResult() {
+    if (inlineSearchResultIndex < (inlineSearchResults.length - 1)) {
+        inlineSearchResultIndex++;
+        jumpToInlineSearchResult();
+    }
+}
+
+function prevInlineSearchResult() {
+    if (inlineSearchResultIndex > 0) {
+        inlineSearchResultIndex--;
+        jumpToInlineSearchResult();
+    }
+}
+
 
 
 

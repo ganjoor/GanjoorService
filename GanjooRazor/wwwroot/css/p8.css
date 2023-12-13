@@ -1313,6 +1313,15 @@ ol {
     content: 'close';
 }
 
+.next-inline-result::after {
+    content: 'arrow_downward';
+}
+
+.prev-inline-result::after {
+    content: 'arrow_upward';
+}
+
+
 
 .bnum-partial-table {
     width: 100%;
@@ -1999,6 +2008,15 @@ fieldset {
     color: gold;
 }
 
+mark {
+    background: orange;
+}
+
+mark.currentInlineResult {
+    background: yellow;
+}
+
+
 
 @media(prefers-color-scheme: dark) {
     body {
@@ -2119,5 +2137,10 @@ fieldset {
         background: orange;
         color: whitesmoke;
     }
+
+        mark.currentInlineResult {
+            background: brown;
+        }
+
 
 }
