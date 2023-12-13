@@ -1340,6 +1340,7 @@ function inlineHighlight() {
         done: function () {
             $(context).mark(searchTerm, {
                 ignoreJoiners: true,
+                separateWordSearch: false,
                 ignorePunctuation: 'ًٌٍَُّ.،!؟ٔ:؛;*)([]«»ْ'.split(''),
                 "exclude": [
                     "#poet-image *",

@@ -1989,6 +1989,10 @@ fieldset {
     cursor: pointer;
 }
 
+.margin-15px {
+    margin: 15px !important;
+}
+
 @media(prefers-color-scheme: dark) {
     body {
         background: rgba(0, 0, 0, 0.9);
@@ -2104,7 +2108,5 @@ fieldset {
         background-color: black !important;
     }
 
-    .margin-20px{
-        margin: 20px;
-    }
+
 }
