@@ -1328,5 +1328,34 @@ function highlightCharacter(previousHighlightedString, charToHighlight) {
     return highlightedString;
 }
 
+function inlineHighlight() {
+    var searchTerm = document.getElementById('inline-search').value;
+    if (searchTerm.trim().length == 0) {
+        inlineUnHighlight();
+        return;
+    }
+    var context = document.getElementById('garticle');
+
+    $(context).unmark({
+        done: function () {
+            $(context).mark(searchTerm, {
+                ignoreJoiners: true,
+                ignorePunctuation: 'ًٌٍَُّ.،!؟ٔ:؛;*)([]«»ْ'.split(''),
+                "exclude": [
+                    "#poet-image *",
+                    "#page-hierarchy *",
+                    "#utils-navbar *",
+                ]
+            });
+        }
+    });
+}
+
+function inlineUnHighlight() {
+    document.getElementById('inline-search').value = '';
+    var context = document.getElementById('garticle');
+    $(context).unmark();
+}
+
 
 

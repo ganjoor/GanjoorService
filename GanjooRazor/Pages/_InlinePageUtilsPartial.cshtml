@@ -241,37 +241,6 @@
         @if(Model.GanjoorPage.Poem != null)
         {
             <div class="clear-both margin-20px">
-                <script>
-                    function inlineHighlight() {
-                        var searchTerm = document.getElementById('inline-search').value;
-                        if (searchTerm.trim().length == 0) {
-                            inlineUnHighlight();
-                            return;
-                        }
-                        var context = document.getElementById('garticle');
-
-                        $(context).unmark({
-                            done: function () {
-                                $(context).mark(searchTerm, {
-                                    ignoreJoiners: true,
-                                    ignorePunctuation: 'ًٌٍَُّ.،!؟ٔ:؛;*)([]«»ْ'.split(''),
-                                    "exclude": [
-                                        "#poet-image *",
-                                        "#page-hierarchy *",
-                                        "#utils-navbar *",
-                                    ]
-                                });
-                            }
-                        });
-                    }
-
-                    function inlineUnHighlight() {
-                        document.getElementById('inline-search').value = '';
-                        var context = document.getElementById('garticle');
-                        $(context).unmark();
-                    }
-                </script>
-
                 <input type="search" name="inline-search" id="inline-search" placeholder="جستجو در متن" size="35" value="" onkeyup="inlineHighlight()">
                 <a onclick="inlineUnHighlight()" role="button" class="cursor-pointer">
                     <i class="noindent-info-button close-button"></i>
