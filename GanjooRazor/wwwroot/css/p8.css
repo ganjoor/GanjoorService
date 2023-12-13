@@ -1309,6 +1309,9 @@ ol {
     content: 'help';
 }
 
+.close-button::after {
+    content: 'close';
+}
 
 
 .bnum-partial-table {
@@ -2099,5 +2102,9 @@ fieldset {
 
     .background-white {
         background-color: black !important;
+    }
+
+    .margin-20px{
+        margin: 20px;
     }
 }
