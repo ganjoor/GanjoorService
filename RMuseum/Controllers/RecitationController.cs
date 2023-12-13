@@ -411,14 +411,35 @@ namespace RMuseum.Controllers
 
             if(narration.Result.RecitationType == RecitationType.Commentary)
             {
-                var recitation = (await _audioService.Get(narration.Result.Id)).Result;
-                recitation.ReviewStatus = AudioReviewStatus.Pending;
-                var resPendingModeration = await _audioService.UpdatePoemNarration(recitation.Id, recitation);
-                if(!string.IsNullOrEmpty(resPendingModeration.ExceptionString))
+                if (narration.Result.Owner.Id == loggedOnUserId)
                 {
-                    return BadRequest(resPendingModeration.ExceptionString);
+                    Guid sessionId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value);
+                    RServiceResult<bool>
+                     serviceResult =
+                     await _userPermissionChecker.Check
+                         (
+                             loggedOnUserId,
+                             sessionId,
+                             User.Claims.Any(c => c.Type == "Language") ? User.Claims.First(c => c.Type == "Language").Value : "fa-IR",
+                             RMuseumSecurableItem.AudioRecitationEntityShortName,
+                             RMuseumSecurableItem.ModerateOperationShortName
+                             );
+                    if (!string.IsNullOrEmpty(serviceResult.ExceptionString))
+                        return BadRequest(serviceResult.ExceptionString);
+
+                    if (!serviceResult.Result)
+                    {
+                        var recitation = (await _audioService.Get(narration.Result.Id)).Result;
+                        recitation.ReviewStatus = AudioReviewStatus.Pending;
+                        var resPendingModeration = await _audioService.UpdatePoemNarration(recitation.Id, recitation);
+                        if (!string.IsNullOrEmpty(resPendingModeration.ExceptionString))
+                        {
+                            return BadRequest(resPendingModeration.ExceptionString);
+                        }
+                        return Ok(resPendingModeration.ExceptionString);
+                    }
                 }
-                return Ok(resPendingModeration.ExceptionString );
+                
             }
 
             var res = await _audioService.ModeratePoemNarration(id, loggedOnUserId, model);

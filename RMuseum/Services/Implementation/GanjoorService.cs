@@ -2502,7 +2502,7 @@ namespace RMuseum.Services.Implementation
                         &&
                         ((string.IsNullOrEmpty(rhyme) && s.SectionType == PoemSectionType.WholePoem) || (!string.IsNullOrEmpty(rhyme) && s.RhymeLetters == rhyme))
                         &&
-                        ((format == GanjoorPoemFormat.Unknown && s.PoemFormat == null ) || s.PoemFormat == format)
+                        (format == GanjoorPoemFormat.Unknown || s.PoemFormat == format)
                         &&
                         (catId == null || catIdList.Contains(s.Poem.CatId))
                         )
