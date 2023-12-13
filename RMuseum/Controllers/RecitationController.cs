@@ -409,6 +409,18 @@ namespace RMuseum.Controllers
 
             }
 
+            if(narration.Result.RecitationType == RecitationType.Commentary)
+            {
+                var recitation = (await _audioService.Get(narration.Result.Id)).Result;
+                recitation.ReviewStatus = AudioReviewStatus.Pending;
+                var resPendingModeration = await _audioService.UpdatePoemNarration(recitation.Id, recitation);
+                if(!string.IsNullOrEmpty(resPendingModeration.ExceptionString))
+                {
+                    return BadRequest(resPendingModeration.ExceptionString);
+                }
+                return Ok(resPendingModeration.ExceptionString );
+            }
+
             var res = await _audioService.ModeratePoemNarration(id, loggedOnUserId, model);
             if (!string.IsNullOrEmpty(res.ExceptionString))
             {

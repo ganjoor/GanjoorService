@@ -613,6 +613,7 @@ namespace RMuseum.Services.Implementationa
             narration.AudioArtistUrl = metadata.AudioArtistUrl;
             narration.AudioSrc = metadata.AudioSrc;
             narration.AudioSrcUrl = metadata.AudioSrcUrl;
+            narration.RecitationType = metadata.RecitationType;
             narration.ReviewStatus = metadata.ReviewStatus;
             _context.Recitations.Update(narration);
             await _context.SaveChangesAsync();
