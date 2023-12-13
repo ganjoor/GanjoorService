@@ -1998,6 +1998,7 @@ fieldset {
     font-size:small;
 }
 
+
 @media(prefers-color-scheme: dark) {
     body {
         background: rgba(0, 0, 0, 0.9);
@@ -2113,5 +2114,9 @@ fieldset {
         background-color: black !important;
     }
 
+    mark {
+        background: orange;
+        color: whitesmoke;
+    }
 
 }
