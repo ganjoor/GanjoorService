@@ -1404,15 +1404,15 @@ function jumpToInlineSearchResult() {
 function nextInlineSearchResult() {
     if (inlineSearchResultIndex < (inlineSearchResults.length - 1)) {
         inlineSearchResultIndex++;
-        jumpToInlineSearchResult();
     }
+    jumpToInlineSearchResult();
 }
 
 function prevInlineSearchResult() {
     if (inlineSearchResultIndex > 0) {
         inlineSearchResultIndex--;
-        jumpToInlineSearchResult();
     }
+    jumpToInlineSearchResult();
 }
 
 
