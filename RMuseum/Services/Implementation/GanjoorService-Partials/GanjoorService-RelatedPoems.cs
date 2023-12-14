@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DNTPersianUtils.Core;
+using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RSecurityBackend.Models.Generic;
@@ -32,21 +33,21 @@ namespace RMuseum.Services.Implementation
                 int index = dbPage.HtmlText.IndexOf("<li>");
                 while(index != -1 && index < endIndex)
                 {
-                    
-
-                    int anchorIndex = dbPage.HtmlText.IndexOf("\"", index);
-                    string poem1Url = dbPage.HtmlText.Substring(anchorIndex, dbPage.HtmlText.IndexOf("\"", index + 1) - anchorIndex - 1 - 1 /*remove trailing slash*/ );
+                    int closeTagIndex = dbPage.HtmlText.IndexOf("</li>", index);
+                    int tagIndex = dbPage.HtmlText.IndexOf("\"", index);
+                    string poem1Url = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("\"", index + 1) - tagIndex - 1 - 1 /*remove trailing slash*/ );
                     var poem1 = await context.GanjoorPoems.AsNoTracking().Where(p => p.FullUrl == poem1Url).SingleOrDefaultAsync();
                     if(poem1 == null)
                     {
                         var redirectedPage = await context.GanjoorPages.AsNoTracking().Where(p => p.RedirectFromFullUrl == poem1Url).SingleAsync();
                         poem1 = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == redirectedPage.Id).SingleAsync();
                     }
-
+                    var poem1Cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == poem1.CatId).SingleAsync();
+                    var poem1Poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poem1Cat.PoetId).SingleAsync();
 
                     index += poem1Url.Length;
-                    anchorIndex = dbPage.HtmlText.IndexOf("\"", index);
-                    string poem2Url = dbPage.HtmlText.Substring(anchorIndex, dbPage.HtmlText.IndexOf("\"", index + 1) - anchorIndex - 1 - 1 /*remove trailing slash*/ );
+                    tagIndex = dbPage.HtmlText.IndexOf("\"", index);
+                    string poem2Url = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("\"", index + 1) - tagIndex - 1 - 1 /*remove trailing slash*/ );
                     var poem2 = await context.GanjoorPoems.AsNoTracking().Where(p => p.FullUrl == poem2Url).SingleOrDefaultAsync();
                     if (poem2 == null)
                     {
@@ -71,6 +72,41 @@ namespace RMuseum.Services.Implementation
                         Description = "",
                         Published = true
                     };
+
+                    //first couplet:
+                    relatedPoem.Couplet1PoetName = poem1Poet.Name;
+                    tagIndex = dbPage.HtmlText.IndexOf("<p>", tagIndex);
+                    if(tagIndex != -1 && tagIndex < closeTagIndex)
+                    {
+                        tagIndex = dbPage.HtmlText.IndexOf("\">", tagIndex);
+                        tagIndex += "\">".Length;
+                        int coupletIndex = -1 + int.Parse(PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex - 1)));
+                        
+                        tagIndex = dbPage.HtmlText.IndexOf(":", tagIndex) + 1;
+
+                        relatedPoem.Couplet1Verse1 = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("-", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
+                        relatedPoem.Couplet1Verse1IsMainPart = false;
+                        if (relatedPoem.Couplet1Verse1.Contains("strong"))
+                        {
+                            relatedPoem.Couplet1Verse1IsMainPart = true;
+                            relatedPoem.Couplet1Verse1 = relatedPoem.Couplet1Verse1.Replace("<strong>", "").Replace("</strong>", "");
+                        }
+
+                        relatedPoem.Couplet1Verse2 = dbPage.HtmlText.Substring(dbPage.HtmlText.IndexOf("-", tagIndex), dbPage.HtmlText.IndexOf("</p>", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
+                        relatedPoem.Couplet1Verse2IsMainPart = false;
+                        if (relatedPoem.Couplet1Verse2.Contains("strong"))
+                        {
+                            relatedPoem.Couplet1Verse2IsMainPart = true;
+                            relatedPoem.Couplet1Verse2 = relatedPoem.Couplet1Verse2.Replace("<strong>", "").Replace("</strong>", "");
+                        }
+                    }
+
+                    tagIndex = dbPage.HtmlText.IndexOf("<p>", tagIndex);
+                    if (tagIndex != -1 && tagIndex < closeTagIndex)
+                    {
+                        
+                    }
+
 
 
                     context.Add(relatedPoem);
