@@ -1371,13 +1371,10 @@ function inlineUnHighlight() {
     $('#inline-search-matches').text('');
     var context = document.getElementById('garticle');
     $(context).unmark();
-
     document.getElementById('fake-inline-div').style.display = 'block';
     document.getElementById('main-inline-div').style.display = 'none';
     document.getElementById('fake-inline-search').value = '';
-    var x = window.scrollX, y = window.scrollY;
     document.getElementById('fake-inline-search').focus();
-    window.scrollTo(x, y);
 }
 
 function displayMainInlineSearch() {
