@@ -58,12 +58,12 @@ namespace RMuseum.Services.Implementation
                     var poem2Cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == poem2.CatId).SingleAsync();
                     var poem2Poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poem2Cat.PoetId).SingleAsync();
 
-                    GanjoorRelatedPoem relatedPoem = new GanjoorRelatedPoem()
+                    GanjoorQuotedPoem relatedPoem = new GanjoorQuotedPoem()
                     {
                         PoemId = poem1.Id,
                         RelatedPoemId = poem2.Id,
                         IsPriorToRelated = true,
-                        ChosenForMainList = false == await context.GanjoorRelatedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.CachedRelatedPoemPoetUrl == poem2Cat.FullUrl).AnyAsync(),
+                        ChosenForMainList = false == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.CachedRelatedPoemPoetUrl == poem2Cat.FullUrl).AnyAsync(),
                         CachedRelatedPoemPoetDeathYearInLHijri = poem2Poet.DeathYearInLHijri,
                         CachedRelatedPoemPoetName = poem2Poet.Name,
                         CachedRelatedPoemPoetUrl = poem2Cat.FullUrl,

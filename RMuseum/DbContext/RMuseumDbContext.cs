@@ -561,7 +561,7 @@ namespace RMuseum.DbContext
         /// <summary>
         /// Related Poems
         /// </summary>
-        public DbSet<GanjoorRelatedPoem> GanjoorRelatedPoems { get; set; }
+        public DbSet<GanjoorQuotedPoem> GanjoorQuotedPoems { get; set; }
 
     }
 }

@@ -5,7 +5,7 @@ namespace RMuseum.Models.Ganjoor
     /// <summary>
     /// related poem to a poem
     /// </summary>
-    public class GanjoorRelatedPoem
+    public class GanjoorQuotedPoem
     {
         /// <summary>
         /// record id
