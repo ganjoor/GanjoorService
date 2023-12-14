@@ -63,7 +63,7 @@ namespace RMuseum.Services.Implementation
                         PoemId = poem1.Id,
                         RelatedPoemId = poem2.Id,
                         IsPriorToRelated = true,
-                        ChosenForMainList = true,
+                        ChosenForMainList = false == await context.GanjoorRelatedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.CachedRelatedPoemPoetUrl == poem2Cat.FullUrl).AnyAsync(),
                         CachedRelatedPoemPoetDeathYearInLHijri = poem2Poet.DeathYearInLHijri,
                         CachedRelatedPoemPoetName = poem2Poet.Name,
                         CachedRelatedPoemPoetUrl = poem2Cat.FullUrl,
