@@ -16826,6 +16826,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -17339,6 +17342,14 @@
             </summary>
             <param name="id">problable metre id</param>
             <param name="metre"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ParseRelatedPageAsync(RMuseum.DbContext.RMuseumDbContext,System.Int32)">
+            <summary>
+            parse related pages
+            </summary>
+            <param name="context"></param>
+            <param name="pageId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetRelatedSections(System.Int32,System.Int32,System.Int32,System.Int32)">
