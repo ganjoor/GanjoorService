@@ -63,6 +63,7 @@ namespace RMuseum.Services.Implementation
                         PoemId = poem1.Id,
                         RelatedPoemId = poem2.Id,
                         IsPriorToRelated = true,
+                        ChosenForMainList = true,
                         CachedRelatedPoemPoetDeathYearInLHijri = poem2Poet.DeathYearInLHijri,
                         CachedRelatedPoemPoetName = poem2Poet.Name,
                         CachedRelatedPoemPoetUrl = poem2Cat.FullUrl,

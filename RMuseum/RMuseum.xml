@@ -8827,6 +8827,11 @@
             this poem is written and should be displayed prior to the related poem
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.ChosenForMainList">
+            <summary>
+            if the related poet poem has multiple poems related to this poem, which one is chosen to be shown at main poems pages?
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.CachedRelatedPoemPoetDeathYearInLHijri">
             <summary>
             related poem peot death date in hijri (used for sorting)

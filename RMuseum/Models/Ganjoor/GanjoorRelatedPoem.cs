@@ -28,6 +28,11 @@ namespace RMuseum.Models.Ganjoor
         public bool IsPriorToRelated { get; set; }
 
         /// <summary>
+        /// if the related poet poem has multiple poems related to this poem, which one is chosen to be shown at main poems pages?
+        /// </summary>
+        public bool ChosenForMainList { get; set; }
+
+        /// <summary>
         /// related poem peot death date in hijri (used for sorting)
         /// </summary>
         public int CachedRelatedPoemPoetDeathYearInLHijri { get; set; }
@@ -106,7 +111,6 @@ namespace RMuseum.Models.Ganjoor
         /// related couplet 1 verse 2
         /// </summary>
         public string RelatedCouplet1Verse2 { get; set; }
-
 
         /// <summary>
         /// is main part
