@@ -8797,6 +8797,166 @@
             death location
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorRelatedPoem">
+            <summary>
+            related poem to a poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Id">
+            <summary>
+            record id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedPoemId">
+            <summary>
+            related poem id (this could be a poem we do not have it available)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.IsPriorToRelated">
+            <summary>
+            this poem is written and should be displayed prior to the related poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedPoemPoetDeathYearInLHijri">
+            <summary>
+            related poem peot death date in hijri (used for sorting)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatePoemFullTitle">
+            <summary>
+            full title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedPoemFullUrl">
+            <summary>
+            full url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet1PoetName">
+            <summary>
+            couplet 1 poet name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet1Verse1">
+            <summary>
+            couplet 1 verse 1
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet1Verse2">
+            <summary>
+            couplet 1 verse 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet1Index">
+            <summary>
+            couplet 1 index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1PoetName">
+            <summary>
+            related couplet 1 poet name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1Verse1">
+            <summary>
+            related couplet 1 verse 1
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1Verse2">
+            <summary>
+            related couplet 1 verse 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1Index">
+            <summary>
+            related couplet 1 index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1Verse3">
+            <summary>
+            related couplet 1 verse 3
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1Verse4">
+            <summary>
+            related couplet 1 verse 4
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1Verse34Index">
+            <summary>
+            related couplet 1 - verse 3/4 index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet2PoetName">
+            <summary>
+            couplet 2 poet name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet2Verse1">
+            <summary>
+            couplet 2 verse 1
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet2Verse2">
+            <summary>
+            couplet 2 verse 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet2Index">
+            <summary>
+            couplet 2 index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2PoetName">
+            <summary>
+            related couplet 2 poet name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2Verse1">
+            <summary>
+            related couplet 2 verse 1
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2Verse2">
+            <summary>
+            related couplet 2 verse 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2Index">
+            <summary>
+            related couplet 2 index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2Verse3">
+            <summary>
+            related couplet 2 verse 3
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2Verse4">
+            <summary>
+            related couplet 2 verse 4
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2Verse34Index">
+            <summary>
+            related couplet 2 - verse 3/4 index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Published">
+            <summary>
+            published
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorSiteBanner">
             <summary>
             ganjoor.net site banner
