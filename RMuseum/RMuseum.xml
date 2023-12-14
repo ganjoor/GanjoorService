@@ -8827,17 +8827,32 @@
             this poem is written and should be displayed prior to the related poem
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedPoemPoetDeathYearInLHijri">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.CachedRelatedPoemPoetDeathYearInLHijri">
             <summary>
             related poem peot death date in hijri (used for sorting)
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatePoemFullTitle">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.CachedRelatedPoemPoetName">
+            <summary>
+            related poem poet name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.CachedRelatedPoemPoetUrl">
+            <summary>
+            related poem poet url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.CachedRelatedPoemPoetImage">
+            <summary>
+            related poem poet image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.CachedRelatedPoemFullTitle">
             <summary>
             full title
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedPoemFullUrl">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.CachedRelatedPoemFullUrl">
             <summary>
             full url
             </summary>
@@ -8852,9 +8867,19 @@
             couplet 1 verse 1
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet1Verse1IsMainPart">
+            <summary>
+            is main part
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet1Verse2">
             <summary>
             couplet 1 verse 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet1Verse2IsMainPart">
+            <summary>
+            is main part
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet1Index">
@@ -8872,9 +8897,19 @@
             related couplet 1 verse 1
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1Verse1IsMainPart">
+            <summary>
+            is main part
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1Verse2">
             <summary>
             related couplet 1 verse 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1Verse2IsMainPart">
+            <summary>
+            is main part
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1Index">
@@ -8887,9 +8922,19 @@
             related couplet 1 verse 3
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1Verse3IsMainPart">
+            <summary>
+            is main part
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1Verse4">
             <summary>
             related couplet 1 verse 4
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1Verse4IsMainPart">
+            <summary>
+            is main part
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet1Verse34Index">
@@ -8907,9 +8952,19 @@
             couplet 2 verse 1
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet2Verse1IsMainPart">
+            <summary>
+            is main part
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet2Verse2">
             <summary>
             couplet 2 verse 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet2Verse2IsMainPart">
+            <summary>
+            is main part
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.Couplet2Index">
@@ -8927,9 +8982,19 @@
             related couplet 2 verse 1
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2Verse1IsMainPart">
+            <summary>
+            is main part
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2Verse2">
             <summary>
             related couplet 2 verse 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2Verse2IsMainPart">
+            <summary>
+            is main part
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2Index">
@@ -8942,9 +9007,19 @@
             related couplet 2 verse 3
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2Verse3IsMainPart">
+            <summary>
+            is main part
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2Verse4">
             <summary>
             related couplet 2 verse 4
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2Verse4IsMainPart">
+            <summary>
+            is main part
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPoem.RelatedCouplet2Verse34Index">

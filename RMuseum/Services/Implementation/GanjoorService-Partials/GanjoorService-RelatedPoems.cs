@@ -62,9 +62,12 @@ namespace RMuseum.Services.Implementation
                         PoemId = poem1.Id,
                         RelatedPoemId = poem2.Id,
                         IsPriorToRelated = true,
-                        RelatedPoemPoetDeathYearInLHijri = poem2Poet.DeathYearInLHijri,
-                        RelatePoemFullTitle = poem2.FullTitle,
-                        RelatedPoemFullUrl = poem2.FullUrl,
+                        CachedRelatedPoemPoetDeathYearInLHijri = poem2Poet.DeathYearInLHijri,
+                        CachedRelatedPoemPoetName = poem2Poet.Name,
+                        CachedRelatedPoemPoetUrl = poem2Cat.FullUrl,
+                        CachedRelatedPoemPoetImage =  $"/api/ganjoor/poet/image{poem2Cat.FullUrl}.gif",
+                        CachedRelatedPoemFullTitle = poem2.FullTitle,
+                        CachedRelatedPoemFullUrl = poem2.FullUrl,
                         Description = "",
                         Published = true
                     };
