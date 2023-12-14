@@ -80,7 +80,7 @@ namespace RMuseum.Services.Implementation
                     {
                         tagIndex = dbPage.HtmlText.IndexOf("\">", tagIndex);
                         tagIndex += "\">".Length;
-                        int coupletIndex = -1 + int.Parse(PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex - 1)));
+                        relatedPoem.Couplet1Index = -1 + int.Parse(PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex - 1)));
                         
                         tagIndex = dbPage.HtmlText.IndexOf(":", tagIndex) + 1;
 
@@ -104,7 +104,27 @@ namespace RMuseum.Services.Implementation
                     tagIndex = dbPage.HtmlText.IndexOf("<p>", tagIndex);
                     if (tagIndex != -1 && tagIndex < closeTagIndex)
                     {
-                        
+                        tagIndex = dbPage.HtmlText.IndexOf("\">", tagIndex);
+                        tagIndex += "\">".Length;
+                        relatedPoem.RelatedCouplet1Index = -1 + int.Parse(PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex - 1)));
+
+                        tagIndex = dbPage.HtmlText.IndexOf(":", tagIndex) + 1;
+
+                        relatedPoem.RelatedCouplet1Verse1 = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("-", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
+                        relatedPoem.RelatedCouplet1Verse1IsMainPart = false;
+                        if (relatedPoem.RelatedCouplet1Verse1.Contains("strong"))
+                        {
+                            relatedPoem.RelatedCouplet1Verse1IsMainPart = true;
+                            relatedPoem.RelatedCouplet1Verse1 = relatedPoem.RelatedCouplet1Verse1.Replace("<strong>", "").Replace("</strong>", "");
+                        }
+
+                        relatedPoem.RelatedCouplet1Verse2 = dbPage.HtmlText.Substring(dbPage.HtmlText.IndexOf("-", tagIndex), dbPage.HtmlText.IndexOf("</p>", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
+                        relatedPoem.RelatedCouplet1Verse2IsMainPart = false;
+                        if (relatedPoem.RelatedCouplet1Verse2.Contains("strong"))
+                        {
+                            relatedPoem.RelatedCouplet1Verse2IsMainPart = true;
+                            relatedPoem.RelatedCouplet1Verse2 = relatedPoem.RelatedCouplet1Verse2.Replace("<strong>", "").Replace("</strong>", "");
+                        }
                     }
 
 
