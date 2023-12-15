@@ -38,7 +38,7 @@ namespace RMuseum.Services.Implementation
                                    {
                                        await jobProgressServiceEF.UpdateJob(job.Id, 0, page.FullTitle);
                                        var res = await _ParseRelatedPageAsync(context, page.Id);
-                                       if(string.IsNullOrEmpty(res.ExceptionString))
+                                       if(!string.IsNullOrEmpty(res.ExceptionString))
                                        {
                                            await jobProgressServiceEF.UpdateJob(job.Id, 100, page.FullTitle, false, res.ExceptionString);
                                            return;
@@ -77,7 +77,7 @@ namespace RMuseum.Services.Implementation
                 {
                     int closeTagIndex = dbPage.HtmlText.IndexOf("</li>", index);
                     int tagIndex = dbPage.HtmlText.IndexOf("\"", index);
-                    string poem1Url = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("\"", index + 1) - tagIndex - 1 - 1 /*remove trailing slash*/ );
+                    string poem1Url = dbPage.HtmlText.Substring("https://ganjoor.net".Length + tagIndex + 1, dbPage.HtmlText.IndexOf("\"", tagIndex + 1) - tagIndex - 1 - 1  /*remove trailing slash*/ - "https://ganjoor.net".Length);
                     var poem1 = await context.GanjoorPoems.AsNoTracking().Where(p => p.FullUrl == poem1Url).SingleOrDefaultAsync();
                     if(poem1 == null)
                     {
@@ -87,9 +87,10 @@ namespace RMuseum.Services.Implementation
                     var poem1Cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == poem1.CatId).SingleAsync();
                     var poem1Poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poem1Cat.PoetId).SingleAsync();
 
-                    index += poem1Url.Length;
-                    tagIndex = dbPage.HtmlText.IndexOf("\"", index);
-                    string poem2Url = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("\"", index + 1) - tagIndex - 1 - 1 /*remove trailing slash*/ );
+
+                    tagIndex = dbPage.HtmlText.IndexOf("</a>", tagIndex);
+                    tagIndex = dbPage.HtmlText.IndexOf("\"", tagIndex);
+                    string poem2Url = dbPage.HtmlText.Substring("https://ganjoor.net".Length + tagIndex + 1, dbPage.HtmlText.IndexOf("\"", tagIndex + 1) - tagIndex - 1 - 1 /*remove trailing slash*/  - "https://ganjoor.net".Length);
                     var poem2 = await context.GanjoorPoems.AsNoTracking().Where(p => p.FullUrl == poem2Url).SingleOrDefaultAsync();
                     if (poem2 == null)
                     {
@@ -123,24 +124,68 @@ namespace RMuseum.Services.Implementation
                     {
                         tagIndex = dbPage.HtmlText.IndexOf("\">", tagIndex);
                         tagIndex += "\">".Length;
-                        relatedPoem.CoupletIndex = -1 + int.Parse(PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex - 1)));
+                        string bnumstring = PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex)).Replace("بیت", "").Trim();
+                        if(int.TryParse(bnumstring, out int bnum))
+                        {
+                            relatedPoem.CoupletIndex = -1 + bnum;
+                        }
+                        else
+                        {
+                            int? b = null;
+                            switch(bnumstring)
+                            {
+                                case "آغازین":
+                                case "اول":
+                                    b = 1;
+                                    break;
+                                case "دوم":
+                                    b = 2;
+                                    break;
+                                case "سوم":
+                                    b = 3;
+                                    break;
+                                case "چهارم":
+                                    b = 4;
+                                    break;
+                                case "پنجم":
+                                    b = 5;
+                                    break;
+                                case "ششم":
+                                    b = 6;
+                                    break;
+                                case "هفتم":
+                                    b = 7;
+                                    break;
+                                case "هشتم":
+                                    b = 8;
+                                    break;
+                                case "نهم":
+                                    b = 9;
+                                    break;
+                            }
+                            if(b != null)
+                            {
+                                relatedPoem.CoupletIndex = (int)b - 1;
+                            }
+                        }
+                        
                         
                         tagIndex = dbPage.HtmlText.IndexOf(":", tagIndex) + 1;
 
-                        relatedPoem.CoupletVerse1 = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("-", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
+                        relatedPoem.CoupletVerse1 = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("-", tagIndex) - 1 - tagIndex).Trim().Replace("\r", "").Replace("\n", "");
                         relatedPoem.CoupletVerse1ShouldBeEmphasized = false;
                         if (relatedPoem.CoupletVerse1.Contains("strong"))
                         {
                             relatedPoem.CoupletVerse1ShouldBeEmphasized = true;
-                            relatedPoem.CoupletVerse1 = relatedPoem.CoupletVerse1.Replace("<strong>", "").Replace("</strong>", "");
+                            relatedPoem.CoupletVerse1 = relatedPoem.CoupletVerse1.Replace("<strong>", "").Replace("</strong>", "").Trim();
                         }
 
-                        relatedPoem.CoupletVerse2 = dbPage.HtmlText.Substring(dbPage.HtmlText.IndexOf("-", tagIndex), dbPage.HtmlText.IndexOf("</p>", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
+                        relatedPoem.CoupletVerse2 = dbPage.HtmlText.Substring(dbPage.HtmlText.IndexOf("-", tagIndex) + 1, dbPage.HtmlText.IndexOf("</p>", tagIndex) - dbPage.HtmlText.IndexOf("-", tagIndex) - 1).Trim().Replace("\r", "").Replace("\n", "");
                         relatedPoem.CoupletVerse2ShouldBeEmphasized = false;
                         if (relatedPoem.CoupletVerse2.Contains("strong"))
                         {
                             relatedPoem.CoupletVerse2ShouldBeEmphasized = true;
-                            relatedPoem.CoupletVerse2 = relatedPoem.CoupletVerse2.Replace("<strong>", "").Replace("</strong>", "");
+                            relatedPoem.CoupletVerse2 = relatedPoem.CoupletVerse2.Replace("<strong>", "").Replace("</strong>", "").Trim();
                         }
                     }
 
@@ -149,24 +194,68 @@ namespace RMuseum.Services.Implementation
                     {
                         tagIndex = dbPage.HtmlText.IndexOf("\">", tagIndex);
                         tagIndex += "\">".Length;
-                        relatedPoem.RelatedCoupletIndex = -1 + int.Parse(PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex - 1)));
+                        string bnumstring = PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex)).Replace("بیت", "").Trim();
+                        if (int.TryParse(bnumstring, out int bnum))
+                        {
+                            relatedPoem.RelatedCoupletIndex = -1 + bnum;
+                        }
+                        else
+                        {
+                            int? b = null;
+                            switch (bnumstring)
+                            {
+                                case "آغازین":
+                                case "اول":
+                                    b = 1;
+                                    break;
+                                case "دوم":
+                                    b = 2;
+                                    break;
+                                case "سوم":
+                                    b = 3;
+                                    break;
+                                case "چهارم":
+                                    b = 4;
+                                    break;
+                                case "پنجم":
+                                    b = 5;
+                                    break;
+                                case "ششم":
+                                    b = 6;
+                                    break;
+                                case "هفتم":
+                                    b = 7;
+                                    break;
+                                case "هشتم":
+                                    b = 8;
+                                    break;
+                                case "نهم":
+                                    b = 9;
+                                    break;
+                            }
+                            if (b != null)
+                            {
+                                relatedPoem.RelatedCoupletIndex = (int)b - 1;
+                            }
+                        }
+
 
                         tagIndex = dbPage.HtmlText.IndexOf(":", tagIndex) + 1;
 
-                        relatedPoem.RelatedCoupletVerse1 = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("-", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
+                        relatedPoem.RelatedCoupletVerse1 = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("-", tagIndex) - 1 - tagIndex).Trim().Replace("\r", "").Replace("\n", "");
                         relatedPoem.RelatedCoupletVerse1ShouldBeEmphasized = false;
                         if (relatedPoem.RelatedCoupletVerse1.Contains("strong"))
                         {
                             relatedPoem.RelatedCoupletVerse1ShouldBeEmphasized = true;
-                            relatedPoem.RelatedCoupletVerse1 = relatedPoem.RelatedCoupletVerse1.Replace("<strong>", "").Replace("</strong>", "");
+                            relatedPoem.RelatedCoupletVerse1 = relatedPoem.RelatedCoupletVerse1.Replace("<strong>", "").Replace("</strong>", "").Trim();
                         }
 
-                        relatedPoem.RelatedCoupletVerse2 = dbPage.HtmlText.Substring(dbPage.HtmlText.IndexOf("-", tagIndex), dbPage.HtmlText.IndexOf("</p>", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
+                        relatedPoem.RelatedCoupletVerse2 = dbPage.HtmlText.Substring(dbPage.HtmlText.IndexOf("-", tagIndex) + 1, dbPage.HtmlText.IndexOf("</p>", tagIndex) - dbPage.HtmlText.IndexOf("-", tagIndex) - 1).Trim().Replace("\r", "").Replace("\n", "");
                         relatedPoem.RelatedCoupletVerse2ShouldBeEmphasized = false;
                         if (relatedPoem.RelatedCoupletVerse2.Contains("strong"))
                         {
                             relatedPoem.RelatedCoupletVerse2ShouldBeEmphasized = true;
-                            relatedPoem.RelatedCoupletVerse2 = relatedPoem.RelatedCoupletVerse2.Replace("<strong>", "").Replace("</strong>", "");
+                            relatedPoem.RelatedCoupletVerse2 = relatedPoem.RelatedCoupletVerse2.Replace("<strong>", "").Replace("</strong>", "").Trim();
                         }
                     }
 
