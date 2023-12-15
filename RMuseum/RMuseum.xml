@@ -2043,6 +2043,13 @@
             <param name="indirect"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorQuotedPoemByIdAsync(System.Guid)">
+            <summary>
+            get quoted by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
