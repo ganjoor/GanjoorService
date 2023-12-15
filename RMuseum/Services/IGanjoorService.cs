@@ -1223,8 +1223,9 @@ namespace RMuseum.Services
         /// <param name="poemId"></param>
         /// <param name="skip"></param>
         /// <param name="itemsCount"></param>
+        /// <param name="onlyClaimedByBothPoets"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForPoemAsync(int poemId, int skip, int itemsCount);
+        Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForPoemAsync(int poemId, int skip, int itemsCount, bool onlyClaimedByBothPoets);
 
         /// <summary>
         /// two poems quoted records
