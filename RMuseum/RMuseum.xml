@@ -15505,6 +15505,34 @@
             <param name="indirect"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorQuotedPoemByIdAsync(System.Guid)">
+            <summary>
+            get quoted by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.InsertGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.GanjoorQuotedPoem)">
+            <summary>
+            insert quoted poem
+            </summary>
+            <param name="quoted"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.UpdateGanjoorQuotedPoemsAsync(RMuseum.Models.Ganjoor.GanjoorQuotedPoem)">
+            <summary>
+            update quoted poem
+            </summary>
+            <param name="quoted"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeleteGanjoorQuotedPoemByIdAsync(System.Guid)">
+            <summary>
+            delete quoted by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
