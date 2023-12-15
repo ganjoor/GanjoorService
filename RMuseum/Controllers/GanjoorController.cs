@@ -3632,6 +3632,24 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// extracting quoted poems
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("quoted/extract")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartExtractingQuotedPoems()
+        {
+            var res = _ganjoorService.StartExtractingQuotedPoems();
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok();
+        }
+
 
 
 

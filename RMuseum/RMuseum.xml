@@ -2007,6 +2007,12 @@
             <param name="loginViewModel"></param>
             <returns>number of synched links</returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartExtractingQuotedPoems">
+            <summary>
+            extracting quoted poems
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -15330,6 +15336,12 @@
         <member name="M:RMuseum.Services.IGanjoorService.StartFillingSectionsPoemFormats">
             <summary>
             filling poem formats
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartExtractingQuotedPoems">
+            <summary>
+            extracting quoted poems
             </summary>
             <returns></returns>
         </member>

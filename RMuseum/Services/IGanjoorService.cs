@@ -1209,5 +1209,12 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         RServiceResult<bool> StartFillingSectionsPoemFormats();
+
+
+        /// <summary>
+        /// extracting quoted poems
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartExtractingQuotedPoems();
     }
 }
