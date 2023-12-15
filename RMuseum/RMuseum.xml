@@ -17309,7 +17309,13 @@
             <param name="metre"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ParseRelatedPageAsync(RMuseum.DbContext.RMuseumDbContext,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartExtractingQuotedPoems">
+            <summary>
+            extracting quoted poems
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._ParseRelatedPageAsync(RMuseum.DbContext.RMuseumDbContext,System.Int32)">
             <summary>
             parse related pages
             </summary>

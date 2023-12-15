@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Services.Implementation;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,12 +16,53 @@ namespace RMuseum.Services.Implementation
     public partial class GanjoorService : IGanjoorService
     {
         /// <summary>
+        /// extracting quoted poems
+        /// </summary>
+        /// <returns></returns>
+        public RServiceResult<bool> StartExtractingQuotedPoems()
+        {
+            try
+            {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                           (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                               {
+                                   LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+
+                                   var job = (await jobProgressServiceEF.NewJob("StartExtractingQuotedPoems", "Query data")).Result;
+
+                                   var pages = await context.GanjoorPages.AsNoTracking().Where(p => p.SecondPoetId != null).ToListAsync();
+                                   foreach (var page in pages)
+                                   {
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 0, page.FullTitle);
+                                       var res = await _ParseRelatedPageAsync(context, page.Id);
+                                       if(string.IsNullOrEmpty(res.ExceptionString))
+                                       {
+                                           await jobProgressServiceEF.UpdateJob(job.Id, 100, page.FullTitle, false, res.ExceptionString);
+                                           return;
+                                       }
+                                       
+                                   }
+                                   await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                               }
+                           });
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// parse related pages
         /// </summary>
         /// <param name="context"></param>
         /// <param name="pageId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> ParseRelatedPageAsync(RMuseumDbContext context, int pageId)
+        private async Task<RServiceResult<bool>> _ParseRelatedPageAsync(RMuseumDbContext context, int pageId)
         {
             try
             {
