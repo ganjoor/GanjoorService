@@ -3659,6 +3659,30 @@
         <member name="M:RMuseum.Migrations.QPSameField.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.PoemPlusClaimedByMultiplePoets">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.PoemPlusClaimedByMultiplePoets.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.PoemPlusClaimedByMultiplePoets.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.PoemPlusClaimedByMultiplePoets.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.GanjoorQuotedPoemPoet">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.GanjoorQuotedPoemPoet.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.GanjoorQuotedPoemPoet.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.GanjoorQuotedPoemPoet.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -8922,6 +8946,16 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.ClaimedByBothPoets">
             <summary>
             poems (same poem) are claimed by both poets
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.PoetId">
+            <summary>
+            poet id (redundant for simplifying queries)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedPoetId">
+            <summary>
+            related poet id
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorRelatedPerson">

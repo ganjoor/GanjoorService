@@ -137,5 +137,15 @@ namespace RMuseum.Models.Ganjoor
         /// poems (same poem) are claimed by both poets
         /// </summary>
         public bool ClaimedByBothPoets { get; set; }
+
+        /// <summary>
+        /// poet id (redundant for simplifying queries)
+        /// </summary>
+        public int PoetId { get; set; }
+
+        /// <summary>
+        /// related poet id
+        /// </summary>
+        public int? RelatedPoetId { get; set; }
     }
 }

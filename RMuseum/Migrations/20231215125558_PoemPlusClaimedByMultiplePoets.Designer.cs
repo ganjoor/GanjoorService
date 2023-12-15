@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RMuseum.DbContext;
 
@@ -11,9 +12,11 @@ using RMuseum.DbContext;
 namespace RMuseum.Migrations
 {
     [DbContext(typeof(RMuseumDbContext))]
-    partial class RMuseumDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231215125558_PoemPlusClaimedByMultiplePoets")]
+    partial class PoemPlusClaimedByMultiplePoets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1851,9 +1854,6 @@ namespace RMuseum.Migrations
                     b.Property<int>("PoemId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PoetId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("Published")
                         .HasColumnType("bit");
 
@@ -1873,9 +1873,6 @@ namespace RMuseum.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int?>("RelatedPoemId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RelatedPoetId")
                         .HasColumnType("int");
 
                     b.Property<int>("SamePoemsQuotedCount")

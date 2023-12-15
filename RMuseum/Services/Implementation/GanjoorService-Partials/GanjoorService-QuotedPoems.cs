@@ -160,6 +160,8 @@ namespace RMuseum.Services.Implementation
                     GanjoorQuotedPoem relatedPoem = new GanjoorQuotedPoem()
                     {
                         PoemId = poem1.Id,
+                        PoetId = poem1Poet.Id,
+                        RelatedPoetId = poem2Poet.Id,
                         RelatedPoemId = poem2.Id,
                         IsPriorToRelated = false,
                         ChosenForMainList = false == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.RelatedPoemId == poem2.Id).AnyAsync(),
@@ -339,6 +341,8 @@ namespace RMuseum.Services.Implementation
                     GanjoorQuotedPoem reverseRelation = new GanjoorQuotedPoem()
                     {
                         PoemId = poem2.Id,
+                        PoetId = poem2Poet.Id,
+                        RelatedPoetId = poem1Poet.Id,
                         RelatedPoemId = poem1.Id,
                         IsPriorToRelated = true,
                         ChosenForMainList = false == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem2.Id && p.RelatedPoemId == poem1.Id).AnyAsync(),
