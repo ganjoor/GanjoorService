@@ -3650,6 +3650,27 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// get quoted poems for a poem
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="skip"></param>
+        /// <param name="itemsCount"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poem/{id}/quoteds")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetGanjoorQuotedPoemsAsync(int poemId, int skip, int itemsCount)
+        {
+            RServiceResult<GanjoorQuotedPoem[]> res =
+                await _ganjoorService.GetGanjoorQuotedPoemsAsync(poemId, skip, itemsCount);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
 
 
 

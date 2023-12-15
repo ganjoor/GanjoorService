@@ -2013,6 +2013,15 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorQuotedPoemsAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            get quoted poems for a poem
+            </summary>
+            <param name="poemId"></param>
+            <param name="skip"></param>
+            <param name="itemsCount"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
