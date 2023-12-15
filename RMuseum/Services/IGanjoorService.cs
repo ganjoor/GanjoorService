@@ -1216,5 +1216,22 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         RServiceResult<bool> StartExtractingQuotedPoems();
+
+        /// <summary>
+        /// get quoted poems for a poem
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="skip"></param>
+        /// <param name="itemsCount"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsAsync(int poemId, int skip, int itemsCount);
+
+        /// <summary>
+        /// two poems quoted records
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="relatedPoemId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForRelatedAsync(int poemId, int relatedPoemId);
     }
 }

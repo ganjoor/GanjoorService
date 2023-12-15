@@ -1867,6 +1867,11 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<GanjoorPoemCompleteViewModel>(null, tagsRes.ExceptionString);
                 PoemGeoDateTag[] geoDateTags = tagsRes.Result;
 
+                var quotedRes = await GetGanjoorQuotedPoemsAsync(id, 0, 6);
+                if (!string.IsNullOrEmpty(quotedRes.ExceptionString))
+                    return new RServiceResult<GanjoorPoemCompleteViewModel>(null, quotedRes.ExceptionString);
+                GanjoorQuotedPoem[] quoteds = quotedRes.Result;
+
 
 
                 poemViewModel = new GanjoorPoemCompleteViewModel()
@@ -1896,7 +1901,8 @@ namespace RMuseum.Services.Implementation
                     Songs = tracks,
                     Comments = poemComments,
                     Sections = poemSections,
-                    GeoDateTags = geoDateTags
+                    GeoDateTags = geoDateTags,
+                    Top6QuotedPoems = quoteds
                 };
 
                 if (AggressiveCacheEnabled)

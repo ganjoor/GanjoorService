@@ -16,6 +16,62 @@ namespace RMuseum.Services.Implementation
     public partial class GanjoorService : IGanjoorService
     {
         /// <summary>
+        /// get quoted poems for a poem
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="skip"></param>
+        /// <param name="itemsCount"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsAsync(int poemId, int skip, int itemsCount)
+        {
+            try
+            {
+                var source =
+                _context.GanjoorQuotedPoems
+                         .AsNoTracking()
+                        .Where(r => r.PoemId == poemId)
+                        .OrderBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri);
+
+                if (itemsCount <= 0)
+                    return new RServiceResult<GanjoorQuotedPoem[]>(await source.ToArrayAsync());
+                return new RServiceResult<GanjoorQuotedPoem[]>
+                    (
+                    await source.Skip(skip).Take(itemsCount).ToArrayAsync()
+                    );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorQuotedPoem[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// two poems quoted records
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="relatedPoemId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForRelatedAsync(int poemId, int relatedPoemId)
+        {
+            try
+            {
+                return new RServiceResult<GanjoorQuotedPoem[]>
+                (
+                    await _context.GanjoorQuotedPoems
+                         .AsNoTracking()
+                        .Where(r => r.PoemId == poemId && r.RelatedPoemId == relatedPoemId)
+                        .OrderBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri).ToArrayAsync()
+                        );
+
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorQuotedPoem[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// extracting quoted poems
         /// </summary>
         /// <returns></returns>
@@ -38,12 +94,12 @@ namespace RMuseum.Services.Implementation
                                    {
                                        await jobProgressServiceEF.UpdateJob(job.Id, 0, page.FullTitle);
                                        var res = await _ParseRelatedPageAsync(context, page.Id);
-                                       if(!string.IsNullOrEmpty(res.ExceptionString))
+                                       if (!string.IsNullOrEmpty(res.ExceptionString))
                                        {
                                            await jobProgressServiceEF.UpdateJob(job.Id, 100, page.FullTitle, false, res.ExceptionString);
                                            return;
                                        }
-                                       
+
                                    }
                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                }
@@ -68,18 +124,18 @@ namespace RMuseum.Services.Implementation
             {
                 var dbPage = await context.GanjoorPages.AsNoTracking().Where(p => p.Id == pageId).SingleAsync();
                 int endIndex = dbPage.HtmlText.IndexOf("در بخش دوم");
-                if(endIndex == -1)
+                if (endIndex == -1)
                 {
                     return new RServiceResult<bool>(false, "endIndex == -1");
                 }
                 int index = dbPage.HtmlText.IndexOf("<li>");
-                while(index != -1 && index < endIndex)
+                while (index != -1 && index < endIndex)
                 {
                     int closeTagIndex = dbPage.HtmlText.IndexOf("</li>", index);
                     int tagIndex = dbPage.HtmlText.IndexOf("\"", index);
                     string poem1Url = dbPage.HtmlText.Substring("https://ganjoor.net".Length + tagIndex + 1, dbPage.HtmlText.IndexOf("\"", tagIndex + 1) - tagIndex - 1 - 1  /*remove trailing slash*/ - "https://ganjoor.net".Length);
                     var poem1 = await context.GanjoorPoems.AsNoTracking().Where(p => p.FullUrl == poem1Url).SingleOrDefaultAsync();
-                    if(poem1 == null)
+                    if (poem1 == null)
                     {
                         var redirectedPage = await context.GanjoorPages.AsNoTracking().Where(p => p.RedirectFromFullUrl == poem1Url).SingleAsync();
                         poem1 = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == redirectedPage.Id).SingleAsync();
@@ -110,31 +166,31 @@ namespace RMuseum.Services.Implementation
                         CachedRelatedPoemPoetDeathYearInLHijri = poem2Poet.DeathYearInLHijri,
                         CachedRelatedPoemPoetName = poem2Poet.Nickname,
                         CachedRelatedPoemPoetUrl = poem2Cat.FullUrl,
-                        CachedRelatedPoemPoetImage =  $"/api/ganjoor/poet/image{poem2Cat.FullUrl}.gif",
+                        CachedRelatedPoemPoetImage = $"/api/ganjoor/poet/image{poem2Cat.FullUrl}.gif",
                         CachedRelatedPoemFullTitle = poem2.FullTitle,
                         CachedRelatedPoemFullUrl = poem2.FullUrl,
                         SortOrder = 1000,
                         Note = "",
                         Published = true,
-                        SamePoemsQuotedCount = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.RelatedPoemId == poem2.Id).AnyAsync() ? 
-                                                1 + await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.RelatedPoemId == poem2.Id).CountAsync() :  1
+                        SamePoemsQuotedCount = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.RelatedPoemId == poem2.Id).AnyAsync() ?
+                                                1 + await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.RelatedPoemId == poem2.Id).CountAsync() : 1
                     };
 
                     //first couplet:
                     tagIndex = dbPage.HtmlText.IndexOf("<p>", tagIndex);
-                    if(tagIndex != -1 && tagIndex < closeTagIndex)
+                    if (tagIndex != -1 && tagIndex < closeTagIndex)
                     {
                         tagIndex = dbPage.HtmlText.IndexOf("\">", tagIndex);
                         tagIndex += "\">".Length;
                         string bnumstring = PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex)).Replace("بیت", "").Trim();
-                        if(int.TryParse(bnumstring, out int bnum))
+                        if (int.TryParse(bnumstring, out int bnum))
                         {
                             relatedPoem.CoupletIndex = -1 + bnum;
                         }
                         else
                         {
                             int? b = null;
-                            switch(bnumstring)
+                            switch (bnumstring)
                             {
                                 case "آخر":
                                     b = 1 + await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem1.Id).MaxAsync(v => v.CoupletIndex);
@@ -171,13 +227,13 @@ namespace RMuseum.Services.Implementation
                                     b = 35;
                                     break;
                             }
-                            if(b != null)
+                            if (b != null)
                             {
                                 relatedPoem.CoupletIndex = (int)b - 1;
                             }
                         }
-                        
-                        
+
+
                         tagIndex = dbPage.HtmlText.IndexOf(":", tagIndex) + 1;
 
                         relatedPoem.CoupletVerse1 = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("-", tagIndex) - 1 - tagIndex).Trim().Replace("\r", "").Replace("\n", "");

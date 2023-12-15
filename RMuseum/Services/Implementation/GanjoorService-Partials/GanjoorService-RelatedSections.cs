@@ -29,7 +29,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<GanjoorCachedRelatedSection[]>> GetRelatedSections(int poemId, int sectionIndex, int skip, int itemsCount)
         {
             var source =
-                 _context.GanjoorCachedRelatedSections
+                 _context.GanjoorCachedRelatedSections.AsNoTracking()
                          .Where(r => r.PoemId == poemId && r.SectionIndex == sectionIndex)
                          .OrderBy(r => r.RelationOrder);
 

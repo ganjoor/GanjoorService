@@ -10526,6 +10526,11 @@
             geo/date tags
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.Top6QuotedPoems">
+            <summary>
+            top 6 quoted poems
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.SectionIndex">
             <summary>
             section index
@@ -15374,6 +15379,23 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorQuotedPoemsAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            get quoted poems for a poem
+            </summary>
+            <param name="poemId"></param>
+            <param name="skip"></param>
+            <param name="itemsCount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorQuotedPoemsForRelatedAsync(System.Int32,System.Int32)">
+            <summary>
+            two poems quoted records
+            </summary>
+            <param name="poemId"></param>
+            <param name="relatedPoemId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -17348,6 +17370,23 @@
             </summary>
             <param name="id">problable metre id</param>
             <param name="metre"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetGanjoorQuotedPoemsAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            get quoted poems for a poem
+            </summary>
+            <param name="poemId"></param>
+            <param name="skip"></param>
+            <param name="itemsCount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetGanjoorQuotedPoemsForRelatedAsync(System.Int32,System.Int32)">
+            <summary>
+            two poems quoted records
+            </summary>
+            <param name="poemId"></param>
+            <param name="relatedPoemId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartExtractingQuotedPoems">

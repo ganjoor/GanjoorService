@@ -133,6 +133,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public PoemGeoDateTag[] GeoDateTags { get; set; }
 
         /// <summary>
+        /// top 6 quoted poems
+        /// </summary>
+        public GanjoorQuotedPoem[] Top6QuotedPoems { get; set; }
+
+        /// <summary>
         /// section index
         /// </summary>
         public int? SectionIndex { get; set; }
