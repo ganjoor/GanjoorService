@@ -3695,6 +3695,18 @@
         <member name="M:RMuseum.Migrations.QPRelatedInDirectly.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.QPRelation">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.QPRelation.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.QPRelation.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.QPRelation.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -8838,6 +8850,11 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.PoemId">
             <summary>
             poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Poem">
+            <summary>
+            poem
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedPoemId">

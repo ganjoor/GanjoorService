@@ -18,6 +18,11 @@ namespace RMuseum.Models.Ganjoor
         public int PoemId { get; set; }
 
         /// <summary>
+        /// poem
+        /// </summary>
+        public GanjoorPoem Poem { get; set; }
+
+        /// <summary>
         /// related poem id (this could be a poem we do not have it available)
         /// </summary>
         public int? RelatedPoemId { get; set; }
