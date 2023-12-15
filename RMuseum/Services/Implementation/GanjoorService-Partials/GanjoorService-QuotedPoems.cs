@@ -133,6 +133,37 @@ namespace RMuseum.Services.Implementation
                     context.Add(relatedPoem);
                     await context.SaveChangesAsync();
 
+
+                    GanjoorQuotedPoem reverseRelation = new GanjoorQuotedPoem()
+                    {
+                        PoemId = poem2.Id,
+                        RelatedPoemId = poem1.Id,
+                        IsPriorToRelated = false,
+                        ChosenForMainList = false == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem2.Id && p.CachedRelatedPoemPoetUrl == poem1Cat.FullUrl).AnyAsync(),
+                        CachedRelatedPoemPoetDeathYearInLHijri = poem1Poet.DeathYearInLHijri,
+                        CachedRelatedPoemPoetName = poem1Poet.Name,
+                        CachedRelatedPoemPoetUrl = poem1Cat.FullUrl,
+                        CachedRelatedPoemPoetImage = $"/api/ganjoor/poet/image{poem1Cat.FullUrl}.gif",
+                        CachedRelatedPoemFullTitle = poem1.FullTitle,
+                        CachedRelatedPoemFullUrl = poem1.FullUrl,
+                        Description = "",
+                        Published = true,
+                        Couplet1PoetName = relatedPoem.Couplet1PoetName,
+                        Couplet1Verse1 = relatedPoem.Couplet1Verse1,
+                        Couplet1Verse1IsMainPart = relatedPoem.Couplet1Verse1IsMainPart,
+                        Couplet1Verse2 = relatedPoem.Couplet1Verse2,
+                        Couplet1Verse2IsMainPart = relatedPoem.Couplet1Verse2IsMainPart,
+                        Couplet1Index = relatedPoem.Couplet1Index,
+                        RelatedCouplet1PoetName = relatedPoem.RelatedCouplet1PoetName,
+                        RelatedCouplet1Verse1 = relatedPoem.RelatedCouplet1Verse1,
+                        RelatedCouplet1Verse1IsMainPart = relatedPoem.RelatedCouplet1Verse1IsMainPart,
+                        RelatedCouplet1Verse2 = relatedPoem.RelatedCouplet1Verse2,
+                        RelatedCouplet1Verse2IsMainPart = relatedPoem.RelatedCouplet1Verse2IsMainPart,
+                        RelatedCouplet1Index = relatedPoem.RelatedCouplet1Index,
+                    };
+                    context.Add(reverseRelation);
+                    await context.SaveChangesAsync();
+
                     index = dbPage.HtmlText.IndexOf("<li>", index);
                 }
                 return new RServiceResult<bool>(true);
