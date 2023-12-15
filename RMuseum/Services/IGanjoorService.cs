@@ -1234,5 +1234,17 @@ namespace RMuseum.Services
         /// <param name="relatedPoemId"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForRelatedAsync(int poemId, int relatedPoemId);
+
+        /// <summary>
+        /// get quoted poems
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="relatedPoetId"></param>
+        /// <param name="chosen"></param>
+        /// <param name="published"></param>
+        /// <param name="claimed"></param>
+        /// <param name="indirect"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsAsync(int? poetId, int? relatedPoetId, bool? chosen, bool? published, bool? claimed, bool? indirect);
     }
 }

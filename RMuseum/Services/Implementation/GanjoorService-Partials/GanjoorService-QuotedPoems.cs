@@ -16,6 +16,47 @@ namespace RMuseum.Services.Implementation
     public partial class GanjoorService : IGanjoorService
     {
         /// <summary>
+        /// get quoted poems
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="relatedPoetId"></param>
+        /// <param name="chosen"></param>
+        /// <param name="published"></param>
+        /// <param name="claimed"></param>
+        /// <param name="indirect"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsAsync(int? poetId, int? relatedPoetId, bool? chosen, bool? published, bool? claimed, bool? indirect)
+        {
+            try
+            {
+                return new RServiceResult<GanjoorQuotedPoem[]>(await
+                _context.GanjoorQuotedPoems
+                         .AsNoTracking()
+                        .Where(r => 
+                        (poetId == null || r.PoetId == poetId)
+                        &&
+                        (chosen == null || r.ChosenForMainList == chosen)
+                        &&
+                        (relatedPoetId == null || r.RelatedPoetId == relatedPoetId)
+                        &&
+                        (published == null || r.Published == published)
+                        &&
+                        (claimed == null || r.ClaimedByBothPoets == claimed)
+                        &&
+                        (indirect == null || r.IndirectQuotation == indirect)
+                        )
+                        .OrderBy(r => r.PoetId).ThenBy(r => r.PoemId).ThenBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri)
+                        .ToArrayAsync()
+                    );
+               
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorQuotedPoem[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// get quoted poems for a poem
         /// </summary>
         /// <param name="poemId"></param>
