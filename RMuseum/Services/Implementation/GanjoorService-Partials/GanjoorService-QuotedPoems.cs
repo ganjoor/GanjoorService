@@ -106,7 +106,7 @@ namespace RMuseum.Services.Implementation
                         PoemId = poem1.Id,
                         RelatedPoemId = poem2.Id,
                         IsPriorToRelated = false,
-                        ChosenForMainList = false == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.CachedRelatedPoemPoetUrl == poem2Cat.FullUrl).AnyAsync(),
+                        ChosenForMainList = false == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.RelatedPoemId == poem2.Id).AnyAsync(),
                         CachedRelatedPoemPoetDeathYearInLHijri = poem2Poet.DeathYearInLHijri,
                         CachedRelatedPoemPoetName = poem2Poet.Nickname,
                         CachedRelatedPoemPoetUrl = poem2Cat.FullUrl,
@@ -115,7 +115,9 @@ namespace RMuseum.Services.Implementation
                         CachedRelatedPoemFullUrl = poem2.FullUrl,
                         SortOrder = 1000,
                         Note = "",
-                        Published = true
+                        Published = true,
+                        SamePoemsQuotedCount = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.RelatedPoemId == poem2.Id).AnyAsync() ? 
+                                                1 + await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.RelatedPoemId == poem2.Id).CountAsync() :  1
                     };
 
                     //first couplet:
@@ -282,7 +284,7 @@ namespace RMuseum.Services.Implementation
                         PoemId = poem2.Id,
                         RelatedPoemId = poem1.Id,
                         IsPriorToRelated = true,
-                        ChosenForMainList = false == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem2.Id && p.CachedRelatedPoemPoetUrl == poem1Cat.FullUrl).AnyAsync(),
+                        ChosenForMainList = false == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem2.Id && p.RelatedPoemId == poem1.Id).AnyAsync(),
                         CachedRelatedPoemPoetDeathYearInLHijri = poem1Poet.DeathYearInLHijri,
                         CachedRelatedPoemPoetName = poem1Poet.Nickname,
                         CachedRelatedPoemPoetUrl = poem1Cat.FullUrl,
@@ -302,6 +304,8 @@ namespace RMuseum.Services.Implementation
                         CoupletVerse2 = relatedPoem.RelatedCoupletVerse2,
                         CoupletVerse2ShouldBeEmphasized = relatedPoem.RelatedCoupletVerse2ShouldBeEmphasized,
                         CoupletIndex = relatedPoem.RelatedCoupletIndex,
+                        SamePoemsQuotedCount = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem2.Id && p.RelatedPoemId == poem1.Id).AnyAsync() ?
+                                                1 + await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem2.Id && p.RelatedPoemId == poem1.Id).CountAsync() : 1
 
                     };
                     context.Add(reverseRelation);
