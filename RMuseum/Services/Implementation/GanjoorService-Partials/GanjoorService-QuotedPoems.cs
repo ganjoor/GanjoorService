@@ -70,35 +70,35 @@ namespace RMuseum.Services.Implementation
                         CachedRelatedPoemPoetImage =  $"/api/ganjoor/poet/image{poem2Cat.FullUrl}.gif",
                         CachedRelatedPoemFullTitle = poem2.FullTitle,
                         CachedRelatedPoemFullUrl = poem2.FullUrl,
-                        Description = "",
+                        SortOrder = 1000,
+                        Note = "",
                         Published = true
                     };
 
                     //first couplet:
-                    relatedPoem.Couplet1PoetName = poem1Poet.Name;
                     tagIndex = dbPage.HtmlText.IndexOf("<p>", tagIndex);
                     if(tagIndex != -1 && tagIndex < closeTagIndex)
                     {
                         tagIndex = dbPage.HtmlText.IndexOf("\">", tagIndex);
                         tagIndex += "\">".Length;
-                        relatedPoem.Couplet1Index = -1 + int.Parse(PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex - 1)));
+                        relatedPoem.CoupletIndex = -1 + int.Parse(PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex - 1)));
                         
                         tagIndex = dbPage.HtmlText.IndexOf(":", tagIndex) + 1;
 
-                        relatedPoem.Couplet1Verse1 = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("-", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
-                        relatedPoem.Couplet1Verse1IsMainPart = false;
-                        if (relatedPoem.Couplet1Verse1.Contains("strong"))
+                        relatedPoem.CoupletVerse1 = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("-", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
+                        relatedPoem.CoupletVerse1ShouldBeEmphasized = false;
+                        if (relatedPoem.CoupletVerse1.Contains("strong"))
                         {
-                            relatedPoem.Couplet1Verse1IsMainPart = true;
-                            relatedPoem.Couplet1Verse1 = relatedPoem.Couplet1Verse1.Replace("<strong>", "").Replace("</strong>", "");
+                            relatedPoem.CoupletVerse1ShouldBeEmphasized = true;
+                            relatedPoem.CoupletVerse1 = relatedPoem.CoupletVerse1.Replace("<strong>", "").Replace("</strong>", "");
                         }
 
-                        relatedPoem.Couplet1Verse2 = dbPage.HtmlText.Substring(dbPage.HtmlText.IndexOf("-", tagIndex), dbPage.HtmlText.IndexOf("</p>", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
-                        relatedPoem.Couplet1Verse2IsMainPart = false;
-                        if (relatedPoem.Couplet1Verse2.Contains("strong"))
+                        relatedPoem.CoupletVerse2 = dbPage.HtmlText.Substring(dbPage.HtmlText.IndexOf("-", tagIndex), dbPage.HtmlText.IndexOf("</p>", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
+                        relatedPoem.CoupletVerse2ShouldBeEmphasized = false;
+                        if (relatedPoem.CoupletVerse2.Contains("strong"))
                         {
-                            relatedPoem.Couplet1Verse2IsMainPart = true;
-                            relatedPoem.Couplet1Verse2 = relatedPoem.Couplet1Verse2.Replace("<strong>", "").Replace("</strong>", "");
+                            relatedPoem.CoupletVerse2ShouldBeEmphasized = true;
+                            relatedPoem.CoupletVerse2 = relatedPoem.CoupletVerse2.Replace("<strong>", "").Replace("</strong>", "");
                         }
                     }
 
@@ -107,24 +107,24 @@ namespace RMuseum.Services.Implementation
                     {
                         tagIndex = dbPage.HtmlText.IndexOf("\">", tagIndex);
                         tagIndex += "\">".Length;
-                        relatedPoem.RelatedCouplet1Index = -1 + int.Parse(PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex - 1)));
+                        relatedPoem.RelatedCoupletIndex = -1 + int.Parse(PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex - 1)));
 
                         tagIndex = dbPage.HtmlText.IndexOf(":", tagIndex) + 1;
 
-                        relatedPoem.RelatedCouplet1Verse1 = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("-", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
-                        relatedPoem.RelatedCouplet1Verse1IsMainPart = false;
-                        if (relatedPoem.RelatedCouplet1Verse1.Contains("strong"))
+                        relatedPoem.RelatedCoupletVerse1 = dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("-", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
+                        relatedPoem.RelatedCoupletVerse1ShouldBeEmphasized = false;
+                        if (relatedPoem.RelatedCoupletVerse1.Contains("strong"))
                         {
-                            relatedPoem.RelatedCouplet1Verse1IsMainPart = true;
-                            relatedPoem.RelatedCouplet1Verse1 = relatedPoem.RelatedCouplet1Verse1.Replace("<strong>", "").Replace("</strong>", "");
+                            relatedPoem.RelatedCoupletVerse1ShouldBeEmphasized = true;
+                            relatedPoem.RelatedCoupletVerse1 = relatedPoem.RelatedCoupletVerse1.Replace("<strong>", "").Replace("</strong>", "");
                         }
 
-                        relatedPoem.RelatedCouplet1Verse2 = dbPage.HtmlText.Substring(dbPage.HtmlText.IndexOf("-", tagIndex), dbPage.HtmlText.IndexOf("</p>", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
-                        relatedPoem.RelatedCouplet1Verse2IsMainPart = false;
-                        if (relatedPoem.RelatedCouplet1Verse2.Contains("strong"))
+                        relatedPoem.RelatedCoupletVerse2 = dbPage.HtmlText.Substring(dbPage.HtmlText.IndexOf("-", tagIndex), dbPage.HtmlText.IndexOf("</p>", tagIndex) - 1).Replace("\r", "").Replace("\n", "");
+                        relatedPoem.RelatedCoupletVerse2ShouldBeEmphasized = false;
+                        if (relatedPoem.RelatedCoupletVerse2.Contains("strong"))
                         {
-                            relatedPoem.RelatedCouplet1Verse2IsMainPart = true;
-                            relatedPoem.RelatedCouplet1Verse2 = relatedPoem.RelatedCouplet1Verse2.Replace("<strong>", "").Replace("</strong>", "");
+                            relatedPoem.RelatedCoupletVerse2ShouldBeEmphasized = true;
+                            relatedPoem.RelatedCoupletVerse2 = relatedPoem.RelatedCoupletVerse2.Replace("<strong>", "").Replace("</strong>", "");
                         }
                     }
 
@@ -146,20 +146,19 @@ namespace RMuseum.Services.Implementation
                         CachedRelatedPoemPoetImage = $"/api/ganjoor/poet/image{poem1Cat.FullUrl}.gif",
                         CachedRelatedPoemFullTitle = poem1.FullTitle,
                         CachedRelatedPoemFullUrl = poem1.FullUrl,
-                        Description = "",
+                        SortOrder = 1000,
+                        Note = "",
                         Published = true,
-                        Couplet1PoetName = relatedPoem.Couplet1PoetName,
-                        Couplet1Verse1 = relatedPoem.Couplet1Verse1,
-                        Couplet1Verse1IsMainPart = relatedPoem.Couplet1Verse1IsMainPart,
-                        Couplet1Verse2 = relatedPoem.Couplet1Verse2,
-                        Couplet1Verse2IsMainPart = relatedPoem.Couplet1Verse2IsMainPart,
-                        Couplet1Index = relatedPoem.Couplet1Index,
-                        RelatedCouplet1PoetName = relatedPoem.RelatedCouplet1PoetName,
-                        RelatedCouplet1Verse1 = relatedPoem.RelatedCouplet1Verse1,
-                        RelatedCouplet1Verse1IsMainPart = relatedPoem.RelatedCouplet1Verse1IsMainPart,
-                        RelatedCouplet1Verse2 = relatedPoem.RelatedCouplet1Verse2,
-                        RelatedCouplet1Verse2IsMainPart = relatedPoem.RelatedCouplet1Verse2IsMainPart,
-                        RelatedCouplet1Index = relatedPoem.RelatedCouplet1Index,
+                        CoupletVerse1 = relatedPoem.CoupletVerse1,
+                        CoupletVerse1ShouldBeEmphasized = relatedPoem.CoupletVerse1ShouldBeEmphasized,
+                        CoupletVerse2 = relatedPoem.CoupletVerse2,
+                        CoupletVerse2ShouldBeEmphasized = relatedPoem.CoupletVerse2ShouldBeEmphasized,
+                        CoupletIndex = relatedPoem.CoupletIndex,
+                        RelatedCoupletVerse1 = relatedPoem.RelatedCoupletVerse1,
+                        RelatedCoupletVerse1ShouldBeEmphasized = relatedPoem.RelatedCoupletVerse1ShouldBeEmphasized,
+                        RelatedCoupletVerse2 = relatedPoem.RelatedCoupletVerse2,
+                        RelatedCoupletVerse2ShouldBeEmphasized = relatedPoem.RelatedCoupletVerse2ShouldBeEmphasized,
+                        RelatedCoupletIndex = relatedPoem.RelatedCoupletIndex,
                     };
                     context.Add(reverseRelation);
                     await context.SaveChangesAsync();

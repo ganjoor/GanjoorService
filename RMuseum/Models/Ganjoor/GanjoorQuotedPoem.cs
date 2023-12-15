@@ -33,6 +33,11 @@ namespace RMuseum.Models.Ganjoor
         public bool ChosenForMainList { get; set; }
 
         /// <summary>
+        /// this sort order can be used to pin a record on top
+        /// </summary>
+        public int SortOrder { get; set; }
+
+        /// <summary>
         /// related poem peot death date in hijri (used for sorting)
         /// </summary>
         public int CachedRelatedPoemPoetDeathYearInLHijri { get; set; }
@@ -63,179 +68,60 @@ namespace RMuseum.Models.Ganjoor
         public string CachedRelatedPoemFullUrl { get; set; }
 
         /// <summary>
-        /// couplet 1 poet name
-        /// </summary>
-        public string Couplet1PoetName { get; set; }
-
-        /// <summary>
         /// couplet 1 verse 1
         /// </summary>
-        public string Couplet1Verse1 { get; set; }
+        public string CoupletVerse1 { get; set; }
 
         /// <summary>
         /// is main part
         /// </summary>
-        public bool Couplet1Verse1IsMainPart { get; set; }
+        public bool CoupletVerse1ShouldBeEmphasized { get; set; }
 
         /// <summary>
         /// couplet 1 verse 2
         /// </summary>
-        public string Couplet1Verse2 { get; set; }
+        public string CoupletVerse2 { get; set; }
 
         /// <summary>
         /// is main part
         /// </summary>
-        public bool Couplet1Verse2IsMainPart { get; set; }
+        public bool CoupletVerse2ShouldBeEmphasized { get; set; }
 
         /// <summary>
         /// couplet 1 index
         /// </summary>
-        public int? Couplet1Index { get; set; }
+        public int? CoupletIndex { get; set; }
 
-        /// <summary>
-        /// related couplet 1 poet name
-        /// </summary>
-        public string RelatedCouplet1PoetName { get; set; }
 
         /// <summary>
         /// related couplet 1 verse 1
         /// </summary>
-        public string RelatedCouplet1Verse1 { get; set; }
+        public string RelatedCoupletVerse1 { get; set; }
 
         /// <summary>
         /// is main part
         /// </summary>
-        public bool RelatedCouplet1Verse1IsMainPart { get; set; }
+        public bool RelatedCoupletVerse1ShouldBeEmphasized { get; set; }
 
         /// <summary>
         /// related couplet 1 verse 2
         /// </summary>
-        public string RelatedCouplet1Verse2 { get; set; }
+        public string RelatedCoupletVerse2 { get; set; }
 
         /// <summary>
         /// is main part
         /// </summary>
-        public bool RelatedCouplet1Verse2IsMainPart { get; set; }
+        public bool RelatedCoupletVerse2ShouldBeEmphasized { get; set; }
 
         /// <summary>
         /// related couplet 1 index
         /// </summary>
-        public int? RelatedCouplet1Index { get; set; }
-
-        /// <summary>
-        /// related couplet 1 verse 3
-        /// </summary>
-        public string RelatedCouplet1Verse3 { get; set; }
-
-        /// <summary>
-        /// is main part
-        /// </summary>
-        public bool RelatedCouplet1Verse3IsMainPart { get; set; }
-
-        /// <summary>
-        /// related couplet 1 verse 4
-        /// </summary>
-        public string RelatedCouplet1Verse4 { get; set; }
-
-        /// <summary>
-        /// is main part
-        /// </summary>
-        public bool RelatedCouplet1Verse4IsMainPart { get; set; }
-
-        /// <summary>
-        /// related couplet 1 - verse 3/4 index
-        /// </summary>
-        public int? RelatedCouplet1Verse34Index { get; set; }
-
-        /// <summary>
-        /// couplet 2 poet name
-        /// </summary>
-        public string Couplet2PoetName { get; set; }
-
-        /// <summary>
-        /// couplet 2 verse 1
-        /// </summary>
-        public string Couplet2Verse1 { get; set; }
-
-        /// <summary>
-        /// is main part
-        /// </summary>
-        public bool Couplet2Verse1IsMainPart { get; set; }
-
-        /// <summary>
-        /// couplet 2 verse 2
-        /// </summary>
-        public string Couplet2Verse2 { get; set; }
-
-        /// <summary>
-        /// is main part
-        /// </summary>
-        public bool Couplet2Verse2IsMainPart { get; set; }
-
-        /// <summary>
-        /// couplet 2 index
-        /// </summary>
-        public int? Couplet2Index { get; set; }
-
-        /// <summary>
-        /// related couplet 2 poet name
-        /// </summary>
-        public string RelatedCouplet2PoetName { get; set; }
-
-        /// <summary>
-        /// related couplet 2 verse 1
-        /// </summary>
-        public string RelatedCouplet2Verse1 { get; set; }
-
-        /// <summary>
-        /// is main part
-        /// </summary>
-        public bool RelatedCouplet2Verse1IsMainPart { get; set; }
-
-        /// <summary>
-        /// related couplet 2 verse 2
-        /// </summary>
-        public string RelatedCouplet2Verse2 { get; set; }
-
-        /// <summary>
-        /// is main part
-        /// </summary>
-        public bool RelatedCouplet2Verse2IsMainPart { get; set; }
-
-        /// <summary>
-        /// related couplet 2 index
-        /// </summary>
-        public int? RelatedCouplet2Index { get; set; }
-
-        /// <summary>
-        /// related couplet 2 verse 3
-        /// </summary>
-        public string RelatedCouplet2Verse3 { get; set; }
-
-        /// <summary>
-        /// is main part
-        /// </summary>
-        public bool RelatedCouplet2Verse3IsMainPart { get; set; }
-
-        /// <summary>
-        /// related couplet 2 verse 4
-        /// </summary>
-        public string RelatedCouplet2Verse4 { get; set; }
-
-        /// <summary>
-        /// is main part
-        /// </summary>
-        public bool RelatedCouplet2Verse4IsMainPart { get; set; }
-
-        /// <summary>
-        /// related couplet 2 - verse 3/4 index
-        /// </summary>
-        public int? RelatedCouplet2Verse34Index { get; set; }
+        public int? RelatedCoupletIndex { get; set; }
 
         /// <summary>
         /// description
         /// </summary>
-        public string Description { get; set; }
+        public string Note { get; set; }
 
         /// <summary>
         /// published

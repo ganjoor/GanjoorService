@@ -8767,6 +8767,11 @@
             if the related poet poem has multiple poems related to this poem, which one is chosen to be shown at main poems pages?
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.SortOrder">
+            <summary>
+            this sort order can be used to pin a record on top
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.CachedRelatedPoemPoetDeathYearInLHijri">
             <summary>
             related poem peot death date in hijri (used for sorting)
@@ -8797,177 +8802,57 @@
             full url
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Couplet1PoetName">
-            <summary>
-            couplet 1 poet name
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Couplet1Verse1">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.CoupletVerse1">
             <summary>
             couplet 1 verse 1
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Couplet1Verse1IsMainPart">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.CoupletVerse1ShouldBeEmphasized">
             <summary>
             is main part
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Couplet1Verse2">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.CoupletVerse2">
             <summary>
             couplet 1 verse 2
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Couplet1Verse2IsMainPart">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.CoupletVerse2ShouldBeEmphasized">
             <summary>
             is main part
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Couplet1Index">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.CoupletIndex">
             <summary>
             couplet 1 index
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet1PoetName">
-            <summary>
-            related couplet 1 poet name
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet1Verse1">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCoupletVerse1">
             <summary>
             related couplet 1 verse 1
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet1Verse1IsMainPart">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized">
             <summary>
             is main part
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet1Verse2">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCoupletVerse2">
             <summary>
             related couplet 1 verse 2
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet1Verse2IsMainPart">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized">
             <summary>
             is main part
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet1Index">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCoupletIndex">
             <summary>
             related couplet 1 index
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet1Verse3">
-            <summary>
-            related couplet 1 verse 3
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet1Verse3IsMainPart">
-            <summary>
-            is main part
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet1Verse4">
-            <summary>
-            related couplet 1 verse 4
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet1Verse4IsMainPart">
-            <summary>
-            is main part
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet1Verse34Index">
-            <summary>
-            related couplet 1 - verse 3/4 index
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Couplet2PoetName">
-            <summary>
-            couplet 2 poet name
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Couplet2Verse1">
-            <summary>
-            couplet 2 verse 1
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Couplet2Verse1IsMainPart">
-            <summary>
-            is main part
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Couplet2Verse2">
-            <summary>
-            couplet 2 verse 2
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Couplet2Verse2IsMainPart">
-            <summary>
-            is main part
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Couplet2Index">
-            <summary>
-            couplet 2 index
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet2PoetName">
-            <summary>
-            related couplet 2 poet name
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet2Verse1">
-            <summary>
-            related couplet 2 verse 1
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet2Verse1IsMainPart">
-            <summary>
-            is main part
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet2Verse2">
-            <summary>
-            related couplet 2 verse 2
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet2Verse2IsMainPart">
-            <summary>
-            is main part
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet2Index">
-            <summary>
-            related couplet 2 index
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet2Verse3">
-            <summary>
-            related couplet 2 verse 3
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet2Verse3IsMainPart">
-            <summary>
-            is main part
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet2Verse4">
-            <summary>
-            related couplet 2 verse 4
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet2Verse4IsMainPart">
-            <summary>
-            is main part
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.RelatedCouplet2Verse34Index">
-            <summary>
-            related couplet 2 - verse 3/4 index
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Description">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorQuotedPoem.Note">
             <summary>
             description
             </summary>
