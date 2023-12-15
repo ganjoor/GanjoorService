@@ -3736,6 +3736,65 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// insert quoted
+        /// </summary>
+        /// <param name="quoted"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("quoted")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> InsertGanjoorQuotedPoemAsync([FromBody] GanjoorQuotedPoem quoted)
+        {
+            RServiceResult<GanjoorQuotedPoem> res =
+                await _ganjoorService.InsertGanjoorQuotedPoemAsync(quoted);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// update quoted
+        /// </summary>
+        /// <param name="quoted"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("quoted")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> UpdateGanjoorQuotedPoemsAsync([FromBody] GanjoorQuotedPoem quoted)
+        {
+            RServiceResult<bool> res =
+                await _ganjoorService.UpdateGanjoorQuotedPoemsAsync(quoted);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// delete quoted
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("quoted")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeleteGanjoorQuotedPoemByIdAsync(Guid id)
+        {
+            RServiceResult<bool> res =
+                await _ganjoorService.DeleteGanjoorQuotedPoemByIdAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+
+
 
         /// <summary>
         /// readonly mode
