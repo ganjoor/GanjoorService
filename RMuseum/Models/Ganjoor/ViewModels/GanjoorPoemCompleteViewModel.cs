@@ -141,5 +141,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// section index
         /// </summary>
         public int? SectionIndex { get; set; }
+
+        /// <summary>
+        /// poem is claimed by multiple poets
+        /// </summary>
+        public bool ClaimedByMultiplePoets { get; set; }
     }
 }

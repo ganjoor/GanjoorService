@@ -1902,7 +1902,8 @@ namespace RMuseum.Services.Implementation
                     Comments = poemComments,
                     Sections = poemSections,
                     GeoDateTags = geoDateTags,
-                    Top6QuotedPoems = quoteds
+                    Top6QuotedPoems = quoteds,
+                    ClaimedByMultiplePoets = poem.ClaimedByMultiplePoets,
                 };
 
                 if (AggressiveCacheEnabled)
@@ -2536,7 +2537,8 @@ namespace RMuseum.Services.Implementation
                                 Id = section.Poet.Id,
                             }
                         },
-                        SectionIndex = section.Index
+                        SectionIndex = section.Index,
+                        ClaimedByMultiplePoets = section.Poem.ClaimedByMultiplePoets,
 
                     }
                 ).AsNoTracking();
@@ -2623,7 +2625,8 @@ namespace RMuseum.Services.Implementation
                                 Id = section.Poet.Id,
                             }
                         },
-                        SectionIndex = section.Index
+                        SectionIndex = section.Index,
+                        ClaimedByMultiplePoets = section.Poem.ClaimedByMultiplePoets,
 
                     }
                 ).AsNoTracking();
@@ -2752,6 +2755,7 @@ namespace RMuseum.Services.Implementation
                                 Id = poem.Cat.Poet.Id,
                             }
                         },
+                        ClaimedByMultiplePoets = poem.ClaimedByMultiplePoets,
                     }
                 ).AsNoTracking();
 

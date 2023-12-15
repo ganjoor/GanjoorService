@@ -113,5 +113,10 @@ namespace RMuseum.Models.Ganjoor
         /// poem summary
         /// </summary>
         public string PoemSummary { get; set; }
+
+        /// <summary>
+        /// poem is claimed by multiple poets
+        /// </summary>
+        public bool ClaimedByMultiplePoets { get; set; }
     }
 }

@@ -3653,7 +3653,7 @@ namespace RMuseum.Controllers
         /// <summary>
         /// get quoted poems for a poem
         /// </summary>
-        /// <param name="poemId"></param>
+        /// <param name="id"></param>
         /// <param name="skip"></param>
         /// <param name="itemsCount"></param>
         /// <returns></returns>
