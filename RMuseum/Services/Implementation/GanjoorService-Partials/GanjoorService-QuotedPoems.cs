@@ -44,6 +44,18 @@ namespace RMuseum.Services.Implementation
             {
                 _context.Add(quoted);
                 await _context.SaveChangesAsync();
+
+                if(quoted.ClaimedByBothPoets)
+                {
+                    var poem = await _context.GanjoorPoems.Where(p => p.Id == quoted.PoemId).SingleAsync();
+                    if(poem.ClaimedByMultiplePoets == false)
+                    {
+                        poem.ClaimedByMultiplePoets = true;
+                        _context.Update(poem);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
                 return new RServiceResult<GanjoorQuotedPoem>(quoted);
 
             }
@@ -94,6 +106,16 @@ namespace RMuseum.Services.Implementation
 
                 _context.Update(dbModel);   
                 await _context.SaveChangesAsync();
+
+                var poem = await _context.GanjoorPoems.Where(p => p.Id == quoted.PoemId).SingleAsync();
+                bool claimedByMultiple = await _context.GanjoorQuotedPoems.AsNoTracking().Where(q => q.PoemId == quoted.PoemId && q.ClaimedByBothPoets == true).AnyAsync();
+                if(poem.ClaimedByMultiplePoets != claimedByMultiple)
+                {
+                    poem.ClaimedByMultiplePoets = claimedByMultiple;
+                    _context.Update(poem);
+                    await _context.SaveChangesAsync();
+                }
+
                 return new RServiceResult<bool>(true);
 
             }
@@ -113,8 +135,19 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var q = await _context.GanjoorQuotedPoems.Where(q => q.Id == id).SingleAsync();
+                var poemId = q.PoemId;
                 _context.Remove(q);
                 await _context.SaveChangesAsync();
+
+                var poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).SingleAsync();
+                bool claimedByMultiple = await _context.GanjoorQuotedPoems.AsNoTracking().Where(q => q.PoemId == poemId && q.ClaimedByBothPoets == true).AnyAsync();
+                if (poem.ClaimedByMultiplePoets != claimedByMultiple)
+                {
+                    poem.ClaimedByMultiplePoets = claimedByMultiple;
+                    _context.Update(poem);
+                    await _context.SaveChangesAsync();
+                }
+
                 return new RServiceResult<bool>(true);
 
             }
