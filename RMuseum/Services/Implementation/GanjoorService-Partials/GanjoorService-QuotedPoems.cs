@@ -22,7 +22,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="skip"></param>
         /// <param name="itemsCount"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsAsync(int poemId, int skip, int itemsCount)
+        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForPoemAsync(int poemId, int skip, int itemsCount)
         {
             try
             {
@@ -70,6 +70,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorQuotedPoem[]>(null, exp.ToString());
             }
         }
+
 
         /// <summary>
         /// extracting quoted poems

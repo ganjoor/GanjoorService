@@ -2013,7 +2013,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorQuotedPoemsAsync(System.Int32,System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32)">
             <summary>
             get quoted poems for a poem
             </summary>
@@ -15462,7 +15462,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorQuotedPoemsAsync(System.Int32,System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32)">
             <summary>
             get quoted poems for a poem
             </summary>
@@ -17455,7 +17455,7 @@
             <param name="metre"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetGanjoorQuotedPoemsAsync(System.Int32,System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32)">
             <summary>
             get quoted poems for a poem
             </summary>
