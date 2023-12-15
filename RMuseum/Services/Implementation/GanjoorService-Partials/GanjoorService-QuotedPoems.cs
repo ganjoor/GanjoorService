@@ -29,7 +29,7 @@ namespace RMuseum.Services.Implementation
                 var source =
                 _context.GanjoorQuotedPoems
                          .AsNoTracking()
-                        .Where(r => r.PoemId == poemId)
+                        .Where(r => r.PoemId == poemId && r.ChosenForMainList == true)
                         .OrderBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri);
 
                 if (itemsCount <= 0)
