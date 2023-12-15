@@ -3662,10 +3662,30 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetGanjoorQuotedPoemsAsync(int poemId, int skip, int itemsCount)
+        public async Task<IActionResult> GetGanjoorQuotedPoemsAsync(int id, int skip, int itemsCount)
         {
             RServiceResult<GanjoorQuotedPoem[]> res =
-                await _ganjoorService.GetGanjoorQuotedPoemsAsync(poemId, skip, itemsCount);
+                await _ganjoorService.GetGanjoorQuotedPoemsAsync(id, skip, itemsCount);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// two poems quoted records
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="relatedId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poem/{id}/quoteds/{relatedId}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetGanjoorQuotedPoemsForRelatedAsync(int id, int relatedId)
+        {
+            RServiceResult<GanjoorQuotedPoem[]> res =
+                await _ganjoorService.GetGanjoorQuotedPoemsForRelatedAsync(id, relatedId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

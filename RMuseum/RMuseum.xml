@@ -2022,6 +2022,14 @@
             <param name="itemsCount"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorQuotedPoemsForRelatedAsync(System.Int32,System.Int32)">
+            <summary>
+            two poems quoted records
+            </summary>
+            <param name="id"></param>
+            <param name="relatedId"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
