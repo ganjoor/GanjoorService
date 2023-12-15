@@ -16,20 +16,172 @@ namespace RMuseum.Services.Implementation
     public partial class GanjoorService : IGanjoorService
     {
         /// <summary>
+        /// get quoted by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorQuotedPoem>> GetGanjoorQuotedPoemByIdAsync(Guid id)
+        {
+            try
+            {
+                return new RServiceResult<GanjoorQuotedPoem>(await _context.GanjoorQuotedPoems.AsNoTracking().Where(q => q.Id == id).SingleAsync());
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorQuotedPoem>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// insert quoted poem
+        /// </summary>
+        /// <param name="quoted"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorQuotedPoem>> InsertGanjoorQuotedPoemAsync(GanjoorQuotedPoem quoted)
+        {
+            try
+            {
+                _context.Add(quoted);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<GanjoorQuotedPoem>(quoted);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorQuotedPoem>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// update quoted poem
+        /// </summary>
+        /// <param name="quoted"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> UpdateGanjoorQuotedPoemsAsync(GanjoorQuotedPoem quoted)
+        {
+            try
+            {
+                var dbModel = await _context.GanjoorQuotedPoems.Where(q => q.Id == quoted.Id).SingleAsync();
+                dbModel.PoemId = quoted.PoemId;
+                dbModel.PoetId = quoted.PoetId;
+                dbModel.RelatedPoetId = quoted.RelatedPoetId;
+                dbModel.RelatedPoemId = quoted.RelatedPoemId;
+                dbModel.IsPriorToRelated = quoted.IsPriorToRelated;
+                dbModel.ChosenForMainList = quoted.ChosenForMainList;
+                dbModel.CachedRelatedPoemPoetDeathYearInLHijri = quoted.CachedRelatedPoemPoetDeathYearInLHijri;
+                dbModel.CachedRelatedPoemPoetName = quoted.CachedRelatedPoemPoetName;
+                dbModel.CachedRelatedPoemPoetUrl = quoted.CachedRelatedPoemPoetUrl;
+                dbModel.CachedRelatedPoemPoetImage = quoted.CachedRelatedPoemPoetImage;
+                dbModel.CachedRelatedPoemFullTitle = quoted.CachedRelatedPoemFullTitle;
+                dbModel.CachedRelatedPoemFullUrl = quoted.CachedRelatedPoemFullUrl;
+                dbModel.SortOrder = quoted.SortOrder;
+                dbModel.Note = quoted.Note;
+                dbModel.Published = quoted.Published;
+                dbModel.RelatedCoupletVerse1 = quoted.RelatedCoupletVerse1;
+                dbModel.RelatedCoupletVerse1ShouldBeEmphasized = quoted.RelatedCoupletVerse1ShouldBeEmphasized;
+                dbModel.RelatedCoupletVerse2 = quoted.RelatedCoupletVerse2;
+                dbModel.RelatedCoupletVerse2ShouldBeEmphasized = quoted.RelatedCoupletVerse2ShouldBeEmphasized;
+                dbModel.RelatedCoupletIndex = quoted.RelatedCoupletIndex;
+                dbModel.CoupletVerse1 = quoted.CoupletVerse1;
+                dbModel.CoupletVerse1ShouldBeEmphasized = quoted.CoupletVerse1ShouldBeEmphasized;
+                dbModel.CoupletVerse2 = quoted.CoupletVerse2;
+                dbModel.CoupletVerse2ShouldBeEmphasized = quoted.CoupletVerse2ShouldBeEmphasized;
+                dbModel.CoupletIndex = quoted.CoupletIndex;
+                dbModel.ClaimedByBothPoets = quoted.ClaimedByBothPoets;
+                dbModel.IndirectQuotation = quoted.IndirectQuotation;
+                dbModel.SamePoemsQuotedCount = quoted.SamePoemsQuotedCount;
+
+                _context.Update(dbModel);   
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// delete quoted by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>>  DeleteGanjoorQuotedPoemByIdAsync(Guid id)
+        {
+            try
+            {
+                var q = await _context.GanjoorQuotedPoems.Where(q => q.Id == id).SingleAsync();
+                _context.Remove(q);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get quoted poems
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="relatedPoetId"></param>
+        /// <param name="chosen"></param>
+        /// <param name="published"></param>
+        /// <param name="claimed"></param>
+        /// <param name="indirect"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsAsync(int? poetId, int? relatedPoetId, bool? chosen, bool? published, bool? claimed, bool? indirect)
+        {
+            try
+            {
+                return new RServiceResult<GanjoorQuotedPoem[]>(await
+                _context.GanjoorQuotedPoems
+                         .AsNoTracking()
+                        .Where(r =>
+                        (poetId == null || r.PoetId == poetId)
+                        &&
+                        (chosen == null || r.ChosenForMainList == chosen)
+                        &&
+                        (relatedPoetId == null || r.RelatedPoetId == relatedPoetId)
+                        &&
+                        (published == null || r.Published == published)
+                        &&
+                        (claimed == null || r.ClaimedByBothPoets == claimed)
+                        &&
+                        (indirect == null || r.IndirectQuotation == indirect)
+                        )
+                        .OrderBy(r => r.PoetId).ThenBy(r => r.PoemId).ThenBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri)
+                        .ToArrayAsync()
+                    );
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorQuotedPoem[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// get quoted poems for a poem
         /// </summary>
         /// <param name="poemId"></param>
         /// <param name="skip"></param>
         /// <param name="itemsCount"></param>
+        /// <param name="onlyClaimedByBothPoets"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsAsync(int poemId, int skip, int itemsCount)
+        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForPoemAsync(int poemId, int skip, int itemsCount, bool onlyClaimedByBothPoets)
         {
             try
             {
                 var source =
                 _context.GanjoorQuotedPoems
                          .AsNoTracking()
-                        .Where(r => r.PoemId == poemId && r.ChosenForMainList == true)
+                        .Where(r => r.PoemId == poemId && r.ChosenForMainList == true
+                                && (!onlyClaimedByBothPoets || r.ClaimedByBothPoets == true))
                         .OrderBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri);
 
                 if (itemsCount <= 0)
@@ -70,6 +222,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorQuotedPoem[]>(null, exp.ToString());
             }
         }
+
 
         /// <summary>
         /// extracting quoted poems

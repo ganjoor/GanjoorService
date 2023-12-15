@@ -43,7 +43,7 @@ namespace RMuseum.Controllers
             var cacheKey = $"ganjoor/poets";
             if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetViewModel[] poets))
             {
-                RServiceResult<GanjoorPoetViewModel[]>  res =
+                RServiceResult<GanjoorPoetViewModel[]> res =
                 await _ganjoorService.GetPoets(true, false);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
@@ -51,7 +51,7 @@ namespace RMuseum.Controllers
                 poets = res.Result;
                 if (AggressiveCacheEnabled)
                     _memoryCache.Set(cacheKey, poets);
-                
+
             }
             return Ok(poets);
         }
@@ -174,7 +174,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> ModifyPoet(int id, [FromBody]GanjoorPoetViewModel poet)
+        public async Task<IActionResult> ModifyPoet(int id, [FromBody] GanjoorPoetViewModel poet)
         {
 
             if (!string.IsNullOrEmpty(poet.ImageUrl))
@@ -317,7 +317,7 @@ namespace RMuseum.Controllers
 
                 lastModified = img.Result.LastModified;
 
-                
+
 
                 RServiceResult<string> imgPath = _imageFileService.GetImagePath(img.Result);
                 if (!string.IsNullOrEmpty(imgPath.ExceptionString))
@@ -377,7 +377,7 @@ namespace RMuseum.Controllers
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
 
-                if(res.Result)
+                if (res.Result)
                 {
                     var cacheKey = $"poet/image/{poet.Result.Cat.UrlSlug}.png";
                     if (_memoryCache.TryGetValue(cacheKey, out string imagePath))
@@ -419,7 +419,7 @@ namespace RMuseum.Controllers
                 if (res.Result == null)
                     return NotFound();
                 cat = res.Result;
-                if(AggressiveCacheEnabled)
+                if (AggressiveCacheEnabled)
                 {
                     _memoryCache.Set(cacheKey, cat);
                 }
@@ -456,7 +456,7 @@ namespace RMuseum.Controllers
                     _memoryCache.Set(cacheKey, cat);
             }
 
-            
+
             return Ok(cat);
         }
 
@@ -477,7 +477,7 @@ namespace RMuseum.Controllers
             try
             {
                 Guid? imageId = null;
-                if(Request.Form.Files.Count > 0)
+                if (Request.Form.Files.Count > 0)
                 {
                     IFormFile file = Request.Form.Files[0];
                     RServiceResult<RImage> image = await _imageFileService.Add(file, null, file.FileName, Path.Combine(Configuration.GetSection("PictureFileService")["StoragePath"], "CategoryImages"));
@@ -495,12 +495,12 @@ namespace RMuseum.Controllers
 
                 var res = await _ganjoorService.SetCategoryExtraInfo(id, Request.Form["bookName"], imageId, bool.Parse(Request.Form["sumUpSubsGeoLocations"]), Request.Form["mapName"]);
 
-                if(!string.IsNullOrEmpty(res.ExceptionString))
+                if (!string.IsNullOrEmpty(res.ExceptionString))
                 {
                     return BadRequest(res.ExceptionString);
                 }
 
-                if(res.Result == null)
+                if (res.Result == null)
                 {
                     return NotFound();
                 }
@@ -527,7 +527,7 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> GenerateMissingBookCoversAsync()
         {
             var res = await _ganjoorService.GenerateMissingBookCoversAsync();
-            if(!string.IsNullOrEmpty(res.ExceptionString))
+            if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok();
         }
@@ -545,7 +545,7 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> GetBooksAsync()
         {
             var books = await _ganjoorService.GetBooksAsync();
-            if(!string.IsNullOrEmpty(books.ExceptionString))
+            if (!string.IsNullOrEmpty(books.ExceptionString))
             {
                 return BadRequest(books.ExceptionString);
             }
@@ -564,7 +564,7 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> BatchRenameCatPoemTitles(int id, [FromBody]GanjoorBatchNamingModel model)
+        public async Task<IActionResult> BatchRenameCatPoemTitles(int id, [FromBody] GanjoorBatchNamingModel model)
         {
             Guid userId =
                new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
@@ -755,7 +755,7 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> GenerateTableOfContents(int id, GanjoorTOC options = GanjoorTOC.Analyse)
         {
             var res = await _ganjoorService.GenerateTableOfContents(id, options);
-            if(!string.IsNullOrEmpty(res.ExceptionString))
+            if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
         }
@@ -860,7 +860,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> ModifyPage(int id, [FromBody]GanjoorModifyPageViewModel page)
+        public async Task<IActionResult> ModifyPage(int id, [FromBody] GanjoorModifyPageViewModel page)
         {
             Guid userId =
                new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
@@ -937,7 +937,7 @@ namespace RMuseum.Controllers
                 return BadRequest(res.ExceptionString);
             return Ok();
         }
-              
+
 
         /// <summary>
         /// older versions of a page (modifications history except for current version)
@@ -957,7 +957,7 @@ namespace RMuseum.Controllers
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
         }
-        
+
         /// <summary>
         /// get old version of page
         /// </summary>
@@ -1269,7 +1269,7 @@ namespace RMuseum.Controllers
             var res = await _ganjoorService.DeletePoemSectionByPoemIdAndIndexAsync(poemId, sectionIndex, convertVerses);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
-            if(res.Result == false)
+            if (res.Result == false)
                 return NotFound();
             return Ok();
         }
@@ -1434,7 +1434,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCorrectionViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetPoemEffectiveCorrections(int id,[FromQuery] PagingParameterModel paging)
+        public async Task<IActionResult> GetPoemEffectiveCorrections(int id, [FromQuery] PagingParameterModel paging)
         {
             var res =
                 await _ganjoorService.GetPoemEffectiveCorrections(id, paging);
@@ -1972,7 +1972,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-        public async Task<IActionResult> PublishAwaitingComment([FromBody]int id)
+        public async Task<IActionResult> PublishAwaitingComment([FromBody] int id)
         {
             if (ReadOnlyMode)
                 return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
@@ -2181,7 +2181,7 @@ namespace RMuseum.Controllers
             {
                 return BadRequest(res.ExceptionString);
             }
-            if(!res.Result)
+            if (!res.Result)
             {
                 return NotFound();
             }
@@ -2377,7 +2377,7 @@ namespace RMuseum.Controllers
                 }
                 );
         }
-        
+
         /// <summary>
         /// Get Similar Poems accroding to prosody and rhyme informations
         /// </summary>
@@ -2396,9 +2396,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCompleteViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
-        public async Task<IActionResult> GetSimilarPoems([FromQuery]PagingParameterModel paging, string metre, string rhyme, int poetId = 0, int catId = 0, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown)
+        public async Task<IActionResult> GetSimilarPoems([FromQuery] PagingParameterModel paging, string metre, string rhyme, int poetId = 0, int catId = 0, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown)
         {
-            var pagedResult = await _ganjoorService.GetSimilarPoems(paging, metre, rhyme, poetId == 0 ?  null : poetId, catId == 0 ? null : catId, language, format);
+            var pagedResult = await _ganjoorService.GetSimilarPoems(paging, metre, rhyme, poetId == 0 ? null : poetId, catId == 0 ? null : catId, language, format);
             if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
                 return BadRequest(pagedResult.ExceptionString);
 
@@ -2450,7 +2450,7 @@ namespace RMuseum.Controllers
 
         public async Task<IActionResult> Search([FromQuery] PagingParameterModel paging, string term, int poetId = 0, int catId = 0)
         {
-            var pagedResult = await _ganjoorService.Search(paging, term, poetId == 0 ? (int?)null : poetId, catId == 0 ? (int?)null: catId);
+            var pagedResult = await _ganjoorService.Search(paging, term, poetId == 0 ? (int?)null : poetId, catId == 0 ? (int?)null : catId);
             if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
                 return BadRequest(pagedResult.ExceptionString);
 
@@ -3656,16 +3656,17 @@ namespace RMuseum.Controllers
         /// <param name="id"></param>
         /// <param name="skip"></param>
         /// <param name="itemsCount"></param>
+        /// <param name="onlyClaimedByBothPoets"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("poem/{id}/quoteds")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetGanjoorQuotedPoemsAsync(int id, int skip, int itemsCount)
+        public async Task<IActionResult> GetGanjoorQuotedPoemsForPoemAsync(int id, int skip, int itemsCount, bool onlyClaimedByBothPoets = false)
         {
             RServiceResult<GanjoorQuotedPoem[]> res =
-                await _ganjoorService.GetGanjoorQuotedPoemsAsync(id, skip, itemsCount);
+                await _ganjoorService.GetGanjoorQuotedPoemsForPoemAsync(id, skip, itemsCount, onlyClaimedByBothPoets);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -3689,6 +3690,107 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// get quoted poems
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="relatedPoetId"></param>
+        /// <param name="chosen"></param>
+        /// <param name="published"></param>
+        /// <param name="claimed"></param>
+        /// <param name="indirect"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("quoted")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetGanjoorQuotedPoemsAsync(int? poetId, int? relatedPoetId, bool? chosen, bool? published, bool? claimed, bool? indirect)
+        {
+            RServiceResult<GanjoorQuotedPoem[]> res =
+                await _ganjoorService.GetGanjoorQuotedPoemsAsync(poetId, relatedPoetId, chosen, published, claimed, indirect);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+
+        /// <summary>
+        /// get quoted by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("quoted/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetGanjoorQuotedPoemByIdAsync(Guid id)
+        {
+            RServiceResult<GanjoorQuotedPoem> res =
+                await _ganjoorService.GetGanjoorQuotedPoemByIdAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// insert quoted
+        /// </summary>
+        /// <param name="quoted"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("quoted")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> InsertGanjoorQuotedPoemAsync([FromBody] GanjoorQuotedPoem quoted)
+        {
+            RServiceResult<GanjoorQuotedPoem> res =
+                await _ganjoorService.InsertGanjoorQuotedPoemAsync(quoted);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// update quoted
+        /// </summary>
+        /// <param name="quoted"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("quoted")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> UpdateGanjoorQuotedPoemsAsync([FromBody] GanjoorQuotedPoem quoted)
+        {
+            RServiceResult<bool> res =
+                await _ganjoorService.UpdateGanjoorQuotedPoemsAsync(quoted);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// delete quoted
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("quoted")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> DeleteGanjoorQuotedPoemByIdAsync(Guid id)
+        {
+            RServiceResult<bool> res =
+                await _ganjoorService.DeleteGanjoorQuotedPoemByIdAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
         }
 
 
@@ -3771,10 +3873,10 @@ namespace RMuseum.Controllers
         /// <param name="memoryCache"></param>
         /// <param name="configuration"></param>
         public GanjoorController(
-            IGanjoorService ganjoorService, 
-            IAppUserService appUserService, 
-            IHttpContextAccessor httpContextAccessor, 
-            IImageFileService imageFileService, 
+            IGanjoorService ganjoorService,
+            IAppUserService appUserService,
+            IHttpContextAccessor httpContextAccessor,
+            IImageFileService imageFileService,
             IMemoryCache memoryCache,
             IConfiguration configuration
             )

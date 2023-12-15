@@ -1223,8 +1223,9 @@ namespace RMuseum.Services
         /// <param name="poemId"></param>
         /// <param name="skip"></param>
         /// <param name="itemsCount"></param>
+        /// <param name="onlyClaimedByBothPoets"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsAsync(int poemId, int skip, int itemsCount);
+        Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForPoemAsync(int poemId, int skip, int itemsCount, bool onlyClaimedByBothPoets);
 
         /// <summary>
         /// two poems quoted records
@@ -1233,5 +1234,45 @@ namespace RMuseum.Services
         /// <param name="relatedPoemId"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForRelatedAsync(int poemId, int relatedPoemId);
+
+        /// <summary>
+        /// get quoted poems
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="relatedPoetId"></param>
+        /// <param name="chosen"></param>
+        /// <param name="published"></param>
+        /// <param name="claimed"></param>
+        /// <param name="indirect"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsAsync(int? poetId, int? relatedPoetId, bool? chosen, bool? published, bool? claimed, bool? indirect);
+
+        /// <summary>
+        /// get quoted by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorQuotedPoem>> GetGanjoorQuotedPoemByIdAsync(Guid id);
+
+        /// <summary>
+        /// insert quoted poem
+        /// </summary>
+        /// <param name="quoted"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorQuotedPoem>> InsertGanjoorQuotedPoemAsync(GanjoorQuotedPoem quoted);
+
+        /// <summary>
+        /// update quoted poem
+        /// </summary>
+        /// <param name="quoted"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> UpdateGanjoorQuotedPoemsAsync(GanjoorQuotedPoem quoted);
+
+        /// <summary>
+        /// delete quoted by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteGanjoorQuotedPoemByIdAsync(Guid id);
     }
 }

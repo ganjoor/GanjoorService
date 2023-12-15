@@ -1867,7 +1867,7 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<GanjoorPoemCompleteViewModel>(null, tagsRes.ExceptionString);
                 PoemGeoDateTag[] geoDateTags = tagsRes.Result;
 
-                var quotedRes = await GetGanjoorQuotedPoemsAsync(id, 0, 6);
+                var quotedRes = await GetGanjoorQuotedPoemsForPoemAsync(id, 0, 6, false);
                 if (!string.IsNullOrEmpty(quotedRes.ExceptionString))
                     return new RServiceResult<GanjoorPoemCompleteViewModel>(null, quotedRes.ExceptionString);
                 GanjoorQuotedPoem[] quoteds = quotedRes.Result;
