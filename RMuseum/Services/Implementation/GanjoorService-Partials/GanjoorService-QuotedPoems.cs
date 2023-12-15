@@ -105,10 +105,10 @@ namespace RMuseum.Services.Implementation
                     {
                         PoemId = poem1.Id,
                         RelatedPoemId = poem2.Id,
-                        IsPriorToRelated = true,
+                        IsPriorToRelated = false,
                         ChosenForMainList = false == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.CachedRelatedPoemPoetUrl == poem2Cat.FullUrl).AnyAsync(),
                         CachedRelatedPoemPoetDeathYearInLHijri = poem2Poet.DeathYearInLHijri,
-                        CachedRelatedPoemPoetName = poem2Poet.Name,
+                        CachedRelatedPoemPoetName = poem2Poet.Nickname,
                         CachedRelatedPoemPoetUrl = poem2Cat.FullUrl,
                         CachedRelatedPoemPoetImage =  $"/api/ganjoor/poet/image{poem2Cat.FullUrl}.gif",
                         CachedRelatedPoemFullTitle = poem2.FullTitle,
@@ -134,6 +134,9 @@ namespace RMuseum.Services.Implementation
                             int? b = null;
                             switch(bnumstring)
                             {
+                                case "آخر":
+                                    b = 1 + await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem1.Id).MaxAsync(v => v.CoupletIndex);
+                                    break;
                                 case "آغازین":
                                 case "اول":
                                     b = 1;
@@ -161,6 +164,9 @@ namespace RMuseum.Services.Implementation
                                     break;
                                 case "نهم":
                                     b = 9;
+                                    break;
+                                case "سی و پنجم":
+                                    b = 35;
                                     break;
                             }
                             if(b != null)
@@ -204,6 +210,9 @@ namespace RMuseum.Services.Implementation
                             int? b = null;
                             switch (bnumstring)
                             {
+                                case "آخر":
+                                    b = 1 + await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem1.Id).MaxAsync(v => v.CoupletIndex);
+                                    break;
                                 case "آغازین":
                                 case "اول":
                                     b = 1;
@@ -231,6 +240,9 @@ namespace RMuseum.Services.Implementation
                                     break;
                                 case "نهم":
                                     b = 9;
+                                    break;
+                                case "سی و پنجم":
+                                    b = 35;
                                     break;
                             }
                             if (b != null)
@@ -269,10 +281,10 @@ namespace RMuseum.Services.Implementation
                     {
                         PoemId = poem2.Id,
                         RelatedPoemId = poem1.Id,
-                        IsPriorToRelated = false,
+                        IsPriorToRelated = true,
                         ChosenForMainList = false == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem2.Id && p.CachedRelatedPoemPoetUrl == poem1Cat.FullUrl).AnyAsync(),
                         CachedRelatedPoemPoetDeathYearInLHijri = poem1Poet.DeathYearInLHijri,
-                        CachedRelatedPoemPoetName = poem1Poet.Name,
+                        CachedRelatedPoemPoetName = poem1Poet.Nickname,
                         CachedRelatedPoemPoetUrl = poem1Cat.FullUrl,
                         CachedRelatedPoemPoetImage = $"/api/ganjoor/poet/image{poem1Cat.FullUrl}.gif",
                         CachedRelatedPoemFullTitle = poem1.FullTitle,
@@ -280,21 +292,22 @@ namespace RMuseum.Services.Implementation
                         SortOrder = 1000,
                         Note = "",
                         Published = true,
-                        CoupletVerse1 = relatedPoem.CoupletVerse1,
-                        CoupletVerse1ShouldBeEmphasized = relatedPoem.CoupletVerse1ShouldBeEmphasized,
-                        CoupletVerse2 = relatedPoem.CoupletVerse2,
-                        CoupletVerse2ShouldBeEmphasized = relatedPoem.CoupletVerse2ShouldBeEmphasized,
-                        CoupletIndex = relatedPoem.CoupletIndex,
-                        RelatedCoupletVerse1 = relatedPoem.RelatedCoupletVerse1,
-                        RelatedCoupletVerse1ShouldBeEmphasized = relatedPoem.RelatedCoupletVerse1ShouldBeEmphasized,
-                        RelatedCoupletVerse2 = relatedPoem.RelatedCoupletVerse2,
-                        RelatedCoupletVerse2ShouldBeEmphasized = relatedPoem.RelatedCoupletVerse2ShouldBeEmphasized,
-                        RelatedCoupletIndex = relatedPoem.RelatedCoupletIndex,
+                        RelatedCoupletVerse1 = relatedPoem.CoupletVerse1,
+                        RelatedCoupletVerse1ShouldBeEmphasized = relatedPoem.CoupletVerse1ShouldBeEmphasized,
+                        RelatedCoupletVerse2 = relatedPoem.CoupletVerse2,
+                        RelatedCoupletVerse2ShouldBeEmphasized = relatedPoem.CoupletVerse2ShouldBeEmphasized,
+                        RelatedCoupletIndex = relatedPoem.CoupletIndex,
+                        CoupletVerse1 = relatedPoem.RelatedCoupletVerse1,
+                        CoupletVerse1ShouldBeEmphasized = relatedPoem.RelatedCoupletVerse1ShouldBeEmphasized,
+                        CoupletVerse2 = relatedPoem.RelatedCoupletVerse2,
+                        CoupletVerse2ShouldBeEmphasized = relatedPoem.RelatedCoupletVerse2ShouldBeEmphasized,
+                        CoupletIndex = relatedPoem.RelatedCoupletIndex,
+
                     };
                     context.Add(reverseRelation);
                     await context.SaveChangesAsync();
 
-                    index = dbPage.HtmlText.IndexOf("<li>", index);
+                    index = dbPage.HtmlText.IndexOf("<li>", tagIndex);
                 }
                 return new RServiceResult<bool>(true);
             }
