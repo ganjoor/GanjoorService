@@ -132,5 +132,10 @@ namespace RMuseum.Models.Ganjoor
         /// when a poem contains more than one quoted couplet from another one this should be more than 1
         /// </summary>
         public int SamePoemsQuotedCount { get; set; }
+
+        /// <summary>
+        /// poems (same poem) are claimed by both poets
+        /// </summary>
+        public bool ClaimedByBothPoets { get; set; }
     }
 }
