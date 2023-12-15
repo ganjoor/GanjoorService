@@ -6,6 +6,7 @@ using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
@@ -15,6 +16,76 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+        /// <summary>
+        /// insert quoted poem
+        /// </summary>
+        /// <param name="quoted"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorQuotedPoem>> InsertGanjoorQuotedPoemAsync(GanjoorQuotedPoem quoted)
+        {
+            try
+            {
+                _context.Add(quoted);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<GanjoorQuotedPoem>(quoted);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorQuotedPoem>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// update quoted poem
+        /// </summary>
+        /// <param name="quoted"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> UpdateGanjoorQuotedPoemsAsync(GanjoorQuotedPoem quoted)
+        {
+            try
+            {
+                var dbModel = await _context.GanjoorQuotedPoems.Where(q => q.Id == quoted.Id).SingleAsync();
+                dbModel.PoemId = quoted.PoemId;
+                dbModel.PoetId = quoted.PoetId;
+                dbModel.RelatedPoetId = quoted.RelatedPoetId;
+                dbModel.RelatedPoemId = quoted.RelatedPoemId;
+                dbModel.IsPriorToRelated = quoted.IsPriorToRelated;
+                dbModel.ChosenForMainList = quoted.ChosenForMainList;
+                dbModel.CachedRelatedPoemPoetDeathYearInLHijri = quoted.CachedRelatedPoemPoetDeathYearInLHijri;
+                dbModel.CachedRelatedPoemPoetName = quoted.CachedRelatedPoemPoetName;
+                dbModel.CachedRelatedPoemPoetUrl = quoted.CachedRelatedPoemPoetUrl;
+                dbModel.CachedRelatedPoemPoetImage = quoted.CachedRelatedPoemPoetImage;
+                dbModel.CachedRelatedPoemFullTitle = quoted.CachedRelatedPoemFullTitle;
+                dbModel.CachedRelatedPoemFullUrl = quoted.CachedRelatedPoemFullUrl;
+                dbModel.SortOrder = quoted.SortOrder;
+                dbModel.Note = quoted.Note;
+                dbModel.Published = quoted.Published;
+                dbModel.RelatedCoupletVerse1 = quoted.RelatedCoupletVerse1;
+                dbModel.RelatedCoupletVerse1ShouldBeEmphasized = quoted.RelatedCoupletVerse1ShouldBeEmphasized;
+                dbModel.RelatedCoupletVerse2 = quoted.RelatedCoupletVerse2;
+                dbModel.RelatedCoupletVerse2ShouldBeEmphasized = quoted.RelatedCoupletVerse2ShouldBeEmphasized;
+                dbModel.RelatedCoupletIndex = quoted.RelatedCoupletIndex;
+                dbModel.CoupletVerse1 = quoted.CoupletVerse1;
+                dbModel.CoupletVerse1ShouldBeEmphasized = quoted.CoupletVerse1ShouldBeEmphasized;
+                dbModel.CoupletVerse2 = quoted.CoupletVerse2;
+                dbModel.CoupletVerse2ShouldBeEmphasized = quoted.CoupletVerse2ShouldBeEmphasized;
+                dbModel.CoupletIndex = quoted.CoupletIndex;
+                dbModel.ClaimedByBothPoets = quoted.ClaimedByBothPoets;
+                dbModel.IndirectQuotation = quoted.IndirectQuotation;
+                dbModel.SamePoemsQuotedCount = quoted.SamePoemsQuotedCount;
+
+                _context.Update(dbModel);   
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
         /// <summary>
         /// get quoted poems
         /// </summary>
@@ -32,7 +103,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorQuotedPoem[]>(await
                 _context.GanjoorQuotedPoems
                          .AsNoTracking()
-                        .Where(r => 
+                        .Where(r =>
                         (poetId == null || r.PoetId == poetId)
                         &&
                         (chosen == null || r.ChosenForMainList == chosen)
@@ -48,7 +119,7 @@ namespace RMuseum.Services.Implementation
                         .OrderBy(r => r.PoetId).ThenBy(r => r.PoemId).ThenBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri)
                         .ToArrayAsync()
                     );
-               
+
             }
             catch (Exception exp)
             {

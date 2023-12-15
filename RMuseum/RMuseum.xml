@@ -17481,6 +17481,20 @@
             <param name="metre"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.InsertGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.GanjoorQuotedPoem)">
+            <summary>
+            insert quoted poem
+            </summary>
+            <param name="quoted"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdateGanjoorQuotedPoemsAsync(RMuseum.Models.Ganjoor.GanjoorQuotedPoem)">
+            <summary>
+            update quoted poem
+            </summary>
+            <param name="quoted"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetGanjoorQuotedPoemsAsync(System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
             <summary>
             get quoted poems
