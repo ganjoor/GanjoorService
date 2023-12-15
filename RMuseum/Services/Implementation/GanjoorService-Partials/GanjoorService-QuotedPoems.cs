@@ -17,6 +17,24 @@ namespace RMuseum.Services.Implementation
     public partial class GanjoorService : IGanjoorService
     {
         /// <summary>
+        /// get quoted by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorQuotedPoem>> GetGanjoorQuotedPoemByIdAsync(Guid id)
+        {
+            try
+            {
+                return new RServiceResult<GanjoorQuotedPoem>(await _context.GanjoorQuotedPoems.AsNoTracking().Where(q => q.Id == id).SingleAsync());
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorQuotedPoem>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// insert quoted poem
         /// </summary>
         /// <param name="quoted"></param>
@@ -76,6 +94,27 @@ namespace RMuseum.Services.Implementation
                 dbModel.SamePoemsQuotedCount = quoted.SamePoemsQuotedCount;
 
                 _context.Update(dbModel);   
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// delete quoted by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>>  DeleteGanjoorQuotedPoemByIdAsync(Guid id)
+        {
+            try
+            {
+                var q = await _context.GanjoorQuotedPoems.Where(q => q.Id == id).SingleAsync();
+                _context.Remove(q);
                 await _context.SaveChangesAsync();
                 return new RServiceResult<bool>(true);
 
