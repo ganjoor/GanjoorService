@@ -175,6 +175,7 @@ namespace RMuseum.Services.Implementation
                         Note = "",
                         Published = true,
                         ClaimedByBothPoets = false,
+                        IndirectQuotation = false,
                         SamePoemsQuotedCount = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.RelatedPoemId == poem2.Id).AnyAsync() ?
                                                 1 + await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.RelatedPoemId == poem2.Id).CountAsync() : 1
                     };
@@ -366,6 +367,7 @@ namespace RMuseum.Services.Implementation
                         CoupletVerse2ShouldBeEmphasized = relatedPoem.RelatedCoupletVerse2ShouldBeEmphasized,
                         CoupletIndex = relatedPoem.RelatedCoupletIndex,
                         ClaimedByBothPoets = false,
+                        IndirectQuotation = false,
                         SamePoemsQuotedCount = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem2.Id && p.RelatedPoemId == poem1.Id).AnyAsync() ?
                                                 1 + await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem2.Id && p.RelatedPoemId == poem1.Id).CountAsync() : 1
 

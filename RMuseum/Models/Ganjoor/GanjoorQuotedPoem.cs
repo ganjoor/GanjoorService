@@ -147,5 +147,10 @@ namespace RMuseum.Models.Ganjoor
         /// related poet id
         /// </summary>
         public int? RelatedPoetId { get; set; }
+
+        /// <summary>
+        /// related indirectly
+        /// </summary>
+        public bool IndirectQuotation { get; set; }
     }
 }
