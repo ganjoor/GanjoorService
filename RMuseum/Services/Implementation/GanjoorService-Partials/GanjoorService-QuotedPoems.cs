@@ -377,6 +377,8 @@ namespace RMuseum.Services.Implementation
                                                 1 + await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.RelatedPoemId == poem2.Id).CountAsync() : 1
                     };
 
+                    
+
                     //first couplet:
                     tagIndex = dbPage.HtmlText.IndexOf("<p>", tagIndex);
                     if (tagIndex != -1 && tagIndex < closeTagIndex)
@@ -539,6 +541,17 @@ namespace RMuseum.Services.Implementation
                     context.Add(relatedPoem);
                     await context.SaveChangesAsync();
 
+                    if (relatedPoem.SamePoemsQuotedCount > 1)
+                    {
+                        var allRelateds = await context.GanjoorQuotedPoems.Where(p => p.Id != relatedPoem.Id && p.PoemId == relatedPoem.PoemId && p.RelatedPoemId == relatedPoem.RelatedPoemId).ToListAsync();
+                        foreach (var rel in allRelateds)
+                        {
+                            rel.SamePoemsQuotedCount = relatedPoem.SamePoemsQuotedCount;
+                        }
+                        context.UpdateRange(allRelateds);
+                        await context.SaveChangesAsync();
+                    }
+
                     var poet1Cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poem1Poet.Id && c.ParentId == null).SingleAsync();
                     GanjoorQuotedPoem reverseRelation = new GanjoorQuotedPoem()
                     {
@@ -575,6 +588,17 @@ namespace RMuseum.Services.Implementation
                     };
                     context.Add(reverseRelation);
                     await context.SaveChangesAsync();
+
+                    if (reverseRelation.SamePoemsQuotedCount > 1)
+                    {
+                        var allRelateds = await context.GanjoorQuotedPoems.Where(p => p.Id != reverseRelation.Id && p.PoemId == reverseRelation.PoemId && p.RelatedPoemId == reverseRelation.RelatedPoemId).ToListAsync();
+                        foreach (var rel in allRelateds)
+                        {
+                            rel.SamePoemsQuotedCount = reverseRelation.SamePoemsQuotedCount;
+                        }
+                        context.UpdateRange(allRelateds);
+                        await context.SaveChangesAsync();
+                    }
 
                     index = dbPage.HtmlText.IndexOf("<li>", tagIndex);
                 }
