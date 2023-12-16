@@ -178,13 +178,17 @@
 
     }
 
-
-    @if (Model.GanjoorQuotedPoem.SamePoemsQuotedCount > 1)
+    @if (Model.GanjoorQuotedPoem.ChosenForMainList && Model.GanjoorQuotedPoem.SamePoemsQuotedCount > 1)
     {
-        <div id=@($"more-quoted-placeholder-{Model.GanjoorQuotedPoem.Id}")></div>
+        <a role="button" class="pagebutton" id="@($"load-more-quoted-button-{Model.GanjoorQuotedPoem.Id}")" onclick="loadMoreQuotedForRelatedPoem(Model.GanjoorQuotedPoem.Id, @Model.GanjoorQuotedPoem.PoemId, @Model.GanjoorQuotedPoem.RelatedPoemId)">مشاهدهٔ @((Model.GanjoorQuotedPoem.SamePoemsQuotedCount - 1).ToPersianNumbers()) نقل قول دیگر در همین شعر<i class="info-buttons autorenew"></i></a>
     }
+    
+
 </div>
 
-
+@if (Model.GanjoorQuotedPoem.ChosenForMainList && Model.GanjoorQuotedPoem.SamePoemsQuotedCount > 1)
+{
+    <div id=@($"more-quoted-placeholder-{Model.GanjoorQuotedPoem.Id}")></div>
+}
 
 
