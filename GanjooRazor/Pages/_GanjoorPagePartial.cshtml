@@ -287,7 +287,7 @@
                             {
                                 @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
                             }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ]).addTo(map);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ]).addTo(map);
 
                                 for (var i = 0; i < poemGeoTags.length; i++) {
                                     var poemGeoTag = poemGeoTags[i];
@@ -620,7 +620,7 @@
                                     {
                                         <div class="related-images-frame" id="qpoems">
                                             <div class="century">
-                                                بازسروده‌ها و وابسته‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('qpoems-section', 'qpoems-collapse-button')"><i class="info-buttons expand_circle_down" id="qpoems-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                                مشق شعر <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('qpoems-section', 'qpoems-collapse-button')"><i class="info-buttons expand_circle_down" id="qpoems-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                             </div>
                                             <div id="qpoems-section">
                                                 @for (int i = 0; i < Math.Min(5, Model.GanjoorPage.Poem.Top6QuotedPoems.Length); i++)
@@ -632,40 +632,37 @@
                                                                 <img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Nickname)">
                                                             </div>
                                                             <div class="simitext">
-                                                                <div class="b-fake">
-                                                                    <div class="m1-fake">
-                                                                        <p>
-                                                                            <a href="#bn@(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletIndex + 1)">
-                                                                                @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse1ShouldBeEmphasized)
-                                                                                {
-                                                                                    <strong>
-                                                                                        @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse1
-                                                                                    </strong>
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse1
-                                                                                }
-                                                                            </a>
-                                                                        </p>
-                                                                    </div>
-                                                                    <div class="m2-fake">
-                                                                        <p>
-                                                                            <a href="#bn@(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletIndex + 1)">
-                                                                                @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse2ShouldBeEmphasized)
-                                                                                {
-                                                                                    <strong>
-                                                                                        @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse2
-                                                                                    </strong>
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse2
-                                                                                }
-                                                                            </a>
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
+                                                                <p>
+                                                                    <a href="#bn@(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletIndex + 1)">
+                                                                        <strong>
+                                                                            بیت @((Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletIndex + 1).ToPersianNumbers())
+                                                                        </strong>
+                                                                    </a>
+                                                                </p>
+                                                                <p>
+
+                                                                    @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse1ShouldBeEmphasized)
+                                                                    {
+                                                                        <strong>@Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse1</strong>
+
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse1
+                                                                    }
+                                                                </p>
+                                                                <p>
+                                                                    @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse2ShouldBeEmphasized)
+                                                                    {
+                                                                        <strong>@Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse2</strong>
+
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse2
+                                                                    }
+                                                                </p>
+
                                                             </div>
                                                         }
                                                         else

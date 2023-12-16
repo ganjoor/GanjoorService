@@ -342,24 +342,24 @@ div.n, div.l {
     text-align: center
 }
 
-.b, .b-fake {
+.b {
     margin: auto;
     margin-bottom: 20px;
     text-align: center;
     clear: both;
 }
 
-.m1, .m1-fake {
+.m1 {
     width: 45%;
     float: right;
 }
 
-.m2, .m2-fake {
+.m2 {
     width: 45%;
     float: left;
 }
 
-    .m1 p, .m1-fake p, .m2 p, .m2-fake p {
+    .m1 p, .m2 p {
         font-family: Vazir;
         font-weight: 300;
         font-size: 0.9em;
@@ -369,11 +369,11 @@ div.n, div.l {
         line-height: 30px;
     }
 
-.m1 p, m1-fake p {
+.m1 p {
     text-align: left;
 }
 
-.m2 p, .m2-fake p {
+.m2 p {
     text-align: right;
 }
 
@@ -381,7 +381,7 @@ div.n, div.l {
     text-align: center;
 }
 
-.m1 p, .m1-fake p, .m2 p, .m2-fake p, .b2 p, .n p{
+.m1 p, .m2 p, .b2 p, .n p {
     color: inherit;
 }
 
@@ -666,7 +666,7 @@ td.c2 {
     margin-left: 0px;
 }
 
-.b, .b-fake, .b1, .n {
+.b, .b1, .n {
     scroll-margin-top: 43px;
 }
 
@@ -682,21 +682,16 @@ td.c2 {
 
 
 @media(max-width: 768px) {
-    .b, .b-fake {
+    .b {
         margin-bottom: 15px;
     }
 
-        .b p, .b-fake p {
+        .b p {
             text-align: center;
             font-size: 1.4em;
         }
 
         .b > div {
-            width: 100%;
-            float: none;
-        }
-
-        .b-fake > div {
             width: 100%;
             float: none;
         }
@@ -932,7 +927,7 @@ ol {
     -moz-osx-font-smoothing: grayscale;
 }
 
-.footer-contents .material-icons{
+.footer-contents .material-icons {
     font-size: 10px;
 }
 
@@ -1993,7 +1988,7 @@ fieldset {
 .charContainer {
     display: flex;
     flex-wrap: wrap;
-    flex-direction:row;
+    flex-direction: row;
 }
 
 .charCell {
@@ -2007,9 +2002,9 @@ fieldset {
     margin: 15px !important;
 }
 
-.inline-small{
-    display:inline;
-    font-size:small;
+.inline-small {
+    display: inline;
+    font-size: small;
     color: gold;
 }
 
@@ -2017,9 +2012,9 @@ mark {
     background: orange;
 }
 
-mark.currentInlineResult {
-    background: yellow;
-}
+    mark.currentInlineResult {
+        background: yellow;
+    }
 
 
 
@@ -2028,7 +2023,7 @@ mark.currentInlineResult {
         background: rgba(0, 0, 0, 0.9);
     }
 
-    *{
+    * {
         color: bisque;
     }
 
@@ -2037,7 +2032,7 @@ mark.currentInlineResult {
         border-width: 1px;
     }
 
-    .circled-number{
+    .circled-number {
         border-color: burlywood;
         border-width: 1px;
     }
@@ -2052,7 +2047,7 @@ mark.currentInlineResult {
         background-blend-mode: multiply;
     }
 
-   
+
 
     .clear-both,
     .tooltip {
@@ -2069,7 +2064,7 @@ mark.currentInlineResult {
         background-color: none;
     }
 
-    .comment-author{
+    .comment-author {
         background-color: brown;
     }
 
@@ -2122,11 +2117,11 @@ mark.currentInlineResult {
         color: bisque;
     }
 
-    #main-navbar{
+    #main-navbar {
         border-color: burlywood;
     }
 
-    .bg-white{
+    .bg-white {
         background-color: darkgray !important;
     }
 
@@ -2146,6 +2141,4 @@ mark.currentInlineResult {
         mark.currentInlineResult {
             background: brown;
         }
-
-
 }
