@@ -381,9 +381,11 @@ namespace RMuseum.Services.Implementation
                     tagIndex = dbPage.HtmlText.IndexOf("<p>", tagIndex);
                     if (tagIndex != -1 && tagIndex < closeTagIndex)
                     {
-                        tagIndex = dbPage.HtmlText.IndexOf("\">", tagIndex);
-                        tagIndex += "\">".Length;
-                        string bnumstring = PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex)).Replace("بیت", "").Trim();
+                        string searchString = dbPage.Id == 39619 ? "بیت" : "\">";
+                        tagIndex = dbPage.HtmlText.IndexOf(searchString, tagIndex);
+                        tagIndex += searchString.Length;
+                        string closeChar = dbPage.Id == 39619 ? ")" : "<";
+                        string bnumstring = PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf(closeChar, tagIndex) - tagIndex)).Replace("بیت", "").Replace(")", "").Replace(":", "").Trim();
                         if (int.TryParse(bnumstring, out int bnum))
                         {
                             relatedPoem.CoupletIndex = -1 + bnum;
@@ -457,9 +459,11 @@ namespace RMuseum.Services.Implementation
                     tagIndex = dbPage.HtmlText.IndexOf("<p>", tagIndex);
                     if (tagIndex != -1 && tagIndex < closeTagIndex)
                     {
-                        tagIndex = dbPage.HtmlText.IndexOf("\">", tagIndex);
-                        tagIndex += "\">".Length;
-                        string bnumstring = PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf("<", tagIndex) - tagIndex)).Replace("بیت", "").Trim();
+                        string searchString = dbPage.Id == 39619 ? "بیت " : "\">";
+                        tagIndex = dbPage.HtmlText.IndexOf(searchString, tagIndex);
+                        tagIndex += searchString.Length;
+                        string closeChar = dbPage.Id == 39619 ? ")" : "<";
+                        string bnumstring = PersianNumbersUtils.ToEnglishNumbers(dbPage.HtmlText.Substring(tagIndex, dbPage.HtmlText.IndexOf(closeChar, tagIndex) - tagIndex)).Replace("بیت", "").Replace(")", "").Replace(":", "").Trim();
                         if (int.TryParse(bnumstring, out int bnum))
                         {
                             relatedPoem.RelatedCoupletIndex = -1 + bnum;
