@@ -331,7 +331,13 @@ namespace RMuseum.Services.Implementation
 
 
                     tagIndex = dbPage.HtmlText.IndexOf("</a>", tagIndex);
-                    tagIndex = dbPage.HtmlText.IndexOf("\"", tagIndex);
+                    var tempTagIndex = dbPage.HtmlText.IndexOf("\"", tagIndex);
+                    if(tempTagIndex < closeTagIndex)
+                    {
+                        tagIndex = tempTagIndex;
+                    }
+                   
+
                     string poem2Url = dbPage.HtmlText.Substring("https://ganjoor.net".Length + tagIndex + 1, dbPage.HtmlText.IndexOf("\"", tagIndex + 1) - tagIndex - 1 - 1 /*remove trailing slash*/  - "https://ganjoor.net".Length);
                     var poem2 = await context.GanjoorPoems.AsNoTracking().Where(p => p.FullUrl == poem2Url).SingleOrDefaultAsync();
                     if (poem2 == null)
