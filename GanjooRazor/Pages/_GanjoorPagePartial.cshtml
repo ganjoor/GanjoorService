@@ -287,7 +287,7 @@
                             {
                                 @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
                             }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ]).addTo(map);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ]).addTo(map);
 
                                 for (var i = 0; i < poemGeoTags.length; i++) {
                                     var poemGeoTag = poemGeoTags[i];
@@ -663,6 +663,52 @@
                                                                     }
                                                                 </p>
 
+                                                            </div>
+
+                                                            <div class="poet-pic-wrap">
+                                                                <a href="@Html.Raw(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemPoetImage)" alt="@Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemPoetName"></a>
+                                                            </div>
+                                                            <div class="inlinesimi-poem-title">
+                                                                @if (string.IsNullOrEmpty(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullUrl))
+                                                                {
+                                                                    @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullTitle
+                                                                }
+                                                                else if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletIndex != null)
+                                                                {
+                                                                    <a href="@Html.Raw(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullUrl)#bn@(Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletIndex + 1)">
+                                                                        @(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullTitle + " » بیت " + ((Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletIndex + 1).ToPersianNumbers()))
+                                                                    </a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a href="@Html.Raw(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullUrl)">
+                                                                        @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullTitle
+                                                                    </a>
+                                                                }
+
+                                                            </div>
+                                                            <div class="simitext">
+                                                                <p>
+
+                                                                    @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletVerse1ShouldBeEmphasized)
+                                                                    {
+                                                                        <strong>@Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletVerse1</strong>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletVerse1
+                                                                    }
+                                                                </p>
+                                                                <p>
+                                                                    @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletVerse2ShouldBeEmphasized)
+                                                                    {
+                                                                        <strong>@Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletVerse2</strong>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletVerse2
+                                                                    }
+                                                                </p>
                                                             </div>
                                                         }
                                                         else
