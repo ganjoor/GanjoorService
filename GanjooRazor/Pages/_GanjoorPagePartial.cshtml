@@ -713,15 +713,90 @@
                                                         }
                                                         else
                                                         {
-                                                            <div class="poet-pic-wrap">
+                                                                                                                        <div class="poet-pic-wrap">
                                                                 <a href="@Html.Raw(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemPoetImage)" alt="@Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemPoetName"></a>
                                                             </div>
                                                             <div class="inlinesimi-poem-title">
-                                                                <a href="@Html.Raw(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullUrl)">@Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullTitle</a><span></span>
+                                                                @if (string.IsNullOrEmpty(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullUrl))
+                                                                {
+                                                                    @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullTitle
+                                                                }
+                                                                else if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletIndex != null)
+                                                                {
+                                                                    <a href="@Html.Raw(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullUrl)#bn@(Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletIndex + 1)">
+                                                                        @(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullTitle + " » بیت " + ((Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletIndex + 1).ToPersianNumbers()))
+                                                                    </a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a href="@Html.Raw(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullUrl)">
+                                                                        @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullTitle
+                                                                    </a>
+                                                                }
+
                                                             </div>
                                                             <div class="simitext">
-                                                                TODO
+                                                                <p>
+
+                                                                    @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletVerse1ShouldBeEmphasized)
+                                                                    {
+                                                                        <strong>@Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletVerse1</strong>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletVerse1
+                                                                    }
+                                                                </p>
+                                                                <p>
+                                                                    @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletVerse2ShouldBeEmphasized)
+                                                                    {
+                                                                        <strong>@Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletVerse2</strong>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Model.GanjoorPage.Poem.Top6QuotedPoems[i].RelatedCoupletVerse2
+                                                                    }
+                                                                </p>
                                                             </div>
+
+                                                            <div class="poet-pic-wrap">
+                                                                <img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Nickname)">
+                                                            </div>
+                                                            <div class="simitext">
+                                                                <p>
+                                                                    <a href="#bn@(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletIndex + 1)">
+                                                                        <strong>
+                                                                            بیت @((Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletIndex + 1).ToPersianNumbers())
+                                                                        </strong>
+                                                                    </a>
+                                                                </p>
+                                                                <p>
+
+                                                                    @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse1ShouldBeEmphasized)
+                                                                    {
+                                                                        <strong>@Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse1</strong>
+
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse1
+                                                                    }
+                                                                </p>
+                                                                <p>
+                                                                    @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse2ShouldBeEmphasized)
+                                                                    {
+                                                                        <strong>@Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse2</strong>
+
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse2
+                                                                    }
+                                                                </p>
+
+                                                            </div>
+
+
                                                         }
 
 
