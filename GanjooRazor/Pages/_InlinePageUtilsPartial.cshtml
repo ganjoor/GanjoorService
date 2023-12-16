@@ -109,6 +109,16 @@
                     </a>
                 }
 
+                @if(Model.GanjoorPage.Poem.Top6QuotedPoems.Any())
+                {
+                    <a href="#qpoems" role="button" class="w3tooltip cursor-pointer">
+                        <div class="circled-number">
+                            <i class="noindent-info-button quoted-poems"></i>
+                        </div>
+                        <span class="w3tooltiptext">مشق شعر</span>
+                    </a>
+                }
+
                 
 
                 @if (Model.SectionsWithMetreAndRhymes != null)

@@ -287,7 +287,7 @@
                             {
                                 @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
                             }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ]).addTo(map);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ]).addTo(map);
 
                                 for (var i = 0; i < poemGeoTags.length; i++) {
                                     var poemGeoTag = poemGeoTags[i];
@@ -713,7 +713,7 @@
                                                         }
                                                         else
                                                         {
-                                                                                                                        <div class="poet-pic-wrap">
+                                                            <div class="poet-pic-wrap">
                                                                 <a href="@Html.Raw(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemPoetImage)" alt="@Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemPoetName"></a>
                                                             </div>
                                                             <div class="inlinesimi-poem-title">

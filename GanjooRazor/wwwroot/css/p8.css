@@ -1549,6 +1549,10 @@ audio {
     content: 'apps';
 }
 
+.quoted-poems::after {
+    content: 'format_quote';
+}
+
 .circled-number-container {
     width: 100%;
     display: inline-table;
