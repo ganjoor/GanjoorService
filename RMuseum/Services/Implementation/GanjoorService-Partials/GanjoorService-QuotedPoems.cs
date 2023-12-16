@@ -352,7 +352,7 @@ namespace RMuseum.Services.Implementation
 
                     var poem2Cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == poem2.CatId).SingleAsync();
                     var poem2Poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poem2Cat.PoetId).SingleAsync();
-                    var poet2Cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == poem2Cat.PoetId).SingleAsync();
+                    var poet2Cat = await context.GanjoorCategories.AsNoTracking().Where(c =>c.PoetId == poem2Poet.Id && c.ParentId == null).SingleAsync();
 
                     GanjoorQuotedPoem relatedPoem = new GanjoorQuotedPoem()
                     {
