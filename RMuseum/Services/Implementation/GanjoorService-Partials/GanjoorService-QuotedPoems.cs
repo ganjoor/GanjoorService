@@ -346,6 +346,7 @@ namespace RMuseum.Services.Implementation
 
                     var poem2Cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == poem2.CatId).SingleAsync();
                     var poem2Poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poem2Cat.PoetId).SingleAsync();
+                    var poet2Cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == poem2Cat.PoetId).SingleAsync();
 
                     GanjoorQuotedPoem relatedPoem = new GanjoorQuotedPoem()
                     {
@@ -358,7 +359,7 @@ namespace RMuseum.Services.Implementation
                         CachedRelatedPoemPoetDeathYearInLHijri = poem2Poet.DeathYearInLHijri,
                         CachedRelatedPoemPoetName = poem2Poet.Nickname,
                         CachedRelatedPoemPoetUrl = poem2Cat.FullUrl,
-                        CachedRelatedPoemPoetImage = $"/api/ganjoor/poet/image{poem2Cat.FullUrl}.gif",
+                        CachedRelatedPoemPoetImage = $"/api/ganjoor/poet/image{poet2Cat.FullUrl}.gif",
                         CachedRelatedPoemFullTitle = poem2.FullTitle,
                         CachedRelatedPoemFullUrl = poem2.FullUrl,
                         SortOrder = 1000,
