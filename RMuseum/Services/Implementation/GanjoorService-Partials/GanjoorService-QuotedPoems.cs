@@ -336,7 +336,11 @@ namespace RMuseum.Services.Implementation
                     var poem2 = await context.GanjoorPoems.AsNoTracking().Where(p => p.FullUrl == poem2Url).SingleOrDefaultAsync();
                     if (poem2 == null)
                     {
-                        var redirectedPage = await context.GanjoorPages.AsNoTracking().Where(p => p.RedirectFromFullUrl == poem2Url).SingleAsync();
+                        var redirectedPage = await context.GanjoorPages.AsNoTracking().Where(p => p.RedirectFromFullUrl == poem2Url).SingleOrDefaultAsync();
+                        if(redirectedPage == null)
+                        {
+                            return new RServiceResult<bool>(false, poem2Url);
+                        }
                         poem2 = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == redirectedPage.Id).SingleAsync();
                     }
 
