@@ -107,6 +107,16 @@ namespace GanjooRazor.Pages
             };
         }
 
+        public _QuotedPoemPartialModel GetQuotedPoemModel(GanjoorQuotedPoem  quotedPoem, GanjoorPageCompleteViewModel page)
+        {
+            return new _QuotedPoemPartialModel()
+            {
+               GanjoorQuotedPoem = quotedPoem,
+               PoetImageUrl = page.PoetOrCat.Poet.ImageUrl,
+               PoetNickName = page.PoetOrCat.Poet.Nickname
+            };
+        }
+
         public async Task<ActionResult> OnPostReply(string replyCommentText, int refPoemId, int refCommentId)
         {
             return await OnPostComment(replyCommentText, refPoemId, refCommentId, -1);

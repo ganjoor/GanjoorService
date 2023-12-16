@@ -1,0 +1,190 @@
+﻿@model GanjooRazor.Pages._QuotedPoemPartialModel
+@using DNTPersianUtils.Core
+@{
+    Layout = null;
+}
+
+<div class="inlinesimi">
+    @if (Model.GanjoorQuotedPoem.IsPriorToRelated)
+    {
+        <div class="poet-pic-wrap">
+            <img src="@(GanjooRazor.APIRoot.InternetUrl + Model.PoetImageUrl)" alt="@Model.PoetNickName">
+        </div>
+        <div class="simitext">
+            <p>
+                <a href="#bn@(Model.GanjoorQuotedPoem.CoupletIndex + 1)">
+                    <strong>
+                        بیت @((Model.GanjoorQuotedPoem.CoupletIndex + 1).ToPersianNumbers())
+                    </strong>
+                </a>
+            </p>
+            <p>
+
+                @if (Model.GanjoorQuotedPoem.CoupletVerse1ShouldBeEmphasized)
+                {
+                    <strong>@Model.GanjoorQuotedPoem.CoupletVerse1</strong>
+
+                }
+                else
+                {
+                    @Model.GanjoorQuotedPoem.CoupletVerse1
+                }
+            </p>
+            <p>
+                @if (Model.GanjoorQuotedPoem.CoupletVerse2ShouldBeEmphasized)
+                {
+                    <strong>@Model.GanjoorQuotedPoem.CoupletVerse2</strong>
+
+                }
+                else
+                {
+                    @Model.GanjoorQuotedPoem.CoupletVerse2
+                }
+            </p>
+
+        </div>
+
+        <div class="poet-pic-wrap">
+            <a href="@Html.Raw(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.GanjoorQuotedPoem.CachedRelatedPoemPoetImage)" alt="@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetName"></a>
+        </div>
+        <div class="inlinesimi-poem-title">
+            @if (string.IsNullOrEmpty(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl))
+            {
+                @Model.GanjoorQuotedPoem.CachedRelatedPoemFullTitle
+            }
+            else if (Model.GanjoorQuotedPoem.RelatedCoupletIndex != null)
+            {
+                <a href="@Html.Raw(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl)#bn@(Model.GanjoorQuotedPoem.RelatedCoupletIndex + 1)">
+                    @(Model.GanjoorQuotedPoem.CachedRelatedPoemFullTitle + " » بیت " + ((Model.GanjoorQuotedPoem.RelatedCoupletIndex + 1).ToPersianNumbers()))
+                </a>
+            }
+            else
+            {
+                <a href="@Html.Raw(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl)">
+                    @Model.GanjoorQuotedPoem.CachedRelatedPoemFullTitle
+                </a>
+            }
+
+        </div>
+        <div class="simitext">
+            <p>
+
+                @if (Model.GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized)
+                {
+                    <strong>@Model.GanjoorQuotedPoem.RelatedCoupletVerse1</strong>
+                }
+                else
+                {
+                    @Model.GanjoorQuotedPoem.RelatedCoupletVerse1
+                }
+            </p>
+            <p>
+                @if (Model.GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized)
+                {
+                    <strong>@Model.GanjoorQuotedPoem.RelatedCoupletVerse2</strong>
+                }
+                else
+                {
+                    @Model.GanjoorQuotedPoem.RelatedCoupletVerse2
+                }
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="poet-pic-wrap">
+            <a href="@Html.Raw(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.GanjoorQuotedPoem.CachedRelatedPoemPoetImage)" alt="@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetName"></a>
+        </div>
+        <div class="inlinesimi-poem-title">
+            @if (string.IsNullOrEmpty(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl))
+            {
+                @Model.GanjoorQuotedPoem.CachedRelatedPoemFullTitle
+            }
+            else if (Model.GanjoorQuotedPoem.RelatedCoupletIndex != null)
+            {
+                <a href="@Html.Raw(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl)#bn@(Model.GanjoorQuotedPoem.RelatedCoupletIndex + 1)">
+                    @(Model.GanjoorQuotedPoem.CachedRelatedPoemFullTitle + " » بیت " + ((Model.GanjoorQuotedPoem.RelatedCoupletIndex + 1).ToPersianNumbers()))
+                </a>
+            }
+            else
+            {
+                <a href="@Html.Raw(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl)">
+                    @Model.GanjoorQuotedPoem.CachedRelatedPoemFullTitle
+                </a>
+            }
+
+        </div>
+        <div class="simitext">
+            <p>
+
+                @if (Model.GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized)
+                {
+                    <strong>@Model.GanjoorQuotedPoem.RelatedCoupletVerse1</strong>
+                }
+                else
+                {
+                    @Model.GanjoorQuotedPoem.RelatedCoupletVerse1
+                }
+            </p>
+            <p>
+                @if (Model.GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized)
+                {
+                    <strong>@Model.GanjoorQuotedPoem.RelatedCoupletVerse2</strong>
+                }
+                else
+                {
+                    @Model.GanjoorQuotedPoem.RelatedCoupletVerse2
+                }
+            </p>
+        </div>
+
+        <div class="poet-pic-wrap">
+            <img src="@(GanjooRazor.APIRoot.InternetUrl + Model.PoetImageUrl)" alt="@Model.PoetNickName">
+        </div>
+        <div class="simitext">
+            <p>
+                <a href="#bn@(Model.GanjoorQuotedPoem.CoupletIndex + 1)">
+                    <strong>
+                        بیت @((Model.GanjoorQuotedPoem.CoupletIndex + 1).ToPersianNumbers())
+                    </strong>
+                </a>
+            </p>
+            <p>
+
+                @if (Model.GanjoorQuotedPoem.CoupletVerse1ShouldBeEmphasized)
+                {
+                    <strong>@Model.GanjoorQuotedPoem.CoupletVerse1</strong>
+
+                }
+                else
+                {
+                    @Model.GanjoorQuotedPoem.CoupletVerse1
+                }
+            </p>
+            <p>
+                @if (Model.GanjoorQuotedPoem.CoupletVerse2ShouldBeEmphasized)
+                {
+                    <strong>@Model.GanjoorQuotedPoem.CoupletVerse2</strong>
+
+                }
+                else
+                {
+                    @Model.GanjoorQuotedPoem.CoupletVerse2
+                }
+            </p>
+
+        </div>
+
+
+    }
+
+
+    @if (Model.GanjoorQuotedPoem.SamePoemsQuotedCount > 1)
+    {
+        <div id=@($"more-quoted-placeholder-{Model.GanjoorQuotedPoem.Id}")></div>
+    }
+</div>
+
+
+
+
