@@ -287,7 +287,7 @@
                             {
                                 @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
                             }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        ]).addTo(map);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ]).addTo(map);
 
                                 for (var i = 0; i < poemGeoTags.length; i++) {
                                     var poemGeoTag = poemGeoTags[i];
@@ -615,7 +615,98 @@
                                             </div>
                                         </div>
                                     }
+
+                                    if (Model.GanjoorPage.Poem.Top6QuotedPoems.Any())
+                                    {
+                                        <div class="related-images-frame" id="qpoems">
+                                            <div class="century">
+                                                بازسروده‌ها و وابسته‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('qpoems-section', 'qpoems-collapse-button')"><i class="info-buttons expand_circle_down" id="qpoems-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            </div>
+                                            <div id="qpoems-section">
+                                                @for (int i = 0; i < Math.Min(5, Model.GanjoorPage.Poem.Top6QuotedPoems.Length); i++)
+                                                {
+                                                    <div class="inlinesimi">
+                                                        @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].IsPriorToRelated)
+                                                        {
+                                                            <div class="poet-pic-wrap">
+                                                                <img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Nickname)">
+                                                            </div>
+                                                            <div class="simitext">
+                                                                <div class="b-fake">
+                                                                    <div class="m1-fake">
+                                                                        <p>
+                                                                            <a href="#bn@(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletIndex + 1)">
+                                                                                @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse1ShouldBeEmphasized)
+                                                                                {
+                                                                                    <strong>
+                                                                                        @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse1
+                                                                                    </strong>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse1
+                                                                                }
+                                                                            </a>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="m2-fake">
+                                                                        <p>
+                                                                            <a href="#bn@(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletIndex + 1)">
+                                                                                @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse2ShouldBeEmphasized)
+                                                                                {
+                                                                                    <strong>
+                                                                                        @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse2
+                                                                                    </strong>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    @Model.GanjoorPage.Poem.Top6QuotedPoems[i].CoupletVerse2
+                                                                                }
+                                                                            </a>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="poet-pic-wrap">
+                                                                <a href="@Html.Raw(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemPoetImage)" alt="@Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemPoetName"></a>
+                                                            </div>
+                                                            <div class="inlinesimi-poem-title">
+                                                                <a href="@Html.Raw(Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullUrl)">@Model.GanjoorPage.Poem.Top6QuotedPoems[i].CachedRelatedPoemFullTitle</a><span></span>
+                                                            </div>
+                                                            <div class="simitext">
+                                                                TODO
+                                                            </div>
+                                                        }
+
+
+                                                        @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].SamePoemsQuotedCount > 1)
+                                                        {
+                                                            <text>TODO</text>
+                                                        }
+                                                    </div>
+
+                                                    @if (Model.GanjoorPage.Poem.Top6QuotedPoems[i].SamePoemsQuotedCount > 1)
+                                                    {
+                                                        <div id=@($"more-quoted-placeholder-{Model.GanjoorPage.Poem.Top6QuotedPoems[i].Id}")></div>
+                                                    }
+                                                }
+
+                                                @if (Model.GanjoorPage.Poem.Top6QuotedPoems.Length == 6)
+                                                {
+                                                    <div id="more-quoted-placeholder"></div>
+                                                    <div id="load-more-quoted">
+                                                        <a role="button" class="pagebutton" id="load-more-quoted" onclick="loadMoreQuotedPoems(@Model.GanjoorPage.Poem.Id, 5)">بیشتر<i class="info-buttons autorenew"></i></a>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
                                 }
+
+
 
                                 @if (Model.SectionsWithRelated.Count > 0)
                                 {
