@@ -1415,5 +1415,33 @@ function prevInlineSearchResult() {
 }
 
 
+function loadMoreQuotedForRelatedPoem(quoteRecordId, poemId, relatedPoemId, poetImageUrl, poetNickName) {
+    var buttonId = 'load-more-quoted-button-' + quoteRecordId;
+    var loadButton = document.getElementById(buttonId);
+    if (loadButton != null) {
+        loadButton.remove();
+    }
+    var divId = 'more-quoted-placeholder-' + quoteRecordId;
+    var divParent = document.getElementById(divId);
+    var imgeId = 'load-more-quoted-loadingimg-' + quoteRecordId;
+    divParent.innerHTML = divParent.innerHTML + '<img id="' + imgeId + '" src="/image/loading.gif" alt="بارگذاری  "/>';
 
+    $.ajax({
+        type: "GET",
+        url: '?Handler=MoreQuotedPoemsForRelatedPoemPartial',
+        data: {
+            poemId: poemId,
+            relatedPoemId: relatedPoemId, 
+            poetImageUrl: poetImageUrl, 
+            poetNickName: poetNickName
+        },
+        success: function (data) {
+
+            var imgElement = document.getElementById(imgeId);
+            imgElement.remove();
+
+            $(data).appendTo(document.getElementById(divId));
+        },
+    });
+}
 

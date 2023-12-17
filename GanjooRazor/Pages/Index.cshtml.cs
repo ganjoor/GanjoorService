@@ -1139,5 +1139,36 @@ namespace GanjooRazor.Pages
             }
             return new JsonResult(true);
         }
+
+        public async Task<ActionResult> OnGetMoreQuotedPoemsForRelatedPoemPartialAsync(int poemId, int relatedPoemId, string poetImageUrl, string poetNickName)
+        {
+            string url = $"{APIRoot.Url}/api/ganjoor/poem/{poemId}/quoteds/{relatedPoemId}";
+            var response = await _httpClient.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+           
+            var quoteds = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorQuotedPoem>>();
+            if(!quoteds.Any())
+            {
+                return new BadRequestObjectResult("مورد دیگری یافت نشد.");
+            }
+
+            quoteds.RemoveAt(0);
+            
+
+            return new PartialViewResult()
+            {
+                ViewName = "MultipleQuotedPoemsPartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model =  new MultipleQuotedPoemsPartialModel()
+                    {
+                        GanjoorQuotedPoems = quoteds.ToArray(),
+                        PoetImageUrl = poetImageUrl,
+                        PoetNickName = poetNickName
+                    }
+                }
+            };
+        }
     }
 }
