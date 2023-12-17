@@ -56,6 +56,15 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
+                var allRelateds = await _context.GanjoorQuotedPoems.Where(p => p.PoemId == quoted.PoemId && p.RelatedPoemId == quoted.RelatedPoemId).ToListAsync();
+                foreach (var rel in allRelateds)
+                {
+                    rel.SamePoemsQuotedCount = allRelateds.Count;
+                }
+                _context.UpdateRange(allRelateds);
+                await _context.SaveChangesAsync();
+
+
                 return new RServiceResult<GanjoorQuotedPoem>(quoted);
 
             }
@@ -75,10 +84,12 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var dbModel = await _context.GanjoorQuotedPoems.Where(q => q.Id == quoted.Id).SingleAsync();
-                dbModel.PoemId = quoted.PoemId;
+                if(dbModel.PoemId !=  quoted.PoemId || dbModel.RelatedPoemId != quoted.RelatedPoemId)
+                {
+                    return new RServiceResult<bool>(false, "dbModel.PoemId !=  quoted.PoemId || dbModel.RelatedPoemId != quoted.RelatedPoemId");
+                }
                 dbModel.PoetId = quoted.PoetId;
                 dbModel.RelatedPoetId = quoted.RelatedPoetId;
-                dbModel.RelatedPoemId = quoted.RelatedPoemId;
                 dbModel.IsPriorToRelated = quoted.IsPriorToRelated;
                 dbModel.ChosenForMainList = quoted.ChosenForMainList;
                 dbModel.CachedRelatedPoemPoetDeathYearInLHijri = quoted.CachedRelatedPoemPoetDeathYearInLHijri;
@@ -116,6 +127,8 @@ namespace RMuseum.Services.Implementation
                     await _context.SaveChangesAsync();
                 }
 
+                await _context.SaveChangesAsync();
+
                 return new RServiceResult<bool>(true);
 
             }
@@ -136,6 +149,7 @@ namespace RMuseum.Services.Implementation
             {
                 var q = await _context.GanjoorQuotedPoems.Where(q => q.Id == id).SingleAsync();
                 var poemId = q.PoemId;
+                var relatedPoemId = q.RelatedPoemId;
                 _context.Remove(q);
                 await _context.SaveChangesAsync();
 
@@ -147,6 +161,18 @@ namespace RMuseum.Services.Implementation
                     _context.Update(poem);
                     await _context.SaveChangesAsync();
                 }
+
+                var allRelateds = await _context.GanjoorQuotedPoems.Where(p => p.PoemId == poemId && p.RelatedPoemId == relatedPoemId).ToListAsync();
+                if(allRelateds.Count > 0)
+                {
+                    foreach (var rel in allRelateds)
+                    {
+                        rel.SamePoemsQuotedCount = allRelateds.Count;
+                    }
+                    _context.UpdateRange(allRelateds);
+                    await _context.SaveChangesAsync();
+                }
+
 
                 return new RServiceResult<bool>(true);
 
