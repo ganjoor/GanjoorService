@@ -1445,3 +1445,31 @@ function loadMoreQuotedForRelatedPoem(quoteRecordId, poemId, relatedPoemId, poet
     });
 }
 
+
+function loadMoreQuotedPoems(poemId, skip, poetImageUrl, poetNickName) {
+    var loadButton = document.getElementById('load-more-quoted');
+    if (loadButton != null) {
+        loadButton.remove();
+    }
+    var divParent = document.getElementById('more-quoted-placeholder');
+    var imgeId = 'load-more-quoted-loadingimg';
+    divParent.innerHTML = divParent.innerHTML + '<img id="' + imgeId + '" src="/image/loading.gif" alt="بارگذاری  "/>';
+
+    $.ajax({
+        type: "GET",
+        url: '?Handler=MoreQuotedPoemsPartial',
+        data: {
+            poemId: poemId,
+            skip: skip,
+            poetImageUrl: poetImageUrl,
+            poetNickName: poetNickName
+        },
+        success: function (data) {
+
+            var imgElement = document.getElementById(imgeId);
+            imgElement.remove();
+
+            $(data).appendTo(document.getElementById('more-quoted-placeholder'));
+        },
+    });
+}
