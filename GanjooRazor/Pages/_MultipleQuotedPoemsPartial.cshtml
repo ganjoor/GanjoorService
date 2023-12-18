@@ -1,10 +1,10 @@
-﻿@model GanjooRazor.Pages.MultipleQuotedPoemsPartialModel
+﻿@model GanjooRazor.Pages._MultipleQuotedPoemsPartialModel
 @using DNTPersianUtils.Core
 @{
     Layout = null;
 }
 
-@foreach(var q in Model.GanjoorQuotedPoems)
+@foreach (var q in Model.GanjoorQuotedPoems)
 {
     <partial name="_QuotedPoemPartial" model=@Model.GetQuotedPoemModel(q, Model.PoetImageUrl, Model.PoetNickName) />
 }

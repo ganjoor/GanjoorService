@@ -1158,10 +1158,10 @@ namespace GanjooRazor.Pages
 
             return new PartialViewResult()
             {
-                ViewName = "MultipleQuotedPoemsPartial",
+                ViewName = "_MultipleQuotedPoemsPartial",
                 ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
                 {
-                    Model =  new MultipleQuotedPoemsPartialModel()
+                    Model =  new _MultipleQuotedPoemsPartialModel()
                     {
                         GanjoorQuotedPoems = quoteds.ToArray(),
                         PoetImageUrl = poetImageUrl,
@@ -1182,10 +1182,10 @@ namespace GanjooRazor.Pages
  
             return new PartialViewResult()
             {
-                ViewName = "MultipleQuotedPoemsPartial",
+                ViewName = "_MultipleQuotedPoemsPartial",
                 ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
                 {
-                    Model = new MultipleQuotedPoemsPartialModel()
+                    Model = new _MultipleQuotedPoemsPartialModel()
                     {
                         GanjoorQuotedPoems = quoteds.ToArray(),
                         PoetImageUrl = poetImageUrl,

@@ -1,11 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using RMuseum.Models.Ganjoor;
-using RMuseum.Models.Ganjoor.ViewModels;
 
 namespace GanjooRazor.Pages
 {
-    public class MultipleQuotedPoemsPartialModel : PageModel
+    public class _MultipleQuotedPoemsPartialModel : PageModel
     {
         public GanjoorQuotedPoem[] GanjoorQuotedPoems { get; set; }
 
