@@ -184,6 +184,13 @@
     }
     
 
+    @if(!string.IsNullOrEmpty(Model.GanjoorQuotedPoem.Note))
+    {
+        <div class="notice">
+            @Html.Raw(Model.GanjoorQuotedPoem.Note)
+        </div>
+    }
+
 </div>
 
 @if (Model.GanjoorQuotedPoem.ChosenForMainList && Model.GanjoorQuotedPoem.SamePoemsQuotedCount > 1)
