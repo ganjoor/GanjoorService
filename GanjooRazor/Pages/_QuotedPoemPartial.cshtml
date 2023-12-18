@@ -45,7 +45,15 @@
         </div>
 
         <div class="poet-pic-wrap">
-            <a href="@Html.Raw(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.GanjoorQuotedPoem.CachedRelatedPoemPoetImage)" alt="@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetName"></a>
+            @if(string.IsNullOrEmpty(Model.GanjoorQuotedPoem.CachedRelatedPoemPoetImage))
+            {
+                <img src="/image/unknown.gif" alt="@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetName" />
+            }
+            else
+            {
+                <a href="@Html.Raw(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.GanjoorQuotedPoem.CachedRelatedPoemPoetImage)" alt="@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetName"></a>
+            }
+            
         </div>
         <div class="inlinesimi-poem-title">
             @if (string.IsNullOrEmpty(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl))
@@ -93,7 +101,14 @@
     else
     {
         <div class="poet-pic-wrap">
-            <a href="@Html.Raw(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.GanjoorQuotedPoem.CachedRelatedPoemPoetImage)" alt="@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetName"></a>
+            @if (string.IsNullOrEmpty(Model.GanjoorQuotedPoem.CachedRelatedPoemPoetImage))
+            {
+                <img src="/image/unknown.gif" alt="@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetName" />
+            }
+            else
+            {
+                <a href="@Html.Raw(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl)"><img src="@(GanjooRazor.APIRoot.InternetUrl +  Model.GanjoorQuotedPoem.CachedRelatedPoemPoetImage)" alt="@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetName"></a>
+            }
         </div>
         <div class="inlinesimi-poem-title">
             @if (string.IsNullOrEmpty(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl))
