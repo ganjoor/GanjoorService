@@ -85,7 +85,12 @@
         }
         else
         {
-            <div class="poem" id="post-@Html.Raw(Model.GanjoorPage.Id.ToString())">
+            <div class="@Model.PoemBlockClass" id="post-@Html.Raw(Model.GanjoorPage.Id.ToString())">
+                @if(Model.GanjoorPage.Poem != null && Model.GanjoorPage.Poem.ClaimedByMultiplePoets)
+                {
+                    <div class="ribbon"><a href="#qpoems">منتسب به چند شاعر</a></div>
+                }
+                
                 @{
                     if (!string.IsNullOrEmpty(Model.PinterestUrl))
                     {

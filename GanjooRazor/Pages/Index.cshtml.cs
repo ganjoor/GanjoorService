@@ -1194,5 +1194,13 @@ namespace GanjooRazor.Pages
                 }
             };
         }
+
+        public string PoemBlockClass 
+        {
+            get
+            {
+                return GanjoorPage != null && GanjoorPage.Poem != null && GanjoorPage.Poem.ClaimedByMultiplePoets ? "poem ribbon-parent" : "poem";
+            }
+        }
     }
 }
