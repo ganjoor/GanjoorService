@@ -58,7 +58,9 @@
         <div class="inlinesimi-poem-title">
             @if (string.IsNullOrEmpty(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl))
             {
-                @Model.GanjoorQuotedPoem.CachedRelatedPoemFullTitle
+                <strong>
+                    @Model.GanjoorQuotedPoem.CachedRelatedPoemFullTitle
+                </strong>
             }
             else if (Model.GanjoorQuotedPoem.RelatedCoupletIndex != null)
             {
@@ -113,7 +115,9 @@
         <div class="inlinesimi-poem-title">
             @if (string.IsNullOrEmpty(Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl))
             {
-                @Model.GanjoorQuotedPoem.CachedRelatedPoemFullTitle
+                <strong>
+                    @Model.GanjoorQuotedPoem.CachedRelatedPoemFullTitle
+                </strong>
             }
             else if (Model.GanjoorQuotedPoem.RelatedCoupletIndex != null)
             {
