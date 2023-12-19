@@ -4,7 +4,12 @@
     Layout = null;
 }
 
-<div class="inlinesimi">
+<div class="@Model.BlockClass">
+    @if(Model.GanjoorQuotedPoem.ClaimedByBothPoets)
+    {
+        <div class="ribbon">منتسب به هر دو سخنور</div>
+    }
+    
     @if (Model.GanjoorQuotedPoem.IsPriorToRelated)
     {
         <div class="poet-pic-wrap">
