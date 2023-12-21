@@ -33,7 +33,7 @@
 
             fetch('@(GanjooRazor.APIRoot.Url)/api/ganjoor/page?url=' + url)
                 .then((response) => response.json())
-                .then((json) => { 
+                .then((json) => {
                     alert(json.poem.id);
                     document.getElementById('GanjoorQuotedPoem_RelatedPoemId').value = json.poem.id;
                     document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemPoetName').value = json.poem.category.poet.nickname;
@@ -42,6 +42,34 @@
                     document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemPoetImage').value = '@(GanjooRazor.APIRoot.Url)' + json.poem.category.poet.imageUrl;
                     document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemFullTitle').value = json.poem.fullTitle;
                     document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemFullUrl').value = json.poem.fullUrl;
+
+                    var coupletIndices = [];
+                    var coupletTexts = [];
+
+                    for (var i = 0; i < json.poem.verses.length; i++) {
+                        var verse = json.poem.verses[i];
+                        if (coupletIndices.indexOf(verse.coupletIndex) != -1) {
+                            coupletTexts[coupletIndices.indexOf(verse.coupletIndex)] += ' - ';
+                            coupletTexts[coupletIndices.indexOf(verse.coupletIndex)] += verse.text;
+                        }
+                        else {
+                            coupletIndices.push(verse.coupletIndex);
+                            coupletTexts.push(verse.text);
+                        }
+                    }
+
+                    var x = document.getElementById("GanjoorQuotedPoem_RelatedCoupletIndex");
+                    x.length = 0;
+                    for (var i = 0; i < coupletIndices.length; i++) {
+                        var option = document.createElement("option");
+                        option.text = coupletTexts[i];
+                        option.value = coupletIndices[i];
+                        x.add(option);
+                    }
+
+                    x.value = coupletIndices[0];
+
+
                 });
 
         }
@@ -65,6 +93,26 @@
         </tr>
         <tr>
             <td>
+                مصرع اول مهم است:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.CoupletVerse1ShouldBeEmphasized" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                مصرع دوم مهم است:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.CoupletVerse2ShouldBeEmphasized" />
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <a onclick="finalizeSelectPage()" class="pagebutton" role="button" id="finalize-select" style="display:none">انتخاب کردم</a>
             </td>
         </tr>
@@ -73,6 +121,7 @@
                 <iframe id="select-poem" src="/" width="800" height="600" style="display:none"></iframe>
             </td>
         </tr>
+
         <tr>
             <td>
                 <a onclick="selectGanjoorPage()" class="pagebutton" role="button" id="display-frame">گزینش شعر مرتبط</a>
@@ -143,6 +192,90 @@
                 <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullUrl" style="direction:ltr" size="80" />
             </td>
         </tr>
+        <tr>
+            <td>
+                بیت مرتبط:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <select asp-for="GanjoorQuotedPoem.RelatedCoupletIndex" style="width:500px;">
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                مصرع اول مهم است:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                مصرع دوم مهم است:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                ترتیب:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.SortOrder" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                شعر مرتبط پیش از این شعر است:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.IsPriorToRelated" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                نمایش در فهرست اصلی:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.ChosenForMainList" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                یادداشت:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <textarea asp-for="GanjoorQuotedPoem.Note" rows="4" cols="80">
+
+                    </textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                منتشر شده:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.Published" />
+            </td>
+        </tr>
+
     </table>
 
 
