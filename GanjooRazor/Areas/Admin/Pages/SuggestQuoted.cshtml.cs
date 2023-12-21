@@ -51,11 +51,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             int poemId = int.Parse(Request.Query["p"]);
 
-            GanjoorQuotedPoem  = new GanjoorQuotedPoem()
-            {
-                PoemId = poemId,
-               
-            };
+            
 
             var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={poemId}");
             if (!pageUrlResponse.IsSuccessStatusCode)
@@ -78,7 +74,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             int coupetIndex = -1;
             string coupletText = "";
-            List<Tuple<int, string>> couplets = [new Tuple<int, string>(-1, "*")];
+            List<Tuple<int, string>> couplets = new List<Tuple<int, string>>();
             int verseIndex = 0;
             bool incompleteCouplet = false;
             while (verseIndex < pageInformation.Poem.Verses.Length)
@@ -118,7 +114,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     case VersePosition.Left:
                     case VersePosition.CenteredVerse2:
                         incompleteCouplet = true;
-                        coupletText += $" {pageInformation.Poem.Verses[verseIndex].Text}";
+                        coupletText += $" - {pageInformation.Poem.Verses[verseIndex].Text}";
                         break;
                 }
                 verseIndex++;
@@ -129,6 +125,39 @@ namespace GanjooRazor.Areas.Admin.Pages
                 couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
 
             Couplets = couplets.ToArray();
+
+            GanjoorQuotedPoem = new GanjoorQuotedPoem()
+            {
+                PoemId = poemId,
+                PoetId = Poem.Category.Poet.Id,
+                RelatedPoetId = null,
+                RelatedPoemId = null,
+                IsPriorToRelated = false,
+                ChosenForMainList = true,
+                CachedRelatedPoemPoetDeathYearInLHijri = 0,
+                CachedRelatedPoemPoetName = null,
+                CachedRelatedPoemPoetUrl = null,
+                CachedRelatedPoemPoetImage = null,
+                CachedRelatedPoemFullTitle = null,
+                CachedRelatedPoemFullUrl = null,
+                SortOrder = 1000,
+                Note = "",
+                Published = false,
+                ClaimedByBothPoets = false,
+                IndirectQuotation = false,
+                SamePoemsQuotedCount = 0,
+                RelatedCoupletVerse1 = null,
+                RelatedCoupletVerse1ShouldBeEmphasized = false,
+                RelatedCoupletVerse2 = null,
+                RelatedCoupletVerse2ShouldBeEmphasized = false,
+                RelatedCoupletIndex = null,
+                CoupletVerse1 = Poem.Verses[0].Text,
+                CoupletVerse1ShouldBeEmphasized = false,
+                CoupletVerse2 = Poem.Verses[1].Text,
+                CoupletVerse2ShouldBeEmphasized = false,
+                CoupletIndex = 0,
+
+            };
 
             return Page();
         }

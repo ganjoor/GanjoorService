@@ -13,7 +13,10 @@
 
 @if (Model.GanjoorQuotedPoem != null)
 {
-    <select asp-for="GanjoorQuotedPoem.CoupletIndex">
+    <p>
+        بیت مرجع:
+    </p>
+    <select asp-for="GanjoorQuotedPoem.CoupletIndex" style="width:500px;">
         @foreach (var item in Model.Couplets)
         {
             <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
