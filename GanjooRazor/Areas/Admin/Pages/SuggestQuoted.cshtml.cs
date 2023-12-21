@@ -223,8 +223,9 @@ namespace GanjooRazor.Areas.Admin.Pages
                 {
                     var url = $"{APIRoot.Url}/api/ganjoor/quoted";
                     var payload = new StringContent(JsonConvert.SerializeObject(GanjoorQuotedPoem), Encoding.UTF8, "application/json");
+                    bool newRecord = GanjoorQuotedPoem.Id == Guid.Empty;
                     HttpResponseMessage response = 
-                        GanjoorQuotedPoem.Id == Guid.Empty ?
+                        newRecord ?
                         await secureClient.PostAsync(url, payload) :
                         await secureClient.PutAsync(url, payload);
                     if (!response.IsSuccessStatusCode)
@@ -233,8 +234,12 @@ namespace GanjooRazor.Areas.Admin.Pages
                     }
                     else
                     {
-                        GanjoorQuotedPoem = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoem>();
-                        LastMessage = $"انجام شد. <br /><a href=\"/Admin/SuggesteQuoted/?p={GanjoorQuotedPoem.PoemId}&id={GanjoorQuotedPoem.Id}\">برگشت</a>";
+                        if(newRecord)
+                        {
+                            GanjoorQuotedPoem = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoem>();
+                        }
+                        
+                        LastMessage = $"انجام شد. <br /><a href=\"/Admin/SuggestQuoted/?p={GanjoorQuotedPoem.PoemId}&id={GanjoorQuotedPoem.Id}\">برگشت</a>";
                         
                     }
                 }
