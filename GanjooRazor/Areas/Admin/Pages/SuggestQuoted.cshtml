@@ -22,13 +22,21 @@
         }
 
         function finalizeSelectPage() {
-            
+
             document.getElementById('display-frame').style.display = 'block';
             document.getElementById('select-poem').style.display = 'none';
             document.getElementById('finalize-select').style.display = 'none';
 
             const currentUrl = document.getElementById('select-poem').contentWindow.location.href;
-            alert(currentUrl);
+
+            var url = currentUrl.substring(currentUrl.indexOf('/', currentUrl.indexOf('//') + 2));
+
+            fetch('@(GanjooRazor.APIRoot.Url)/api/ganjoor/page?url=' + url)
+                .then((response) => response.json())
+                .then((json) => { 
+                    alert(json.poem.id); 
+                });
+
         }
 
     </script>
@@ -61,9 +69,9 @@
         <tr>
             <td>
 
-                
+
                 <a onclick="selectGanjoorPage()" class="pagebutton" role="button" id="display-frame">گزینش شعر مرتبط</a>
-                
+
 
             </td>
         </tr>
