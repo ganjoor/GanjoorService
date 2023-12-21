@@ -34,7 +34,14 @@
             fetch('@(GanjooRazor.APIRoot.Url)/api/ganjoor/page?url=' + url)
                 .then((response) => response.json())
                 .then((json) => { 
-                    alert(json.poem.id); 
+                    alert(json.poem.id);
+                    document.getElementById('GanjoorQuotedPoem_RelatedPoemId').value = json.poem.id;
+                    document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemPoetName').value = json.poem.category.poet.nickname;
+                    document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemPoetDeathYearInLHijri').value = json.poem.category.poet.deathYearInLHijri.toString();
+                    document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemPoetUrl').value = json.poem.category.poet.fullUrl;
+                    document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemPoetImage').value = '@(GanjooRazor.APIRoot.Url)' + json.poem.category.poet.imageUrl;
+                    document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemFullTitle').value = json.poem.fullTitle;
+                    document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemFullUrl').value = json.poem.fullUrl;
                 });
 
         }
@@ -68,11 +75,72 @@
         </tr>
         <tr>
             <td>
-
-
                 <a onclick="selectGanjoorPage()" class="pagebutton" role="button" id="display-frame">گزینش شعر مرتبط</a>
-
-
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.RelatedPoemId" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetName" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                سالمرگ شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetDeathYearInLHijri" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                نشانی صفحهٔ شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetUrl" style="direction:ltr" size="80" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                تصویر شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetImage" style="direction:ltr" size="80" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                عنوان شعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullTitle" size="80" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                نشانی شعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullUrl" style="direction:ltr" size="80" />
             </td>
         </tr>
     </table>
