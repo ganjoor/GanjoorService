@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using RMuseum.Models.Ganjoor;
+using GanjooRazor.Utils;
+using System.Text;
+using System.Linq;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
@@ -32,6 +35,8 @@ namespace GanjooRazor.Areas.Admin.Pages
         }
 
         public GanjoorPoemCompleteViewModel Poem { get; set; }
+
+        public GanjoorPoemCompleteViewModel RelatedPoem { get; set; }
 
         public Tuple<int, string>[] Couplets { get; set; }
 
@@ -96,64 +101,43 @@ namespace GanjooRazor.Areas.Admin.Pages
             return couplets.ToArray();
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        private async Task<string> Prepare(int poemId, string id)
         {
-            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
-                return Redirect("/");
-
-
-            if (string.IsNullOrEmpty(Request.Query["p"]))
+            LastMessage = "";
+            var poemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}");
+            if (!poemQuery.IsSuccessStatusCode)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "شناسهٔ شعر مشخص نیست.");
+                LastMessage = JsonConvert.DeserializeObject<string>(await poemQuery.Content.ReadAsStringAsync());
+                return LastMessage;
             }
-
-            int poemId = int.Parse(Request.Query["p"]);
-
-            var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={poemId}");
-            if (!pageUrlResponse.IsSuccessStatusCode)
-            {
-                LastMessage = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
-                return Page();
-            }
-
-            var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
-
-            var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
-            if (!pageQuery.IsSuccessStatusCode)
-            {
-                LastMessage = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
-                return Page();
-            }
-            var pageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
-
-            Poem = pageInformation.Poem;
+            Poem = JObject.Parse(await poemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
 
             Couplets = GetCouplets(Poem.Verses);
             RelatedCouplets = [];
 
-            if (!string.IsNullOrEmpty(Request.Query["id"]))
+            if (!string.IsNullOrEmpty(id))
             {
-                var id = Request.Query["id"];
+              
                 var quoteQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/quoted/{id}");
                 if (!quoteQuery.IsSuccessStatusCode)
                 {
                     LastMessage = JsonConvert.DeserializeObject<string>(await quoteQuery.Content.ReadAsStringAsync());
-                    return Page();
+                    return LastMessage;
                 }
                 GanjoorQuotedPoem = JObject.Parse(await quoteQuery.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoem>();
-                if(GanjoorQuotedPoem.RelatedPoemId != null)
+                if (GanjoorQuotedPoem.RelatedPoemId != null)
                 {
-                    var poemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{GanjoorQuotedPoem.RelatedPoemId}");
-                    if (!poemQuery.IsSuccessStatusCode)
+                    var relPoemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{GanjoorQuotedPoem.RelatedPoemId}");
+                    if (!relPoemQuery.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await poemQuery.Content.ReadAsStringAsync());
-                        return Page();
+                        LastMessage = JsonConvert.DeserializeObject<string>(await relPoemQuery.Content.ReadAsStringAsync());
+                        return LastMessage;
                     }
-                    var relPoem = JObject.Parse(await poemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
+                    RelatedPoem = JObject.Parse(await relPoemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
 
-                    RelatedCouplets = GetCouplets(relPoem.Verses);
+                    RelatedCouplets = GetCouplets(RelatedPoem.Verses);
                 }
-                
+
             }
             else
             {
@@ -190,7 +174,76 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                 };
             }
+            return LastMessage;
+        }
 
+        public async Task<IActionResult> OnGetAsync()
+        {
+            if (string.IsNullOrEmpty(Request.Cookies["Token"]))
+                return Redirect("/");
+
+            if (string.IsNullOrEmpty(Request.Query["p"]))
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "شناسهٔ شعر مشخص نیست.");
+            }
+
+            await Prepare(int.Parse(Request.Query["p"]), Request.Query["id"]);
+
+
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(GanjoorQuotedPoem GanjoorQuotedPoem)
+        {
+            await Prepare(GanjoorQuotedPoem.PoemId, GanjoorQuotedPoem.Id == Guid.Empty ? null : GanjoorQuotedPoem.Id.ToString());
+            GanjoorQuotedPoem.CoupletVerse1 = Poem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.CoupletIndex).ToArray()[0].Text;
+            GanjoorQuotedPoem.CoupletVerse2 = Poem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.CoupletIndex).ToArray()[1].Text;
+            if (GanjoorQuotedPoem.RelatedPoemId != null && RelatedPoem == null)
+            {
+                var relPoemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{GanjoorQuotedPoem.RelatedPoemId}");
+                if (!relPoemQuery.IsSuccessStatusCode)
+                {
+                    LastMessage = JsonConvert.DeserializeObject<string>(await relPoemQuery.Content.ReadAsStringAsync());
+                    return Page();
+                }
+                RelatedPoem = JObject.Parse(await relPoemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
+
+                RelatedCouplets = GetCouplets(RelatedPoem.Verses);
+            }
+
+            if (GanjoorQuotedPoem.RelatedCoupletIndex != null)
+            {
+                GanjoorQuotedPoem.RelatedCoupletVerse1 = RelatedPoem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.RelatedCoupletIndex).ToArray()[0].Text;
+                GanjoorQuotedPoem.RelatedCoupletVerse2 = RelatedPoem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.RelatedCoupletIndex).ToArray()[1].Text;
+            }
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var url = $"{APIRoot.Url}/api/ganjoor/quoted";
+                    var payload = new StringContent(JsonConvert.SerializeObject(GanjoorQuotedPoem), Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = 
+                        GanjoorQuotedPoem.Id == Guid.Empty ?
+                        await secureClient.PostAsync(url, payload) :
+                        await secureClient.PutAsync(url, payload);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    }
+                    else
+                    {
+                        GanjoorQuotedPoem = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoem>();
+                        LastMessage = $"انجام شد. <br /><a href=\"/Admin/SuggesteQuoted/?p={GanjoorQuotedPoem.PoemId}&id={GanjoorQuotedPoem.Id}\">برگشت</a>";
+                        
+                    }
+                }
+                else
+                {
+                    LastMessage = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
+                }
+
+            }
             return Page();
         }
     }
