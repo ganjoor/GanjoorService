@@ -60,9 +60,10 @@ namespace RMuseum.Services.Implementation
                 foreach (var rel in allRelateds)
                 {
                     rel.SamePoemsQuotedCount = allRelateds.Count;
+                    _context.Update(rel);
+                    await _context.SaveChangesAsync();
                 }
-                _context.UpdateRange(allRelateds);
-                await _context.SaveChangesAsync();
+               
 
 
                 return new RServiceResult<GanjoorQuotedPoem>(quoted);
@@ -163,13 +164,10 @@ namespace RMuseum.Services.Implementation
                 }
 
                 var allRelateds = await _context.GanjoorQuotedPoems.Where(p => p.PoemId == poemId && p.RelatedPoemId == relatedPoemId).ToListAsync();
-                if(allRelateds.Count > 0)
+                foreach (var rel in allRelateds)
                 {
-                    foreach (var rel in allRelateds)
-                    {
-                        rel.SamePoemsQuotedCount = allRelateds.Count;
-                    }
-                    _context.UpdateRange(allRelateds);
+                    rel.SamePoemsQuotedCount = allRelateds.Count;
+                    _context.Update(rel);
                     await _context.SaveChangesAsync();
                 }
 
