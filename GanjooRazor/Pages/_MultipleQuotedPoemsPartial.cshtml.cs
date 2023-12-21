@@ -11,13 +11,16 @@ namespace GanjooRazor.Pages
 
         public string PoetNickName { get; set; }
 
+        public bool CanEdit { get; set; }
+
         public _QuotedPoemPartialModel GetQuotedPoemModel(GanjoorQuotedPoem quotedPoem, string poetImageUrl, string poetNickName)
         {
             return new _QuotedPoemPartialModel()
             {
                 GanjoorQuotedPoem = quotedPoem,
                 PoetImageUrl = poetImageUrl,
-                PoetNickName = poetNickName
+                PoetNickName = poetNickName,
+                CanEdit = CanEdit,
             };
         }
     }

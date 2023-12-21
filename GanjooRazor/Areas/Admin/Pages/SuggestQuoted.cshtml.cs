@@ -51,8 +51,6 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             int poemId = int.Parse(Request.Query["p"]);
 
-            
-
             var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={poemId}");
             if (!pageUrlResponse.IsSuccessStatusCode)
             {
@@ -126,38 +124,51 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             Couplets = couplets.ToArray();
 
-            GanjoorQuotedPoem = new GanjoorQuotedPoem()
+            if (!string.IsNullOrEmpty(Request.Query["id"]))
             {
-                PoemId = poemId,
-                PoetId = Poem.Category.Poet.Id,
-                RelatedPoetId = null,
-                RelatedPoemId = null,
-                IsPriorToRelated = false,
-                ChosenForMainList = true,
-                CachedRelatedPoemPoetDeathYearInLHijri = 0,
-                CachedRelatedPoemPoetName = null,
-                CachedRelatedPoemPoetUrl = null,
-                CachedRelatedPoemPoetImage = null,
-                CachedRelatedPoemFullTitle = null,
-                CachedRelatedPoemFullUrl = null,
-                SortOrder = 1000,
-                Note = "",
-                Published = false,
-                ClaimedByBothPoets = false,
-                IndirectQuotation = false,
-                SamePoemsQuotedCount = 0,
-                RelatedCoupletVerse1 = null,
-                RelatedCoupletVerse1ShouldBeEmphasized = false,
-                RelatedCoupletVerse2 = null,
-                RelatedCoupletVerse2ShouldBeEmphasized = false,
-                RelatedCoupletIndex = null,
-                CoupletVerse1 = Poem.Verses[0].Text,
-                CoupletVerse1ShouldBeEmphasized = false,
-                CoupletVerse2 = Poem.Verses[1].Text,
-                CoupletVerse2ShouldBeEmphasized = false,
-                CoupletIndex = 0,
+                var quoteQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/quoted/{Request.Query["id"]}");
+                if (!pageQuery.IsSuccessStatusCode)
+                {
+                    LastMessage = JsonConvert.DeserializeObject<string>(await quoteQuery.Content.ReadAsStringAsync());
+                    return Page();
+                }
+                GanjoorQuotedPoem = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoem>();
+            }
+            else
+            {
+                GanjoorQuotedPoem = new GanjoorQuotedPoem()
+                {
+                    PoemId = poemId,
+                    PoetId = Poem.Category.Poet.Id,
+                    RelatedPoetId = null,
+                    RelatedPoemId = null,
+                    IsPriorToRelated = false,
+                    ChosenForMainList = true,
+                    CachedRelatedPoemPoetDeathYearInLHijri = 0,
+                    CachedRelatedPoemPoetName = null,
+                    CachedRelatedPoemPoetUrl = null,
+                    CachedRelatedPoemPoetImage = null,
+                    CachedRelatedPoemFullTitle = null,
+                    CachedRelatedPoemFullUrl = null,
+                    SortOrder = 1000,
+                    Note = "",
+                    Published = false,
+                    ClaimedByBothPoets = false,
+                    IndirectQuotation = false,
+                    SamePoemsQuotedCount = 0,
+                    RelatedCoupletVerse1 = null,
+                    RelatedCoupletVerse1ShouldBeEmphasized = false,
+                    RelatedCoupletVerse2 = null,
+                    RelatedCoupletVerse2ShouldBeEmphasized = false,
+                    RelatedCoupletIndex = null,
+                    CoupletVerse1 = Poem.Verses[0].Text,
+                    CoupletVerse1ShouldBeEmphasized = false,
+                    CoupletVerse2 = Poem.Verses[1].Text,
+                    CoupletVerse2ShouldBeEmphasized = false,
+                    CoupletIndex = 0,
 
-            };
+                };
+            }
 
             return Page();
         }

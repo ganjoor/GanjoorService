@@ -630,14 +630,14 @@
                                             <div id="qpoems-section">
                                                 @for (int i = 0; i < Math.Min(5, Model.GanjoorPage.Poem.Top6QuotedPoems.Length); i++)
                                                 {
-                                                    <partial name="_QuotedPoemPartial" model=@Model.GetQuotedPoemModel(Model.GanjoorPage.Poem.Top6QuotedPoems[i], Model.GanjoorPage) />
+                                                    <partial name="_QuotedPoemPartial" model=@Model.GetQuotedPoemModel(Model.GanjoorPage.Poem.Top6QuotedPoems[i], Model.GanjoorPage, Model.CanEdit) />
                                                 }
 
                                                 @if (Model.GanjoorPage.Poem.Top6QuotedPoems.Length == 6)
                                                 {
                                                     <div id="more-quoted-placeholder"></div>
                                                     <div id="load-more-quoted">
-                                                        <a role="button" class="pagebutton" id="load-more-quoted" onclick="loadMoreQuotedPoems(@Model.GanjoorPage.Poem.Id, 5, '@Model.GanjoorPage.PoetOrCat.Poet.ImageUrl', '@Model.GanjoorPage.PoetOrCat.Poet.Nickname')">بیشتر<i class="info-buttons autorenew"></i></a>
+                                                        <a role="button" class="pagebutton" id="load-more-quoted" onclick="loadMoreQuotedPoems(@Model.GanjoorPage.Poem.Id, 5, '@Model.GanjoorPage.PoetOrCat.Poet.ImageUrl', '@Model.GanjoorPage.PoetOrCat.Poet.Nickname', @Model.CanEdit.ToString().ToLower())">بیشتر<i class="info-buttons autorenew"></i></a>
                                                     </div>
                                                 }
                                             </div>

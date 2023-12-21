@@ -1415,7 +1415,7 @@ function prevInlineSearchResult() {
 }
 
 
-function loadMoreQuotedForRelatedPoem(quoteRecordId, poemId, relatedPoemId, poetImageUrl, poetNickName) {
+function loadMoreQuotedForRelatedPoem(quoteRecordId, poemId, relatedPoemId, poetImageUrl, poetNickName, canEdit) {
     var buttonId = 'load-more-quoted-button-' + quoteRecordId;
     var loadButton = document.getElementById(buttonId);
     if (loadButton != null) {
@@ -1433,7 +1433,8 @@ function loadMoreQuotedForRelatedPoem(quoteRecordId, poemId, relatedPoemId, poet
             poemId: poemId,
             relatedPoemId: relatedPoemId, 
             poetImageUrl: poetImageUrl, 
-            poetNickName: poetNickName
+            poetNickName: poetNickName,
+            canEdit: canEdit
         },
         success: function (data) {
 
@@ -1446,7 +1447,7 @@ function loadMoreQuotedForRelatedPoem(quoteRecordId, poemId, relatedPoemId, poet
 }
 
 
-function loadMoreQuotedPoems(poemId, skip, poetImageUrl, poetNickName) {
+function loadMoreQuotedPoems(poemId, skip, poetImageUrl, poetNickName, canEdit) {
     var loadButton = document.getElementById('load-more-quoted');
     if (loadButton != null) {
         loadButton.remove();
@@ -1462,7 +1463,8 @@ function loadMoreQuotedPoems(poemId, skip, poetImageUrl, poetNickName) {
             poemId: poemId,
             skip: skip,
             poetImageUrl: poetImageUrl,
-            poetNickName: poetNickName
+            poetNickName: poetNickName,
+            canEdit: canEdit
         },
         success: function (data) {
 

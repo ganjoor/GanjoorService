@@ -107,13 +107,14 @@ namespace GanjooRazor.Pages
             };
         }
 
-        public _QuotedPoemPartialModel GetQuotedPoemModel(GanjoorQuotedPoem  quotedPoem, GanjoorPageCompleteViewModel page)
+        public _QuotedPoemPartialModel GetQuotedPoemModel(GanjoorQuotedPoem  quotedPoem, GanjoorPageCompleteViewModel page, bool canEdit)
         {
             return new _QuotedPoemPartialModel()
             {
                GanjoorQuotedPoem = quotedPoem,
                PoetImageUrl = page.PoetOrCat.Poet.ImageUrl,
-               PoetNickName = page.PoetOrCat.Poet.Nickname
+               PoetNickName = page.PoetOrCat.Poet.Nickname,
+               CanEdit = canEdit,
             };
         }
 
@@ -1140,7 +1141,7 @@ namespace GanjooRazor.Pages
             return new JsonResult(true);
         }
 
-        public async Task<ActionResult> OnGetMoreQuotedPoemsForRelatedPoemPartialAsync(int poemId, int relatedPoemId, string poetImageUrl, string poetNickName)
+        public async Task<ActionResult> OnGetMoreQuotedPoemsForRelatedPoemPartialAsync(int poemId, int relatedPoemId, string poetImageUrl, string poetNickName, bool canEdit)
         {
             string url = $"{APIRoot.Url}/api/ganjoor/poem/{poemId}/quoteds/{relatedPoemId}";
             var response = await _httpClient.GetAsync(url);
@@ -1165,13 +1166,14 @@ namespace GanjooRazor.Pages
                     {
                         GanjoorQuotedPoems = quoteds.ToArray(),
                         PoetImageUrl = poetImageUrl,
-                        PoetNickName = poetNickName
+                        PoetNickName = poetNickName,
+                        CanEdit = canEdit
                     }
                 }
             };
         }
 
-        public async Task<ActionResult> OnGetMoreQuotedPoemsPartialAsync(int poemId, int skip, string poetImageUrl, string poetNickName)
+        public async Task<ActionResult> OnGetMoreQuotedPoemsPartialAsync(int poemId, int skip, string poetImageUrl, string poetNickName, bool canEdit)
         {
             string url = $"{APIRoot.Url}/api/ganjoor/poem/{poemId}/quoteds?skip={skip}&itemsCount=1000";
             var response = await _httpClient.GetAsync(url);
@@ -1189,7 +1191,8 @@ namespace GanjooRazor.Pages
                     {
                         GanjoorQuotedPoems = quoteds.ToArray(),
                         PoetImageUrl = poetImageUrl,
-                        PoetNickName = poetNickName
+                        PoetNickName = poetNickName,
+                        CanEdit = canEdit
                     }
                 }
             };
