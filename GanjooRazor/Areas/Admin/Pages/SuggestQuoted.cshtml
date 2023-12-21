@@ -1,0 +1,22 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.SuggestQuotedModel
+@using DNTPersianUtils.Core
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "پیشنهاد مشق شعر";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>@Html.Raw(Model.LastMessage)</p>
+
+@if (Model.GanjoorQuotedPoem != null)
+{
+    <select asp-for="GanjoorQuotedPoem.CoupletIndex">
+        @foreach (var item in Model.Couplets)
+        {
+            <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
+        }
+    </select>
+}
