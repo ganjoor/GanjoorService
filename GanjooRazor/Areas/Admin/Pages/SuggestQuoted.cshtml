@@ -36,6 +36,7 @@
                 .then((json) => {
                     alert(json.poem.id);
                     document.getElementById('GanjoorQuotedPoem_RelatedPoemId').value = json.poem.id;
+                    document.getElementById('GanjoorQuotedPoem_RelatedPoetId').value = json.poem.category.poet.id;
                     document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemPoetName').value = json.poem.category.poet.nickname;
                     document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemPoetDeathYearInLHijri').value = json.poem.category.poet.deathYearInLHijri.toString();
                     document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemPoetUrl').value = json.poem.category.poet.fullUrl;
@@ -113,6 +114,16 @@
         </tr>
         <tr>
             <td>
+                شاعر مرجع:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.PoetId" />
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <a onclick="finalizeSelectPage()" class="pagebutton" role="button" id="finalize-select" style="display:none">انتخاب کردم</a>
             </td>
         </tr>
@@ -135,6 +146,11 @@
         <tr>
             <td>
                 شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.RelatedPoetId" />
             </td>
         </tr>
         <tr>
@@ -255,14 +271,22 @@
         </tr>
         <tr>
             <td>
+                مستقیماً ارتباط ندارد:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.IndirectQuotation" />
+            </td>
+        </tr>
+        <tr>
+            <td>
                 یادداشت:
             </td>
         </tr>
         <tr>
             <td>
-                <textarea asp-for="GanjoorQuotedPoem.Note" rows="4" cols="80">
-
-                    </textarea>
+                <textarea asp-for="GanjoorQuotedPoem.Note" rows="4" cols="80"></textarea>
             </td>
         </tr>
         <tr>
