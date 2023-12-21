@@ -77,7 +77,6 @@ namespace GanjooRazor.Areas.Admin.Pages
             bool incompleteCouplet = false;
             while (verseIndex < pageInformation.Poem.Verses.Length)
             {
-
                 switch (pageInformation.Poem.Verses[verseIndex].VersePosition)
                 {
                     case VersePosition.Comment:
@@ -126,13 +125,14 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             if (!string.IsNullOrEmpty(Request.Query["id"]))
             {
-                var quoteQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/quoted/{Request.Query["id"]}");
-                if (!pageQuery.IsSuccessStatusCode)
+                var id = Request.Query["id"];
+                var quoteQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/quoted/{id}");
+                if (!quoteQuery.IsSuccessStatusCode)
                 {
                     LastMessage = JsonConvert.DeserializeObject<string>(await quoteQuery.Content.ReadAsStringAsync());
                     return Page();
                 }
-                GanjoorQuotedPoem = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoem>();
+                GanjoorQuotedPoem = JObject.Parse(await quoteQuery.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoem>();
             }
             else
             {

@@ -215,6 +215,11 @@
         </div>
     }
 
+    @if (Model.CanEdit)
+    {
+        <a href="/Admin/SuggestQuoted/?p=@Model.GanjoorQuotedPoem.PoemId&id=@Model.GanjoorQuotedPoem.Id" class="pagebutton comments-link">ویرایش</a>
+    }
+
 </div>
 
 @if (Model.GanjoorQuotedPoem.ChosenForMainList && Model.GanjoorQuotedPoem.SamePoemsQuotedCount > 1)
