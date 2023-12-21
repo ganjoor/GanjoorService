@@ -145,77 +145,16 @@
         </tr>
         <tr>
             <td>
-                شاعر:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <input asp-for="GanjoorQuotedPoem.RelatedPoetId" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetName" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                سالمرگ شاعر:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetDeathYearInLHijri" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                نشانی صفحهٔ شاعر:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetUrl" style="direction:ltr" size="80" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                تصویر شاعر:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetImage" style="direction:ltr" size="80" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                عنوان شعر:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullTitle" size="80" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                نشانی شعر:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullUrl" style="direction:ltr" size="80" />
-            </td>
-        </tr>
-        <tr>
-            <td>
                 بیت مرتبط:
             </td>
         </tr>
         <tr>
             <td>
                 <select asp-for="GanjoorQuotedPoem.RelatedCoupletIndex" style="width:500px;">
+                    @foreach (var item in Model.RelatedCouplets)
+                    {
+                        <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
+                    }
                 </select>
             </td>
         </tr>
@@ -279,6 +218,82 @@
                 <input asp-for="GanjoorQuotedPoem.IndirectQuotation" />
             </td>
         </tr>
+        <tr>
+            <td>
+                منتسب به هر دو شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.ClaimedByBothPoets" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.RelatedPoetId" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetName" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                سالمرگ شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetDeathYearInLHijri" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                نشانی صفحهٔ شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetUrl" style="direction:ltr" size="80" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                تصویر شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetImage" style="direction:ltr" size="80" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                عنوان شعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullTitle" size="80" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                نشانی شعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullUrl" style="direction:ltr" size="80" />
+            </td>
+        </tr>
+        
         <tr>
             <td>
                 یادداشت:

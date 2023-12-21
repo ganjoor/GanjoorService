@@ -35,8 +35,66 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public Tuple<int, string>[] Couplets { get; set; }
 
+        public Tuple<int, string>[] RelatedCouplets { get; set; }
+
         [BindProperty]
         public GanjoorQuotedPoem GanjoorQuotedPoem { get; set; }
+
+        private Tuple<int, string>[] GetCouplets(GanjoorVerseViewModel[] verses)
+        {
+            int coupetIndex = -1;
+            string coupletText = "";
+            List<Tuple<int, string>> couplets = new List<Tuple<int, string>>();
+            int verseIndex = 0;
+            bool incompleteCouplet = false;
+            while (verseIndex < verses.Length)
+            {
+                switch (verses[verseIndex].VersePosition)
+                {
+                    case VersePosition.Comment:
+                        incompleteCouplet = false;
+                        if (!string.IsNullOrEmpty(coupletText))
+                        {
+                            couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
+                            coupletText = "";
+                        }
+                        break;
+                    case VersePosition.Paragraph:
+                    case VersePosition.Single:
+                        incompleteCouplet = false;
+                        if (!string.IsNullOrEmpty(coupletText))
+                        {
+                            couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
+                            coupletText = "";
+                        }
+                        coupetIndex++;
+                        couplets.Add(new Tuple<int, string>(coupetIndex, verses[verseIndex].Text));
+                        break;
+                    case VersePosition.Right:
+                    case VersePosition.CenteredVerse1:
+                        incompleteCouplet = false;
+                        if (!string.IsNullOrEmpty(coupletText))
+                        {
+                            couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
+                        }
+                        coupetIndex++;
+                        coupletText = verses[verseIndex].Text;
+                        break;
+                    case VersePosition.Left:
+                    case VersePosition.CenteredVerse2:
+                        incompleteCouplet = true;
+                        coupletText += $" - {verses[verseIndex].Text}";
+                        break;
+                }
+                verseIndex++;
+            }
+
+
+            if (incompleteCouplet && !string.IsNullOrEmpty(coupletText))
+                couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
+
+            return couplets.ToArray();
+        }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -70,58 +128,8 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             Poem = pageInformation.Poem;
 
-            int coupetIndex = -1;
-            string coupletText = "";
-            List<Tuple<int, string>> couplets = new List<Tuple<int, string>>();
-            int verseIndex = 0;
-            bool incompleteCouplet = false;
-            while (verseIndex < pageInformation.Poem.Verses.Length)
-            {
-                switch (pageInformation.Poem.Verses[verseIndex].VersePosition)
-                {
-                    case VersePosition.Comment:
-                        incompleteCouplet = false;
-                        if (!string.IsNullOrEmpty(coupletText))
-                        {
-                            couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
-                            coupletText = "";
-                        }
-                        break;
-                    case VersePosition.Paragraph:
-                    case VersePosition.Single:
-                        incompleteCouplet = false;
-                        if (!string.IsNullOrEmpty(coupletText))
-                        {
-                            couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
-                            coupletText = "";
-                        }
-                        coupetIndex++;
-                        couplets.Add(new Tuple<int, string>(coupetIndex, pageInformation.Poem.Verses[verseIndex].Text));
-                        break;
-                    case VersePosition.Right:
-                    case VersePosition.CenteredVerse1:
-                        incompleteCouplet = false;
-                        if (!string.IsNullOrEmpty(coupletText))
-                        {
-                            couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
-                        }
-                        coupetIndex++;
-                        coupletText = pageInformation.Poem.Verses[verseIndex].Text;
-                        break;
-                    case VersePosition.Left:
-                    case VersePosition.CenteredVerse2:
-                        incompleteCouplet = true;
-                        coupletText += $" - {pageInformation.Poem.Verses[verseIndex].Text}";
-                        break;
-                }
-                verseIndex++;
-            }
-
-
-            if (incompleteCouplet && !string.IsNullOrEmpty(coupletText))
-                couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
-
-            Couplets = couplets.ToArray();
+            Couplets = GetCouplets(Poem.Verses);
+            RelatedCouplets = [];
 
             if (!string.IsNullOrEmpty(Request.Query["id"]))
             {
@@ -133,6 +141,19 @@ namespace GanjooRazor.Areas.Admin.Pages
                     return Page();
                 }
                 GanjoorQuotedPoem = JObject.Parse(await quoteQuery.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoem>();
+                if(GanjoorQuotedPoem.RelatedPoemId != null)
+                {
+                    var poemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{GanjoorQuotedPoem.RelatedPoemId}");
+                    if (!poemQuery.IsSuccessStatusCode)
+                    {
+                        LastMessage = JsonConvert.DeserializeObject<string>(await poemQuery.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+                    var relPoem = JObject.Parse(await poemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
+
+                    RelatedCouplets = GetCouplets(relPoem.Verses);
+                }
+                
             }
             else
             {
