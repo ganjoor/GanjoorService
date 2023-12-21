@@ -13,13 +13,61 @@
 
 @if (Model.GanjoorQuotedPoem != null)
 {
-    <p>
-        بیت مرجع:
-    </p>
-    <select asp-for="GanjoorQuotedPoem.CoupletIndex" style="width:500px;">
-        @foreach (var item in Model.Couplets)
-        {
-            <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
+    <script>
+
+        function selectGanjoorPage() {
+            document.getElementById('display-frame').style.display = 'none';
+            document.getElementById('select-poem').style.display = 'block';
+            document.getElementById('finalize-select').style.display = 'block';
         }
-    </select>
+
+        function finalizeSelectPage() {
+            
+            document.getElementById('display-frame').style.display = 'block';
+            document.getElementById('select-poem').style.display = 'none';
+            document.getElementById('finalize-select').style.display = 'none';
+
+            const currentUrl = document.getElementById('select-poem').contentWindow.location.href;
+            alert(currentUrl);
+        }
+
+    </script>
+    <table>
+        <tr>
+            <td>
+                بیت مرجع:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <select asp-for="GanjoorQuotedPoem.CoupletIndex" style="width:500px;">
+                    @foreach (var item in Model.Couplets)
+                    {
+                        <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
+                    }
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a onclick="finalizeSelectPage()" class="pagebutton" role="button" id="finalize-select" style="display:none">انتخاب کردم</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <iframe id="select-poem" src="/" width="800" height="600" style="display:none"></iframe>
+            </td>
+        </tr>
+        <tr>
+            <td>
+
+                
+                <a onclick="selectGanjoorPage()" class="pagebutton" role="button" id="display-frame">گزینش شعر مرتبط</a>
+                
+
+            </td>
+        </tr>
+    </table>
+
+
 }
