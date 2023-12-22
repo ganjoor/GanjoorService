@@ -2027,7 +2027,7 @@
             <param name="relatedPoetId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32,System.Boolean,System.Nullable{System.Boolean})">
             <summary>
             get quoted poems for a poem
             </summary>
@@ -2035,6 +2035,7 @@
             <param name="skip"></param>
             <param name="itemsCount"></param>
             <param name="onlyClaimedByBothPoets"></param>
+            <param name="published"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorQuotedPoemsForRelatedAsync(System.Int32,System.Int32,System.Nullable{System.Boolean})">
@@ -15597,7 +15598,7 @@
             <param name="relatedPoetId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32,System.Boolean,System.Nullable{System.Boolean})">
             <summary>
             get quoted poems for a poem
             </summary>
@@ -15605,6 +15606,7 @@
             <param name="skip"></param>
             <param name="itemsCount"></param>
             <param name="onlyClaimedByBothPoets"></param>
+            <param name="published"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorQuotedPoemsForRelatedAsync(System.Int32,System.Int32,System.Nullable{System.Boolean})">
@@ -17703,7 +17705,7 @@
             <param name="indirect"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32,System.Boolean,System.Nullable{System.Boolean})">
             <summary>
             get quoted poems for a poem
             </summary>
@@ -17711,6 +17713,7 @@
             <param name="skip"></param>
             <param name="itemsCount"></param>
             <param name="onlyClaimedByBothPoets"></param>
+            <param name="published"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetGanjoorQuotedPoemsForRelatedAsync(System.Int32,System.Int32,System.Nullable{System.Boolean})">

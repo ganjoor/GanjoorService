@@ -795,16 +795,19 @@ namespace RMuseum.Services.Implementation
         /// <param name="skip"></param>
         /// <param name="itemsCount"></param>
         /// <param name="onlyClaimedByBothPoets"></param>
+        /// <param name="published"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForPoemAsync(int poemId, int skip, int itemsCount, bool onlyClaimedByBothPoets)
+        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForPoemAsync(int poemId, int skip, int itemsCount, bool onlyClaimedByBothPoets, bool? published)
         {
             try
             {
                 var source =
                 _context.GanjoorQuotedPoems
                          .AsNoTracking()
-                        .Where(r => r.PoemId == poemId && r.Published && r.ChosenForMainList == true
-                                && (!onlyClaimedByBothPoets || r.ClaimedByBothPoets == true))
+                        .Where(r => r.PoemId == poemId && r.ChosenForMainList == true
+                                && (!onlyClaimedByBothPoets || r.ClaimedByBothPoets == true)
+                                && (published == null || r.Published == published)
+                                )
                         .OrderBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri);
 
                 if (itemsCount <= 0)
