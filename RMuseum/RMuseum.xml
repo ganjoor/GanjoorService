@@ -3407,6 +3407,11 @@
             Related Poems
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.DiscoverQuotedQueueItems">
+            <summary>
+            discover quoted q items
+            </summary>
+        </member>
         <member name="T:RMuseum.Migrations.PictureFileExtUrl">
             <inheritdoc />
         </member>
@@ -6841,6 +6846,36 @@
         <member name="T:RMuseum.Models.Ganjoor.CorrectionReviewResult">
             <summary>
             correction review result
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.DiscoverQuotedQueueItem">
+            <summary>
+            discover quoted q item
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.DiscoverQuotedQueueItem.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.DiscoverQuotedQueueItem.PoetId">
+            <summary>
+            poet id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.DiscoverQuotedQueueItem.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.DiscoverQuotedQueueItem.RelatedPoetId">
+            <summary>
+            related poet id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.DiscoverQuotedQueueItem.RelatedPoemId">
+            <summary>
+            related poem id
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorCachedRelatedPoem.Id">

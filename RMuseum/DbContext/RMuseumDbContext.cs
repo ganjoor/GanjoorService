@@ -563,5 +563,11 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorQuotedPoem> GanjoorQuotedPoems { get; set; }
 
+
+        /// <summary>
+        /// discover quoted q items
+        /// </summary>
+        public DbSet<DiscoverQuotedQueueItem> DiscoverQuotedQueueItems { get; set; }
+
     }
 }
