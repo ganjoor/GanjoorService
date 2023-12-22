@@ -3658,10 +3658,31 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult StartRegeneratingRelatedPoemsPagesAsync()
+        public IActionResult StartRegeneratingRelatedPoemsPages()
         {
             var loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            var res = _ganjoorService.StartRegeneratingRelatedPoemsPagesAsync(loggedOnUserId);
+            var res = _ganjoorService.StartRegeneratingRelatedPoemsPages(loggedOnUserId);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// discover related poems
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="relatedPoetId"></param>
+        /// <returns></returns>
+        [HttpPost("quoted/discover/{poetId}/{relaredPoetId}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartDiscoverRelatedPoems(int poetId, int relatedPoetId)
+        {
+            
+            var res = _ganjoorService.StartDiscoverRelatedPoems(poetId, relatedPoetId);
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);

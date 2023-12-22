@@ -2013,10 +2013,18 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.StartRegeneratingRelatedPoemsPagesAsync">
+        <member name="M:RMuseum.Controllers.GanjoorController.StartRegeneratingRelatedPoemsPages">
             <summary>
             regenerate related poems pages
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartDiscoverRelatedPoems(System.Int32,System.Int32)">
+            <summary>
+            discover related poems
+            </summary>
+            <param name="poetId"></param>
+            <param name="relatedPoetId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32,System.Boolean)">
@@ -15562,11 +15570,19 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.StartRegeneratingRelatedPoemsPagesAsync(System.Guid)">
+        <member name="M:RMuseum.Services.IGanjoorService.StartRegeneratingRelatedPoemsPages(System.Guid)">
             <summary>
             regenerate related poems pages
             </summary>
             <param name="editingUserId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartDiscoverRelatedPoems(System.Int32,System.Int32)">
+            <summary>
+            discover related poems
+            </summary>
+            <param name="poetId"></param>
+            <param name="relatedPoetId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32,System.Boolean)">
@@ -17607,7 +17623,15 @@
             <param name="metre"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartRegeneratingRelatedPoemsPagesAsync(System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartDiscoverRelatedPoems(System.Int32,System.Int32)">
+            <summary>
+            discover related poems
+            </summary>
+            <param name="poetId"></param>
+            <param name="relatedPoetId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartRegeneratingRelatedPoemsPages(System.Guid)">
             <summary>
             regenerate related poems pages
             </summary>

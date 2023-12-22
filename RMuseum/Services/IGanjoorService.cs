@@ -1222,7 +1222,15 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="editingUserId"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartRegeneratingRelatedPoemsPagesAsync(Guid editingUserId);
+        RServiceResult<bool> StartRegeneratingRelatedPoemsPages(Guid editingUserId);
+
+        /// <summary>
+        /// discover related poems
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="relatedPoetId"></param>
+        /// <returns></returns>
+        RServiceResult<bool> StartDiscoverRelatedPoems(int poetId, int relatedPoetId);
 
         /// <summary>
         /// get quoted poems for a poem
