@@ -17556,6 +17556,15 @@
             <param name="metre"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._RegenerateRelatedPoemsPageAsync(RMuseum.DbContext.RMuseumDbContext,System.Int32,System.Int32)">
+            <summary>
+            parse related pages
+            </summary>
+            <param name="context"></param>
+            <param name="poetId"></param>
+            <param name="relatedPoetId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetGanjoorQuotedPoemByIdAsync(System.Guid)">
             <summary>
             get quoted by id
