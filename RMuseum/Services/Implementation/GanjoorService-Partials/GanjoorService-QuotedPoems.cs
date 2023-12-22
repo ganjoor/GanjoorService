@@ -380,7 +380,7 @@ namespace RMuseum.Services.Implementation
                     await _context.SaveChangesAsync();
                 }
 
-                if (quoted.RelatedPoetId != null)
+                if (quoted.Published && quoted.RelatedPoetId != null)
                 {
                     var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == quoted.PoetId && p.SecondPoetId == quoted.RelatedPoetId).SingleOrDefaultAsync();
                     if(page != null)
@@ -454,7 +454,7 @@ namespace RMuseum.Services.Implementation
 
                 await _context.SaveChangesAsync();
 
-                if (quoted.RelatedPoetId != null)
+                if (quoted.Published && quoted.RelatedPoetId != null)
                 {
                     var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == quoted.PoetId && p.SecondPoetId == quoted.RelatedPoetId).SingleOrDefaultAsync();
                     if (page != null)
@@ -487,6 +487,7 @@ namespace RMuseum.Services.Implementation
                 var poetId = q.PoetId;
                 var relatedPoetId = q.RelatedPoetId;
                 var relatedPoemId = q.RelatedPoemId;
+                var published = q.Published;
                 _context.Remove(q);
                 await _context.SaveChangesAsync();
 
@@ -507,7 +508,7 @@ namespace RMuseum.Services.Implementation
                     await _context.SaveChangesAsync();
                 }
 
-                if (relatedPoetId != null)
+                if (published && relatedPoetId != null)
                 {
                     var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == poetId && p.SecondPoetId == relatedPoetId).SingleOrDefaultAsync();
                     if (page != null)
