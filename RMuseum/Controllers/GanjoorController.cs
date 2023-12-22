@@ -3704,7 +3704,7 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetGanjoorQuotedPoemsForPoemAsync(int id, int skip, int itemsCount, bool onlyClaimedByBothPoets = false, bool? published = true)
+        public async Task<IActionResult> GetGanjoorQuotedPoemsForPoemAsync(int id, int skip, int itemsCount, bool onlyClaimedByBothPoets = false, bool? published = null)
         {
             RServiceResult<GanjoorQuotedPoem[]> res =
                 await _ganjoorService.GetGanjoorQuotedPoemsForPoemAsync(id, skip, itemsCount, onlyClaimedByBothPoets, published);
