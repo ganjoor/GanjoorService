@@ -128,7 +128,7 @@
         <table>
             <tr>
                 <td>
-                    بیت مرجع:
+                    بیت مرجع از <a href="/?p=@Model.GanjoorQuotedPoem.PoemId">شعر</a>:
                     <input type="hidden" asp-for="GanjoorQuotedPoem.Id" />
                     <input type="hidden" asp-for="GanjoorQuotedPoem.PoemId" />
                     <input type="hidden" asp-for="GanjoorQuotedPoem.PoetId" />
@@ -423,7 +423,7 @@
         @foreach (var q in Model.AllPoemQuoteds)
         {
             <tr>
-                <td><a href="Admin/SuggestQuoted/?p=@q.PoemId&id=@q.Id">#</a> </td>
+                <td><a href="/Admin/SuggestQuoted/?p=@q.PoemId&id=@q.Id">#</a> </td>
                 <td>@q.CachedRelatedPoemPoetName</td>
                 <td>@q.CoupletVerse1</td>
                 <td>@q.CoupletVerse2</td>
