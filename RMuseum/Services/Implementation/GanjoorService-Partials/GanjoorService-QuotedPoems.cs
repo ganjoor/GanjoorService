@@ -237,7 +237,7 @@ namespace RMuseum.Services.Implementation
                 var source =
                 _context.GanjoorQuotedPoems
                          .AsNoTracking()
-                        .Where(r => r.PoemId == poemId && r.ChosenForMainList == true
+                        .Where(r => r.PoemId == poemId && r.Published && r.ChosenForMainList == true
                                 && (!onlyClaimedByBothPoets || r.ClaimedByBothPoets == true))
                         .OrderBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri);
 
@@ -259,8 +259,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="poemId"></param>
         /// <param name="relatedPoemId"></param>
+        /// <param name="published"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForRelatedAsync(int poemId, int relatedPoemId)
+        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForRelatedAsync(int poemId, int relatedPoemId, bool? published)
         {
             try
             {
@@ -268,7 +269,7 @@ namespace RMuseum.Services.Implementation
                 (
                     await _context.GanjoorQuotedPoems
                          .AsNoTracking()
-                        .Where(r => r.PoemId == poemId && r.RelatedPoemId == relatedPoemId)
+                        .Where(r => r.PoemId == poemId && r.RelatedPoemId == relatedPoemId && (published == null || r.Published == published) )
                         .OrderBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri).ToArrayAsync()
                         );
 

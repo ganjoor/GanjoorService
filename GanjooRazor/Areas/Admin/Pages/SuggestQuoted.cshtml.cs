@@ -13,6 +13,9 @@ using GanjooRazor.Utils;
 using System.Text;
 using System.Linq;
 using System.Net;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Azure;
+using System.Drawing;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
@@ -45,6 +48,8 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         [BindProperty]
         public GanjoorQuotedPoem GanjoorQuotedPoem { get; set; }
+
+        public GanjoorQuotedPoem[] AllPoemQuoteds { get; set; }
 
         private Tuple<int, string>[] GetCouplets(GanjoorVerseViewModel[] verses)
         {
@@ -175,6 +180,14 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                 };
             }
+
+            var allQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/quoteds");
+            if (!allQuery.IsSuccessStatusCode)
+            {
+                LastMessage = JsonConvert.DeserializeObject<string>(await allQuery.Content.ReadAsStringAsync());
+                return LastMessage;
+            }
+            AllPoemQuoteds = JsonConvert.DeserializeObject<GanjoorQuotedPoem[]>(await allQuery.Content.ReadAsStringAsync());
             return LastMessage;
         }
 
@@ -197,6 +210,9 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostAsync(GanjoorQuotedPoem GanjoorQuotedPoem)
         {
+            try
+            {
+            
             await Prepare(GanjoorQuotedPoem.PoemId, GanjoorQuotedPoem.Id == Guid.Empty ? null : GanjoorQuotedPoem.Id.ToString());
             GanjoorQuotedPoem.CoupletVerse1 = Poem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.CoupletIndex).ToArray()[0].Text;
             GanjoorQuotedPoem.CoupletVerse2 = Poem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.CoupletIndex).ToArray()[1].Text;
@@ -249,6 +265,11 @@ namespace GanjooRazor.Areas.Admin.Pages
                     LastMessage = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
                 }
 
+            }
+            }
+            catch (Exception e)
+            {
+                LastMessage = e.ToString();
             }
             return Page();
         }

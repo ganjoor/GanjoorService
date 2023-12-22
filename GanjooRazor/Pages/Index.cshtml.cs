@@ -1143,7 +1143,7 @@ namespace GanjooRazor.Pages
 
         public async Task<ActionResult> OnGetMoreQuotedPoemsForRelatedPoemPartialAsync(int poemId, int relatedPoemId, string poetImageUrl, string poetNickName, bool canEdit)
         {
-            string url = $"{APIRoot.Url}/api/ganjoor/poem/{poemId}/quoteds/{relatedPoemId}";
+            string url = $"{APIRoot.Url}/api/ganjoor/poem/{poemId}/quoteds/{relatedPoemId}?published=true";
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
                 return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));

@@ -3677,16 +3677,17 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="relatedId"></param>
+        /// <param name="published"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("poem/{id}/quoteds/{relatedId}")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetGanjoorQuotedPoemsForRelatedAsync(int id, int relatedId)
+        public async Task<IActionResult> GetGanjoorQuotedPoemsForRelatedAsync(int id, int relatedId, bool? published = null)
         {
             RServiceResult<GanjoorQuotedPoem[]> res =
-                await _ganjoorService.GetGanjoorQuotedPoemsForRelatedAsync(id, relatedId);
+                await _ganjoorService.GetGanjoorQuotedPoemsForRelatedAsync(id, relatedId, published);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

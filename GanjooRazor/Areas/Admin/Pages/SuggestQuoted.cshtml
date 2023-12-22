@@ -356,5 +356,30 @@
         </table>
     </form>
 
+    <h1>همهٔ مشق‌های شعر</h1>
+    <table>
+        <tr>
+            <td>#</td>
+            <td>شاعر</td>
+            <td>۱</td>
+            <td>۲</td>
+            <td>۱</td>
+            <td>۲</td>
+            <td>منتشر شده</td>
+        </tr>
+        @foreach (var q in Model.AllPoemQuoteds)
+        {
+            <tr>
+                <td><a href="Admin/SuggestQuoted/?p=@q.PoemId&id=@q.Id">#</a> </td>
+                <td>@q.CachedRelatedPoemPoetName</td>
+                <td>@q.CoupletVerse1</td>
+                <td>@q.CoupletVerse2</td>
+                <td>@q.RelatedCoupletVerse1</td>
+                <td>@q.RelatedCoupletVerse2</td>
+                <td>@q.Published</td>
+            </tr>
+        }
+    </table>
+
 
 }
