@@ -295,5 +295,87 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             return new JsonResult(true);
         }
+
+        public async Task<IActionResult> OnPostGenerateReverseAsync(string id)
+        {
+            var quoteQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/quoted/{id}");
+            if (!quoteQuery.IsSuccessStatusCode)
+            {
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await quoteQuery.Content.ReadAsStringAsync()));
+            }
+            var quote = JObject.Parse(await quoteQuery.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoem>();
+
+            var poemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{quote.PoemId}");
+            if (!poemQuery.IsSuccessStatusCode)
+            {
+                LastMessage = JsonConvert.DeserializeObject<string>(await poemQuery.Content.ReadAsStringAsync());
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await quoteQuery.Content.ReadAsStringAsync()));
+            }
+            Poem = JObject.Parse(await poemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
+
+            GanjoorQuotedPoem reverseRelation = new GanjoorQuotedPoem()
+            {
+                PoemId = (int)quote.RelatedPoemId,
+                PoetId = (int)quote.RelatedPoetId,
+                RelatedPoetId = quote.PoetId,
+                RelatedPoemId = quote.PoemId,
+                IsPriorToRelated = !quote.IsPriorToRelated,
+                ChosenForMainList = true,
+                CachedRelatedPoemPoetDeathYearInLHijri = Poem.Category.Poet.DeathYearInLHijri,
+                CachedRelatedPoemPoetName = Poem.Category.Poet.Nickname,
+                CachedRelatedPoemPoetUrl = Poem.Category.Poet.FullUrl,
+                CachedRelatedPoemPoetImage = $"/api/ganjoor/poet/image{Poem.Category.Poet.FullUrl}.gif",
+                CachedRelatedPoemFullTitle = Poem.FullTitle,
+                CachedRelatedPoemFullUrl = Poem.FullUrl,
+                SortOrder = 1000,
+                Note = quote.Note,
+                Published = false,
+                RelatedCoupletVerse1 = quote.CoupletVerse1,
+                RelatedCoupletVerse1ShouldBeEmphasized = quote.CoupletVerse1ShouldBeEmphasized,
+                RelatedCoupletVerse2 = quote.CoupletVerse2,
+                RelatedCoupletVerse2ShouldBeEmphasized = quote.CoupletVerse2ShouldBeEmphasized,
+                RelatedCoupletIndex = quote.CoupletIndex,
+                CoupletVerse1 = quote.RelatedCoupletVerse1,
+                CoupletVerse1ShouldBeEmphasized = quote.RelatedCoupletVerse1ShouldBeEmphasized,
+                CoupletVerse2 = quote.RelatedCoupletVerse2,
+                CoupletVerse2ShouldBeEmphasized = quote.RelatedCoupletVerse2ShouldBeEmphasized,
+                CoupletIndex = quote.RelatedCoupletIndex,
+                ClaimedByBothPoets = quote.ClaimedByBothPoets,
+                IndirectQuotation = quote.IndirectQuotation,
+                SamePoemsQuotedCount = 1,
+
+            };
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var url = $"{APIRoot.Url}/api/ganjoor/quoted";
+                    var payload = new StringContent(JsonConvert.SerializeObject(reverseRelation), Encoding.UTF8, "application/json");
+                    
+                    HttpResponseMessage response =
+                       
+                        await secureClient.PostAsync(url, payload)
+                        ;
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await quoteQuery.Content.ReadAsStringAsync()));
+                    }
+                    else
+                    {
+                        reverseRelation = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoem>();
+                        return new JsonResult($"/Admin/SuggestQuoted/?p={reverseRelation.PoemId}&id={reverseRelation.Id}\"");
+                    }
+                }
+                else
+                {
+                    return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>("لطفاً از گنجور خارج و مجددا به آن وارد شوید."));
+                    
+                }
+
+            }
+
+            
+        }
     }
 }
