@@ -2013,6 +2013,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartRegeneratingRelatedPoemsPagesAsync">
+            <summary>
+            regenerate related poems pages
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32,System.Boolean)">
             <summary>
             get quoted poems for a poem
@@ -15521,6 +15527,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartRegeneratingRelatedPoemsPagesAsync(System.Guid)">
+            <summary>
+            regenerate related poems pages
+            </summary>
+            <param name="editingUserId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32,System.Boolean)">
             <summary>
             get quoted poems for a poem
@@ -17557,6 +17570,13 @@
             </summary>
             <param name="id">problable metre id</param>
             <param name="metre"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartRegeneratingRelatedPoemsPagesAsync(System.Guid)">
+            <summary>
+            regenerate related poems pages
+            </summary>
+            <param name="editingUserId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._RegenerateRelatedPoemsPageAsync(System.Guid,RMuseum.DbContext.RMuseumDbContext,System.Int32,System.Int32)">

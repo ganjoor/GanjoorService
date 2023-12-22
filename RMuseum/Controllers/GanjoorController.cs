@@ -3651,6 +3651,25 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// regenerate related poems pages
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("quoted/pages/generate")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartRegeneratingRelatedPoemsPagesAsync()
+        {
+            var loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = _ganjoorService.StartRegeneratingRelatedPoemsPagesAsync(loggedOnUserId);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok();
+        }
+
+        /// <summary>
         /// get quoted poems for a poem
         /// </summary>
         /// <param name="id"></param>

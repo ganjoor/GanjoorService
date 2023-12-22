@@ -17,7 +17,52 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
-        public RServiceResult<bool> StartRegeneratingRelatedPoemsPageAsync(Guid editingUserId, int poetId, int relatedPoetId)
+        /// <summary>
+        /// regenerate related poems pages
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <returns></returns>
+        public RServiceResult<bool> StartRegeneratingRelatedPoemsPagesAsync(Guid editingUserId)
+        {
+            try
+            {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                           (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                               {
+                                   LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+
+                                   var job = (await jobProgressServiceEF.NewJob($"StartRegeneratingRelatedPoemsPagesAsync", "Query data")).Result;
+
+                                   try
+                                   {
+                                       var pages = await context.GanjoorPages.AsNoTracking().Where(p =>  p.SecondPoetId != null).ToListAsync();
+                                       foreach (var page in pages)
+                                       {
+                                           await jobProgressServiceEF.UpdateJob(job.Id, page.Id, $"StartRegeneratingRelatedPoemsPageAsync({page.PoetId}, {page.SecondPoetId})");
+                                           await _RegenerateRelatedPoemsPageAsync(editingUserId, context, (int)page.PoetId, (int)page.SecondPoetId);
+                                       }
+                                      
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                   }
+                                   catch (Exception exp)
+                                   {
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                   }
+
+                               }
+                           });
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        private RServiceResult<bool> _StartRegeneratingRelatedPoemsPageAsync(Guid editingUserId, int poetId, int relatedPoetId)
         {
             try
             {
@@ -340,7 +385,7 @@ namespace RMuseum.Services.Implementation
                     var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == quoted.PoetId && p.SecondPoetId == quoted.RelatedPoetId).SingleOrDefaultAsync();
                     if(page != null)
                     {
-                        StartRegeneratingRelatedPoemsPageAsync(editingUserId, quoted.PoetId, (int)quoted.RelatedPoetId);
+                        _StartRegeneratingRelatedPoemsPageAsync(editingUserId, quoted.PoetId, (int)quoted.RelatedPoetId);
                     }
                 }
 
@@ -414,7 +459,7 @@ namespace RMuseum.Services.Implementation
                     var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == quoted.PoetId && p.SecondPoetId == quoted.RelatedPoetId).SingleOrDefaultAsync();
                     if (page != null)
                     {
-                        StartRegeneratingRelatedPoemsPageAsync(editingUserId, quoted.PoetId, (int)quoted.RelatedPoetId);
+                        _StartRegeneratingRelatedPoemsPageAsync(editingUserId, quoted.PoetId, (int)quoted.RelatedPoetId);
                     }
                 }
 
@@ -467,7 +512,7 @@ namespace RMuseum.Services.Implementation
                     var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == poetId && p.SecondPoetId == relatedPoetId).SingleOrDefaultAsync();
                     if (page != null)
                     {
-                        StartRegeneratingRelatedPoemsPageAsync(editingUserId, poetId, (int)relatedPoetId);
+                        _StartRegeneratingRelatedPoemsPageAsync(editingUserId, poetId, (int)relatedPoetId);
                     }
                 }
 

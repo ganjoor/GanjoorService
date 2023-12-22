@@ -1218,6 +1218,13 @@ namespace RMuseum.Services
         RServiceResult<bool> StartExtractingQuotedPoems();
 
         /// <summary>
+        /// regenerate related poems pages
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <returns></returns>
+        RServiceResult<bool> StartRegeneratingRelatedPoemsPagesAsync(Guid editingUserId);
+
+        /// <summary>
         /// get quoted poems for a poem
         /// </summary>
         /// <param name="poemId"></param>
