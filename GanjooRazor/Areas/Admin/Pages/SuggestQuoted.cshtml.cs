@@ -12,6 +12,7 @@ using RMuseum.Models.Ganjoor;
 using GanjooRazor.Utils;
 using System.Text;
 using System.Linq;
+using System.Net;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
@@ -250,6 +251,28 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             }
             return Page();
+        }
+
+        public async Task<IActionResult> OnDeleteAsync(string id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/quoted?id={id}");
+
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+            return new JsonResult(true);
         }
     }
 }

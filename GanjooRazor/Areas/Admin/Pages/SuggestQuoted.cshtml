@@ -75,6 +75,31 @@
 
         }
 
+        function deleteThisOne(id) {
+            if (!confirm('آیا از حذف این مورد اطمینان دارید؟'))
+                return;
+
+
+            $.ajax({
+                type: "DELETE",
+                url: '',
+                data: {
+                    id: id
+                },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+                success: function () {
+                    alert('انجام شد.');
+                    location.reload(true);
+                },
+            });
+
+        }
+
     </script>
     <form method="post">
         <table>
@@ -324,6 +349,10 @@
                 </td>
             </tr>
 
+            <tr><td><hr /></td></tr>
+            <tr><td>
+                    <a role="button" onclick="deleteThisOne('@Model.GanjoorQuotedPoem.Id')" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
+            </td></tr>
         </table>
     </form>
 
