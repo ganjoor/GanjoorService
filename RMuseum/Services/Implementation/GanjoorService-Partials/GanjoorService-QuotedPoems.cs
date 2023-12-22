@@ -7,7 +7,6 @@ using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,6 +17,40 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+        public RServiceResult<bool> StartRegeneratingRelatedPoemsPageAsync(Guid editingUserId, int poetId, int relatedPoetId)
+        {
+            try
+            {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                           (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                               {
+                                   LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+
+                                   var job = (await jobProgressServiceEF.NewJob($"StartRegeneratingRelatedPoemsPageAsync({poetId}, {relatedPoetId})", "Query data")).Result;
+
+                                   try
+                                   {
+                                       await _RegenerateRelatedPoemsPageAsync(editingUserId, context, poetId, relatedPoetId);
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                   }
+                                   catch (Exception exp)
+                                   {
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                   }
+
+                               }
+                           });
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
         /// <summary>
         /// parse related pages
         /// </summary>
@@ -92,6 +125,11 @@ namespace RMuseum.Services.Implementation
                     }
                     html += $"</p>{Environment.NewLine}";
 
+                    if(!string.IsNullOrEmpty(quotedPoem.Note))
+                    {
+                        html += $"<div class=\"notice\">{quotedPoem.Note}</div>{Environment.NewLine}";
+                    }
+
                     html += $"</li>{Environment.NewLine}";
                 }
                 html += $"</ol>{Environment.NewLine}";
@@ -153,6 +191,11 @@ namespace RMuseum.Services.Implementation
                         html += quotedPoem.RelatedCoupletVerse2;
                     }
                     html += $"</p>{Environment.NewLine}";
+
+                    if (!string.IsNullOrEmpty(quotedPoem.Note))
+                    {
+                        html += $"<div class=\"notice\">{quotedPoem.Note}</div>{Environment.NewLine}";
+                    }
 
                     html += $"</li>{Environment.NewLine}";
                 }
@@ -264,8 +307,9 @@ namespace RMuseum.Services.Implementation
         /// insert quoted poem
         /// </summary>
         /// <param name="quoted"></param>
+        /// <param name="editingUserId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorQuotedPoem>> InsertGanjoorQuotedPoemAsync(GanjoorQuotedPoem quoted)
+        public async Task<RServiceResult<GanjoorQuotedPoem>> InsertGanjoorQuotedPoemAsync(GanjoorQuotedPoem quoted, Guid editingUserId)
         {
             try
             {
@@ -291,7 +335,14 @@ namespace RMuseum.Services.Implementation
                     await _context.SaveChangesAsync();
                 }
 
-
+                if (quoted.RelatedPoetId != null)
+                {
+                    var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == quoted.PoetId && p.SecondPoetId == quoted.RelatedPoetId).SingleOrDefaultAsync();
+                    if(page != null)
+                    {
+                        StartRegeneratingRelatedPoemsPageAsync(editingUserId, quoted.PoetId, (int)quoted.RelatedPoetId);
+                    }
+                }
 
                 return new RServiceResult<GanjoorQuotedPoem>(quoted);
 
@@ -306,8 +357,9 @@ namespace RMuseum.Services.Implementation
         /// update quoted poem
         /// </summary>
         /// <param name="quoted"></param>
+        /// <param name="editingUserId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> UpdateGanjoorQuotedPoemsAsync(GanjoorQuotedPoem quoted)
+        public async Task<RServiceResult<bool>> UpdateGanjoorQuotedPoemsAsync(GanjoorQuotedPoem quoted, Guid editingUserId)
         {
             try
             {
@@ -357,6 +409,15 @@ namespace RMuseum.Services.Implementation
 
                 await _context.SaveChangesAsync();
 
+                if (quoted.RelatedPoetId != null)
+                {
+                    var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == quoted.PoetId && p.SecondPoetId == quoted.RelatedPoetId).SingleOrDefaultAsync();
+                    if (page != null)
+                    {
+                        StartRegeneratingRelatedPoemsPageAsync(editingUserId, quoted.PoetId, (int)quoted.RelatedPoetId);
+                    }
+                }
+
                 return new RServiceResult<bool>(true);
 
             }
@@ -370,13 +431,16 @@ namespace RMuseum.Services.Implementation
         /// delete quoted by id
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="editingUserId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> DeleteGanjoorQuotedPoemByIdAsync(Guid id)
+        public async Task<RServiceResult<bool>> DeleteGanjoorQuotedPoemByIdAsync(Guid id, Guid editingUserId)
         {
             try
             {
                 var q = await _context.GanjoorQuotedPoems.Where(q => q.Id == id).SingleAsync();
                 var poemId = q.PoemId;
+                var poetId = q.PoetId;
+                var relatedPoetId = q.RelatedPoetId;
                 var relatedPoemId = q.RelatedPoemId;
                 _context.Remove(q);
                 await _context.SaveChangesAsync();
@@ -396,6 +460,15 @@ namespace RMuseum.Services.Implementation
                     rel.SamePoemsQuotedCount = allRelateds.Count;
                     _context.Update(rel);
                     await _context.SaveChangesAsync();
+                }
+
+                if (relatedPoetId != null)
+                {
+                    var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == poetId && p.SecondPoetId == relatedPoetId).SingleOrDefaultAsync();
+                    if (page != null)
+                    {
+                        StartRegeneratingRelatedPoemsPageAsync(editingUserId, poetId, (int)relatedPoetId);
+                    }
                 }
 
 

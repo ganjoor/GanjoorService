@@ -3749,8 +3749,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> InsertGanjoorQuotedPoemAsync([FromBody] GanjoorQuotedPoem quoted)
         {
+            var loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<GanjoorQuotedPoem> res =
-                await _ganjoorService.InsertGanjoorQuotedPoemAsync(quoted);
+                await _ganjoorService.InsertGanjoorQuotedPoemAsync(quoted, loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -3768,8 +3769,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> UpdateGanjoorQuotedPoemsAsync([FromBody] GanjoorQuotedPoem quoted)
         {
+            var loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<bool> res =
-                await _ganjoorService.UpdateGanjoorQuotedPoemsAsync(quoted);
+                await _ganjoorService.UpdateGanjoorQuotedPoemsAsync(quoted, loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok();
@@ -3787,8 +3789,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> DeleteGanjoorQuotedPoemByIdAsync(Guid id)
         {
+            var loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<bool> res =
-                await _ganjoorService.DeleteGanjoorQuotedPoemByIdAsync(id);
+                await _ganjoorService.DeleteGanjoorQuotedPoemByIdAsync(id, loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok();

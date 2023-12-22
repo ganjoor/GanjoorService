@@ -1259,21 +1259,24 @@ namespace RMuseum.Services
         /// insert quoted poem
         /// </summary>
         /// <param name="quoted"></param>
+        /// <param name="editingUserId"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorQuotedPoem>> InsertGanjoorQuotedPoemAsync(GanjoorQuotedPoem quoted);
+        Task<RServiceResult<GanjoorQuotedPoem>> InsertGanjoorQuotedPoemAsync(GanjoorQuotedPoem quoted, Guid editingUserId);
 
         /// <summary>
         /// update quoted poem
         /// </summary>
         /// <param name="quoted"></param>
+        /// <param name="editingUserId"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> UpdateGanjoorQuotedPoemsAsync(GanjoorQuotedPoem quoted);
+        Task<RServiceResult<bool>> UpdateGanjoorQuotedPoemsAsync(GanjoorQuotedPoem quoted, Guid editingUserId);
 
         /// <summary>
         /// delete quoted by id
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="editingUserId"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> DeleteGanjoorQuotedPoemByIdAsync(Guid id);
+        Task<RServiceResult<bool>> DeleteGanjoorQuotedPoemByIdAsync(Guid id, Guid editingUserId);
     }
 }
