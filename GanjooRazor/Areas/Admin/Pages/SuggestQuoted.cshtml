@@ -97,7 +97,30 @@
                     location.reload(true);
                 },
             });
+        }
 
+        function reverseQuote(id) {
+            if (!confirm('آیا از درج معکوس این مورد اطمینان دارید؟'))
+                return;
+
+
+            $.ajax({
+                type: "POST",
+                url: '?handler=GenerateReverse',
+                data: {
+                    id: id
+                },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+                success: function (e) {
+                    alert('انجام شد.');
+                    location.href = e;
+                },
+            });
         }
 
     </script>
@@ -373,7 +396,14 @@
             <tr><td><hr /></td></tr>
             <tr>
                 <td>
-                    <a role="button" onclick="deleteThisOne('@Model.GanjoorQuotedPoem.Id')" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
+                    <a role="button" onclick="reverseQuote('@Model.GanjoorQuotedPoem.Id')" class="actionlink" title="درج معکوس">درج معکوس</a>
+                </td>
+            </tr>
+
+            <tr><td><hr /></td></tr>
+            <tr>
+                <td>
+                    <a role="button" onclick="deleteThisOne('@Model.GanjoorQuotedPoem.Id')" class="actionlink" title="حذف">حذف <i class="noindent-info-button delete-icon"></i></a>
                 </td>
             </tr>
         </table>

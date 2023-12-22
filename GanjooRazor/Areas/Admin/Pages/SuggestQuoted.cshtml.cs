@@ -364,7 +364,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     else
                     {
                         reverseRelation = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoem>();
-                        return new JsonResult($"/Admin/SuggestQuoted/?p={reverseRelation.PoemId}&id={reverseRelation.Id}\"");
+                        return new JsonResult($"/Admin/SuggestQuoted/?p={reverseRelation.PoemId}&id={reverseRelation.Id}");
                     }
                 }
                 else
