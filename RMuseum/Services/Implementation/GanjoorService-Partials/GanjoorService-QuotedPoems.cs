@@ -16,6 +16,149 @@ namespace RMuseum.Services.Implementation
     public partial class GanjoorService : IGanjoorService
     {
         /// <summary>
+        /// parse related pages
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="poetId"></param>
+        /// <param name="relatedPoetId"></param>
+        /// <returns></returns>
+        private async Task<RServiceResult<bool>> _RegenerateRelatedPoemsPageAsync(RMuseumDbContext context, int poetId, int relatedPoetId)
+        {
+            var page = await context.GanjoorPages.Where(p => p.PoetId == poetId && p.SecondPoetId == relatedPoetId).SingleOrDefaultAsync();
+            if (page == null)
+            {
+                return new RServiceResult<bool>(false, $"No page for {poetId} - {relatedPoetId}");
+            }
+
+            var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == page.PoetId).SingleAsync();
+
+            string html = "";
+
+            var claimedByBothList = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poetId && p.RelatedPoetId == relatedPoetId && p.ClaimedByBothPoets && p.Published).ToListAsync();
+            if (claimedByBothList.Any())
+            {
+                html += $"<p>فهرست زیر شامل اشعاری است که در نسخه‌های دیوان‌های هر دو سخنور آمده است و به هر دو منتسب است:</p>{Environment.NewLine}";
+                html += $"<br style=\"clear:both;\">{Environment.NewLine}";
+                html += $"<ol>{Environment.NewLine}";
+                foreach (var quotedPoem in claimedByBothList)
+                {
+                    var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == quotedPoem.PoetId).SingleAsync();
+                    html += $"<li>{Environment.NewLine}";
+                    html += $"<h3>{Environment.NewLine}";
+                    html += $"<a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> :: <a href=\"{quotedPoem.CachedRelatedPoemFullUrl}\">{quotedPoem.CachedRelatedPoemFullTitle}</a>{Environment.NewLine}";
+                    html += $"</h3>{Environment.NewLine}";
+
+                    html += $"<p>{poet.Nickname} (بیت {quotedPoem.CoupletIndex + 1}): ";
+                    if (quotedPoem.CoupletVerse1ShouldBeEmphasized)
+                    {
+                        html += $"<strong>{quotedPoem.CoupletVerse1}</strong>";
+                    }
+                    else
+                    {
+                        html += quotedPoem.CoupletVerse1;
+                    }
+                    html += " - ";
+                    if (quotedPoem.CoupletVerse2ShouldBeEmphasized)
+                    {
+                        html += $"<strong>{quotedPoem.CoupletVerse2}</strong>";
+                    }
+                    else
+                    {
+                        html += quotedPoem.CoupletVerse2;
+                    }
+                    html += $"</p>{Environment.NewLine}";
+
+                    html += $"<p>{quotedPoem.CachedRelatedPoemPoetName} (بیت {quotedPoem.RelatedCoupletIndex + 1}): ";
+                    if (quotedPoem.RelatedCoupletVerse1ShouldBeEmphasized)
+                    {
+                        html += $"<strong>{quotedPoem.RelatedCoupletVerse1}</strong>";
+                    }
+                    else
+                    {
+                        html += quotedPoem.RelatedCoupletVerse1;
+                    }
+                    html += " - ";
+                    if (quotedPoem.RelatedCoupletVerse2ShouldBeEmphasized)
+                    {
+                        html += $"<strong>{quotedPoem.RelatedCoupletVerse2}</strong>";
+                    }
+                    else
+                    {
+                        html += quotedPoem.RelatedCoupletVerse2;
+                    }
+                    html += $"</p>{Environment.NewLine}";
+
+                    html += $"</li>{Environment.NewLine}";
+                }
+                html += $"</ol>{Environment.NewLine}";
+                html += $"<br style=\"clear:both;\">{Environment.NewLine}";
+            }
+
+            var relatedPoet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == page.SecondPoetId).SingleAsync();
+
+            var normalRelatedPoems = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poetId && p.RelatedPoetId == relatedPoetId && p.ClaimedByBothPoets == false && p.Published).ToListAsync();
+            if (normalRelatedPoems.Any())
+            {
+                html += $"<p>در این بخش شعرهایی را فهرست کرده‌ایم که در آنها {poet.Name} مصرع یا بیتی از {relatedPoet.Name} را عیناً نقل قول کرده است:</p>{Environment.NewLine}";
+                html += $"<br style=\"clear:both;\">{Environment.NewLine}";
+                html += $"<ol>{Environment.NewLine}";
+                foreach (var quotedPoem in normalRelatedPoems)
+                {
+                    var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == quotedPoem.PoetId).SingleAsync();
+                    html += $"<li>{Environment.NewLine}";
+                    html += $"<h3>{Environment.NewLine}";
+                    html += $"<a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> :: <a href=\"{quotedPoem.CachedRelatedPoemFullUrl}\">{quotedPoem.CachedRelatedPoemFullTitle}</a>{Environment.NewLine}";
+                    html += $"</h3>{Environment.NewLine}";
+
+                    html += $"<p>{poet.Nickname} (بیت {quotedPoem.CoupletIndex + 1}): ";
+                    if (quotedPoem.CoupletVerse1ShouldBeEmphasized)
+                    {
+                        html += $"<strong>{quotedPoem.CoupletVerse1}</strong>";
+                    }
+                    else
+                    {
+                        html += quotedPoem.CoupletVerse1;
+                    }
+                    html += " - ";
+                    if (quotedPoem.CoupletVerse2ShouldBeEmphasized)
+                    {
+                        html += $"<strong>{quotedPoem.CoupletVerse2}</strong>";
+                    }
+                    else
+                    {
+                        html += quotedPoem.CoupletVerse2;
+                    }
+                    html += $"</p>{Environment.NewLine}";
+
+                    html += $"<p>{quotedPoem.CachedRelatedPoemPoetName} (بیت {quotedPoem.RelatedCoupletIndex + 1}): ";
+                    if (quotedPoem.RelatedCoupletVerse1ShouldBeEmphasized)
+                    {
+                        html += $"<strong>{quotedPoem.RelatedCoupletVerse1}</strong>";
+                    }
+                    else
+                    {
+                        html += quotedPoem.RelatedCoupletVerse1;
+                    }
+                    html += " - ";
+                    if (quotedPoem.RelatedCoupletVerse2ShouldBeEmphasized)
+                    {
+                        html += $"<strong>{quotedPoem.RelatedCoupletVerse2}</strong>";
+                    }
+                    else
+                    {
+                        html += quotedPoem.RelatedCoupletVerse2;
+                    }
+                    html += $"</p>{Environment.NewLine}";
+
+                    html += $"</li>{Environment.NewLine}";
+                }
+                html += $"</ol>{Environment.NewLine}";
+                html += $"<br style=\"clear:both;\">{Environment.NewLine}";
+            }
+
+            return new RServiceResult<bool>(true);
+        }
+        /// <summary>
         /// get quoted by id
         /// </summary>
         /// <param name="id"></param>
@@ -45,10 +188,10 @@ namespace RMuseum.Services.Implementation
                 _context.Add(quoted);
                 await _context.SaveChangesAsync();
 
-                if(quoted.ClaimedByBothPoets)
+                if (quoted.ClaimedByBothPoets)
                 {
                     var poem = await _context.GanjoorPoems.Where(p => p.Id == quoted.PoemId).SingleAsync();
-                    if(poem.ClaimedByMultiplePoets == false)
+                    if (poem.ClaimedByMultiplePoets == false)
                     {
                         poem.ClaimedByMultiplePoets = true;
                         _context.Update(poem);
@@ -63,7 +206,7 @@ namespace RMuseum.Services.Implementation
                     _context.Update(rel);
                     await _context.SaveChangesAsync();
                 }
-               
+
 
 
                 return new RServiceResult<GanjoorQuotedPoem>(quoted);
@@ -85,7 +228,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var dbModel = await _context.GanjoorQuotedPoems.Where(q => q.Id == quoted.Id).SingleAsync();
-                if(dbModel.PoemId !=  quoted.PoemId || dbModel.RelatedPoemId != quoted.RelatedPoemId)
+                if (dbModel.PoemId != quoted.PoemId || dbModel.RelatedPoemId != quoted.RelatedPoemId)
                 {
                     return new RServiceResult<bool>(false, "dbModel.PoemId !=  quoted.PoemId || dbModel.RelatedPoemId != quoted.RelatedPoemId");
                 }
@@ -116,12 +259,12 @@ namespace RMuseum.Services.Implementation
                 dbModel.IndirectQuotation = quoted.IndirectQuotation;
                 dbModel.SamePoemsQuotedCount = quoted.SamePoemsQuotedCount;
 
-                _context.Update(dbModel);   
+                _context.Update(dbModel);
                 await _context.SaveChangesAsync();
 
                 var poem = await _context.GanjoorPoems.Where(p => p.Id == quoted.PoemId).SingleAsync();
                 bool claimedByMultiple = await _context.GanjoorQuotedPoems.AsNoTracking().Where(q => q.PoemId == quoted.PoemId && q.ClaimedByBothPoets == true).AnyAsync();
-                if(poem.ClaimedByMultiplePoets != claimedByMultiple)
+                if (poem.ClaimedByMultiplePoets != claimedByMultiple)
                 {
                     poem.ClaimedByMultiplePoets = claimedByMultiple;
                     _context.Update(poem);
@@ -144,7 +287,7 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>>  DeleteGanjoorQuotedPoemByIdAsync(Guid id)
+        public async Task<RServiceResult<bool>> DeleteGanjoorQuotedPoemByIdAsync(Guid id)
         {
             try
             {
@@ -269,7 +412,7 @@ namespace RMuseum.Services.Implementation
                 (
                     await _context.GanjoorQuotedPoems
                          .AsNoTracking()
-                        .Where(r => r.PoemId == poemId && r.RelatedPoemId == relatedPoemId && (published == null || r.Published == published) )
+                        .Where(r => r.PoemId == poemId && r.RelatedPoemId == relatedPoemId && (published == null || r.Published == published))
                         .OrderBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri).ToArrayAsync()
                         );
 
@@ -357,18 +500,18 @@ namespace RMuseum.Services.Implementation
 
                     tagIndex = dbPage.HtmlText.IndexOf("</a>", tagIndex);
                     var tempTagIndex = dbPage.HtmlText.IndexOf("\"", tagIndex);
-                    if(tempTagIndex < closeTagIndex)
+                    if (tempTagIndex < closeTagIndex)
                     {
                         tagIndex = tempTagIndex;
                     }
-                   
+
 
                     string poem2Url = dbPage.HtmlText.Substring("https://ganjoor.net".Length + tagIndex + 1, dbPage.HtmlText.IndexOf("\"", tagIndex + 1) - tagIndex - 1 - 1 /*remove trailing slash*/  - "https://ganjoor.net".Length);
                     var poem2 = await context.GanjoorPoems.AsNoTracking().Where(p => p.FullUrl == poem2Url).SingleOrDefaultAsync();
                     if (poem2 == null)
                     {
                         var redirectedPage = await context.GanjoorPages.AsNoTracking().Where(p => p.RedirectFromFullUrl == poem2Url).SingleOrDefaultAsync();
-                        if(redirectedPage == null)
+                        if (redirectedPage == null)
                         {
                             return new RServiceResult<bool>(false, poem2Url);
                         }
@@ -377,7 +520,7 @@ namespace RMuseum.Services.Implementation
 
                     var poem2Cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == poem2.CatId).SingleAsync();
                     var poem2Poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poem2Cat.PoetId).SingleAsync();
-                    var poet2Cat = await context.GanjoorCategories.AsNoTracking().Where(c =>c.PoetId == poem2Poet.Id && c.ParentId == null).SingleAsync();
+                    var poet2Cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poem2Poet.Id && c.ParentId == null).SingleAsync();
 
                     GanjoorQuotedPoem relatedPoem = new GanjoorQuotedPoem()
                     {
@@ -402,7 +545,7 @@ namespace RMuseum.Services.Implementation
                                                 1 + await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == poem1.Id && p.RelatedPoemId == poem2.Id).CountAsync() : 1
                     };
 
-                    
+
 
                     //first couplet:
                     tagIndex = dbPage.HtmlText.IndexOf("<p>", tagIndex);
