@@ -2,9 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
+using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,13 +21,14 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// parse related pages
         /// </summary>
+        /// <param name="editingUserId"></param>
         /// <param name="context"></param>
         /// <param name="poetId"></param>
         /// <param name="relatedPoetId"></param>
         /// <returns></returns>
-        private async Task<RServiceResult<bool>> _RegenerateRelatedPoemsPageAsync(RMuseumDbContext context, int poetId, int relatedPoetId)
+        private async Task<RServiceResult<bool>> _RegenerateRelatedPoemsPageAsync(Guid editingUserId, RMuseumDbContext context, int poetId, int relatedPoetId)
         {
-            var page = await context.GanjoorPages.Where(p => p.PoetId == poetId && p.SecondPoetId == relatedPoetId).SingleOrDefaultAsync();
+            var page = await context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == poetId && p.SecondPoetId == relatedPoetId).SingleOrDefaultAsync();
             if (page == null)
             {
                 return new RServiceResult<bool>(false, $"No page for {poetId} - {relatedPoetId}");
@@ -154,6 +158,86 @@ namespace RMuseum.Services.Implementation
                 }
                 html += $"</ol>{Environment.NewLine}";
                 html += $"<br style=\"clear:both;\">{Environment.NewLine}";
+
+                var poemSections = await context.GanjoorPoemSections.AsNoTracking()
+                                .Include(s => s.Poem).ThenInclude(p => p.Cat)
+                                .Include(s => s.GanjoorMetre)
+                                .Where(s => s.SectionType == PoemSectionType.WholePoem && s.Poem.Cat.PoetId == poetId && s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters))
+                                .OrderBy(s => s.PoemId)
+                                .ToListAsync();
+                if(poemSections.Any())
+                {
+                    var relatedPoemSections = await context.GanjoorPoemSections.AsNoTracking()
+                             .Include(s => s.Poem).ThenInclude(p => p.Cat)
+                             .Include(s => s.GanjoorMetre)
+                             .Where(s => s.SectionType == PoemSectionType.WholePoem && s.Poem.Cat.PoetId == relatedPoetId && s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters))
+                             .OrderBy(s => s.PoemId)
+                             .ToListAsync();
+
+                    if(relatedPoemSections.Any())
+                    {
+                        Dictionary<(int, string), (List<GanjoorPoemSection>, List<GanjoorPoemSection>)> list = [];
+
+                        foreach (var poemSection in poemSections)
+                        {
+                            var relatedPoemList = relatedPoemSections.Where(s => s.GanjoorMetreId == poemSection.GanjoorMetreId && s.RhymeLetters == poemSection.RhymeLetters).ToList();
+                            if (!relatedPoemList.Any())
+                            {
+                                continue;
+                            }
+                            if (!list.TryGetValue(((int)poemSection.GanjoorMetreId, poemSection.RhymeLetters), out (List<GanjoorPoemSection>, List<GanjoorPoemSection>) poemsList))
+                            {
+                                poemsList = (new List<GanjoorPoemSection>(), relatedPoemList);
+                                list.Add
+                                    (
+                                    ((int)poemSection.GanjoorMetreId, poemSection.RhymeLetters), poemsList
+                                    );
+                            }
+                            poemsList.Item1.Add (poemSection);
+                        }
+
+                        if(list.Any())
+                        {
+                            html += $"<hr />{Environment.NewLine}";
+                            html += $"<p>در این بخش مجموعه شعرهایی از دو شاعر را که توأماً هموزن و همقافیه هستند در گروه‌های مجزا فهرست کرده‌ایم: </p>{Environment.NewLine}";
+                            html += $"<br style=\"clear:both;\">{Environment.NewLine}";
+
+                            html += $"<ol>{Environment.NewLine}";
+                            foreach (var pair in list.Values)
+                            {
+                                html += $"<li>{Environment.NewLine}";
+                                foreach (var section in pair.Item1)
+                                {
+                                    var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId).OrderBy(v => v.VOrder).Take(2).ToListAsync();
+                                    html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text} - {verses[1].Text}</p>{Environment.NewLine}";
+                                }
+                                html += $"<br style=\"clear:both;\">{Environment.NewLine}";
+                                foreach (var section in pair.Item2)
+                                {
+                                    var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId).OrderBy(v => v.VOrder).Take(2).ToListAsync();
+                                    html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text} - {verses[1].Text}</p>{Environment.NewLine}";
+                                }
+                                html += $"<hr />{Environment.NewLine}";
+                                html += $"</li>{Environment.NewLine}";
+                            }
+                            html += $"</ol>{Environment.NewLine}";
+                            html += $"<br style=\"clear:both;\">{Environment.NewLine}";
+                        }
+                    }
+                }
+
+
+
+                await _UpdatePageAsync(context, page.Id, editingUserId,
+                    new GanjoorModifyPageViewModel()
+                    {
+                        Title = page.Title,
+                        HtmlText = html,
+                        Note = $"_RegenerateRelatedPoemsPageAsync({poetId}, {relatedPoetId})",
+                        UrlSlug = page.UrlSlug,
+                        NoIndex = page.NoIndex,
+                    }
+                    , false);
             }
 
             return new RServiceResult<bool>(true);
