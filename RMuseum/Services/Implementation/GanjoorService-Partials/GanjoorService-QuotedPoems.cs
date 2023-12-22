@@ -411,7 +411,7 @@ namespace RMuseum.Services.Implementation
                 html += $"<ol>{Environment.NewLine}";
                 foreach (var quotedPoem in normalRelatedPoems)
                 {
-                    var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == quotedPoem.PoetId).SingleAsync();
+                    var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == quotedPoem.PoemId).SingleAsync();
                     html += $"<li>{Environment.NewLine}";
                     html += $"<h3>{Environment.NewLine}";
                     html += $"<a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> :: <a href=\"{quotedPoem.CachedRelatedPoemFullUrl}\">{quotedPoem.CachedRelatedPoemFullTitle}</a>{Environment.NewLine}";
