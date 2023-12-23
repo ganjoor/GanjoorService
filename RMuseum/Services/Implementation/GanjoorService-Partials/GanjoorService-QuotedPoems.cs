@@ -516,13 +516,13 @@ namespace RMuseum.Services.Implementation
                                 html += $"<li>{Environment.NewLine}";
                                 foreach (var section in pair.Item1)
                                 {
-                                    var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId).OrderBy(v => v.VOrder).Take(2).ToListAsync();
+                                    var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId && v.SectionIndex1 == section.Index).OrderBy(v => v.VOrder).Take(2).ToListAsync();
                                     html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text} - {verses[1].Text}</p>{Environment.NewLine}";
                                 }
                                 html += $"<br style=\"clear:both;\">{Environment.NewLine}";
                                 foreach (var section in pair.Item2)
                                 {
-                                    var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId).OrderBy(v => v.VOrder).Take(2).ToListAsync();
+                                    var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId &&  v.SectionIndex1 == section.Index).OrderBy(v => v.VOrder).Take(2).ToListAsync();
                                     html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text} - {verses[1].Text}</p>{Environment.NewLine}";
                                 }
                                 html += $"<hr />{Environment.NewLine}";
