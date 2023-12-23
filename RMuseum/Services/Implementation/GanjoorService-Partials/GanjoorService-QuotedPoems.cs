@@ -350,7 +350,7 @@ namespace RMuseum.Services.Implementation
                     html += $"<a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> :: <a href=\"{quotedPoem.CachedRelatedPoemFullUrl}\">{quotedPoem.CachedRelatedPoemFullTitle}</a>{Environment.NewLine}";
                     html += $"</h3>{Environment.NewLine}";
 
-                    html += $"<p>{poet.Nickname} (بیت {quotedPoem.CoupletIndex + 1}): ";
+                    html += $"<p>{poet.Nickname} (بیت {(quotedPoem.CoupletIndex + 1).ToPersianNumbers()}): ";
                     if (quotedPoem.CoupletVerse1ShouldBeEmphasized)
                     {
                         html += $"<strong>{quotedPoem.CoupletVerse1}</strong>";
@@ -370,7 +370,7 @@ namespace RMuseum.Services.Implementation
                     }
                     html += $"</p>{Environment.NewLine}";
 
-                    html += $"<p>{quotedPoem.CachedRelatedPoemPoetName} (بیت {quotedPoem.RelatedCoupletIndex + 1}): ";
+                    html += $"<p>{quotedPoem.CachedRelatedPoemPoetName} (بیت {(quotedPoem.RelatedCoupletIndex + 1).ToPersianNumbers()}): ";
                     if (quotedPoem.RelatedCoupletVerse1ShouldBeEmphasized)
                     {
                         html += $"<strong>{quotedPoem.RelatedCoupletVerse1}</strong>";
@@ -417,7 +417,7 @@ namespace RMuseum.Services.Implementation
                     html += $"<a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> :: <a href=\"{quotedPoem.CachedRelatedPoemFullUrl}\">{quotedPoem.CachedRelatedPoemFullTitle}</a>{Environment.NewLine}";
                     html += $"</h3>{Environment.NewLine}";
 
-                    html += $"<p>{poet.Nickname} (بیت {quotedPoem.CoupletIndex + 1}): ";
+                    html += $"<p>{poet.Nickname} (بیت {(quotedPoem.CoupletIndex + 1).ToPersianNumbers()}): ";
                     if (quotedPoem.CoupletVerse1ShouldBeEmphasized)
                     {
                         html += $"<strong>{quotedPoem.CoupletVerse1}</strong>";
@@ -437,7 +437,7 @@ namespace RMuseum.Services.Implementation
                     }
                     html += $"</p>{Environment.NewLine}";
 
-                    html += $"<p>{quotedPoem.CachedRelatedPoemPoetName} (بیت {quotedPoem.RelatedCoupletIndex + 1}): ";
+                    html += $"<p>{quotedPoem.CachedRelatedPoemPoetName} (بیت {(quotedPoem.RelatedCoupletIndex + 1).ToPersianNumbers()}): ";
                     if (quotedPoem.RelatedCoupletVerse1ShouldBeEmphasized)
                     {
                         html += $"<strong>{quotedPoem.RelatedCoupletVerse1}</strong>";
