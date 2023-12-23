@@ -3675,7 +3675,7 @@ namespace RMuseum.Controllers
         /// <param name="poetId"></param>
         /// <param name="relatedPoetId"></param>
         /// <returns></returns>
-        [HttpPost("quoted/discover/{poetId}/{relaredPoetId}")]
+        [HttpPost("quoted/discover/{poetId}/{relatedPoetId}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
