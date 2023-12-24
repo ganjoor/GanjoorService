@@ -1154,7 +1154,11 @@ namespace GanjooRazor.Pages
                 return new BadRequestObjectResult("مورد دیگری یافت نشد.");
             }
 
-            quoteds.RemoveAt(0);
+            if(quoteds.Any(q => q.ChosenForMainList))
+            {
+                var mainList = quoteds.Where(q => q.ChosenForMainList).First();
+                quoteds.Remove(mainList);
+            }
             
 
             return new PartialViewResult()
