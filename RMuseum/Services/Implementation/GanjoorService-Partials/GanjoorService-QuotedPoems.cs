@@ -613,7 +613,7 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                var allRelateds = await _context.GanjoorQuotedPoems.Where(p => p.PoemId == quoted.PoemId && p.RelatedPoemId == quoted.RelatedPoemId).ToListAsync();
+                var allRelateds = await _context.GanjoorQuotedPoems.Where(p => p.PoemId == quoted.PoemId && p.RelatedPoemId == quoted.RelatedPoemId && p.Published).ToListAsync();
                 foreach (var rel in allRelateds)
                 {
                     rel.SamePoemsQuotedCount = allRelateds.Count;
@@ -695,6 +695,14 @@ namespace RMuseum.Services.Implementation
 
                 await _context.SaveChangesAsync();
 
+                var allRelateds = await _context.GanjoorQuotedPoems.Where(p => p.PoemId == quoted.PoemId && p.RelatedPoemId == quoted.RelatedPoemId && p.Published).ToListAsync();
+                foreach (var rel in allRelateds)
+                {
+                    rel.SamePoemsQuotedCount = allRelateds.Count;
+                    _context.Update(rel);
+                    await _context.SaveChangesAsync();
+                }
+
                 if (quoted.Published && quoted.RelatedPoetId != null)
                 {
                     var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == quoted.PoetId && p.SecondPoetId == quoted.RelatedPoetId).SingleOrDefaultAsync();
@@ -741,7 +749,7 @@ namespace RMuseum.Services.Implementation
                     await _context.SaveChangesAsync();
                 }
 
-                var allRelateds = await _context.GanjoorQuotedPoems.Where(p => p.PoemId == poemId && p.RelatedPoemId == relatedPoemId).ToListAsync();
+                var allRelateds = await _context.GanjoorQuotedPoems.Where(p => p.PoemId == poemId && p.RelatedPoemId == relatedPoetId && p.Published).ToListAsync();
                 foreach (var rel in allRelateds)
                 {
                     rel.SamePoemsQuotedCount = allRelateds.Count;
