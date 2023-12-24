@@ -819,12 +819,23 @@ else
                                     <input type="radio" id="verse@(verse.VORder)_review_result_NotChanged" name="verse@(verse.VORder)_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
                                 }
                                 <label for="verse@(verse.VORder)_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label><br>
+                                
                                 <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseWrong" name="verse@(verse.VORder)_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
                                 <label for="verse@(verse.VORder)_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label><br>
+                                
                                 <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseVariant" name="verse@(verse.VORder)_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
                                 <label for="verse@(verse.VORder)_review_result_RejectedBecauseVariant">مربوط به نسخهٔ دیگری است</label><br>
+                                
                                 <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseUnnecessaryChange" name="verse@(verse.VORder)_review_result" class="radio-unnecessary" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseUnnecessaryChange">
                                 <label for="verse@(verse.VORder)_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
+
+                                <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseOfAbusingPunctuations" name="verse@(verse.VORder)_review_result" class="radio-punctuation" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseOfAbusingPunctuations">
+                                <label for="verse@(verse.VORder)_review_result_RejectedBecauseOfAbusingPunctuations">از علائم سجاوندی به طور نامناسب استفاده شده است.</label><br>
+
+
+                                <input type="radio" id="verse@(verse.VORder)_review_result_RejectedBecauseOfNonStandardCharcaters" name="verse@(verse.VORder)_review_result" class="radio-nonstandard" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseOfNonStandardCharcaters">
+                                <label for="verse@(verse.VORder)_review_result_RejectedBecauseOfNonStandardCharcaters">برای هٔ چسبان یا نویسه‌های دیگر از دستور خط فرهنگستان تبعیت نشده است.</label><br>
+
                                 <input type="radio" id="verse@(verse.VORder)_review_result_Rejected" name="verse@(verse.VORder)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
                                 <label for="verse@(verse.VORder)_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label><br>
                                 <input type="text" id="verse@(verse.VORder)_review_note" name="verse@(verse.VORder)_review_note" value="" size="50" />

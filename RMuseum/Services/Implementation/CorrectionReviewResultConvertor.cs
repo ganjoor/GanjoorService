@@ -46,6 +46,10 @@ namespace RMuseum.Services.Implementation
                     return "از کادر معنی برای پیشنهاد تصحیح یا ارائهٔ توضیح تصحیحی استفاده شده است.";
                 case CorrectionReviewResult.RejectedParaphraseBecauseItIsWordMeaningOrIncomplete:
                     return "معنی یا خلاصهٔ ارائه شده جزئی و ناقص یا در حد معنی کلمه است.";
+                case CorrectionReviewResult.RejectedBecauseOfAbusingPunctuations:
+                    return "از علائم سجاوندی به طور نامناسب استفاده شده است.";
+                case CorrectionReviewResult.RejectedBecauseOfNonStandardCharcaters:
+                    return "برای هٔ چسبان یا نویسه‌های دیگر از دستور خط فرهنگستان تبعیت نشده است.";
             }
             return "هنوز بررسی نشده";
         }

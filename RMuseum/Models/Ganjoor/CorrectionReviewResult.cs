@@ -21,5 +21,7 @@
         RejectedParaphraseBecauseNotBetter = 13,
         RejectedParaphraseBecauseItIsNotAParaphrase = 14,
         RejectedParaphraseBecauseItIsWordMeaningOrIncomplete = 15,
+        RejectedBecauseOfAbusingPunctuations = 16,
+        RejectedBecauseOfNonStandardCharcaters = 17,
     }
 }
