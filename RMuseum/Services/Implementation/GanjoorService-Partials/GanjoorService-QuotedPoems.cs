@@ -23,8 +23,10 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="poetId"></param>
         /// <param name="relatedPoetId"></param>
+        /// <param name="breakOnFirstSimilar"></param>
+        /// <param name="relatedSubCatId"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartDiscoverRelatedPoems(int poetId, int relatedPoetId)
+        public RServiceResult<bool> StartDiscoverRelatedPoems(int poetId, int relatedPoetId, bool breakOnFirstSimilar, int? relatedSubCatId)
         {
             try
             {
@@ -40,7 +42,7 @@ namespace RMuseum.Services.Implementation
 
                                    try
                                    {
-                                       await _DiscoverRelatedPoemsAsync(context, poetId, relatedPoetId, jobProgressServiceEF, job);
+                                       await _DiscoverRelatedPoemsAsync(context, poetId, relatedPoetId, jobProgressServiceEF, job,  breakOnFirstSimilar, relatedSubCatId);
 
                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                    }
@@ -79,7 +81,7 @@ namespace RMuseum.Services.Implementation
             return (float)found / total > 0.7f && AreSimilar(str2, str1, false);
         }
 
-        private async Task<RServiceResult<bool>> _DiscoverRelatedPoemsAsync(RMuseumDbContext context, int poetId, int relatedPoetId, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        private async Task<RServiceResult<bool>> _DiscoverRelatedPoemsAsync(RMuseumDbContext context, int poetId, int relatedPoetId, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, bool breakOnFirstSimilar, int? relatedSubCatId)
         {
             DiscoverQuotedQueueItem discoverQuotedQueueItem = await context.DiscoverQuotedQueueItems.Where(i => i.PoetId == poetId && i.RelatedPoetId == relatedPoetId).SingleOrDefaultAsync();
             if (discoverQuotedQueueItem == null)
@@ -101,6 +103,13 @@ namespace RMuseum.Services.Implementation
             var relatedPoetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == relatedPoetId && c.ParentId == null).SingleAsync();
             bool isPriorToRelated = poet.DeathYearInLHijri < relatedPoet.DeathYearInLHijri;
 
+            List<int> catIdList = new List<int>();
+            if (relatedSubCatId != null)
+            {
+                catIdList.Add((int)relatedSubCatId);
+                await _populateCategoryChildren(_context, (int)relatedSubCatId, catIdList);
+            }
+
 
             var poems = await context.GanjoorPoems.AsNoTracking().Include(p => p.Cat).Where(p => p.Id >= discoverQuotedQueueItem.PoemId && p.Cat.PoetId == poetId).OrderBy(p => p.Id).ToListAsync();
             foreach (var poem in poems)
@@ -115,7 +124,10 @@ namespace RMuseum.Services.Implementation
                     && v.VersePosition != VersePosition.Comment
                     && v.CoupletIndex != null
                     ).OrderBy(v => v.VOrder).ToListAsync();
-                var relatedPoems = await context.GanjoorPoems.AsNoTracking().Include(p => p.Cat).Where(p => p.Id >= discoverQuotedQueueItem.RelatedPoemId && p.Cat.PoetId == relatedPoetId).OrderBy(p => p.Id).ToListAsync();
+
+                var relatedPoems = await context.GanjoorPoems.AsNoTracking().Include(p => p.Cat)
+                            .Where(p => p.Id >= discoverQuotedQueueItem.RelatedPoemId && p.Cat.PoetId == relatedPoetId && (relatedSubCatId == null || catIdList.Contains(p.CatId)))
+                            .OrderBy(p => p.Id).ToListAsync();
                 foreach (var otherPoem in relatedPoems)
                 {
                     discoverQuotedQueueItem.RelatedPoetId = otherPoem.Id;
@@ -190,7 +202,13 @@ namespace RMuseum.Services.Implementation
                                                        &&
                                                        q.RelatedCoupletIndex == verse.CoupletIndex
                                                        );
-                                if (alreadyAdded2) continue;
+                                if (alreadyAdded2)
+                                {
+                                    if (breakOnFirstSimilar)
+                                        break;
+                                    else
+                                        continue;
+                                }
 
                                 GanjoorQuotedPoem reverseRelation = new GanjoorQuotedPoem()
                                 {
@@ -227,6 +245,9 @@ namespace RMuseum.Services.Implementation
                                 };
                                 context.Add(reverseRelation);
                                 await context.SaveChangesAsync();
+
+                                if (breakOnFirstSimilar)
+                                    break;
 
                             }
                         }
