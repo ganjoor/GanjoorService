@@ -31,7 +31,7 @@
 
             var url = currentUrl.substring(currentUrl.indexOf('/', currentUrl.indexOf('//') + 2));
 
-            fetch('@(GanjooRazor.APIRoot.Url)/api/ganjoor/page?url=' + url)
+            fetch('@(GanjooRazor.APIRoot.InternetUrl)/api/ganjoor/page?url=' + url)
                 .then((response) => response.json())
                 .then((json) => {
                     alert(json.poem.id);
