@@ -187,7 +187,7 @@ namespace RMuseum.Services.Implementation
                                     CoupletVerse1 = verses.Where(v => v.CoupletIndex == verse.CoupletIndex).OrderBy(v => v.VOrder).ToArray()[0].Text,
                                     CoupletVerse1ShouldBeEmphasized = verses.Where(v => v.CoupletIndex == verse.CoupletIndex).OrderBy(v => v.VOrder).ToArray()[0].VOrder == verse.VOrder,
                                     CoupletVerse2 = verses.Where(v => v.CoupletIndex == verse.CoupletIndex).OrderBy(v => v.VOrder).ToArray()[1].Text,
-                                    CoupletVerse2ShouldBeEmphasized = verses.Where(v => v.CoupletIndex == verse.CoupletIndex).OrderBy(v => v.VOrder).ToArray()[0].VOrder == verse.VOrder,
+                                    CoupletVerse2ShouldBeEmphasized = verses.Where(v => v.CoupletIndex == verse.CoupletIndex).OrderBy(v => v.VOrder).ToArray()[1].VOrder == verse.VOrder,
                                     CoupletIndex = verse.CoupletIndex,
                                 };
 
