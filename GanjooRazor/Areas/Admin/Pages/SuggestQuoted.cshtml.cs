@@ -123,7 +123,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             if (!string.IsNullOrEmpty(id))
             {
-              
+
                 var quoteQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/quoted/{id}");
                 if (!quoteQuery.IsSuccessStatusCode)
                 {
@@ -151,9 +151,9 @@ namespace GanjooRazor.Areas.Admin.Pages
                         return LastMessage;
                     }
 
-                    var revs =  JsonConvert.DeserializeObject<GanjoorQuotedPoem[]>(await revQuery.Content.ReadAsStringAsync());
+                    var revs = JsonConvert.DeserializeObject<GanjoorQuotedPoem[]>(await revQuery.Content.ReadAsStringAsync());
                     var rev = revs.Where(r => r.CoupletIndex == GanjoorQuotedPoem.RelatedCoupletIndex && r.RelatedCoupletIndex == GanjoorQuotedPoem.CoupletIndex).SingleOrDefault();
-                    if(rev != null)
+                    if (rev != null)
                     {
                         ReverseId = rev.Id;
                     }
@@ -215,15 +215,23 @@ namespace GanjooRazor.Areas.Admin.Pages
             if (!string.IsNullOrEmpty(Request.Query["all"]))
             {
                 DisplayAll = true;
-
-                var allQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/quoted?published=false");
+                string url = $"{APIRoot.Url}/api/ganjoor/quoted?published=false";
+                if (!string.IsNullOrEmpty(Request.Query["p"]))
+                {
+                    url += $"&poetId={Request.Query["p"]}";
+                }
+                if (!string.IsNullOrEmpty(Request.Query["r"]))
+                {
+                    url += $"&relatedPoetId={Request.Query["r"]}";
+                }
+                var allQuery = await _httpClient.GetAsync(url);
                 if (!allQuery.IsSuccessStatusCode)
                 {
                     LastMessage = JsonConvert.DeserializeObject<string>(await allQuery.Content.ReadAsStringAsync());
                 }
                 AllPoemQuoteds = JsonConvert.DeserializeObject<GanjoorQuotedPoem[]>(await allQuery.Content.ReadAsStringAsync());
 
-                return Page();  
+                return Page();
             }
 
             string poemIdString = Request.Query["p"];
@@ -238,7 +246,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         return Page();
                     }
                     GanjoorQuotedPoem = JObject.Parse(await quoteQuery.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoem>();
-                    poemIdString = GanjoorQuotedPoem.PoemId.ToString(); 
+                    poemIdString = GanjoorQuotedPoem.PoemId.ToString();
                 }
                 else
                 {
@@ -259,60 +267,60 @@ namespace GanjooRazor.Areas.Admin.Pages
         {
             try
             {
-            
-            await Prepare(GanjoorQuotedPoem.PoemId, GanjoorQuotedPoem.Id == Guid.Empty ? null : GanjoorQuotedPoem.Id.ToString());
-            GanjoorQuotedPoem.CoupletVerse1 = Poem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.CoupletIndex).ToArray()[0].Text;
-            GanjoorQuotedPoem.CoupletVerse2 = Poem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.CoupletIndex).ToArray()[1].Text;
-            if (GanjoorQuotedPoem.RelatedPoemId != null && RelatedPoem == null)
-            {
-                var relPoemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{GanjoorQuotedPoem.RelatedPoemId}");
-                if (!relPoemQuery.IsSuccessStatusCode)
-                {
-                    LastMessage = JsonConvert.DeserializeObject<string>(await relPoemQuery.Content.ReadAsStringAsync());
-                    return Page();
-                }
-                RelatedPoem = JObject.Parse(await relPoemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
 
-                RelatedCouplets = GetCouplets(RelatedPoem.Verses);
-            }
-
-            if (GanjoorQuotedPoem.RelatedCoupletIndex != null)
-            {
-                GanjoorQuotedPoem.RelatedCoupletVerse1 = RelatedPoem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.RelatedCoupletIndex).ToArray()[0].Text;
-                GanjoorQuotedPoem.RelatedCoupletVerse2 = RelatedPoem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.RelatedCoupletIndex).ToArray()[1].Text;
-            }
-            using (HttpClient secureClient = new HttpClient())
-            {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                await Prepare(GanjoorQuotedPoem.PoemId, GanjoorQuotedPoem.Id == Guid.Empty ? null : GanjoorQuotedPoem.Id.ToString());
+                GanjoorQuotedPoem.CoupletVerse1 = Poem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.CoupletIndex).ToArray()[0].Text;
+                GanjoorQuotedPoem.CoupletVerse2 = Poem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.CoupletIndex).ToArray()[1].Text;
+                if (GanjoorQuotedPoem.RelatedPoemId != null && RelatedPoem == null)
                 {
-                    var url = $"{APIRoot.Url}/api/ganjoor/quoted";
-                    var payload = new StringContent(JsonConvert.SerializeObject(GanjoorQuotedPoem), Encoding.UTF8, "application/json");
-                    bool newRecord = GanjoorQuotedPoem.Id == Guid.Empty;
-                    HttpResponseMessage response = 
-                        newRecord ?
-                        await secureClient.PostAsync(url, payload) :
-                        await secureClient.PutAsync(url, payload);
-                    if (!response.IsSuccessStatusCode)
+                    var relPoemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{GanjoorQuotedPoem.RelatedPoemId}");
+                    if (!relPoemQuery.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastMessage = JsonConvert.DeserializeObject<string>(await relPoemQuery.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+                    RelatedPoem = JObject.Parse(await relPoemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
+
+                    RelatedCouplets = GetCouplets(RelatedPoem.Verses);
+                }
+
+                if (GanjoorQuotedPoem.RelatedCoupletIndex != null)
+                {
+                    GanjoorQuotedPoem.RelatedCoupletVerse1 = RelatedPoem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.RelatedCoupletIndex).ToArray()[0].Text;
+                    GanjoorQuotedPoem.RelatedCoupletVerse2 = RelatedPoem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.RelatedCoupletIndex).ToArray()[1].Text;
+                }
+                using (HttpClient secureClient = new HttpClient())
+                {
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                    {
+                        var url = $"{APIRoot.Url}/api/ganjoor/quoted";
+                        var payload = new StringContent(JsonConvert.SerializeObject(GanjoorQuotedPoem), Encoding.UTF8, "application/json");
+                        bool newRecord = GanjoorQuotedPoem.Id == Guid.Empty;
+                        HttpResponseMessage response =
+                            newRecord ?
+                            await secureClient.PostAsync(url, payload) :
+                            await secureClient.PutAsync(url, payload);
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        }
+                        else
+                        {
+                            if (newRecord)
+                            {
+                                GanjoorQuotedPoem = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoem>();
+                            }
+
+                            LastMessage = $"انجام شد. <br /><a href=\"/Admin/SuggestQuoted/?p={GanjoorQuotedPoem.PoemId}&id={GanjoorQuotedPoem.Id}\">برگشت</a>";
+
+                        }
                     }
                     else
                     {
-                        if(newRecord)
-                        {
-                            GanjoorQuotedPoem = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoem>();
-                        }
-                        
-                        LastMessage = $"انجام شد. <br /><a href=\"/Admin/SuggestQuoted/?p={GanjoorQuotedPoem.PoemId}&id={GanjoorQuotedPoem.Id}\">برگشت</a>";
-                        
+                        LastMessage = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
                     }
-                }
-                else
-                {
-                    LastMessage = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
-                }
 
-            }
+                }
             }
             catch (Exception e)
             {
@@ -399,9 +407,9 @@ namespace GanjooRazor.Areas.Admin.Pages
                 {
                     var url = $"{APIRoot.Url}/api/ganjoor/quoted";
                     var payload = new StringContent(JsonConvert.SerializeObject(reverseRelation), Encoding.UTF8, "application/json");
-                    
+
                     HttpResponseMessage response =
-                       
+
                         await secureClient.PostAsync(url, payload)
                         ;
                     if (!response.IsSuccessStatusCode)
@@ -417,12 +425,12 @@ namespace GanjooRazor.Areas.Admin.Pages
                 else
                 {
                     return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>("لطفاً از گنجور خارج و مجددا به آن وارد شوید."));
-                    
+
                 }
 
             }
 
-            
+
         }
     }
 }
