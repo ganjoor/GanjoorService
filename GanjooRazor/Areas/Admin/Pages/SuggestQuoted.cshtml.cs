@@ -13,9 +13,6 @@ using GanjooRazor.Utils;
 using System.Text;
 using System.Linq;
 using System.Net;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Azure;
-using System.Drawing;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
@@ -50,8 +47,9 @@ namespace GanjooRazor.Areas.Admin.Pages
         public GanjoorQuotedPoem GanjoorQuotedPoem { get; set; }
 
         public GanjoorQuotedPoem[] AllPoemQuoteds { get; set; }
-
         public Guid? ReverseId { get; set; }
+
+        public bool DisplayAll { get; set; }
 
         private Tuple<int, string>[] GetCouplets(GanjoorVerseViewModel[] verses)
         {
@@ -213,6 +211,20 @@ namespace GanjooRazor.Areas.Admin.Pages
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
                 return Redirect("/");
 
+            DisplayAll = false;
+            if (!string.IsNullOrEmpty(Request.Query["all"]))
+            {
+                DisplayAll = true;
+
+                var allQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/quoted?published=false");
+                if (!allQuery.IsSuccessStatusCode)
+                {
+                    LastMessage = JsonConvert.DeserializeObject<string>(await allQuery.Content.ReadAsStringAsync());
+                }
+                AllPoemQuoteds = JsonConvert.DeserializeObject<GanjoorQuotedPoem[]>(await allQuery.Content.ReadAsStringAsync());
+
+                return Page();  
+            }
 
             string poemIdString = Request.Query["p"];
             if (string.IsNullOrEmpty(poemIdString))

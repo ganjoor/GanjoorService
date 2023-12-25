@@ -11,6 +11,80 @@
 
 <p>@Html.Raw(Model.LastMessage)</p>
 
+@if (Model.DisplayAll)
+{
+    <h1>همهٔ مشق‌های منتشر نشده</h1>
+    <table>
+        <tr>
+            <td>#</td>
+            <td>شاعر</td>
+            <td>۱</td>
+            <td>۲</td>
+            <td>۱</td>
+            <td>۲</td>
+            <td>منتشر شده</td>
+        </tr>
+        @foreach (var q in Model.AllPoemQuoteds)
+        {
+            <tr>
+                <td><a href="/Admin/SuggestQuoted/?p=@q.PoemId&id=@q.Id">#</a> </td>
+                <td>@q.CachedRelatedPoemPoetName</td>
+                <td>
+                    @if (q.CoupletVerse1ShouldBeEmphasized)
+                    {
+                        <span class="red-color">@q.CoupletVerse1</span>
+                    }
+                    else
+                    {
+                        @q.CoupletVerse1
+                    }
+                </td>
+                <td>
+                    @if (q.CoupletVerse2ShouldBeEmphasized)
+                    {
+                        <span class="red-color">@q.CoupletVerse2</span>
+                    }
+                    else
+                    {
+                        @q.CoupletVerse2
+                    }
+                </td>
+                <td>
+                    @if (q.RelatedCoupletVerse1ShouldBeEmphasized)
+                    {
+                        <span class="red-color">@q.RelatedCoupletVerse1</span>
+                    }
+                    else
+                    {
+                        @q.RelatedCoupletVerse1
+                    }
+                </td>
+                <td>
+                    @if (q.RelatedCoupletVerse2ShouldBeEmphasized)
+                    {
+                        <span class="red-color">@q.RelatedCoupletVerse2</span>
+                    }
+                    else
+                    {
+                        @q.RelatedCoupletVerse2
+                    }
+                </td>
+                <td>@q.Published</td>
+            </tr>
+            <tr>
+                <td colspan="7">
+                    <hr />
+                </td>
+            </tr>
+        }
+    </table>
+    return;
+}
+<p>
+    <a href="?all=true">همهٔ مشق‌های منتشر نشده</a>
+</p>
+
+
 @if (Model.GanjoorQuotedPoem != null && Model.Couplets != null)
 {
     <script>
@@ -195,6 +269,15 @@
                     <input asp-for="GanjoorQuotedPoem.RelatedPoemId" />
                 </td>
             </tr>
+            @if (Model.GanjoorQuotedPoem.RelatedPoemId != null)
+            {
+                <tr>
+                    <td>
+                        <a href="/?p=@Model.GanjoorQuotedPoem.RelatedPoemId">مشاهدهٔ شعر مرتبط</a>
+                    </td>
+                </tr>
+            }
+
             <tr>
                 <td>
                     بیت مرتبط:
@@ -406,7 +489,7 @@
             <tr><td><hr /></td></tr>
             <tr>
                 <td>
-                    @if(Model.ReverseId != null)
+                    @if (Model.ReverseId != null)
                     {
                         <a href="/Admin/SuggestQuoted/?p=@Model.GanjoorQuotedPoem.RelatedPoemId&id=@Model.ReverseId">نمایش معکوس</a>
                     }
@@ -414,7 +497,7 @@
                     {
                         <a role="button" onclick="reverseQuote('@Model.GanjoorQuotedPoem.Id')" class="actionlink" title="درج معکوس">درج معکوس</a>
                     }
-                    
+
                 </td>
             </tr>
 
