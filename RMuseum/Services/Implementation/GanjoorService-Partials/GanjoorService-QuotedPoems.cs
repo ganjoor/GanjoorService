@@ -107,7 +107,7 @@ namespace RMuseum.Services.Implementation
             if (relatedSubCatId != null)
             {
                 catIdList.Add((int)relatedSubCatId);
-                await _populateCategoryChildren(_context, (int)relatedSubCatId, catIdList);
+                await _populateCategoryChildren(context, (int)relatedSubCatId, catIdList);
             }
 
 
