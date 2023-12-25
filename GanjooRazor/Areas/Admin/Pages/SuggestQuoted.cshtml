@@ -13,6 +13,33 @@
 
 @if (Model.DisplayAll)
 {
+    <script>
+        function deleteUnpublished(id) {
+            if (!confirm('آیا از حذف این مورد منتشر نشده اطمینان دارید؟'))
+                return;
+
+
+            $.ajax({
+                type: "DELETE",
+                url: '',
+                data: {
+                    id: id
+                },
+                error: function (e) {
+                    if (e.responseText == null)
+                        alert(e);
+                    else
+                        alert(e.responseText);
+                },
+                success: function () {
+
+                    var elem = document.getElementById('tr-' + id);
+                    elem.parentNode.removeChild(elem);
+                },
+            });
+        }
+
+    </script>
     <h1>همهٔ مشق‌های منتشر نشده</h1>
     <table>
         <tr>
@@ -22,11 +49,11 @@
             <td>۲</td>
             <td>۱</td>
             <td>۲</td>
-            <td>منتشر شده</td>
+            <td>حذف</td>
         </tr>
         @foreach (var q in Model.AllPoemQuoteds)
         {
-            <tr>
+            <tr id="tr-@q.Id">
                 <td><a href="/Admin/SuggestQuoted/?p=@q.PoemId&id=@q.Id">#</a> </td>
                 <td>@q.CachedRelatedPoemPoetName</td>
                 <td>
@@ -69,7 +96,7 @@
                         @q.RelatedCoupletVerse2
                     }
                 </td>
-                <td>@q.Published</td>
+                <td><a role="button" onclick="deleteUnpublished('@q.Id')" class="actionlink" title="حذف">حذف <i class="noindent-info-button delete-icon"></i></a></td>
             </tr>
             <tr>
                 <td colspan="7">
@@ -173,6 +200,7 @@
             });
         }
 
+       
         function reverseQuote(id) {
             if (!confirm('آیا از درج معکوس این مورد اطمینان دارید؟'))
                 return;
