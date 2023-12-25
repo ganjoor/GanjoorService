@@ -389,7 +389,7 @@ function playCouplet(coupletIndex) {
                     var v = parseInt($(this).find('VerseOrder').text())
                     if (v == vIndex) {
                         var verseStart = parseInt($(this).find('AudioMiliseconds').text()) / nOneSecondBugFix;
-                        var audioControl = document.getElementById('audio-' + String(recitationOrder));
+                        var audioControl = document.getElementById('audio-' + String(recitaionIds[recitationIndex]));
                         audioControl.play();
                         var buttonList = '#listen-' + coupletIndex;
                         $(buttonList).text('در حال دریافت خوانش ...');

@@ -9,15 +9,15 @@
     {
         var recitaion = Model.Recitations[nRecitationIndex];
         <div class="@Model.CSSClass(nRecitationIndex)" id="@recitaion.Id">
-            <audio id="audio-@Model.RecitationType-@(nRecitationIndex + 1)" preload="none" controls>
+            <audio id="audio-@recitaion.Id" preload="none" controls>
                 <source src="@recitaion.Mp3Url" title="@($"{recitaion.AudioTitle} به خوانش {recitaion.AudioArtist}")" data-track-number="@(nRecitationIndex + 1)">
                 مرورگر شما از پخش صدای HTML 5 پشتیبانی نمی‌کند.
             </audio>
             @if (nRecitationIndex != (Model.Recitations.Length - 1))
             {
                 <script>
-                    document.getElementById('audio-@Model.RecitationType-@(nRecitationIndex + 1)').addEventListener("ended", function () {
-                        document.getElementById('audio-@Model.RecitationType-@(nRecitationIndex + 2)').play();
+                    document.getElementById('audio-@recitaion.Id').addEventListener("ended", function () {
+                        document.getElementById('audio-@Model.Recitations[nRecitationIndex + 1].Id').play();
                         showAllRecitations();
                     });
                 </script>
@@ -29,7 +29,7 @@
                 }
                 else
                 {
-                    <a role="button" onclick="document.getElementById('audio-@Model.RecitationType-@(nRecitationIndex + 1)').play()" class="actionlink">@recitaion.AudioTitle</a> @Html.Raw(Model.getAudioDesc(recitaion, nRecitationIndex == 0))
+                    <a role="button" onclick="document.getElementById('audio-@recitaion.Id').play()" class="actionlink">@recitaion.AudioTitle</a> @Html.Raw(Model.getAudioDesc(recitaion, nRecitationIndex == 0))
                 }
                 
             </div>
@@ -37,7 +37,7 @@
             @if(!Model.CategoryMode)
             {
                 <div class="audio-partial-action-box">
-                    <a role="button" class="w3tooltip cursor-pointer recitation-button" onclick="document.getElementById('audio-@Model.RecitationType-@(nRecitationIndex + 1)').play()"><i class="recitation-icons recitation-play"></i><span class="w3tooltiptext">پخش</span></a>
+                    <a role="button" class="w3tooltip cursor-pointer recitation-button" onclick="document.getElementById('audio-@recitaion.Id').play()"><i class="recitation-icons recitation-play"></i><span class="w3tooltiptext">پخش</span></a>
                     <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@($"/AudioClip/?a={recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="recitation-icons recitation-download"></i><span class="w3tooltiptext">دریافت خوانش</span></a>
                     <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@($"/ReportRecitation/?a={recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="recitation-icons recitation-report"></i><span class="w3tooltiptext">گزارش خطا</span></a>
                     @if (Model.LoggedIn)
@@ -75,8 +75,8 @@
                     </div>
                 }
                 <script>
-                    document.getElementById('audio-@Model.RecitationType-@(nRecitationIndex + 1)').addEventListener('play', () => {
-                        currentAudio = document.getElementById('audio-@Model.RecitationType-@(nRecitationIndex + 1)');
+                    document.getElementById('audio-@recitaion.Id').addEventListener('play', () => {
+                        currentAudio = document.getElementById('audio-@recitaion.Id');
                         var audioList = document.querySelectorAll('audio');
                         audioList.forEach(function (audioElement) {
                             if (audioElement != currentAudio) {
@@ -87,8 +87,8 @@
                         _setXml('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitaion.Id}.xml")');
                     });
 
-                    document.getElementById('audio-@Model.RecitationType-@(nRecitationIndex + 1)').addEventListener('timeupdate', () => {
-                        _trackTimeChanged(document.getElementById('audio-@Model.RecitationType-@(nRecitationIndex + 1)'));
+                    document.getElementById('audio-@recitaion.Id').addEventListener('timeupdate', () => {
+                        _trackTimeChanged(document.getElementById('audio-@recitaion.Id'));
                     });
                 </script>
             }

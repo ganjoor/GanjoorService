@@ -16,7 +16,7 @@
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon">
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml">
     <script src="/lib/jquery/dist/jquery.min.js"></script>
-    <script src="/js/bk.js?version=49"></script>
+    <script src="/js/bk.js?version=50"></script>
     <script src="/js/jquery.mark.min.js"></script>
     <script>
         var cookieValue = getCookie("playerScrollLock");
@@ -162,13 +162,15 @@
             <script>
                 var narrators = [];
                 var audioxmlfiles = [];
+                var recitaionIds = [];
                 @foreach (var recitation in Model.GanjoorPage.Poem.Recitations)
                 {
                     if (recitation.InSyncWithText)
                     {
                         <text>
                             narrators.push('@Html.Raw(recitation.AudioArtist)');
-                        audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
+                            audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
+                            recitaionIds.push(@recitation.Id);
                         </text>
                     }
                 }
@@ -208,16 +210,16 @@
     @{
         if (!string.IsNullOrEmpty(Model.PinterestUrl))
         {
-            <script>
-                $(function () {
-                    $("a").attr('href', function (i, h) {
-                        if (h != null) {
-                            return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
-                        }
-                        return h;
+                <script>
+                    $(function () {
+                        $("a").attr('href', function (i, h) {
+                            if (h != null) {
+                                return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
+                            }
+                            return h;
+                        });
                     });
-                });
-            </script>
+                </script>
         }
     }
 
