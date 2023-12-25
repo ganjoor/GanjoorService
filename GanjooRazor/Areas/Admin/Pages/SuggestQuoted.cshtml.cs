@@ -51,6 +51,8 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public GanjoorQuotedPoem[] AllPoemQuoteds { get; set; }
 
+        public Guid? ReverseId { get; set; }
+
         private Tuple<int, string>[] GetCouplets(GanjoorVerseViewModel[] verses)
         {
             int coupetIndex = -1;
@@ -142,6 +144,21 @@ namespace GanjooRazor.Areas.Admin.Pages
                     RelatedPoem = JObject.Parse(await relPoemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
 
                     RelatedCouplets = GetCouplets(RelatedPoem.Verses);
+
+
+                    var revQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{GanjoorQuotedPoem.RelatedPoemId}/quoteds/{GanjoorQuotedPoem.PoemId}");
+                    if (!revQuery.IsSuccessStatusCode)
+                    {
+                        LastMessage = JsonConvert.DeserializeObject<string>(await revQuery.Content.ReadAsStringAsync());
+                        return LastMessage;
+                    }
+
+                    var revs =  JsonConvert.DeserializeObject<GanjoorQuotedPoem[]>(await revQuery.Content.ReadAsStringAsync());
+                    var rev = revs.Where(r => r.CoupletIndex == GanjoorQuotedPoem.RelatedCoupletIndex && r.RelatedCoupletIndex == GanjoorQuotedPoem.CoupletIndex).SingleOrDefault();
+                    if(rev != null)
+                    {
+                        ReverseId = rev.Id;
+                    }
                 }
 
             }

@@ -406,7 +406,15 @@
             <tr><td><hr /></td></tr>
             <tr>
                 <td>
-                    <a role="button" onclick="reverseQuote('@Model.GanjoorQuotedPoem.Id')" class="actionlink" title="درج معکوس">درج معکوس</a>
+                    @if(Model.ReverseId != null)
+                    {
+                        <a href="/Admin/SuggestQuoted/?p=@Model.GanjoorQuotedPoem.RelatedPoemId&id=@Model.ReverseId">نمایش معکوس</a>
+                    }
+                    else
+                    {
+                        <a role="button" onclick="reverseQuote('@Model.GanjoorQuotedPoem.Id')" class="actionlink" title="درج معکوس">درج معکوس</a>
+                    }
+                    
                 </td>
             </tr>
 
