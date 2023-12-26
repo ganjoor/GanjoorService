@@ -599,6 +599,21 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                if( await _context.GanjoorQuotedPoems.AsNoTracking()
+                                        .Where(q => 
+                                                    q.PoemId == quoted.PoemId
+                                                    &&
+                                                    q.RelatedPoemId != null &&  q.RelatedPoemId == quoted.RelatedPoemId
+                                                    &&
+                                                    q.CoupletIndex == quoted.CoupletIndex
+                                                    &&
+                                                    q.RelatedCoupletIndex != null && q.RelatedCoupletIndex == quoted.RelatedCoupletIndex
+                                                    ).AnyAsync())
+                {
+                    return new RServiceResult<GanjoorQuotedPoem>(null, "نقل قول تکراری");
+                }
+
+
                 _context.Add(quoted);
                 await _context.SaveChangesAsync();
 
