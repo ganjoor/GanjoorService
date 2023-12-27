@@ -54,7 +54,7 @@
         @foreach (var q in Model.AllPoemQuoteds)
         {
             <tr id="tr-@q.Id">
-                <td><a href="/Admin/SuggestQuoted/?p=@q.PoemId&id=@q.Id">#</a> </td>
+                <td><a href="/Admin/SuggestQuoted/?p=@q.PoemId&id=@q.Id">@q.PoemId-@q.RelatedPoemId</a> </td>
                 <td>@q.CachedRelatedPoemPoetName</td>
                 <td>
                     @if (q.CoupletVerse1ShouldBeEmphasized)
