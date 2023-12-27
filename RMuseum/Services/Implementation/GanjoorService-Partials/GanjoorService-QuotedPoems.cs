@@ -194,6 +194,9 @@ namespace RMuseum.Services.Implementation
                                 context.Add(relatedPoem);
                                 await context.SaveChangesAsync();
 
+                                if (breakOnFirstSimilar)
+                                    break;
+
                                 var alreadyAdded2 = await context.GanjoorQuotedPoems.AsNoTracking()
                                            .AnyAsync(q => q.PoemId == otherPoem.Id &&
                                                        q.RelatedPoemId == poem.Id
@@ -202,13 +205,7 @@ namespace RMuseum.Services.Implementation
                                                        &&
                                                        q.RelatedCoupletIndex == verse.CoupletIndex
                                                        );
-                                if (alreadyAdded2)
-                                {
-                                    if (breakOnFirstSimilar)
-                                        break;
-                                    else
-                                        continue;
-                                }
+                                if (alreadyAdded2) continue;
 
                                 GanjoorQuotedPoem reverseRelation = new GanjoorQuotedPoem()
                                 {
