@@ -538,6 +538,11 @@
         </table>
     </form>
 
+    @if(Model.AllPoemQuoteds == null)
+    {
+        return;
+    }
+
     <h1>همهٔ مشق‌های شعر</h1>
     <table>
         <tr>
