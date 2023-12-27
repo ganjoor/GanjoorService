@@ -130,7 +130,7 @@ namespace RMuseum.Services.Implementation
                             .OrderBy(p => p.Id).ToListAsync();
                 foreach (var otherPoem in relatedPoems)
                 {
-                    discoverQuotedQueueItem.RelatedPoetId = otherPoem.Id;
+                    discoverQuotedQueueItem.RelatedPoemId = otherPoem.Id;
                     context.Update(discoverQuotedQueueItem);
                     await jobProgressServiceEF.UpdateJob(job.Id, poem.Id, otherPoem.Id.ToString());
 
