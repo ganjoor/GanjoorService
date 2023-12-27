@@ -214,8 +214,8 @@ namespace RMuseum.Services.Implementation
                                 {
                                     PoemId = otherPoem.Id,
                                     PoetId = relatedPoet.Id,
-                                    RelatedPoetId = poem.Id,
-                                    RelatedPoemId = poet.Id,
+                                    RelatedPoetId = poet.Id,
+                                    RelatedPoemId = poem.Id,
                                     IsPriorToRelated = !relatedPoem.IsPriorToRelated,
                                     ChosenForMainList = false == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == otherPoem.Id && p.RelatedPoemId == poem.Id).AnyAsync(),
                                     CachedRelatedPoemPoetDeathYearInLHijri = poet.DeathYearInLHijri,
