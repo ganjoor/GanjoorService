@@ -206,6 +206,13 @@
     {
         <a role="button" class="pagebutton" id="@($"load-more-quoted-button-{Model.GanjoorQuotedPoem.Id}")" onclick="loadMoreQuotedForRelatedPoem('@Model.GanjoorQuotedPoem.Id', @Model.GanjoorQuotedPoem.PoemId, @Model.GanjoorQuotedPoem.RelatedPoemId, '@Model.PoetImageUrl', '@Model.PoetNickName', @Model.CanEdit.ToString().ToLower())">مشاهدهٔ @((Model.GanjoorQuotedPoem.SamePoemsQuotedCount - 1).ToPersianNumbers()) نقل قول دیگر در همین شعر<i class="info-buttons autorenew"></i></a>
     }
+
+    @if (Model.GanjoorQuotedPoem.ClaimedByBothPoets)
+    {
+        <div class="century-alt">
+            <a href="/faq?id=7">چطور یک شعر می‌تواند به چند شاعر منتسب باشد؟</a>
+        </div>
+    }
     
 
     @if(!string.IsNullOrEmpty(Model.GanjoorQuotedPoem.Note))
@@ -214,6 +221,8 @@
             @Html.Raw(Model.GanjoorQuotedPoem.Note)
         </div>
     }
+
+
 
     @if (Model.CanEdit)
     {
