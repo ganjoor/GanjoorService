@@ -424,7 +424,7 @@ namespace RMuseum.Services.Implementation
             var normalRelatedPoems = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poetId && p.RelatedPoetId == relatedPoetId && p.ClaimedByBothPoets == false && p.Published).OrderBy(p => p.PoemId).ThenBy(p => p.CoupletIndex).ToListAsync();
             if (normalRelatedPoems.Any())
             {
-                html += $"<p>در این بخش شعرهایی را فهرست کرده‌ایم که در آنها {poet.Name} مصرع یا بیتی از {relatedPoet.Name} را عیناً نقل قول کرده است:</p>{Environment.NewLine}";
+                html += $"<p>در این بخش شعرهایی را فهرست کرده‌ایم که در آنها {poet.Nickname} مصرع یا بیتی از {relatedPoet.Nickname} را عیناً نقل قول کرده است:</p>{Environment.NewLine}";
                 html += $"<br style=\"clear:both;\">{Environment.NewLine}";
                 html += $"<ol>{Environment.NewLine}";
                 foreach (var quotedPoem in normalRelatedPoems)
