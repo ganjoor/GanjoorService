@@ -2019,7 +2019,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.StartDiscoverRelatedPoems(System.Int32,System.Int32,System.Boolean,System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.StartDiscoverRelatedPoems(System.Int32,System.Int32,System.Boolean,System.Int32,System.Boolean)">
             <summary>
             discover related poems
             </summary>
@@ -2027,6 +2027,7 @@
             <param name="relatedPoetId"></param>
             <param name="breakOnFirstSimilar"></param>
             <param name="relatedSubCatId"></param>
+            <param name="insertReverse"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
@@ -15593,7 +15594,7 @@
             <param name="editingUserId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.StartDiscoverRelatedPoems(System.Int32,System.Int32,System.Boolean,System.Nullable{System.Int32})">
+        <member name="M:RMuseum.Services.IGanjoorService.StartDiscoverRelatedPoems(System.Int32,System.Int32,System.Boolean,System.Nullable{System.Int32},System.Boolean)">
             <summary>
             discover related poems
             </summary>
@@ -15601,6 +15602,7 @@
             <param name="relatedPoetId"></param>
             <param name="breakOnFirstSimilar"></param>
             <param name="relatedSubCatId"></param>
+            <param name="insertReverse"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetGanjoorQuotedPoemsForPoemAsync(System.Int32,System.Int32,System.Int32,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
@@ -17643,7 +17645,7 @@
             <param name="metre"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartDiscoverRelatedPoems(System.Int32,System.Int32,System.Boolean,System.Nullable{System.Int32})">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartDiscoverRelatedPoems(System.Int32,System.Int32,System.Boolean,System.Nullable{System.Int32},System.Boolean)">
             <summary>
             discover related poems
             </summary>
@@ -17651,6 +17653,7 @@
             <param name="relatedPoetId"></param>
             <param name="breakOnFirstSimilar"></param>
             <param name="relatedSubCatId"></param>
+            <param name="insertReverse"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartRegeneratingRelatedPoemsPages(System.Guid)">

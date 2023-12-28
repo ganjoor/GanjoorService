@@ -3676,15 +3676,16 @@ namespace RMuseum.Controllers
         /// <param name="relatedPoetId"></param>
         /// <param name="breakOnFirstSimilar"></param>
         /// <param name="relatedSubCatId"></param>
+        /// <param name="insertReverse"></param>
         /// <returns></returns>
         [HttpPost("quoted/discover/{poetId}/{relatedPoetId}/{breakOnFirstSimilar}/{relatedSubCatId}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult StartDiscoverRelatedPoems(int poetId, int relatedPoetId, bool breakOnFirstSimilar = false, int relatedSubCatId = 0)
+        public IActionResult StartDiscoverRelatedPoems(int poetId, int relatedPoetId, bool breakOnFirstSimilar = false, int relatedSubCatId = 0, bool insertReverse = false)
         {
             
-            var res = _ganjoorService.StartDiscoverRelatedPoems(poetId, relatedPoetId, breakOnFirstSimilar, relatedSubCatId == 0 ? null :  relatedSubCatId);
+            var res = _ganjoorService.StartDiscoverRelatedPoems(poetId, relatedPoetId, breakOnFirstSimilar, relatedSubCatId == 0 ? null :  relatedSubCatId, insertReverse);
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);

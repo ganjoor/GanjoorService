@@ -1231,8 +1231,9 @@ namespace RMuseum.Services
         /// <param name="relatedPoetId"></param>
         /// <param name="breakOnFirstSimilar"></param>
         /// <param name="relatedSubCatId"></param>
+        /// <param name="insertReverse"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartDiscoverRelatedPoems(int poetId, int relatedPoetId, bool breakOnFirstSimilar, int? relatedSubCatId);
+        RServiceResult<bool> StartDiscoverRelatedPoems(int poetId, int relatedPoetId, bool breakOnFirstSimilar, int? relatedSubCatId, bool insertReverse);
 
         /// <summary>
         /// get quoted poems for a poem

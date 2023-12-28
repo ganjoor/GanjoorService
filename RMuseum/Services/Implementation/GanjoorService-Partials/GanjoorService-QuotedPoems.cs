@@ -25,8 +25,9 @@ namespace RMuseum.Services.Implementation
         /// <param name="relatedPoetId"></param>
         /// <param name="breakOnFirstSimilar"></param>
         /// <param name="relatedSubCatId"></param>
+        /// <param name="insertReverse"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartDiscoverRelatedPoems(int poetId, int relatedPoetId, bool breakOnFirstSimilar, int? relatedSubCatId)
+        public RServiceResult<bool> StartDiscoverRelatedPoems(int poetId, int relatedPoetId, bool breakOnFirstSimilar, int? relatedSubCatId, bool insertReverse)
         {
             try
             {
@@ -42,7 +43,7 @@ namespace RMuseum.Services.Implementation
 
                                    try
                                    {
-                                       await _DiscoverRelatedPoemsAsync(context, poetId, relatedPoetId, jobProgressServiceEF, job,  breakOnFirstSimilar, relatedSubCatId);
+                                       await _DiscoverRelatedPoemsAsync(context, poetId, relatedPoetId, insertReverse, jobProgressServiceEF, job,  breakOnFirstSimilar, relatedSubCatId);
 
                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                    }
@@ -81,7 +82,7 @@ namespace RMuseum.Services.Implementation
             return (float)found / total > 0.7f && AreSimilar(str2, str1, false);
         }
 
-        private async Task<RServiceResult<bool>> _DiscoverRelatedPoemsAsync(RMuseumDbContext context, int poetId, int relatedPoetId, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, bool breakOnFirstSimilar, int? relatedSubCatId)
+        private async Task<RServiceResult<bool>> _DiscoverRelatedPoemsAsync(RMuseumDbContext context, int poetId, int relatedPoetId, bool insertReverse, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, bool breakOnFirstSimilar, int? relatedSubCatId)
         {
             DiscoverQuotedQueueItem discoverQuotedQueueItem = await context.DiscoverQuotedQueueItems.Where(i => i.PoetId == poetId && i.RelatedPoetId == relatedPoetId).SingleOrDefaultAsync();
             if (discoverQuotedQueueItem == null)
@@ -194,10 +195,9 @@ namespace RMuseum.Services.Implementation
                                 context.Add(relatedPoem);
                                 await context.SaveChangesAsync();
 
-                                if (breakOnFirstSimilar)
-                                    break;
-
-                                var alreadyAdded2 = await context.GanjoorQuotedPoems.AsNoTracking()
+                                if(insertReverse)
+                                {
+                                    var alreadyAdded2 = await context.GanjoorQuotedPoems.AsNoTracking()
                                            .AnyAsync(q => q.PoemId == otherPoem.Id &&
                                                        q.RelatedPoemId == poem.Id
                                                        &&
@@ -205,43 +205,45 @@ namespace RMuseum.Services.Implementation
                                                        &&
                                                        q.RelatedCoupletIndex == verse.CoupletIndex
                                                        );
-                                if (alreadyAdded2) continue;
+                                    if (alreadyAdded2) continue;
 
-                                GanjoorQuotedPoem reverseRelation = new GanjoorQuotedPoem()
-                                {
-                                    PoemId = otherPoem.Id,
-                                    PoetId = relatedPoet.Id,
-                                    RelatedPoetId = poet.Id,
-                                    RelatedPoemId = poem.Id,
-                                    IsPriorToRelated = !relatedPoem.IsPriorToRelated,
-                                    ChosenForMainList = false == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == otherPoem.Id && p.RelatedPoemId == poem.Id).AnyAsync(),
-                                    CachedRelatedPoemPoetDeathYearInLHijri = poet.DeathYearInLHijri,
-                                    CachedRelatedPoemPoetName = poet.Nickname,
-                                    CachedRelatedPoemPoetUrl = poetCat.FullUrl,
-                                    CachedRelatedPoemPoetImage = $"/api/ganjoor/poet/image{poetCat.FullUrl}.gif",
-                                    CachedRelatedPoemFullTitle = poem.FullTitle,
-                                    CachedRelatedPoemFullUrl = poem.FullUrl,
-                                    SortOrder = 1000,
-                                    Note = "",
-                                    Published = false,
-                                    RelatedCoupletVerse1 = relatedPoem.CoupletVerse1,
-                                    RelatedCoupletVerse1ShouldBeEmphasized = relatedPoem.CoupletVerse1ShouldBeEmphasized,
-                                    RelatedCoupletVerse2 = relatedPoem.CoupletVerse2,
-                                    RelatedCoupletVerse2ShouldBeEmphasized = relatedPoem.CoupletVerse2ShouldBeEmphasized,
-                                    RelatedCoupletIndex = relatedPoem.CoupletIndex,
-                                    CoupletVerse1 = relatedPoem.RelatedCoupletVerse1,
-                                    CoupletVerse1ShouldBeEmphasized = relatedPoem.RelatedCoupletVerse1ShouldBeEmphasized,
-                                    CoupletVerse2 = relatedPoem.RelatedCoupletVerse2,
-                                    CoupletVerse2ShouldBeEmphasized = relatedPoem.RelatedCoupletVerse2ShouldBeEmphasized,
-                                    CoupletIndex = relatedPoem.RelatedCoupletIndex,
-                                    ClaimedByBothPoets = false,
-                                    IndirectQuotation = false,
-                                    SamePoemsQuotedCount = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == otherPoem.Id && p.RelatedPoemId == poem.Id).AnyAsync() ?
-                                               1 + await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == otherPoem.Id && p.RelatedPoemId == poem.Id).CountAsync() : 1
+                                    GanjoorQuotedPoem reverseRelation = new GanjoorQuotedPoem()
+                                    {
+                                        PoemId = otherPoem.Id,
+                                        PoetId = relatedPoet.Id,
+                                        RelatedPoetId = poet.Id,
+                                        RelatedPoemId = poem.Id,
+                                        IsPriorToRelated = !relatedPoem.IsPriorToRelated,
+                                        ChosenForMainList = false == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == otherPoem.Id && p.RelatedPoemId == poem.Id).AnyAsync(),
+                                        CachedRelatedPoemPoetDeathYearInLHijri = poet.DeathYearInLHijri,
+                                        CachedRelatedPoemPoetName = poet.Nickname,
+                                        CachedRelatedPoemPoetUrl = poetCat.FullUrl,
+                                        CachedRelatedPoemPoetImage = $"/api/ganjoor/poet/image{poetCat.FullUrl}.gif",
+                                        CachedRelatedPoemFullTitle = poem.FullTitle,
+                                        CachedRelatedPoemFullUrl = poem.FullUrl,
+                                        SortOrder = 1000,
+                                        Note = "",
+                                        Published = false,
+                                        RelatedCoupletVerse1 = relatedPoem.CoupletVerse1,
+                                        RelatedCoupletVerse1ShouldBeEmphasized = relatedPoem.CoupletVerse1ShouldBeEmphasized,
+                                        RelatedCoupletVerse2 = relatedPoem.CoupletVerse2,
+                                        RelatedCoupletVerse2ShouldBeEmphasized = relatedPoem.CoupletVerse2ShouldBeEmphasized,
+                                        RelatedCoupletIndex = relatedPoem.CoupletIndex,
+                                        CoupletVerse1 = relatedPoem.RelatedCoupletVerse1,
+                                        CoupletVerse1ShouldBeEmphasized = relatedPoem.RelatedCoupletVerse1ShouldBeEmphasized,
+                                        CoupletVerse2 = relatedPoem.RelatedCoupletVerse2,
+                                        CoupletVerse2ShouldBeEmphasized = relatedPoem.RelatedCoupletVerse2ShouldBeEmphasized,
+                                        CoupletIndex = relatedPoem.RelatedCoupletIndex,
+                                        ClaimedByBothPoets = false,
+                                        IndirectQuotation = false,
+                                        SamePoemsQuotedCount = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == otherPoem.Id && p.RelatedPoemId == poem.Id).AnyAsync() ?
+                                                   1 + await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoemId == otherPoem.Id && p.RelatedPoemId == poem.Id).CountAsync() : 1
 
-                                };
-                                context.Add(reverseRelation);
-                                await context.SaveChangesAsync();
+                                    };
+                                    context.Add(reverseRelation);
+                                    await context.SaveChangesAsync();
+                                }
+                                
 
                                 if (breakOnFirstSimilar)
                                     break;
