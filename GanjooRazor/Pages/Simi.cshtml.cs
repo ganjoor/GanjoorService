@@ -78,6 +78,9 @@ namespace GanjooRazor.Pages
         public string LastError { get; set; }
         public string Language { get; set; }
         public GanjoorPoemFormat Format { get; set; }
+        public string Query { get; set; }
+        public bool Quoted { get; set; }
+        public bool ExactSearch { get; set; }
 
 
         /// <summary>
@@ -207,6 +210,15 @@ namespace GanjooRazor.Pages
             {
                 Format = (GanjoorPoemFormat)int.Parse(f);
             }
+
+            Query = Request.Query["s"].ApplyCorrectYeKe().Trim();
+            ExactSearch = Request.Query["es"] == "1";
+            bool quotes = Query.IndexOf("\"") != -1 || ExactSearch;
+            Query = LanguageUtils.MakeTextSearchable(Query); //replace zwnj with space
+            if (quotes)
+                Query = $"\"{Query}\"";
+
+            Quoted = quotes && Query.Contains(" ");
 
 
             ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
@@ -352,7 +364,16 @@ namespace GanjooRazor.Pages
                 CatFullTitle = "";
             }
 
+            if (!string.IsNullOrEmpty(Query))
+            {
+                title += $" شامل کلیدواژهٔ «{Query}»";
+            }
+
             string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={Metre}&rhyme={Rhyme}&poetId={PoetId}&catId={CatId}&language={Language}&format={(int)Format}";
+            if(!string.IsNullOrEmpty(Query))
+            {
+                url += $"&term={Query}";
+            }
             var response = await _httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)

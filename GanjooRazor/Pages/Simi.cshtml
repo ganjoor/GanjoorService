@@ -235,6 +235,12 @@
                                     
                                 }
                             </select>
+                            <label for="f" class="width-100per">کلیدواژه (جستجو در کل صفحهٔ شعر، برای جستجوی بهتر از <a href="/search?s=@Model.Query">صفحهٔ جستجو</a> استفاده کنید):</label>
+                            <input type="text" name="s" id="s" class="width-100per" value="@Model.Query" placeholder="کلیدواژه" />
+                            @if (Model.ExactSearch)
+                            {
+                                <input type="hidden" name="es" id="es" value="1" />
+                            }
 
                             @if(Model.CatId != 0)
                             {
@@ -256,7 +262,7 @@
                 @if (Model.Poems == null)
                 {
                     <div class="sitem">
-                        <p>لطفاً وزن یا قافیهٔ ابیات مد نظر را وارد کنید.</p>
+                        <p>لطفاً اطلاعات ورودی برای ابیات مد نظر را وارد کنید.</p>
                     </div>
                 }
                 else
