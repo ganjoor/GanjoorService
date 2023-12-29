@@ -42,8 +42,8 @@ namespace GanjooRazor.Areas.User.Pages
                 ArtistUrl = "https://beeptunes.com/artist/3403349",
                 AlbumName = "اجراهای خصوصی",
                 AlbumUrl = "https://khosousi.com",
-                TrackName = "",
-                TrackUrl = "",
+                TrackName = Request.Query["TrackName"],
+                TrackUrl = Request.Query["TrackUrl"],
                 Approved = false,
                 Rejected = false,
                 BrokenLink = false,
@@ -77,7 +77,7 @@ namespace GanjooRazor.Areas.User.Pages
                 return Page();
             }
 
-            return Redirect("/User/AddSong");
+            return Redirect($"/User/AddSong?TrackName={PoemMusicTrackViewModel.TrackName}&TrackUrl={PoemMusicTrackViewModel.TrackUrl}");
         }
     }
 }
