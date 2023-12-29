@@ -2485,8 +2485,9 @@ namespace RMuseum.Services.Implementation
         /// <param name="language"></param>
         /// <param name="format"></param>
         /// <param name="catId"></param>
+        /// <param name="term"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoems(PagingParameterModel paging, string metre, string rhyme, int? poetId, int? catId, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoems(PagingParameterModel paging, string metre, string rhyme, int? poetId, int? catId, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown, string term = null)
         {
             if (poetId == null)
             {
@@ -2497,6 +2498,28 @@ namespace RMuseum.Services.Implementation
             {
                 catIdList.Add((int)catId);
                 await _populateCategoryChildren(_context, (int)catId, catIdList);
+            }
+            string searchConditions = "";
+            if (!string.IsNullOrEmpty(term))
+            {
+                term = term.Replace("‌", " ");//replace zwnj with space
+                if (term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
+                {
+                    searchConditions = term.Replace("\"", "").Replace("'", "");
+                    searchConditions = $"\"{searchConditions}\"";
+                }
+                else
+                {
+                    string[] words = term.Replace("\"", "").Replace("'", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                    searchConditions = "";
+                    string emptyOrAnd = "";
+                    foreach (string word in words)
+                    {
+                        searchConditions += $" {emptyOrAnd} \"*{word}*\" ";
+                        emptyOrAnd = " AND ";
+                    }
+                }
             }
             var source =
                 _context.GanjoorPoemSections.Include(s => s.Poem).Include(s => s.Poet).Include(s => s.GanjoorMetre)
@@ -2512,6 +2535,8 @@ namespace RMuseum.Services.Implementation
                         (format == GanjoorPoemFormat.Unknown || s.PoemFormat == format)
                         &&
                         (catId == null || catIdList.Contains(s.Poem.CatId))
+                        &&
+                        (searchConditions == "" || (searchConditions != "" && EF.Functions.Contains(s.Poem.PlainText, searchConditions)))
                         )
                 .OrderBy(p => p.Poet.BirthYearInLHijri).ThenBy(p => p.Poet.Nickname).ThenBy(p => p.SectionType).ThenBy(p => p.Poem.Id)
                 .Select

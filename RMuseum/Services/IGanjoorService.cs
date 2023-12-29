@@ -482,8 +482,9 @@ namespace RMuseum.Services
         /// <param name="catId"></param>
         /// <param name="language"></param>
         /// <param name="format"></param>
+        /// <param name="term"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoems(PagingParameterModel paging, string metre, string rhyme, int? poetId, int? catId, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoems(PagingParameterModel paging, string metre, string rhyme, int? poetId, int? catId, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown, string term = null);
 
         /// <summary>
         /// language tagged poem sections
