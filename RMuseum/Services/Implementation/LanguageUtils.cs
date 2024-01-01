@@ -203,6 +203,10 @@ namespace RMuseum.Services.Implementation
                             if (verses.Count == 2 && verseTextList.Count == 2)
                             {
                                 rhyme = PrepareTextForFindingRhyme(verseTextList[1]);
+                                if(rhyme.Length > 50)
+                                {
+                                    rhyme = "";
+                                }
                                 return new GanjooRhymeAnalysisResult()
                                 {
                                     Rhyme = rhyme, //rhyme.Length > 50 condition check removed to search using prosody meters
@@ -235,6 +239,11 @@ namespace RMuseum.Services.Implementation
                             FailVerse = "",
                         };
                     }*/
+
+                    if (rhyme.Length > 50)
+                    {
+                        rhyme = "";
+                    }
 
                     return new GanjooRhymeAnalysisResult()
                     {
