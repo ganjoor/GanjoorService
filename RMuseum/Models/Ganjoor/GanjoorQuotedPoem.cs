@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RSecurityBackend.Models.Auth.Db;
+using System;
 
 namespace RMuseum.Models.Ganjoor
 {
@@ -129,7 +130,7 @@ namespace RMuseum.Models.Ganjoor
         public string Note { get; set; }
 
         /// <summary>
-        /// published
+        /// published (approved)
         /// </summary>
         public bool Published { get; set; }
 
@@ -157,5 +158,45 @@ namespace RMuseum.Models.Ganjoor
         /// related indirectly
         /// </summary>
         public bool IndirectQuotation { get; set; }
+
+        /// <summary>
+        /// Suggested by user id
+        /// </summary>
+        public Guid? SuggestedById { get; set; }
+
+        /// <summary>
+        /// Suggested by user
+        /// </summary>
+        public virtual RAppUser SuggestedBy { get; set; }
+
+        /// <summary>
+        /// suggestion date
+        /// </summary>
+        public DateTime? SuggestionDate { get; set; }
+
+        /// <summary>
+        /// review date
+        /// </summary>
+        public DateTime? ReviewDate { get; set; }
+
+        /// <summary>
+        /// reviewer id
+        /// </summary>
+        public Guid? ReviewerUserId { get; set; }
+
+        /// <summary>
+        /// reviwer user id
+        /// </summary>
+        public virtual RAppUser ReviewerUser { get; set; }
+
+        /// <summary>
+        /// instead of deleting rejected quotes keep them for user (not published + not rejected means not reviewed)
+        /// </summary>
+        public bool Rejected { get; set; }
+
+        /// <summary>
+        /// review note
+        /// </summary>
+        public string ReviewNote { get; set; }
     }
 }
