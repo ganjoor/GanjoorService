@@ -11536,6 +11536,172 @@
             some explanotory text provided by reporter
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel">
+            <summary>
+            quoted poem view model
+            </summary>
+        </member>
+        <member name="M:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.#ctor">
+            <summary>
+            constructor
+            </summary>
+        </member>
+        <member name="M:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.#ctor(RMuseum.Models.Ganjoor.GanjoorQuotedPoem)">
+            <summary>
+            copy constructor
+            </summary>
+            <param name="src"></param>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.Id">
+            <summary>
+            record id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.Poem">
+            <summary>
+            poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.RelatedPoemId">
+            <summary>
+            related poem id (this could be a poem we do not have it available)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.IsPriorToRelated">
+            <summary>
+            this poem is written and should be displayed prior to the related poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.ChosenForMainList">
+            <summary>
+            if the related poet poem has multiple poems related to this poem, which one is chosen to be shown at main poems pages?
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.SortOrder">
+            <summary>
+            this sort order can be used to pin a record on top
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.CachedRelatedPoemPoetDeathYearInLHijri">
+            <summary>
+            related poem peot death date in hijri (used for sorting)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.CachedRelatedPoemPoetName">
+            <summary>
+            related poem poet name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.CachedRelatedPoemPoetUrl">
+            <summary>
+            related poem poet url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.CachedRelatedPoemPoetImage">
+            <summary>
+            related poem poet image
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.CachedRelatedPoemFullTitle">
+            <summary>
+            full title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.CachedRelatedPoemFullUrl">
+            <summary>
+            full url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.CoupletVerse1">
+            <summary>
+            couplet 1 verse 1
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.CoupletVerse1ShouldBeEmphasized">
+            <summary>
+            is main part
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.CoupletVerse2">
+            <summary>
+            couplet 1 verse 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.CoupletVerse2ShouldBeEmphasized">
+            <summary>
+            is main part
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.CoupletIndex">
+            <summary>
+            couplet 1 index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.RelatedCoupletVerse1">
+            <summary>
+            related couplet 1 verse 1
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.RelatedCoupletVerse1ShouldBeEmphasized">
+            <summary>
+            is main part
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.RelatedCoupletVerse2">
+            <summary>
+            related couplet 1 verse 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.RelatedCoupletVerse2ShouldBeEmphasized">
+            <summary>
+            is main part
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.RelatedCoupletIndex">
+            <summary>
+            related couplet 1 index
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.Note">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.Published">
+            <summary>
+            published (approved)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.SamePoemsQuotedCount">
+            <summary>
+            when a poem contains more than one quoted couplet from another one this should be more than 1
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.ClaimedByBothPoets">
+            <summary>
+            poems (same poem) are claimed by both poets
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.PoetId">
+            <summary>
+            poet id (redundant for simplifying queries)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.RelatedPoetId">
+            <summary>
+            related poet id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.IndirectQuotation">
+            <summary>
+            related indirectly
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorSearchVerseViewModel">
             <summary>
             Ganjoor Verse View Model
