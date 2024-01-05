@@ -3728,11 +3728,11 @@ namespace RMuseum.Controllers
         [HttpGet]
         [Route("poem/{id}/quoteds/{relatedId}")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem[]))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoemViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetGanjoorQuotedPoemsForRelatedAsync(int id, int relatedId, bool? published = null)
         {
-            RServiceResult<GanjoorQuotedPoem[]> res =
+            RServiceResult<GanjoorQuotedPoemViewModel[]> res =
                 await _ganjoorService.GetGanjoorQuotedPoemsForRelatedAsync(id, relatedId, published);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -3752,11 +3752,11 @@ namespace RMuseum.Controllers
         [HttpGet]
         [Route("quoted")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem[]))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoemViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetGanjoorQuotedPoemsAsync(int? poetId, int? relatedPoetId, bool? chosen, bool? published, bool? claimed, bool? indirect)
         {
-            RServiceResult<GanjoorQuotedPoem[]> res =
+            RServiceResult<GanjoorQuotedPoemViewModel[]> res =
                 await _ganjoorService.GetGanjoorQuotedPoemsAsync(poetId, relatedPoetId, chosen, published, claimed, indirect);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -3772,11 +3772,11 @@ namespace RMuseum.Controllers
         [HttpGet]
         [Route("quoted/{id}")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoemViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetGanjoorQuotedPoemByIdAsync(Guid id)
         {
-            RServiceResult<GanjoorQuotedPoem> res =
+            RServiceResult<GanjoorQuotedPoemViewModel> res =
                 await _ganjoorService.GetGanjoorQuotedPoemByIdAsync(id);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -3791,12 +3791,12 @@ namespace RMuseum.Controllers
         [HttpPost]
         [Route("quoted")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoemViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> InsertGanjoorQuotedPoemAsync([FromBody] GanjoorQuotedPoem quoted)
+        public async Task<IActionResult> InsertGanjoorQuotedPoemAsync([FromBody] GanjoorQuotedPoemViewModel quoted)
         {
             var loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            RServiceResult<GanjoorQuotedPoem> res =
+            RServiceResult<GanjoorQuotedPoemViewModel> res =
                 await _ganjoorService.InsertGanjoorQuotedPoemAsync(quoted, loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
@@ -3813,7 +3813,7 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> UpdateGanjoorQuotedPoemsAsync([FromBody] GanjoorQuotedPoem quoted)
+        public async Task<IActionResult> UpdateGanjoorQuotedPoemsAsync([FromBody] GanjoorQuotedPoemViewModel quoted)
         {
             var loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<bool> res =

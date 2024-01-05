@@ -2071,14 +2071,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.InsertGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.GanjoorQuotedPoem)">
+        <member name="M:RMuseum.Controllers.GanjoorController.InsertGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel)">
             <summary>
             insert quoted
             </summary>
             <param name="quoted"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.UpdateGanjoorQuotedPoemsAsync(RMuseum.Models.Ganjoor.GanjoorQuotedPoem)">
+        <member name="M:RMuseum.Controllers.GanjoorController.UpdateGanjoorQuotedPoemsAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel)">
             <summary>
             update quoted
             </summary>
@@ -15853,7 +15853,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.InsertGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.GanjoorQuotedPoem,System.Guid)">
+        <member name="M:RMuseum.Services.IGanjoorService.InsertGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel,System.Guid)">
             <summary>
             insert quoted poem
             </summary>
@@ -15861,7 +15861,7 @@
             <param name="editingUserId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.UpdateGanjoorQuotedPoemsAsync(RMuseum.Models.Ganjoor.GanjoorQuotedPoem,System.Guid)">
+        <member name="M:RMuseum.Services.IGanjoorService.UpdateGanjoorQuotedPoemsAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel,System.Guid)">
             <summary>
             update quoted poem
             </summary>
@@ -17888,7 +17888,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.InsertGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.GanjoorQuotedPoem,System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.InsertGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel,System.Guid)">
             <summary>
             insert quoted poem
             </summary>
@@ -17896,7 +17896,7 @@
             <param name="editingUserId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdateGanjoorQuotedPoemsAsync(RMuseum.Models.Ganjoor.GanjoorQuotedPoem,System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdateGanjoorQuotedPoemsAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel,System.Guid)">
             <summary>
             update quoted poem
             </summary>

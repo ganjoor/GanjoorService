@@ -9,6 +9,7 @@ using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
@@ -43,7 +44,7 @@ namespace RMuseum.Services.Implementation
 
                                    try
                                    {
-                                       await _DiscoverRelatedPoemsAsync(context, poetId, relatedPoetId, insertReverse, jobProgressServiceEF, job,  breakOnFirstSimilar, relatedSubCatId);
+                                       await _DiscoverRelatedPoemsAsync(context, poetId, relatedPoetId, insertReverse, jobProgressServiceEF, job, breakOnFirstSimilar, relatedSubCatId);
 
                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                    }
@@ -147,7 +148,7 @@ namespace RMuseum.Services.Implementation
                         string text = LanguageUtils.MakeTextSearchable(verse.Text);
                         foreach (var relatedVerse in relatedVerses)
                         {
-                            if(AreSimilar(text, LanguageUtils.MakeTextSearchable(relatedVerse.Text), true))
+                            if (AreSimilar(text, LanguageUtils.MakeTextSearchable(relatedVerse.Text), true))
                             {
                                 var alreadyAdded = await context.GanjoorQuotedPoems.AsNoTracking()
                                             .AnyAsync(q => q.PoemId == poem.Id &&
@@ -195,7 +196,7 @@ namespace RMuseum.Services.Implementation
                                 context.Add(relatedPoem);
                                 await context.SaveChangesAsync();
 
-                                if(insertReverse)
+                                if (insertReverse)
                                 {
                                     var alreadyAdded2 = await context.GanjoorQuotedPoems.AsNoTracking()
                                            .AnyAsync(q => q.PoemId == otherPoem.Id &&
@@ -243,7 +244,7 @@ namespace RMuseum.Services.Implementation
                                     context.Add(reverseRelation);
                                     await context.SaveChangesAsync();
                                 }
-                                
+
 
                                 if (breakOnFirstSimilar)
                                     break;
@@ -542,7 +543,7 @@ namespace RMuseum.Services.Implementation
                                 html += $"<br style=\"clear:both;\">{Environment.NewLine}";
                                 foreach (var section in pair.Item2)
                                 {
-                                    var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId &&  v.SectionIndex1 == section.Index).OrderBy(v => v.VOrder).Take(2).ToListAsync();
+                                    var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId && v.SectionIndex1 == section.Index).OrderBy(v => v.VOrder).Take(2).ToListAsync();
                                     html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text} - {verses[1].Text}</p>{Environment.NewLine}";
                                 }
                                 html += $"<hr />{Environment.NewLine}";
@@ -570,21 +571,25 @@ namespace RMuseum.Services.Implementation
 
             return new RServiceResult<bool>(true);
         }
+
         /// <summary>
         /// get quoted by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorQuotedPoem>> GetGanjoorQuotedPoemByIdAsync(Guid id)
+        public async Task<RServiceResult<GanjoorQuotedPoemViewModel>> GetGanjoorQuotedPoemByIdAsync(Guid id)
         {
             try
             {
-                return new RServiceResult<GanjoorQuotedPoem>(await _context.GanjoorQuotedPoems.AsNoTracking().Where(q => q.Id == id).SingleAsync());
+                return new RServiceResult<GanjoorQuotedPoemViewModel>(
+                    new GanjoorQuotedPoemViewModel(
+                    await _context.GanjoorQuotedPoems.AsNoTracking().Where(q => q.Id == id).SingleAsync()
+                    ));
 
             }
             catch (Exception exp)
             {
-                return new RServiceResult<GanjoorQuotedPoem>(null, exp.ToString());
+                return new RServiceResult<GanjoorQuotedPoemViewModel>(null, exp.ToString());
             }
         }
 
@@ -594,31 +599,65 @@ namespace RMuseum.Services.Implementation
         /// <param name="quoted"></param>
         /// <param name="editingUserId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorQuotedPoem>> InsertGanjoorQuotedPoemAsync(GanjoorQuotedPoem quoted, Guid editingUserId)
+        public async Task<RServiceResult<GanjoorQuotedPoemViewModel>> InsertGanjoorQuotedPoemAsync(GanjoorQuotedPoemViewModel quoted, Guid editingUserId)
         {
             try
             {
-                if( await _context.GanjoorQuotedPoems.AsNoTracking()
-                                        .Where(q => 
+                if (await _context.GanjoorQuotedPoems.AsNoTracking()
+                                        .Where(q =>
                                                     q.PoemId == quoted.PoemId
                                                     &&
-                                                    q.RelatedPoemId != null &&  q.RelatedPoemId == quoted.RelatedPoemId
+                                                    q.RelatedPoemId != null && q.RelatedPoemId == quoted.RelatedPoemId
                                                     &&
                                                     q.CoupletIndex == quoted.CoupletIndex
                                                     &&
                                                     q.RelatedCoupletIndex != null && q.RelatedCoupletIndex == quoted.RelatedCoupletIndex
                                                     ).AnyAsync())
                 {
-                    return new RServiceResult<GanjoorQuotedPoem>(null, "نقل قول تکراری");
+                    return new RServiceResult<GanjoorQuotedPoemViewModel>(null, "نقل قول تکراری");
                 }
 
+                GanjoorQuotedPoem dbQuoted = new GanjoorQuotedPoem()
+                {
+                    Id = quoted.Id,
+                    PoemId = quoted.PoemId,
+                    Poem = quoted.Poem,
+                    RelatedPoemId = quoted.RelatedPoemId,
+                    IsPriorToRelated = quoted.IsPriorToRelated,
+                    ChosenForMainList = quoted.ChosenForMainList,
+                    SortOrder = quoted.SortOrder,
+                    CachedRelatedPoemPoetDeathYearInLHijri = quoted.CachedRelatedPoemPoetDeathYearInLHijri,
+                    CachedRelatedPoemPoetName = quoted.CachedRelatedPoemPoetName,
+                    CachedRelatedPoemPoetUrl = quoted.CachedRelatedPoemPoetUrl,
+                    CachedRelatedPoemPoetImage = quoted.CachedRelatedPoemPoetImage,
+                    CachedRelatedPoemFullTitle = quoted.CachedRelatedPoemFullTitle,
+                    CachedRelatedPoemFullUrl = quoted.CachedRelatedPoemFullUrl,
+                    CoupletVerse1 = quoted.CoupletVerse1,
+                    CoupletVerse1ShouldBeEmphasized = quoted.CoupletVerse1ShouldBeEmphasized,
+                    CoupletVerse2 = quoted.CoupletVerse2,
+                    CoupletVerse2ShouldBeEmphasized = quoted.CoupletVerse2ShouldBeEmphasized,
+                    CoupletIndex = quoted.CoupletIndex,
+                    RelatedCoupletVerse1 = quoted.RelatedCoupletVerse1,
+                    RelatedCoupletVerse1ShouldBeEmphasized = quoted.RelatedCoupletVerse1ShouldBeEmphasized,
+                    RelatedCoupletVerse2 = quoted.RelatedCoupletVerse2,
+                    RelatedCoupletVerse2ShouldBeEmphasized = quoted.RelatedCoupletVerse2ShouldBeEmphasized,
+                    RelatedCoupletIndex = quoted.RelatedCoupletIndex,
+                    Note = quoted.Note,
+                    Published = quoted.Published,
+                    SamePoemsQuotedCount = quoted.SamePoemsQuotedCount,
+                    ClaimedByBothPoets = quoted.ClaimedByBothPoets,
+                    PoetId = quoted.PoetId,
+                    RelatedPoetId = quoted.RelatedPoetId,
+                    IndirectQuotation = quoted.IndirectQuotation,
+                    SuggestedById = editingUserId,
+                };
 
-                _context.Add(quoted);
+                _context.Add(dbQuoted);
                 await _context.SaveChangesAsync();
 
-                if (quoted.ClaimedByBothPoets)
+                if (dbQuoted.ClaimedByBothPoets)
                 {
-                    var poem = await _context.GanjoorPoems.Where(p => p.Id == quoted.PoemId).SingleAsync();
+                    var poem = await _context.GanjoorPoems.Where(p => p.Id == dbQuoted.PoemId).SingleAsync();
                     if (poem.ClaimedByMultiplePoets == false)
                     {
                         poem.ClaimedByMultiplePoets = true;
@@ -627,7 +666,7 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                var allRelateds = await _context.GanjoorQuotedPoems.Where(p => p.PoemId == quoted.PoemId && p.RelatedPoemId == quoted.RelatedPoemId && p.Published).ToListAsync();
+                var allRelateds = await _context.GanjoorQuotedPoems.Where(p => p.PoemId == dbQuoted.PoemId && p.RelatedPoemId == dbQuoted.RelatedPoemId && p.Published).ToListAsync();
                 foreach (var rel in allRelateds)
                 {
                     rel.SamePoemsQuotedCount = allRelateds.Count;
@@ -635,21 +674,21 @@ namespace RMuseum.Services.Implementation
                     await _context.SaveChangesAsync();
                 }
 
-                if (quoted.Published && quoted.RelatedPoetId != null)
+                if (dbQuoted.Published && dbQuoted.RelatedPoetId != null)
                 {
-                    var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == quoted.PoetId && p.SecondPoetId == quoted.RelatedPoetId).SingleOrDefaultAsync();
+                    var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == dbQuoted.PoetId && p.SecondPoetId == dbQuoted.RelatedPoetId).SingleOrDefaultAsync();
                     if (page != null)
                     {
-                        _StartRegeneratingRelatedPoemsPageAsync(editingUserId, quoted.PoetId, (int)quoted.RelatedPoetId);
+                        _StartRegeneratingRelatedPoemsPageAsync(editingUserId, dbQuoted.PoetId, (int)dbQuoted.RelatedPoetId);
                     }
                 }
 
-                return new RServiceResult<GanjoorQuotedPoem>(quoted);
+                return new RServiceResult<GanjoorQuotedPoemViewModel>(new GanjoorQuotedPoemViewModel(dbQuoted));
 
             }
             catch (Exception exp)
             {
-                return new RServiceResult<GanjoorQuotedPoem>(null, exp.ToString());
+                return new RServiceResult<GanjoorQuotedPoemViewModel>(null, exp.ToString());
             }
         }
 
@@ -659,7 +698,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="quoted"></param>
         /// <param name="editingUserId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> UpdateGanjoorQuotedPoemsAsync(GanjoorQuotedPoem quoted, Guid editingUserId)
+        public async Task<RServiceResult<bool>> UpdateGanjoorQuotedPoemsAsync(GanjoorQuotedPoemViewModel quoted, Guid editingUserId)
         {
             try
             {
@@ -800,11 +839,11 @@ namespace RMuseum.Services.Implementation
         /// <param name="claimed"></param>
         /// <param name="indirect"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsAsync(int? poetId, int? relatedPoetId, bool? chosen, bool? published, bool? claimed, bool? indirect)
+        public async Task<RServiceResult<GanjoorQuotedPoemViewModel[]>> GetGanjoorQuotedPoemsAsync(int? poetId, int? relatedPoetId, bool? chosen, bool? published, bool? claimed, bool? indirect)
         {
             try
             {
-                return new RServiceResult<GanjoorQuotedPoem[]>(await
+                return new RServiceResult<GanjoorQuotedPoemViewModel[]>(await
                 _context.GanjoorQuotedPoems
                          .AsNoTracking()
                         .Where(r =>
@@ -821,13 +860,14 @@ namespace RMuseum.Services.Implementation
                         (indirect == null || r.IndirectQuotation == indirect)
                         )
                         .OrderBy(r => r.PoetId).ThenBy(r => r.PoemId).ThenBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri)
+                        .Select(r => new GanjoorQuotedPoemViewModel(r))
                         .ToArrayAsync()
                     );
 
             }
             catch (Exception exp)
             {
-                return new RServiceResult<GanjoorQuotedPoem[]>(null, exp.ToString());
+                return new RServiceResult<GanjoorQuotedPoemViewModel[]>(null, exp.ToString());
             }
         }
 
@@ -848,7 +888,7 @@ namespace RMuseum.Services.Implementation
                 var source =
                 _context.GanjoorQuotedPoems
                          .AsNoTracking()
-                        .Where(r => r.PoemId == poemId 
+                        .Where(r => r.PoemId == poemId
                                 && (chosenForMainList == null || r.ChosenForMainList == chosenForMainList)
                                 && (onlyClaimedByBothPoets == null || r.ClaimedByBothPoets == onlyClaimedByBothPoets)
                                 && (published == null || r.Published == published)
@@ -876,23 +916,25 @@ namespace RMuseum.Services.Implementation
         /// <param name="relatedPoemId"></param>
         /// <param name="published"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForRelatedAsync(int poemId, int relatedPoemId, bool? published)
+        public async Task<RServiceResult<GanjoorQuotedPoemViewModel[]>> GetGanjoorQuotedPoemsForRelatedAsync(int poemId, int relatedPoemId, bool? published)
         {
             try
             {
-                return new RServiceResult<GanjoorQuotedPoem[]>
+                return new RServiceResult<GanjoorQuotedPoemViewModel[]>
                 (
                     await _context.GanjoorQuotedPoems
                          .AsNoTracking()
                         .Where(r => r.PoemId == poemId && r.RelatedPoemId == relatedPoemId && (published == null || r.Published == published))
-                        .OrderBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri).ToArrayAsync()
+                        .OrderBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri)
+                        .Select(r => new GanjoorQuotedPoemViewModel(r))
+                        .ToArrayAsync()
                         );
 
 
             }
             catch (Exception exp)
             {
-                return new RServiceResult<GanjoorQuotedPoem[]>(null, exp.ToString());
+                return new RServiceResult<GanjoorQuotedPoemViewModel[]>(null, exp.ToString());
             }
         }
 

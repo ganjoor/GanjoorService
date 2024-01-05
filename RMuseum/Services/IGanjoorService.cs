@@ -1255,7 +1255,7 @@ namespace RMuseum.Services
         /// <param name="relatedPoemId"></param>
         /// <param name="published"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForRelatedAsync(int poemId, int relatedPoemId, bool? published);
+        Task<RServiceResult<GanjoorQuotedPoemViewModel[]>> GetGanjoorQuotedPoemsForRelatedAsync(int poemId, int relatedPoemId, bool? published);
 
         /// <summary>
         /// get quoted poems
@@ -1267,14 +1267,14 @@ namespace RMuseum.Services
         /// <param name="claimed"></param>
         /// <param name="indirect"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsAsync(int? poetId, int? relatedPoetId, bool? chosen, bool? published, bool? claimed, bool? indirect);
+        Task<RServiceResult<GanjoorQuotedPoemViewModel[]>> GetGanjoorQuotedPoemsAsync(int? poetId, int? relatedPoetId, bool? chosen, bool? published, bool? claimed, bool? indirect);
 
         /// <summary>
         /// get quoted by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorQuotedPoem>> GetGanjoorQuotedPoemByIdAsync(Guid id);
+        Task<RServiceResult<GanjoorQuotedPoemViewModel>> GetGanjoorQuotedPoemByIdAsync(Guid id);
 
         /// <summary>
         /// insert quoted poem
@@ -1282,7 +1282,7 @@ namespace RMuseum.Services
         /// <param name="quoted"></param>
         /// <param name="editingUserId"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorQuotedPoem>> InsertGanjoorQuotedPoemAsync(GanjoorQuotedPoem quoted, Guid editingUserId);
+        Task<RServiceResult<GanjoorQuotedPoemViewModel>> InsertGanjoorQuotedPoemAsync(GanjoorQuotedPoemViewModel quoted, Guid editingUserId);
 
         /// <summary>
         /// update quoted poem
@@ -1290,7 +1290,7 @@ namespace RMuseum.Services
         /// <param name="quoted"></param>
         /// <param name="editingUserId"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> UpdateGanjoorQuotedPoemsAsync(GanjoorQuotedPoem quoted, Guid editingUserId);
+        Task<RServiceResult<bool>> UpdateGanjoorQuotedPoemsAsync(GanjoorQuotedPoemViewModel quoted, Guid editingUserId);
 
         /// <summary>
         /// delete quoted by id
