@@ -841,7 +841,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="published"></param>
         /// <param name="chosenForMainList"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorQuotedPoem[]>> GetGanjoorQuotedPoemsForPoemAsync(int poemId, int skip, int itemsCount, bool? onlyClaimedByBothPoets, bool? published, bool? chosenForMainList)
+        public async Task<RServiceResult<GanjoorQuotedPoemViewModel[]>> GetGanjoorQuotedPoemsForPoemAsync(int poemId, int skip, int itemsCount, bool? onlyClaimedByBothPoets, bool? published, bool? chosenForMainList)
         {
             try
             {
@@ -853,18 +853,19 @@ namespace RMuseum.Services.Implementation
                                 && (onlyClaimedByBothPoets == null || r.ClaimedByBothPoets == onlyClaimedByBothPoets)
                                 && (published == null || r.Published == published)
                                 )
+                        .Select(r => new GanjoorQuotedPoemViewModel(r))
                         .OrderBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri);
 
                 if (itemsCount <= 0)
-                    return new RServiceResult<GanjoorQuotedPoem[]>(await source.ToArrayAsync());
-                return new RServiceResult<GanjoorQuotedPoem[]>
+                    return new RServiceResult<GanjoorQuotedPoemViewModel[]>(await source.ToArrayAsync());
+                return new RServiceResult<GanjoorQuotedPoemViewModel[]>
                     (
                     await source.Skip(skip).Take(itemsCount).ToArrayAsync()
                     );
             }
             catch (Exception exp)
             {
-                return new RServiceResult<GanjoorQuotedPoem[]>(null, exp.ToString());
+                return new RServiceResult<GanjoorQuotedPoemViewModel[]>(null, exp.ToString());
             }
         }
 

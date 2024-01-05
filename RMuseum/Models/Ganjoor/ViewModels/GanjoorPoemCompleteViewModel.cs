@@ -135,7 +135,7 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// <summary>
         /// top 6 quoted poems
         /// </summary>
-        public GanjoorQuotedPoem[] Top6QuotedPoems { get; set; }
+        public GanjoorQuotedPoemViewModel[] Top6QuotedPoems { get; set; }
 
         /// <summary>
         /// section index

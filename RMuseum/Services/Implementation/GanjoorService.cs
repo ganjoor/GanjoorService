@@ -1870,7 +1870,7 @@ namespace RMuseum.Services.Implementation
                 var quotedRes = await GetGanjoorQuotedPoemsForPoemAsync(id, 0, 6, null, true, true);
                 if (!string.IsNullOrEmpty(quotedRes.ExceptionString))
                     return new RServiceResult<GanjoorPoemCompleteViewModel>(null, quotedRes.ExceptionString);
-                GanjoorQuotedPoem[] quoteds = quotedRes.Result;
+                GanjoorQuotedPoemViewModel[] quoteds = quotedRes.Result;
 
 
 

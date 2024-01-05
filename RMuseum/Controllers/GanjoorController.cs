@@ -3707,11 +3707,11 @@ namespace RMuseum.Controllers
         [HttpGet]
         [Route("poem/{id}/quoteds")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoem[]))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoemViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetGanjoorQuotedPoemsForPoemAsync(int id, int skip, int itemsCount, bool? onlyClaimedByBothPoets = null, bool? published = null, bool? chosenForMainList = null)
         {
-            RServiceResult<GanjoorQuotedPoem[]> res =
+            RServiceResult<GanjoorQuotedPoemViewModel[]> res =
                 await _ganjoorService.GetGanjoorQuotedPoemsForPoemAsync(id, skip, itemsCount, onlyClaimedByBothPoets, published, chosenForMainList);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
