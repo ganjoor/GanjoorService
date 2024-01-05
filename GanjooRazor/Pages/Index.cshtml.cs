@@ -107,11 +107,11 @@ namespace GanjooRazor.Pages
             };
         }
 
-        public _QuotedPoemPartialModel GetQuotedPoemModel(GanjoorQuotedPoem  quotedPoem, GanjoorPageCompleteViewModel page, bool canEdit)
+        public _QuotedPoemPartialModel GetQuotedPoemModel(GanjoorQuotedPoemViewModel  quotedPoem, GanjoorPageCompleteViewModel page, bool canEdit)
         {
             return new _QuotedPoemPartialModel()
             {
-               GanjoorQuotedPoem = quotedPoem,
+               GanjoorQuotedPoemViewModel = quotedPoem,
                PoetImageUrl = page.PoetOrCat.Poet.ImageUrl,
                PoetNickName = page.PoetOrCat.Poet.Nickname,
                CanEdit = canEdit,
@@ -1148,7 +1148,7 @@ namespace GanjooRazor.Pages
             if (!response.IsSuccessStatusCode)
                 return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
            
-            var quoteds = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorQuotedPoem>>();
+            var quoteds = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorQuotedPoemViewModel>>();
             if(!quoteds.Any())
             {
                 return new BadRequestObjectResult("مورد دیگری یافت نشد.");
@@ -1184,7 +1184,7 @@ namespace GanjooRazor.Pages
             if (!response.IsSuccessStatusCode)
                 return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
 
-            var quoteds = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorQuotedPoem>>();
+            var quoteds = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorQuotedPoemViewModel>>();
  
             return new PartialViewResult()
             {

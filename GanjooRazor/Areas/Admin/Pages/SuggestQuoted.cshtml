@@ -112,7 +112,7 @@
 </p>
 
 
-@if (Model.GanjoorQuotedPoem != null && Model.Couplets != null)
+@if (Model.GanjoorQuotedPoemViewModel != null && Model.Couplets != null)
 {
     <script>
 
@@ -230,15 +230,15 @@
         <table>
             <tr>
                 <td>
-                    بیت مرجع از <a href="/?p=@Model.GanjoorQuotedPoem.PoemId">شعر</a>:
-                    <input type="hidden" asp-for="GanjoorQuotedPoem.Id" />
-                    <input type="hidden" asp-for="GanjoorQuotedPoem.PoemId" />
-                    <input type="hidden" asp-for="GanjoorQuotedPoem.PoetId" />
+                    بیت مرجع از <a href="/?p=@Model.GanjoorQuotedPoemViewModel.PoemId">شعر</a>:
+                    <input type="hidden" asp-for="GanjoorQuotedPoemViewModel.Id" />
+                    <input type="hidden" asp-for="GanjoorQuotedPoemViewModel.PoemId" />
+                    <input type="hidden" asp-for="GanjoorQuotedPoemViewModel.PoetId" />
                 </td>
             </tr>
             <tr>
                 <td>
-                    <select asp-for="GanjoorQuotedPoem.CoupletIndex" style="width:500px;">
+                    <select asp-for="GanjoorQuotedPoemViewModel.CoupletIndex" style="width:500px;">
                         @foreach (var item in Model.Couplets)
                         {
                             <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
@@ -253,7 +253,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CoupletVerse1ShouldBeEmphasized" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.CoupletVerse1ShouldBeEmphasized" />
                 </td>
             </tr>
             <tr>
@@ -263,7 +263,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CoupletVerse2ShouldBeEmphasized" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.CoupletVerse2ShouldBeEmphasized" />
                 </td>
             </tr>
             <tr>
@@ -273,7 +273,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.PoetId" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.PoetId" />
                 </td>
             </tr>
             <tr>
@@ -294,14 +294,14 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedPoemId" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.RelatedPoemId" />
                 </td>
             </tr>
-            @if (Model.GanjoorQuotedPoem.RelatedPoemId != null)
+            @if (Model.GanjoorQuotedPoemViewModel.RelatedPoemId != null)
             {
                 <tr>
                     <td>
-                        <a href="/?p=@Model.GanjoorQuotedPoem.RelatedPoemId">مشاهدهٔ شعر مرتبط</a>
+                        <a href="/?p=@Model.GanjoorQuotedPoemViewModel.RelatedPoemId">مشاهدهٔ شعر مرتبط</a>
                     </td>
                 </tr>
             }
@@ -313,7 +313,7 @@
             </tr>
             <tr>
                 <td>
-                    <select asp-for="GanjoorQuotedPoem.RelatedCoupletIndex" style="width:500px;">
+                    <select asp-for="GanjoorQuotedPoemViewModel.RelatedCoupletIndex" style="width:500px;">
                         @foreach (var item in Model.RelatedCouplets)
                         {
                             <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
@@ -328,7 +328,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse1" size="80" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.RelatedCoupletVerse1" size="80" />
                 </td>
             </tr>
             <tr>
@@ -338,7 +338,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.RelatedCoupletVerse1ShouldBeEmphasized" />
                 </td>
             </tr>
             <tr>
@@ -348,7 +348,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse2" size="80" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.RelatedCoupletVerse2" size="80" />
                 </td>
             </tr>
 
@@ -359,7 +359,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.RelatedCoupletVerse2ShouldBeEmphasized" />
                 </td>
             </tr>
             <tr>
@@ -369,7 +369,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.SortOrder" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.SortOrder" />
                 </td>
             </tr>
             <tr>
@@ -379,7 +379,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.IsPriorToRelated" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.IsPriorToRelated" />
                 </td>
             </tr>
             <tr>
@@ -389,7 +389,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.ChosenForMainList" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.ChosenForMainList" />
                 </td>
             </tr>
             <tr>
@@ -399,7 +399,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.IndirectQuotation" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.IndirectQuotation" />
                 </td>
             </tr>
             <tr>
@@ -409,7 +409,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.ClaimedByBothPoets" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.ClaimedByBothPoets" />
                 </td>
             </tr>
             <tr>
@@ -419,12 +419,12 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedPoetId" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.RelatedPoetId" />
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetName" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.CachedRelatedPoemPoetName" />
                 </td>
             </tr>
             <tr>
@@ -434,7 +434,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetDeathYearInLHijri" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.CachedRelatedPoemPoetDeathYearInLHijri" />
                 </td>
             </tr>
             <tr>
@@ -444,7 +444,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetUrl" style="direction:ltr" size="80" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.CachedRelatedPoemPoetUrl" style="direction:ltr" size="80" />
                 </td>
             </tr>
             <tr>
@@ -454,7 +454,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetImage" style="direction:ltr" size="80" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.CachedRelatedPoemPoetImage" style="direction:ltr" size="80" />
                 </td>
             </tr>
             <tr>
@@ -464,7 +464,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullTitle" size="80" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.CachedRelatedPoemFullTitle" size="80" />
                 </td>
             </tr>
             <tr>
@@ -474,7 +474,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullUrl" style="direction:ltr" size="80" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.CachedRelatedPoemFullUrl" style="direction:ltr" size="80" />
                 </td>
             </tr>
 
@@ -485,7 +485,7 @@
             </tr>
             <tr>
                 <td>
-                    <textarea asp-for="GanjoorQuotedPoem.Note" rows="4" cols="80" class="editor"></textarea>
+                    <textarea asp-for="GanjoorQuotedPoemViewModel.Note" rows="4" cols="80" class="editor"></textarea>
                 </td>
             </tr>
             <tr>
@@ -495,7 +495,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.Published" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.Published" />
                 </td>
             </tr>
             <tr>
@@ -505,7 +505,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.SamePoemsQuotedCount" />
+                    <input asp-for="GanjoorQuotedPoemViewModel.SamePoemsQuotedCount" />
                 </td>
             </tr>
             <tr>
@@ -519,11 +519,11 @@
                 <td>
                     @if (Model.ReverseId != null)
                     {
-                        <a href="/Admin/SuggestQuoted/?p=@Model.GanjoorQuotedPoem.RelatedPoemId&id=@Model.ReverseId">نمایش معکوس</a>
+                        <a href="/Admin/SuggestQuoted/?p=@Model.GanjoorQuotedPoemViewModel.RelatedPoemId&id=@Model.ReverseId">نمایش معکوس</a>
                     }
                     else
                     {
-                        <a role="button" onclick="reverseQuote('@Model.GanjoorQuotedPoem.Id')" class="actionlink" title="درج معکوس">درج معکوس</a>
+                        <a role="button" onclick="reverseQuote('@Model.GanjoorQuotedPoemViewModel.Id')" class="actionlink" title="درج معکوس">درج معکوس</a>
                     }
 
                 </td>
@@ -532,7 +532,7 @@
             <tr><td><hr /></td></tr>
             <tr>
                 <td>
-                    <a role="button" onclick="deleteThisOne('@Model.GanjoorQuotedPoem.Id')" class="actionlink" title="حذف">حذف <i class="noindent-info-button delete-icon"></i></a>
+                    <a role="button" onclick="deleteThisOne('@Model.GanjoorQuotedPoemViewModel.Id')" class="actionlink" title="حذف">حذف <i class="noindent-info-button delete-icon"></i></a>
                 </td>
             </tr>
         </table>
