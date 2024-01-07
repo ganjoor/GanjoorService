@@ -843,7 +843,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                return new RServiceResult<GanjoorQuotedPoemViewModel[]>(await
+                var source = await
                 _context.GanjoorQuotedPoems
                          .AsNoTracking()
                         .Where(r =>
@@ -860,8 +860,10 @@ namespace RMuseum.Services.Implementation
                         (indirect == null || r.IndirectQuotation == indirect)
                         )
                         .OrderBy(r => r.PoetId).ThenBy(r => r.PoemId).ThenBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri)
-                        .Select(r => new GanjoorQuotedPoemViewModel(r))
-                        .ToArrayAsync()
+
+                        .ToArrayAsync();
+                return new RServiceResult<GanjoorQuotedPoemViewModel[]>(
+                    source.Select(r => new GanjoorQuotedPoemViewModel(r)).ToArray()
                     );
 
             }
@@ -893,14 +895,11 @@ namespace RMuseum.Services.Implementation
                                 && (onlyClaimedByBothPoets == null || r.ClaimedByBothPoets == onlyClaimedByBothPoets)
                                 && (published == null || r.Published == published)
                                 )
-                        .Select(r => new GanjoorQuotedPoemViewModel(r))
                         .OrderBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri);
-
-                if (itemsCount <= 0)
-                    return new RServiceResult<GanjoorQuotedPoemViewModel[]>(await source.ToArrayAsync());
+                var selection = itemsCount <= 0 ? await source.ToArrayAsync() : await source.Skip(skip).Take(itemsCount).ToArrayAsync();
                 return new RServiceResult<GanjoorQuotedPoemViewModel[]>
                     (
-                    await source.Skip(skip).Take(itemsCount).ToArrayAsync()
+                        selection.Select(r => new GanjoorQuotedPoemViewModel(r)).ToArray()
                     );
             }
             catch (Exception exp)
@@ -920,15 +919,16 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                return new RServiceResult<GanjoorQuotedPoemViewModel[]>
-                (
-                    await _context.GanjoorQuotedPoems
+                var source = await _context.GanjoorQuotedPoems
                          .AsNoTracking()
                         .Where(r => r.PoemId == poemId && r.RelatedPoemId == relatedPoemId && (published == null || r.Published == published))
                         .OrderBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri)
-                        .Select(r => new GanjoorQuotedPoemViewModel(r))
-                        .ToArrayAsync()
-                        );
+                        .ToArrayAsync();
+                return new RServiceResult<GanjoorQuotedPoemViewModel[]>
+                (
+                    source.Select(r => new GanjoorQuotedPoemViewModel(r))
+                        .ToArray()
+               );
 
 
             }
