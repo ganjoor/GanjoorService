@@ -93,6 +93,52 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// next unmoderated quoted poem
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorQuotedPoemViewModel>> GetNextUnmoderatedGanjoorQuotedPoemAsync(int skip)
+        {
+            try
+            {
+                var r = await
+                    _context.GanjoorQuotedPoems
+                             .AsNoTracking()
+                            .Where(r => r.Published == false && r.Rejected == false)
+                            .OrderBy(r => r.Id)
+                            .Skip(skip)
+                            .FirstOrDefaultAsync();
+                return new RServiceResult<GanjoorQuotedPoemViewModel>(r == null ? null : new GanjoorQuotedPoemViewModel(r));
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorQuotedPoemViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// unmoderated quoted poems count
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<int>> GetUnmoderatedGanjoorQuotedsCountPoemAsync()
+        {
+            try
+            {
+                return new RServiceResult<int>(
+                    await
+                    _context.GanjoorQuotedPoems
+                             .AsNoTracking()
+                            .Where(r => r.Published == false && r.Rejected == false)
+                            .CountAsync()
+                    );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<int>(-1, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// discover related poems
         /// </summary>
         /// <param name="poetId"></param>

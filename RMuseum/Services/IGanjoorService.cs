@@ -1307,5 +1307,18 @@ namespace RMuseum.Services
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorQuotedPoemViewModel>> SuggestGanjoorQuotedPoemAsync(GanjoorQuotedPoemViewModel quoted, Guid userId);
+
+        /// <summary>
+        /// next unmoderated quoted poem
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorQuotedPoemViewModel>> GetNextUnmoderatedGanjoorQuotedPoemAsync(int skip);
+
+        /// <summary>
+        /// unmoderated quoted poems count
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<int>> GetUnmoderatedGanjoorQuotedsCountPoemAsync();
     }
 }

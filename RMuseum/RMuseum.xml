@@ -15904,6 +15904,19 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetNextUnmoderatedGanjoorQuotedPoemAsync(System.Int32)">
+            <summary>
+            next unmoderated quoted poem
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetUnmoderatedGanjoorQuotedsCountPoemAsync">
+            <summary>
+            unmoderated quoted poems count
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -17886,6 +17899,19 @@
             </summary>
             <param name="quoted"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnmoderatedGanjoorQuotedPoemAsync(System.Int32)">
+            <summary>
+            next unmoderated quoted poem
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnmoderatedGanjoorQuotedsCountPoemAsync">
+            <summary>
+            unmoderated quoted poems count
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartDiscoverRelatedPoems(System.Int32,System.Int32,System.Boolean,System.Nullable{System.Int32},System.Boolean)">
