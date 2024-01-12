@@ -1299,5 +1299,13 @@ namespace RMuseum.Services
         /// <param name="editingUserId"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> DeleteGanjoorQuotedPoemByIdAsync(Guid id, Guid editingUserId);
+
+        /// <summary>
+        /// suggest new quote
+        /// </summary>
+        /// <param name="quoted"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorQuotedPoemViewModel>> SuggestGanjoorQuotedPoemAsync(GanjoorQuotedPoemViewModel quoted, Guid userId);
     }
 }

@@ -2092,6 +2092,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.SuggestGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel)">
+            <summary>
+            suggest new quote (for normal users)
+            </summary>
+            <param name="quoted"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -15889,6 +15896,14 @@
             <param name="editingUserId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SuggestGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel,System.Guid)">
+            <summary>
+            suggest new quote
+            </summary>
+            <param name="quoted"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -17863,6 +17878,14 @@
             </summary>
             <param name="id">problable metre id</param>
             <param name="metre"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel,System.Guid)">
+            <summary>
+            suggest new quote
+            </summary>
+            <param name="quoted"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartDiscoverRelatedPoems(System.Int32,System.Int32,System.Boolean,System.Nullable{System.Int32},System.Boolean)">

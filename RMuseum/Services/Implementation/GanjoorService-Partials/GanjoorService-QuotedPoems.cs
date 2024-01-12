@@ -9,7 +9,6 @@ using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
@@ -19,6 +18,80 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+
+        /// <summary>
+        /// suggest new quote
+        /// </summary>
+        /// <param name="quoted"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorQuotedPoemViewModel>> SuggestGanjoorQuotedPoemAsync(GanjoorQuotedPoemViewModel quoted, Guid userId)
+        {
+            try
+            {
+                if (await _context.GanjoorQuotedPoems.AsNoTracking()
+                                        .Where(q =>
+                                                    q.PoemId == quoted.PoemId
+                                                    &&
+                                                    q.RelatedPoemId != null && q.RelatedPoemId == quoted.RelatedPoemId
+                                                    &&
+                                                    q.CoupletIndex == quoted.CoupletIndex
+                                                    &&
+                                                    q.RelatedCoupletIndex != null && q.RelatedCoupletIndex == quoted.RelatedCoupletIndex
+                                                    &&
+                                                    q.Rejected == false
+                                                    ).AnyAsync())
+                {
+                    return new RServiceResult<GanjoorQuotedPoemViewModel>(null, "این نقل قول پیش‌تر پیشنهاد شده است.");
+                }
+
+                GanjoorQuotedPoem dbQuoted = new GanjoorQuotedPoem()
+                {
+                    Id = quoted.Id,
+                    PoemId = quoted.PoemId,
+                    Poem = quoted.Poem,
+                    RelatedPoemId = quoted.RelatedPoemId,
+                    IsPriorToRelated = quoted.IsPriorToRelated,
+                    ChosenForMainList = quoted.ChosenForMainList,
+                    SortOrder = quoted.SortOrder,
+                    CachedRelatedPoemPoetDeathYearInLHijri = quoted.CachedRelatedPoemPoetDeathYearInLHijri,
+                    CachedRelatedPoemPoetName = quoted.CachedRelatedPoemPoetName,
+                    CachedRelatedPoemPoetUrl = quoted.CachedRelatedPoemPoetUrl,
+                    CachedRelatedPoemPoetImage = quoted.CachedRelatedPoemPoetImage,
+                    CachedRelatedPoemFullTitle = quoted.CachedRelatedPoemFullTitle,
+                    CachedRelatedPoemFullUrl = quoted.CachedRelatedPoemFullUrl,
+                    CoupletVerse1 = quoted.CoupletVerse1,
+                    CoupletVerse1ShouldBeEmphasized = quoted.CoupletVerse1ShouldBeEmphasized,
+                    CoupletVerse2 = quoted.CoupletVerse2,
+                    CoupletVerse2ShouldBeEmphasized = quoted.CoupletVerse2ShouldBeEmphasized,
+                    CoupletIndex = quoted.CoupletIndex,
+                    RelatedCoupletVerse1 = quoted.RelatedCoupletVerse1,
+                    RelatedCoupletVerse1ShouldBeEmphasized = quoted.RelatedCoupletVerse1ShouldBeEmphasized,
+                    RelatedCoupletVerse2 = quoted.RelatedCoupletVerse2,
+                    RelatedCoupletVerse2ShouldBeEmphasized = quoted.RelatedCoupletVerse2ShouldBeEmphasized,
+                    RelatedCoupletIndex = quoted.RelatedCoupletIndex,
+                    Note = quoted.Note,
+                    Published = quoted.Published,
+                    SamePoemsQuotedCount = quoted.SamePoemsQuotedCount,
+                    ClaimedByBothPoets = quoted.ClaimedByBothPoets,
+                    PoetId = quoted.PoetId,
+                    RelatedPoetId = quoted.RelatedPoetId,
+                    IndirectQuotation = quoted.IndirectQuotation,
+                    SuggestedById = userId,
+                };
+
+                _context.Add(dbQuoted);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<GanjoorQuotedPoemViewModel>(new GanjoorQuotedPoemViewModel(dbQuoted));
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorQuotedPoemViewModel>(null, exp.ToString());
+            }
+        }
+
         /// <summary>
         /// discover related poems
         /// </summary>

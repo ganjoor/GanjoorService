@@ -3843,7 +3843,25 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
-
+        /// <summary>
+        /// suggest new quote (for normal users)
+        /// </summary>
+        /// <param name="quoted"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("quoted/suggest")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoemViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> SuggestGanjoorQuotedPoemAsync([FromBody] GanjoorQuotedPoemViewModel quoted)
+        {
+            var loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<GanjoorQuotedPoemViewModel> res =
+                await _ganjoorService.SuggestGanjoorQuotedPoemAsync(quoted, loggedOnUserId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
 
 
         /// <summary>
