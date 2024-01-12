@@ -3863,6 +3863,45 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// next unmoderated quoted poem
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("quoted/suggestion/next")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorQuotedPoemViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetNextUnmoderatedGanjoorQuotedPoemAsync(int skip = 0)
+        {
+            RServiceResult<GanjoorQuotedPoemViewModel> res =
+                await _ganjoorService.GetNextUnmoderatedGanjoorQuotedPoemAsync(skip);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            var resCount = await _ganjoorService.GetUnmoderatedGanjoorQuotedsCountAsync();
+            if (!string.IsNullOrEmpty(resCount.ExceptionString))
+                return BadRequest(resCount.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers",
+                JsonConvert.SerializeObject(
+                    new PaginationMetadata()
+                    {
+                        totalCount = resCount.Result,
+                        pageSize = -1,
+                        currentPage = -1,
+                        hasNextPage = false,
+                        hasPreviousPage = false,
+                        totalPages = -1
+                    })
+                );
+
+            return Ok(res.Result);//might be null
+        }
+
 
         /// <summary>
         /// readonly mode

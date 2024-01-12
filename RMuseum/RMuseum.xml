@@ -2099,6 +2099,13 @@
             <param name="quoted"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetNextUnmoderatedGanjoorQuotedPoemAsync(System.Int32)">
+            <summary>
+            next unmoderated quoted poem
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -15911,7 +15918,7 @@
             <param name="skip"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetUnmoderatedGanjoorQuotedsCountPoemAsync">
+        <member name="M:RMuseum.Services.IGanjoorService.GetUnmoderatedGanjoorQuotedsCountAsync">
             <summary>
             unmoderated quoted poems count
             </summary>
@@ -17908,7 +17915,7 @@
             <param name="skip"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnmoderatedGanjoorQuotedsCountPoemAsync">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnmoderatedGanjoorQuotedsCountAsync">
             <summary>
             unmoderated quoted poems count
             </summary>

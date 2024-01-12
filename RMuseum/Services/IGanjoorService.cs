@@ -1319,6 +1319,6 @@ namespace RMuseum.Services
         /// unmoderated quoted poems count
         /// </summary>
         /// <returns></returns>
-        Task<RServiceResult<int>> GetUnmoderatedGanjoorQuotedsCountPoemAsync();
+        Task<RServiceResult<int>> GetUnmoderatedGanjoorQuotedsCountAsync();
     }
 }

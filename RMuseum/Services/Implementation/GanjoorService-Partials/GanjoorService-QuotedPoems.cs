@@ -120,7 +120,7 @@ namespace RMuseum.Services.Implementation
         /// unmoderated quoted poems count
         /// </summary>
         /// <returns></returns>
-        public async Task<RServiceResult<int>> GetUnmoderatedGanjoorQuotedsCountPoemAsync()
+        public async Task<RServiceResult<int>> GetUnmoderatedGanjoorQuotedsCountAsync()
         {
             try
             {
