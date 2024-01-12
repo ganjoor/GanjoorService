@@ -1256,70 +1256,87 @@ ol {
 
 .mouse-icon::after {
     content: 'mouse';
+    font-family: 'Material Icons';
 }
 
 .format_list_numbered_rtl::after {
-    content: 'format_list_numbered_rtl'
+    content: 'format_list_numbered_rtl';
+    font-family: 'Material Icons';
 }
 
 .copylink-icon::after {
     content: 'link';
+    font-family: 'Material Icons';
 }
 
 .copytext-icon::after {
     content: 'content_copy';
+    font-family: 'Material Icons';
 }
 
 .share-icon::after {
     content: 'share';
+    font-family: 'Material Icons';
 }
 
 .rhyming-poems::after {
     content: 'search';
+    font-family: 'Material Icons';
 }
 
 .translate-button::after {
     content: 'translate';
+    font-family: 'Material Icons';
 }
 
 .edit-poem-button::after {
     content: 'edit';
+    font-family: 'Material Icons';
 }
 
 .edit-note-poem-button::after {
     content: 'edit_note';
+    font-family: 'Material Icons';
 }
 
 .autorenew::after {
     content: 'autorenew';
+    font-family: 'Material Icons';
 }
 
 .queue_music::after {
     content: 'queue_music';
+    font-family: 'Material Icons';
 }
 
 .music_note::after {
     content: 'music_note';
+    font-family: 'Material Icons';
 }
 
 .photo_camera::after {
     content: 'photo_camera';
+    font-family: 'Material Icons';
 }
 
 .help-button::after {
     content: 'help';
+    font-family: 'Material Icons';
 }
 
 .close-button::after {
     content: 'close';
+    font-family: 'Material Icons';
 }
 
 .next-inline-result::after {
     content: 'arrow_downward';
+    font-family: 'Material Icons';
 }
 
 .prev-inline-result::after {
     content: 'arrow_upward';
+    font-family: 'Material Icons';
 }
 
 
@@ -1394,38 +1411,47 @@ ol {
 
 .recitation-download::after {
     content: 'download';
+    font-family: 'Material Icons';
 }
 
 .recitation-play::after {
     content: 'play_arrow';
+    font-family: 'Material Icons';
 }
 
 .recitation-report::after {
     content: 'flag';
+    font-family: 'Material Icons';
 }
 
 .recitation-scrollunlock::after {
     content: 'no_encryption';
+    font-family: 'Material Icons';
 }
 
 .recitation-scrolllock::after {
     content: 'lock';
+    font-family: 'Material Icons';
 }
 
 .recitation-novote::after {
     content: 'thumb_up_off_alt';
+    font-family: 'Material Icons';
 }
 
 .recitation-vote::after {
     content: 'thumb_up_alt';
+    font-family: 'Material Icons';
 }
 
 .recitation-score::after {
     content: 'calculate';
+    font-family: 'Material Icons';
 }
 
 .recitation-website::after {
     content: 'public';
+    font-family: 'Material Icons';
 }
 
 audio {
@@ -1524,34 +1550,42 @@ audio {
 
 .recitation-listen::after {
     content: 'hearing';
+    font-family: 'Material Icons';
 }
 
 .commentary-listen::after {
     content: 'spatial_audio_off';
+    font-family: 'Material Icons';
 }
 
 .recitation-comments::after {
     content: 'question_answer';
+    font-family: 'Material Icons';
 }
 
 .recitation-explore::after {
     content: 'travel_explore';
+    font-family: 'Material Icons';
 }
 
 .recitation-music::after {
     content: 'music_video';
+    font-family: 'Material Icons';
 }
 
 .recitation-manuscripts::after {
     content: 'auto_stories';
+    font-family: 'Material Icons';
 }
 
 .recitation-navigation::after {
     content: 'apps';
+    font-family: 'Material Icons';
 }
 
 .quoted-poems::after {
     content: 'format_quote';
+    font-family: 'Material Icons';
 }
 
 .circled-number-container {
@@ -1590,10 +1624,12 @@ audio {
 
 .map-icon::after {
     content: 'public';
+    font-family: 'Material Icons';
 }
 
 .query_stats::after {
     content: 'query_stats';
+    font-family: 'Material Icons';
 }
 
 
@@ -1604,6 +1640,7 @@ audio {
 
 .expand_circle_down::after, .collapse_circle_down::after {
     content: 'expand_circle_down';
+    font-family: 'Material Icons';
 }
 
 .expand_circle_down {
@@ -1615,52 +1652,64 @@ audio {
 }
 
 .bookmarks-icon::after {
-    content: 'hotel_class'
+    content: 'hotel_class';
+    font-family: 'Material Icons';
 }
 
 .bookmarking-icon::after {
-    content: 'star'
+    content: 'star';
+    font-family: 'Material Icons';
 }
 
 .menu-icon::after {
-    content: 'menu'
+    content: 'menu';
+    font-family: 'Material Icons';
 }
 
 
 .notifications-icon::after {
-    content: 'notifications'
+    content: 'notifications';
+    font-family: 'Material Icons';
 }
 
 .home-icon::after {
-    content: 'home'
+    content: 'home';
+    font-family: 'Material Icons';
 }
 
 .user-home-icon::after {
-    content: 'manage_accounts'
+    content: 'manage_accounts';
+    font-family: 'Material Icons';
 }
 
 .history-icon::after {
-    content: 'history'
+    content: 'history';
+    font-family: 'Material Icons';
 }
 
 .done-icon::after {
-    content: 'done'
+    content: 'done';
+    font-family: 'Material Icons';
 }
 
 .delete-icon::after {
-    content: 'delete'
+    content: 'delete';
+    font-family: 'Material Icons';
 }
 
 .menu-book::after {
-    content: 'menu_book'
+    content: 'menu_book';
+    font-family: 'Material Icons';
 }
 
 .logout-icon::after {
-    content: 'run_circle'
+    content: 'run_circle';
+    font-family: 'Material Icons';
 }
 
 .account-icon::after {
-    content: 'account_circle'
+    content: 'account_circle';
+    font-family: 'Material Icons';
 }
 
 
@@ -1790,22 +1839,27 @@ fieldset {
 
 .pin-button::after {
     content: 'push_pin';
+    font-family: 'Material Icons';
 }
 
 .up-btn::after {
     content: 'arrow_circle_up';
+    font-family: 'Material Icons';
 }
 
 .down-btn::after {
     content: 'arrow_circle_down';
+    font-family: 'Material Icons';
 }
 
 .left-btn::after {
     content: 'arrow_circle_left';
+    font-family: 'Material Icons';
 }
 
 .right-btn::after {
     content: 'arrow_circle_right';
+    font-family: 'Material Icons';
 }
 
 .float-right {
