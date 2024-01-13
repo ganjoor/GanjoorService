@@ -18,6 +18,69 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+        /// <summary>
+        /// moderate quoted poems
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> ModerateGanjoorQuotedPoemAsync(GanjoorQuotedPoemModerationViewModel model, Guid userId)
+        {
+            try
+            {
+                var dbQuoted = await _context.GanjoorQuotedPoems.Where(q => q.Id == model.Id).SingleAsync();
+                dbQuoted.ReviewNote = model.ReviewNote;
+                dbQuoted.Published = model.Approved;
+                dbQuoted.Rejected = !model.Approved;
+                dbQuoted.ReviewerUserId = userId;
+                dbQuoted.ReviewDate = DateTime.Now;
+                _context.Update(dbQuoted);
+                await _context.SaveChangesAsync();
+
+                if(model.Approved) 
+                {
+                    if (dbQuoted.ClaimedByBothPoets)
+                    {
+                        var poem = await _context.GanjoorPoems.Where(p => p.Id == dbQuoted.PoemId).SingleAsync();
+                        if (poem.ClaimedByMultiplePoets == false)
+                        {
+                            poem.ClaimedByMultiplePoets = true;
+                            _context.Update(poem);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+
+                    var allRelateds = await _context.GanjoorQuotedPoems.Where(p => p.PoemId == dbQuoted.PoemId && p.RelatedPoemId == dbQuoted.RelatedPoemId && p.Published).ToListAsync();
+                    foreach (var rel in allRelateds)
+                    {
+                        rel.SamePoemsQuotedCount = allRelateds.Count;
+                        _context.Update(rel);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    if (dbQuoted.Published && dbQuoted.RelatedPoetId != null)
+                    {
+                        var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == dbQuoted.PoetId && p.SecondPoetId == dbQuoted.RelatedPoetId).SingleOrDefaultAsync();
+                        if (page != null)
+                        {
+                            _StartRegeneratingRelatedPoemsPageAsync(userId, dbQuoted.PoetId, (int)dbQuoted.RelatedPoetId);
+                        }
+                    }
+                }
+
+                await _notificationService.PushNotification((Guid)dbQuoted.SuggestedById,
+                                  "بررسی مشق شعر پیشنهادی شما",
+                                  $"با سپاس از زحمت و همت شما مشق شعر پیشنهادیتان برای <a href=\"{dbQuoted.CachedRelatedPoemFullUrl}\" target=\"_blank\">{dbQuoted.CachedRelatedPoemFullTitle}</a> بررسی شد.{Environment.NewLine}" +
+                                  $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «<a href=\"/User/Quotes\">مشق شعر‌های پیشنهادی من</a>» را مشاهده بفرمایید.{Environment.NewLine}"
+                                  );
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
 
         /// <summary>
         /// suggest new quote
@@ -78,6 +141,7 @@ namespace RMuseum.Services.Implementation
                     RelatedPoetId = quoted.RelatedPoetId,
                     IndirectQuotation = quoted.IndirectQuotation,
                     SuggestedById = userId,
+                    SuggestionDate = DateTime.Now,
                 };
 
                 _context.Add(dbQuoted);

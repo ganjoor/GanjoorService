@@ -1320,5 +1320,13 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         Task<RServiceResult<int>> GetUnmoderatedGanjoorQuotedsCountAsync();
+
+        /// <summary>
+        /// moderate quoted poems
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> ModerateGanjoorQuotedPoemAsync(GanjoorQuotedPoemModerationViewModel model, Guid userId);
     }
 }
