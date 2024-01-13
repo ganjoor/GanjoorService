@@ -3902,6 +3902,26 @@ namespace RMuseum.Controllers
             return Ok(res.Result);//might be null
         }
 
+        /// <summary>
+        /// moderate quoted poems
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("quoted/moderate")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> ModerateGanjoorQuotedPoemAsync([FromBody] GanjoorQuotedPoemModerationViewModel model)
+        {
+            var loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<bool> res =
+                await _ganjoorService.ModerateGanjoorQuotedPoemAsync(model, loggedOnUserId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
 
         /// <summary>
         /// readonly mode

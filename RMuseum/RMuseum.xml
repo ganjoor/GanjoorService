@@ -2106,6 +2106,13 @@
             <param name="skip"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.ModerateGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemModerationViewModel)">
+            <summary>
+            moderate quoted poems
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -11562,6 +11569,26 @@
             some explanotory text provided by reporter
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemModerationViewModel">
+            <summary>
+            moderation view model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemModerationViewModel.Id">
+            <summary>
+            record id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemModerationViewModel.Approved">
+            <summary>
+            approved
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemModerationViewModel.ReviewNote">
+            <summary>
+            review note
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel">
             <summary>
             quoted poem view model
@@ -15924,6 +15951,14 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ModerateGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemModerationViewModel,System.Guid)">
+            <summary>
+            moderate quoted poems
+            </summary>
+            <param name="model"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -17898,6 +17933,14 @@
             </summary>
             <param name="id">problable metre id</param>
             <param name="metre"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ModerateGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemModerationViewModel,System.Guid)">
+            <summary>
+            moderate quoted poems
+            </summary>
+            <param name="model"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel,System.Guid)">
