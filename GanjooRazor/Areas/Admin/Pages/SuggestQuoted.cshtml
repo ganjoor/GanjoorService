@@ -238,7 +238,7 @@
             </tr>
             <tr>
                 <td>
-                    <select asp-for="GanjoorQuotedPoem.CoupletIndex" style="width:500px;">
+                    <select asp-for="GanjoorQuotedPoem.CoupletIndex" style="width:100%">
                         @foreach (var item in Model.Couplets)
                         {
                             <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
@@ -313,7 +313,7 @@
             </tr>
             <tr>
                 <td>
-                    <select asp-for="GanjoorQuotedPoem.RelatedCoupletIndex" style="width:500px;">
+                    <select asp-for="GanjoorQuotedPoem.RelatedCoupletIndex" style="width:100%;">
                         @foreach (var item in Model.RelatedCouplets)
                         {
                             <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
@@ -328,7 +328,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse1" size="80" />
+                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse1" size="70" />
                 </td>
             </tr>
             <tr>
@@ -348,7 +348,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse2" size="80" />
+                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse2" size="70" />
                 </td>
             </tr>
 
@@ -444,7 +444,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetUrl" style="direction:ltr" size="80" />
+                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetUrl" style="direction:ltr" size="70" />
                 </td>
             </tr>
             <tr>
@@ -454,7 +454,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetImage" style="direction:ltr" size="80" />
+                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetImage" style="direction:ltr" size="70" />
                 </td>
             </tr>
             <tr>
@@ -464,7 +464,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullTitle" size="80" />
+                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullTitle" size="70" />
                 </td>
             </tr>
             <tr>
@@ -474,7 +474,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullUrl" style="direction:ltr" size="80" />
+                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullUrl" style="direction:ltr" size="70" />
                 </td>
             </tr>
 
