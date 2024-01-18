@@ -10,7 +10,7 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<p>@Html.Raw(Model.LastMessage)</p>
+<p class="red-color">@Html.Raw(Model.LastMessage)</p>
 
 @if (Model.GanjoorQuotedPoem != null && Model.Couplets != null)
 {
@@ -35,7 +35,7 @@
             fetch('@(GanjooRazor.APIRoot.InternetUrl)/api/ganjoor/page?url=' + url)
                 .then((response) => response.json())
                 .then((json) => {
-                    alert(json.poem.id);
+                   
                     document.getElementById('GanjoorQuotedPoem_RelatedPoemId').value = json.poem.id;
                     document.getElementById('GanjoorQuotedPoem_RelatedPoetId').value = json.poem.category.poet.id;
                     document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemPoetName').value = json.poem.category.poet.nickname;
@@ -70,7 +70,7 @@
                     }
 
                     x.value = coupletIndices[0];
-
+                    alert('مشخصات شعر درج شد.');
 
                 });
 
@@ -190,13 +190,10 @@
             <tr>
                 <td>
                     <a onclick="selectGanjoorPage()" class="pagebutton" role="button" id="display-frame">گزینش شعر مرتبط</a>
+                    <input asp-for="GanjoorQuotedPoem.RelatedPoemId" type="hidden" />
                 </td>
             </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedPoemId" />
-                </td>
-            </tr>
+           
             @if (Model.GanjoorQuotedPoem.RelatedPoemId != null)
             {
                 <tr>
@@ -219,6 +216,13 @@
                             <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
                         }
                     </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="notice">
+                        اگر شعر مرتبط در گنجور وجود ندارد مصرع اول و دوم مرتبط آن را در کادرهای بعد تایپ کنید.
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -260,16 +264,7 @@
             <tr>
                 <td>
                     <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    ترتیب:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.SortOrder" />
+                    <input asp-for="GanjoorQuotedPoem.SortOrder" hidden />
                 </td>
             </tr>
             <tr>
@@ -280,26 +275,8 @@
             <tr>
                 <td>
                     <input asp-for="GanjoorQuotedPoem.IsPriorToRelated" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    نمایش در فهرست اصلی:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.ChosenForMainList" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    مستقیماً ارتباط ندارد:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.IndirectQuotation" />
+                    <input asp-for="GanjoorQuotedPoem.ChosenForMainList" type="hidden" />
+                    <input asp-for="GanjoorQuotedPoem.IndirectQuotation" type="hidden" />
                 </td>
             </tr>
             <tr>
@@ -318,12 +295,9 @@
                 </td>
             </tr>
             <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedPoetId" />
-                </td>
-            </tr>
             <tr>
                 <td>
+                    <input asp-for="GanjoorQuotedPoem.RelatedPoetId" hidden />
                     <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetName" />
                 </td>
             </tr>
@@ -345,16 +319,12 @@
             <tr>
                 <td>
                     <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetUrl" style="direction:ltr" size="65" />
+                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetImage" type="hidden" />
                 </td>
             </tr>
             <tr>
                 <td>
-                    تصویر شاعر:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetImage" style="direction:ltr" size="65" />
+                    
                 </td>
             </tr>
             <tr>
@@ -375,6 +345,8 @@
             <tr>
                 <td>
                     <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullUrl" style="direction:ltr" size="65" />
+                    <input asp-for="GanjoorQuotedPoem.Published" hidden />
+                    <input asp-for="GanjoorQuotedPoem.SamePoemsQuotedCount" hidden />
                 </td>
             </tr>
 
@@ -388,80 +360,46 @@
                     <textarea asp-for="GanjoorQuotedPoem.Note" rows="4" cols="80" class="editor"></textarea>
                 </td>
             </tr>
+
             <tr>
                 <td>
-                    منتشر شده:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.Published" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    تعداد همسان‌ها:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.SamePoemsQuotedCount" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="submit" value="ذخیره" />
+                    <input type="submit" value="ذخیرهٔ پیشنهاد" />
                 </td>
             </tr>
 
             <tr><td><hr /></td></tr>
-            <tr>
-                <td>
-                    @if (Model.ReverseId != null)
-                    {
-                        <a href="/Admin/SuggestQuoted/?p=@Model.GanjoorQuotedPoem.RelatedPoemId&id=@Model.ReverseId">نمایش معکوس</a>
-                    }
-                    else
-                    {
-                        <a role="button" onclick="reverseQuote('@Model.GanjoorQuotedPoem.Id')" class="actionlink" title="درج معکوس">درج معکوس</a>
-                    }
-
-                </td>
-            </tr>
-
-            <tr><td><hr /></td></tr>
-            <tr>
-                <td>
-                    <a role="button" onclick="deleteThisOne('@Model.GanjoorQuotedPoem.Id')" class="actionlink" title="حذف">حذف <i class="noindent-info-button delete-icon"></i></a>
-                </td>
-            </tr>
+           
         </table>
     </form>
 
-    <h1>همهٔ مشق‌های شعر</h1>
-    <table>
-        <tr>
-            <td>#</td>
-            <td>شاعر</td>
-            <td>۱</td>
-            <td>۲</td>
-            <td>۱</td>
-            <td>۲</td>
-            <td>منتشر شده</td>
-        </tr>
-        @foreach (var q in Model.AllPoemQuoteds)
-        {
+    @if(Model.CanEdit)
+    {
+        <h1>همهٔ مشق‌های شعر - نمایش فقط به ادمین</h1>
+        <table>
             <tr>
-                <td><a href="/Admin/SuggestQuoted/?p=@q.PoemId&id=@q.Id">#</a> </td>
-                <td>@q.CachedRelatedPoemPoetName</td>
-                <td>@q.CoupletVerse1</td>
-                <td>@q.CoupletVerse2</td>
-                <td>@q.RelatedCoupletVerse1</td>
-                <td>@q.RelatedCoupletVerse2</td>
-                <td>@q.Published</td>
+                <td>#</td>
+                <td>شاعر</td>
+                <td>۱</td>
+                <td>۲</td>
+                <td>۱</td>
+                <td>۲</td>
+                <td>منتشر شده</td>
             </tr>
-        }
-    </table>
+            @foreach (var q in Model.AllPoemQuoteds)
+            {
+                <tr>
+                    <td><a href="/User/SuggestQuoted/?p=@q.PoemId&id=@q.Id">#</a> </td>
+                    <td>@q.CachedRelatedPoemPoetName</td>
+                    <td>@q.CoupletVerse1</td>
+                    <td>@q.CoupletVerse2</td>
+                    <td>@q.RelatedCoupletVerse1</td>
+                    <td>@q.RelatedCoupletVerse2</td>
+                    <td>@q.Published</td>
+                </tr>
+            }
+        </table>
+    }
+    
 
 
 }
