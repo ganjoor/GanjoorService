@@ -1309,6 +1309,14 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorQuotedPoemViewModel>> SuggestGanjoorQuotedPoemAsync(GanjoorQuotedPoemViewModel quoted, Guid userId);
 
         /// <summary>
+        /// get user or all quoted suggestions
+        /// </summary>
+        /// <param name="userId">if sent empty returns all suggestions</param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorQuotedPoemViewModel[] Items)>> GetUserQuotedSuggestionsAsync(Guid userId, PagingParameterModel paging);
+
+        /// <summary>
         /// next unmoderated quoted poem
         /// </summary>
         /// <param name="skip"></param>

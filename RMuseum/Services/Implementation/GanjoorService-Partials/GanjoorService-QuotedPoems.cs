@@ -157,6 +157,37 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get user or all quoted suggestions
+        /// </summary>
+        /// <param name="userId">if sent empty returns all suggestions</param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorQuotedPoemViewModel[] Items)>> GetUserQuotedSuggestionsAsync(Guid userId, PagingParameterModel paging)
+        {
+            var source = from dbSuggestion in
+                             _context.GanjoorQuotedPoems.AsNoTracking()
+                         where userId == Guid.Empty || dbSuggestion.SuggestedById == userId
+                         orderby dbSuggestion.Id descending
+                         select
+                          dbSuggestion;
+
+            (PaginationMetadata PagingMeta, GanjoorQuotedPoem[] Items) dbPaginatedResult =
+                await QueryablePaginator<GanjoorQuotedPoem>.Paginate(source, paging);
+
+            List<GanjoorQuotedPoemViewModel> list = new List<GanjoorQuotedPoemViewModel>();
+            foreach (var dbCorrection in dbPaginatedResult.Items)
+            {
+                list.Add
+                    (
+                    new GanjoorQuotedPoemViewModel(dbCorrection)
+                );
+            }
+
+            return new RServiceResult<(PaginationMetadata, GanjoorQuotedPoemViewModel[])>
+                ((dbPaginatedResult.PagingMeta, list.ToArray()));
+        }
+
+        /// <summary>
         /// next unmoderated quoted poem
         /// </summary>
         /// <param name="skip"></param>

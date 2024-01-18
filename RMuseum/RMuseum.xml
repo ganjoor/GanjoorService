@@ -2099,6 +2099,13 @@
             <param name="quoted"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetUserQuotedSuggestionsAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get list of user suggested corrections
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetNextUnmoderatedGanjoorQuotedPoemAsync(System.Int32)">
             <summary>
             next unmoderated quoted poem
@@ -15938,6 +15945,14 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetUserQuotedSuggestionsAsync(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get user or all quoted suggestions
+            </summary>
+            <param name="userId">if sent empty returns all suggestions</param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetNextUnmoderatedGanjoorQuotedPoemAsync(System.Int32)">
             <summary>
             next unmoderated quoted poem
@@ -17949,6 +17964,14 @@
             </summary>
             <param name="quoted"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserQuotedSuggestionsAsync(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get user or all quoted suggestions
+            </summary>
+            <param name="userId">if sent empty returns all suggestions</param>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnmoderatedGanjoorQuotedPoemAsync(System.Int32)">
