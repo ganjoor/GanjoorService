@@ -17,7 +17,7 @@ using System.Net;
 namespace GanjooRazor.Areas.Admin.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
-    public class SuggestQuotedModel : PageModel
+    public class EditQuotedModel : PageModel
     {
         public string LastMessage { get; set; }
 
@@ -30,7 +30,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
-        public SuggestQuotedModel(HttpClient httpClient)
+        public EditQuotedModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
@@ -311,7 +311,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                                 GanjoorQuotedPoem = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoemViewModel>();
                             }
 
-                            LastMessage = $"انجام شد. <br /><a href=\"/Admin/SuggestQuoted/?p={GanjoorQuotedPoem.PoemId}&id={GanjoorQuotedPoem.Id}\">برگشت</a>";
+                            LastMessage = $"انجام شد. <br /><a href=\"/Admin/EditQuoted/?p={GanjoorQuotedPoem.PoemId}&id={GanjoorQuotedPoem.Id}\">برگشت</a>";
 
                         }
                     }
@@ -419,7 +419,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     else
                     {
                         reverseRelation = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoemViewModel>();
-                        return new JsonResult($"/Admin/SuggestQuoted/?p={reverseRelation.PoemId}&id={reverseRelation.Id}");
+                        return new JsonResult($"/Admin/EditQuoted/?p={reverseRelation.PoemId}&id={reverseRelation.Id}");
                     }
                 }
                 else

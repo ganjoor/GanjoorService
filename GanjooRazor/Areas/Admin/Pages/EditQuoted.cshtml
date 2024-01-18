@@ -1,5 +1,5 @@
 ﻿@page
-@model GanjooRazor.Areas.Admin.Pages.SuggestQuotedModel
+@model GanjooRazor.Areas.Admin.Pages.EditQuotedModel
 @using DNTPersianUtils.Core
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
@@ -54,7 +54,7 @@
         @foreach (var q in Model.AllPoemQuoteds)
         {
             <tr id="tr-@q.Id">
-                <td><a href="/Admin/SuggestQuoted/?p=@q.PoemId&id=@q.Id">@q.PoemId-@q.RelatedPoemId</a> </td>
+                <td><a href="/Admin/EditQuoted/?p=@q.PoemId&id=@q.Id">@q.PoemId-@q.RelatedPoemId</a> </td>
                 <td>@q.CachedRelatedPoemPoetName</td>
                 <td>
                     @if (q.CoupletVerse1ShouldBeEmphasized)
@@ -519,7 +519,7 @@
                 <td>
                     @if (Model.ReverseId != null)
                     {
-                        <a href="/Admin/SuggestQuoted/?p=@Model.GanjoorQuotedPoem.RelatedPoemId&id=@Model.ReverseId">نمایش معکوس</a>
+                        <a href="/Admin/EditQuoted/?p=@Model.GanjoorQuotedPoem.RelatedPoemId&id=@Model.ReverseId">نمایش معکوس</a>
                     }
                     else
                     {
@@ -552,7 +552,7 @@
         @foreach (var q in Model.AllPoemQuoteds)
         {
             <tr>
-                <td><a href="/Admin/SuggestQuoted/?p=@q.PoemId&id=@q.Id">#</a> </td>
+                <td><a href="/Admin/EditQuoted/?p=@q.PoemId&id=@q.Id">#</a> </td>
                 <td>@q.CachedRelatedPoemPoetName</td>
                 <td>@q.CoupletVerse1</td>
                 <td>@q.CoupletVerse2</td>
