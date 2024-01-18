@@ -644,9 +644,9 @@
                                         </div>
                                     }
 
-                                    @if(Model.CanEdit)
+                                    @if(Model.LoggedIn)
                                     {
-                                        <a href="/Admin/EditQuoted/?p=@Model.GanjoorPage.Id" class="pagebutton comments-link">پیشنهاد مشق شعر</a>
+                                        <a href="/User/SuggestQuoted/?p=@Model.GanjoorPage.Id" class="pagebutton comments-link">پیشنهاد مشق شعر</a>
                                     }
                                 }
 

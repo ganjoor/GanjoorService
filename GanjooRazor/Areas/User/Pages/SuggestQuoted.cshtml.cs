@@ -13,10 +13,10 @@ using System.Text;
 using System.Linq;
 using System.Net;
 
-namespace GanjooRazor.Areas.Admin.Pages
+namespace GanjooRazor.Areas.User.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
-    public class EditQuotedModel : PageModel
+    public class SuggestQuotedModel : PageModel
     {
         public string LastMessage { get; set; }
 
@@ -29,7 +29,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
-        public EditQuotedModel(HttpClient httpClient)
+        public SuggestQuotedModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
@@ -48,7 +48,6 @@ namespace GanjooRazor.Areas.Admin.Pages
         public GanjoorQuotedPoemViewModel[] AllPoemQuoteds { get; set; }
         public Guid? ReverseId { get; set; }
 
-        public bool DisplayAll { get; set; }
 
         private Tuple<int, string>[] GetCouplets(GanjoorVerseViewModel[] verses)
         {
@@ -210,28 +209,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
                 return Redirect("/");
 
-            DisplayAll = false;
-            if (!string.IsNullOrEmpty(Request.Query["all"]))
-            {
-                DisplayAll = true;
-                string url = $"{APIRoot.Url}/api/ganjoor/quoted?published=false";
-                if (!string.IsNullOrEmpty(Request.Query["p"]))
-                {
-                    url += $"&poetId={Request.Query["p"]}";
-                }
-                if (!string.IsNullOrEmpty(Request.Query["r"]))
-                {
-                    url += $"&relatedPoetId={Request.Query["r"]}";
-                }
-                var allQuery = await _httpClient.GetAsync(url);
-                if (!allQuery.IsSuccessStatusCode)
-                {
-                    LastMessage = JsonConvert.DeserializeObject<string>(await allQuery.Content.ReadAsStringAsync());
-                }
-                AllPoemQuoteds = JsonConvert.DeserializeObject<GanjoorQuotedPoemViewModel[]>(await allQuery.Content.ReadAsStringAsync());
-
-                return Page();
-            }
+           
 
             string poemIdString = Request.Query["p"];
             if (string.IsNullOrEmpty(poemIdString))
@@ -310,7 +288,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                                 GanjoorQuotedPoem = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoemViewModel>();
                             }
 
-                            LastMessage = $"انجام شد. <br /><a href=\"/Admin/EditQuoted/?p={GanjoorQuotedPoem.PoemId}&id={GanjoorQuotedPoem.Id}\">برگشت</a>";
+                            LastMessage = $"انجام شد. <br /><a href=\"/Admin/SuggestQuoted/?p={GanjoorQuotedPoem.PoemId}&id={GanjoorQuotedPoem.Id}\">برگشت</a>";
 
                         }
                     }
