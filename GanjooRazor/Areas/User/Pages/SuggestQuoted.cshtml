@@ -20,13 +20,16 @@
             document.getElementById('display-frame').style.display = 'none';
             document.getElementById('select-poem').style.display = 'block';
             document.getElementById('finalize-select').style.display = 'block';
+            document.getElementById('finalize-select2').style.display = 'block';
         }
 
         function finalizeSelectPage() {
-
+            document.getElementById('loading-selection').style.display = 'block';
+            document.getElementById('finalize-select2').style.display = 'none';
             document.getElementById('display-frame').style.display = 'block';
             document.getElementById('select-poem').style.display = 'none';
             document.getElementById('finalize-select').style.display = 'none';
+            
 
             const currentUrl = document.getElementById('select-poem').contentWindow.location.href;
 
@@ -70,59 +73,10 @@
                     }
 
                     x.value = coupletIndices[0];
-                    alert('مشخصات شعر درج شد.');
+                    document.getElementById('loading-selection').style.display = 'none';
 
                 });
 
-        }
-
-        function deleteThisOne(id) {
-            if (!confirm('آیا از حذف این مورد اطمینان دارید؟'))
-                return;
-
-
-            $.ajax({
-                type: "DELETE",
-                url: '',
-                data: {
-                    id: id
-                },
-                error: function (e) {
-                    if (e.responseText == null)
-                        alert(e);
-                    else
-                        alert(e.responseText);
-                },
-                success: function () {
-                    alert('انجام شد.');
-                    location.reload(true);
-                },
-            });
-        }
-
-
-        function reverseQuote(id) {
-            if (!confirm('آیا از درج معکوس این مورد اطمینان دارید؟'))
-                return;
-
-
-            $.ajax({
-                type: "POST",
-                url: '?handler=GenerateReverse',
-                data: {
-                    id: id
-                },
-                error: function (e) {
-                    if (e.responseText == null)
-                        alert(e);
-                    else
-                        alert(e.responseText);
-                },
-                success: function (e) {
-                    alert('انجام شد.');
-                    location.href = e;
-                },
-            });
         }
 
     </script>
@@ -178,7 +132,8 @@
             </tr>
             <tr>
                 <td>
-                    <a onclick="finalizeSelectPage()" class="pagebutton" role="button" id="finalize-select" style="display:none">انتخاب کردم</a>
+                    <a onclick="finalizeSelectPage()" class="pagebutton" role="button" id="finalize-select2" style="display:none">انتخاب کردم</a>
+                  
                 </td>
             </tr>
             <tr>
@@ -193,6 +148,13 @@
                     <input asp-for="GanjoorQuotedPoem.RelatedPoemId" type="hidden" />
                 </td>
             </tr>
+            <tr>
+                <td>
+                    <a onclick="finalizeSelectPage()" class="pagebutton" role="button" id="finalize-select" style="display:none">انتخاب کردم</a>
+                    <div id="loading-selection" style="display:none"><img src="/image/loading.gif" /></div>
+                </td>
+            </tr>
+
            
             @if (Model.GanjoorQuotedPoem.RelatedPoemId != null)
             {
@@ -363,7 +325,7 @@
 
             <tr>
                 <td>
-                    <input type="submit" value="ذخیرهٔ پیشنهاد" />
+                    <input type="submit" value="پیشنهاد" />
                 </td>
             </tr>
 
