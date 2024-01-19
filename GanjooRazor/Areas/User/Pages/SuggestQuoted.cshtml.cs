@@ -45,9 +45,7 @@ namespace GanjooRazor.Areas.User.Pages
         [BindProperty]
         public GanjoorQuotedPoemViewModel GanjoorQuotedPoem { get; set; }
 
-        public GanjoorQuotedPoemViewModel[] AllPoemQuoteds { get; set; }
 
-        public bool CanEdit { get; set; }
 
         private Tuple<int, string>[] GetCouplets(GanjoorVerseViewModel[] verses)
         {
@@ -108,7 +106,7 @@ namespace GanjooRazor.Areas.User.Pages
         private async Task<string> Prepare(int poemId, string id)
         {
             LastMessage = "";
-            CanEdit = Request.Cookies["CanEdit"] == "True";
+            
             var poemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}");
             if (!poemQuery.IsSuccessStatusCode)
             {
@@ -190,13 +188,7 @@ namespace GanjooRazor.Areas.User.Pages
                 };
             }
 
-            var allQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/quoteds");
-            if (!allQuery.IsSuccessStatusCode)
-            {
-                LastMessage = JsonConvert.DeserializeObject<string>(await allQuery.Content.ReadAsStringAsync());
-                return LastMessage;
-            }
-            AllPoemQuoteds = JsonConvert.DeserializeObject<GanjoorQuotedPoemViewModel[]>(await allQuery.Content.ReadAsStringAsync());
+            
             return LastMessage;
         }
 

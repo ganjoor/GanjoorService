@@ -318,7 +318,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetUrl" style="direction:ltr" size="65" />
+                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetUrl" style="direction:ltr;text-align:left" size="65" />
                     <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetImage" type="hidden" />
                 </td>
             </tr>
@@ -344,7 +344,7 @@
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullUrl" style="direction:ltr" size="65" />
+                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullUrl" style="direction:ltr;text-align:left" size="65" />
                     <input asp-for="GanjoorQuotedPoem.Published" hidden />
                     <input asp-for="GanjoorQuotedPoem.SamePoemsQuotedCount" hidden />
                 </td>
@@ -371,35 +371,5 @@
            
         </table>
     </form>
-
-    @if(Model.CanEdit)
-    {
-        <h1>همهٔ مشق‌های شعر - نمایش فقط به ادمین</h1>
-        <table>
-            <tr>
-                <td>#</td>
-                <td>شاعر</td>
-                <td>۱</td>
-                <td>۲</td>
-                <td>۱</td>
-                <td>۲</td>
-                <td>منتشر شده</td>
-            </tr>
-            @foreach (var q in Model.AllPoemQuoteds)
-            {
-                <tr>
-                    <td><a href="/User/SuggestQuoted/?p=@q.PoemId&id=@q.Id">#</a> </td>
-                    <td>@q.CachedRelatedPoemPoetName</td>
-                    <td>@q.CoupletVerse1</td>
-                    <td>@q.CoupletVerse2</td>
-                    <td>@q.RelatedCoupletVerse1</td>
-                    <td>@q.RelatedCoupletVerse2</td>
-                    <td>@q.Published</td>
-                </tr>
-            }
-        </table>
-    }
-    
-
 
 }
