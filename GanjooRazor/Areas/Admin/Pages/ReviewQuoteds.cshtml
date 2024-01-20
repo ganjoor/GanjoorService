@@ -23,6 +23,11 @@ else
         <table>
             <tr>
                 <td>
+                    تعداد کل: @Model.TotalCount
+                </td>
+            </tr>
+            <tr>
+                <td>
                     بیت مرجع از <a href="/?p=@Model.GanjoorQuotedPoem.PoemId">شعر</a>:
                     <input type="hidden" asp-for="GanjoorQuotedPoem.Id" />
                     <input type="hidden" asp-for="GanjoorQuotedPoem.PoemId" />
