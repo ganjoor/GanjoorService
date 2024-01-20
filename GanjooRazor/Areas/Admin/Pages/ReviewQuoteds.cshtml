@@ -29,19 +29,14 @@ else
             <tr>
                 <td>
                     بیت مرجع از <a href="/?p=@Model.GanjoorQuotedPoem.PoemId">شعر</a>:
-                    <input type="hidden" asp-for="GanjoorQuotedPoem.Id" />
-                    <input type="hidden" asp-for="GanjoorQuotedPoem.PoemId" />
-                    <input type="hidden" asp-for="GanjoorQuotedPoem.PoetId" />
                 </td>
             </tr>
             <tr>
                 <td>
-                    <select asp-for="GanjoorQuotedPoem.CoupletIndex" style="width:100%">
-                        @foreach (var item in Model.Couplets)
-                        {
-                            <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
-                        }
-                    </select>
+                    @if(Model.GanjoorQuotedPoem.CoupletIndex != null && Model.GanjoorQuotedPoem.CoupletIndex != -1)
+                    {
+                        <p>@($"{(Model.Couplets[(int)Model.GanjoorQuotedPoem.CoupletIndex].Item1 + 1).ToPersianNumbers()} - {Model.Couplets[(int)Model.GanjoorQuotedPoem.CoupletIndex].Item2}")</p>
+                    }
                 </td>
             </tr>
             <tr>
@@ -51,7 +46,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CoupletVerse1ShouldBeEmphasized" />
+                    <p>@Model.GanjoorQuotedPoem.CoupletVerse1ShouldBeEmphasized</p>
                 </td>
             </tr>
             <tr>
@@ -61,7 +56,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CoupletVerse2ShouldBeEmphasized" />
+                    <p>@Model.GanjoorQuotedPoem.CoupletVerse2ShouldBeEmphasized</p>
                 </td>
             </tr>
             <tr>
@@ -71,30 +66,10 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.PoetId" />
+                    <p>@Model.GanjoorQuotedPoem.PoetId</p>
                 </td>
             </tr>
-            <tr>
-                <td>
-                    <a onclick="finalizeSelectPage()" class="pagebutton" role="button" id="finalize-select" style="display:none">انتخاب کردم</a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <iframe id="select-poem" src="/" height="600" style="display:none;width:100%;margin:auto"></iframe>
-                </td>
-            </tr>
-
-            <tr>
-                <td>
-                    <a onclick="selectGanjoorPage()" class="pagebutton" role="button" id="display-frame">گزینش شعر مرتبط</a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedPoemId" />
-                </td>
-            </tr>
+          
             @if (Model.GanjoorQuotedPoem.RelatedPoemId != null)
             {
                 <tr>
@@ -111,12 +86,11 @@ else
             </tr>
             <tr>
                 <td>
-                    <select asp-for="GanjoorQuotedPoem.RelatedCoupletIndex" style="width:100%;">
-                        @foreach (var item in Model.RelatedCouplets)
-                        {
-                            <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
-                        }
-                    </select>
+                    @if (Model.GanjoorQuotedPoem.RelatedCoupletIndex != null && Model.GanjoorQuotedPoem.RelatedCoupletIndex != -1)
+                    {
+                        <p>@($"{(Model.RelatedCouplets[(int)Model.GanjoorQuotedPoem.RelatedCoupletIndex].Item1 + 1).ToPersianNumbers()} - {Model.RelatedCouplets[(int)Model.GanjoorQuotedPoem.RelatedCoupletIndex].Item2}")</p>
+                    }
+                   
                 </td>
             </tr>
             <tr>
@@ -126,7 +100,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse1" size="65" />
+                    <p>@Model.GanjoorQuotedPoem.RelatedCoupletVerse1</p>
                 </td>
             </tr>
             <tr>
@@ -136,7 +110,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized" />
+                    <p>@Model.GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized</p>
                 </td>
             </tr>
             <tr>
@@ -146,7 +120,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse2" size="65" />
+                    <p>@Model.GanjoorQuotedPoem.RelatedCoupletVerse2</p>
                 </td>
             </tr>
 
@@ -157,7 +131,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized" />
+                    <p>@Model.GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized</p>
                 </td>
             </tr>
             <tr>
@@ -167,7 +141,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.SortOrder" />
+                    <p>@Model.GanjoorQuotedPoem.SortOrder</p>
                 </td>
             </tr>
             <tr>
@@ -177,7 +151,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.IsPriorToRelated" />
+                    <p>@Model.GanjoorQuotedPoem.IsPriorToRelated</p>
                 </td>
             </tr>
             <tr>
@@ -187,7 +161,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.ChosenForMainList" />
+                    <p>@Model.GanjoorQuotedPoem.ChosenForMainList</p>
                 </td>
             </tr>
             <tr>
@@ -197,7 +171,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.IndirectQuotation" />
+                    <p>@Model.GanjoorQuotedPoem.IndirectQuotation</p>
                 </td>
             </tr>
             <tr>
@@ -207,7 +181,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.ClaimedByBothPoets" />
+                    <p>@Model.GanjoorQuotedPoem.ClaimedByBothPoets</p>
                 </td>
             </tr>
             <tr>
@@ -217,12 +191,12 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedPoetId" />
+                    <p>@Model.GanjoorQuotedPoem.RelatedPoetId</p>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetName" />
+                    <p>@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetName</p>
                 </td>
             </tr>
             <tr>
@@ -232,7 +206,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetDeathYearInLHijri" />
+                    <p>@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetDeathYearInLHijri</p>
                 </td>
             </tr>
             <tr>
@@ -242,7 +216,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetUrl" style="direction:ltr" size="65" />
+                    <a href="@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetUrl">@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetUrl</a>
                 </td>
             </tr>
             <tr>
@@ -252,7 +226,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetImage" style="direction:ltr" size="65" />
+                    <img src="@($"https://api.ganjoor.net{Model.GanjoorQuotedPoem.CachedRelatedPoemPoetImage}")" />
                 </td>
             </tr>
             <tr>
@@ -262,7 +236,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullTitle" size="65" />
+                    <p>@Model.GanjoorQuotedPoem.CachedRelatedPoemFullTitle</p>
                 </td>
             </tr>
             <tr>
@@ -272,7 +246,7 @@ else
             </tr>
             <tr>
                 <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullUrl" style="direction:ltr" size="65" />
+                    <a href="@Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl">@Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl</a>
                 </td>
             </tr>
 
@@ -283,43 +257,17 @@ else
             </tr>
             <tr>
                 <td>
-                    <textarea asp-for="GanjoorQuotedPoem.Note" rows="4" cols="80" class="editor"></textarea>
+                    <p>@Model.GanjoorQuotedPoem.Note</p>
                 </td>
             </tr>
-            <tr>
-                <td>
-                    منتشر شده:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.Published" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    تعداد همسان‌ها:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.SamePoemsQuotedCount" />
-                </td>
-            </tr>
+            
+           
             <tr>
                 <td>
                     <input type="submit" value="ذخیره" />
                 </td>
             </tr>
 
-            
-
-            <tr><td><hr /></td></tr>
-            <tr>
-                <td>
-                    <a role="button" onclick="deleteThisOne('@Model.GanjoorQuotedPoem.Id')" class="actionlink" title="حذف">حذف <i class="noindent-info-button delete-icon"></i></a>
-                </td>
-            </tr>
         </table>
     </form>
 

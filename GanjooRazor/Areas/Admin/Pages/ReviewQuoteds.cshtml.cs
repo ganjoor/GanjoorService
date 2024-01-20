@@ -18,9 +18,14 @@ namespace GanjooRazor.Areas.Admin.Pages
     public class ReviewQuotedsModel : PageModel
     {
         /// <summary>
-        /// suggestion
+        /// moderation model
         /// </summary>
         [BindProperty]
+        public GanjoorQuotedPoemModerationViewModel ModerationModel { get; set; }
+
+        /// <summary>
+        /// suggestion
+        /// </summary>
         public GanjoorQuotedPoemViewModel GanjoorQuotedPoem { get; set; }
         /// <summary>
         /// fatal error
@@ -154,6 +159,13 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                            
                         }
+
+                        ModerationModel = new GanjoorQuotedPoemModerationViewModel()
+                        {
+                            Id = GanjoorQuotedPoem.Id,
+                            Approved = false,
+                            ReviewNote = ""
+                        };
                     }
                     
                 }
