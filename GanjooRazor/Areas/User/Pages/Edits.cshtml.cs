@@ -130,6 +130,10 @@ namespace GanjooRazor.Areas.User.Pages
                                             Url = AllUsersEdits ? "/User/Edits/?page=1&AllUsers=1" : "/User/Edits/?page=1"
                                         }
                                         );
+                                    if(filteredUserId != null)
+                                    {
+                                        PaginationLinks[PaginationLinks.Count - 1].Url += $"&UserId={filteredUserId}";
+                                    }
                                 }
                                 for (int i = (paginationMetadata.currentPage - 2); i <= (paginationMetadata.currentPage + 2); i++)
                                 {
@@ -157,6 +161,10 @@ namespace GanjooRazor.Areas.User.Pages
                                                     Url = AllUsersEdits ? $"/User/Edits/?page={i}&AllUsers=1" : $"/User/Edits/?page={i}"
                                                 }
                                                 );
+                                            if (filteredUserId != null)
+                                            {
+                                                PaginationLinks[PaginationLinks.Count - 1].Url += $"&UserId={filteredUserId}";
+                                            }
                                         }
                                     }
                                 }
@@ -179,6 +187,10 @@ namespace GanjooRazor.Areas.User.Pages
                                            Url = AllUsersEdits ? $"/User/Edits/?page={paginationMetadata.totalPages}&AllUsers=1" : $"/User/Edits/?page={paginationMetadata.totalPages}"
                                        }
                                        );
+                                    if (filteredUserId != null)
+                                    {
+                                        PaginationLinks[PaginationLinks.Count - 1].Url += $"&UserId={filteredUserId}";
+                                    }
                                 }
                             }
                         }
