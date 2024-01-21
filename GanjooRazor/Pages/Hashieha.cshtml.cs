@@ -200,9 +200,9 @@ namespace GanjooRazor.Pages
                 Profile = JsonConvert.DeserializeObject<GanjoorUserPublicProfile>(await responseUserProfile.Content.ReadAsStringAsync());
 
 
-                ViewData["Title"] = $"گنجور » حاشیه‌های {Profile.NickName}";
+                ViewData["Title"] = $"گنجور » حاشیه‌گذاری‌های {Profile.NickName}";
 
-                Title = $"حاشیه‌های {Profile.NickName}";
+                Title = $"حاشیه‌گذاری‌های {Profile.NickName}";
                 HomeLink = $"/hashieha?userid={filterUserId}";
 
                 if (!string.IsNullOrEmpty(Request.Cookies["Token"]))
