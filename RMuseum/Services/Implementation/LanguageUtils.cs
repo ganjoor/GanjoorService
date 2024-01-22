@@ -79,7 +79,6 @@ namespace RMuseum.Services.Implementation
         public static string SameSoundLetters(string text)
         {
             return text.Replace("ث", "س").Replace("ح", "ه").Replace("ذ", "ز").Replace("ص", "س").Replace("ض", "ز").Replace("ط", "ت").Replace("ظ", "ز").Replace("غ", "ق");
-                       ;
         }
 
         private static string PrepareTextForFindingRhyme(string text)
