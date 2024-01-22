@@ -98,25 +98,13 @@
         var verseSameSound = RMuseum.Services.Implementation.LanguageUtils.SameSoundLetters(verseTextSearchable);
 
         <div class="century">
-            شمار نویسه‌های مصرع @((v + 1).ToPersianNumbers()) (از @verseTextSearchable.Replace(" ", "").Length.ToPersianNumbers() نویسه)
+            شمار نویسه‌های همصدای مصرع @((v + 1).ToPersianNumbers()) (از @verseSameSound.Replace(" ", "").Length.ToPersianNumbers() نویسه)
         </div>
-        <div id="letters-stat-sourceStringContainer-@verse.Id" class="notice">@verseTextSearchable</div>
-        <div id="letters-stat-resultTableContainer-@verse.Id" class="charContainer"></div>
+        <div id="letters-stat-sourceStringContainer-samev-@verse.Id" class="notice">@verseSameSound</div>
+        <div id="letters-stat-resultTableContainer-samev-@verse.Id" class="charContainer"></div>
         <script>
-            countAndDisplayCharacters('@verseTextSearchable', 'letters-stat-resultTableContainer-@verse.Id', 'letters-stat-sourceStringContainer-@verse.Id');
+            countAndDisplayCharacters('@verseSameSound', 'letters-stat-resultTableContainer-samev-@verse.Id', 'letters-stat-sourceStringContainer-samev-@verse.Id');
         </script>
-
-        @if (verseTextSearchable != verseSameSound)
-        {
-            <div class="century">
-                شمار نویسه‌های همصدای مصرع @((v + 1).ToPersianNumbers()) (از @verseSameSound.Replace(" ", "").Length.ToPersianNumbers() نویسه)
-            </div>
-            <div id="letters-stat-sourceStringContainer-samev-@verse.Id" class="notice">@verseSameSound</div>
-            <div id="letters-stat-resultTableContainer-samev-@verse.Id" class="charContainer"></div>
-            <script>
-                countAndDisplayCharacters('@verseSameSound', 'letters-stat-resultTableContainer-samev-@verse.Id', 'letters-stat-sourceStringContainer-samev-@verse.Id');
-            </script>
-        }
        
     }
 
