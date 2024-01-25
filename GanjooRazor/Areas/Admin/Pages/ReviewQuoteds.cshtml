@@ -28,248 +28,270 @@ else
             </tr>
             <tr>
                 <td>
-                    بیت مرجع از <a href="/?p=@Model.GanjoorQuotedPoem.PoemId">شعر</a>:
+                    <input type="hidden" asp-for="ModerationModel.Id" />
+                    تأیید می‌شود؟
                 </td>
             </tr>
             <tr>
                 <td>
-                    @if(Model.GanjoorQuotedPoem.CoupletIndex != null && Model.GanjoorQuotedPoem.CoupletIndex != -1)
-                    {
-                        <p>@($"{(Model.Couplets[(int)Model.GanjoorQuotedPoem.CoupletIndex].Item1 + 1).ToPersianNumbers()} - {Model.Couplets[(int)Model.GanjoorQuotedPoem.CoupletIndex].Item2}")</p>
-                    }
+                    
+                    <input asp-for="ModerationModel.Approved" />
                 </td>
             </tr>
             <tr>
                 <td>
-                    مصرع اول مهم است:
+                    <textarea asp-for="ModerationModel.ReviewNote" rows="4"></textarea>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <p>@Model.GanjoorQuotedPoem.CoupletVerse1ShouldBeEmphasized</p>
+                    <input type="submit" value="بررسی" />
                 </td>
             </tr>
-            <tr>
-                <td>
-                    مصرع دوم مهم است:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.CoupletVerse2ShouldBeEmphasized</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    شاعر مرجع:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.PoetId</p>
-                </td>
-            </tr>
-          
-            @if (Model.GanjoorQuotedPoem.RelatedPoemId != null)
-            {
-                <tr>
-                    <td>
-                        <a href="/?p=@Model.GanjoorQuotedPoem.RelatedPoemId">مشاهدهٔ شعر مرتبط</a>
-                    </td>
-                </tr>
-            }
-
-            <tr>
-                <td>
-                    بیت مرتبط:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @if (Model.GanjoorQuotedPoem.RelatedCoupletIndex != null && Model.GanjoorQuotedPoem.RelatedCoupletIndex != -1)
-                    {
-                        <p>@($"{(Model.RelatedCouplets[(int)Model.GanjoorQuotedPoem.RelatedCoupletIndex].Item1 + 1).ToPersianNumbers()} - {Model.RelatedCouplets[(int)Model.GanjoorQuotedPoem.RelatedCoupletIndex].Item2}")</p>
-                    }
-                   
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    مصرع اول مرتبط (خارج از گنجور):
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.RelatedCoupletVerse1</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    مصرع اول مهم است:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    مصرع دوم مرتبط (خارج از گنجور):
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.RelatedCoupletVerse2</p>
-                </td>
-            </tr>
-
-            <tr>
-                <td>
-                    مصرع دوم مهم است:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    ترتیب:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.SortOrder</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    این شعر قدیمی‌تر از شعر مرتبط است:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.IsPriorToRelated</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    نمایش در فهرست اصلی:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.ChosenForMainList</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    مستقیماً ارتباط ندارد:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.IndirectQuotation</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    منتسب به هر دو شاعر:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.ClaimedByBothPoets</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    شاعر:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.RelatedPoetId</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetName</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    سالمرگ شاعر:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetDeathYearInLHijri</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    نشانی صفحهٔ شاعر:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetUrl">@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetUrl</a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    تصویر شاعر:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <img src="@($"https://api.ganjoor.net{Model.GanjoorQuotedPoem.CachedRelatedPoemPoetImage}")" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    عنوان شعر:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.CachedRelatedPoemFullTitle</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    نشانی شعر:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="@Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl">@Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl</a>
-                </td>
-            </tr>
-
-            <tr>
-                <td>
-                    یادداشت:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p>@Model.GanjoorQuotedPoem.Note</p>
-                </td>
-            </tr>
-            
-           
-            <tr>
-                <td>
-                    <input type="submit" value="ذخیره" />
-                </td>
-            </tr>
-
         </table>
     </form>
+    <table>
+       
+        <tr>
+            <td>
+                بیت مرجع از <a href="/?p=@Model.GanjoorQuotedPoem.PoemId">شعر</a>:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @if (Model.GanjoorQuotedPoem.CoupletIndex != null && Model.GanjoorQuotedPoem.CoupletIndex != -1)
+                {
+                    <p>@($"{(Model.Couplets[(int)Model.GanjoorQuotedPoem.CoupletIndex].Item1 + 1).ToPersianNumbers()} - {Model.Couplets[(int)Model.GanjoorQuotedPoem.CoupletIndex].Item2}")</p>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>
+                مصرع اول مهم است:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.CoupletVerse1ShouldBeEmphasized</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                مصرع دوم مهم است:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.CoupletVerse2ShouldBeEmphasized</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                شاعر مرجع:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.PoetId</p>
+            </td>
+        </tr>
 
-   
+        @if (Model.GanjoorQuotedPoem.RelatedPoemId != null)
+        {
+            <tr>
+                <td>
+                    <a href="/?p=@Model.GanjoorQuotedPoem.RelatedPoemId">مشاهدهٔ شعر مرتبط</a>
+                </td>
+            </tr>
+        }
+
+        <tr>
+            <td>
+                بیت مرتبط:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @if (Model.GanjoorQuotedPoem.RelatedCoupletIndex != null && Model.GanjoorQuotedPoem.RelatedCoupletIndex != -1)
+                {
+                    <p>@($"{(Model.RelatedCouplets[(int)Model.GanjoorQuotedPoem.RelatedCoupletIndex].Item1 + 1).ToPersianNumbers()} - {Model.RelatedCouplets[(int)Model.GanjoorQuotedPoem.RelatedCoupletIndex].Item2}")</p>
+                }
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                مصرع اول مرتبط (خارج از گنجور):
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.RelatedCoupletVerse1</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                مصرع اول مهم است:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                مصرع دوم مرتبط (خارج از گنجور):
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.RelatedCoupletVerse2</p>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                مصرع دوم مهم است:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                ترتیب:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.SortOrder</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                این شعر قدیمی‌تر از شعر مرتبط است:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.IsPriorToRelated</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                نمایش در فهرست اصلی:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.ChosenForMainList</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                مستقیماً ارتباط ندارد:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.IndirectQuotation</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                منتسب به هر دو شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.ClaimedByBothPoets</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.RelatedPoetId</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetName</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                سالمرگ شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetDeathYearInLHijri</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                نشانی صفحهٔ شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetUrl">@Model.GanjoorQuotedPoem.CachedRelatedPoemPoetUrl</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                تصویر شاعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <img src="@($"https://api.ganjoor.net{Model.GanjoorQuotedPoem.CachedRelatedPoemPoetImage}")" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                عنوان شعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.CachedRelatedPoemFullTitle</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                نشانی شعر:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="@Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl">@Model.GanjoorQuotedPoem.CachedRelatedPoemFullUrl</a>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                یادداشت:
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>@Model.GanjoorQuotedPoem.Note</p>
+            </td>
+        </tr>
+
+
+  
+
+    </table>
+
+
+
 }
