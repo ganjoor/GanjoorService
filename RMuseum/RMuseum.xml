@@ -11762,6 +11762,16 @@
             related indirectly
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.Rejected">
+            <summary>
+            approved
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemViewModel.ReviewNote">
+            <summary>
+            review note
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorSearchVerseViewModel">
             <summary>
             Ganjoor Verse View Model

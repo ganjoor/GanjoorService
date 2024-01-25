@@ -48,6 +48,8 @@ namespace RMuseum.Models.Ganjoor.ViewModels
             PoetId = src.PoetId;
             RelatedPoetId = src.RelatedPoetId;
             IndirectQuotation = src.IndirectQuotation;
+            Rejected = src.Rejected;
+            ReviewNote = src.ReviewNote;
         }
 
         /// <summary>
@@ -202,5 +204,15 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// related indirectly
         /// </summary>
         public bool IndirectQuotation { get; set; }
+
+        /// <summary>
+        /// approved
+        /// </summary>
+        public bool Rejected { get; set; }
+
+        /// <summary>
+        /// review note
+        /// </summary>
+        public string ReviewNote { get; set; }
     }
 }

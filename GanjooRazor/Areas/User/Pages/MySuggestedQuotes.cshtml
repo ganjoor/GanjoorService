@@ -1,0 +1,281 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.MySuggestedQuotesModel
+@{
+    Layout = "_UserPanelLayout";
+    ViewData["Title"] = "آهنگ‌های پیشنهادی من";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string color = "gray";
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    @if (Model.SuggestedSongs.Count == 0)
+    {
+        <p>
+            شما هنوز هیچ آهنگ مرتبطی را پیشنهاد نداده‌اید. برای آشنایی با نحوهٔ پیشنهاد آهنگ‌های مرتبط <a href="https://blog.ganjoor.net/1395/06/28/bptags/" target="_blank">اینجا</a> را ببینید.
+        </p>
+    }
+
+    @foreach (var GanjoorQuotedPoem in Model.SuggestedSongs)
+    {
+        if (color == "gray")
+            color = "lightsteelblue";
+        else
+            color = "gray";
+
+        <div style="background-color:@color" id="bookmark-@GanjoorQuotedPoem.Id">
+
+
+            <p>
+                وضعیت: @(GanjoorQuotedPoem.Rejected ? "رد شده" : GanjoorQuotedPoem.Published ? "تأیید شده" : "بررسی نشده")
+            </p>
+
+            @if (GanjoorQuotedPoem.Rejected)
+            {
+                <p>
+                    دلیل رد: @GanjoorQuotedPoem.ReviewNote
+                </p>
+            }
+
+
+            <table>
+
+                <tr>
+                    <td>
+                        <a href="/?p=@GanjoorQuotedPoem.PoemId">شعر مرجع</a>:
+                    </td>
+                </tr>
+               
+                <tr>
+                    <td>
+                        شاعر مرجع:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.PoetId</p>
+                    </td>
+                </tr>
+
+                @if (GanjoorQuotedPoem.RelatedPoemId != null)
+                {
+                    <tr>
+                        <td>
+                            <a href="/?p=@GanjoorQuotedPoem.RelatedPoemId">مشاهدهٔ شعر مرتبط</a>
+                        </td>
+                    </tr>
+                }
+
+                <tr>
+                    <td>
+                        مصرع اول مرتبط (خارج از گنجور):
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.RelatedCoupletVerse1</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        مصرع اول مهم است:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        مصرع دوم مرتبط (خارج از گنجور):
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.RelatedCoupletVerse2</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        مصرع دوم مهم است:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        ترتیب:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.SortOrder</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        این شعر قدیمی‌تر از شعر مرتبط است:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.IsPriorToRelated</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        نمایش در فهرست اصلی:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.ChosenForMainList</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        مستقیماً ارتباط ندارد:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.IndirectQuotation</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        منتسب به هر دو شاعر:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.ClaimedByBothPoets</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        شاعر:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.RelatedPoetId</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.CachedRelatedPoemPoetName</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        سالمرگ شاعر:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.CachedRelatedPoemPoetDeathYearInLHijri</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        نشانی صفحهٔ شاعر:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="@GanjoorQuotedPoem.CachedRelatedPoemPoetUrl">@GanjoorQuotedPoem.CachedRelatedPoemPoetUrl</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        تصویر شاعر:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img src="@($"https://api.ganjoor.net{GanjoorQuotedPoem.CachedRelatedPoemPoetImage}")" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        عنوان شعر:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.CachedRelatedPoemFullTitle</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        نشانی شعر:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <a href="@GanjoorQuotedPoem.CachedRelatedPoemFullUrl">@GanjoorQuotedPoem.CachedRelatedPoemFullUrl</a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        یادداشت:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>@GanjoorQuotedPoem.Note</p>
+                    </td>
+                </tr>
+
+
+
+
+            </table>
+           
+
+        </div>
+
+
+        <hr />
+    }
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+}
