@@ -20,7 +20,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public List<NameIdUrlImage> PaginationLinks { get; set; }
 
-        public List<GanjoorQuotedPoemViewModel> SuggestedSongs { get; set; }
+        public List<GanjoorQuotedPoemViewModel> SuggestedQuotes { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
@@ -36,14 +36,14 @@ namespace GanjooRazor.Areas.User.Pages
                         {
                             pageNumber = int.Parse(Request.Query["page"]);
                         }
-                        var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/song/mysuggestions/?PageNumber={pageNumber}&PageSize=20");
+                        var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/quoted/suggest/?PageNumber={pageNumber}&PageSize=20");
                         if (!response.IsSuccessStatusCode)
                         {
                             LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                             return Page();
                         }
 
-                        SuggestedSongs = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorQuotedPoemViewModel>>();
+                        SuggestedQuotes = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorQuotedPoemViewModel>>();
 
                         string paginnationMetadata = response.Headers.GetValues("paging-headers").FirstOrDefault();
                         if (!string.IsNullOrEmpty(paginnationMetadata))

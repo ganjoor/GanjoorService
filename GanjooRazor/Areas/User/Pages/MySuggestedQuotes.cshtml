@@ -28,14 +28,14 @@ else
         }
     </p>
 
-    @if (Model.SuggestedSongs.Count == 0)
+    @if (Model.SuggestedQuotes.Count == 0)
     {
         <p>
             شما هنوز هیچ آهنگ مرتبطی را پیشنهاد نداده‌اید. برای آشنایی با نحوهٔ پیشنهاد آهنگ‌های مرتبط <a href="https://blog.ganjoor.net/1395/06/28/bptags/" target="_blank">اینجا</a> را ببینید.
         </p>
     }
 
-    @foreach (var GanjoorQuotedPoem in Model.SuggestedSongs)
+    @foreach (var GanjoorQuotedPoem in Model.SuggestedQuotes)
     {
         if (color == "gray")
             color = "lightsteelblue";

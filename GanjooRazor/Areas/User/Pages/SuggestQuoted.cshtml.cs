@@ -271,12 +271,9 @@ namespace GanjooRazor.Areas.User.Pages
                         }
                         else
                         {
-                            if (newRecord)
-                            {
-                                GanjoorQuotedPoem = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoemViewModel>();
-                            }
+                            
 
-                            LastMessage = $"انجام شد. <br /><a href=\"/User/SuggestQuoted/?p={GanjoorQuotedPoem.PoemId}&id={GanjoorQuotedPoem.Id}\">برگشت</a>";
+                            Response.Redirect("/User/MySuggestedQuotes");
 
                         }
                     }
