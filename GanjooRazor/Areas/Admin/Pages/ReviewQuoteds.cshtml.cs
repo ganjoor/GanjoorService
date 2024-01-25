@@ -11,6 +11,7 @@ using System;
 using RMuseum.Models.Ganjoor;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
@@ -173,6 +174,41 @@ namespace GanjooRazor.Areas.Admin.Pages
                 {
                     FatalError = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
                 }
+            }
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(GanjoorQuotedPoemModerationViewModel ModerationModel)
+        {
+            FatalError = "";
+            try
+            {
+                using (HttpClient secureClient = new HttpClient())
+                {
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                    {
+                        var url = $"{APIRoot.Url}/api/ganjoor/quoted/moderate";
+                        var payload = new StringContent(JsonConvert.SerializeObject(ModerationModel), Encoding.UTF8, "application/json");
+                        HttpResponseMessage response = await secureClient.PutAsync(url, payload);
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            FatalError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        }
+                        else
+                        {
+                            Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
+                            Response.Redirect($"/Admin/ReviewQuoteds?skip={Skip}");
+                        }
+                    }
+                    else
+                    { 
+                        FatalError = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                FatalError = e.ToString();
             }
             return Page();
         }
