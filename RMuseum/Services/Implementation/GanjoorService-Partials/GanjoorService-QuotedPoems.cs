@@ -821,6 +821,8 @@ namespace RMuseum.Services.Implementation
                                         .Where(q =>
                                                     q.PoemId == quoted.PoemId
                                                     &&
+                                                    q.Rejected == false
+                                                    &&
                                                     q.RelatedPoemId != null && q.RelatedPoemId == quoted.RelatedPoemId
                                                     &&
                                                     q.CoupletIndex == quoted.CoupletIndex
@@ -1061,6 +1063,8 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorQuotedPoems
                          .AsNoTracking()
                         .Where(r =>
+                        r.Rejected == false
+                        &&
                         (poetId == null || r.PoetId == poetId)
                         &&
                         (chosen == null || r.ChosenForMainList == chosen)
@@ -1105,6 +1109,7 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorQuotedPoems
                          .AsNoTracking()
                         .Where(r => r.PoemId == poemId
+                                && r.Rejected == false
                                 && (chosenForMainList == null || r.ChosenForMainList == chosenForMainList)
                                 && (onlyClaimedByBothPoets == null || r.ClaimedByBothPoets == onlyClaimedByBothPoets)
                                 && (published == null || r.Published == published)
@@ -1135,7 +1140,7 @@ namespace RMuseum.Services.Implementation
             {
                 var source = await _context.GanjoorQuotedPoems
                          .AsNoTracking()
-                        .Where(r => r.PoemId == poemId && r.RelatedPoemId == relatedPoemId && (published == null || r.Published == published))
+                        .Where(r => r.PoemId == poemId && r.RelatedPoemId == relatedPoemId && r.Rejected == false && (published == null || r.Published == published))
                         .OrderBy(r => r.SortOrder).ThenBy(r => r.CachedRelatedPoemPoetDeathYearInLHijri)
                         .ToArrayAsync();
                 return new RServiceResult<GanjoorQuotedPoemViewModel[]>
