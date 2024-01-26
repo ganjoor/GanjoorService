@@ -335,6 +335,14 @@ namespace RMuseum.Services.Implementation
                             html += $"</div>{Environment.NewLine}";
                         }
                         */
+
+                        if(true == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poet.Id).AnyAsync())
+                        {
+                            html += $"<div class=\"part-title-block-alt\" id=\"quotes-{poet.Id}\">{Environment.NewLine}";
+                            html += $"<a href=\"/quotes?p={cat.UrlSlug}\">نقل‌قول‌ها و شعرهای مرتبط {poet.Nickname}</a>{Environment.NewLine}";
+                            html += $"</div>{Environment.NewLine}";
+                        }
+
                         var thisPoetsSimilars = await context.GanjoorPages.AsNoTracking()
                                .Where(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == poet.Id).ToListAsync();
 
