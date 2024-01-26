@@ -34,6 +34,15 @@ else
             </tr>
             <tr>
                 <td>
+                    <div class="notice">
+                        <p>
+                            در صورت تأیید سراغ مشق بروید آن را ویرایش کنید، درج معکوس بزنید و معکوس را منتشر کنید.
+                        </p>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
                     
                     <input asp-for="ModerationModel.Approved" />
                 </td>
@@ -48,7 +57,14 @@ else
                     <input type="submit" value="بررسی" />
                 </td>
             </tr>
+            <tr>
+                <td>
+
+                    <a href="/Admin/ReviewQuoteds?skip=@(Model.Skip + 1)" role="button" class="pagebutton">بعدی</a>
+                </td>
+            </tr>
         </table>
+
     </form>
     <table>
        
