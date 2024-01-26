@@ -96,12 +96,55 @@
                         @ViewData["Title"]
                     </h2>
 
-                    @if (Model.Quotes.Count == 0)
+                    @if (Model.Quotes.Count == 0 && Model.ClaimedQuotes.Count == 0)
                     {
                         <p>نقل قولی یافت نشد.</p>
                     }
                     else
                     {
+                        @if(Model.ClaimedQuotes.Count > 0)
+                        {
+                            <div class="century">موارد منتسب به شاعران دیگر</div>
+
+                            <ol>
+                                @foreach (var quotedPoem in Model.ClaimedQuotes)
+                                {
+                                    <li>
+                                        <h3>
+                                            <a href="@quotedPoem.Poem.FullUrl">@quotedPoem.Poem.FullTitle</a> ::
+                                            @if (string.IsNullOrEmpty(quotedPoem.CachedRelatedPoemFullUrl))
+                                            {
+                                                @quotedPoem.CachedRelatedPoemFullTitle
+                                            }
+                                            else
+                                            {
+                                                <a href="@quotedPoem.CachedRelatedPoemFullUrl">@quotedPoem.CachedRelatedPoemFullTitle</a>
+                                            }
+                                        </h3>
+                                        <p>
+                                            <a href="@quotedPoem.Poem.FullUrl">@quotedPoem.Poem.FullTitle</a>: @quotedPoem.CoupletVerse1 - @quotedPoem.CoupletVerse2
+                                        </p>
+                                        <p>
+                                            @if (string.IsNullOrEmpty(quotedPoem.CachedRelatedPoemFullUrl))
+                                            {
+                                                @(quotedPoem.CachedRelatedPoemFullTitle)<text>: </text>
+                                            }
+                                            else
+                                            {
+                                                <a href="@quotedPoem.CachedRelatedPoemFullUrl">@quotedPoem.CachedRelatedPoemFullTitle</a><text>: </text>
+                                            }
+                                            @quotedPoem.RelatedCoupletVerse1 - @quotedPoem.RelatedCoupletVerse2
+                                        </p>
+                                    </li>
+                                }
+                            </ol>
+                            <br class="clear-both" />
+                            
+                            <div class="century">نقل قول‌های دیگر</div>
+                        }
+
+                        
+
                         <ol>
                             @foreach (var quotedPoem in Model.Quotes)
                             {
@@ -123,13 +166,13 @@
                                     <p>
                                         @if (string.IsNullOrEmpty(quotedPoem.CachedRelatedPoemFullUrl))
                                         {
-                                            @quotedPoem.CachedRelatedPoemFullTitle
+                                            @quotedPoem.CachedRelatedPoemFullTitle<text>: </text>
                                         }
                                         else
                                         {
-                                            <a href="@quotedPoem.CachedRelatedPoemFullUrl">@quotedPoem.CachedRelatedPoemFullTitle</a>
+                                            <a href="@quotedPoem.CachedRelatedPoemFullUrl">@quotedPoem.CachedRelatedPoemFullTitle</a><text>: </text>
                                         }
-                                        : @quotedPoem.RelatedCoupletVerse1 - @quotedPoem.RelatedCoupletVerse2
+                                        @quotedPoem.RelatedCoupletVerse1 - @quotedPoem.RelatedCoupletVerse2
                                     </p>
                                 </li>
                             }
