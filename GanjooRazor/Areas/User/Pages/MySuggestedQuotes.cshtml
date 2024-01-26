@@ -44,10 +44,26 @@ else
 
         <div style="background-color:@color" id="bookmark-@GanjoorQuotedPoem.Id">
 
-
-            <p>
-                وضعیت: @(GanjoorQuotedPoem.Rejected ? "رد شده" : GanjoorQuotedPoem.Published ? "تأیید شده" : "بررسی نشده")
-            </p>
+            @if(GanjoorQuotedPoem.Rejected)
+            {
+                <p class="red-color">
+                    رد شده
+                </p>
+            }
+            else
+            @if (GanjoorQuotedPoem.Published)
+            {
+                <p class="green-color">
+                    تأیید شده
+                </p>
+            }
+            else
+            {
+                <p>
+                   بررسی نشده
+                </p>
+            }
+         
 
             @if (GanjoorQuotedPoem.Rejected)
             {
