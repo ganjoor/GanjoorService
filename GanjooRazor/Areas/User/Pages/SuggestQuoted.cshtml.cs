@@ -271,10 +271,7 @@ namespace GanjooRazor.Areas.User.Pages
                         }
                         else
                         {
-                            
-
                             Response.Redirect("/User/MySuggestedQuotes");
-
                         }
                     }
                     else

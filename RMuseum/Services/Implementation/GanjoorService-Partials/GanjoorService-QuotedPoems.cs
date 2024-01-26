@@ -108,6 +108,18 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<GanjoorQuotedPoemViewModel>(null, "این نقل قول پیش‌تر پیشنهاد شده است.");
                 }
 
+                if(quoted.RelatedPoemId == null)
+                {
+                    if(string.IsNullOrEmpty(quoted.RelatedCoupletVerse1) || string.IsNullOrEmpty(quoted.RelatedCoupletVerse2))
+                    {
+                        return new RServiceResult<GanjoorQuotedPoemViewModel>(null, "اگر شعر از گنجور انتخاب نشده باید متن مصرع اول و دوم را بنویسید.");
+                    }
+                    if(string.IsNullOrEmpty(quoted.CachedRelatedPoemPoetName))
+                    {
+                        return new RServiceResult<GanjoorQuotedPoemViewModel>(null, "اگر شعر از گنجور انتخاب نشده باید نام شاعر مرتبط را بنویسید.");
+                    }
+                }
+
                 GanjoorQuotedPoem dbQuoted = new GanjoorQuotedPoem()
                 {
                     Id = quoted.Id,
