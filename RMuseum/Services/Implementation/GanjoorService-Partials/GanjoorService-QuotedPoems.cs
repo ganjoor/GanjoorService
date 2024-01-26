@@ -1193,6 +1193,7 @@ namespace RMuseum.Services.Implementation
                 var source = await
                 _context.GanjoorQuotedPoems
                          .AsNoTracking()
+                         .Include(q => q.Poem)
                         .Where(r =>
                         r.Rejected == false
                         &&
