@@ -38,7 +38,14 @@
             fetch('@(GanjooRazor.APIRoot.InternetUrl)/api/ganjoor/page?url=' + url)
                 .then((response) => response.json())
                 .then((json) => {
-                   
+
+                    if (json.poem == null) {
+                        document.getElementById('loading-selection').style.display = 'none';
+                        alert('صفحه‌ای که انتخاب کرده‌اید حاوی یک شعر نیست.');
+                        selectGanjoorPage();
+                        return;
+                    }
+
                     document.getElementById('GanjoorQuotedPoem_RelatedPoemId').value = json.poem.id;
                     document.getElementById('GanjoorQuotedPoem_RelatedPoetId').value = json.poem.category.poet.id;
                     document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemPoetName').value = json.poem.category.poet.nickname;
@@ -75,19 +82,39 @@
                     x.value = coupletIndices[0];
                     document.getElementById('loading-selection').style.display = 'none';
 
+                }).catch((error) => {
+                    document.getElementById('loading-selection').style.display = 'none';
+                    alert('صفحه‌ای که انتخاب کرده‌اید حاوی یک شعر نیست. جزئیات بیشتر: ' + error);
+                    selectGanjoorPage();
                 });
 
         }
 
     </script>
+    <div class="notice">
+        <p>
+            از این طریق می‌توانید نقل قول یک شاعر از یک شاعر دیگر را در گنجور ثبت کنید. توجه داشته باشید که اقتفا (یکسانی قافیه) دلیل کافی بر نقل قول نیست. باید در شعرها حداقل یک مصرع بعینه (با تخفیف تفاوت جزئی واژگان) نقل قول شده باشد.
+        </p>
+    </div>
     <form method="post">
         <table>
+            <tr>
+                <td>
+                    <div class="notice">
+                        <p>
+                            از فهرست زیر بیتی را که نقل قول در آن رخ داده مشخص کنید.
+                        </p>
+                    </div>
+                  
+                </td>
+            </tr>
             <tr>
                 <td>
                     بیت مرجع از <a href="/?p=@Model.GanjoorQuotedPoem.PoemId">شعر</a>:
                     <input type="hidden" asp-for="GanjoorQuotedPoem.Id" />
                     <input type="hidden" asp-for="GanjoorQuotedPoem.PoemId" />
                     <input type="hidden" asp-for="GanjoorQuotedPoem.PoetId" />
+                    
                 </td>
             </tr>
             <tr>
@@ -102,7 +129,7 @@
             </tr>
             <tr>
                 <td>
-                    مصرع اول مهم است:
+                    نقل قول در مصرع اول:
                 </td>
             </tr>
             <tr>
@@ -112,7 +139,7 @@
             </tr>
             <tr>
                 <td>
-                    مصرع دوم مهم است:
+                    نقل قول در مصرع دوم:
                 </td>
             </tr>
             <tr>
@@ -122,18 +149,15 @@
             </tr>
             <tr>
                 <td>
-                    شاعر مرجع:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.PoetId" />
+                    <div class="notice">
+                        <p>اگر شعر مرتبط در گنجور وجود دارد آن را با «گزینش شعر مرتبط» و پیدا کردن آن در صفحه‌ای که باز می‌شود مشخص کنید.</p>
+
+                    </div>
                 </td>
             </tr>
             <tr>
                 <td>
                     <a onclick="finalizeSelectPage()" class="pagebutton" role="button" id="finalize-select2" style="display:none">انتخاب کردم</a>
-                  
                 </td>
             </tr>
             <tr>
@@ -165,6 +189,7 @@
                 </tr>
             }
 
+
             <tr>
                 <td>
                     بیت مرتبط:
@@ -194,12 +219,21 @@
             </tr>
             <tr>
                 <td>
+                   <div class="notice">
+                       <p>
+                           اگر شعر را از طریق دکمهٔ «گزینش شعر مرتبط» انتخاب کرده‌اید کادر زیر را خالی بگذارید.
+                       </p>
+                   </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
                     <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse1" size="65" />
                 </td>
             </tr>
             <tr>
                 <td>
-                    مصرع اول مهم است:
+                    نقل قول در مصرع اول شعر مرتبط:
                 </td>
             </tr>
             <tr>
@@ -214,13 +248,22 @@
             </tr>
             <tr>
                 <td>
+                    <div class="notice">
+                        <p>
+                            اگر شعر را از طریق دکمهٔ «گزینش شعر مرتبط» انتخاب کرده‌اید کادر زیر را خالی بگذارید.
+                        </p>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
                     <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse2" size="65" />
                 </td>
             </tr>
 
             <tr>
                 <td>
-                    مصرع دوم مهم است:
+                    نقل قول در مصرع دوم شعر مرتبط:
                 </td>
             </tr>
             <tr>
@@ -256,7 +299,7 @@
                     شاعر:
                 </td>
             </tr>
-            <tr>
+          
             <tr>
                 <td>
                     <input asp-for="GanjoorQuotedPoem.RelatedPoetId" hidden />
@@ -325,7 +368,7 @@
 
             <tr>
                 <td>
-                    <input type="submit" value="پیشنهاد" />
+                    <input type="submit" class="width-100per" value="پیشنهاد" />
                 </td>
             </tr>
 
