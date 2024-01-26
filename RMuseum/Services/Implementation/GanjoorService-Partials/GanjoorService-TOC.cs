@@ -339,7 +339,7 @@ namespace RMuseum.Services.Implementation
                         if(true == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poet.Id).AnyAsync())
                         {
                             html += $"<div class=\"part-title-block-alt\" id=\"quotes-{poet.Id}\">{Environment.NewLine}";
-                            html += $"<a href=\"/quotes?p={cat.UrlSlug}\">نقل‌قول‌ها و شعرهای مرتبط {poet.Nickname}</a>{Environment.NewLine}";
+                            html += $"<a href=\"/quotes?p={cat.UrlSlug}\">نقل قول‌ها و شعرهای مرتبط {poet.Nickname}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                         }
 
