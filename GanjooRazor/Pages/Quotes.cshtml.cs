@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace GanjooRazor.Pages
 {
+    [IgnoreAntiforgeryToken(Order = 1001)]
     public class QuotesModel : LoginPartialEnabledPageModel
     {
         private readonly IConfiguration Configuration;
