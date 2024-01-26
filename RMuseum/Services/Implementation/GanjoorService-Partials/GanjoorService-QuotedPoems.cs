@@ -584,13 +584,24 @@ namespace RMuseum.Services.Implementation
             }
 
             var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == page.PoetId).SingleAsync();
+            var poetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poet.Id && c.ParentId == null).SingleAsync();
             var relatedPoet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == page.SecondPoetId).SingleAsync();
             var relatedPoetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == relatedPoet.Id && c.ParentId == null).SingleAsync();
 
             string html = "";
 
             var claimedByBothList = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poetId && p.RelatedPoetId == relatedPoetId && p.ClaimedByBothPoets && p.Published).OrderBy(p => p.PoemId).ThenBy(p => p.RelatedPoemId).ToListAsync();
-            var claimedByBothListNotInGanjoor = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poetId && p.RelatedPoetId == null && p.ClaimedByBothPoets && p.Published && p.CachedRelatedPoemFullUrl == $"https://ganjoor.net{relatedPoetCat.FullUrl}").OrderBy(p => p.PoemId).ToListAsync();
+            var claimedByBothListNotInGanjoor = await context.GanjoorQuotedPoems.AsNoTracking().Where(
+                p => 
+                (
+                (p.PoetId == poetId  && p.CachedRelatedPoemFullUrl == $"https://ganjoor.net{relatedPoetCat.FullUrl}")
+                ||
+                (p.PoetId == relatedPoetId && p.CachedRelatedPoemFullUrl == $"https://ganjoor.net{poetCat.FullUrl}")
+                )
+                && p.RelatedPoetId == null && p.ClaimedByBothPoets && p.Published
+
+
+                ).OrderBy(p => p.PoemId).ToListAsync();
             if (claimedByBothList.Any() || claimedByBothListNotInGanjoor.Any())
             {
                 html += $"<p>فهرست زیر شامل اشعاری است که در نسخه‌های دیوان‌های هر دو سخنور آمده است و به هر دو منتسب است:</p>{Environment.NewLine}";
@@ -714,7 +725,16 @@ namespace RMuseum.Services.Implementation
 
 
             var normalRelatedPoems = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poetId && p.RelatedPoetId == relatedPoetId && p.ClaimedByBothPoets == false && p.Published).OrderBy(p => p.PoemId).ThenBy(p => p.CoupletIndex).ToListAsync();
-            var normalRelatedPoemsNotInGanjoor = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poetId && p.RelatedPoetId == null && p.ClaimedByBothPoets == false && p.Published && p.CachedRelatedPoemFullUrl == $"https://ganjoor.net{relatedPoetCat.FullUrl}").OrderBy(p => p.PoemId).ToListAsync();
+            var normalRelatedPoemsNotInGanjoor = await context.GanjoorQuotedPoems.AsNoTracking().Where
+                (p => 
+                 (
+                (p.PoetId == poetId && p.CachedRelatedPoemFullUrl == $"https://ganjoor.net{relatedPoetCat.FullUrl}")
+                ||
+                (p.PoetId == relatedPoetId && p.CachedRelatedPoemFullUrl == $"https://ganjoor.net{poetCat.FullUrl}")
+                )
+                &&
+                p.RelatedPoetId == null && p.ClaimedByBothPoets == false && p.Published
+                ).OrderBy(p => p.PoemId).ToListAsync();
             if (normalRelatedPoems.Any() || normalRelatedPoemsNotInGanjoor.Any())
             {
                 html += $"<p>در این بخش شعرهایی را فهرست کرده‌ایم که در آنها {poet.Nickname} مصرع یا بیتی از {relatedPoet.Nickname} را عیناً نقل قول کرده است:</p>{Environment.NewLine}";
