@@ -118,7 +118,7 @@ else
                 </tr>
                 <tr>
                     <td>
-                        <p>@GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized</p>
+                        <input type="checkbox" @(GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized ? "checked=\"checked\"" : "") />
                     </td>
                 </tr>
                 <tr>
@@ -139,49 +139,10 @@ else
                 </tr>
                 <tr>
                     <td>
-                        <p>@GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized</p>
+                        <input type="checkbox" @(GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized ? "checked=\"checked\"" : "") />
                     </td>
                 </tr>
-                <tr>
-                    <td>
-                        ترتیب:
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <p>@GanjoorQuotedPoem.SortOrder</p>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        این شعر قدیمی‌تر از شعر مرتبط است:
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <p>@GanjoorQuotedPoem.IsPriorToRelated</p>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        نمایش در فهرست اصلی:
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <p>@GanjoorQuotedPoem.ChosenForMainList</p>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        مستقیماً ارتباط ندارد:
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <p>@GanjoorQuotedPoem.IndirectQuotation</p>
-                    </td>
-                </tr>
+
                 <tr>
                     <td>
                         منتسب به هر دو شاعر:
@@ -189,17 +150,12 @@ else
                 </tr>
                 <tr>
                     <td>
-                        <p>@GanjoorQuotedPoem.ClaimedByBothPoets</p>
+                        <input type="checkbox" @(GanjoorQuotedPoem.ClaimedByBothPoets ? "checked=\"checked\"" : "") />
                     </td>
                 </tr>
                 <tr>
                     <td>
                         شاعر:
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <p>@GanjoorQuotedPoem.RelatedPoetId</p>
                     </td>
                 </tr>
                 <tr>
@@ -268,9 +224,6 @@ else
                         <p>@GanjoorQuotedPoem.Note</p>
                     </td>
                 </tr>
-
-
-
 
             </table>
            
