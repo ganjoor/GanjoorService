@@ -1,0 +1,172 @@
+﻿@page
+@model GanjooRazor.Pages.QuotesModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+        @Html.Raw(ViewData["Title"])
+    </title>
+    <link href="/css/p8.css?version=49" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
+    <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/js/bk.js?version=50"></script>
+    <script>
+        var cookieValue = getCookie("playerScrollLock");
+        var playerScrollLock = cookieValue === "true";
+
+        cookieValue = getCookie("stickyEnabled");
+        var stickyEnabled = cookieValue != "false";
+    </script>
+
+
+
+</head>
+<body>
+    @if (!string.IsNullOrEmpty(Model.LastError))
+    {
+        @Model.LastError
+    }
+    else
+    {
+        <div id="hdr2" class="clearfix">
+            <h1><a href="/" title="گنجور"><img src="/image/gdapk.png" alt="گنجور" /></a></h1>
+            <div class="actionbox">
+                <form action="/search" method="get" id="searchform">
+                    <input type="text" name="s" id="s" class="inputText" value="" placeholder="جستجو" />
+                    <input type="hidden" name="es" id="es" value="1" />
+                    <select name="author" id="author" onchange="onSelectedPoetChanged()">
+
+                        @{
+                            if (Model.Poet != null)
+                            {
+                                <option value="0">در آثار همهٔ سخنوران</option>
+                            }
+                            else
+                            {
+                                <option value="0" selected>در آثار همهٔ سخنوران</option>
+                            }
+
+                            if (Model.Poets != null)
+                            {
+                                foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
+                                {
+                                    if(Model.Poet != null && Model.Poet.Id == poet.Id)
+                                    {
+                                        <option value="@poet.Id" selected>@poet.Nickname</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@poet.Id">@poet.Nickname</option>
+                                    }
+                                    
+                                }
+                            }
+                        }
+                    </select>
+                    <input type="submit" value="بیاب" />
+                </form>
+            </div><!-- .actionbox -->
+        </div>
+
+        <!-- #hdr2 -->
+
+        <div id="fa">
+
+            <partial name="_InlineLoginPartial" model="Model" />
+
+
+            <div id="maincnt">
+                <div class="poem">
+
+                    @if(Model.Poet != null)
+                    {
+                        <div id="poet-image">
+                            <a href="@Html.Raw(Model.Poet.FullUrl)"><img src="@Model.Poet.ImageUrl" alt="@Html.Raw(Model.Poet.Nickname)"></a>
+                        </div>
+                    }
+
+                    <h2>
+                        @ViewData["Title"]
+                    </h2>
+
+                    @if (Model.Quotes.Count == 0)
+                    {
+                        <p>نقل قولی یافت نشد.</p>
+                    }
+                    else
+                    {
+                        <ol>
+                            @foreach (var quotedPoem in Model.Quotes)
+                            {
+                                <li>
+                                    <h3>
+                                        <a href="@quotedPoem.Poem.FullUrl">@quotedPoem.Poem.FullTitle</a> ::
+                                        @if (string.IsNullOrEmpty(quotedPoem.CachedRelatedPoemFullUrl))
+                                        {
+                                            @quotedPoem.CachedRelatedPoemFullTitle
+                                        }
+                                        else
+                                        {
+                                            <a href="@quotedPoem.CachedRelatedPoemFullUrl">@quotedPoem.CachedRelatedPoemFullTitle</a>
+                                        }
+                                    </h3>
+                                    <p>
+                                        <a href="@quotedPoem.Poem.FullUrl">@quotedPoem.Poem.FullTitle</a>: @quotedPoem.CoupletVerse1 - @quotedPoem.CoupletVerse2
+                                    </p>
+                                    <p>
+                                        @if (string.IsNullOrEmpty(quotedPoem.CachedRelatedPoemFullUrl))
+                                        {
+                                            @quotedPoem.CachedRelatedPoemFullTitle
+                                        }
+                                        else
+                                        {
+                                            <a href="@quotedPoem.CachedRelatedPoemFullUrl">@quotedPoem.CachedRelatedPoemFullTitle</a>
+                                        }
+                                        : @quotedPoem.RelatedCoupletVerse1 - @quotedPoem.RelatedCoupletVerse2
+                                    </p>
+                                </li>
+                            }
+                        </ol>
+                        <br class="clear-both" />
+                    }
+
+
+
+                </div>
+            </div>
+
+
+
+            <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true}) />
+
+        </div>
+
+        <script src="/js/vaabd.js?version=6"></script>
+
+        @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
+        {
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=@(ViewData["GoogleAnalyticsCode"])"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag() { dataLayer.push(arguments); }
+                gtag('js', new Date());
+
+                gtag('config', '@ViewData["GoogleAnalyticsCode"]');
+            </script>
+        }
+    }
+    }
+
+
+</body>
+</html>
+
+
