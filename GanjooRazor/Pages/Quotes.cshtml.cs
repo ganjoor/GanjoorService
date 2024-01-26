@@ -76,23 +76,6 @@ namespace GanjooRazor.Pages
 
             Quotes = JArray.Parse(await responseQuotes.Content.ReadAsStringAsync()).ToObject<List<GanjoorQuotedPoemViewModel>>();
 
-            foreach (var quote in Quotes)
-            {
-                var poemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{quote.PoemId}");
-                if (!poemQuery.IsSuccessStatusCode)
-                {
-                    LastError = JsonConvert.DeserializeObject<string>(await poemQuery.Content.ReadAsStringAsync());
-                    return Page();
-                }
-                var poem = JObject.Parse(await poemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
-                quote.Poem = new RMuseum.Models.Ganjoor.GanjoorPoem()
-                {
-                    Id = poem.Id,
-                    FullTitle = poem.FullTitle,
-                    FullUrl = poem.FullUrl,
-                };
-            }
-
             var responseClaimedQuotes = await _httpClient.GetAsync(url + "&claimed=true");
             if (!responseClaimedQuotes.IsSuccessStatusCode)
             {
@@ -102,27 +85,7 @@ namespace GanjooRazor.Pages
 
             ClaimedQuotes = JArray.Parse(await responseClaimedQuotes.Content.ReadAsStringAsync()).ToObject<List<GanjoorQuotedPoemViewModel>>();
 
-            foreach (var quote in ClaimedQuotes)
-            {
-                var poemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{quote.PoemId}");
-                if (!poemQuery.IsSuccessStatusCode)
-                {
-                    LastError = JsonConvert.DeserializeObject<string>(await poemQuery.Content.ReadAsStringAsync());
-                    return Page();
-                }
-                var poem = JObject.Parse(await poemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
-                quote.Poem = new RMuseum.Models.Ganjoor.GanjoorPoem()
-                {
-                    Id = poem.Id,
-                    FullTitle = poem.FullTitle,
-                    FullUrl = poem.FullUrl,
-                };
-            }
-
-            
-
-
-            ViewData["Title"] = Poet == null ? "نقل قول‌های شاعران" : $"نقل‌قول‌ها و شعرهای مرتبط {Poet.Nickname}";
+            ViewData["Title"] = Poet == null ? "نقل قول‌های شاعران" : $"نقل قول‌ها و شعرهای مرتبط {Poet.Nickname}";
 
             return Page();
         }
