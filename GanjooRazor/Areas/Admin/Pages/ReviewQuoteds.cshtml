@@ -72,7 +72,7 @@ else
         </tr>
         <tr>
             <td>
-                <p>@Model.GanjoorQuotedPoem.CoupletVerse1ShouldBeEmphasized</p>
+                <input type="checkbox" @(Model.GanjoorQuotedPoem.CoupletVerse1ShouldBeEmphasized ? "checked=\"checked\"" : "") />
             </td>
         </tr>
         <tr>
@@ -82,7 +82,7 @@ else
         </tr>
         <tr>
             <td>
-                <p>@Model.GanjoorQuotedPoem.CoupletVerse2ShouldBeEmphasized</p>
+                <input type="checkbox" @(Model.GanjoorQuotedPoem.CoupletVerse2ShouldBeEmphasized ? "checked=\"checked\"" : "") />
             </td>
         </tr>
         <tr>
@@ -136,7 +136,7 @@ else
         </tr>
         <tr>
             <td>
-                <p>@Model.GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized</p>
+                <input type="checkbox" @(Model.GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized ? "checked=\"checked\"" : "") />
             </td>
         </tr>
         <tr>
@@ -157,7 +157,7 @@ else
         </tr>
         <tr>
             <td>
-                <p>@Model.GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized</p>
+                <input type="checkbox" @(Model.GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized ? "checked=\"checked\"" : "") />
             </td>
         </tr>
         <tr>
@@ -177,29 +177,8 @@ else
         </tr>
         <tr>
             <td>
-                <p>@Model.GanjoorQuotedPoem.IsPriorToRelated</p>
+                <input type="checkbox" @(Model.GanjoorQuotedPoem.IsPriorToRelated ? "checked=\"checked\"" : "") />
             </td>
-        </tr>
-        <tr>
-            <td>
-                نمایش در فهرست اصلی:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p>@Model.GanjoorQuotedPoem.ChosenForMainList</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                مستقیماً ارتباط ندارد:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p>@Model.GanjoorQuotedPoem.IndirectQuotation</p>
-            </td>
-        </tr>
         <tr>
             <td>
                 منتسب به هر دو شاعر:
@@ -207,7 +186,7 @@ else
         </tr>
         <tr>
             <td>
-                <p>@Model.GanjoorQuotedPoem.ClaimedByBothPoets</p>
+                <input type="checkbox" @(Model.GanjoorQuotedPoem.ClaimedByBothPoets ? "checked=\"checked\"" : "") />
             </td>
         </tr>
         <tr>
