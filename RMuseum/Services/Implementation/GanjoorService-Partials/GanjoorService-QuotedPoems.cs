@@ -219,7 +219,7 @@ namespace RMuseum.Services.Implementation
                             .OrderBy(r => r.Id)
                             .Skip(skip)
                             .FirstOrDefaultAsync();
-                return new RServiceResult<GanjoorQuotedPoemViewModel>(r == null ? null : new GanjoorQuotedPoemViewModel(r));
+                return new RServiceResult<GanjoorQuotedPoemViewModel>(r == null ? null : new GanjoorQuotedPoemViewModel(r, true));
             }
             catch (Exception exp)
             {

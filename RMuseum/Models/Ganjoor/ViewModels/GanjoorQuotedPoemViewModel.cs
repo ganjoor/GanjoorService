@@ -16,7 +16,9 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// copy constructor
         /// </summary>
         /// <param name="src"></param>
-        public GanjoorQuotedPoemViewModel(GanjoorQuotedPoem src)
+        /// <param name="includeUserId">
+        /// </param>
+        public GanjoorQuotedPoemViewModel(GanjoorQuotedPoem src, bool includeUserId = false)
         {
             Id = src.Id;
             PoemId = src.PoemId;
@@ -50,6 +52,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
             IndirectQuotation = src.IndirectQuotation;
             Rejected = src.Rejected;
             ReviewNote = src.ReviewNote;
+            if(includeUserId)
+            {
+                SuggestedById = src.SuggestedById;
+            }
         }
 
         /// <summary>
@@ -214,5 +220,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// review note
         /// </summary>
         public string ReviewNote { get; set; }
+
+        /// <summary>
+        /// suggested by
+        /// </summary>
+        public Guid? SuggestedById { get; set; }
     }
 }
