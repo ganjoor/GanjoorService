@@ -164,7 +164,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         ModerationModel = new GanjoorQuotedPoemModerationViewModel()
                         {
                             Id = GanjoorQuotedPoem.Id,
-                            Approved = false,
+                            Approved = true,
                             ReviewNote = ""
                         };
                     }
