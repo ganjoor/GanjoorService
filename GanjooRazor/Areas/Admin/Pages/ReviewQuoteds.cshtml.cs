@@ -12,6 +12,7 @@ using RMuseum.Models.Ganjoor;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using System.Text;
+using RMuseum.Models.Auth.ViewModel;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
@@ -50,6 +51,8 @@ namespace GanjooRazor.Areas.Admin.Pages
         public GanjoorPoemCompleteViewModel Poem { get; set; }
 
         public GanjoorPoemCompleteViewModel RelatedPoem { get; set; }
+
+        public GanjoorUserPublicProfile SuggestedBy { get; set; }
 
         private Tuple<int, string>[] GetCouplets(GanjoorVerseViewModel[] verses)
         {
@@ -135,6 +138,15 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                     if(GanjoorQuotedPoem != null)
                     {
+                        var responseUserProfile = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/user/profile/{GanjoorQuotedPoem.SuggestedById}");
+                        if (!responseUserProfile.IsSuccessStatusCode)
+                        {
+                            FatalError = JsonConvert.DeserializeObject<string>(await responseUserProfile.Content.ReadAsStringAsync());
+                            return Page();
+                        }
+
+                        SuggestedBy = JsonConvert.DeserializeObject<GanjoorUserPublicProfile>(await responseUserProfile.Content.ReadAsStringAsync());
+
                         var poemQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{GanjoorQuotedPoem.PoemId}");
                         if (!poemQuery.IsSuccessStatusCode)
                         {

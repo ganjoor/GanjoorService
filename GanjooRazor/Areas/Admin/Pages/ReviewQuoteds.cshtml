@@ -28,6 +28,16 @@ else
             </tr>
             <tr>
                 <td>
+                    پیشنهاد دهنده:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a href="/user/edits/?allusers=1&userid=@Model.GanjoorQuotedPoem.SuggestedById" target="_blank">@Model.SuggestedBy.NickName</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
                     <input type="hidden" asp-for="ModerationModel.Id" />
                     تأیید می‌شود؟
                 </td>
@@ -45,12 +55,11 @@ else
             </tr>
             <tr>
                 <td>
-                    <input type="submit" value="بررسی" />
+                    <input type="submit" class="width-100per" value="بررسی" />
                 </td>
             </tr>
             <tr>
                 <td>
-
                     <a href="/Admin/ReviewQuoteds?skip=@(Model.Skip + 1)" role="button" class="pagebutton">بعدی</a>
                 </td>
             </tr>
@@ -58,7 +67,7 @@ else
 
     </form>
     <table>
-       
+        
         <tr>
             <td>
                 بیت مرجع از <a href="/?p=@Model.GanjoorQuotedPoem.PoemId">شعر</a>:
