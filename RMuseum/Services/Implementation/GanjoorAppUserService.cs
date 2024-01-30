@@ -400,6 +400,11 @@ namespace RMuseum.Services.Implementation
             context.UpdateRange(suggestedPoetPhotos);
             await context.SaveChangesAsync();
 
+            var suggestQuotes = await context.GanjoorQuotedPoems.Where(s => s.SuggestedById == userId).ToListAsync();
+            foreach(var suggestedQuote in suggestedPoetPhotos)
+                suggestedQuote.SuggestedById = deletedUserId;
+            context.UpdateRange(suggestedPoetPhotos);
+            await context.SaveChangesAsync();
 
             var visits = await context.GanjoorUserPoemVisits.Where(v => v.UserId == userId).ToListAsync();
             context.RemoveRange(visits);
