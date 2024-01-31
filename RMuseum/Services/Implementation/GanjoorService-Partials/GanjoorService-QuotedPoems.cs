@@ -944,70 +944,72 @@ namespace RMuseum.Services.Implementation
                     html += $"</ol>{Environment.NewLine}";
                     html += $"<br style=\"clear:both;\">{Environment.NewLine}";
 
-                    var poemSections = await context.GanjoorPoemSections.AsNoTracking()
-                                    .Include(s => s.Poem).ThenInclude(p => p.Cat)
-                                    .Include(s => s.GanjoorMetre)
-                                    .Where(s => s.SectionType == PoemSectionType.WholePoem && s.Poem.Cat.PoetId == poetId && s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters))
-                                    .OrderBy(s => s.PoemId)
-                                    .ToListAsync();
-                    if (poemSections.Any())
+
+                }
+
+                var poemSections = await context.GanjoorPoemSections.AsNoTracking()
+                .Include(s => s.Poem).ThenInclude(p => p.Cat)
+                .Include(s => s.GanjoorMetre)
+                .Where(s => s.SectionType == PoemSectionType.WholePoem && s.Poem.Cat.PoetId == poetId && s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters))
+                .OrderBy(s => s.PoemId)
+                .ToListAsync();
+                if (poemSections.Any())
+                {
+                    var relatedPoemSections = await context.GanjoorPoemSections.AsNoTracking()
+                             .Include(s => s.Poem).ThenInclude(p => p.Cat)
+                             .Include(s => s.GanjoorMetre)
+                             .Where(s => s.SectionType == PoemSectionType.WholePoem && s.Poem.Cat.PoetId == relatedPoetId && s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters))
+                             .OrderBy(s => s.PoemId)
+                             .ToListAsync();
+
+                    if (relatedPoemSections.Any())
                     {
-                        var relatedPoemSections = await context.GanjoorPoemSections.AsNoTracking()
-                                 .Include(s => s.Poem).ThenInclude(p => p.Cat)
-                                 .Include(s => s.GanjoorMetre)
-                                 .Where(s => s.SectionType == PoemSectionType.WholePoem && s.Poem.Cat.PoetId == relatedPoetId && s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters))
-                                 .OrderBy(s => s.PoemId)
-                                 .ToListAsync();
+                        Dictionary<(int, string), (List<GanjoorPoemSection>, List<GanjoorPoemSection>)> list = [];
 
-                        if (relatedPoemSections.Any())
+                        foreach (var poemSection in poemSections)
                         {
-                            Dictionary<(int, string), (List<GanjoorPoemSection>, List<GanjoorPoemSection>)> list = [];
-
-                            foreach (var poemSection in poemSections)
+                            var relatedPoemList = relatedPoemSections.Where(s => s.GanjoorMetreId == poemSection.GanjoorMetreId && s.RhymeLetters == poemSection.RhymeLetters).ToList();
+                            if (!relatedPoemList.Any())
                             {
-                                var relatedPoemList = relatedPoemSections.Where(s => s.GanjoorMetreId == poemSection.GanjoorMetreId && s.RhymeLetters == poemSection.RhymeLetters).ToList();
-                                if (!relatedPoemList.Any())
-                                {
-                                    continue;
-                                }
-                                if (!list.TryGetValue(((int)poemSection.GanjoorMetreId, poemSection.RhymeLetters), out (List<GanjoorPoemSection>, List<GanjoorPoemSection>) poemsList))
-                                {
-                                    poemsList = (new List<GanjoorPoemSection>(), relatedPoemList);
-                                    list.Add
-                                        (
-                                        ((int)poemSection.GanjoorMetreId, poemSection.RhymeLetters), poemsList
-                                        );
-                                }
-                                poemsList.Item1.Add(poemSection);
+                                continue;
                             }
-
-                            if (list.Any())
+                            if (!list.TryGetValue(((int)poemSection.GanjoorMetreId, poemSection.RhymeLetters), out (List<GanjoorPoemSection>, List<GanjoorPoemSection>) poemsList))
                             {
+                                poemsList = (new List<GanjoorPoemSection>(), relatedPoemList);
+                                list.Add
+                                    (
+                                    ((int)poemSection.GanjoorMetreId, poemSection.RhymeLetters), poemsList
+                                    );
+                            }
+                            poemsList.Item1.Add(poemSection);
+                        }
+
+                        if (list.Any())
+                        {
+                            html += $"<hr />{Environment.NewLine}";
+                            html += $"<p>در این بخش مجموعه شعرهایی از دو شاعر را که توأماً هموزن و همقافیه هستند در گروه‌های مجزا فهرست کرده‌ایم: </p>{Environment.NewLine}";
+                            html += $"<br style=\"clear:both;\">{Environment.NewLine}";
+
+                            html += $"<ol>{Environment.NewLine}";
+                            foreach (var pair in list.Values)
+                            {
+                                html += $"<li>{Environment.NewLine}";
+                                foreach (var section in pair.Item1)
+                                {
+                                    var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId && v.SectionIndex1 == section.Index).OrderBy(v => v.VOrder).Take(2).ToListAsync();
+                                    html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text} - {verses[1].Text}</p>{Environment.NewLine}";
+                                }
+                                html += $"<br style=\"clear:both;\">{Environment.NewLine}";
+                                foreach (var section in pair.Item2)
+                                {
+                                    var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId && v.SectionIndex1 == section.Index).OrderBy(v => v.VOrder).Take(2).ToListAsync();
+                                    html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text} - {verses[1].Text}</p>{Environment.NewLine}";
+                                }
                                 html += $"<hr />{Environment.NewLine}";
-                                html += $"<p>در این بخش مجموعه شعرهایی از دو شاعر را که توأماً هموزن و همقافیه هستند در گروه‌های مجزا فهرست کرده‌ایم: </p>{Environment.NewLine}";
-                                html += $"<br style=\"clear:both;\">{Environment.NewLine}";
-
-                                html += $"<ol>{Environment.NewLine}";
-                                foreach (var pair in list.Values)
-                                {
-                                    html += $"<li>{Environment.NewLine}";
-                                    foreach (var section in pair.Item1)
-                                    {
-                                        var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId && v.SectionIndex1 == section.Index).OrderBy(v => v.VOrder).Take(2).ToListAsync();
-                                        html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text} - {verses[1].Text}</p>{Environment.NewLine}";
-                                    }
-                                    html += $"<br style=\"clear:both;\">{Environment.NewLine}";
-                                    foreach (var section in pair.Item2)
-                                    {
-                                        var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId && v.SectionIndex1 == section.Index).OrderBy(v => v.VOrder).Take(2).ToListAsync();
-                                        html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text} - {verses[1].Text}</p>{Environment.NewLine}";
-                                    }
-                                    html += $"<hr />{Environment.NewLine}";
-                                    html += $"</li>{Environment.NewLine}";
-                                }
-                                html += $"</ol>{Environment.NewLine}";
-                                html += $"<br style=\"clear:both;\">{Environment.NewLine}";
+                                html += $"</li>{Environment.NewLine}";
                             }
+                            html += $"</ol>{Environment.NewLine}";
+                            html += $"<br style=\"clear:both;\">{Environment.NewLine}";
                         }
                     }
                 }
