@@ -617,6 +617,20 @@ namespace RMuseum.Services.Implementation
 
                                     try
                                     {
+                                        //fix for QuotedPoems here:
+                                        var quotedPoems = await context.GanjoorQuotedPoems.Where(q => q.RelatedPoetId != null).ToListAsync();
+                                        foreach (var quotedPoem in quotedPoems)
+                                        {
+                                            var qPoet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == quotedPoem.PoetId).SingleAsync();
+                                            if(quotedPoem.CachedRelatedPoemPoetDeathYearInLHijri > 0)
+                                            {
+                                                quotedPoem.IsPriorToRelated = qPoet.DeathYearInLHijri < quotedPoem.CachedRelatedPoemPoetDeathYearInLHijri;
+                                                context.Update(quotedPoem);
+                                                await context.SaveChangesAsync();
+                                            }
+                                        }
+
+
                                         var poetsCoupletCounts =
                                                     await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
                                                     .Where(v =>
