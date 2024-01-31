@@ -754,7 +754,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GenerateTableOfContents(int id, GanjoorTOC options = GanjoorTOC.Analyse)
         {
-            var res = await _ganjoorService.GenerateTableOfContents(id, options);
+            var res = await _ganjoorService.GenerateTableOfContents(new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value), id, options);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

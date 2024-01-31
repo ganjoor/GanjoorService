@@ -154,12 +154,13 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// generate category TOC
         /// </summary>
+        /// <param name="userId"></param>
         /// <param name="catId"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<string>> GenerateTableOfContents(int catId, GanjoorTOC options)
+        public async Task<RServiceResult<string>> GenerateTableOfContents(Guid userId, int catId, GanjoorTOC options)
         {
-            return await _GenerateTableOfContents(_context, catId, options);
+            return await _GenerateTableOfContents(_context, catId, options, userId );
         }
       
 

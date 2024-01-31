@@ -747,10 +747,11 @@ namespace RMuseum.Services
         /// <summary>
         /// generate category TOC
         /// </summary>
+        /// <param name="userId"></param>
         /// <param name="catId"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        Task<RServiceResult<string>> GenerateTableOfContents(int catId, GanjoorTOC options);
+        Task<RServiceResult<string>> GenerateTableOfContents(Guid userId, int catId, GanjoorTOC options);
 
         /// <summary>
         /// directly insert generated TOC

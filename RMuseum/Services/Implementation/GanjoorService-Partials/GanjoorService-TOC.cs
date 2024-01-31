@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic.ApplicationServices;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
@@ -92,7 +93,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var resGeneration = await _GenerateTableOfContents(context, catId, options);
+                var resGeneration = await _GenerateTableOfContents(context, catId, options, userId);
                 if (!string.IsNullOrEmpty(resGeneration.ExceptionString))
                 {
                     return new RServiceResult<bool>(false, resGeneration.ExceptionString);
@@ -227,7 +228,7 @@ namespace RMuseum.Services.Implementation
                        .Replace("ٔ", "")//ye
                        ;
         }
-        private async Task<RServiceResult<string>> _GenerateTableOfContents(RMuseumDbContext context, int catId, GanjoorTOC options)
+        private async Task<RServiceResult<string>> _GenerateTableOfContents(RMuseumDbContext context, int catId, GanjoorTOC options, Guid userId)
         {
             try
             {
@@ -343,6 +344,46 @@ namespace RMuseum.Services.Implementation
                             html += $"</div>{Environment.NewLine}";
                         }
 
+                        var quotedFromPoetIds =
+                            await context.GanjoorQuotedPoems.AsNoTracking()
+                                .Where(q => q.PoetId == poet.Id && q.IsPriorToRelated == false && q.RelatedPoetId != null)
+                                .GroupBy(q => q.RelatedPoetId)
+                                .Select(q =>  q.Key)
+                                .ToListAsync();
+
+                        foreach (var quotedPoetId in quotedFromPoetIds)
+                        {
+                            if (quotedPoetId == poet.Id) continue;
+                            if(false == await context.GanjoorPages.AsNoTracking()
+                                .AnyAsync(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == poet.Id && p.SecondPoetId == quotedPoetId))
+                            {
+                                var secondPoet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == quotedPoetId).SingleAsync();
+                                var secondPoetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == quotedPoetId && c.ParentId == null).SingleAsync();
+                                var newPageId = 1 + await context.GanjoorPages.MaxAsync(p => p.Id);
+                                while (await context.GanjoorPoems.Where(p => p.Id == newPageId).AnyAsync())
+                                    newPageId++;
+                                GanjoorPage page = new GanjoorPage()
+                                {
+                                    Id = newPageId,
+                                    GanjoorPageType = GanjoorPageType.ProsodySimilars,
+                                    Published = true,
+                                    PageOrder = -1,
+                                    Title = $"استقبالهای {poet.Nickname} از {secondPoet.Nickname}",
+                                    FullTitle = $"{poet.Nickname} » استقبالهای {poet.Nickname} از {secondPoet.Nickname}",
+                                    UrlSlug = secondPoetCat.UrlSlug,
+                                    FullUrl = $"/{cat.UrlSlug}/{secondPoetCat.UrlSlug}",
+                                    HtmlText = "<p>متن در حال آماده‌سازی است.</p>",
+                                    PoetId = poet.Id,
+                                    PostDate = DateTime.Now,
+                                    SecondPoetId = quotedPoetId,
+                                };
+                                context.GanjoorPages.Add(page);
+                                await context.SaveChangesAsync();
+
+                                await _RegenerateRelatedPoemsPageAsync(userId, context, poet.Id, secondPoet.Id);
+                            }
+                        }
+
                         var thisPoetsSimilars = await context.GanjoorPages.AsNoTracking()
                                .Where(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == poet.Id).ToListAsync();
 
@@ -351,6 +392,46 @@ namespace RMuseum.Services.Implementation
                             html += $"<div class=\"part-title-block-alt\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
+                        }
+
+                        var quotedByPoetIds =
+                            await context.GanjoorQuotedPoems.AsNoTracking()
+                                .Where(q => q.IsPriorToRelated == true && q.RelatedPoetId == poet.Id)
+                                .GroupBy(q => q.PoetId)
+                                .Select(q => q.Key)
+                                .ToListAsync();
+
+                        foreach (var quotedPoetId in quotedByPoetIds)
+                        {
+                            if (quotedPoetId == poet.Id) continue;
+                            if (false == await context.GanjoorPages.AsNoTracking()
+                                .AnyAsync(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == quotedPoetId && p.SecondPoetId == poet.Id))
+                            {
+                                var secondPoet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == quotedPoetId).SingleAsync();
+                                var secondPoetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == quotedPoetId && c.ParentId == null).SingleAsync();
+                                var newPageId = 1 + await context.GanjoorPages.MaxAsync(p => p.Id);
+                                while (await context.GanjoorPoems.Where(p => p.Id == newPageId).AnyAsync())
+                                    newPageId++;
+                                GanjoorPage page = new GanjoorPage()
+                                {
+                                    Id = newPageId,
+                                    GanjoorPageType = GanjoorPageType.ProsodySimilars,
+                                    Published = true,
+                                    PageOrder = -1,
+                                    Title = $"استقبالهای {secondPoet.Nickname} از {poet.Nickname}",
+                                    FullTitle = $"{secondPoet.Nickname} » استقبالهای {secondPoet.Nickname} از {poet.Nickname}",
+                                    UrlSlug = poetPage.UrlSlug,
+                                    FullUrl = $"/{secondPoetCat.UrlSlug}/{poetPage.UrlSlug}",
+                                    HtmlText = "<p>متن در حال آماده‌سازی است.</p>",
+                                    PoetId = secondPoet.Id,
+                                    PostDate = DateTime.Now,
+                                    SecondPoetId = poet.Id,
+                                };
+                                context.GanjoorPages.Add(page);
+                                await context.SaveChangesAsync();
+
+                                await _RegenerateRelatedPoemsPageAsync(userId, context, secondPoet.Id, poet.Id);
+                            }
                         }
 
                         var otherPoetsSimilars = await context.GanjoorPages.AsNoTracking()
@@ -574,7 +655,7 @@ namespace RMuseum.Services.Implementation
                            }
                            );
 
-                page.HtmlText = (await _GenerateTableOfContents(context, cat.Id, GanjoorTOC.TitlesAndFirstCouplet)).Result;
+                page.HtmlText = (await _GenerateTableOfContents(context, cat.Id, GanjoorTOC.TitlesAndFirstCouplet, userId)).Result;
                 context.GanjoorPages.Update(page);
                 await context.SaveChangesAsync();
 

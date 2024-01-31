@@ -15410,10 +15410,11 @@
             <param name="rhythm"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GenerateTableOfContents(System.Int32,RMuseum.Models.Ganjoor.GanjoorTOC)">
+        <member name="M:RMuseum.Services.IGanjoorService.GenerateTableOfContents(System.Guid,System.Int32,RMuseum.Models.Ganjoor.GanjoorTOC)">
             <summary>
             generate category TOC
             </summary>
+            <param name="userId"></param>
             <param name="catId"></param>
             <param name="options"></param>
             <returns></returns>
@@ -17637,10 +17638,11 @@
             <param name="options"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GenerateTableOfContents(System.Int32,RMuseum.Models.Ganjoor.GanjoorTOC)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GenerateTableOfContents(System.Guid,System.Int32,RMuseum.Models.Ganjoor.GanjoorTOC)">
             <summary>
             generate category TOC
             </summary>
+            <param name="userId"></param>
             <param name="catId"></param>
             <param name="options"></param>
             <returns></returns>
