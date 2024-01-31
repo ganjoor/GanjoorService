@@ -389,8 +389,19 @@ namespace RMuseum.Services.Implementation
                             }
                         }
 
-                        var thisPoetsSimilars = await context.GanjoorPages.AsNoTracking()
+                        var poets = await context.GanjoorPoets.AsNoTracking().OrderBy(p => p.DeathYearInLHijri).ToListAsync();
+
+                        var thisPoetsSimilarsUnSorted = await context.GanjoorPages.AsNoTracking()
                                .Where(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == poet.Id).ToListAsync();
+
+                        List<GanjoorPage> thisPoetsSimilars = new List<GanjoorPage>();
+                        foreach (var ganjoorPoet in poets)
+                        {
+                            if(thisPoetsSimilarsUnSorted.Any(p => p.SecondPoetId == ganjoorPoet.Id))
+                            {
+                                thisPoetsSimilars.Add(thisPoetsSimilarsUnSorted.Single(p => p.SecondPoetId == ganjoorPoet.Id));
+                            }
+                        }
 
                         foreach (var childPage in thisPoetsSimilars)
                         {
@@ -441,8 +452,18 @@ namespace RMuseum.Services.Implementation
                             }
                         }
 
-                        var otherPoetsSimilars = await context.GanjoorPages.AsNoTracking()
+                        var otherPoetsSimilarsUnSorted = await context.GanjoorPages.AsNoTracking()
                                 .Where(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.SecondPoetId == poet.Id).ToListAsync();
+
+                        List<GanjoorPage> otherPoetsSimilars = new List<GanjoorPage>();
+                        foreach (var ganjoorPoet in poets)
+                        {
+                            if (otherPoetsSimilarsUnSorted.Any(p => p.PoetId == ganjoorPoet.Id))
+                            {
+                                otherPoetsSimilars.Add(thisPoetsSimilarsUnSorted.Single(p => p.PoetId == ganjoorPoet.Id));
+                            }
+                        }
+
                         foreach (var childPage in otherPoetsSimilars)
                         {
                             html += $"<div class=\"part-title-block-alt\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
