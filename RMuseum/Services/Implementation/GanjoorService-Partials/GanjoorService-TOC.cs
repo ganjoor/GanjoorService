@@ -358,7 +358,12 @@ namespace RMuseum.Services.Implementation
                                 .AnyAsync(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == poet.Id && p.SecondPoetId == quotedPoetId))
                             {
                                 var secondPoet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == quotedPoetId).SingleAsync();
+                                if (secondPoet.DeathYearInLHijri > poet.DeathYearInLHijri) continue;
+                                
                                 var secondPoetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == quotedPoetId && c.ParentId == null).SingleAsync();
+
+                                
+                                
                                 var newPageId = 1 + await context.GanjoorPages.MaxAsync(p => p.Id);
                                 while (await context.GanjoorPoems.Where(p => p.Id == newPageId).AnyAsync())
                                     newPageId++;
@@ -368,8 +373,8 @@ namespace RMuseum.Services.Implementation
                                     GanjoorPageType = GanjoorPageType.ProsodySimilars,
                                     Published = true,
                                     PageOrder = -1,
-                                    Title = $"استقبالهای {poet.Nickname} از {secondPoet.Nickname}",
-                                    FullTitle = $"{poet.Nickname} » استقبالهای {poet.Nickname} از {secondPoet.Nickname}",
+                                    Title = $"مشابه‌های {poet.Nickname} و {secondPoet.Nickname}",
+                                    FullTitle = $"{poet.Nickname} » مشابه‌های {poet.Nickname} و {secondPoet.Nickname}",
                                     UrlSlug = secondPoetCat.UrlSlug,
                                     FullUrl = $"/{cat.UrlSlug}/{secondPoetCat.UrlSlug}",
                                     HtmlText = "<p>متن در حال آماده‌سازی است.</p>",
@@ -408,6 +413,8 @@ namespace RMuseum.Services.Implementation
                                 .AnyAsync(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == quotedPoetId && p.SecondPoetId == poet.Id))
                             {
                                 var secondPoet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == quotedPoetId).SingleAsync();
+                                if (secondPoet.DeathYearInLHijri < poet.DeathYearInLHijri) continue;
+
                                 var secondPoetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == quotedPoetId && c.ParentId == null).SingleAsync();
                                 var newPageId = 1 + await context.GanjoorPages.MaxAsync(p => p.Id);
                                 while (await context.GanjoorPoems.Where(p => p.Id == newPageId).AnyAsync())
@@ -418,8 +425,8 @@ namespace RMuseum.Services.Implementation
                                     GanjoorPageType = GanjoorPageType.ProsodySimilars,
                                     Published = true,
                                     PageOrder = -1,
-                                    Title = $"استقبالهای {secondPoet.Nickname} از {poet.Nickname}",
-                                    FullTitle = $"{secondPoet.Nickname} » استقبالهای {secondPoet.Nickname} از {poet.Nickname}",
+                                    Title = $"مشابه‌های {secondPoet.Nickname} و {poet.Nickname}",
+                                    FullTitle = $"{secondPoet.Nickname} » مشابه‌های {secondPoet.Nickname} و {poet.Nickname}",
                                     UrlSlug = poetPage.UrlSlug,
                                     FullUrl = $"/{secondPoetCat.UrlSlug}/{poetPage.UrlSlug}",
                                     HtmlText = "<p>متن در حال آماده‌سازی است.</p>",
