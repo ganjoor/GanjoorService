@@ -1227,6 +1227,15 @@ namespace RMuseum.Services
         RServiceResult<bool> StartRegeneratingRelatedPoemsPages(Guid editingUserId);
 
         /// <summary>
+        /// generate related poems page
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <param name="poetId"></param>
+        /// <param name="relatedPoetId"></param>
+        /// <returns></returns>
+        RServiceResult<bool> StartRegeneratingRelatedPoemsPageAsync(Guid editingUserId, int poetId, int relatedPoetId);
+
+        /// <summary>
         /// discover related poems
         /// </summary>
         /// <param name="poetId"></param>

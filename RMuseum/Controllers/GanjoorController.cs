@@ -3671,6 +3671,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// regenerate two poets similar page
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="relatedPoetId"></param>
+        /// <returns></returns>
+        [HttpPut("quoted/pages/generate/{poetId}/{relatedPoetId}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartRegeneratingRelatedPoemsPageAsync(int poetId, int relatedPoetId)
+        {
+            var loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = _ganjoorService.StartRegeneratingRelatedPoemsPageAsync(loggedOnUserId, poetId, relatedPoetId);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok();
+        }
+
+        /// <summary>
         /// discover related poems
         /// </summary>
         /// <param name="poetId"></param>

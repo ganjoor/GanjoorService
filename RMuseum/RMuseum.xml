@@ -2020,6 +2020,14 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartRegeneratingRelatedPoemsPageAsync(System.Int32,System.Int32)">
+            <summary>
+            regenerate two poets similar page
+            </summary>
+            <param name="poetId"></param>
+            <param name="relatedPoetId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.StartDiscoverRelatedPoems(System.Int32,System.Int32,System.Boolean,System.Int32,System.Boolean)">
             <summary>
             discover related poems
@@ -15880,6 +15888,15 @@
             <param name="editingUserId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartRegeneratingRelatedPoemsPageAsync(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            generate related poems page
+            </summary>
+            <param name="editingUserId"></param>
+            <param name="poetId"></param>
+            <param name="relatedPoetId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.StartDiscoverRelatedPoems(System.Int32,System.Int32,System.Boolean,System.Nullable{System.Int32},System.Boolean)">
             <summary>
             discover related poems
@@ -18022,6 +18039,15 @@
             regenerate related poems pages
             </summary>
             <param name="editingUserId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartRegeneratingRelatedPoemsPageAsync(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            generate related poems page
+            </summary>
+            <param name="editingUserId"></param>
+            <param name="poetId"></param>
+            <param name="relatedPoetId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._RegenerateRelatedPoemsPageAsync(System.Guid,RMuseum.DbContext.RMuseumDbContext,System.Int32,System.Int32)">

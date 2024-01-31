@@ -63,7 +63,7 @@ namespace RMuseum.Services.Implementation
                         var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == dbQuoted.PoetId && p.SecondPoetId == dbQuoted.RelatedPoetId).SingleOrDefaultAsync();
                         if (page != null)
                         {
-                            _StartRegeneratingRelatedPoemsPageAsync(userId, dbQuoted.PoetId, (int)dbQuoted.RelatedPoetId);
+                            StartRegeneratingRelatedPoemsPageAsync(userId, dbQuoted.PoetId, (int)dbQuoted.RelatedPoetId);
                         }
 
 
@@ -603,7 +603,15 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private RServiceResult<bool> _StartRegeneratingRelatedPoemsPageAsync(Guid editingUserId, int poetId, int relatedPoetId)
+
+        /// <summary>
+        /// generate related poems page
+        /// </summary>
+        /// <param name="editingUserId"></param>
+        /// <param name="poetId"></param>
+        /// <param name="relatedPoetId"></param>
+        /// <returns></returns>
+        public RServiceResult<bool> StartRegeneratingRelatedPoemsPageAsync(Guid editingUserId, int poetId, int relatedPoetId)
         {
             try
             {
@@ -1116,7 +1124,7 @@ namespace RMuseum.Services.Implementation
                     var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == dbQuoted.PoetId && p.SecondPoetId == dbQuoted.RelatedPoetId).SingleOrDefaultAsync();
                     if (page != null)
                     {
-                        _StartRegeneratingRelatedPoemsPageAsync(editingUserId, dbQuoted.PoetId, (int)dbQuoted.RelatedPoetId);
+                        StartRegeneratingRelatedPoemsPageAsync(editingUserId, dbQuoted.PoetId, (int)dbQuoted.RelatedPoetId);
                     }
                 }
 
@@ -1198,7 +1206,7 @@ namespace RMuseum.Services.Implementation
                     var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == quoted.PoetId && p.SecondPoetId == quoted.RelatedPoetId).SingleOrDefaultAsync();
                     if (page != null)
                     {
-                        _StartRegeneratingRelatedPoemsPageAsync(editingUserId, quoted.PoetId, (int)quoted.RelatedPoetId);
+                        StartRegeneratingRelatedPoemsPageAsync(editingUserId, quoted.PoetId, (int)quoted.RelatedPoetId);
                     }
                 }
 
@@ -1252,7 +1260,7 @@ namespace RMuseum.Services.Implementation
                     var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.PoetId == poetId && p.SecondPoetId == relatedPoetId).SingleOrDefaultAsync();
                     if (page != null)
                     {
-                        _StartRegeneratingRelatedPoemsPageAsync(editingUserId, poetId, (int)relatedPoetId);
+                        StartRegeneratingRelatedPoemsPageAsync(editingUserId, poetId, (int)relatedPoetId);
                     }
                 }
 
