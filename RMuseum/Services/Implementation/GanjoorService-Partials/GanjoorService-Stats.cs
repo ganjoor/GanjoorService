@@ -618,7 +618,7 @@ namespace RMuseum.Services.Implementation
                                     try
                                     {
                                         //fix for QuotedPoems here:
-                                        var quotedPoems = await context.GanjoorQuotedPoems.Where(q => q.RelatedPoetId != null).ToListAsync();
+                                        var quotedPoems = await context.GanjoorQuotedPoems.Where(q => q.RelatedPoetId != null && q.Published == true).ToListAsync();
                                         foreach (var quotedPoem in quotedPoems)
                                         {
                                             var qPoet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == quotedPoem.PoetId).SingleAsync();

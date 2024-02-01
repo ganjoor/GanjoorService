@@ -337,7 +337,7 @@ namespace RMuseum.Services.Implementation
                         }
                         */
 
-                        if(true == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poet.Id).AnyAsync())
+                        if(true == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poet.Id && p.Published == true).AnyAsync())
                         {
                             html += $"<div class=\"part-title-block-alt\" id=\"quotes-{poet.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"/quotes?p={cat.UrlSlug}\">نقل قول‌ها و شعرهای مرتبط {poet.Nickname}</a>{Environment.NewLine}";
@@ -346,7 +346,7 @@ namespace RMuseum.Services.Implementation
 
                         var quotedFromPoetIds =
                             await context.GanjoorQuotedPoems.AsNoTracking()
-                                .Where(q => q.PoetId == poet.Id && q.IsPriorToRelated == false && q.RelatedPoetId != null)
+                                .Where(q => q.PoetId == poet.Id && q.IsPriorToRelated == false && q.RelatedPoetId != null && q.Published == true)
                                 .GroupBy(q => q.RelatedPoetId)
                                 .Select(q =>  q.Key)
                                 .ToListAsync();
@@ -412,7 +412,7 @@ namespace RMuseum.Services.Implementation
 
                         var quotedByPoetIds =
                             await context.GanjoorQuotedPoems.AsNoTracking()
-                                .Where(q => q.IsPriorToRelated == true && q.RelatedPoetId == poet.Id)
+                                .Where(q => q.IsPriorToRelated == true && q.RelatedPoetId == poet.Id && q.Published == true)
                                 .GroupBy(q => q.PoetId)
                                 .Select(q => q.Key)
                                 .ToListAsync();
