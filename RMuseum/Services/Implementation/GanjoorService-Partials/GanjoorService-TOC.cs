@@ -460,7 +460,7 @@ namespace RMuseum.Services.Implementation
                         {
                             if (otherPoetsSimilarsUnSorted.Any(p => p.PoetId == ganjoorPoet.Id))
                             {
-                                otherPoetsSimilars.Add(thisPoetsSimilarsUnSorted.Single(p => p.PoetId == ganjoorPoet.Id));
+                                otherPoetsSimilars.Add(otherPoetsSimilarsUnSorted.Single(p => p.PoetId == ganjoorPoet.Id));
                             }
                         }
 
