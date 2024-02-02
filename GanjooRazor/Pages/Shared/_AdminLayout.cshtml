@@ -161,6 +161,25 @@
             });
         }
 
+        function rebuildRelatedPages() {
+            if (!confirm('آیا از بازسازی محتوای صفحات استقبال‌ها اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=RebuildRelatedPages';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('فرایند بازسازی صفحات آمار شروع شد.')
+                },
+
+            });
+        }
+
 
 
 
