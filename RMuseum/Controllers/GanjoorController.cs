@@ -1849,7 +1849,7 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// get a single comment information (replies are not included)
+        /// get a single comment information (only published comments, replies are not included)
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
