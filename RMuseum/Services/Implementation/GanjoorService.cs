@@ -854,8 +854,6 @@ namespace RMuseum.Services.Implementation
         }
 
 
-
-
         /// <summary>
         /// get poem comments
         /// </summary>
@@ -917,6 +915,53 @@ namespace RMuseum.Services.Implementation
             {
                 _FindReplies(reply, allComments);
             }
+        }
+
+        /// <summary>
+        /// get a single comment information (replies are not included)
+        /// </summary>
+        /// <param name="commentId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorCommentSummaryViewModel>> GetCommentByIdAsync(int commentId)
+        {
+            var source =
+                  from c in _context.GanjoorComments.Include(c => c.User)
+                  where
+                  c.Status == PublishStatus.Published
+                  &&
+                  c.Id == commentId
+                  select new GanjoorCommentSummaryViewModel()
+                  {
+                      Id = c.Id,
+                      AuthorName = c.User == null ? c.AuthorName : $"{c.User.NickName}",
+                      AuthorUrl = c.AuthorUrl,
+                      CommentDate = c.CommentDate,
+                      HtmlComment = c.HtmlComment,
+                      PublishStatus = c.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
+                      InReplyToId = c.InReplyToId,
+                      UserId = c.UserId,
+                      CoupletIndex = c.CoupletIndex == null ? -1 : (int)c.CoupletIndex,
+                  };
+
+            GanjoorCommentSummaryViewModel comment = await source.AsNoTracking().SingleOrDefaultAsync();
+            if (comment == null)
+            {
+                return new RServiceResult<GanjoorCommentSummaryViewModel>(null);
+            }
+
+            comment.AuthorName = comment.AuthorName.ToPersianNumbers().ApplyCorrectYeKe();
+
+            var dbComment = await _context.GanjoorComments.AsNoTracking().Where(c => c.Id == commentId).SingleAsync();
+
+            var relatedVerses = comment.CoupletIndex == -1 ? new List<GanjoorVerse>() : await _context.GanjoorVerses.Where(v => v.PoemId == dbComment.PoemId && v.CoupletIndex == comment.CoupletIndex).OrderBy(v => v.VOrder).ToListAsync();
+            string coupleText = relatedVerses.Count == 0 ? "" : relatedVerses[0].Text;
+            for (int nVerseIndex = 1; nVerseIndex < relatedVerses.Count; nVerseIndex++)
+            {
+                coupleText += $" {relatedVerses[nVerseIndex].Text}";
+            }
+            comment.CoupletSummary = _CutSummary(coupleText);
+
+            return new RServiceResult<GanjoorCommentSummaryViewModel>(comment);
         }
 
         /// <summary>

@@ -1849,6 +1849,31 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get a single comment information (replies are not included)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("comments/{id}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCommentFullViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetCommentByIdAsync(int id)
+        {
+            var res = await _ganjoorService.GetCommentByIdAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            if(res.Result == null)
+            {
+                return NotFound();
+            }
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// get recent comments
         /// </summary>
         /// <param name="paging"></param>

@@ -1458,6 +1458,13 @@
             <param name="poetId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCommentByIdAsync(System.Int32)">
+            <summary>
+            get a single comment information (replies are not included)
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetRecentComments(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid},System.String)">
             <summary>
             get recent comments
@@ -14888,6 +14895,13 @@
             <param name="coupletIndex"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetCommentByIdAsync(System.Int32)">
+            <summary>
+            get a single comment information (replies are not included)
+            </summary>
+            <param name="commentId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetRelatedSections(System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
             get a section related sections
@@ -18460,6 +18474,13 @@
             <param name="poemId"></param>
             <param name="userId"></param>
             <param name="coupletIndex"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCommentByIdAsync(System.Int32)">
+            <summary>
+            get a single comment information (replies are not included)
+            </summary>
+            <param name="commentId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.NewComment(System.Guid,System.String,System.Int32,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">

@@ -212,6 +212,13 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId, int? coupletIndex);
 
         /// <summary>
+        /// get a single comment information (replies are not included)
+        /// </summary>
+        /// <param name="commentId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorCommentSummaryViewModel>> GetCommentByIdAsync(int commentId);
+
+        /// <summary>
         /// get a section related sections
         /// </summary>
         /// <param name="poemId">poem id</param>
