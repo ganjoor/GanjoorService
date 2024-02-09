@@ -201,7 +201,28 @@ else
                 </form>
             </td>
         </tr>
-
+        <tr>
+            <td>
+                @if (Model.Correction.VerseOrderText.Any(v => v.MarkForDelete))
+                {
+                    <span class="red-color">حذف دارد</span>
+                }
+                else
+                {
+                    <text>حذف ندارد</text>
+                }
+            </td>
+            <td>
+                @if (Model.Correction.VerseOrderText.Any(v => v.NewVerse))
+                {
+                    <span class="red-color">اضافه دارد</span>
+                }
+                else
+                {
+                    <text>اضافه ندارد</text>
+                }
+            </td>
+        </tr>
         <tr>
             <td>
                 زمان:
@@ -210,7 +231,6 @@ else
                 @Model.Correction.Date.ToFriendlyPersianDateTextify()
             </td>
         </tr>
-
         <tr>
             <td>
                 تعداد کل:
