@@ -298,6 +298,21 @@ else
                 @Model.TotalCount
             </td>
         </tr>
+        <tr>
+            <td>
+                شکستن
+            </td>
+            <td>
+                @if(Model.Correction.BreakFromVerse1VOrder != null)
+                {
+                    <span class="red-color">دارد</span>
+                }
+                else
+                {
+                    <text>ندارد</text>
+                }
+            </td>
+        </tr>
 
         <tr>
             <td colspan=2>
@@ -543,12 +558,6 @@ else
                 </td>
             </tr>
         }
-
-        <tr>
-            <td colspan="2">
-                <span class="red-color">شکستن</span>
-            </td>
-        </tr>
 
         @for (int v = 0; v < Model.Verses.Count; v++)
         {
