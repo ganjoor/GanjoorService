@@ -66,6 +66,7 @@ namespace RMuseum.Services.Implementation
             try
             {
                 var poemList = await _context.GanjoorPoems.Where(p => p.CatId == catId).ToListAsync();
+                var lan = await _context.GanjoorLanguages.AsNoTracking().Where(l => l.Code == language).SingleAsync();
                 foreach (var poem in poemList)
                 {
                     poem.Language = language;
@@ -74,6 +75,12 @@ namespace RMuseum.Services.Implementation
                     {
                         section.Language = language;
                     }
+                    var verses = await _context.GanjoorVerses.Where(v => v.PoemId == poem.Id && v.VersePosition != VersePosition.Comment).ToListAsync();
+                    foreach (var verse in verses)
+                    {
+                        verse.LanguageId = lan.Id;
+                    }
+                    _context.UpdateRange(verses);
                     _context.UpdateRange(poemSections);
                 }
                 _context.UpdateRange(poemList);
