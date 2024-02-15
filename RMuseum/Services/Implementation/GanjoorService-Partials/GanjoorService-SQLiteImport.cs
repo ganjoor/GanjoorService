@@ -402,7 +402,7 @@ namespace RMuseum.Services.Implementation
                             $"SELECT * FROM verse WHERE poem_id = {poem.id} AND position <> {(int)VersePosition.Comment} ORDER BY vorder" :
                             $"SELECT * FROM verse WHERE poem_id = {poem.id} ORDER BY vorder";
 
-                    foreach (var verse in await sqlite.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poem.id} ORDER BY vorder"))
+                    foreach (var verse in await sqlite.QueryAsync(sql))
                     {
                         int vOrder = int.Parse(verse.vorder.ToString());
                         int position = int.Parse(verse.position.ToString());
