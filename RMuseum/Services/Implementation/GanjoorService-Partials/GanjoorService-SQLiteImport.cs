@@ -399,7 +399,7 @@ namespace RMuseum.Services.Implementation
                     bool bImportCommentsAsPoemSummary = bool.Parse(Configuration.GetSection("Ganjoor")["ImportCommentsAsPoemSummary"]);
 
                     string sql = bImportCommentsAsPoemSummary ?
-                            $"SELECT * FROM verse WHERE poem_id = {poem.id} AND vorder <> {(int)VersePosition.Comment} ORDER BY vorder" :
+                            $"SELECT * FROM verse WHERE poem_id = {poem.id} AND position <> {(int)VersePosition.Comment} ORDER BY vorder" :
                             $"SELECT * FROM verse WHERE poem_id = {poem.id} ORDER BY vorder";
 
                     foreach (var verse in await sqlite.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poem.id} ORDER BY vorder"))
@@ -420,7 +420,7 @@ namespace RMuseum.Services.Implementation
                     if(bImportCommentsAsPoemSummary)
                     {
                         string summary = "";
-                        foreach (var verse in await sqlite.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poem.id} AND vorder = {(int)VersePosition.Comment} ORDER BY vorder"))
+                        foreach (var verse in await sqlite.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poem.id} AND position = {(int)VersePosition.Comment} ORDER BY vorder"))
                         {
                             string text = verse.text;
                             if(summary.Length > 0)
