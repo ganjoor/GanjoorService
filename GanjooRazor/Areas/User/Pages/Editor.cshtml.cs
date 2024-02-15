@@ -396,7 +396,7 @@ namespace GanjooRazor.Areas.User.Pages
                         int vOrder = int.Parse(vParts[0]);
                         if (vOrder == 0)
                         {
-                            poemSummary = vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک");
+                            poemSummary = vParts.Length > 1 ? vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک") : "";
                         }
                         else
                         {
