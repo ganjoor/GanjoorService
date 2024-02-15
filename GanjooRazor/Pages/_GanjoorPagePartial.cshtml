@@ -521,7 +521,7 @@
                                             <div class="notice" id="summary">
                                                 <div class="century">خلاصه</div>
                                                 <p>
-                                                    @Model.GanjoorPage.Poem.PoemSummary
+                                                    @Html.Raw(Model.GanjoorPage.Poem.PoemSummary.Replace("\n", "<br />"))
                                                 </p>
                                                 @if (Model.LoggedIn)
                                                 {
