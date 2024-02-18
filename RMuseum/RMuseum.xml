@@ -2742,6 +2742,13 @@
             <param name="report"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.EditApprovedMistakeAsync(RMuseum.Models.GanjoorAudio.ViewModels.RecitationErrorReportViewModel)">
+            <summary>
+            edit approved mistake of a recitation text
+            </summary>
+            <param name="report"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.RemoveApprovedMistakeAsync(System.Int32)">
             <summary>
             remove approved mistake
@@ -19926,6 +19933,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.EditApprovedMistakeAsync(System.Int32,System.String)">
+            <summary>
+            edit approved mistake text
+            </summary>
+            <param name="id"></param>
+            <param name="reason"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.ComputePoemRecitationsOrdersAsync(System.Int32,System.Boolean)">
             <summary>
             compute poem recitations order
@@ -20472,6 +20487,14 @@
             remove approved mistake
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.EditApprovedMistakeAsync(System.Int32,System.String)">
+            <summary>
+            edit approved mistake text
+            </summary>
+            <param name="id"></param>
+            <param name="reason"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.ComputePoemRecitationsOrdersAsync(System.Int32,System.Boolean)">

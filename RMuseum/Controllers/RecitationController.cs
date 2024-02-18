@@ -937,6 +937,33 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// edit approved mistake of a recitation text
+        /// </summary>
+        /// <param name="report"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("errors/report/edit")]
+        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> EditApprovedMistakeAsync([FromBody] RecitationErrorReportViewModel report)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+            RServiceResult<bool> res = await _audioService.EditApprovedMistakeAsync(report.Id, report.ReasonText);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            if (!res.Result)
+            {
+                return NotFound();
+            }
+            return Ok();
+        }
+
+        /// <summary>
         /// remove approved mistake
         /// </summary>
         /// <param name="id"></param>

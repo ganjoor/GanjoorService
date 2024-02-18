@@ -2459,6 +2459,30 @@ namespace RMuseum.Services.Implementationa
         }
 
         /// <summary>
+        /// edit approved mistake text
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> EditApprovedMistakeAsync(int id, string reason)
+        {
+            try
+            {
+                var mistake = await _context.RecitationApprovedMistakes.Where(m => m.Id == id).SingleAsync();
+                mistake.Mistake = reason;
+                _context.Update(mistake);
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// compute poem recitations order
         /// </summary>
         /// <param name="poemId"></param>

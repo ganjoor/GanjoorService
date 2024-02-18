@@ -257,6 +257,14 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> RemoveApprovedMistakeAsync(int id);
 
         /// <summary>
+        /// edit approved mistake text
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> EditApprovedMistakeAsync(int id, string reason);
+
+        /// <summary>
         /// compute poem recitations order
         /// </summary>
         /// <param name="poemId"></param>
