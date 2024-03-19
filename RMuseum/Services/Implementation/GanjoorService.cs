@@ -730,6 +730,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<PublicRecitationViewModel[]>> GetPoemRecitations(int id)
         {
+            bool loadFromExternalServer =  bool.Parse(Configuration.GetSection("ExternalFTPServer")["LoadFromExternalServer"]);
             var source =
                  from audio in _context.Recitations
                  join poem in _context.GanjoorPoems
@@ -738,6 +739,8 @@ namespace RMuseum.Services.Implementation
                  audio.ReviewStatus == AudioReviewStatus.Approved
                  &&
                  poem.Id == id
+                 &&
+                 audio.AudioSyncStatus == AudioSyncStatus.SynchronizedOrRejected
                  orderby audio.RecitationType, audio.AudioOrder
                  select new PublicRecitationViewModel()
                  {
@@ -755,7 +758,7 @@ namespace RMuseum.Services.Implementation
                      Mp3SizeInBytes = audio.Mp3SizeInBytes,
                      PublishDate = audio.ReviewDate,
                      FileLastUpdated = audio.FileLastUpdated,
-                     Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                     Mp3Url = loadFromExternalServer ? audio.Mp3Url :  $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                      PlainText = "", //poem.PlainText 
                      HtmlText = "",//poem.HtmlText

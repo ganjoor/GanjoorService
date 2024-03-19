@@ -110,6 +110,7 @@ namespace RMuseum.Services.Implementationa
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>> GetPublishedRecitations(PagingParameterModel paging, string searchTerm, int poetId, int catId)
         {
+            bool loadFromExternalServer = bool.Parse(Configuration.GetSection("ExternalFTPServer")["LoadFromExternalServer"]);
             if (poetId == 0 && catId == 0)
             {
                 var source =
@@ -118,6 +119,8 @@ namespace RMuseum.Services.Implementationa
                                  on audio.GanjoorPostId equals poem.Id
                                  where
                                  audio.ReviewStatus == AudioReviewStatus.Approved
+                                 &&
+                                 audio.AudioSyncStatus == AudioSyncStatus.SynchronizedOrRejected
                                  &&
                                  (
                                  string.IsNullOrEmpty(searchTerm) ||
@@ -151,7 +154,7 @@ namespace RMuseum.Services.Implementationa
                                      Mp3SizeInBytes = audio.Mp3SizeInBytes,
                                      PublishDate = audio.ReviewDate,
                                      FileLastUpdated = audio.FileLastUpdated,
-                                     Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                                     Mp3Url = loadFromExternalServer ? audio.Mp3Url : $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
                                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                                      PlainText = poem.PlainText,
                                      HtmlText = poem.HtmlText,
@@ -178,6 +181,8 @@ namespace RMuseum.Services.Implementationa
                                  &&
                                  audio.ReviewStatus == AudioReviewStatus.Approved
                                  &&
+                                 audio.AudioSyncStatus == AudioSyncStatus.SynchronizedOrRejected
+                                 &&
                                  (
                                  string.IsNullOrEmpty(searchTerm) ||
                                  (
@@ -210,7 +215,7 @@ namespace RMuseum.Services.Implementationa
                                      Mp3SizeInBytes = audio.Mp3SizeInBytes,
                                      PublishDate = audio.ReviewDate,
                                      FileLastUpdated = audio.FileLastUpdated,
-                                     Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                                     Mp3Url = loadFromExternalServer ? audio.Mp3Url : $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
                                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                                      PlainText = poem.PlainText,
                                      HtmlText = poem.HtmlText,
@@ -236,6 +241,8 @@ namespace RMuseum.Services.Implementationa
                                  &&
                                  audio.ReviewStatus == AudioReviewStatus.Approved
                                  &&
+                                 audio.AudioSyncStatus == AudioSyncStatus.SynchronizedOrRejected
+                                 &&
                                  (
                                  string.IsNullOrEmpty(searchTerm) ||
                                  (
@@ -268,7 +275,7 @@ namespace RMuseum.Services.Implementationa
                                      Mp3SizeInBytes = audio.Mp3SizeInBytes,
                                      PublishDate = audio.ReviewDate,
                                      FileLastUpdated = audio.FileLastUpdated,
-                                     Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                                     Mp3Url = loadFromExternalServer ? audio.Mp3Url : $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
                                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                                      PlainText = poem.PlainText,
                                      HtmlText = poem.HtmlText,
@@ -295,9 +302,10 @@ namespace RMuseum.Services.Implementationa
         {
             try
             {
+                bool loadFromExternalServer = bool.Parse(Configuration.GetSection("ExternalFTPServer")["LoadFromExternalServer"]);
                 var source = from poem in _context.GanjoorPoems.AsNoTracking()
                              from audio in _context.Recitations
-                                               .Where(a => a.GanjoorPostId == poem.Id && a.ReviewStatus == AudioReviewStatus.Approved && a.RecitationType == RecitationType.Normal)
+                                               .Where(a => a.GanjoorPostId == poem.Id && a.ReviewStatus == AudioReviewStatus.Approved && a.AudioSyncStatus == AudioSyncStatus.SynchronizedOrRejected && a.RecitationType == RecitationType.Normal)
                                                .OrderBy(a => a.AudioOrder)
                                                .Take(1)
                                                .DefaultIfEmpty()
@@ -320,7 +328,7 @@ namespace RMuseum.Services.Implementationa
                                  Mp3SizeInBytes = audio.Mp3SizeInBytes,
                                  PublishDate = audio.ReviewDate,
                                  FileLastUpdated = audio.FileLastUpdated,
-                                 Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                                 Mp3Url = loadFromExternalServer ? audio.Mp3Url : $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
                                  XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                                  PlainText = includePoemText ? poem.PlainText : "",
                                  HtmlText = includePoemText ? poem.HtmlText : "",
@@ -370,12 +378,13 @@ namespace RMuseum.Services.Implementationa
         /// <returns></returns>
         public async Task<RServiceResult<PublicRecitationViewModel>> GetPublishedRecitationById(int id)
         {
+            bool loadFromExternalServer = bool.Parse(Configuration.GetSection("ExternalFTPServer")["LoadFromExternalServer"]);
             var source =
                  from audio in _context.Recitations.AsNoTracking()
                  join poem in _context.GanjoorPoems
                  on audio.GanjoorPostId equals poem.Id
                  where
-                 audio.ReviewStatus == AudioReviewStatus.Approved && audio.Id == id
+                 audio.ReviewStatus == AudioReviewStatus.Approved && audio.AudioSyncStatus == AudioSyncStatus.SynchronizedOrRejected && audio.Id == id
                  select new PublicRecitationViewModel()
                  {
                      Id = audio.Id,
@@ -392,7 +401,7 @@ namespace RMuseum.Services.Implementationa
                      Mp3SizeInBytes = audio.Mp3SizeInBytes,
                      PublishDate = audio.ReviewDate,
                      FileLastUpdated = audio.FileLastUpdated,
-                     Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                     Mp3Url = loadFromExternalServer ? audio.Mp3Url : $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                      PlainText = poem.PlainText,
                      HtmlText = poem.HtmlText,
@@ -2675,6 +2684,7 @@ namespace RMuseum.Services.Implementationa
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, PublicRecitationViewModel[] Items)>> GetUserUpvotedRecitationsAsync(PagingParameterModel paging, Guid userId)
         {
+            bool loadFromExternalServer = bool.Parse(Configuration.GetSection("ExternalFTPServer")["LoadFromExternalServer"]);
             var source =
                  from upvote in _context.RecitationUserUpVotes.AsNoTracking().Include(u => u.Recitation)
                  join poem in _context.GanjoorPoems
@@ -2698,7 +2708,7 @@ namespace RMuseum.Services.Implementationa
                      Mp3SizeInBytes = upvote.Recitation.Mp3SizeInBytes,
                      PublishDate = upvote.Recitation.ReviewDate,
                      FileLastUpdated = upvote.Recitation.FileLastUpdated,
-                     Mp3Url = $"{WebServiceUrl.Url}/api/audio/file/{upvote.Recitation.Id}.mp3",
+                     Mp3Url = loadFromExternalServer ? upvote.Recitation.Mp3Url : $"{WebServiceUrl.Url}/api/audio/file/{upvote.Recitation.Id}.mp3",
                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{upvote.Recitation.Id}",
                      PlainText = poem.PlainText,
                      HtmlText = poem.HtmlText,
