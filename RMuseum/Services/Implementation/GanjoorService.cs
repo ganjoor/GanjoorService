@@ -3773,7 +3773,14 @@ namespace RMuseum.Services.Implementation
                     var unsynchronizeds = JsonConvert.DeserializeObject<PDFGanjoorLink[]>(await unsyncedResponse.Content.ReadAsStringAsync());
                     foreach (var unsynchronized in unsynchronizeds)
                     {
-                        if(false == await _context.PinterestLinks.Where(p => p.NaskbanLinkId == unsynchronized.Id).AnyAsync() )
+                        bool isTextOriginalSource =
+                            unsynchronized.IsTextOriginalSource
+                            &&
+                            await _context.GanjoorLinks.Where(l => l.GanjoorPostId == unsynchronized.GanjoorPostId && l.IsTextOriginalSource).AnyAsync() == false
+                            &&
+                            await _context.PinterestLinks.Where(l => l.GanjoorPostId == unsynchronized.GanjoorPostId && l.IsTextOriginalSource).AnyAsync() == false
+                            ;
+                        if (false == await _context.PinterestLinks.Where(p => p.NaskbanLinkId == unsynchronized.Id).AnyAsync() )
                         {
                             PinterestLink link = new PinterestLink()
                             {
@@ -3789,7 +3796,7 @@ namespace RMuseum.Services.Implementation
                                 SuggestedById = ganjoorUserId,
                                 Synchronized = true,
                                 ReviewerId = ganjoorUserId,
-                                IsTextOriginalSource = unsynchronized.IsTextOriginalSource,
+                                IsTextOriginalSource = isTextOriginalSource,
                                 PDFBookId = unsynchronized.PDFBookId,
                                 PageNumber = unsynchronized.PageNumber,
                                 NaskbanLinkId = unsynchronized.Id
