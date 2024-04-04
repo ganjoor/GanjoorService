@@ -339,11 +339,11 @@
                 </td>
             </tr>
 
-            @if(Model.PoemRelatedImages.Any(r => r.PoemId == poem.Id))
+            @if(Model.PoemRelatedImages.Any(r => r.PoemId == poem.Id && r.TargetPageUrl.Contains("https://naskban.ir")))
             {
                 <tr>
                     <td colspan="5">
-                        <img src="@Model.PoemRelatedImages.Where(r => r.PoemId == poem.Id).First().ThumbnailImageUrl" />
+                        <img src="@Model.PoemRelatedImages.Where(r => r.PoemId == poem.Id && r.TargetPageUrl.Contains("https://naskban.ir")).First().ThumbnailImageUrl" />
                     </td>
                 </tr>
             }
