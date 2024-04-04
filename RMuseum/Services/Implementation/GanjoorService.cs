@@ -180,8 +180,8 @@ namespace RMuseum.Services.Implementation
             return await GetCatById(cat.Id, poems, mainSections);
         }
 
-        
-        
+
+
         /// <summary>
         /// get list of books
         /// </summary>
@@ -226,19 +226,19 @@ namespace RMuseum.Services.Implementation
                         {
                             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
                             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-                            using(Font font = new Font(Configuration.GetSection("Ganjoor")["BooksCoverTitleFontName"], float.Parse(Configuration.GetSection("Ganjoor")["BooksCoverTitleFontSize"])))
+                            using (Font font = new Font(Configuration.GetSection("Ganjoor")["BooksCoverTitleFontName"], float.Parse(Configuration.GetSection("Ganjoor")["BooksCoverTitleFontSize"])))
                             {
                                 SizeF sz = g.MeasureString(book.BookName, font);
                                 using (SolidBrush brsh = new SolidBrush(Color.FromArgb(51, 0, 0)))
                                     g.DrawString(book.BookName, font, brsh, new PointF(200.0f - sz.Width / 2, 230.0f - sz.Height / 2));
                             }
-                            
+
                         }
                         MemoryStream coverData = new MemoryStream();
                         coverImg.Save(coverData, System.Drawing.Imaging.ImageFormat.Jpeg);
                         coverData.Seek(0, SeekOrigin.Begin);
                         RServiceResult<RImage> imageRes = await _imageFileService.Add(null, coverData, $"Book-{book.Id}", "CategoryImages");
-                        if(!string.IsNullOrEmpty(imageRes.ExceptionString))
+                        if (!string.IsNullOrEmpty(imageRes.ExceptionString))
                         {
                             return new RServiceResult<bool>(false, imageRes.ExceptionString);
                         }
@@ -248,10 +248,10 @@ namespace RMuseum.Services.Implementation
                             return new RServiceResult<bool>(false, imageRes.ExceptionString);
                         }
                         var finalRes = await SetCategoryExtraInfo(book.Id, book.BookName, imageRes.Result.Id, book.SumUpSubsGeoLocations, book.MapName);
-                        if(!string.IsNullOrEmpty(finalRes.ExceptionString))
+                        if (!string.IsNullOrEmpty(finalRes.ExceptionString))
                         {
                             return new RServiceResult<bool>(false, finalRes.ExceptionString);
-                        }    
+                        }
                     }
                 }
                 return new RServiceResult<bool>(true);
@@ -728,7 +728,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<PublicRecitationViewModel[]>> GetPoemRecitations(int id)
         {
-            bool loadFromExternalServer =  bool.Parse(Configuration.GetSection("ExternalFTPServer")["LoadFromExternalServer"]);
+            bool loadFromExternalServer = bool.Parse(Configuration.GetSection("ExternalFTPServer")["LoadFromExternalServer"]);
             var source =
                  from audio in _context.Recitations
                  join poem in _context.GanjoorPoems
@@ -756,7 +756,7 @@ namespace RMuseum.Services.Implementation
                      Mp3SizeInBytes = audio.Mp3SizeInBytes,
                      PublishDate = audio.ReviewDate,
                      FileLastUpdated = audio.FileLastUpdated,
-                     Mp3Url = loadFromExternalServer ? audio.Mp3Url :  $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                     Mp3Url = loadFromExternalServer ? audio.Mp3Url : $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                      PlainText = "", //poem.PlainText 
                      HtmlText = "",//poem.HtmlText
@@ -2210,7 +2210,7 @@ namespace RMuseum.Services.Implementation
                          dbCorrection.Reviewed == true
                          &&
                          (
-                         dbCorrection.Result == CorrectionReviewResult.Approved || dbCorrection.RhythmResult == CorrectionReviewResult.Approved 
+                         dbCorrection.Result == CorrectionReviewResult.Approved || dbCorrection.RhythmResult == CorrectionReviewResult.Approved
                          || dbCorrection.Rhythm2Result == CorrectionReviewResult.Approved || dbCorrection.RhymeLettersReviewResult == CorrectionReviewResult.Approved
                          || dbCorrection.PoemFormatReviewResult == CorrectionReviewResult.Approved
                          ||
@@ -3484,9 +3484,9 @@ namespace RMuseum.Services.Implementation
             e.Accept = true;
         }
 
-        
 
-       
+
+
 
 
         /// <summary>
@@ -3679,7 +3679,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        
+
 
         /// <summary>
         /// manually add a duplicate for a poems
@@ -3778,7 +3778,7 @@ namespace RMuseum.Services.Implementation
                             &&
                             await _context.PinterestLinks.Where(l => l.GanjoorPostId == unsynchronized.GanjoorPostId && l.IsTextOriginalSource).AnyAsync() == false
                             ;
-                        if (false == await _context.PinterestLinks.Where(p => p.NaskbanLinkId == unsynchronized.Id).AnyAsync() )
+                        if (false == await _context.PinterestLinks.Where(p => p.NaskbanLinkId == unsynchronized.Id).AnyAsync())
                         {
                             PinterestLink link = new PinterestLink()
                             {
@@ -3837,6 +3837,71 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
+        }
+
+        /// <summary>
+        /// get category poem related images
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<PoemRelatedImageEx[]>> GetCatPoemImagesAsync(int catId)
+        {
+            try
+            {
+                var museumSrc =
+                 from link in _context.GanjoorLinks.Include(l => l.Artifact).Include(l => l.Item).ThenInclude(i => i.Images)
+                 join poem in _context.GanjoorPoems
+                 on link.GanjoorPostId equals poem.Id
+                 where
+                 link.DisplayOnPage == true
+                 &&
+                 link.ReviewResult == ReviewResult.Approved
+                 &&
+                 poem.CatId == catId
+                 orderby poem.Id
+                 select new PoemRelatedImageEx()
+                 {
+                     PoemRelatedImageType = PoemRelatedImageType.MuseumLink,
+                     ThumbnailImageUrl = link.Item.Images.First().ExternalNormalSizeImageUrl.Replace("/norm/", "/thumb/").Replace("/orig/", "/thumb/"),
+                     TargetPageUrl = link.LinkToOriginalSource ? link.OriginalSourceUrl : $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
+                     AltText = $"{link.Artifact.Name} » {link.Item.Name}",
+                     IsTextOriginalSource = link.IsTextOriginalSource,
+                     PoemId = poem.Id,
+                     PoemFullUrl = poem.FullUrl,
+                     PoemFullTitle = poem.FullTitle,
+                 };
+                List<PoemRelatedImageEx> museumImages = await museumSrc.ToListAsync();
+
+                var externalSrc =
+                     from link in _context.PinterestLinks
+                     join poem in _context.GanjoorPoems
+                     on link.GanjoorPostId equals poem.Id
+                     where
+                     link.ReviewResult == ReviewResult.Approved
+                     &&
+                     poem.Id == catId
+                     orderby poem.Id
+                     select new PoemRelatedImageEx()
+                     {
+                         PoemRelatedImageType = PoemRelatedImageType.ExternalLink,
+                         ThumbnailImageUrl = link.LinkType == LinkType.Naskban ? link.PinterestImageUrl : link.Item.Images.First().ExternalNormalSizeImageUrl.Replace("/norm/", "/thumb/").Replace("/orig/", "/thumb/"),
+                         TargetPageUrl = link.PinterestUrl,
+                         AltText = link.AltText,
+                         IsTextOriginalSource = link.IsTextOriginalSource,
+                         PoemId = poem.Id,
+                         PoemFullUrl = poem.FullUrl,
+                         PoemFullTitle = poem.FullTitle,
+                     };
+
+                museumImages.AddRange(await externalSrc.AsNoTracking().ToListAsync());
+
+                return new RServiceResult<PoemRelatedImageEx[]>(museumImages.ToArray());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<PoemRelatedImageEx[]>(null, exp.ToString());
+            }
+
         }
 
         /// <summary>

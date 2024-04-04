@@ -1221,6 +1221,13 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(string naskbanUrl);
 
         /// <summary>
+        /// get category poem related images
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PoemRelatedImageEx[]>> GetCatPoemImagesAsync(int catId);
+
+        /// <summary>
         /// filling poem formats
         /// </summary>
         /// <returns></returns>

@@ -49,4 +49,22 @@
         /// </summary>
         public bool IsTextOriginalSource { get; set; }
     }
+
+    public class PoemRelatedImageEx : PoemRelatedImage
+    {
+        /// <summary>
+        /// poem id
+        /// </summary>
+        public int PoemId { get; set; }
+
+        /// <summary>
+        /// poem url
+        /// </summary>
+        public string PoemFullUrl { get; set; }
+
+        /// <summary>
+        /// poem full title
+        /// </summary>
+        public string PoemFullTitle { get; set; }
+    }
 }

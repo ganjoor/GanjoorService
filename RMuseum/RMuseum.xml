@@ -2022,6 +2022,13 @@
             <param name="naskbanUrl"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCatPoemImagesAsync(System.Int32)">
+            <summary>
+            get category poem related images
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.StartExtractingQuotedPoems">
             <summary>
             extracting quoted poems
@@ -12154,6 +12161,21 @@
             is text original source
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImageEx.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImageEx.PoemFullUrl">
+            <summary>
+            poem url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PoemRelatedImageEx.PoemFullTitle">
+            <summary>
+            poem full title
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemVerseOrder">
             <summary>
             poem + verse order
@@ -15904,6 +15926,13 @@
             <param name="naskbanUrl"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetCatPoemImagesAsync(System.Int32)">
+            <summary>
+            get category poem related images
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.StartFillingSectionsPoemFormats">
             <summary>
             filling poem formats
@@ -18920,6 +18949,13 @@
             delete poem related naskban images by url
             </summary>
             <param name="naskbanUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatPoemImagesAsync(System.Int32)">
+            <summary>
+            get category poem related images
+            </summary>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.Implementation.GanjoorService.AggressiveCacheEnabled">

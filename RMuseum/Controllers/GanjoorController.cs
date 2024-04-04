@@ -3668,15 +3668,31 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(string naskbanUrl)
         {
             var res = await _ganjoorService.DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(naskbanUrl);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
-            if (res.Result == false)
-                return NotFound();
             return Ok();
+        }
+
+        /// <summary>
+        /// get category poem related images
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("cat/{id}/images")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemRelatedImageEx[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetCatPoemImagesAsync(int id)
+        {
+            var res = await _ganjoorService.GetCatPoemImagesAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
         }
 
 
