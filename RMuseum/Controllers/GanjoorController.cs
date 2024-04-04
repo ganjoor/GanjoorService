@@ -3659,6 +3659,28 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// delete poem related naskban images by url
+        /// </summary>
+        /// <param name="naskbanUrl"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("naskban")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(string naskbanUrl)
+        {
+            var res = await _ganjoorService.DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(naskbanUrl);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == false)
+                return NotFound();
+            return Ok();
+        }
+
+
+        /// <summary>
         /// extracting quoted poems
         /// </summary>
         /// <returns></returns>

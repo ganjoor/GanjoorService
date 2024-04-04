@@ -2015,6 +2015,13 @@
             <param name="loginViewModel"></param>
             <returns>number of synched links</returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(System.String)">
+            <summary>
+            delete poem related naskban images by url
+            </summary>
+            <param name="naskbanUrl"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.StartExtractingQuotedPoems">
             <summary>
             extracting quoted poems
@@ -15890,6 +15897,13 @@
             <param name="naskbanPassword"></param>
             <returns>number of synched items</returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(System.String)">
+            <summary>
+            delete poem related naskban images by url
+            </summary>
+            <param name="naskbanUrl"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.StartFillingSectionsPoemFormats">
             <summary>
             filling poem formats
@@ -18900,6 +18914,13 @@
             <param name="naskbanUserName"></param>
             <param name="naskbanPassword"></param>
             <returns>number of synched items</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(System.String)">
+            <summary>
+            delete poem related naskban images by url
+            </summary>
+            <param name="naskbanUrl"></param>
+            <returns></returns>
         </member>
         <member name="P:RMuseum.Services.Implementation.GanjoorService.AggressiveCacheEnabled">
             <summary>

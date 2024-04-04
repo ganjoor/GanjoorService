@@ -31,9 +31,7 @@ using System.Net;
 using System.Text;
 using RMuseum.Models.Auth.ViewModel;
 using System.Net.Http.Headers;
-using RMuseum.Models.GanjoorIntegration.ViewModels;
 using RMuseum.Models.GanjoorIntegration;
-using Microsoft.VisualBasic.ApplicationServices;
 
 namespace RMuseum.Services.Implementation
 {
@@ -3815,6 +3813,29 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<int>(0, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// delete poem related naskban images by url
+        /// </summary>
+        /// <param name="naskbanUrl"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(string naskbanUrl)
+        {
+            try
+            {
+                var images = await _context.PinterestLinks.Where(l => l.PinterestUrl == naskbanUrl && l.LinkType == LinkType.Naskban).ToListAsync();
+                if (images.Count > 0)
+                {
+                    _context.RemoveRange(images);
+                    await _context.SaveChangesAsync();
+                }
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
             }
         }
 
