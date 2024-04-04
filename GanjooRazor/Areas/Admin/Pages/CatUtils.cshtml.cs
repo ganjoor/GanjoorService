@@ -542,5 +542,24 @@ namespace GanjooRazor.Areas.Admin.Pages
                 return Redirect($"/Admin/CatUtils?url={Cat.Cat.FullUrl}");
             }
         }
+
+        
+
+        public async Task<IActionResult> OnPostRemNaskbanImage(string url)
+        {
+
+            using (HttpClient secureClient = new HttpClient())
+            {
+                await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
+                HttpResponseMessage response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/naskban?naskbanUrl={url}");
+                
+                if (!response.IsSuccessStatusCode)
+                {
+                    var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    return new BadRequestObjectResult(res);
+                }
+                return new OkObjectResult(true);
+            }
+        }
     }
 }

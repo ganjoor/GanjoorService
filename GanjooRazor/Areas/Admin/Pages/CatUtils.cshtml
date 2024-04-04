@@ -10,6 +10,30 @@
 <h1>@ViewData["Title"]</h1>
 
 <script>
+     function deleteRelatedImage(targetUrl){
+        if (!confirm('آیا از حذف تصویر منتهی به نشانی زیر اطمینان دارید؟\r\n'+targetUrl))
+            return;
+        var url = '?handler=RemNaskbanImage';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                url: targetUrl
+            },
+            error: function (e) {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+            },
+            success: function () {
+                alert('انجام شد!')
+            },
+
+        });
+     }
+
      function reslugCat(catId) {
         if (!confirm('آیا از تولید مجدد نشانی‌های شعرهای بخش اطمینان دارید؟'))
             return;
@@ -346,6 +370,8 @@
                 <tr>
                     <td colspan="5">
                         <img src="@Model.PoemRelatedImages.Where(r => r.PoemId == poem.Id && r.TargetPageUrl.Contains("https://naskban.ir")).First().ThumbnailImageUrl" />
+                        <br />
+                        <p><a role="button" onclick="deleteRelatedImage('@Model.PoemRelatedImages.Where(r => r.PoemId == poem.Id && r.TargetPageUrl.Contains("https://naskban.ir")).First().TargetPageUrl')" class="actionlink">حذف این تصویر</a></p>
                     </td>
                 </tr>
             }
