@@ -69,6 +69,7 @@
                                 @if(Model.IsAdmin)
                                 {
                                     <a role="button" onclick="deleteMistake(@mistake.Id)" class="w3tooltip"><i class="pageicons">delete</i><span class="w3tooltiptext">حذف خطا</span></a>
+                                    <a role="button" onclick="editMistakeReason(@mistake.Id, '@mistake.Mistake.Replace("\r\n", "<br>")')" class="w3tooltip"><i class="pageicons">edit</i><span class="w3tooltiptext">ویرایش خطا</span></a>
                                 }
                             </div>
                         }

@@ -774,7 +774,27 @@ function deleteMistake(mistakeId) {
             }
         },
     });
+}
 
+function editMistakeReason(mistakeId, reasonText) {
+    var edited = prompt('ویرایش', reasonText);
+
+    if (edited == null) return;
+   
+
+    var url = '?handler=Mistake';
+
+    $.ajax({
+        type: "PUT",
+        url: url,
+        data: {
+            id: mistakeId,
+            reasonText: edited,
+        },
+        success: function () {
+            alert('انجام شد.');
+        },
+    });
 }
 
 function editMyComment(commentId, coupletIndex) {

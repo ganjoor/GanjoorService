@@ -1141,6 +1141,40 @@ namespace GanjooRazor.Pages
             return new JsonResult(true);
         }
 
+        public async Task<IActionResult> OnPutMistakeAsync(int id, string reasonText)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var stringContent = new StringContent(
+                       JsonConvert.SerializeObject
+                       (
+                           new RecitationErrorReportViewModel()
+                           {
+                               Id = id,
+                               ReasonText = reasonText,
+                               NumberOfLinesAffected = 1,
+                               CoupletIndex = -1,
+                           }
+                       ),
+                       Encoding.UTF8, "application/json");
+
+                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/audio/errors/report/edit", stringContent);
+
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+            return new JsonResult(true);
+        }
+
         public async Task<ActionResult> OnGetMoreQuotedPoemsForRelatedPoemPartialAsync(int poemId, int relatedPoemId, string poetImageUrl, string poetNickName, bool canEdit)
         {
             string url = $"{APIRoot.Url}/api/ganjoor/poem/{poemId}/quoteds/{relatedPoemId}?published=true";
