@@ -141,13 +141,21 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             Numberings = JsonConvert.DeserializeObject<GanjoorNumbering[]>(await numberings.Content.ReadAsStringAsync());
 
-            var images = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{Cat.Cat.Id}/images");
-            if (!images.IsSuccessStatusCode)
+            if (!string.IsNullOrEmpty(Request.Query["images"]))
             {
-                LastMessage = JsonConvert.DeserializeObject<string>(await images.Content.ReadAsStringAsync());
-                return false;
+                var images = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{Cat.Cat.Id}/images");
+                if (!images.IsSuccessStatusCode)
+                {
+                    LastMessage = JsonConvert.DeserializeObject<string>(await images.Content.ReadAsStringAsync());
+                    return false;
+                }
+                PoemRelatedImages = JsonConvert.DeserializeObject<PoemRelatedImageEx[]>(await images.Content.ReadAsStringAsync());
             }
-            PoemRelatedImages = JsonConvert.DeserializeObject<PoemRelatedImageEx[]>(await images.Content.ReadAsStringAsync());
+            else
+            {
+                PoemRelatedImages = [];
+            }
+
 
             await ReadLanguagesAsync();
             return true;
