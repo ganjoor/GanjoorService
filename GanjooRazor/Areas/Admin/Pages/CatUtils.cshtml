@@ -338,6 +338,15 @@
                     <input type="checkbox" id="select-@poem.Id" data-value="@poem.Id" class="poemSelect" />
                 </td>
             </tr>
+
+            @if(Model.PoemRelatedImages.Any(r => r.PoemId == poem.Id))
+            {
+                <tr>
+                    <td colspan="5">
+                        <img src="@Model.PoemRelatedImages.Where(r => r.PoemId == poem.Id).First().ThumbnailImageUrl" />
+                    </td>
+                </tr>
+            }
         }
 
         <tr>

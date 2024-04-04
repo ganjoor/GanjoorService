@@ -78,6 +78,8 @@ namespace GanjooRazor.Areas.Admin.Pages
         [BindProperty]
         public GanjoorCatViewModel CatMeta { get; set; }
 
+        public PoemRelatedImageEx[] PoemRelatedImages { get; set; }
+
         private async Task ReadLanguagesAsync()
         {
             HttpResponseMessage response = await _httpClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
@@ -138,6 +140,14 @@ namespace GanjooRazor.Areas.Admin.Pages
                 return false;
             }
             Numberings = JsonConvert.DeserializeObject<GanjoorNumbering[]>(await numberings.Content.ReadAsStringAsync());
+
+            var images = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{Cat.Cat.Id}/images");
+            if (!images.IsSuccessStatusCode)
+            {
+                LastMessage = JsonConvert.DeserializeObject<string>(await images.Content.ReadAsStringAsync());
+                return false;
+            }
+            PoemRelatedImages = JsonConvert.DeserializeObject<PoemRelatedImageEx[]>(await images.Content.ReadAsStringAsync());
 
             await ReadLanguagesAsync();
             return true;

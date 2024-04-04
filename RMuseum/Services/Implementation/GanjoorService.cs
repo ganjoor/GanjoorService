@@ -3879,7 +3879,7 @@ namespace RMuseum.Services.Implementation
                      where
                      link.ReviewResult == ReviewResult.Approved
                      &&
-                     poem.Id == catId
+                     poem.CatId == catId
                      orderby poem.Id
                      select new PoemRelatedImageEx()
                      {
