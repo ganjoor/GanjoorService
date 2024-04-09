@@ -13,6 +13,8 @@ using System.Net.Http.Headers;
 using System.Net.Http;
 using System.Net;
 using System.Text;
+using RMuseum.DbContext;
+using RSecurityBackend.Services.Implementation;
 
 namespace RMuseum.Services.Implementation
 {
@@ -27,8 +29,38 @@ namespace RMuseum.Services.Implementation
         /// <param name="ganjoorUserId"></param>
         /// <param name="naskbanUserName"></param>
         /// <param name="naskbanPassword"></param>
+        public void SynchronizeNaskbanLinks(Guid ganjoorUserId, string naskbanUserName, string naskbanPassword)
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                           (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                               {
+                                   LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                   var job = (await jobProgressServiceEF.NewJob("SynchronizeNaskbanLinks", "Query data")).Result;
+                                   var res = await _SynchronizeNaskbanLinksAsync(context, ganjoorUserId, naskbanUserName, naskbanPassword);
+                                   if (!string.IsNullOrEmpty(res.ExceptionString))
+                                   {
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, res.ExceptionString);
+                                   }
+                                   else
+                                   {
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                   }
+                               }
+                           });
+        }
+
+        /// <summary>
+        /// synchronize naskban links
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="ganjoorUserId"></param>
+        /// <param name="naskbanUserName"></param>
+        /// <param name="naskbanPassword"></param>
         /// <returns>number of synched items</returns>
-        public async Task<RServiceResult<int>> SynchronizeNaskbanLinksAsync(Guid ganjoorUserId, string naskbanUserName, string naskbanPassword)
+        private async Task<RServiceResult<int>> _SynchronizeNaskbanLinksAsync(RMuseumDbContext context, Guid ganjoorUserId, string naskbanUserName, string naskbanPassword)
         {
             try
             {
@@ -61,11 +93,11 @@ namespace RMuseum.Services.Implementation
                         bool isTextOriginalSource =
                             unsynchronized.IsTextOriginalSource
                             &&
-                            await _context.GanjoorLinks.Where(l => l.GanjoorPostId == unsynchronized.GanjoorPostId && l.IsTextOriginalSource).AnyAsync() == false
+                            await context.GanjoorLinks.Where(l => l.GanjoorPostId == unsynchronized.GanjoorPostId && l.IsTextOriginalSource).AnyAsync() == false
                             &&
-                            await _context.PinterestLinks.Where(l => l.GanjoorPostId == unsynchronized.GanjoorPostId && l.IsTextOriginalSource).AnyAsync() == false
+                            await context.PinterestLinks.Where(l => l.GanjoorPostId == unsynchronized.GanjoorPostId && l.IsTextOriginalSource).AnyAsync() == false
                             ;
-                        if (false == await _context.PinterestLinks.Where(p => p.NaskbanLinkId == unsynchronized.Id).AnyAsync())
+                        if (false == await context.PinterestLinks.Where(p => p.NaskbanLinkId == unsynchronized.Id).AnyAsync())
                         {
                             PinterestLink link = new PinterestLink()
                             {
@@ -86,8 +118,8 @@ namespace RMuseum.Services.Implementation
                                 PageNumber = unsynchronized.PageNumber,
                                 NaskbanLinkId = unsynchronized.Id
                             };
-                            _context.PinterestLinks.Add(link);
-                            await _context.SaveChangesAsync();
+                            context.PinterestLinks.Add(link);
+                            await context.SaveChangesAsync();
                         }
                         await secureClient.PutAsync($"https://api.naskban.ir/api/pdf/ganjoor/sync/{unsynchronized.Id}", null);
                     }

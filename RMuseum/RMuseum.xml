@@ -2008,7 +2008,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.SynchronizeNaskbanLinksAsync(RSecurityBackend.Models.Auth.ViewModels.LoginViewModel)">
+        <member name="M:RMuseum.Controllers.GanjoorController.SynchronizeNaskbanLinks(RSecurityBackend.Models.Auth.ViewModels.LoginViewModel)">
             <summary>
             synchronize https:://naskban.ir links (logs in and then out to naskban.ir using auth info)
             </summary>
@@ -15910,7 +15910,7 @@
             <param name="ignoreSumup"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.SynchronizeNaskbanLinksAsync(System.Guid,System.String,System.String)">
+        <member name="M:RMuseum.Services.IGanjoorService.SynchronizeNaskbanLinks(System.Guid,System.String,System.String)">
             <summary>
             synchronize naskban links
             </summary>
@@ -17865,10 +17865,19 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.SynchronizeNaskbanLinksAsync(System.Guid,System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SynchronizeNaskbanLinks(System.Guid,System.String,System.String)">
             <summary>
             synchronize naskban links
             </summary>
+            <param name="ganjoorUserId"></param>
+            <param name="naskbanUserName"></param>
+            <param name="naskbanPassword"></param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._SynchronizeNaskbanLinksAsync(RMuseum.DbContext.RMuseumDbContext,System.Guid,System.String,System.String)">
+            <summary>
+            synchronize naskban links
+            </summary>
+            <param name="context"></param>
             <param name="ganjoorUserId"></param>
             <param name="naskbanUserName"></param>
             <param name="naskbanPassword"></param>

@@ -1211,7 +1211,7 @@ namespace RMuseum.Services
         /// <param name="naskbanUserName"></param>
         /// <param name="naskbanPassword"></param>
         /// <returns>number of synched items</returns>
-        Task<RServiceResult<int>> SynchronizeNaskbanLinksAsync(Guid ganjoorUserId, string naskbanUserName, string naskbanPassword);
+        void SynchronizeNaskbanLinks(Guid ganjoorUserId, string naskbanUserName, string naskbanPassword);
 
         /// <summary>
         /// delete poem related naskban images by url

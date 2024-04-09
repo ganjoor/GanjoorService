@@ -3641,9 +3641,9 @@ namespace RMuseum.Controllers
         [HttpPost]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
         [Route("naskban")]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> SynchronizeNaskbanLinksAsync(
+        public IActionResult SynchronizeNaskbanLinks(
             [AuditIgnore]
             [FromBody]
             LoginViewModel loginViewModel
@@ -3651,11 +3651,8 @@ namespace RMuseum.Controllers
         {
             var userId =
                new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            var res = await _ganjoorService.SynchronizeNaskbanLinksAsync(userId, loginViewModel.Username, loginViewModel.Password);
-
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
+            _ganjoorService.SynchronizeNaskbanLinks(new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value), loginViewModel.Username, loginViewModel.Password);
+            return Ok();
         }
 
         /// <summary>
