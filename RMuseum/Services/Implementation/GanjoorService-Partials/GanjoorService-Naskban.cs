@@ -223,43 +223,43 @@ namespace RMuseum.Services.Implementation
                     secureClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loggedOnUser.Token);
 
 
-                    int firstPoemId = 0;
-                    var optionName = "LastJustifiedNaskbanLinkPoemId";
+                    DateTime firstLinkSuggestionDate = DateTime.MinValue;
+                    var optionName = "LastJustifiedNaskbanLinkSuggestionDate";
                     RGenericOption lastJustifiedNaskbanLinkPoemIdGenericOption = await (from o in context.Options.AsNoTracking()
                                                                                         where o.Name == optionName && o.RAppUserId == null
                                                                                         select o).SingleOrDefaultAsync();
                     if (lastJustifiedNaskbanLinkPoemIdGenericOption != null)
                     {
-                        firstPoemId = int.Parse(lastJustifiedNaskbanLinkPoemIdGenericOption.Value);
+                        firstLinkSuggestionDate = DateTime.Parse(lastJustifiedNaskbanLinkPoemIdGenericOption.Value);
                     }
                     else
                     {
                         lastJustifiedNaskbanLinkPoemIdGenericOption = new RGenericOption()
                         {
                             Name = optionName,
-                            Value = "0",
+                            Value = firstLinkSuggestionDate.ToString("yyyy-MM-dd HH:mm:ss"),
                         };
                         context.Add(lastJustifiedNaskbanLinkPoemIdGenericOption);
                         await context.SaveChangesAsync();
                     }
 
-                    var naskbanLinks = await context.PinterestLinks.AsNoTracking().Where(l => l.LinkType == LinkType.Naskban && l.GanjoorPostId > firstPoemId).OrderBy(l => l.GanjoorPostId).ToListAsync();
+                    var naskbanLinks = await context.PinterestLinks.AsNoTracking().Where(l => l.LinkType == LinkType.Naskban && l.SuggestionDate > firstLinkSuggestionDate).OrderBy(l => l.SuggestionDate).ToListAsync();
 
-                    if (firstPoemId == 0 && naskbanLinks.Any())
+                    if (firstLinkSuggestionDate == DateTime.MinValue && naskbanLinks.Any())
                     {
-                        firstPoemId = naskbanLinks.First().GanjoorPostId;
+                        firstLinkSuggestionDate = naskbanLinks.First().SuggestionDate;
                     }
                     int progress = 0;
                     foreach (var naskbanLink in naskbanLinks)
                     {
                         progress++;
-                        if (naskbanLink.GanjoorPostId != firstPoemId)
+                        if (naskbanLink.SuggestionDate != firstLinkSuggestionDate)
                         {
                             var option = await context.Options.Where(o => o.Id == lastJustifiedNaskbanLinkPoemIdGenericOption.Id).SingleAsync();
-                            option.Value = firstPoemId.ToString();
+                            option.Value = firstLinkSuggestionDate.ToString("yyyy-MM-dd HH:mm:ss");
                             context.Update(option);
-                            await jobProgressServiceEF.UpdateJob(job.Id, progress, $"{progress} of {naskbanLinks.Count}");
-                            firstPoemId = naskbanLink.GanjoorPostId;
+                            await jobProgressServiceEF.UpdateJob(job.Id, progress, $"{progress} از {naskbanLinks.Count}");
+                            firstLinkSuggestionDate = naskbanLink.SuggestionDate;
                         }
                         var naskbanPageResponse = await secureClient.GetAsync($"https://api.naskban.ir/api/pdf/{naskbanLink.PDFBookId}/page/{naskbanLink.PageNumber}");
                         if (!naskbanPageResponse.IsSuccessStatusCode)
