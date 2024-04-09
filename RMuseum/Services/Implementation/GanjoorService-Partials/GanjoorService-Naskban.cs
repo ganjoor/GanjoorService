@@ -67,20 +67,25 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                LoginViewModel loginViewModel = new LoginViewModel()
+                LoggedOnUserModelEx loggedOnUser;
+                using (HttpClient client = new HttpClient())
                 {
-                    Username = naskbanUserName,
-                    Password = naskbanPassword,
-                    ClientAppName = "Ganjoor API",
-                    Language = "fa-IR"
-                };
-                var loginResponse = await _httpClient.PostAsync("https://api.naskban.ir/api/users/login", new StringContent(JsonConvert.SerializeObject(loginViewModel), Encoding.UTF8, "application/json"));
+                    LoginViewModel loginViewModel = new LoginViewModel()
+                    {
+                        Username = naskbanUserName,
+                        Password = naskbanPassword,
+                        ClientAppName = "Ganjoor API",
+                        Language = "fa-IR"
+                    };
+                    var loginResponse = await client.PostAsync("https://api.naskban.ir/api/users/login", new StringContent(JsonConvert.SerializeObject(loginViewModel), Encoding.UTF8, "application/json"));
 
-                if (loginResponse.StatusCode != HttpStatusCode.OK)
-                {
-                    return new RServiceResult<int>(0, "login error: " + JsonConvert.DeserializeObject<string>(await loginResponse.Content.ReadAsStringAsync()));
+                    if (loginResponse.StatusCode != HttpStatusCode.OK)
+                    {
+                        return new RServiceResult<int>(0, "login error: " + JsonConvert.DeserializeObject<string>(await loginResponse.Content.ReadAsStringAsync()));
+                    }
+                    loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await loginResponse.Content.ReadAsStringAsync());
                 }
-                LoggedOnUserModelEx loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await loginResponse.Content.ReadAsStringAsync());
+                
 
                 using (HttpClient secureClient = new HttpClient())
                 {
@@ -193,20 +198,25 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                LoginViewModel loginViewModel = new LoginViewModel()
+                LoggedOnUserModelEx loggedOnUser;
+                using (HttpClient client = new HttpClient())
                 {
-                    Username = naskbanUserName,
-                    Password = naskbanPassword,
-                    ClientAppName = "Ganjoor API",
-                    Language = "fa-IR"
-                };
-                var loginResponse = await _httpClient.PostAsync("https://api.naskban.ir/api/users/login", new StringContent(JsonConvert.SerializeObject(loginViewModel), Encoding.UTF8, "application/json"));
+                    LoginViewModel loginViewModel = new LoginViewModel()
+                    {
+                        Username = naskbanUserName,
+                        Password = naskbanPassword,
+                        ClientAppName = "Ganjoor API",
+                        Language = "fa-IR"
+                    };
+                    var loginResponse = await client.PostAsync("https://api.naskban.ir/api/users/login", new StringContent(JsonConvert.SerializeObject(loginViewModel), Encoding.UTF8, "application/json"));
 
-                if (loginResponse.StatusCode != HttpStatusCode.OK)
-                {
-                    return new RServiceResult<bool>(false, "login error: " + JsonConvert.DeserializeObject<string>(await loginResponse.Content.ReadAsStringAsync()));
+                    if (loginResponse.StatusCode != HttpStatusCode.OK)
+                    {
+                        return new RServiceResult<int>(0, "login error: " + JsonConvert.DeserializeObject<string>(await loginResponse.Content.ReadAsStringAsync()));
+                    }
+                    loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await loginResponse.Content.ReadAsStringAsync());
                 }
-                LoggedOnUserModelEx loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await loginResponse.Content.ReadAsStringAsync());
+
 
                 using (HttpClient secureClient = new HttpClient())
                 {
