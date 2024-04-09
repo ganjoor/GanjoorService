@@ -212,7 +212,7 @@ namespace RMuseum.Services.Implementation
 
                     if (loginResponse.StatusCode != HttpStatusCode.OK)
                     {
-                        return new RServiceResult<int>(0, "login error: " + JsonConvert.DeserializeObject<string>(await loginResponse.Content.ReadAsStringAsync()));
+                        return new RServiceResult<bool>(false, "login error: " + JsonConvert.DeserializeObject<string>(await loginResponse.Content.ReadAsStringAsync()));
                     }
                     loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await loginResponse.Content.ReadAsStringAsync());
                 }
