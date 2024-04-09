@@ -234,14 +234,12 @@ namespace RMuseum.Services.Implementation
                     }
                     else
                     {
-                        context.Add
-                        (
-                            new RGenericOption()
-                                {
-                                    Name = optionName,
-                                    Value = "0",
-                                }
-                            );
+                        lastJustifiedNaskbanLinkPoemIdGenericOption = new RGenericOption()
+                        {
+                            Name = optionName,
+                            Value = "0",
+                        };
+                        context.Add(lastJustifiedNaskbanLinkPoemIdGenericOption);
                         await context.SaveChangesAsync();
                     }
 
