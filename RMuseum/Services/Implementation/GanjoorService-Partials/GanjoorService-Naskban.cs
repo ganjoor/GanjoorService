@@ -85,7 +85,7 @@ namespace RMuseum.Services.Implementation
                     }
                     loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await loginResponse.Content.ReadAsStringAsync());
                 }
-                
+
 
                 using (HttpClient secureClient = new HttpClient())
                 {
@@ -221,29 +221,41 @@ namespace RMuseum.Services.Implementation
                 using (HttpClient secureClient = new HttpClient())
                 {
                     secureClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loggedOnUser.Token);
-                   
+
 
                     int firstPoemId = 0;
                     var optionName = "LastJustifiedNaskbanLinkPoemId";
                     RGenericOption lastJustifiedNaskbanLinkPoemIdGenericOption = await (from o in context.Options.AsNoTracking()
-                                                           where o.Name == optionName && o.RAppUserId == null
-                                                           select o).SingleOrDefaultAsync();
-                    if(lastJustifiedNaskbanLinkPoemIdGenericOption != null)
+                                                                                        where o.Name == optionName && o.RAppUserId == null
+                                                                                        select o).SingleOrDefaultAsync();
+                    if (lastJustifiedNaskbanLinkPoemIdGenericOption != null)
                     {
                         firstPoemId = int.Parse(lastJustifiedNaskbanLinkPoemIdGenericOption.Value);
+                    }
+                    else
+                    {
+                        context.Add
+                        (
+                            new RGenericOption()
+                                {
+                                    Name = optionName,
+                                    Value = "0",
+                                }
+                            );
+                        await context.SaveChangesAsync();
                     }
 
                     var naskbanLinks = await context.PinterestLinks.AsNoTracking().Where(l => l.LinkType == LinkType.Naskban && l.GanjoorPostId > firstPoemId).OrderBy(l => l.GanjoorPostId).ToListAsync();
 
-                    if(firstPoemId == 0 && naskbanLinks.Any() )
+                    if (firstPoemId == 0 && naskbanLinks.Any())
                     {
                         firstPoemId = naskbanLinks.First().GanjoorPostId;
                     }
                     int progress = 0;
-                    foreach ( var naskbanLink in naskbanLinks )
+                    foreach (var naskbanLink in naskbanLinks)
                     {
                         progress++;
-                        if(naskbanLink.GanjoorPostId != firstPoemId )
+                        if (naskbanLink.GanjoorPostId != firstPoemId)
                         {
                             var option = await context.Options.Where(o => o.Id == lastJustifiedNaskbanLinkPoemIdGenericOption.Id).SingleAsync();
                             option.Value = firstPoemId.ToString();
@@ -279,7 +291,7 @@ namespace RMuseum.Services.Implementation
                         var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == naskbanLink.GanjoorPostId && v.VersePosition != VersePosition.Comment).OrderBy(v => v.VOrder).ToListAsync();
                         if (!verses.Any()) continue;
                         string verseText = verses.First().Text;
-                        if(verses.Count > 1)
+                        if (verses.Count > 1)
                         {
                             verseText += $" {verses[1].Text}";
                         }
@@ -299,7 +311,7 @@ namespace RMuseum.Services.Implementation
                         }
                         var percentMainPage = found * 100 / poemWords.Length;
 
-                        if(percentMainPage < 70)
+                        if (percentMainPage < 70)
                         {
                             naskbanPageResponse = await secureClient.GetAsync($"https://api.naskban.ir/api/pdf/{naskbanLink.PDFBookId}/page/{naskbanLink.PageNumber + 1}");
                             if (!naskbanPageResponse.IsSuccessStatusCode)
@@ -321,7 +333,7 @@ namespace RMuseum.Services.Implementation
                             }
                             var percentNextPage = found * 100 / poemWords.Length;
 
-                            if(percentNextPage >= 70)
+                            if (percentNextPage >= 70)
                             {
                                 modifyNaskbanLink.PageNumber = nextPage.PageNumber;
                                 modifyNaskbanLink.PinterestImageUrl = nextPage.ExtenalThumbnailImageUrl;
@@ -329,7 +341,7 @@ namespace RMuseum.Services.Implementation
                                 modifyNaskbanLink.AltText = $"{bookPage} - صفحهٔ {nextPage.PageNumber.ToPersianNumbers()}";
                             }
                             else
-                            if(naskbanLink.PageNumber > 1)
+                            if (naskbanLink.PageNumber > 1)
                             {
                                 naskbanPageResponse = await secureClient.GetAsync($"https://api.naskban.ir/api/pdf/{naskbanLink.PDFBookId}/page/{naskbanLink.PageNumber - 1}");
                                 if (!naskbanPageResponse.IsSuccessStatusCode)
