@@ -17890,6 +17890,14 @@
             <param name="naskbanUrl"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.JustifyNaskbanPageNumbers(System.Guid,System.String,System.String)">
+            <summary>
+            justify naskban links
+            </summary>
+            <param name="ganjoorUserId"></param>
+            <param name="naskbanUserName"></param>
+            <param name="naskbanPassword"></param>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetSuggestedSpecLinesAsync(System.Int32)">
             <summary>
             return list of suggested spec lines

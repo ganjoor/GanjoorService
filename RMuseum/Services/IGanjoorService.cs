@@ -1214,6 +1214,13 @@ namespace RMuseum.Services
         void SynchronizeNaskbanLinks(Guid ganjoorUserId, string naskbanUserName, string naskbanPassword);
 
         /// <summary>
+        /// justify naskban links
+        /// </summary>
+        /// <param name="naskbanUserName"></param>
+        /// <param name="naskbanPassword"></param>
+        void JustifyNaskbanPageNumbers(string naskbanUserName, string naskbanPassword);
+
+        /// <summary>
         /// delete poem related naskban images by url
         /// </summary>
         /// <param name="naskbanUrl"></param>

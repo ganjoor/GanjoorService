@@ -3638,9 +3638,8 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="loginViewModel"></param>
         /// <returns>number of synched links</returns>
-        [HttpPost]
+        [HttpPost("naskban")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
-        [Route("naskban")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public IActionResult SynchronizeNaskbanLinks(
@@ -3655,13 +3654,26 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        [HttpPut("naskban")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult JustifyNaskbanPageNumbers(
+           [AuditIgnore]
+            [FromBody]
+            LoginViewModel loginViewModel
+           )
+        {
+            _ganjoorService.JustifyNaskbanPageNumbers(loginViewModel.Username, loginViewModel.Password);
+            return Ok();
+        }
+
         /// <summary>
         /// delete poem related naskban images by url
         /// </summary>
         /// <param name="naskbanUrl"></param>
         /// <returns></returns>
-        [HttpDelete]
-        [Route("naskban")]
+        [HttpDelete("naskban")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
