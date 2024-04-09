@@ -17534,6 +17534,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -17860,6 +17863,22 @@
             <summary>
             start updating stats page
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SynchronizeNaskbanLinksAsync(System.Guid,System.String,System.String)">
+            <summary>
+            synchronize naskban links
+            </summary>
+            <param name="ganjoorUserId"></param>
+            <param name="naskbanUserName"></param>
+            <param name="naskbanPassword"></param>
+            <returns>number of synched items</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(System.String)">
+            <summary>
+            delete poem related naskban images by url
+            </summary>
+            <param name="naskbanUrl"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetSuggestedSpecLinesAsync(System.Int32)">
@@ -18933,22 +18952,6 @@
             delete duplicate
             </summary>
             <param name="id"></param>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.SynchronizeNaskbanLinksAsync(System.Guid,System.String,System.String)">
-            <summary>
-            synchronize naskban links
-            </summary>
-            <param name="ganjoorUserId"></param>
-            <param name="naskbanUserName"></param>
-            <param name="naskbanPassword"></param>
-            <returns>number of synched items</returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(System.String)">
-            <summary>
-            delete poem related naskban images by url
-            </summary>
-            <param name="naskbanUrl"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatPoemImagesAsync(System.Int32)">
