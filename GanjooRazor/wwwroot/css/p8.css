@@ -1156,7 +1156,12 @@ ol {
     border-radius: 5px;
     color: white;
     font-size: small;
+    padding: 5px;
 }
+
+    .related-image-is-text-source a {
+        color: azure !important;
+    }
 
 
 .comment-author, inlinesimi-poem-more {
@@ -1782,6 +1787,10 @@ fieldset {
 
 .background-white {
     background-color: white !important;
+}
+
+.background-darkgreen {
+    background-color: darkgreen !important;
 }
 
 .nobackground {
