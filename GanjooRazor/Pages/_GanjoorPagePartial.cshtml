@@ -759,8 +759,9 @@
                                                             <a target="_blank" href="@Html.Raw(image.TargetPageUrl)">
                                                                 <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@image.AltText" loading="lazy" class="related-image-main">
                                                             </a>
-                                                            <div class="related-image-is-text-source" style="clear:both">
-                                                                <div class="century-alt"><strong>منبع کاغذی گنجور</strong></div>
+                                                            <div class="related-image-is-text-source">
+                                                                <div class="width-100per"><strong>منبع کاغذی گنجور</strong></div>
+                                                                <hr />
                                                                 <div class="width-100per"><a target="_blank" href="@Html.Raw(image.TargetPageUrl)">@image.AltText.ToPersianNumbers()</a></div>
                                                             </div>
                                                         </div>
@@ -775,7 +776,7 @@
                                                         <a target="_blank" href="@Html.Raw(image.TargetPageUrl)">
                                                             <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@image.AltText" loading="lazy" class="related-image">
                                                         </a>
-                                                        <div class="related-image-is-text-source" style="clear:both"><a target="_blank" href="@Html.Raw(image.TargetPageUrl)">@image.AltText.ToPersianNumbers()</a></div>
+                                                        <div class="related-image-is-text-source"><a target="_blank" href="@Html.Raw(image.TargetPageUrl)">@image.AltText.ToPersianNumbers()</a></div>
                                                     </div>
                                                 }
                                             </div>

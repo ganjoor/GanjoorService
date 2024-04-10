@@ -1130,7 +1130,10 @@ ol {
 
 .related-image-container, .related-image-container-main {
     text-align: center;
-    margin: auto;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: auto;
+    margin-right: auto;
     width: 200px;
 }
 
