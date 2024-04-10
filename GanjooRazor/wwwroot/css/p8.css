@@ -1128,9 +1128,14 @@ ol {
         margin: auto
     }
 
-.related-image-container {
+.related-image-container, .related-image-container-main {
     text-align: center;
     margin: auto;
+    width: 200px;
+}
+
+.related-image-container-main {
+    width: 300px;
 }
 
 .related-image {
@@ -2112,8 +2117,8 @@ mark {
         left: 100%;
     }
 
-    .ribbon a{
-        color:white !important;
+    .ribbon a {
+        color: white !important;
     }
 
 @media(prefers-color-scheme: dark) {

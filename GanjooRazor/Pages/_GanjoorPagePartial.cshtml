@@ -755,7 +755,7 @@
                                                 @foreach (var image in Model.GanjoorPage.Poem.Images.Where(image => image.IsTextOriginalSource))
                                                 {
                                                     <div class="width-100per">
-                                                        <div class="related-image-container" style="width:300px;clear:both;">
+                                                        <div class="related-image-container-main">
                                                             <a target="_blank" href="@Html.Raw(image.TargetPageUrl)">
                                                                 <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@image.AltText" loading="lazy" width="300px" class="related-image" style="width:300px;">
                                                             </a>
@@ -771,7 +771,7 @@
                                                
                                                 @foreach (var image in Model.GanjoorPage.Poem.Images.Where(image => image.IsTextOriginalSource == false))
                                                 {
-                                                    <div class="related-image-container" style="width:200px">
+                                                    <div class="related-image-container">
                                                         <a target="_blank" href="@Html.Raw(image.TargetPageUrl)">
                                                             <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@image.AltText" loading="lazy" width="200px" class="related-image">
                                                         </a>
