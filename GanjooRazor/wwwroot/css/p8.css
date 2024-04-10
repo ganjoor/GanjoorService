@@ -2137,6 +2137,35 @@ mark {
         color: white !important;
     }
 
+.main-image-container {
+    position: relative;
+    display: inline-block; /* Changed to inline-block for better control */
+    width: fit-content;
+    border: 5px solid darkgreen;
+}
+
+.main-image-ribbon {
+    position: absolute; /* Changed to absolute for precise positioning */
+    top: 0; /* Align to the top edge of the container */
+    right: 0; /* Align to the right edge of the container */
+    background-color: darkgreen;
+    color: white;
+    padding: 5px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    /* Clip the corners */
+    clip-path: polygon(0 0, 100% 0%, 100% 100%, 0% 100%, 10% 50%);
+    z-index: 10;
+}
+
+.main-image-source {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+
+
 @media(prefers-color-scheme: dark) {
     body {
         background: rgba(0, 0, 0, 0.9);
