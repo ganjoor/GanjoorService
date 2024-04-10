@@ -1138,10 +1138,14 @@ ol {
     width: 300px;
 }
 
-.related-image {
+.related-image, .related-image-main {
     width: 200px;
     float: right;
     padding: 5px;
+}
+
+.related-image-main {
+    width: 300px;
 }
 
 .related-image-is-text-source {
