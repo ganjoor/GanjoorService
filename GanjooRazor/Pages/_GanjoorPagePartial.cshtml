@@ -748,20 +748,34 @@
                                     @if (Model.GanjoorPage.Poem.Images.Length > 0)
                                     {
                                         <div class="century">
-                                            تصاویر مرتبط در گنجینهٔ گنجور <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('images-section', 'images-collapse-button')"><i class="info-buttons expand_circle_down" id="images-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            تصاویر مرتبط در <a href="https://museum.ganjoor.net">گنجینهٔ گنجور</a> و <a href="https://naskban.ir">نسکبان</a> <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('images-section', 'images-collapse-button')"><i class="info-buttons expand_circle_down" id="images-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                         </div>
                                         <div id="images-section">
                                             <div class="related-images">
-                                                @foreach (var image in Model.GanjoorPage.Poem.Images)
+                                                @foreach (var image in Model.GanjoorPage.Poem.Images.Where(image => image.IsTextOriginalSource))
                                                 {
-                                                    <div class="related-image-container">
+                                                    <div style="width:100%">
+                                                        <div class="related-image-container" style="width:300px;clear:both;">
+                                                            <a target="_blank" href="@Html.Raw(image.TargetPageUrl)">
+                                                                <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@image.AltText" loading="lazy" width="300px" class="related-image" style="width:300px;">
+                                                            </a>
+                                                            <div class="related-image-is-text-source" style="clear:both">
+                                                                <div style="width:100%"><strong>منبع کاغذی گنجور</strong></div>
+                                                                <div style="width:100%"><a target="_blank" href="@Html.Raw(image.TargetPageUrl)">@image.AltText.ToPersianNumbers()</a></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                   
+                                                }
+
+                                               
+                                                @foreach (var image in Model.GanjoorPage.Poem.Images.Where(image => image.IsTextOriginalSource == false))
+                                                {
+                                                    <div class="related-image-container" style="width:200px">
                                                         <a target="_blank" href="@Html.Raw(image.TargetPageUrl)">
-                                                            <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@image.AltText" loading="lazy" width="200" class="related-image">
+                                                            <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@image.AltText" loading="lazy" width="200px" class="related-image">
                                                         </a>
-                                                        @if (image.IsTextOriginalSource)
-                                                        {
-                                                            <div class="related-image-is-text-source"><a target="_blank" href="@Html.Raw(image.TargetPageUrl)">منبع کاغذی گنجور</a></div>
-                                                        }
+                                                        <div class="related-image-is-text-source" style="clear:both"><a target="_blank" href="@Html.Raw(image.TargetPageUrl)">@image.AltText.ToPersianNumbers()</a></div>
                                                     </div>
                                                 }
                                             </div>
