@@ -2,18 +2,7 @@
 @using DNTPersianUtils.Core
 
 <div id="utils-navbar">
-    @if (Model.GanjoorPage != null 
-    && 
-    (
-        Model.GanjoorPage.Poem != null 
-        ||
-        !string.IsNullOrEmpty(Model.PreviousUrl) || !string.IsNullOrEmpty(Model.NextUrl)
-        ||
-        (Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
-        ||
-        (Model.CategoryHasRecitations)
-    )
-    )
+    @if (Model.GanjoorPage != null)
     {
         <div class="clear-both utilbar">
             @if (Model.GanjoorPage.Poem != null)
