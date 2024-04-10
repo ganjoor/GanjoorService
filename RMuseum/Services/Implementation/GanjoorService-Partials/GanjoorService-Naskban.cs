@@ -284,7 +284,7 @@ namespace RMuseum.Services.Implementation
                         }
 
                         var modifyNaskbanLink = await context.PinterestLinks.Where(l => l.Id == naskbanLink.Id).SingleAsync();
-                        modifyNaskbanLink.AltText = $"{bookPage} - صفحهٔ {naskbanLink.PageNumber.ToPersianNumbers()}";
+                        modifyNaskbanLink.AltText = $"{bookPage} - تصویر {naskbanLink.PageNumber.ToPersianNumbers()}";
 
                         var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == naskbanLink.GanjoorPostId && v.VersePosition != VersePosition.Comment).OrderBy(v => v.VOrder).ToListAsync();
                         if (!verses.Any()) continue;
@@ -336,7 +336,7 @@ namespace RMuseum.Services.Implementation
                                 modifyNaskbanLink.PageNumber = nextPage.PageNumber;
                                 modifyNaskbanLink.PinterestImageUrl = nextPage.ExtenalThumbnailImageUrl;
                                 modifyNaskbanLink.PinterestUrl = $"https://naskban.ir/{nextPage.PDFBookId}/{nextPage.PageNumber}";
-                                modifyNaskbanLink.AltText = $"{bookPage} - صفحهٔ {nextPage.PageNumber.ToPersianNumbers()}";
+                                modifyNaskbanLink.AltText = $"{bookPage} - تصویر {nextPage.PageNumber.ToPersianNumbers()}";
                             }
                             else
                             if (naskbanLink.PageNumber > 1)
@@ -366,7 +366,7 @@ namespace RMuseum.Services.Implementation
                                     modifyNaskbanLink.PageNumber = prevPage.PageNumber;
                                     modifyNaskbanLink.PinterestImageUrl = prevPage.ExtenalThumbnailImageUrl;
                                     modifyNaskbanLink.PinterestUrl = $"https://naskban.ir/{prevPage.PDFBookId}/{prevPage.PageNumber}";
-                                    modifyNaskbanLink.AltText = $"{bookPage} - صفحهٔ {prevPage.PageNumber.ToPersianNumbers()}";
+                                    modifyNaskbanLink.AltText = $"{bookPage} - تصویر {prevPage.PageNumber.ToPersianNumbers()}";
                                 }
                             }
                         }
