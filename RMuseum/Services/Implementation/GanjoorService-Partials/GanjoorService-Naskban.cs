@@ -250,6 +250,7 @@ namespace RMuseum.Services.Implementation
                         firstLinkSuggestionDate = naskbanLinks.First().SuggestionDate;
                     }
                     int progress = 0;
+                    PDFBook book = null;
                     foreach (var naskbanLink in naskbanLinks)
                     {
                         progress++;
@@ -261,27 +262,25 @@ namespace RMuseum.Services.Implementation
                             await jobProgressServiceEF.UpdateJob(job.Id, progress, $"{progress} از {naskbanLinks.Count}");
                             firstLinkSuggestionDate = naskbanLink.SuggestionDate;
                         }
-                        var naskbanPageResponse = await secureClient.GetAsync($"https://api.naskban.ir/api/pdf/{naskbanLink.PDFBookId}/page/{naskbanLink.PageNumber}");
-                        if (!naskbanPageResponse.IsSuccessStatusCode)
+                        if (book == null || book.Id != naskbanLink.PDFBookId)
                         {
-                            return new RServiceResult<bool>(false, "naskbanPageResponse error: " + JsonConvert.DeserializeObject<string>(await naskbanPageResponse.Content.ReadAsStringAsync()));
-                        }
-                        naskbanPageResponse.EnsureSuccessStatusCode();
-                        var currentPage = JsonConvert.DeserializeObject<PDFPage>(await naskbanPageResponse.Content.ReadAsStringAsync());
+                            HttpResponseMessage responseBook = await secureClient.GetAsync($"https://api.naskban.ir/api/pdf/{naskbanLink.PDFBookId}?includePages=true&includeBookText=false&includePageText=true");
+                            if (responseBook.StatusCode != HttpStatusCode.OK)
+                            {
+                                return new RServiceResult<bool>(false, "book fetch error: " + JsonConvert.DeserializeObject<string>(await responseBook.Content.ReadAsStringAsync()));
+                            }
+                            responseBook.EnsureSuccessStatusCode();
 
-                        HttpResponseMessage responseBook = await secureClient.GetAsync($"https://api.naskban.ir/api/pdf/{naskbanLink.PDFBookId}?includePages=false&includeBookText=false&includePageText=false");
-                        if (responseBook.StatusCode != HttpStatusCode.OK)
-                        {
-                            return new RServiceResult<bool>(false, "book fetch error: " + JsonConvert.DeserializeObject<string>(await responseBook.Content.ReadAsStringAsync()));
+                            book = JsonConvert.DeserializeObject<PDFBook>(await responseBook.Content.ReadAsStringAsync());
                         }
-                        responseBook.EnsureSuccessStatusCode();
 
-                        PDFBook book = JsonConvert.DeserializeObject<PDFBook>(await responseBook.Content.ReadAsStringAsync());
                         string bookPage = book.Title;
                         if (!string.IsNullOrEmpty(book.AuthorsLine))
                         {
                             bookPage = $"{book.Title} - {book.AuthorsLine}";
                         }
+
+                        var currentPage = book.Pages.Where(p => p.PageNumber == naskbanLink.PageNumber).Single();
 
                         var modifyNaskbanLink = await context.PinterestLinks.Where(l => l.Id == naskbanLink.Id).SingleAsync();
                         modifyNaskbanLink.AltText = $"{bookPage} - تصویر {naskbanLink.PageNumber.ToPersianNumbers()}";
@@ -319,14 +318,12 @@ namespace RMuseum.Services.Implementation
                             do
                             {
                                 t++;
-                                naskbanPageResponse = await secureClient.GetAsync($"https://api.naskban.ir/api/pdf/{naskbanLink.PDFBookId}/page/{naskbanLink.PageNumber + t}");
-                                if (!naskbanPageResponse.IsSuccessStatusCode)
+                                if((naskbanLink.PageNumber + t) >= book.Pages.Count)
                                 {
                                     break;
                                 }
-                                naskbanPageResponse.EnsureSuccessStatusCode();
 
-                                var nextPage = JsonConvert.DeserializeObject<PDFPage>(await naskbanPageResponse.Content.ReadAsStringAsync());
+                                var nextPage = book.Pages.Where(p => p.PageNumber == naskbanLink.PageNumber + t).Single();
                                 pageText = nextPage.PageText;
 
                                 found = 0;
@@ -354,14 +351,7 @@ namespace RMuseum.Services.Implementation
                             
                             if (!firstVerseFound && naskbanLink.PageNumber > 1)
                             {
-                                naskbanPageResponse = await secureClient.GetAsync($"https://api.naskban.ir/api/pdf/{naskbanLink.PDFBookId}/page/{naskbanLink.PageNumber - 1}");
-                                if (!naskbanPageResponse.IsSuccessStatusCode)
-                                {
-                                    continue;
-                                }
-                                naskbanPageResponse.EnsureSuccessStatusCode();
-
-                                var prevPage = JsonConvert.DeserializeObject<PDFPage>(await naskbanPageResponse.Content.ReadAsStringAsync());
+                                var prevPage = book.Pages.Where(p => p.PageNumber == (naskbanLink.PageNumber - 1)).Single();
                                 pageText = prevPage.PageText;
 
                                 found = 0;
