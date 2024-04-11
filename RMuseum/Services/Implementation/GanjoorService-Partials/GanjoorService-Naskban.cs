@@ -299,6 +299,8 @@ namespace RMuseum.Services.Implementation
 
                         string pageText = currentPage.PageText;
 
+                        bool firstVerseFound = false;
+
                         int found = 0;
                         foreach (var poemWord in poemWords)
                         {
@@ -309,37 +311,48 @@ namespace RMuseum.Services.Implementation
                         }
                         var percentMainPage = found * 100 / poemWords.Length;
 
-                        if (percentMainPage < 70)
+                        if(percentMainPage >= 70)
+                            firstVerseFound = true;
+                        else
                         {
-                            naskbanPageResponse = await secureClient.GetAsync($"https://api.naskban.ir/api/pdf/{naskbanLink.PDFBookId}/page/{naskbanLink.PageNumber + 1}");
-                            if (!naskbanPageResponse.IsSuccessStatusCode)
+                            int t = 0;
+                            do
                             {
-                                continue;
-                            }
-                            naskbanPageResponse.EnsureSuccessStatusCode();
-
-                            var nextPage = JsonConvert.DeserializeObject<PDFPage>(await naskbanPageResponse.Content.ReadAsStringAsync());
-                            pageText = nextPage.PageText;
-
-                            found = 0;
-                            foreach (var poemWord in poemWords)
-                            {
-                                if (pageText.Contains(poemWord))
+                                t++;
+                                naskbanPageResponse = await secureClient.GetAsync($"https://api.naskban.ir/api/pdf/{naskbanLink.PDFBookId}/page/{naskbanLink.PageNumber + t}");
+                                if (!naskbanPageResponse.IsSuccessStatusCode)
                                 {
-                                    found++;
+                                    break;
+                                }
+                                naskbanPageResponse.EnsureSuccessStatusCode();
+
+                                var nextPage = JsonConvert.DeserializeObject<PDFPage>(await naskbanPageResponse.Content.ReadAsStringAsync());
+                                pageText = nextPage.PageText;
+
+                                found = 0;
+                                foreach (var poemWord in poemWords)
+                                {
+                                    if (pageText.Contains(poemWord))
+                                    {
+                                        found++;
+                                    }
+                                }
+                                var percentNextPage = found * 100 / poemWords.Length;
+
+                                if (percentNextPage >= 70)
+                                {
+                                    modifyNaskbanLink.PageNumber = nextPage.PageNumber;
+                                    modifyNaskbanLink.PinterestImageUrl = nextPage.ExtenalThumbnailImageUrl;
+                                    modifyNaskbanLink.PinterestUrl = $"https://naskban.ir/{nextPage.PDFBookId}/{nextPage.PageNumber}";
+                                    modifyNaskbanLink.AltText = $"{bookPage} - تصویر {nextPage.PageNumber.ToPersianNumbers()}";
+                                    firstVerseFound = true;
+                                    break;
                                 }
                             }
-                            var percentNextPage = found * 100 / poemWords.Length;
-
-                            if (percentNextPage >= 70)
-                            {
-                                modifyNaskbanLink.PageNumber = nextPage.PageNumber;
-                                modifyNaskbanLink.PinterestImageUrl = nextPage.ExtenalThumbnailImageUrl;
-                                modifyNaskbanLink.PinterestUrl = $"https://naskban.ir/{nextPage.PDFBookId}/{nextPage.PageNumber}";
-                                modifyNaskbanLink.AltText = $"{bookPage} - تصویر {nextPage.PageNumber.ToPersianNumbers()}";
-                            }
-                            else
-                            if (naskbanLink.PageNumber > 1)
+                            while (t < 5);
+                           
+                            
+                            if (!firstVerseFound && naskbanLink.PageNumber > 1)
                             {
                                 naskbanPageResponse = await secureClient.GetAsync($"https://api.naskban.ir/api/pdf/{naskbanLink.PDFBookId}/page/{naskbanLink.PageNumber - 1}");
                                 if (!naskbanPageResponse.IsSuccessStatusCode)
@@ -367,8 +380,14 @@ namespace RMuseum.Services.Implementation
                                     modifyNaskbanLink.PinterestImageUrl = prevPage.ExtenalThumbnailImageUrl;
                                     modifyNaskbanLink.PinterestUrl = $"https://naskban.ir/{prevPage.PDFBookId}/{prevPage.PageNumber}";
                                     modifyNaskbanLink.AltText = $"{bookPage} - تصویر {prevPage.PageNumber.ToPersianNumbers()}";
+                                    firstVerseFound = true;
                                 }
                             }
+                        }
+
+                        if(!firstVerseFound)
+                        {
+                            modifyNaskbanLink.ReviewResult = ReviewResult.Awaiting;
                         }
 
                         context.Update(modifyNaskbanLink);
