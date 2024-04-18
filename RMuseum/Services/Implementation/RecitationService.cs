@@ -17,6 +17,7 @@ using RMuseum.Services.Implementation;
 using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Models.Notification;
 using RSecurityBackend.Services;
 using RSecurityBackend.Services.Implementation;
 using System;
@@ -925,6 +926,7 @@ namespace RMuseum.Services.Implementationa
                                          "خطا در پردازش فایل ارسالی",
                                          $"شعری با این شناسه در گنجور وجود ندارد.{Environment.NewLine}" +
                                          $"{file.FileName}"
+                                         , NotificationType.Error
                                      );
                                 }
                                 else
@@ -943,6 +945,7 @@ namespace RMuseum.Services.Implementationa
                                          "خطا در پردازش فایل ارسالی",
                                          $"فایل صوتیی همسان با فایل ارسالی پیشتر آپلود شده است.{Environment.NewLine}" +
                                          $"{file.FileName}"
+                                         , NotificationType.Error
                                      );
                                 }
                                 else
@@ -993,6 +996,7 @@ namespace RMuseum.Services.Implementationa
                                          "خطا در پردازش فایل ارسالی",
                                          $"فایل mp3 متناظر یافت نشد(توجه فرمایید که همنامی اهمیت ندارد و فایل mp3 ارسالی باید دقیقاً همان فایلی باشد که همگامی با آن صورت گرفته است.اگر بعداً آن را جایگزین کرده‌اید مشخصات آن با مشخصات درج شده در فایل xml همسان نخواهد بود).{Environment.NewLine}" +
                                          $"{file.FileName}"
+                                         , NotificationType.Error
                                      );
                                     }
                                     else
@@ -1025,6 +1029,7 @@ namespace RMuseum.Services.Implementationa
                                                          "خطای تعداد زیاد خوانش موجود برای شعر",
                                                          $"متأسفانه این شعر در حال حاضر دارای دست کم {maxRecitationsPerPoem.ToPersianNumbers()} خوانش است و امکان ارسال خوانش جدید برای آن وجود ندارد. اگر روی ارسال خوانش برای این شعر اصرار دارید لطفاً خوانش‌های موجود آن را بررسی کنید و اشکالاتی که منطقاً خوانش را قابل حذف می‌کند از طریق ابزار گزارش خطا گزارش کنید. راه دیگر آن است که برای اشعار دیگری که تعداد زیادی خوانش ندارند خوانش ارسال کنید.{Environment.NewLine}" +
                                                          $"{file.FileName}"
+                                                         , NotificationType.Error
                                                      );
                                         }
                                         else
@@ -1162,6 +1167,7 @@ namespace RMuseum.Services.Implementationa
                                          "خطا در پردازش فایل ارسالی",
                                          $"{exp}{Environment.NewLine}" +
                                          $"{file.FileName}"
+                                         , NotificationType.Error
                                      );
                         }
                         processFilesCount++;
@@ -1185,6 +1191,7 @@ namespace RMuseum.Services.Implementationa
                                          "خطا در پردازش فایل ارسالی",
                                          $"فایل mp3 متناظر یافت نشد(توجه فرمایید که همنامی اهمیت ندارد و فایل mp3 ارسالی باید دقیقاً همان فایلی باشد که همگامی با آن صورت گرفته است.اگر بعداً آن را جایگزین کرده‌اید مشخصات آن با مشخصات درج شده در فایل xml همسان نخواهد بود).{Environment.NewLine}" +
                                          $"{file.FileName}"
+                                         , NotificationType.Error
                                      );
 
                         }
@@ -1342,6 +1349,7 @@ namespace RMuseum.Services.Implementationa
                     $"خوانش ارسالی {narration.AudioTitle} منتشر شد.{Environment.NewLine}" +
                     $"لطفا توجه فرمایید که ممکن است ظاهر شدن تأثیر تغییرات روی سایت به دلیل تنظیمات حفظ کارایی گنجور تا یک روز طول بکشد.{Environment.NewLine}" +
                     $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+                    , NotificationType.NoActionRequired
                 );
 
             }
@@ -1358,6 +1366,7 @@ namespace RMuseum.Services.Implementationa
                    replace ? "خطا در به‌روزآوری نهایی اطلاعات خوانش ارسالی" : "خطا در انتشار نهایی خوانش ارسالی",
                    $"انتشار یا به‌روزآوری خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
                    $"لطفاً در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
+                   , NotificationType.Error
                );
 
                 //I mean admins!
@@ -1371,6 +1380,7 @@ namespace RMuseum.Services.Implementationa
                                             (Guid)moderator.Id,
                                             replace ? "خطا در به‌روزآوری نهایی اطلاعات خوانش ارسالی" : "خطا در انتشار نهایی خوانش ارسالی",
                                             $"لطفا صف انتظار را بررسی کنید.{Environment.NewLine}"
+                                            , NotificationType.Error
                                         );
                     }
                 }
@@ -1428,6 +1438,7 @@ namespace RMuseum.Services.Implementationa
                     $"خوانش ارسالی {audioTitle} حذف شد.{Environment.NewLine}" +
                     $"لطفاً توجه فرمایید که ممکن است ظاهر شدن تأثیر تغییرات روی وبگاه به دلیل تنظیمات حفظ کارایی گنجور تا یک روز طول بکشد.{Environment.NewLine}" +
                     $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+                    , NotificationType.NoActionRequired
                 );
 
 
@@ -1445,6 +1456,7 @@ namespace RMuseum.Services.Implementationa
                    "خطا در حذف نهایی خوانش ارسالی",
                    $"حذف نهایی خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
                    $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
+                   , NotificationType.Error
                );
 
                 //I mean admins!
@@ -1458,6 +1470,7 @@ namespace RMuseum.Services.Implementationa
                                             (Guid)moderator.Id,
                                             "خطا در حذف نهایی خوانش ارسالی",
                                             $"لطفا صف انتظار را بررسی کنید.{Environment.NewLine}"
+                                            , NotificationType.Error
                                         );
                     }
                 }
@@ -1514,6 +1527,7 @@ namespace RMuseum.Services.Implementationa
                     $"اطلاعات خوانش ارسالی {narration.AudioTitle} به‌روز شد.{Environment.NewLine}" +
                     $"لطفا توجه فرمایید که فایل‌های صوتی معمولاً روی مرورگرها کَش می‌شوند. جهت اطمینان از جایگزینی فایل می‌بایست با مرورگری که تا به حال شعر را با آن ندیده‌اید بررسی بفرمایید.{Environment.NewLine}" +
                     $"می‌توانید با مراجعه به <a href=\"https://ganjoor.net/?p={narration.GanjoorPostId}\">این صفحه</a> وضعیت آن را بررسی کنید."
+                    , NotificationType.NoActionRequired
                 );
                 }
 
@@ -1534,6 +1548,7 @@ namespace RMuseum.Services.Implementationa
                        "خطا در به‌روزآوری نهایی اطلاعات خوانش ارسالی",
                        $"به‌روزآوری اطلاعات خوانش ارسالی {narration.AudioTitle} با خطا مواجه شد.{Environment.NewLine}" +
                        $"لطفا در صف انتشار گنجور وضعیت آن را بررسی کنید و تلاش مجدد بزنید."
+                       , NotificationType.Error
                    );
                 }
 
@@ -1549,6 +1564,7 @@ namespace RMuseum.Services.Implementationa
                                             (Guid)moderator.Id,
                                             "خطا در به روزآوری نهایی خوانش ارسالی",
                                             $"لطفا صف انتظار را بررسی کنید.{Environment.NewLine}"
+                                            , NotificationType.Error
                                         );
                     }
                 }
