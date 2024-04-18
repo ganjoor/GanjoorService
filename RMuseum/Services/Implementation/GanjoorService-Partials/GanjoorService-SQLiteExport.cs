@@ -267,6 +267,7 @@ namespace RMuseum.Services.Implementation
                     await sqliteConnection.ExecuteAsync(q);
                     await sqliteConnection.ExecuteAsync("BEGIN;");
                     string bio = poet.Description;
+                    if(bio == null) { bio = ""; }
                     bio = bio.Replace("\"", "").Replace("'", "");
                     await sqliteConnection.ExecuteAsync($"INSERT INTO poet (id, name, cat_id, description) VALUES ({poet.Id}, '{poet.Nickname}', {catPoet.Id}, '{(ignoreBio ? "" : bio)}');");
                     await ExportCatToSqlite(context, sqliteConnection, catPoet);
