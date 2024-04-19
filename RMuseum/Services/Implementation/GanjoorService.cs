@@ -32,6 +32,7 @@ using System.Text;
 using RMuseum.Models.Auth.ViewModel;
 using System.Net.Http.Headers;
 using RMuseum.Models.GanjoorIntegration;
+using RSecurityBackend.Models.Notification;
 
 namespace RMuseum.Services.Implementation
 {
@@ -1065,10 +1066,11 @@ namespace RMuseum.Services.Implementation
 
                     await _notificationService.PushNotification((Guid)refComment.UserId,
                                        "پاسخ به حاشیهٔ شما",
-                                       $"{userRes.Result.NickName} برای حاشیهٔ شما روی <a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> این پاسخ را نوشته است: {Environment.NewLine}" +
+                                       $"{userRes.Result.NickName} برای حاشیهٔ شما روی <a href=\"https://ganjoor.net{poem.FullUrl}\">{poem.FullTitle}</a> این پاسخ را نوشته است: {Environment.NewLine}" +
                                        $"{content}" +
                                        $"این متن حاشیهٔ خود شماست: {Environment.NewLine}" +
-                                       $"{refComment.HtmlComment}"
+                                       $"{refComment.HtmlComment}",
+                                       NotificationType.ActionRequired
                                        );
                 }
             }
@@ -1261,7 +1263,8 @@ namespace RMuseum.Services.Implementation
                                        $"{reason}{Environment.NewLine}" +
                                        $"<a href=\"https://ganjoor.net?p={comment.PoemId}\">نشانی صفحهٔ متناظر در گنجور</a>{Environment.NewLine}" +
                                        $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
-                                       $"{comment.HtmlComment}"
+                                       $"{comment.HtmlComment}",
+                                       NotificationType.Warning
                                        );
             }
 
@@ -1275,7 +1278,8 @@ namespace RMuseum.Services.Implementation
                                            "حذف پاسخ شما به حاشیه",
                                            $"پاسخ شما به یکی از حاشیه‌های گنجور به دلیل حذف زنجیرهٔ حاشیه توسط یکی از حاشیه‌گذاران حذف شده است.{Environment.NewLine}" +
                                            $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
-                                           $"{replies[i].HtmlComment}"
+                                           $"{replies[i].HtmlComment}",
+                                           NotificationType.Warning
                                            );
                 }
                 _context.GanjoorComments.Remove(replies[i]);
@@ -1360,7 +1364,8 @@ namespace RMuseum.Services.Implementation
                                            $"پاسخ شما به یکی از حاشیه‌های گنجور به دلیل حذف زنجیرهٔ حاشیه توسط یکی از حاشیه‌گذاران حذف شده است.{Environment.NewLine}" +
                                            $"<a href=\"https://ganjoor.net?p={comment.PoemId}\">نشانی صفحهٔ متناظر در گنجور</a>{Environment.NewLine}" +
                                            $"این متن حاشیهٔ حذف شدهٔ شماست: {Environment.NewLine}" +
-                                           $"{replies[i].HtmlComment}"
+                                           $"{replies[i].HtmlComment}",
+                                           NotificationType.Warning
                                            );
                 }
                 _context.GanjoorComments.Remove(replies[i]);
@@ -1531,8 +1536,9 @@ namespace RMuseum.Services.Implementation
                                     (
                                         (Guid)moderator.Id,
                                         "گزارش حاشیه",
-                                        $"گزارشی برای یک حاشیه ثبت شده است. لطفاً بخش <a href=\"/User/ReportedComments\">حاشیه‌های گزارش شده</a> را بررسی فرمایید.{Environment.NewLine}" +
-                                        $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی حاشیه‌هاست پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
+                                        $"گزارشی برای یک حاشیه ثبت شده است. لطفاً بخش <a href=\"https://ganjoor.net/User/ReportedComments\">حاشیه‌های گزارش شده</a> را بررسی فرمایید.{Environment.NewLine}" +
+                                        $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی حاشیه‌هاست پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید.",
+                                        NotificationType.ActionRequired
                                     );
                 }
             }
