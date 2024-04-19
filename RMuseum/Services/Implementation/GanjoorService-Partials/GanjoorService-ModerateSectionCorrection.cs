@@ -365,8 +365,8 @@ namespace RMuseum.Services.Implementation
 
                 await _notificationService.PushNotification(dbCorrection.UserId,
                                    "بررسی ویرایش پیشنهادی شما",
-                                   $"با سپاس از زحمت و همت شما ویرایش پیشنهادیتان برای <a href=\"{dbPoem.FullUrl}\" target=\"_blank\">{dbPoem.FullTitle}</a> بررسی شد.{Environment.NewLine}" +
-                                   $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «<a href=\"/User/SectionEdits\">ویرایش‌های قطعات من</a>» را مشاهده بفرمایید.{Environment.NewLine}"
+                                   $"با سپاس از زحمت و همت شما ویرایش پیشنهادیتان برای <a href=\"https://ganjoor.net{dbPoem.FullUrl}\" target=\"_blank\">{dbPoem.FullTitle}</a> بررسی شد.{Environment.NewLine}" +
+                                   $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «<a href=\"https://ganjoor.net/User/SectionEdits\">ویرایش‌های قطعات من</a>» را مشاهده بفرمایید.{Environment.NewLine}"
                                    );
 
                 foreach (var section in sections)

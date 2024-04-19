@@ -5,6 +5,7 @@ using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Models.Image;
+using RSecurityBackend.Models.Notification;
 using System;
 using System.Data;
 using System.IO;
@@ -181,8 +182,9 @@ namespace RMuseum.Services.Implementation
                                         (
                                             (Guid)moderator.Id,
                                             "ثبت مشخصات جدید برای سخنور",
-                                            $"درخواستی برای ثبت مشخصات جدید برای «{poet.Nickname}» ثبت شده است. در صورت تمایل به بررسی، بخش مربوط به سخنور را <a href=\"/User/SuggestedPoetSpecLines\">اینجا</a> ببینید.{ Environment.NewLine}" +
-                                            $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی مشخصات است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
+                                            $"درخواستی برای ثبت مشخصات جدید برای «{poet.Nickname}» ثبت شده است. در صورت تمایل به بررسی، بخش مربوط به سخنور را <a href=\"https://ganjoor.net/User/SuggestedPoetSpecLines\">اینجا</a> ببینید.{ Environment.NewLine}" +
+                                            $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی مشخصات است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید.",
+                                            NotificationType.ActionRequired
                                         );
                     }
                 }
@@ -254,7 +256,8 @@ namespace RMuseum.Services.Implementation
                     await _notificationService.PushNotification((Guid)dbModel.SuggestedById,
                                       $"عدم پذیرش مشارکت شما در مشخصات {poet.Nickname}",
                                       $"متأسفانه پیشنهاد شما برای مشخصات {poet.Nickname}{causePhrase} مورد پذیرش قرار نگرفت. پیشنها شما: {Environment.NewLine}" +
-                                      $"{dbModel.Contents}"
+                                      $"{dbModel.Contents}",
+                                      NotificationType.Warning
                                       );
                 }
 

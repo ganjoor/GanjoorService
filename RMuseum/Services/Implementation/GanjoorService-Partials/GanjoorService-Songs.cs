@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using DNTPersianUtils.Core;
 using RSecurityBackend.Services.Implementation;
 using RMuseum.Models.Auth.Memory;
+using RSecurityBackend.Models.Notification;
 
 namespace RMuseum.Services.Implementation
 {
@@ -189,8 +190,9 @@ namespace RMuseum.Services.Implementation
                                     (
                                         (Guid)moderator.Id,
                                         "پیشنهاد آهنگ",
-                                        $"کاربری آهنگ مرتبط جدیدی را برای یک شعر پیشنهاد داده است. لطفاً بخش <a href=\"/User/ReviewSongs\">آهنگ‌های پیشنهادی</a> را بررسی فرمایید.{Environment.NewLine}" +
-                                        $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی آهنگ‌های پیشنهادی است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
+                                        $"کاربری آهنگ مرتبط جدیدی را برای یک شعر پیشنهاد داده است. لطفاً بخش <a href=\"https://ganjoor.net/User/ReviewSongs\">آهنگ‌های پیشنهادی</a> را بررسی فرمایید.{Environment.NewLine}" +
+                                        $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی آهنگ‌های پیشنهادی است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید.",
+                                        NotificationType.ActionRequired
                                     );
                 }
             }
@@ -344,7 +346,7 @@ namespace RMuseum.Services.Implementation
                 await _notificationService.PushNotification(
                     (Guid)track.SuggestedById,
                                   "تأیید آهنگ پیشنهادی",
-                                  $"آهنگ پیشنهادی شما («{track.TrackName}» برای «<a href='{poem.FullUrl}'>{poem.FullTitle}</a>») تأیید شد.  {Environment.NewLine}" +
+                                  $"آهنگ پیشنهادی شما («{track.TrackName}» برای «<a href='https://ganjoor.net{poem.FullUrl}'>{poem.FullTitle}</a>») تأیید شد.  {Environment.NewLine}" +
                                   $"از این که به تکمیل اطلاعات گنجور کمک کردید سپاسگزاریم."
                                   );
             }
@@ -353,11 +355,12 @@ namespace RMuseum.Services.Implementation
                 await _notificationService.PushNotification(
                     (Guid)track.SuggestedById,
                                   "رد آهنگ پیشنهادی",
-                                  $"آهنگ پیشنهادی شما («{track.TrackName}» برای «<a href='{poem.FullUrl}'>{poem.FullTitle}</a>») تأیید نشد. {Environment.NewLine}" +
+                                  $"آهنگ پیشنهادی شما («{track.TrackName}» برای «<a href='https://ganjoor.net{poem.FullUrl}'>{poem.FullTitle}</a>») تأیید نشد. {Environment.NewLine}" +
                                   $"علت عدم تأیید: {Environment.NewLine}" +
                                   $"«{track.RejectionCause}» {Environment.NewLine}" +
                                   $"توجه کنید که در پیشنهاد آهنگ می‌بایست دقیقا قطعه‌ای را مشخص کنید که شعر در آن خوانده شده و پیشنهاد خواننده یا آلبوم یا برنامهٔ گلها به طور کلی فایده‌ای ندارد.{Environment.NewLine}" +
-                                  $"اگر تصور می‌کنید اشتباهی رخ داده لطفا مجددا آهنگ را پیشنهاد دهید و در بخش توضیحات دلیل خود را بنویسید.{Environment.NewLine}با سپاس"
+                                  $"اگر تصور می‌کنید اشتباهی رخ داده لطفا مجددا آهنگ را پیشنهاد دهید و در بخش توضیحات دلیل خود را بنویسید.{Environment.NewLine}با سپاس",
+                                  NotificationType.Warning
                                   );
             }
 

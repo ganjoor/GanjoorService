@@ -141,8 +141,8 @@ namespace RMuseum.Services.Implementation
 
                 await _notificationService.PushNotification((Guid)dbQuoted.SuggestedById,
                                   "بررسی مشق شعر پیشنهادی شما",
-                                  $"با سپاس از زحمت و همت شما مشق شعر پیشنهادیتان برای <a href=\"{dbQuoted.CachedRelatedPoemFullUrl}\" target=\"_blank\">{dbQuoted.CachedRelatedPoemFullTitle}</a> بررسی شد.{Environment.NewLine}" +
-                                  $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «<a href=\"/User/MySuggestedQuotes\">مشق شعر‌های پیشنهادی من</a>» را مشاهده بفرمایید.{Environment.NewLine}"
+                                  $"با سپاس از زحمت و همت شما مشق شعر پیشنهادیتان برای <a href=\"https://ganjoor.net{dbQuoted.CachedRelatedPoemFullUrl}\" target=\"_blank\">{dbQuoted.CachedRelatedPoemFullTitle}</a> بررسی شد.{Environment.NewLine}" +
+                                  $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «<a href=\"https://ganjoor.net/User/MySuggestedQuotes\">مشق شعر‌های پیشنهادی من</a>» را مشاهده بفرمایید.{Environment.NewLine}"
                                   );
 
                 return new RServiceResult<bool>(true);
