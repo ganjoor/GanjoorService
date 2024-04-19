@@ -27,6 +27,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DNTPersianUtils.Core;
 using FluentFTP;
+using RSecurityBackend.Models.Notification;
 
 namespace RMuseum.Services.Implementation
 {
@@ -1874,7 +1875,7 @@ namespace RMuseum.Services.Implementation
                         (
                         referenceNote.RAppUserId,
                         $"پاسخگویی {userInfo.Result.NickName} به یادداشت شما دربارهٔ {artificat.Name}",
-                        $"برای مشاهدهٔ پاسخ ارائه شده <a href=\"/items/{artificat.FriendlyUrl}#{note.Id}\">اینجا</a> را ببینید.<br />" +
+                        $"برای مشاهدهٔ پاسخ ارائه شده <a href=\"https://museum.ganjoor.net/items/{artificat.FriendlyUrl}#{note.Id}\">اینجا</a> را ببینید.<br />" +
                         $"پاسخ داده شده: <br />" +
                         $"<blockquote cite=\"/item/{artificat.FriendlyUrl}#{note.Id}\">{note.HtmlContent}</blockquote><br />" +
                         $"یادداشت شما: <br />" +
@@ -1951,7 +1952,7 @@ namespace RMuseum.Services.Implementation
                         (
                         referenceNote.RAppUserId,
                         $"پاسخگویی {userInfo.Result.NickName} به یادداشت شما دربارهٔ {artificat.Name} « {item.Name}",
-                        $"برای مشاهدهٔ پاسخ ارائه شده <a href=\"/items/{artificat.FriendlyUrl}/{item.FriendlyUrl}#{note.Id}\">اینجا</a> را ببینید.<br />" +
+                        $"برای مشاهدهٔ پاسخ ارائه شده <a href=\"https://museum.ganjoor.net/items/{artificat.FriendlyUrl}/{item.FriendlyUrl}#{note.Id}\">اینجا</a> را ببینید.<br />" +
                         $"پاسخ داده شده: <br />" +
                         $"<blockquote cite=\"/item/{artificat.FriendlyUrl}/{item.FriendlyUrl}#{note.Id}\">{note.HtmlContent}</blockquote><br />" +
                         $"یادداشت شما: <br />" +
@@ -2567,7 +2568,8 @@ namespace RMuseum.Services.Implementation
                                        $"توجه فرمایید که یادداشتهای عمومی گنجینهٔ گنجور برای بحث در مورد نسخه‌ها در نظر گرفته شده‌اند و جای بحثهای محتوایی بی‌ربط به نسخهٔ خاص می‌تواند در گنجور باشد.{Environment.NewLine}" +
                                        $"{reasonText}" +
                                        $"این متن یادداشت حذف شدهٔ شماست: {Environment.NewLine}" +
-                                       $"{note.HtmlContent}"
+                                       $"{note.HtmlContent}",
+                                       NotificationType.Warning
                                        );
                 _context.UserNotes.Remove(note);
 
