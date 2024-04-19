@@ -641,7 +641,8 @@ namespace RMuseum.Services.Implementationa
                                             (Guid)moderator.Id,
                                             "درخواست بررسی خوانش",
                                             $"درخواستی برای بررسی خوانشی از «{narration.AudioArtist}» ثبت شده است. در صورت تمایل به بررسی، بخش «{section} در انتظار تأیید» را ببینید.{Environment.NewLine}" +
-                                            $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی خوانش‌هاست پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
+                                            $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی خوانش‌هاست پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید.",
+                                            NotificationType.ActionRequired
                                         );
                     }
                 }
@@ -1252,7 +1253,8 @@ namespace RMuseum.Services.Implementationa
                          narration.OwnerId,
                          "نیاز به بررسی خوانش ارسالی",
                          $"خوانش {narration.AudioTitle} بررسی شده و نیاز به اعمال تغییرات دارد.{Environment.NewLine}" +
-                         $"می‌توانید با مراجعه به خوانش‌هایتان وضعیت آن را بررسی کنید."
+                         $"می‌توانید با مراجعه به خوانش‌هایتان وضعیت آن را بررسی کنید.",
+                         NotificationType.ActionRequired
                      );
             }
             else
@@ -1263,7 +1265,8 @@ namespace RMuseum.Services.Implementationa
                          narration.OwnerId,
                          "عدم پذیرش خوانش ارسالی",
                          $"خوانش ارسالی {narration.AudioTitle} قابل پذیرش نبود.{Environment.NewLine}" +
-                         $"می‌توانید با مراجعه به  خوانش‌هایتان وضعیت آن را بررسی کنید."
+                         $"می‌توانید با مراجعه به  خوانش‌هایتان وضعیت آن را بررسی کنید.",
+                         NotificationType.ActionRequired
                      );
             }
             else //approved:
@@ -2268,7 +2271,8 @@ namespace RMuseum.Services.Implementationa
                                             (Guid)moderator.Id,
                                             "گزارش خطا در خوانش",
                                             $"گزارش خطایی برای یک خوانش ثبت شده است. لطفاً خوانش‌های گزارش شده را در پیشخان خوانشگران مشاهده کنید.{Environment.NewLine}" +
-                                            $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی خوانش‌هاست پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
+                                            $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی خوانش‌هاست پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید.",
+                                            NotificationType.ActionRequired
                                         );
                     }
                 }
@@ -2335,7 +2339,8 @@ namespace RMuseum.Services.Implementationa
                 (
                     (Guid)userId,
                     "عدم پذیرش گزارش خطای خوانش",
-                    $"گزارش خطای ارسالی شما برای خوانش {recitation.AudioTitle} از {recitation.AudioArtist} به دلیل {rejectionNote} مورد پذیرش قرار نگرفت."
+                    $"گزارش خطای ارسالی شما برای خوانش {recitation.AudioTitle} از {recitation.AudioArtist} به دلیل {rejectionNote} مورد پذیرش قرار نگرفت.",
+                    NotificationType.Warning
                 );
                 }
 
@@ -2387,7 +2392,8 @@ namespace RMuseum.Services.Implementationa
                    "خروج خوانش از وضعیت انتشار به دلیل گزارش خطا",
                    $"خوانش {recitation.AudioTitle} از {recitation.AudioArtist} به دلیل تأیید گزارش خطای ارسالی از سوی کاربران از حالت انتشار خارج شده است.{Environment.NewLine}" +
                    $"اشکال گزارش شده: {report.ReasonText}{Environment.NewLine}" +
-                   $"لطفاً پس از بررسی مشکل خوانش یاد شده را حذف کنید."
+                   $"لطفاً پس از بررسی مشکل خوانش یاد شده را حذف کنید.",
+                   NotificationType.Warning
                );
 
                 return new RServiceResult<bool>(true);
@@ -2443,7 +2449,8 @@ namespace RMuseum.Services.Implementationa
                    "تأیید خطای خوانش ارسالی",
                    $"خطایی در خوانش {recitation.AudioTitle} از {recitation.AudioArtist} گزارش و تأیید شده است.{Environment.NewLine}" +
                    $"اشکال گزارش شده: {dbReport.ReasonText}{Environment.NewLine}" +
-                   $"لطفاً بررسی بفرمایید."
+                   $"لطفاً بررسی بفرمایید.",
+                   NotificationType.ActionRequired
                );
 
                 await ComputePoemRecitationsOrdersAsync(recitation.GanjoorPostId);
