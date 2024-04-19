@@ -7,6 +7,7 @@ using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Models.Notification;
 using RSecurityBackend.Services;
 using System;
 using System.IO;
@@ -137,7 +138,8 @@ namespace RMuseum.Services.Implementation
                                             (Guid)moderator.Id,
                                             "ثبت تصویر پیشنهادی جدید برای سخنور",
                                             $"درخواستی برای ثبت تصویر پیشنهادی جدیدی برای «{poet.Nickname}» ثبت شده است. در صورت تمایل به بررسی، بخش مربوط به سخنور را <a href=\"/User/SuggestedPoetPhotos\">اینجا</a> ببینید.{ Environment.NewLine}" +
-                                            $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی تصاویر است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید."
+                                            $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی تصاویر است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید.",
+                                            NotificationType.ActionRequired
                                         );
                     }
                 }
@@ -357,7 +359,8 @@ namespace RMuseum.Services.Implementation
                     string causePhrase = string.IsNullOrEmpty(rejectionCause) ? "" : $" به دلیل {rejectionCause} ";
                     await _notificationService.PushNotification((Guid)dbModel.SuggestedById,
                                       $"عدم پذیرش تصویر ارسالی شما برای {poet.Nickname}",
-                                      $"متأسفانه تصویر پیشنهادی شما برای مشخصات {poet.Nickname}{causePhrase} مورد پذیرش قرار نگرفت"
+                                      $"متأسفانه تصویر پیشنهادی شما برای مشخصات {poet.Nickname}{causePhrase} مورد پذیرش قرار نگرفت",
+                                      NotificationType.Warning
                                       );
                 }
 
