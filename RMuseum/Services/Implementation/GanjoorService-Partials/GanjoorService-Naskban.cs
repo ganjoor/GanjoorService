@@ -311,15 +311,18 @@ namespace RMuseum.Services.Implementation
                         }
                         var percentMainPage = found * 100 / poemWords.Length;
 
-                        if(percentMainPage >= 70)
+                        if (percentMainPage >= 70)
+                        {
                             firstVerseFound = true;
+                            modifyNaskbanLink.MatchPercent = percentMainPage;
+                        }
                         else
                         {
                             int t = 0;
                             do
                             {
                                 t++;
-                                if((naskbanLink.PageNumber + t) >= book.Pages.Count)
+                                if ((naskbanLink.PageNumber + t) >= book.Pages.Count)
                                 {
                                     break;
                                 }
@@ -343,13 +346,14 @@ namespace RMuseum.Services.Implementation
                                     modifyNaskbanLink.PinterestImageUrl = nextPage.ExtenalThumbnailImageUrl;
                                     modifyNaskbanLink.PinterestUrl = $"https://naskban.ir/{nextPage.PDFBookId}/{nextPage.PageNumber}";
                                     modifyNaskbanLink.AltText = $"{bookPage} - تصویر {nextPage.PageNumber.ToPersianNumbers()}";
+                                    modifyNaskbanLink.MatchPercent = percentNextPage;
                                     firstVerseFound = true;
                                     break;
                                 }
                             }
                             while (t < 5);
-                           
-                            
+
+
                             if (!firstVerseFound && naskbanLink.PageNumber > 1)
                             {
                                 var prevPage = book.Pages.Where(p => p.PageNumber == (naskbanLink.PageNumber - 1)).Single();
@@ -371,6 +375,7 @@ namespace RMuseum.Services.Implementation
                                     modifyNaskbanLink.PinterestImageUrl = prevPage.ExtenalThumbnailImageUrl;
                                     modifyNaskbanLink.PinterestUrl = $"https://naskban.ir/{prevPage.PDFBookId}/{prevPage.PageNumber}";
                                     modifyNaskbanLink.AltText = $"{bookPage} - تصویر {prevPage.PageNumber.ToPersianNumbers()}";
+                                    modifyNaskbanLink.MatchPercent= percentPrevPage;
                                     firstVerseFound = true;
                                 }
                             }
