@@ -6707,6 +6707,11 @@
             naskban link id
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PinterestLink.MatchPercent">
+            <summary>
+            match percent
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.ReviewResult">
             <summary>
             Review Result

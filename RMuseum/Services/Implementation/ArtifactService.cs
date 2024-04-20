@@ -3140,7 +3140,8 @@ namespace RMuseum.Services.Implementation
                 ReviewResult = ReviewResult.Awaiting,
                 SuggestionDate = DateTime.Now,
                 SuggestedById = userId,
-                Synchronized = false
+                Synchronized = false,
+                MatchPercent = 0,
             };
             _context.PinterestLinks.Add(link);
             await _context.SaveChangesAsync();

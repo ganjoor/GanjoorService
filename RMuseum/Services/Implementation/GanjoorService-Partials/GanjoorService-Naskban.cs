@@ -124,7 +124,8 @@ namespace RMuseum.Services.Implementation
                                 IsTextOriginalSource = isTextOriginalSource,
                                 PDFBookId = unsynchronized.PDFBookId,
                                 PageNumber = unsynchronized.PageNumber,
-                                NaskbanLinkId = unsynchronized.Id
+                                NaskbanLinkId = unsynchronized.Id,
+                                MatchPercent = 0,
                             };
                             context.PinterestLinks.Add(link);
                             await context.SaveChangesAsync();
