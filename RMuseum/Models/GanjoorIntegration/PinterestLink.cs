@@ -134,5 +134,10 @@ namespace RMuseum.Models.GanjoorIntegration
         /// naskban link id
         /// </summary>
         public Guid? NaskbanLinkId { get; set; }
+
+        /// <summary>
+        /// match percent
+        /// </summary>
+        public int MatchPercent { get; set; }
     }
 }
