@@ -268,7 +268,7 @@ namespace RMuseum.Services.Implementation
                             HttpResponseMessage responseBook = await secureClient.GetAsync($"https://api.naskban.ir/api/pdf/{naskbanLink.PDFBookId}?includePages=true&includeBookText=false&includePageText=true");
                             if (responseBook.StatusCode != HttpStatusCode.OK)
                             {
-                                return new RServiceResult<bool>(false, "book fetch error: " + JsonConvert.DeserializeObject<string>(await responseBook.Content.ReadAsStringAsync()));
+                                return new RServiceResult<bool>(false, $"book fetch error bookid = {naskbanLink.PDFBookId} naskbanlinkid = {naskbanLink.Id} - " + JsonConvert.DeserializeObject<string>(await responseBook.Content.ReadAsStringAsync()));
                             }
                             responseBook.EnsureSuccessStatusCode();
 
