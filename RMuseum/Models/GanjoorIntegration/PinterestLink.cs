@@ -139,5 +139,10 @@ namespace RMuseum.Models.GanjoorIntegration
         /// match percent
         /// </summary>
         public int MatchPercent { get; set; }
+
+        /// <summary>
+        /// reviewed by a human
+        /// </summary>
+        public bool HumanReviewed { get; set; }
     }
 }

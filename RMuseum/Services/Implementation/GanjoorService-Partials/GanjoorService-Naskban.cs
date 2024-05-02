@@ -125,7 +125,8 @@ namespace RMuseum.Services.Implementation
                                 PDFBookId = unsynchronized.PDFBookId,
                                 PageNumber = unsynchronized.PageNumber,
                                 NaskbanLinkId = unsynchronized.Id,
-                                MatchPercent = 0,
+                                MatchPercent = unsynchronized.SuggestedByMachine ? 100 : 0,
+                                HumanReviewed = !unsynchronized.SuggestedByMachine,
                             };
                             context.PinterestLinks.Add(link);
                             await context.SaveChangesAsync();
@@ -255,6 +256,7 @@ namespace RMuseum.Services.Implementation
                     foreach (var naskbanLink in naskbanLinks)
                     {
                         progress++;
+                        if (naskbanLink.HumanReviewed) continue;
                         if (naskbanLink.SuggestionDate != firstLinkSuggestionDate)
                         {
                             var option = await context.Options.Where(o => o.Id == lastJustifiedNaskbanLinkPoemIdGenericOption.Id).SingleAsync();

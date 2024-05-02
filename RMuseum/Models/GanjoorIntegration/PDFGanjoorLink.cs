@@ -91,5 +91,10 @@ namespace RMuseum.Models.GanjoorIntegration
         /// external thumbnail image url
         /// </summary>
         public string ExternalThumbnailImageUrl { get; set; }
+
+        /// <summary>
+        /// suggested using machine computations
+        /// </summary>
+        public bool SuggestedByMachine { get; set; }
     }
 }
