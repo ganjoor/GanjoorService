@@ -3669,6 +3669,23 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// mark naskban links for poems of a categiory and its children as human reviewed
+        /// </summary>
+        /// <param name="naskbanBookId"></param>
+        /// <param name="catId"></param>
+        /// <param name="humanReviewed"></param>
+        /// <returns></returns>
+        [HttpPut("naskban/humanreviewed/{naskbanBookId}/{catId}/{humanReviewed}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult MarkNaskbanLinksAsHumanReviewed(int naskbanBookId, int catId, bool humanReviewed)
+        {
+            _ganjoorService.MarkNaskbanLinksAsHumanReviewed(naskbanBookId, catId, humanReviewed);
+            return Ok();
+        }
+
+        /// <summary>
         /// delete poem related naskban images by url
         /// </summary>
         /// <param name="naskbanUrl"></param>

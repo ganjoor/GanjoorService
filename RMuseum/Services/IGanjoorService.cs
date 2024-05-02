@@ -1221,6 +1221,14 @@ namespace RMuseum.Services
         void JustifyNaskbanPageNumbers(string naskbanUserName, string naskbanPassword);
 
         /// <summary>
+        /// mark naskban links as human reviewed
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="parentCatId"></param>
+        /// <param name="humanReviewed"></param>
+        void MarkNaskbanLinksAsHumanReviewed(int bookId, int parentCatId, bool humanReviewed);
+
+        /// <summary>
         /// delete poem related naskban images by url
         /// </summary>
         /// <param name="naskbanUrl"></param>
