@@ -2024,6 +2024,15 @@
             <param name="humanReviewed"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.MarkNaskbanLinksAsTextOriginal(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            mark naskban links a text original for a category
+            </summary>
+            <param name="naskbanBookId"></param>
+            <param name="catId"></param>
+            <param name="textOriginal"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(System.String)">
             <summary>
             delete poem related naskban images by url
@@ -15982,6 +15991,14 @@
             <param name="parentCatId"></param>
             <param name="humanReviewed"></param>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.MarkNaskbanLinksAsTextOriginal(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            mark naskban links a text original for a category
+            </summary>
+            <param name="bookId"></param>
+            <param name="parentCatId"></param>
+            <param name="textOriginal"></param>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(System.String)">
             <summary>
             delete poem related naskban images by url
@@ -17953,6 +17970,14 @@
             <param name="bookId"></param>
             <param name="parentCatId"></param>
             <param name="humanReviewed"></param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.MarkNaskbanLinksAsTextOriginal(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            mark naskban links a text original for a category
+            </summary>
+            <param name="bookId"></param>
+            <param name="parentCatId"></param>
+            <param name="textOriginal"></param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(System.String)">
             <summary>

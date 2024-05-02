@@ -1229,6 +1229,14 @@ namespace RMuseum.Services
         void MarkNaskbanLinksAsHumanReviewed(int bookId, int parentCatId, bool humanReviewed);
 
         /// <summary>
+        /// mark naskban links a text original for a category
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="parentCatId"></param>
+        /// <param name="textOriginal"></param>
+        void MarkNaskbanLinksAsTextOriginal(int bookId, int parentCatId, bool textOriginal);
+
+        /// <summary>
         /// delete poem related naskban images by url
         /// </summary>
         /// <param name="naskbanUrl"></param>
