@@ -18,6 +18,7 @@ using RSecurityBackend.Services.Implementation;
 using RSecurityBackend.Models.Generic.Db;
 using RMuseum.Models.PDFLibrary;
 using DNTPersianUtils.Core;
+using System.Collections.Generic;
 
 namespace RMuseum.Services.Implementation
 {
@@ -146,6 +147,57 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// mark naskban links as human reviewed
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="parentCatId"></param>
+        /// <param name="humanReviewed"></param>
+        public void MarkNaskbanLinksAsHumanReviewed(int bookId, int parentCatId, bool humanReviewed)
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                           (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                               {
+                                   LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                   var job = (await jobProgressServiceEF.NewJob($"MarkNaskbanLinksAsHumanReviewed(bookId: {bookId} - cat:{parentCatId})", "Query data")).Result;
+                                   try
+                                   {
+                                       List<int> catIdList = new List<int>
+                                       {
+                                           parentCatId
+                                       };
+                                       await _populateCategoryChildren(context, parentCatId, catIdList);
+                                       int poemCount = 0;
+                                       int progress = 0;
+                                       foreach (int catId in catIdList)
+                                       {
+                                           var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).ToListAsync();
+                                           poemCount += poems.Count;
+                                           foreach (var poem in poems)
+                                           {
+                                               var naskbanLinks = await context.PinterestLinks.Where(l => l.GanjoorPostId == poem.Id && l.PDFBookId == bookId).ToListAsync();
+                                               foreach(var link in naskbanLinks)
+                                               {
+                                                   link.HumanReviewed = humanReviewed;
+                                                   context.Update(link);
+                                               }
+                                               await jobProgressServiceEF.UpdateJob(job.Id, progress, $"{progress} از {poemCount}");
+                                           }
+                                       }
+                                       
+                                   }
+                                   catch (Exception exp)
+                                   {
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                   }
+                                  
+                               }
+                           });
+        }
+
+        /// <summary>
         /// delete poem related naskban images by url
         /// </summary>
         /// <param name="naskbanUrl"></param>
@@ -167,6 +219,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }
+
 
         /// <summary>
         /// justify naskban links
