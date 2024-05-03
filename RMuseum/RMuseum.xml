@@ -3508,6 +3508,11 @@
             discover quoted q items
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.PaperSources">
+            <summary>
+            paper sources
+            </summary>
+        </member>
         <member name="T:RMuseum.Migrations.PictureFileExtUrl">
             <inheritdoc />
         </member>
@@ -13076,6 +13081,101 @@
             Manuscript
             </summary>
         </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.GanjoorCatId">
+            <summary>
+            cat id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.GanjoorCatFullTitle">
+            <summary>
+            cat full title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.GanjoorCatFullUrl">
+            <summary>
+            cat full url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.GanjoorPoemId">
+            <summary>
+            start from this poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.BookId">
+            <summary>
+            book id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.BookTitle">
+            <summary>
+            book title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.PageNumber">
+            <summary>
+            page number
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.Threshold">
+            <summary>
+            threshold
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.QueueTime">
+            <summary>
+            queue time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.Started">
+            <summary>
+            started
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.StartTime">
+            <summary>
+            start time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.LastUpdate">
+            <summary>
+            last update
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.LastUpdatedByUserId">
+            <summary>
+            updated by user
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.CurrentPoemId">
+            <summary>
+            current poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.Progress">
+            <summary>
+            progress
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.CurrentPageNumber">
+            <summary>
+            current page number
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.Finished">
+            <summary>
+            finished
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.PDFLibrary.GanjoorPoemMatchFinding.FinishTime">
+            <summary>
+            finish time
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.PDFLibrary.MultiVolumePDFCollection">
             <summary>
             Multi Volume Book
@@ -18067,6 +18167,22 @@
             </summary>
             <param name="naskbanUserName"></param>
             <param name="naskbanPassword"></param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportNaskbanGanjoorPoemMatchFindings(System.String,System.String)">
+            <summary>
+            import naskban ganjoor matchings
+            </summary>
+            <param name="naskbanUserName"></param>
+            <param name="naskbanPassword"></param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._ImportNaskbanGanjoorPoemMatchFindingsAsync(RMuseum.DbContext.RMuseumDbContext,System.String,System.String)">
+            <summary>
+            import naskban ganjoor matchings
+            </summary>
+            <param name="context"></param>
+            <param name="naskbanUserName"></param>
+            <param name="naskbanPassword"></param>
+            <returns>number of synched items</returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetSuggestedSpecLinesAsync(System.Int32)">
             <summary>

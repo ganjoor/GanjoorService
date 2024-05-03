@@ -569,5 +569,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<DiscoverQuotedQueueItem> DiscoverQuotedQueueItems { get; set; }
 
+        /// <summary>
+        /// paper sources
+        /// </summary>
+        public DbSet<PaperSource> PaperSources { get; set; }
+
     }
 }

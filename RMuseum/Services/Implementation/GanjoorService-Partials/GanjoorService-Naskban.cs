@@ -19,6 +19,7 @@ using RSecurityBackend.Models.Generic.Db;
 using RMuseum.Models.PDFLibrary;
 using DNTPersianUtils.Core;
 using System.Collections.Generic;
+using RMuseum.Migrations;
 
 namespace RMuseum.Services.Implementation
 {
@@ -505,6 +506,119 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// import naskban ganjoor matchings
+        /// </summary>
+        /// <param name="naskbanUserName"></param>
+        /// <param name="naskbanPassword"></param>
+        public void ImportNaskbanGanjoorPoemMatchFindings(string naskbanUserName, string naskbanPassword)
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                           (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                               {
+                                   LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                   var job = (await jobProgressServiceEF.NewJob("ImportNaskbanGanjoorPoemMatchFindings", "Query data")).Result;
+                                   var res = await _ImportNaskbanGanjoorPoemMatchFindingsAsync(context, naskbanUserName, naskbanPassword);
+                                   if (!string.IsNullOrEmpty(res.ExceptionString))
+                                   {
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, res.ExceptionString);
+                                   }
+                                   else
+                                   {
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                   }
+                               }
+                           });
+        }
+
+        /// <summary>
+        /// import naskban ganjoor matchings
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="naskbanUserName"></param>
+        /// <param name="naskbanPassword"></param>
+        /// <returns>number of synched items</returns>
+        private async Task<RServiceResult<int>> _ImportNaskbanGanjoorPoemMatchFindingsAsync(RMuseumDbContext context, string naskbanUserName, string naskbanPassword)
+        {
+            try
+            {
+                LoggedOnUserModelEx loggedOnUser;
+                using (HttpClient client = new HttpClient())
+                {
+                    LoginViewModel loginViewModel = new LoginViewModel()
+                    {
+                        Username = naskbanUserName,
+                        Password = naskbanPassword,
+                        ClientAppName = "Ganjoor API",
+                        Language = "fa-IR"
+                    };
+                    var loginResponse = await client.PostAsync("https://api.naskban.ir/api/users/login", new StringContent(JsonConvert.SerializeObject(loginViewModel), Encoding.UTF8, "application/json"));
+
+                    if (loginResponse.StatusCode != HttpStatusCode.OK)
+                    {
+                        return new RServiceResult<int>(0, "login error: " + JsonConvert.DeserializeObject<string>(await loginResponse.Content.ReadAsStringAsync()));
+                    }
+                    loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await loginResponse.Content.ReadAsStringAsync());
+                }
+
+
+                using (HttpClient secureClient = new HttpClient())
+                {
+                    secureClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loggedOnUser.Token);
+                    var unsyncedResponse = await secureClient.GetAsync("https://api.naskban.ir/api/pdf/ganjoor/matching");
+                    if (!unsyncedResponse.IsSuccessStatusCode)
+                    {
+                        return new RServiceResult<int>(0, "unsync error: " + JsonConvert.DeserializeObject<string>(await unsyncedResponse.Content.ReadAsStringAsync()));
+                    }
+                    var matchings = JsonConvert.DeserializeObject<GanjoorPoemMatchFinding[]>(await unsyncedResponse.Content.ReadAsStringAsync());
+                    foreach (var matching in matchings)
+                    {
+                        if (false == await context.PaperSources.Where(p => p.NaskbanBookId == matching.BookId).AnyAsync())
+                        {
+                            HttpResponseMessage responseBook = await secureClient.GetAsync($"https://api.naskban.ir/api/pdf/{matching.BookId}?includePages=false&includeBookText=false&includePageText=false");
+                            if (responseBook.StatusCode != HttpStatusCode.OK)
+                            {
+                                return new RServiceResult<int>(0, $"book fetch error bookid = {matching.BookId} matching id = {matching.Id} - " + JsonConvert.DeserializeObject<string>(await responseBook.Content.ReadAsStringAsync()));
+                            }
+                            responseBook.EnsureSuccessStatusCode();
+
+                            var book = JsonConvert.DeserializeObject<PDFBook>(await responseBook.Content.ReadAsStringAsync());
+                            var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == matching.GanjoorCatId).SingleAsync();
+                            PaperSource paperSource = new PaperSource()
+                            {
+                                GanjoorPoetId = cat.PoetId,
+                                GanjoorCatId = matching.GanjoorCatId,
+                                GanjoorCatFullTitle = matching.GanjoorCatFullTitle,
+                                GanjoorCatFullUrl = matching.GanjoorCatFullUrl,
+                                BookType = LinkType.Naskban,
+                                BookFullUrl = $"https://naskban.ir/{matching.BookId}",
+                                NaskbanBookId = matching.BookId,
+                                BookFullTitle = matching.BookTitle,
+                                CoverThumbnailImageUrl = book.ExtenalCoverImageUrl,
+                                Description = "",
+                                IsTextOriginalSource = false,
+                                MatchPercent = 0,
+                                HumanReviewed = false,
+                            };
+                            context.PaperSources.Add(paperSource);
+                            await context.SaveChangesAsync();
+                        }
+                    }
+
+                    var logoutUrl = $"https://api.naskban.ir/api/users/delsession?userId={loggedOnUser.User.Id}&sessionId={loggedOnUser.SessionId}";
+                    await secureClient.DeleteAsync(logoutUrl);
+                    return new RServiceResult<int>(matchings.Length);
+                }
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<int>(0, exp.ToString());
             }
         }
     }
