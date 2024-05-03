@@ -3704,6 +3704,25 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// import naskban ganjoor matchings
+        /// </summary>
+        /// <param name="loginViewModel"></param>
+        /// <returns></returns>
+        [HttpPut("naskban/import/matchingbooks")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult ImportNaskbanGanjoorPoemMatchFindings(
+           [AuditIgnore]
+            [FromBody]
+            LoginViewModel loginViewModel
+           )
+        {
+            _ganjoorService.ImportNaskbanGanjoorPoemMatchFindings(loginViewModel.Username, loginViewModel.Password);
+            return Ok();
+        }
+
+        /// <summary>
         /// delete poem related naskban images by url
         /// </summary>
         /// <param name="naskbanUrl"></param>
