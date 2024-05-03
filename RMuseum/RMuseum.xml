@@ -6517,6 +6517,81 @@
             Naskban
             </summary>
         </member>
+        <member name="T:RMuseum.Models.GanjoorIntegration.PaperSource">
+            <summary>
+            Ganjoor Paper Source
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.GanjoorPoetId">
+            <summary>
+            poet id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.GanjoorCatId">
+            <summary>
+            cat id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.GanjoorCatFullTitle">
+            <summary>
+            cat full title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.GanjoorCatFullUrl">
+            <summary>
+            cat full url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.BookType">
+            <summary>
+            book type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.BookFullUrl">
+            <summary>
+            book full url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.NaskbanBookId">
+            <summary>
+            naskban book id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.BookFullTitle">
+            <summary>
+            book title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.IsTextOriginalSource">
+            <summary>
+             is the text original source for the category?
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.CoverThumbnailImageUrl">
+            <summary>
+            cover thumbnail image url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.MatchPercent">
+            <summary>
+            match percent
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.HumanReviewed">
+            <summary>
+            reviewed by a human
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink">
             <summary>
             PDFBook Ganjoor Link
