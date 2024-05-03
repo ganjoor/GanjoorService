@@ -1221,6 +1221,13 @@ namespace RMuseum.Services
         void JustifyNaskbanPageNumbers(string naskbanUserName, string naskbanPassword);
 
         /// <summary>
+        /// import naskban ganjoor matchings
+        /// </summary>
+        /// <param name="naskbanUserName"></param>
+        /// <param name="naskbanPassword"></param>
+        void ImportNaskbanGanjoorPoemMatchFindings(string naskbanUserName, string naskbanPassword);
+
+        /// <summary>
         /// mark naskban links as human reviewed
         /// </summary>
         /// <param name="bookId"></param>

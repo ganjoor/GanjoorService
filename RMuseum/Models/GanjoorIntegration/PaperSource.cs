@@ -76,5 +76,10 @@ namespace RMuseum.Models.GanjoorIntegration
         /// reviewed by a human
         /// </summary>
         public bool HumanReviewed { get; set; }
+
+        /// <summary>
+        /// position in sorting
+        /// </summary>
+        public int OrderIndicator { get; set; }
     }
 }

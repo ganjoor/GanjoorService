@@ -6597,6 +6597,11 @@
             reviewed by a human
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.OrderIndicator">
+            <summary>
+            position in sorting
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink">
             <summary>
             PDFBook Ganjoor Link

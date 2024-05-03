@@ -605,6 +605,7 @@ namespace RMuseum.Services.Implementation
                                 IsTextOriginalSource = false,
                                 MatchPercent = 0,
                                 HumanReviewed = false,
+                                OrderIndicator = 0,
                             };
                             context.PaperSources.Add(paperSource);
                             await context.SaveChangesAsync();
