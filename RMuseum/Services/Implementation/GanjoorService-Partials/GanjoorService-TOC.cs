@@ -509,10 +509,7 @@ namespace RMuseum.Services.Implementation
                             html += $"</div>{Environment.NewLine}";//related-poets-section
                             html += $"</div>{Environment.NewLine}";//related-images-frame
                         }
-
-                        html += $"<div class=\"part-title-block-alt\" id=\"photos-{poet.Id}\">{Environment.NewLine}";
-                        html += $"<a href=\"/photos?p={cat.UrlSlug}\">تصاویر پیشنهادی برای {poet.Nickname}</a>{Environment.NewLine}";
-                        html += $"</div>{Environment.NewLine}";
+                     
                     }
 
 
