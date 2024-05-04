@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using NAudio.Gui;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
@@ -627,6 +628,8 @@ namespace GanjooRazor.Pages
             }
         }
 
+        public GanjoorPoetSuggestedPictureViewModel Photo { get; set; }
+
         /// <summary>
         /// Get
         /// </summary>
@@ -735,6 +738,21 @@ namespace GanjooRazor.Pages
                         return Page();
                     }
                     CategoryHasRecitations = JsonConvert.DeserializeObject<bool>(await catHasAnyRecitationQuery.Content.ReadAsStringAsync());
+                }
+
+                if(IsPoetPage)
+                {
+                    var responsePhotos = await _httpClient.GetAsync($"{APIRoot.Url}/api/poetphotos/poet/{GanjoorPage.PoetOrCat.Poet.Id}");
+                    if (!responsePhotos.IsSuccessStatusCode)
+                    {
+                        LastError = JsonConvert.DeserializeObject<string>(await responsePhotos.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+                    var photos = JArray.Parse(await responsePhotos.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetSuggestedPictureViewModel>>();
+                    if(photos.Any())
+                    {
+                        Photo = photos.First();
+                    }
                 }
 
                 if (IsPoemPage)

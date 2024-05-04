@@ -292,7 +292,7 @@
                             {
                                 @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
                             }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ]).addTo(map);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ]).addTo(map);
 
                                 for (var i = 0; i < poemGeoTags.length; i++) {
                                     var poemGeoTag = poemGeoTags[i];
@@ -400,6 +400,51 @@
                             <div id="recitations-section">
                             </div>
                         </div>
+                    }
+
+                    @if (Model.IsPoetPage)
+                    {
+                        <div class="related-images-frame" id="photos-section">
+
+                            <div class="century">
+                                تصویر چهره <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('face-photo', 'face-photo-collapse-button')"><i class="info-buttons collapse_circle_down" id="face-photo-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                            </div>
+
+                            <div id="face-photo">
+                                @if (Model.Photo == null)
+                                {
+                                    <div class="part-title-block-alt" id="photos">
+                                        <a href="/photos?p=@Model.GanjoorPage.PoetOrCat.Cat.UrlSlug">پیشنهاد تصویر چهره برای @Model.GanjoorPage.PoetOrCat.Poet.Nickname</a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="ganjoor-comment">
+                                        <div class="century">
+                                            @Model.Photo.Title
+
+                                            @if (Model.Photo.ChosenOne)
+                                            {
+                                                <i class="noindent-info-button done-icon"></i>
+                                            }
+                                        </div>
+
+                                        <div class="clear-both">
+                                            <img src="@Html.Raw(Model.Photo.ExternalNormalSizeImageUrl.Replace("/norm/", "/orig/"))" alt="@Model.Photo.Title" class="max-width-100per" />
+                                        </div>
+
+                                        <div class="comments-like-div">
+                                            @Html.Raw(Model.Photo.Description)
+                                        </div>
+
+                                        <div class="part-title-block-alt" id="photos">
+                                            <a href="/photos?p=@Model.GanjoorPage.PoetOrCat.Cat.UrlSlug">مشاهده و پیشنهاد تصاویر چهره برای @Model.GanjoorPage.PoetOrCat.Poet.Nickname</a>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
                     }
 
                     @if (Model.CanEdit && !Model.IsPoemPage)
