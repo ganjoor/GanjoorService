@@ -242,13 +242,13 @@ namespace RMuseum.Services.Implementation
                 var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
                 var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == cat.PoetId).SingleAsync();
                 var rhythms = await context.GanjoorMetres.ToListAsync();
-                string html = string.IsNullOrEmpty(cat.DescriptionHtml) ? "" : $"{cat.DescriptionHtml.Replace("../", "https://ganjoor.net/") }{Environment.NewLine}";
+                string html = string.IsNullOrEmpty(cat.DescriptionHtml) ? "" : $"{cat.DescriptionHtml.Replace("../", "https://ganjoor.net/")}{Environment.NewLine}";
                 var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).OrderBy(c => c.MixedModeOrder).ThenBy(c => c.Id).ToListAsync();
                 var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).OrderBy(p => p.MixedModeOrder).ThenBy(p => p.Id).ToListAsync();
 
                 if (options == GanjoorTOC.OnlyTitles || (options == GanjoorTOC.Analyse && (cat.ParentId == null || subCats.Where(c => c.MixedModeOrder != 0).Any() || poems.Count == 0 || poems.Where(p => p.MixedModeOrder != 0).Any())))//ignore options parameter
                 {
-                    if((subCats.Count + poems.Count) > 7)
+                    if ((subCats.Count + poems.Count) > 7)
                     {
                         html += $"<div class=\"clear-both\">{Environment.NewLine}";
                         html += $"<input type=\"text\" id=\"findpoet\" placeholder=\"جستجو در عناوین\" size=\"35\" value=\"\" oninput=\"onInlineSearch(this.value, 'found-items', 'part-title-block')\">{Environment.NewLine}";
@@ -329,8 +329,8 @@ namespace RMuseum.Services.Implementation
                     {
                         //poet page
                         var poetPage = await context.GanjoorPages.AsNoTracking().Where(p => p.ParentId == null && p.PoetId == cat.PoetId && p.GanjoorPageType == GanjoorPageType.PoetPage).SingleAsync();
-                        
-                        
+
+
                         html += $"<p>دیگر صفحات مرتبط با {poet.Nickname} در این پایگاه:</p>{Environment.NewLine}";
                         /*
                         // do not include stats pages
@@ -344,138 +344,142 @@ namespace RMuseum.Services.Implementation
                         }
                         */
 
-                        if(true == await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poet.Id && p.Published == true).AnyAsync())
+                        bool hasQuotes = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poet.Id && p.Published == true).AnyAsync();
+
+                        if (hasQuotes)
                         {
+                            
                             html += $"<div class=\"part-title-block-alt\" id=\"quotes-{poet.Id}\">{Environment.NewLine}";
-                            html += $"<a href=\"/quotes?p={cat.UrlSlug}\">نقل قول‌ها و شعرهای مرتبط {poet.Nickname}</a>{Environment.NewLine}";
+                            html += $"<a href=\"/quotes?p={cat.UrlSlug}\">همهٔ نقل قول‌ها و شعرهای مرتبط {poet.Nickname}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
-                        }
 
-                        var quotedFromPoetIds =
-                            await context.GanjoorQuotedPoems.AsNoTracking()
-                                .Where(q => q.PoetId == poet.Id && q.IsPriorToRelated == false && q.RelatedPoetId != null && q.Published == true)
-                                .GroupBy(q => q.RelatedPoetId)
-                                .Select(q =>  q.Key)
-                                .ToListAsync();
+                            var quotedFromPoetIds =
+                                await context.GanjoorQuotedPoems.AsNoTracking()
+                                    .Where(q => q.PoetId == poet.Id && q.IsPriorToRelated == false && q.RelatedPoetId != null && q.Published == true)
+                                    .GroupBy(q => q.RelatedPoetId)
+                                    .Select(q => q.Key)
+                                    .ToListAsync();
 
-                        foreach (var quotedPoetId in quotedFromPoetIds)
-                        {
-                            if (quotedPoetId == poet.Id) continue;
-                            if(false == await context.GanjoorPages.AsNoTracking()
-                                .AnyAsync(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == poet.Id && p.SecondPoetId == quotedPoetId))
+                            foreach (var quotedPoetId in quotedFromPoetIds)
                             {
-                                var secondPoet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == quotedPoetId).SingleAsync();
-                                if (secondPoet.DeathYearInLHijri > poet.DeathYearInLHijri) continue;
-                                
-                                var secondPoetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == quotedPoetId && c.ParentId == null).SingleAsync();
-
-                                
-                                
-                                var newPageId = 1 + await context.GanjoorPages.MaxAsync(p => p.Id);
-                                while (await context.GanjoorPoems.Where(p => p.Id == newPageId).AnyAsync())
-                                    newPageId++;
-                                GanjoorPage page = new GanjoorPage()
+                                if (quotedPoetId == poet.Id) continue;
+                                if (false == await context.GanjoorPages.AsNoTracking()
+                                    .AnyAsync(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == poet.Id && p.SecondPoetId == quotedPoetId))
                                 {
-                                    Id = newPageId,
-                                    GanjoorPageType = GanjoorPageType.ProsodySimilars,
-                                    Published = true,
-                                    PageOrder = -1,
-                                    Title = $"استقبالهای {poet.Nickname} از {secondPoet.Nickname}",
-                                    FullTitle = $"{poet.Nickname} » استقبالهای {poet.Nickname} از {secondPoet.Nickname}",
-                                    UrlSlug = secondPoetCat.UrlSlug,
-                                    FullUrl = $"/{cat.UrlSlug}/{secondPoetCat.UrlSlug}",
-                                    HtmlText = "<p>متن در حال آماده‌سازی است.</p>",
-                                    PoetId = poet.Id,
-                                    PostDate = DateTime.Now,
-                                    SecondPoetId = quotedPoetId,
-                                };
-                                context.GanjoorPages.Add(page);
-                                await context.SaveChangesAsync();
+                                    var secondPoet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == quotedPoetId).SingleAsync();
+                                    if (secondPoet.DeathYearInLHijri > poet.DeathYearInLHijri) continue;
 
-                                await _RegenerateRelatedPoemsPageAsync(userId, context, poet.Id, secondPoet.Id);
+                                    var secondPoetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == quotedPoetId && c.ParentId == null).SingleAsync();
+
+
+
+                                    var newPageId = 1 + await context.GanjoorPages.MaxAsync(p => p.Id);
+                                    while (await context.GanjoorPoems.Where(p => p.Id == newPageId).AnyAsync())
+                                        newPageId++;
+                                    GanjoorPage page = new GanjoorPage()
+                                    {
+                                        Id = newPageId,
+                                        GanjoorPageType = GanjoorPageType.ProsodySimilars,
+                                        Published = true,
+                                        PageOrder = -1,
+                                        Title = $"استقبالهای {poet.Nickname} از {secondPoet.Nickname}",
+                                        FullTitle = $"{poet.Nickname} » استقبالهای {poet.Nickname} از {secondPoet.Nickname}",
+                                        UrlSlug = secondPoetCat.UrlSlug,
+                                        FullUrl = $"/{cat.UrlSlug}/{secondPoetCat.UrlSlug}",
+                                        HtmlText = "<p>متن در حال آماده‌سازی است.</p>",
+                                        PoetId = poet.Id,
+                                        PostDate = DateTime.Now,
+                                        SecondPoetId = quotedPoetId,
+                                    };
+                                    context.GanjoorPages.Add(page);
+                                    await context.SaveChangesAsync();
+
+                                    await _RegenerateRelatedPoemsPageAsync(userId, context, poet.Id, secondPoet.Id);
+                                }
                             }
-                        }
 
-                        var poets = await context.GanjoorPoets.AsNoTracking().OrderBy(p => p.DeathYearInLHijri).ToListAsync();
+                            var poets = await context.GanjoorPoets.AsNoTracking().OrderBy(p => p.DeathYearInLHijri).ToListAsync();
 
-                        var thisPoetsSimilarsUnSorted = await context.GanjoorPages.AsNoTracking()
-                               .Where(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == poet.Id).ToListAsync();
+                            var thisPoetsSimilarsUnSorted = await context.GanjoorPages.AsNoTracking()
+                                   .Where(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == poet.Id).ToListAsync();
 
-                        List<GanjoorPage> thisPoetsSimilars = new List<GanjoorPage>();
-                        foreach (var ganjoorPoet in poets)
-                        {
-                            if(thisPoetsSimilarsUnSorted.Any(p => p.SecondPoetId == ganjoorPoet.Id))
+                            List<GanjoorPage> thisPoetsSimilars = new List<GanjoorPage>();
+                            foreach (var ganjoorPoet in poets)
                             {
-                                thisPoetsSimilars.Add(thisPoetsSimilarsUnSorted.Single(p => p.SecondPoetId == ganjoorPoet.Id));
-                            }
-                        }
-
-                        foreach (var childPage in thisPoetsSimilars)
-                        {
-                            html += $"<div class=\"part-title-block-alt\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
-                            html += $"<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}";
-                            html += $"</div>{Environment.NewLine}";
-                        }
-
-                        var quotedByPoetIds =
-                            await context.GanjoorQuotedPoems.AsNoTracking()
-                                .Where(q => q.IsPriorToRelated == true && q.RelatedPoetId == poet.Id && q.Published == true)
-                                .GroupBy(q => q.PoetId)
-                                .Select(q => q.Key)
-                                .ToListAsync();
-
-                        foreach (var quotedPoetId in quotedByPoetIds)
-                        {
-                            if (quotedPoetId == poet.Id) continue;
-                            if (false == await context.GanjoorPages.AsNoTracking()
-                                .AnyAsync(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == quotedPoetId && p.SecondPoetId == poet.Id))
-                            {
-                                var secondPoet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == quotedPoetId).SingleAsync();
-                                if (secondPoet.DeathYearInLHijri < poet.DeathYearInLHijri) continue;
-
-                                var secondPoetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == quotedPoetId && c.ParentId == null).SingleAsync();
-                                var newPageId = 1 + await context.GanjoorPages.MaxAsync(p => p.Id);
-                                while (await context.GanjoorPoems.Where(p => p.Id == newPageId).AnyAsync())
-                                    newPageId++;
-                                GanjoorPage page = new GanjoorPage()
+                                if (thisPoetsSimilarsUnSorted.Any(p => p.SecondPoetId == ganjoorPoet.Id))
                                 {
-                                    Id = newPageId,
-                                    GanjoorPageType = GanjoorPageType.ProsodySimilars,
-                                    Published = true,
-                                    PageOrder = -1,
-                                    Title = $"استقبالهای {secondPoet.Nickname} از {poet.Nickname}",
-                                    FullTitle = $"{secondPoet.Nickname} » استقبالهای {secondPoet.Nickname} از {poet.Nickname}",
-                                    UrlSlug = poetPage.UrlSlug,
-                                    FullUrl = $"/{secondPoetCat.UrlSlug}/{poetPage.UrlSlug}",
-                                    HtmlText = "<p>متن در حال آماده‌سازی است.</p>",
-                                    PoetId = secondPoet.Id,
-                                    PostDate = DateTime.Now,
-                                    SecondPoetId = poet.Id,
-                                };
-                                context.GanjoorPages.Add(page);
-                                await context.SaveChangesAsync();
-
-                                await _RegenerateRelatedPoemsPageAsync(userId, context, secondPoet.Id, poet.Id);
+                                    thisPoetsSimilars.Add(thisPoetsSimilarsUnSorted.Single(p => p.SecondPoetId == ganjoorPoet.Id));
+                                }
                             }
-                        }
 
-                        var otherPoetsSimilarsUnSorted = await context.GanjoorPages.AsNoTracking()
-                                .Where(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.SecondPoetId == poet.Id).ToListAsync();
-
-                        List<GanjoorPage> otherPoetsSimilars = new List<GanjoorPage>();
-                        foreach (var ganjoorPoet in poets)
-                        {
-                            if (otherPoetsSimilarsUnSorted.Any(p => p.PoetId == ganjoorPoet.Id))
+                            foreach (var childPage in thisPoetsSimilars)
                             {
-                                otherPoetsSimilars.Add(otherPoetsSimilarsUnSorted.Single(p => p.PoetId == ganjoorPoet.Id));
+                                html += $"<div class=\"part-title-block-alt\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
+                                html += $"<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}";
+                                html += $"</div>{Environment.NewLine}";
                             }
-                        }
 
-                        foreach (var childPage in otherPoetsSimilars)
-                        {
-                            html += $"<div class=\"part-title-block-alt\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
-                            html += $"<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}";
-                            html += $"</div>{Environment.NewLine}";
+                            var quotedByPoetIds =
+                                await context.GanjoorQuotedPoems.AsNoTracking()
+                                    .Where(q => q.IsPriorToRelated == true && q.RelatedPoetId == poet.Id && q.Published == true)
+                                    .GroupBy(q => q.PoetId)
+                                    .Select(q => q.Key)
+                                    .ToListAsync();
+
+                            foreach (var quotedPoetId in quotedByPoetIds)
+                            {
+                                if (quotedPoetId == poet.Id) continue;
+                                if (false == await context.GanjoorPages.AsNoTracking()
+                                    .AnyAsync(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == quotedPoetId && p.SecondPoetId == poet.Id))
+                                {
+                                    var secondPoet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == quotedPoetId).SingleAsync();
+                                    if (secondPoet.DeathYearInLHijri < poet.DeathYearInLHijri) continue;
+
+                                    var secondPoetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == quotedPoetId && c.ParentId == null).SingleAsync();
+                                    var newPageId = 1 + await context.GanjoorPages.MaxAsync(p => p.Id);
+                                    while (await context.GanjoorPoems.Where(p => p.Id == newPageId).AnyAsync())
+                                        newPageId++;
+                                    GanjoorPage page = new GanjoorPage()
+                                    {
+                                        Id = newPageId,
+                                        GanjoorPageType = GanjoorPageType.ProsodySimilars,
+                                        Published = true,
+                                        PageOrder = -1,
+                                        Title = $"استقبالهای {secondPoet.Nickname} از {poet.Nickname}",
+                                        FullTitle = $"{secondPoet.Nickname} » استقبالهای {secondPoet.Nickname} از {poet.Nickname}",
+                                        UrlSlug = poetPage.UrlSlug,
+                                        FullUrl = $"/{secondPoetCat.UrlSlug}/{poetPage.UrlSlug}",
+                                        HtmlText = "<p>متن در حال آماده‌سازی است.</p>",
+                                        PoetId = secondPoet.Id,
+                                        PostDate = DateTime.Now,
+                                        SecondPoetId = poet.Id,
+                                    };
+                                    context.GanjoorPages.Add(page);
+                                    await context.SaveChangesAsync();
+
+                                    await _RegenerateRelatedPoemsPageAsync(userId, context, secondPoet.Id, poet.Id);
+                                }
+                            }
+
+                            var otherPoetsSimilarsUnSorted = await context.GanjoorPages.AsNoTracking()
+                                    .Where(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.SecondPoetId == poet.Id).ToListAsync();
+
+                            List<GanjoorPage> otherPoetsSimilars = new List<GanjoorPage>();
+                            foreach (var ganjoorPoet in poets)
+                            {
+                                if (otherPoetsSimilarsUnSorted.Any(p => p.PoetId == ganjoorPoet.Id))
+                                {
+                                    otherPoetsSimilars.Add(otherPoetsSimilarsUnSorted.Single(p => p.PoetId == ganjoorPoet.Id));
+                                }
+                            }
+
+                            foreach (var childPage in otherPoetsSimilars)
+                            {
+                                html += $"<div class=\"part-title-block-alt\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
+                                html += $"<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}";
+                                html += $"</div>{Environment.NewLine}";
+                            }
+
                         }
 
                         html += $"<div class=\"part-title-block-alt\" id=\"photos-{poet.Id}\">{Environment.NewLine}";
@@ -551,7 +555,7 @@ namespace RMuseum.Services.Implementation
                         {
                             string versePosition = options == GanjoorTOC.AlphabeticWithFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerseNotSorted ? "اول" : "دوم";
                             string sampleVerse = options == GanjoorTOC.AlphabeticWithFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerseNotSorted ? randomPoemVerses[0].Text : randomPoemVerses[1].Text;
-                            html += $"<p>مثلاً برای پیدا کردن شعری که مصرع «<em>{sampleVerse}</em>» مصرع {versePosition} یکی از بیتهای آن است باید شعرهایی را نگاه کنید که آخر حرف قافیهٔ آنها «<em><a href=\"#{ GPersianTextSync.UniquelyFarglisize(randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)) }\">{randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)}</a></em>» است.</p>{Environment.NewLine}";
+                            html += $"<p>مثلاً برای پیدا کردن شعری که مصرع «<em>{sampleVerse}</em>» مصرع {versePosition} یکی از بیتهای آن است باید شعرهایی را نگاه کنید که آخر حرف قافیهٔ آنها «<em><a href=\"#{GPersianTextSync.UniquelyFarglisize(randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1))}\">{randomPoem.RhymeLetters.Substring(randomPoem.RhymeLetters.Length - 1)}</a></em>» است.</p>{Environment.NewLine}";
                         }
 
                         html += $"</div>{Environment.NewLine}";
@@ -572,7 +576,7 @@ namespace RMuseum.Services.Implementation
                                 }
                             }
                         }
-                        if(
+                        if (
                             options == GanjoorTOC.AlphabeticWithFirstCouplet
                             ||
                             options == GanjoorTOC.AlphabeticWithFirstVerse
@@ -590,8 +594,8 @@ namespace RMuseum.Services.Implementation
                                 foundLastChars.Sort((a, b) => fa.CompareInfo.Compare(a, b));
                             }
                         }
-                        
-                        
+
+
                         foreach (var poemLastChar in foundLastChars)
                         {
                             string rep = poemLastChar == "ا" ? "الف" : poemLastChar;
