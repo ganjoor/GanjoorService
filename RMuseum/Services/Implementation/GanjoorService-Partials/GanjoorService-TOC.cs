@@ -331,8 +331,9 @@ namespace RMuseum.Services.Implementation
                         var poetPage = await context.GanjoorPages.AsNoTracking().Where(p => p.ParentId == null && p.PoetId == cat.PoetId && p.GanjoorPageType == GanjoorPageType.PoetPage).SingleAsync();
 
 
-                        html += $"<p>دیگر صفحات مرتبط با {poet.Nickname} در این پایگاه:</p>{Environment.NewLine}";
+
                         /*
+                        html += $"<p>دیگر صفحات مرتبط با {poet.Nickname} در این پایگاه:</p>{Environment.NewLine}";
                         // do not include stats pages
                         var statsPage = await context.GanjoorPages.AsNoTracking()
                                 .Where(p => p.FullUrl == $"{poetPage.FullUrl}/vazn").SingleOrDefaultAsync();
