@@ -86,11 +86,11 @@
         else
         {
             <div class="@Model.PoemBlockClass" id="post-@Html.Raw(Model.GanjoorPage.Id.ToString())">
-                @if(Model.GanjoorPage.Poem != null && Model.GanjoorPage.Poem.ClaimedByMultiplePoets)
+                @if (Model.GanjoorPage.Poem != null && Model.GanjoorPage.Poem.ClaimedByMultiplePoets)
                 {
                     <div class="ribbon"><a href="#qpoems">منتسب به چند شاعر</a></div>
                 }
-                
+
                 @{
                     if (!string.IsNullOrEmpty(Model.PinterestUrl))
                     {
@@ -226,22 +226,24 @@
                    (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
                    )
                     {
-                        <div class="comments-like-div" id="map-section">
+                        <div class="related-images-frame" id="map-section">
+
                             @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
                             {
                                 <div class="century">
-                                    @Model.GanjoorPage.PoetOrCat.Cat.MapName
+                                    @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons collapse_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                 </div>
                             }
                             else
-
                             {
                                 <div class="century">
-                                    جای‌ها
+                                    جای‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons collapse_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                 </div>
                             }
+
                             <div id="catmap"></div>
                         </div>
+
                     }
 
                     @if ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
@@ -292,7 +294,7 @@
                             {
                                 @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
                             }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ]).addTo(map);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ]).addTo(map);
 
                                 for (var i = 0; i < poemGeoTags.length; i++) {
                                     var poemGeoTag = poemGeoTags[i];
@@ -705,7 +707,7 @@
                                         </div>
                                     }
 
-                                    @if(Model.LoggedIn)
+                                    @if (Model.LoggedIn)
                                     {
                                         <a href="/User/SuggestQuoted/?p=@Model.GanjoorPage.Id" class="pagebutton comments-link">پیشنهاد مشق شعر</a>
                                     }
@@ -805,7 +807,7 @@
                                         </div>
                                     </div>
                                 }
- 
+
                             </div>
 
                             <div class="related-images-frame" id="discussions">
