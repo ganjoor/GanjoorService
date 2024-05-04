@@ -1605,6 +1605,11 @@ audio {
     font-family: 'Material Icons';
 }
 
+.face-photo::after {
+    content: 'face_5';
+    font-family: 'Material Icons';
+}
+
 .circled-number-container {
     width: 100%;
     display: inline-table;

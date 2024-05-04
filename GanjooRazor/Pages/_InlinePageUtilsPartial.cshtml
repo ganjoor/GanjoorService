@@ -98,7 +98,7 @@
                     </a>
                 }
 
-                @if(Model.GanjoorPage.Poem.Top6QuotedPoems.Any())
+                @if (Model.GanjoorPage.Poem.Top6QuotedPoems.Any())
                 {
                     <a href="#qpoems" role="button" class="w3tooltip cursor-pointer">
                         <div class="circled-number">
@@ -108,7 +108,7 @@
                     </a>
                 }
 
-                
+
 
                 @if (Model.SectionsWithMetreAndRhymes != null)
                 {
@@ -138,12 +138,53 @@
                 }
             }
 
-            @if 
-            (
-                (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null && Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
-                ||
-                (Model.CategoryHasRecitations)
-            )
+
+            @if (Model.GanjoorPage.Poem == null)
+            {
+                <a href="#cat-stats" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button query_stats"></i>
+                    </div>
+                    <span class="w3tooltiptext">
+                        آمار
+                    </span>
+                </a>
+            }
+
+            @if
+           (
+           (Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+           ||
+           (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
+           )
+            {
+                <a href="#map-section" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button map-icon"></i>
+                    </div>
+                    <span class="w3tooltiptext">
+                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
+                        {
+                            <text>
+                                @Model.GanjoorPage.PoetOrCat.Cat.MapName
+                            </text>
+                        }
+                        else
+                        {
+                            <text>
+                                جای‌ها
+                            </text>
+                        }
+                    </span>
+                </a>
+            }
+
+            @if
+           (
+           (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null && Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
+           ||
+           (Model.CategoryHasRecitations)
+           )
             {
                 <a href="#recitations" role="button" class="w3tooltip cursor-pointer">
                     <div class="circled-number">
@@ -166,43 +207,13 @@
                 </a>
             }
 
-            @if
-            (
-                (Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
-                ||
-                (Model.GanjoorPage != null && Model.GanjoorPage.Poem != null && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
-            )
+            @if(Model.GanjoorPage != null && Model.GanjoorPage.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.PoetPage)
             {
-                <a href="#map-section" role="button" class="w3tooltip cursor-pointer">
+                <a href="#photos-section" role="button" class="w3tooltip cursor-pointer">
                     <div class="circled-number">
-                        <i class="noindent-info-button map-icon"></i>
+                        <i class="noindent-info-button face-photo"></i>
                     </div>
-                    <span class="w3tooltiptext">
-                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
-                        {
-                            <text>
-                                 @Model.GanjoorPage.PoetOrCat.Cat.MapName
-                            </text>
-                        }
-                        else
-                        {
-                            <text>
-                                جای‌ها
-                            </text>
-                        }
-                    </span>
-                </a>
-            }
-
-            @if(Model.GanjoorPage.Poem == null)
-            {
-                <a href="#cat-stats" role="button" class="w3tooltip cursor-pointer">
-                    <div class="circled-number">
-                        <i class="noindent-info-button query_stats"></i>
-                    </div>
-                    <span class="w3tooltiptext">
-                        آمار
-                    </span>
+                    <span class="w3tooltiptext">تصاویر چهره</span>
                 </a>
             }
 
@@ -237,16 +248,16 @@
             }
         </div>
 
-        @if(Model.GanjoorPage.Poem != null)
+        @if (Model.GanjoorPage.Poem != null)
         {
             <script>
-                
+
             </script>
             <div class="clear-both margin-15px" id="fake-inline-div">
                 <input type="search" name="fake-inline-search" id="fake-inline-search" class="text-align-center" placeholder="جستجو در متن" size="20" value="" oninput="displayMainInlineSearch()">
             </div>
         }
-        
+
     }
 
 </div>
