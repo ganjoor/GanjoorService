@@ -348,10 +348,18 @@ namespace RMuseum.Services.Implementation
 
                         if (hasQuotes)
                         {
-                            
+                            html = "<div class=\"related-images-frame\" id=\"related-poets\">";
+                            html += $"<div class=\"century\">{Environment.NewLine}";
+                            html += $" مشق شعر <a role=\"button\" class=\"w3tooltip cursor-pointer\" onclick=\"switch_section('related-poets-section', 'related-poets-collapse-button')\"><i class=\"info-buttons collapse_circle_down\" id=\"related-poets-collapse-button\"></i><span class=\"w3tooltiptext\">جمع شود / باز شود</span></a>{Environment.NewLine}";
+                            html += $"</div>{Environment.NewLine}";
+                            html += $"<div id=\"related-poets-section\" style=\"display:none\">{Environment.NewLine}";
+
+
                             html += $"<div class=\"part-title-block-alt\" id=\"quotes-{poet.Id}\">{Environment.NewLine}";
                             html += $"<a href=\"/quotes?p={cat.UrlSlug}\">همهٔ نقل قول‌ها و شعرهای مرتبط {poet.Nickname}</a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
+
+                            html += $"<div class=\"spacer\">{Environment.NewLine}";
 
                             var quotedFromPoetIds =
                                 await context.GanjoorQuotedPoems.AsNoTracking()
@@ -414,9 +422,18 @@ namespace RMuseum.Services.Implementation
 
                             foreach (var childPage in thisPoetsSimilars)
                             {
-                                html += $"<div class=\"part-title-block-alt\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
-                                html += $"<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}";
-                                html += $"</div>{Environment.NewLine}";
+                                var childPoet = poets.Where(p => p.Id == childPage.PoetId).SingleOrDefault();
+                                if(childPoet != null)
+                                {
+                                    var poetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == childPoet.Id && c.ParentId == null).SingleAsync();
+                                    var poetImageUrl = $"https://api.ganjoor.net/api/ganjoor/poet/image{poetCat.FullUrl}.gif";
+                                    html += $"<div class=\"poet\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
+                                    html += $"<a href=\"{childPage.FullUrl}\">{Environment.NewLine}";
+                                    html += $"<img src=\"{poetImageUrl}\" alt=\"{childPoet.Nickname}\" />";
+                                    html += $"</a>{Environment.NewLine}";
+                                    html += $"<div class=\"caption\">{Environment.NewLine}<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}</div>";
+                                    html += $"</div>{Environment.NewLine}";
+                                }
                             }
 
                             var quotedByPoetIds =
@@ -475,11 +492,22 @@ namespace RMuseum.Services.Implementation
 
                             foreach (var childPage in otherPoetsSimilars)
                             {
-                                html += $"<div class=\"part-title-block-alt\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
-                                html += $"<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}";
-                                html += $"</div>{Environment.NewLine}";
+                                var childPoet = poets.Where(p => p.Id == childPage.PoetId).SingleOrDefault();
+                                if (childPoet != null)
+                                {
+                                    var poetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == childPoet.Id && c.ParentId == null).SingleAsync();
+                                    var poetImageUrl = $"https://api.ganjoor.net/api/ganjoor/poet/image{poetCat.FullUrl}.gif";
+                                    html += $"<div class=\"poet\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
+                                    html += $"<a href=\"{childPage.FullUrl}\">{Environment.NewLine}";
+                                    html += $"<img src=\"{poetImageUrl}\" alt=\"{childPoet.Nickname}\" />";
+                                    html += $"</a>{Environment.NewLine}";
+                                    html += $"<div class=\"caption\">{Environment.NewLine}<a href=\"{childPage.FullUrl}\">{childPage.Title}</a>{Environment.NewLine}</div>";
+                                    html += $"</div>{Environment.NewLine}";
+                                }
                             }
 
+                            html += $"</div>{Environment.NewLine}";
+                            html += $"</div>{Environment.NewLine}";
                         }
 
                         html += $"<div class=\"part-title-block-alt\" id=\"photos-{poet.Id}\">{Environment.NewLine}";
