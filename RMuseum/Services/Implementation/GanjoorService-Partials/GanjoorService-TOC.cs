@@ -429,7 +429,7 @@ namespace RMuseum.Services.Implementation
                                     var poetImageUrl = $"https://api.ganjoor.net/api/ganjoor/poet/image{childPoetCat.FullUrl}.gif";
                                     html += $"<div class=\"poet\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
                                     html += $"<a href=\"{childPage.FullUrl}\">{Environment.NewLine}";
-                                    html += $"<img src=\"{poetImageUrl}\" alt=\"{childPoet.Nickname}\" />";
+                                    html += $"<img src=\"{poetImageUrl}\" alt=\"{childPoet.Nickname}\" >";
                                     html += $"</a>{Environment.NewLine}";
                                     html += $"<div class=\"caption\">{Environment.NewLine}<a href=\"{childPage.FullUrl}\">{childPoet.Nickname}</a>{Environment.NewLine}</div>";
                                     html += $"</div>{Environment.NewLine}";
@@ -499,15 +499,15 @@ namespace RMuseum.Services.Implementation
                                     var poetImageUrl = $"https://api.ganjoor.net/api/ganjoor/poet/image{poetCat.FullUrl}.gif";
                                     html += $"<div class=\"poet\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
                                     html += $"<a href=\"{childPage.FullUrl}\">{Environment.NewLine}";
-                                    html += $"<img src=\"{poetImageUrl}\" alt=\"{childPoet.Nickname}\" />";
+                                    html += $"<img src=\"{poetImageUrl}\" alt=\"{childPoet.Nickname}\" >";
                                     html += $"</a>{Environment.NewLine}";
                                     html += $"<div class=\"caption\">{Environment.NewLine}<a href=\"{childPage.FullUrl}\">{childPoet.Nickname}</a>{Environment.NewLine}</div>";
                                     html += $"</div>{Environment.NewLine}";
                                 }
                             }
-
-                            html += $"</div>{Environment.NewLine}";
-                            html += $"</div>{Environment.NewLine}";
+                            html += $"</div>{Environment.NewLine}";//spacer
+                            html += $"</div>{Environment.NewLine}";//related-poets-section
+                            html += $"</div>{Environment.NewLine}";//related-images-frame
                         }
 
                         html += $"<div class=\"part-title-block-alt\" id=\"photos-{poet.Id}\">{Environment.NewLine}";
