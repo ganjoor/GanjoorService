@@ -599,7 +599,7 @@ namespace RMuseum.Services.Implementation
                                 BookType = LinkType.Naskban,
                                 BookFullUrl = $"https://naskban.ir/{matching.BookId}",
                                 NaskbanBookId = matching.BookId,
-                                BookFullTitle = matching.BookTitle,
+                                BookFullTitle = book.Title,
                                 CoverThumbnailImageUrl = book.ExtenalCoverImageUrl,
                                 Description = "",
                                 IsTextOriginalSource = false,
