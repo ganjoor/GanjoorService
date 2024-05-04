@@ -579,7 +579,7 @@ namespace RMuseum.Services.Implementation
                     var matchings = JsonConvert.DeserializeObject<GanjoorPoemMatchFinding[]>(await unsyncedResponse.Content.ReadAsStringAsync());
                     foreach (var matching in matchings)
                     {
-                        if (false == await context.PaperSources.Where(p => p.NaskbanBookId == matching.BookId).AnyAsync())
+                        if (false == await context.GanjoorPaperSources.Where(p => p.NaskbanBookId == matching.BookId).AnyAsync())
                         {
                             HttpResponseMessage responseBook = await secureClient.GetAsync($"https://api.naskban.ir/api/pdf/{matching.BookId}?includePages=false&includeBookText=false&includePageText=false");
                             if (responseBook.StatusCode != HttpStatusCode.OK)
@@ -590,7 +590,7 @@ namespace RMuseum.Services.Implementation
 
                             var book = JsonConvert.DeserializeObject<PDFBook>(await responseBook.Content.ReadAsStringAsync());
                             var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == matching.GanjoorCatId).SingleAsync();
-                            PaperSource paperSource = new PaperSource()
+                            GanjoorPaperSource paperSource = new GanjoorPaperSource()
                             {
                                 GanjoorPoetId = cat.PoetId,
                                 GanjoorCatId = matching.GanjoorCatId,
@@ -607,7 +607,7 @@ namespace RMuseum.Services.Implementation
                                 HumanReviewed = false,
                                 OrderIndicator = 0,
                             };
-                            context.PaperSources.Add(paperSource);
+                            context.GanjoorPaperSources.Add(paperSource);
                             await context.SaveChangesAsync();
                         }
                     }
@@ -620,6 +620,26 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<int>(0, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// category paper sources
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPaperSource[]>> GetCategoryPaperSourcesAsync(int categoryId)
+        {
+            try
+            {
+                return new RServiceResult<GanjoorPaperSource[]>
+                    (
+                    await _context.GanjoorPaperSources.AsNoTracking().Where(p => p.GanjoorCatId == categoryId).OrderBy(c => c.OrderIndicator).ThenBy(c => c.Id).ToArrayAsync()
+                    );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPaperSource[]>(null, exp.ToString());
             }
         }
     }

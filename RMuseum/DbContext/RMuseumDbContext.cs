@@ -572,7 +572,7 @@ namespace RMuseum.DbContext
         /// <summary>
         /// paper sources
         /// </summary>
-        public DbSet<PaperSource> PaperSources { get; set; }
+        public DbSet<GanjoorPaperSource> GanjoorPaperSources { get; set; }
 
     }
 }

@@ -2,6 +2,7 @@
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
+using RMuseum.Models.GanjoorIntegration;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Threading.Tasks;
@@ -50,8 +51,9 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <param name="poems"></param>
         /// <param name="mainSections"></param>
+        /// <param name="paperSources"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id, bool poems = false, bool mainSections = false);
+        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id, bool poems = false, bool mainSections = false, bool paperSources = false);
 
         /// <summary>
         /// get cat by url
@@ -59,8 +61,9 @@ namespace RMuseum.Services
         /// <param name="url"></param>
         /// <param name="poems"></param>
         /// <param name="mainSections"></param>
+        /// <param name="paperSources"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatByUrl(string url, bool poems = false, bool mainSections = false);
+        Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatByUrl(string url, bool poems = false, bool mainSections = false, bool paperSources = false);
 
         /// <summary>
         /// Update category extra info
@@ -1226,6 +1229,13 @@ namespace RMuseum.Services
         /// <param name="naskbanUserName"></param>
         /// <param name="naskbanPassword"></param>
         void ImportNaskbanGanjoorPoemMatchFindings(string naskbanUserName, string naskbanPassword);
+
+        /// <summary>
+        /// category paper sources
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPaperSource[]>> GetCategoryPaperSourcesAsync(int categoryId);
 
         /// <summary>
         /// mark naskban links as human reviewed

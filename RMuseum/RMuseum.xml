@@ -2033,6 +2033,13 @@
             <param name="textOriginal"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.ImportNaskbanGanjoorPoemMatchFindings(RSecurityBackend.Models.Auth.ViewModels.LoginViewModel)">
+            <summary>
+            import naskban ganjoor matchings
+            </summary>
+            <param name="loginViewModel"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(System.String)">
             <summary>
             delete poem related naskban images by url
@@ -3508,7 +3515,7 @@
             discover quoted q items
             </summary>
         </member>
-        <member name="P:RMuseum.DbContext.RMuseumDbContext.PaperSources">
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPaperSources">
             <summary>
             paper sources
             </summary>
@@ -6492,6 +6499,86 @@
             is text original source
             </summary>
         </member>
+        <member name="T:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource">
+            <summary>
+            Ganjoor Paper Source
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.GanjoorPoetId">
+            <summary>
+            poet id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.GanjoorCatId">
+            <summary>
+            cat id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.GanjoorCatFullTitle">
+            <summary>
+            cat full title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.GanjoorCatFullUrl">
+            <summary>
+            cat full url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.BookType">
+            <summary>
+            book type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.BookFullUrl">
+            <summary>
+            book full url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.NaskbanBookId">
+            <summary>
+            naskban book id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.BookFullTitle">
+            <summary>
+            book title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.IsTextOriginalSource">
+            <summary>
+             is the text original source for the category?
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.CoverThumbnailImageUrl">
+            <summary>
+            cover thumbnail image url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.MatchPercent">
+            <summary>
+            match percent
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.HumanReviewed">
+            <summary>
+            reviewed by a human
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.GanjoorPaperSource.OrderIndicator">
+            <summary>
+            position in sorting
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.LinkType">
             <summary>
             Link Type
@@ -6520,86 +6607,6 @@
         <member name="F:RMuseum.Models.GanjoorIntegration.LinkType.Naskban">
             <summary>
             Naskban
-            </summary>
-        </member>
-        <member name="T:RMuseum.Models.GanjoorIntegration.PaperSource">
-            <summary>
-            Ganjoor Paper Source
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.Id">
-            <summary>
-            Id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.GanjoorPoetId">
-            <summary>
-            poet id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.GanjoorCatId">
-            <summary>
-            cat id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.GanjoorCatFullTitle">
-            <summary>
-            cat full title
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.GanjoorCatFullUrl">
-            <summary>
-            cat full url
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.BookType">
-            <summary>
-            book type
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.BookFullUrl">
-            <summary>
-            book full url
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.NaskbanBookId">
-            <summary>
-            naskban book id
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.BookFullTitle">
-            <summary>
-            book title
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.Description">
-            <summary>
-            description
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.IsTextOriginalSource">
-            <summary>
-             is the text original source for the category?
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.CoverThumbnailImageUrl">
-            <summary>
-            cover thumbnail image url
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.MatchPercent">
-            <summary>
-            match percent
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.HumanReviewed">
-            <summary>
-            reviewed by a human
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.GanjoorIntegration.PaperSource.OrderIndicator">
-            <summary>
-            position in sorting
             </summary>
         </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.PDFGanjoorLink">
@@ -10291,6 +10298,11 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.Poems">
             <summary>
             poems
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.PaperSources">
+            <summary>
+            paper sources
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.NewImage">
@@ -15001,22 +15013,24 @@
             <param name="url"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetCatById(System.Int32,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetCatById(System.Int32,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             get cat by id
             </summary>
             <param name="id"></param>
             <param name="poems"></param>
             <param name="mainSections"></param>
+            <param name="paperSources"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetCatByUrl(System.String,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetCatByUrl(System.String,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             get cat by url
             </summary>
             <param name="url"></param>
             <param name="poems"></param>
             <param name="mainSections"></param>
+            <param name="paperSources"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.SetCategoryExtraInfo(System.Int32,System.String,System.Nullable{System.Guid},System.Boolean,System.String)">
@@ -16162,6 +16176,20 @@
             </summary>
             <param name="naskbanUserName"></param>
             <param name="naskbanPassword"></param>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ImportNaskbanGanjoorPoemMatchFindings(System.String,System.String)">
+            <summary>
+            import naskban ganjoor matchings
+            </summary>
+            <param name="naskbanUserName"></param>
+            <param name="naskbanPassword"></param>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetCategoryPaperSourcesAsync(System.Int32)">
+            <summary>
+            category paper sources
+            </summary>
+            <param name="categoryId"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.MarkNaskbanLinksAsHumanReviewed(System.Int32,System.Int32,System.Boolean)">
             <summary>
@@ -18189,6 +18217,13 @@
             <param name="naskbanPassword"></param>
             <returns>number of synched items</returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryPaperSourcesAsync(System.Int32)">
+            <summary>
+            category paper sources
+            </summary>
+            <param name="categoryId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetSuggestedSpecLinesAsync(System.Int32)">
             <summary>
             return list of suggested spec lines
@@ -18750,13 +18785,14 @@
             <param name="url"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatByUrl(System.String,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatByUrl(System.String,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             get cat by url
             </summary>
             <param name="url"></param>
             <param name="poems"></param>
             <param name="mainSections"></param>
+            <param name="paperSources"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetBooksAsync">
@@ -18771,13 +18807,14 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatById(System.Int32,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatById(System.Int32,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             get cat by id
             </summary>
             <param name="id"></param>
             <param name="poems"></param>
             <param name="mainSections"></param>
+            <param name="paperSources"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPageUrlById(System.Int32)">

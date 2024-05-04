@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using RMuseum.Models.GanjoorIntegration;
 using System;
 using System.Collections.Generic;
 
@@ -103,6 +104,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// poems
         /// </summary>
         public ICollection<GanjoorPoemSummaryViewModel> Poems { get; set; }
+
+        /// <summary>
+        /// paper sources
+        /// </summary>
+        public ICollection<GanjoorPaperSource> PaperSources { get; set; }
 
         /// <summary>
         /// new image

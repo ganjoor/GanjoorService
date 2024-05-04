@@ -5,7 +5,7 @@ namespace RMuseum.Models.GanjoorIntegration
     /// <summary>
     /// Ganjoor Paper Source
     /// </summary>
-    public class PaperSource
+    public class GanjoorPaperSource
     {
         /// <summary>
         /// Id

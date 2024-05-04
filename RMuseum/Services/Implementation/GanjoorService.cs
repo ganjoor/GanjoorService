@@ -167,8 +167,9 @@ namespace RMuseum.Services.Implementation
         /// <param name="url"></param>
         /// <param name="poems"></param>
         /// <param name="mainSections"></param>
+        /// <param name="paperSources"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatByUrl(string url, bool poems = false, bool mainSections = false)
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatByUrl(string url, bool poems = false, bool mainSections = false, bool paperSources = false)
         {
             // /hafez/ => /hafez :
             if (url.LastIndexOf('/') == url.Length - 1)
@@ -178,7 +179,7 @@ namespace RMuseum.Services.Implementation
             var cat = await _context.GanjoorCategories.Where(c => c.FullUrl == url).AsNoTracking().SingleOrDefaultAsync();
             if (cat == null)
                 return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
-            return await GetCatById(cat.Id, poems, mainSections);
+            return await GetCatById(cat.Id, poems, mainSections, paperSources);
         }
 
 
@@ -269,13 +270,14 @@ namespace RMuseum.Services.Implementation
         /// <param name="id"></param>
         /// <param name="poems"></param>
         /// <param name="mainSections"></param>
+        /// <param name="paperSources"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id, bool poems = false, bool mainSections = false)
+        public async Task<RServiceResult<GanjoorPoetCompleteViewModel>> GetCatById(int id, bool poems = false, bool mainSections = false, bool paperSources = false)
         {
-            return await _GetCatById(_context, id, poems, mainSections);
+            return await _GetCatById(_context, id, poems, mainSections, paperSources);
         }
 
-        private async Task<RServiceResult<GanjoorPoetCompleteViewModel>> _GetCatById(RMuseumDbContext context, int id, bool poems = false, bool mainSections = false)
+        private async Task<RServiceResult<GanjoorPoetCompleteViewModel>> _GetCatById(RMuseumDbContext context, int id, bool poems = false, bool mainSections = false, bool paperSources = false)
         {
             var cat = await context.GanjoorCategories.Include(c => c.Poet).Include(c => c.Parent).Where(c => c.Id == id).AsNoTracking().FirstOrDefaultAsync();
             if (cat == null)
@@ -413,7 +415,8 @@ namespace RMuseum.Services.Implementation
                      }
                  ).AsNoTracking().ToListAsync()
                  :
-                 null
+                 null,
+                PaperSources = paperSources ? await context.GanjoorPaperSources.AsNoTracking().Where(p => p.GanjoorCatId == cat.Id).ToListAsync() : null,
             };
 
             if (poems && mainSections)
