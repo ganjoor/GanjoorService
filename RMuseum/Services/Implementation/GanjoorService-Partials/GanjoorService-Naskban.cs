@@ -571,7 +571,7 @@ namespace RMuseum.Services.Implementation
                 using (HttpClient secureClient = new HttpClient())
                 {
                     secureClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loggedOnUser.Token);
-                    var unsyncedResponse = await secureClient.GetAsync("https://api.naskban.ir/api/pdf/ganjoor/matching");
+                    var unsyncedResponse = await secureClient.GetAsync("https://api.naskban.ir/api/pdf/ganjoor/matching?notStarted=false&notFinished=false");
                     if (!unsyncedResponse.IsSuccessStatusCode)
                     {
                         return new RServiceResult<int>(0, "unsync error: " + JsonConvert.DeserializeObject<string>(await unsyncedResponse.Content.ReadAsStringAsync()));
