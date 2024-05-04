@@ -327,7 +327,7 @@
                                     </div>
 
                                     <div class="clear-both">
-                                        <img src="@Html.Raw(photo.ImageUrl)" alt="@photo.Title" class="max-width-100per" />
+                                        <img src="@Html.Raw(photo.ExternalNormalSizeImageUrl.Replace("/norm/", "/orig/"))" alt="@photo.Title" class="max-width-100per" />
                                     </div>
 
                                     <div class="comments-like-div">
