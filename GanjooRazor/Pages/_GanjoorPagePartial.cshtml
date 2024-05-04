@@ -757,7 +757,7 @@
                                                             @Html.Raw(s.Top6RelatedSections[i].HtmlExcerpt)
                                                         </div>
 
-                                                        @if (s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount > 0 && s.GanjoorMetre != null)
+                                                        @if (s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount > 0 && s.GanjoorMetre != null && !string.IsNullOrEmpty(s.RhymeLetters))
                                                         {
                                                             @if (s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount > 20)
                                                             {
