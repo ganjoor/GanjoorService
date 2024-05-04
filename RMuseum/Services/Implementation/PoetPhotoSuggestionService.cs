@@ -48,7 +48,8 @@ namespace RMuseum.Services.Implementation
                           Published = r.Published,
                           ChosenOne = r.ChosenOne,
                           SuggestedById = r.SuggestedById,
-                          ImageUrl = $"api/rimages/{r.PictureId}.jpg"
+                          ImageUrl = $"api/rimages/{r.PictureId}.jpg",
+                          ExternalNormalSizeImageUrl = r.Picture.ExternalNormalSizeImageUrl.Replace("/orig/", "/norm/")
                       }
                       )
                          .ToArrayAsync()
@@ -81,7 +82,8 @@ namespace RMuseum.Services.Implementation
                           Published = r.Published,
                           ChosenOne = r.ChosenOne,
                           SuggestedById = r.SuggestedById,
-                          ImageUrl = $"api/rimages/{r.PictureId}.jpg"
+                          ImageUrl = $"api/rimages/{r.PictureId}.jpg",
+                          ExternalNormalSizeImageUrl = r.Picture.ExternalNormalSizeImageUrl.Replace("/orig/", "/norm/")
                       }
                       )
                        .FirstOrDefaultAsync()
@@ -157,7 +159,8 @@ namespace RMuseum.Services.Implementation
                         Published = picture.Published,
                         ChosenOne = picture.ChosenOne,
                         SuggestedById = picture.SuggestedById,
-                        ImageUrl = $"api/rimages/{picture.PictureId}.jpg"
+                        ImageUrl = $"api/rimages/{picture.PictureId}.jpg",
+                        ExternalNormalSizeImageUrl = $"https://api.ganjoor.net/api/rimages/{picture.PictureId}.jpg"
                     }
                     );
             }
@@ -196,7 +199,8 @@ namespace RMuseum.Services.Implementation
                           Published = r.Published,
                           ChosenOne = r.ChosenOne,
                           SuggestedById = r.SuggestedById,
-                          ImageUrl = $"api/rimages/{r.PictureId}.jpg"
+                          ImageUrl = $"api/rimages/{r.PictureId}.jpg",
+                          ExternalNormalSizeImageUrl = $"https://api.ganjoor.net/api/rimages/{r.PictureId}.jpg"
                       }
                       ).FirstOrDefaultAsync()
                  );

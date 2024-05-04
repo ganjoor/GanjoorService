@@ -54,5 +54,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// </summary>
         public string RejectionCause { get; set; }
 
+        /// <summary>
+        /// external normal size image url
+        /// </summary>
+        public string ExternalNormalSizeImageUrl { get; set; }
+
     }
 }
