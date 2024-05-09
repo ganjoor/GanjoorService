@@ -416,7 +416,10 @@ namespace RMuseum.Services.Implementation
                  ).AsNoTracking().ToListAsync()
                  :
                  null,
-                PaperSources = paperSources ? await context.GanjoorPaperSources.AsNoTracking().Where(p => p.GanjoorCatId == cat.Id).ToListAsync() : null,
+                PaperSources = paperSources ? 
+                    cat.ParentId == null ? await context.GanjoorPaperSources.AsNoTracking().Where(p => p.GanjoorPoetId == cat.PoetId).ToListAsync()
+                    : await context.GanjoorPaperSources.AsNoTracking().Where(p => p.GanjoorCatId == cat.Id).ToListAsync() : 
+                    null,
             };
 
             if (poems && mainSections)
