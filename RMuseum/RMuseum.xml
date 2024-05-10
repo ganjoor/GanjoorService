@@ -18251,6 +18251,11 @@
             <param name="categoryId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportPaperSourcesFromMuseum">
+            <summary>
+            import paper sources from museum
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetSuggestedSpecLinesAsync(System.Int32)">
             <summary>
             return list of suggested spec lines
