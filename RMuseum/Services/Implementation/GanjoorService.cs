@@ -114,7 +114,7 @@ namespace RMuseum.Services.Implementation
                 if (poet == null)
                     return new RServiceResult<GanjoorPoetCompleteViewModel>(null);
                 var cat = await _context.GanjoorCategories.Where(c => c.ParentId == null && c.PoetId == id).AsNoTracking().FirstOrDefaultAsync();
-                poetCat = (await GetCatById(cat.Id, catPoems)).Result;
+                poetCat = (await GetCatById(cat.Id, catPoems, false, true)).Result;
                 if (poetCat != null && AggressiveCacheEnabled)
                 {
                     _memoryCache.Set(cacheKey, poetCat);
@@ -417,8 +417,8 @@ namespace RMuseum.Services.Implementation
                  :
                  null,
                 PaperSources = paperSources ? 
-                    cat.ParentId == null ? await context.GanjoorPaperSources.AsNoTracking().Where(p => p.GanjoorPoetId == cat.PoetId).ToListAsync()
-                    : await context.GanjoorPaperSources.AsNoTracking().Where(p => p.GanjoorCatId == cat.Id).ToListAsync() : 
+                    cat.ParentId == null ? await context.GanjoorPaperSources.AsNoTracking().Where(p => p.GanjoorPoetId == cat.PoetId).OrderByDescending(p => p.IsTextOriginalSource).ThenBy(p => p.OrderIndicator).ToListAsync()
+                    : await context.GanjoorPaperSources.AsNoTracking().Where(p => p.GanjoorCatId == cat.Id).OrderByDescending(p => p.IsTextOriginalSource).ThenBy(p => p.OrderIndicator).ToListAsync() : 
                     null,
             };
 
@@ -663,7 +663,7 @@ namespace RMuseum.Services.Implementation
 
                     case GanjoorPageType.CatPage:
                         {
-                            var catRes = await GetCatById((int)dbPage.CatId, catPoems);
+                            var catRes = await GetCatById((int)dbPage.CatId, catPoems, false, true);
                             if (!string.IsNullOrEmpty(catRes.ExceptionString))
                             {
                                 return new RServiceResult<GanjoorPageCompleteViewModel>(null, catRes.ExceptionString);

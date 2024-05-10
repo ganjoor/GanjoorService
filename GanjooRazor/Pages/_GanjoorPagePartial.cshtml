@@ -445,7 +445,29 @@
                             </div>
                         </div>
 
-                    }
+                        @if(Model.GanjoorPage.PoetOrCat.Cat.PaperSources != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources.Any())
+                        {
+                            <div class="related-images-frame" id="papersources-section">
+
+                                <div class="century">
+                                    منابع کاغذی <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('papersources', 'papersources-collapse-button')"><i class="info-buttons collapse_circle_down" id="papersources-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                </div>
+
+                                <div id="papersources">
+                                    @foreach (var book in Model.GanjoorPage.PoetOrCat.Cat.PaperSources)
+                                    {
+                                        <div class="related-image-container">
+                                            <a target="_blank" href="@Html.Raw(book.BookFullUrl)">
+                                                <img src="@Html.Raw(book.CoverThumbnailImageUrl)" alt="@book.BookFullTitle" loading="lazy" class="related-image">
+                                            </a>
+                                            <a target="_blank" href="@Html.Raw(book.BookFullUrl)">@book.BookFullTitle</a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                }
 
                     @if (Model.CanEdit && !Model.IsPoemPage)
                     {
