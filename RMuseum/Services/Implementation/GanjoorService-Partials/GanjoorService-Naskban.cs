@@ -232,7 +232,11 @@ namespace RMuseum.Services.Implementation
                                                {
                                                    var sources = await context.PinterestLinks.Where(l => l.GanjoorPostId == poem.Id).ToListAsync();
                                                    foreach (var source in sources)
+                                                   {
                                                        source.IsTextOriginalSource = source.PDFBookId == bookId;
+                                                       if (source.IsTextOriginalSource)
+                                                           source.HumanReviewed = true;
+                                                   }
                                                    context.UpdateRange(sources);
                                                    await context.SaveChangesAsync();
                                                }
