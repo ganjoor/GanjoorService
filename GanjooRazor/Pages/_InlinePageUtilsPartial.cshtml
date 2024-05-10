@@ -139,7 +139,7 @@
             }
 
 
-            @if (Model.GanjoorPage.Poem == null)
+            @if (Model.GanjoorPage.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.PoetPage || Model.GanjoorPage.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.CatPage)
             {
                 <a href="#cat-stats" role="button" class="w3tooltip cursor-pointer">
                     <div class="circled-number">
@@ -214,6 +214,16 @@
                         <i class="noindent-info-button face-photo"></i>
                     </div>
                     <span class="w3tooltiptext">تصاویر چهره</span>
+                </a>
+            }
+
+            @if (Model.GanjoorPage != null && Model.GanjoorPage.PoetOrCat != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources.Any())
+            {
+                <a href="#papersources-section" role="button" class="w3tooltip cursor-pointer">
+                    <div class="circled-number">
+                        <i class="noindent-info-button recitation-manuscripts"></i>
+                    </div>
+                    <span class="w3tooltiptext">منابع کاغذی</span>
                 </a>
             }
 
