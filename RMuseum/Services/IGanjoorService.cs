@@ -1231,6 +1231,11 @@ namespace RMuseum.Services
         void ImportNaskbanGanjoorPoemMatchFindings(string naskbanUserName, string naskbanPassword);
 
         /// <summary>
+        /// import paper sources from museum
+        /// </summary>
+        void ImportPaperSourcesFromMuseum();
+
+        /// <summary>
         /// category paper sources
         /// </summary>
         /// <param name="categoryId"></param>

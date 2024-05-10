@@ -3741,6 +3741,22 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// import paper sources from museum
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("papersources/import")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public IActionResult ImportPaperSourcesFromMuseum()
+        {
+            _ganjoorService.ImportPaperSourcesFromMuseum();
+            return Ok();
+        }
+
+        /// <summary>
         /// get paper sources for a catgeory
         /// </summary>
         /// <param name="id"></param>

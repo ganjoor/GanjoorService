@@ -9,8 +9,7 @@ using RMuseum.DbContext;
 using RSecurityBackend.Services.Implementation;
 using RSecurityBackend.Models.Generic.Db;
 using System.Collections.Generic;
-using RMuseum.Models.PDFLibrary;
-using System.Reflection.PortableExecutable;
+
 
 namespace RMuseum.Services.Implementation
 {
