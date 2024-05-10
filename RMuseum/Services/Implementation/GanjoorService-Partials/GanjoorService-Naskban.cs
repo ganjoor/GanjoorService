@@ -228,14 +228,33 @@ namespace RMuseum.Services.Implementation
                                            poemCount += poems.Count;
                                            foreach (var poem in poems)
                                            {
-                                               var naskbanLinks = await context.PinterestLinks.Where(l => l.GanjoorPostId == poem.Id && l.PDFBookId == bookId).ToListAsync();
-                                               foreach (var link in naskbanLinks)
+                                               if (textOriginal)
                                                {
-                                                   link.IsTextOriginalSource = textOriginal;
-                                                   context.Update(link);
+                                                   var sources = await context.PinterestLinks.Where(l => l.GanjoorPostId == poem.Id).ToListAsync();
+                                                   foreach (var source in sources)
+                                                       source.IsTextOriginalSource = source.PDFBookId == bookId;
+                                                   context.UpdateRange(sources);
+                                                   await context.SaveChangesAsync();
+                                               }
+                                               else
+                                               {
+                                                   var source = await context.PinterestLinks.Where(l => l.GanjoorPostId == poem.Id && l.IsTextOriginalSource == true).SingleOrDefaultAsync();
+                                                   if (source != null)
+                                                   {
+                                                       source.IsTextOriginalSource = false;
+                                                       context.Update(source);
+                                                       await context.SaveChangesAsync();
+                                                   }
                                                }
                                                await jobProgressServiceEF.UpdateJob(job.Id, progress, $"{progress} از {poemCount}");
                                            }
+                                       }
+
+                                       var book = await context.GanjoorPaperSources.Where(s => s.NaskbanBookId == bookId && s.GanjoorCatId == parentCatId).SingleOrDefaultAsync();
+                                       if (book != null)
+                                       {
+                                           book.IsTextOriginalSource = textOriginal;
+                                           context.Update(book);
                                        }
 
                                    }
