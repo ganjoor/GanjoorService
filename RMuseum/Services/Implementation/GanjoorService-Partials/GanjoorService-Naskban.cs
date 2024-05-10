@@ -19,7 +19,6 @@ using RSecurityBackend.Models.Generic.Db;
 using RMuseum.Models.PDFLibrary;
 using DNTPersianUtils.Core;
 using System.Collections.Generic;
-using RMuseum.Migrations;
 
 namespace RMuseum.Services.Implementation
 {
@@ -620,26 +619,6 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<int>(0, exp.ToString());
-            }
-        }
-
-        /// <summary>
-        /// category paper sources
-        /// </summary>
-        /// <param name="categoryId"></param>
-        /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPaperSource[]>> GetCategoryPaperSourcesAsync(int categoryId)
-        {
-            try
-            {
-                return new RServiceResult<GanjoorPaperSource[]>
-                    (
-                    await _context.GanjoorPaperSources.AsNoTracking().Where(p => p.GanjoorCatId == categoryId).OrderByDescending(c => c.IsTextOriginalSource).OrderBy(c => c.OrderIndicator).ThenBy(c => c.Id).ToArrayAsync()
-                    );
-            }
-            catch (Exception exp)
-            {
-                return new RServiceResult<GanjoorPaperSource[]>(null, exp.ToString());
             }
         }
     }
