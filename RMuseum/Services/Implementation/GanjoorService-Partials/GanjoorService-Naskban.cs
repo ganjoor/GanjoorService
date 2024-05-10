@@ -226,6 +226,7 @@ namespace RMuseum.Services.Implementation
                                        {
                                            var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).ToListAsync();
                                            poemCount += poems.Count;
+                                           progress++;
                                            foreach (var poem in poems)
                                            {
                                                if (textOriginal)

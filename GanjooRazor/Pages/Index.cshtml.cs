@@ -1261,5 +1261,26 @@ namespace GanjooRazor.Pages
                 return GanjoorPage != null && GanjoorPage.Poem != null && GanjoorPage.Poem.ClaimedByMultiplePoets ? "poem ribbon-parent" : "poem";
             }
         }
+
+        public async Task<ActionResult> OnPostMarkAsTextOriginalAsync(int bookId, int categoryId)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PutAsync(
+                        $"{APIRoot.Url}/api/ganjoor/naskban/textoriginal/{bookId}/{categoryId}/true", null);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    return new OkObjectResult(true);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+        }
     }
 }
