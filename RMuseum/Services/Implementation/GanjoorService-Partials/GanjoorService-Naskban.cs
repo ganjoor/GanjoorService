@@ -634,7 +634,7 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<GanjoorPaperSource[]>
                     (
-                    await _context.GanjoorPaperSources.AsNoTracking().Where(p => p.GanjoorCatId == categoryId).OrderBy(c => c.OrderIndicator).ThenBy(c => c.Id).ToArrayAsync()
+                    await _context.GanjoorPaperSources.AsNoTracking().Where(p => p.GanjoorCatId == categoryId).OrderByDescending(c => c.IsTextOriginalSource).OrderBy(c => c.OrderIndicator).ThenBy(c => c.Id).ToArrayAsync()
                     );
             }
             catch (Exception exp)
