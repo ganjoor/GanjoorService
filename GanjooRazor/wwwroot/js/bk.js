@@ -1495,3 +1495,22 @@ function loadMoreQuotedPoems(poemId, skip, poetImageUrl, poetNickName, canEdit) 
         },
     });
 }
+
+function markAsTextOriginal(bookId, categoryId, bookName, catName) {
+    if (!confirm('آیا ' + bookName + ' منبع کاغذی بخش ' + catName + ' است؟'))
+        return;
+
+    var url = '?handler=MarkAsTextOriginal';
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+            bookId: bookId,
+            categoryId: categoryId
+        },
+        success: function () {
+            alert('فرایند کار شروع شد.');
+        },
+    });
+}

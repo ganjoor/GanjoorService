@@ -464,6 +464,12 @@
                                                 <div class="related-image-is-text-source">
                                                     <a target="_blank" href="@Html.Raw(book.BookFullUrl)">@book.BookFullTitle</a>
                                                 </div>
+                                                @if(Model.CanEdit)
+                                                {
+                                                    <div>
+                                                        <a onclick="markAsTextOriginal(@book.NaskbanBookId, @Model.GanjoorPage.PoetOrCat.Cat.Id, '@book.BookFullTitle', '@Model.GanjoorPage.PoetOrCat.Cat.Title')" class="pagebutton" role="button">منبع کاغذی شود</a>
+                                                    </div>
+                                                }
                                             </div>
                                         }
                                     </div>
