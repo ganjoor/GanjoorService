@@ -107,7 +107,7 @@ namespace RMuseum.Services.Implementation
                                 GanjoorCatFullTitle = poet.Nickname,
                                 GanjoorCatFullUrl = cat.FullUrl,
                                 BookType = LinkType.Museum,
-                                BookFullUrl = $"https://museum.ir/items/{artifact.FriendlyUrl}",
+                                BookFullUrl = $"https://museum.ganjoor.net/items/{artifact.FriendlyUrl}",
                                 NaskbanBookId = 0,
                                 BookFullTitle = artifact.Name,
                                 CoverThumbnailImageUrl = artifact.CoverImage.ExternalNormalSizeImageUrl.Replace("/norm/", "/thumb/").Replace("/orig/", "/thumb/"),
