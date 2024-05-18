@@ -177,12 +177,12 @@ namespace RMuseum.Services.Implementation
         /// <param name="secret"></param>
         /// <param name="password"></param>
         /// <param name="firstName"></param>
-        /// <param name="surName"></param>
+        /// <param name="sureName"></param>
         /// <param name="phoneNumber"></param>
         /// <returns></returns>
-        public override async Task<RServiceResult<bool>> FinalizeSignUp(string email, string secret, string password, string firstName, string surName, string phoneNumber)
+        public override async Task<RServiceResult<bool>> FinalizeSignUp(string email, string secret, string password, string firstName, string sureName, string phoneNumber)
         {
-            RServiceResult<bool> res = await base.FinalizeSignUp(email, secret, password, firstName, surName, phoneNumber);
+            RServiceResult<bool> res = await base.FinalizeSignUp(email, secret, password, firstName, sureName, phoneNumber);
             if(res.Result)
             {
                 try

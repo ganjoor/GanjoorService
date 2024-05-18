@@ -180,7 +180,7 @@ namespace GanjooRazor.Pages
                 Secret = Secret,
                 Email = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()),
                 FirstName = "",
-                SurName = "",
+                SureName = "",
                 Password = "",
                 PasswordConfirmation = ""
             };
@@ -213,7 +213,7 @@ namespace GanjooRazor.Pages
                 Email = FinalViewModel.Email,
                 Secret = FinalViewModel.Secret,
                 FirstName = FinalViewModel.FirstName,
-                SurName = FinalViewModel.SurName,
+                SureName = FinalViewModel.SureName,
                 Password = FinalViewModel.Password
             };
 
@@ -256,7 +256,7 @@ namespace GanjooRazor.Pages
             Response.Cookies.Append("SessionId", loggedOnUser.SessionId.ToString(), cookieOption);
             Response.Cookies.Append("Token", loggedOnUser.Token, cookieOption);
             Response.Cookies.Append("Username", loggedOnUser.User.Username, cookieOption);
-            Response.Cookies.Append("Name", $"{loggedOnUser.User.FirstName} {loggedOnUser.User.SurName}", cookieOption);
+            Response.Cookies.Append("Name", $"{loggedOnUser.User.FirstName} {loggedOnUser.User.SureName}", cookieOption);
             Response.Cookies.Append("NickName", $"{loggedOnUser.User.NickName}", cookieOption);
             Response.Cookies.Append("KeepHistory", $"{loggedOnUser.KeepHistory}", cookieOption);
 

@@ -17663,7 +17663,7 @@
             <param name="secret"></param>
             <param name="password"></param>
             <param name="firstName"></param>
-            <param name="surName"></param>
+            <param name="sureName"></param>
             <param name="phoneNumber"></param>
             <returns></returns>
         </member>
