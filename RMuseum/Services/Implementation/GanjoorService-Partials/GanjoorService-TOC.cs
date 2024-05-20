@@ -140,14 +140,15 @@ namespace RMuseum.Services.Implementation
             {
                 if (options == GanjoorTOC.TitlesAndFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerse || options == GanjoorTOC.AlphabeticWithFirstVerseNotSorted)
                 {
-                    var excerpt = verses[0].Text;
+                    var excerptVerse = verses.Any(v => v.VersePosition != VersePosition.Comment) ? verses.Where(v => v.VersePosition != VersePosition.Comment).First() : verses.First();
+                    var excerpt = excerptVerse.Text;
                     if (
                         (
-                        verses[0].VersePosition == VersePosition.Paragraph
+                        excerptVerse.VersePosition == VersePosition.Paragraph
                         ||
-                        verses[0].VersePosition == VersePosition.Single
+                        excerptVerse.VersePosition == VersePosition.Single
                         ||
-                        verses[0].VersePosition == VersePosition.Comment
+                        excerptVerse.VersePosition == VersePosition.Comment
                         ) && excerpt.Length > 100)
                     {
                         excerpt = excerpt.Substring(0, 50);
@@ -166,25 +167,27 @@ namespace RMuseum.Services.Implementation
                 else
                 if (options == GanjoorTOC.AlphabeticWithSecondVerse || options == GanjoorTOC.AlphabeticWithSecondVerseNotSorted || options == GanjoorTOC.TitlesAndSecondVerse)
                 {
-                    if (verses.Length > 1)
+                    var excerptVerses = verses.Any(v => v.VersePosition != VersePosition.Comment) ? verses.Where(v => v.VersePosition != VersePosition.Comment).ToArray() : verses;
+                    if (excerptVerses.Length > 1)
                     {
-                        title += $": {verses[1].Text}";
+                        title += $": {excerptVerses[1].Text}";
                     }
                     else
                     {
-                        title += $": {verses[0].Text}";
+                        title += $": {excerptVerses[0].Text}";
                     }
                 }
                 else
                 if (options == GanjoorTOC.AlphabeticWithFirstCouplet || options == GanjoorTOC.AlphabeticWithFirstCoupletNotSorted || options == GanjoorTOC.TitlesAndFirstCouplet)
                 {
-                    if (verses.Length > 1)
+                    var excerptVerses = verses.Any(v => v.VersePosition != VersePosition.Comment) ? verses.Where(v => v.VersePosition != VersePosition.Comment).ToArray() : verses;
+                    if (excerptVerses.Length > 1)
                     {
-                        title += $": {verses[0].Text} - {verses[1].Text}";
+                        title += $": {excerptVerses[0].Text} - {excerptVerses[1].Text}";
                     }
                     else
                     {
-                        title += $": {verses[0].Text}";
+                        title += $": {excerptVerses[0].Text}";
                     }
                 }
                 else
@@ -196,7 +199,8 @@ namespace RMuseum.Services.Implementation
                     }
                     else
                     {
-                        title += $": {verses[0].Text}";
+                        var excerptVerse = verses.Any(v => v.VersePosition != VersePosition.Comment) ? verses.Where(v => v.VersePosition != VersePosition.Comment).First() : verses.First();
+                        title += $": {excerptVerse.Text}";
                     }
                 }
                 else
@@ -212,7 +216,8 @@ namespace RMuseum.Services.Implementation
                     }
                     else
                     {
-                        title += $": {verses[0].Text}";
+                        var excerptVerse = verses.Any(v => v.VersePosition != VersePosition.Comment) ? verses.Where(v => v.VersePosition != VersePosition.Comment).First() : verses.First();
+                        title += $": {excerptVerse.Text}";
                     }
                 }
             }
