@@ -157,7 +157,12 @@ namespace GanjooRazor.Areas.User.Pages
 
                     RhythmsAlphabetically = rhythmsByVerseCount.ToArray();
 
-                    PoemSection = PageInformation.Poem.Sections.Where(s => s.Index == int.Parse(Request.Query["index"])).Single();
+                    PoemSection = PageInformation.Poem.Sections.Where(s => s.Index == int.Parse(Request.Query["index"])).SingleOrDefault();
+                    if(PoemSection == null)
+                    {
+                        FatalError = "این قطعه به طور مستقل قابل ویرایش نیست.";
+                        return Page();
+                    }
                     if(string.IsNullOrEmpty(PoemSection.Language))
                     {
                         PoemSection.Language = "fa-IR";
