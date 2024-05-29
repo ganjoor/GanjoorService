@@ -229,13 +229,13 @@
                             @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
                             {
                                 <div class="century">
-                                    @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons collapse_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                    @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                 </div>
                             }
                             else
                             {
                                 <div class="century">
-                                    جای‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons collapse_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                    جای‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                 </div>
                             }
 
@@ -395,7 +395,10 @@
                         <div class="spacer">&nbsp;</div>
                         <div class="related-images-frame" id="recitations">
                             <div class="century cursor-pointer" id="load-cat-recitations" onclick="loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">
-                                خوانش‌ها را بارگذاری کن
+                                خوانش‌ها بارگذاری شوند
+                            </div>
+                            <div class="century" style="display:none" id="recitations-section-controller">
+                                خوانش‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('recitations-section', 'recitations-section-collapse-button')"><i class="info-buttons expand_circle_down" id="recitations-section-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                             </div>
                             <div id="recitations-section">
                             </div>
@@ -407,7 +410,7 @@
                         <div class="related-images-frame" id="photos-section">
 
                             <div class="century">
-                                تصویر چهره <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('face-photo', 'face-photo-collapse-button')"><i class="info-buttons collapse_circle_down" id="face-photo-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                تصویر چهره <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('face-photo', 'face-photo-collapse-button')"><i class="info-buttons expand_circle_down" id="face-photo-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                             </div>
 
                             <div id="face-photo">
@@ -450,10 +453,10 @@
                             <div class="related-images-frame" id="papersources-section">
 
                                 <div class="century">
-                                    منابع کاغذی <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('papersources', 'papersources-collapse-button')"><i class="info-buttons collapse_circle_down" id="papersources-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                    منابع کاغذی <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('papersources', 'papersources-collapse-button')"><i class="info-buttons expand_circle_down" id="papersources-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                 </div>
 
-                                <div id="papersources" style="display:none">
+                                <div id="papersources">
                                     <div class="related-images">
                                         @foreach (var book in Model.GanjoorPage.PoetOrCat.Cat.PaperSources)
                                         {
@@ -681,13 +684,13 @@
                                         @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
                                         {
                                             <div class="century">
-                                                @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons collapse_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                                @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                             </div>
                                         }
                                         else
                                         {
                                             <div class="century">
-                                                جای‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons collapse_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                                جای‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                             </div>
                                         }
 

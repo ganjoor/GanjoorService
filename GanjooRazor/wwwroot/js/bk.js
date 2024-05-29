@@ -1149,6 +1149,7 @@ function loadCatRecitations(catId) {
         success: function (data) {
             document.getElementById("remove-this").remove();
             loadButton.remove();
+            document.getElementById('recitations-section-controller').style.display = 'block';
             $(data).appendTo(divParent);
         },
     });
