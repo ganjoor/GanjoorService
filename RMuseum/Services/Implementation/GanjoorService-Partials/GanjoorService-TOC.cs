@@ -356,9 +356,9 @@ namespace RMuseum.Services.Implementation
                         {
                             html += "<div class=\"related-images-frame\" id=\"related-poets\">";
                             html += $"<div class=\"century\">{Environment.NewLine}";
-                            html += $" مشق شعر <a role=\"button\" class=\"w3tooltip cursor-pointer\" onclick=\"switch_section('related-poets-section', 'related-poets-collapse-button')\"><i class=\"info-buttons collapse_circle_down\" id=\"related-poets-collapse-button\"></i><span class=\"w3tooltiptext\">جمع شود / باز شود</span></a>{Environment.NewLine}";
+                            html += $" مشق شعر <a role=\"button\" class=\"w3tooltip cursor-pointer\" onclick=\"switch_section('related-poets-section', 'related-poets-collapse-button')\"><i class=\"info-buttons expand_circle_down\" id=\"related-poets-collapse-button\"></i><span class=\"w3tooltiptext\">جمع شود / باز شود</span></a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
-                            html += $"<div id=\"related-poets-section\" style=\"display:none\">{Environment.NewLine}";
+                            html += $"<div id=\"related-poets-section\">{Environment.NewLine}";
 
 
                             html += $"<div class=\"part-title-block-alt\" id=\"quotes-{poet.Id}\">{Environment.NewLine}";
