@@ -1026,8 +1026,10 @@ namespace RMuseum.Services.Implementation
 
             content = await _ProcessCommentHtml(content, _context);
 
+            int maxWordLengthInComments = int.Parse(Configuration.GetSection("Ganjoor")["MaxWordLengthInComments"]);
+
             string commentText = Regex.Replace(content, "<.*?>", string.Empty);
-            if (commentText.Split(" ", StringSplitOptions.RemoveEmptyEntries).Max(s => s.Length) > 50)
+            if (commentText.Split(" ", StringSplitOptions.RemoveEmptyEntries).Max(s => s.Length) > maxWordLengthInComments)
             {
                 return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "متن حاشیه شامل کلمات به هم پیوستهٔ طولانی است.");
             }
