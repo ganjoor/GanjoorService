@@ -630,7 +630,8 @@ namespace RMuseum.Controllers
             var res = await _audioService.GetUserDefProfile(loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
-
+            if(res.Result == null)
+                return BadRequest("نمایهٔ پیش‌فرض شما مشخص نیست. لطفاً پیش از ارسال خوانش از منو، قسمت «نمایه‌های من» نمایهٔ پیش‌فرض خود را تعریف کنید.");
             return Ok(res.Result);
         }
 
