@@ -33,7 +33,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
                 Username = appUser.UserName,
                 Email = appUser.Email,
                 FirstName = appUser.FirstName,
-                SureName = appUser.SureName,
+                SurName = appUser.SurName,
                 PhoneNumber = appUser.PhoneNumber,
                 RImageId = appUser.RImageId,
                 Status = appUser.Status,

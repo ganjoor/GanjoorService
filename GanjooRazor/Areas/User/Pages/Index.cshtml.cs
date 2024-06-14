@@ -63,7 +63,7 @@ namespace GanjooRazor.Areas.Panel.Pages
                             Id = userInfo.Id,
                             Username = userInfo.Username,
                             FirstName = userInfo.FirstName,
-                            SureName = userInfo.SureName,
+                            SurName = userInfo.SurName,
                             NickName = userInfo.NickName,
                             PhoneNumber = userInfo.PhoneNumber,
                             Email = userInfo.Email,

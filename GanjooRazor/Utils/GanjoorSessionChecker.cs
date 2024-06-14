@@ -59,7 +59,7 @@ namespace GanjooRazor.Utils
                 response.Cookies.Append("SessionId", loggedOnUser.SessionId.ToString(), cookieOption);
                 response.Cookies.Append("Token", loggedOnUser.Token, cookieOption);
                 response.Cookies.Append("Username", loggedOnUser.User.Username, cookieOption);
-                response.Cookies.Append("Name", $"{loggedOnUser.User.FirstName} {loggedOnUser.User.SureName}", cookieOption);
+                response.Cookies.Append("Name", $"{loggedOnUser.User.FirstName} {loggedOnUser.User.SurName}", cookieOption);
                 response.Cookies.Append("NickName", $"{loggedOnUser.User.NickName}", cookieOption);
 
                 bool canEditContent = false;
