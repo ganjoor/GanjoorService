@@ -20,7 +20,7 @@ namespace RMuseum.Models.Note.ViewModels
         public Guid RAppUserId { get; set; }
 
         /// <summary>
-        /// User Name (FirstName + SureName)
+        /// User Name (FirstName + SurName)
         /// </summary>
         public string UserName { get; set; }
 

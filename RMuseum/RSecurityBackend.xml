@@ -27,12 +27,18 @@
             IAppUserService instance
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Authorization.UserGroupPermissionHandler.#ctor(RSecurityBackend.Services.IUserPermissionChecker,RSecurityBackend.Services.IAppUserService)">
+        <member name="F:RSecurityBackend.Authorization.UserGroupPermissionHandler._workspaceService">
+            <summary>
+            workspace service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Authorization.UserGroupPermissionHandler.#ctor(RSecurityBackend.Services.IUserPermissionChecker,RSecurityBackend.Services.IAppUserService,RSecurityBackend.Services.IWorkspaceService)">
             <summary>
             constructor
             </summary>
             <param name="userPermissionChecker"></param>
             <param name="appUserService"></param>
+            <param name="workspaceService"></param>
         </member>
         <member name="T:RSecurityBackend.Authorization.UserGroupPermissionRequirement">
             <summary>
@@ -103,12 +109,13 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+        <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Get(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String)">
             <summary>
             Paginated Users Information (if user does not have user:view permission list only contains him/her information)
             </summary>
             <param name="paging"></param>
             <param name="filterByEmail"></param>
+            <param name="filterByNickName"></param>
             <returns>All Users Information</returns>
         </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Get(System.Guid)">
@@ -122,7 +129,7 @@
             <summary>
             add a new user (if you are trying to add an admin user you yourself should be admin)
             </summary>
-            <param name="newUserInfo">if passsword is sent empty system genrates one for it which could be retrieved from returned record</param>
+            <param name="newUserInfo"></param>
             <returns>id/generated password if required could be retrieved from return value</returns>
         </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.Put(System.Guid,RSecurityBackend.Models.Auth.ViewModels.RegisterRAppUser)">
@@ -188,7 +195,7 @@
         </member>
         <member name="M:RSecurityBackend.Controllers.AppUserControllerBase.GetUserImage(System.Guid)">
             <summary>
-            Get User Image in base 64
+            Get User Image
             </summary>
             <param name="id"></param>
             <returns></returns>
@@ -363,67 +370,70 @@
             Artifact Service
             </summary>
         </member>
-        <member name="T:RSecurityBackend.Controllers.NoificationControllerBase">
+        <member name="T:RSecurityBackend.Controllers.NotificationControllerBase">
             <summary>
             Notifications controller
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.GetUserNotifications">
+        <member name="M:RSecurityBackend.Controllers.NotificationControllerBase.GetUserNotifications(RSecurityBackend.Models.Notification.NotificationType)">
             <summary>
             Get User Notifications
             </summary>
+            <param name="notificationType"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.GetUserNotificationsPaginated(RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RSecurityBackend.Controllers.NotificationControllerBase.GetUserNotificationsPaginated(RSecurityBackend.Models.Generic.PagingParameterModel,RSecurityBackend.Models.Notification.NotificationType)">
             <summary>
             Get User Notifications (Paginated Version)
             </summary>
             <param name="paging"></param>
+            <param name="notificationType"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.GetUnreadUserNotificationsCount">
+        <member name="M:RSecurityBackend.Controllers.NotificationControllerBase.GetUnreadUserNotificationsCount(RSecurityBackend.Models.Notification.NotificationType)">
             <summary>
             Get unread user notifications count
             </summary>
+            <param name="notificationType"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.SwitchNotificationStatus(System.Guid)">
+        <member name="M:RSecurityBackend.Controllers.NotificationControllerBase.SwitchNotificationStatus(System.Guid)">
             <summary>
             Switch Notification Status
             </summary>
             <param name="notificationId"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.SetAllNotificationsStatusRead">
+        <member name="M:RSecurityBackend.Controllers.NotificationControllerBase.SetAllNotificationsStatusRead">
             <summary>
             Set All User Notifications Status Read
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.SetAllNotificationsStatusUnread">
+        <member name="M:RSecurityBackend.Controllers.NotificationControllerBase.SetAllNotificationsStatusUnread">
             <summary>
             Set All User Notifications Status Unread
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.DeleteNotification(System.Guid)">
+        <member name="M:RSecurityBackend.Controllers.NotificationControllerBase.DeleteNotification(System.Guid)">
             <summary>
             Delete Notification
             </summary>
             <param name="notificationId"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.DeleteAllReadNotification">
+        <member name="M:RSecurityBackend.Controllers.NotificationControllerBase.DeleteAllReadNotification">
             <summary>
             Delete All Read Notifications
             </summary>
             <returns></returns>
         </member>
-        <member name="F:RSecurityBackend.Controllers.NoificationControllerBase._notificationService">
+        <member name="F:RSecurityBackend.Controllers.NotificationControllerBase._notificationService">
             <summary>
             Notification Service
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Controllers.NoificationControllerBase.#ctor(RSecurityBackend.Services.IRNotificationService)">
+        <member name="M:RSecurityBackend.Controllers.NotificationControllerBase.#ctor(RSecurityBackend.Services.IRNotificationService)">
             <summary>
             constructor
             </summary>
@@ -436,7 +446,7 @@
         </member>
         <member name="M:RSecurityBackend.Controllers.RGenericOptionsControllerBase.GetValue(System.String)">
             <summary>
-            get user level option
+            get user level option, if option value is not found it returns empty string
             </summary>
             <param name="name"></param>
             <returns></returns>
@@ -451,34 +461,28 @@
         </member>
         <member name="M:RSecurityBackend.Controllers.RGenericOptionsControllerBase.GetGlobalOptionValue(System.String)">
             <summary>
-            get global option value, Security Warning: every authenticated user could see value of global options, so do not store sensitive data into them
+            get global option value, Security Warning: every authenticated user could see value of global options, so do not store sensitive data into them  or you can override this behaviour in your derived class
             </summary>
             <param name="name"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Controllers.RGenericOptionsControllerBase.SetGlobalOptionValue(System.String,System.String)">
             <summary>
-            set global option value
+            set global option value, Security Warning: every authenticated user could change value of global options, so do not store sensitive data into them or you can override this behaviour in your derived class
             </summary>
             <param name="name"></param>
             <param name="value"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Controllers.RGenericOptionsControllerBase.#ctor(RSecurityBackend.Services.IRGenericOptionsService,Microsoft.Extensions.Caching.Memory.IMemoryCache)">
+        <member name="M:RSecurityBackend.Controllers.RGenericOptionsControllerBase.#ctor(RSecurityBackend.Services.IRGenericOptionsService)">
             <summary>
             constructor
             </summary>
             <param name="optionsService"></param>
-            <param name="memoryCache"></param>
         </member>
         <member name="F:RSecurityBackend.Controllers.RGenericOptionsControllerBase._optionsService">
             <summary>
             Options Service
-            </summary>
-        </member>
-        <member name="F:RSecurityBackend.Controllers.RGenericOptionsControllerBase._memoryCache">
-            <summary>
-            IMemoryCache
             </summary>
         </member>
         <member name="T:RSecurityBackend.Controllers.RImageControllerBase">
@@ -486,11 +490,12 @@
             Generic Image Provider
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Controllers.RImageControllerBase.Get(System.Guid)">
+        <member name="M:RSecurityBackend.Controllers.RImageControllerBase.GetImageWithCustomExtension(System.Guid,System.String)">
             <summary>
-            returns image stream
+            return image with custom extension
             </summary>
             <param name="id"></param>
+            <param name="ext"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Controllers.RImageControllerBase.UploadImage">
@@ -508,7 +513,7 @@
         </member>
         <member name="F:RSecurityBackend.Controllers.RImageControllerBase._pictureFileService">
             <summary>
-            Artifact Service
+            image file Service
             </summary>
         </member>
         <member name="F:RSecurityBackend.Controllers.RImageControllerBase._memoryCache">
@@ -625,6 +630,286 @@
             </summary>
             <param name="roleService"></param>
         </member>
+        <member name="T:RSecurityBackend.Controllers.WorkspaceControllerBase">
+            <summary>
+            Worspace API
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceControllerBase.AddWorkpspaceAsync(RSecurityBackend.Models.Cloud.ViewModels.NewWorkspaceModel)">
+            <summary>
+            add workspace (if you want it to be limited override WorkspaceService.RestrictWorkspaceAdding to look at workspace:add )
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceControllerBase.UpdateWorkpspaceAsync(System.Guid,RSecurityBackend.Models.Cloud.ViewModels.WorkspaceViewModel)">
+            <summary>
+            Update workspace
+            </summary>
+            <param name="workspace"></param>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceControllerBase.DeleteWorkspaceAsync(System.Guid)">
+            <summary>
+            delete workspace
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceControllerBase.GetMemberWorkspacesAsync(System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            user workspaces (member or owner)
+            </summary>
+            <param name="onlyActive"></param>
+            <param name="onlyMember"></param>
+            <param name="onlyOwned"></param>
+            <remarks>members are invalid</remarks>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceControllerBase.GetUserWorkspaceByIdAsync(System.Guid)">
+            <summary>
+            get user workspace information
+            </summary>
+            <param name="workspace"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.WorkspaceControllerBase._workspaceService">
+            <summary>
+            workspace service
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.WorkspaceControllerBase._userPermissionChecker">
+            <summary>
+            IUserPermissionChecker instance
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.WorkspaceControllerBase._appUserService">
+            <summary>
+            IAppUserService instance
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceControllerBase.#ctor(RSecurityBackend.Services.IWorkspaceService,RSecurityBackend.Services.IUserPermissionChecker,RSecurityBackend.Services.IAppUserService)">
+            <summary>
+            workspace service
+            </summary>
+            <param name="workspaceService"></param>
+            <param name="userPermissionChecker"></param>
+            <param name="appUserService"></param>
+        </member>
+        <member name="T:RSecurityBackend.Controllers.WorkspaceMemberControllerBase">
+            <summary>
+            Workspace Members
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.DeleteMemberAsync(System.Guid,System.Guid)">
+            <summary>
+            delete member
+            </summary>
+            <param name="workspace"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.GetWorkspaceMembersAsync(System.Guid)">
+            <summary>
+            get workspace members (if RestrictWorkspaceMembersQueryToAuthorizarion returns true looks at workspace:vumembers)
+            </summary>
+            <param name="workspace"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.ChangeMemberStatusAsync(System.Guid,System.Guid,RSecurityBackend.Models.Cloud.RWSUserMembershipStatus)">
+            <summary>
+            change member status
+            </summary>
+            <param name="workspace"></param>
+            <param name="userId"></param>
+            <param name="status"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.AddUserToRoleInWorkspaceAsync(System.Guid,System.Guid,System.String)">
+            <summary>
+            add user to role in a workspace
+            </summary>
+            <param name="workspace"></param>
+            <param name="userId"></param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.RemoveUserFromRoleInWorkspaceAsync(System.Guid,System.Guid,System.String)">
+            <summary>
+            remove user from role in workspace
+            </summary>
+            <param name="workspace"></param>
+            <param name="userId"></param>
+            <param name="role"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.GetUserRoles(System.Guid,System.Guid)">
+            <summary>
+            get user roles
+            </summary>
+            <param name="workspace"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.InviteMemberAsync(System.Guid,RSecurityBackend.Models.Cloud.ViewModels.InviteMemberViewModel)">
+            <summary>
+             add member  (does not send any email)
+            </summary>
+            <param name="workspace"></param>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.RevokeInvitationAsync(System.Guid,System.Guid)">
+            <summary>
+            revoke member invitation to a workspace
+            </summary>
+            <param name="workspace"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.GetUserInvitationsAsync">
+            <summary>
+            user workspace invitations
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.GetWorkspaceInvitationsAsync(System.Guid)">
+            <summary>
+            workspace invitations
+            </summary>
+            <param name="workspace"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.ProcessWorkspaceInvitationAsync(System.Guid,System.Boolean)">
+            <summary>
+            process workspace invitation
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="reject"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.LeaveWorkspaceAsync(System.Guid)">
+            <summary>
+            leave a workspace
+            </summary>
+            <param name="workspace"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.SetWorkspaceOrderForUserAsync(System.Guid,System.Int32)">
+            <summary>
+            set workspace order for user
+            </summary>
+            <param name="workspace"></param>
+            <param name="order"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.GetUserSecurableItemsStatus(System.Guid)">
+            <summary>
+            get logged on user securableitems (permissions) in workspace
+            </summary>
+            <param name="workspace"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.WorkspaceMemberControllerBase._workspaceService">
+            <summary>
+            workspace service
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.WorkspaceMemberControllerBase._userPermissionChecker">
+            <summary>
+            IUserPermissionChecker instance
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.WorkspaceMemberControllerBase._appUserService">
+            <summary>
+            IAppUserService instance
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceMemberControllerBase.#ctor(RSecurityBackend.Services.IWorkspaceService,RSecurityBackend.Services.IUserPermissionChecker,RSecurityBackend.Services.IAppUserService)">
+            <summary>
+            workspace service
+            </summary>
+            <param name="workspaceService"></param>
+            <param name="userPermissionChecker"></param>
+            <param name="appUserService"></param>
+        </member>
+        <member name="T:RSecurityBackend.Controllers.WorkspaceRoleControllerBase">
+            <summary>
+            Workspace User roles
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceRoleControllerBase.Get(System.Guid)">
+            <summary>
+            All Roles Information
+            </summary>
+            <returns>All Roles Information</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceRoleControllerBase.Get(System.Guid,System.String)">
+            <summary>
+            returns role information
+            </summary>
+            <param name="workspace"></param>
+            <param name="roleName">role name</param>
+            <returns>role information</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceRoleControllerBase.Post(System.Guid,RSecurityBackend.Models.Cloud.RWSRole)">
+            <summary>
+            add a new role
+            </summary>
+            <param name="workspace"></param>
+            <param name="newGroupInfo"></param>
+            <returns>id if required could be retrieved from return value</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceRoleControllerBase.Put(System.Guid,System.String,RSecurityBackend.Models.Cloud.RWSRole)">
+            <summary>
+            update existing role
+            </summary>
+            <param name="workspace"></param>
+            <param name="roleName">role name</param>
+            <param name="existingGroupInfo">existingGroupInfo.id could be passed empty and it is ignored completely</param>
+            <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceRoleControllerBase.Delete(System.Guid,System.String)">
+            <summary>
+            delete role
+            </summary>
+            <param name="workspace"></param>
+            <param name="roleName">role name</param>
+            <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceRoleControllerBase.GetRoleSecurableItemsStatus(System.Guid,System.String)">
+            <summary>
+            lists role permissions
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceRoleControllerBase.SetRoleSecurableItemsStatus(System.Guid,System.String,RSecurityBackend.Models.Auth.Memory.SecurableItem[])">
+            <summary>
+            Saves role permissions
+            </summary>
+            <param name="workspace"></param>
+            <param name="roleName">role name</param>
+            <param name="securableItems"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceRoleControllerBase.GetSecurableItems">
+            <summary>
+            Get All SecurableItems
+            </summary>
+            <returns>All All SecurableItems</returns>
+        </member>
+        <member name="F:RSecurityBackend.Controllers.WorkspaceRoleControllerBase._roleService">
+            <summary>
+            IWorkspaceRolesService instance
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Controllers.WorkspaceRoleControllerBase.#ctor(RSecurityBackend.Services.IWorkspaceRolesService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="roleService"></param>
+        </member>
         <member name="T:RSecurityBackend.DbContext.RSecurityDbContext`3">
             <summary>
             Security EF DbContext
@@ -699,12 +984,42 @@
         </member>
         <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.UserBehaviourLogs">
             <summary>
-            user bad behaviour loigs
+            User bad behaviour logs
             </summary>
         </member>
         <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.BannedEmails">
             <summary>
-            banned emails
+            Banned emails
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.RWorkspaces">
+            <summary>
+            Workspaces
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.RWSPermissions">
+            <summary>
+            Workspace Permissions
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.RWSRoles">
+            <summary>
+            Workspace Roles
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.RWSUsers">
+            <summary>
+            Workspace Users
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.RWSUserRoles">
+            <summary>
+            User Workspace Roles
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.DbContext.RSecurityDbContext`3.WorkspaceUserInvitations">
+            <summary>
+            workspace user invitation
             </summary>
         </member>
         <member name="T:RSecurityBackend.Models.Audit.Db.REvent">
@@ -818,9 +1133,9 @@
             First Name
             </summary>
         </member>
-        <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.SureName">
+        <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.SurName">
             <summary>
-            Sure Name
+            Sur Name
             </summary>
         </member>
         <member name="P:RSecurityBackend.Models.Auth.Db.RAppUser.CreateDate">
@@ -1137,6 +1452,16 @@
             global options
             </summary>
         </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.WorkspaceEntityShortName">
+            <summary>
+            workspaces
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.WorkspaceRoleEntityShortName">
+            <summary>
+            worspace role
+            </summary>
+        </member>
         <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.ViewOperationShortName">
             <summary>
             view
@@ -1177,9 +1502,39 @@
             administer
             </summary>
         </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.InviteMembersOperationShortName">
+            <summary>
+            invite members
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.RemoveMembersOperationShortName">
+            <summary>
+            remove members
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.ChangeMemberStatusOperationShortName">
+            <summary>
+            change member status
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.ChangeMemberRoleShortName">
+            <summary>
+            modify member role
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Auth.Memory.SecurableItem.QueryMembersListOperationShortName">
+            <summary>
+            view members
+            </summary>
+        </member>
         <member name="P:RSecurityBackend.Models.Auth.Memory.SecurableItem.Items">
             <summary>
             list of forms and their permissions
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.Memory.SecurableItem.WorkspaceItems">
+            <summary>
+            workspace forms and their permissions
             </summary>
         </member>
         <member name="P:RSecurityBackend.Models.Auth.Memory.SecurableItem.ShortName">
@@ -1402,9 +1757,9 @@
             Hamid Reza
             </example>
         </member>
-        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.SureName">
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.PublicRAppUser.SurName">
             <summary>
-            Sure Name
+            SurName
             </summary>
             <example>
             Mohammadi
@@ -1668,13 +2023,369 @@
             Hamid Reza
             </example>
         </member>
-        <member name="P:RSecurityBackend.Models.Auth.ViewModels.VerifiedSignUpViewModel.SureName">
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.VerifiedSignUpViewModel.SurName">
             <summary>
-            Sure Name
+            SurName
             </summary>
             <example>
             Mohammadi
             </example>        
+        </member>
+        <member name="P:RSecurityBackend.Models.Auth.ViewModels.VerifiedSignUpViewModel.PhoneNumber">
+            <summary>
+            User Mobile Phone Number
+            </summary>
+            <example>
+            +989121234567
+            </example>
+        </member>
+        <member name="T:RSecurityBackend.Models.Cloud.RWorkspace">
+            <summary>
+            Workspace (a reference for a set of records separated from each other, users may have access to different workspaces and have different roles in each of them)
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWorkspace.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWorkspace.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWorkspace.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWorkspace.CreateDate">
+            <summary>
+            worspace create date
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWorkspace.Members">
+            <summary>
+            users having access to the workspace
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWorkspace.Active">
+            <summary>
+            active
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Cloud.RWSPermission">
+            <summary>
+            Workspace Permission line
+            </summary>
+            <see cref="T:RSecurityBackend.Models.Auth.Memory.SecurableItem"/>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSPermission.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSPermission.SecurableItemShortName">
+            <summary>
+            SecurableItem short name
+            </summary>
+            <example>
+            job
+            </example>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSPermission.OperationShortName">
+            <summary>
+            Operation short name
+            </summary>
+            <example>
+            view
+            </example>
+        </member>
+        <member name="T:RSecurityBackend.Models.Cloud.RWSRole">
+            <summary>
+            Workspace Role
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Models.Cloud.RWSRole.#ctor">
+            <summary>
+            default constructor
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Models.Cloud.RWSRole.#ctor(System.String)">
+            <summary>
+            constructor
+            </summary>
+            <param name="roleName"></param>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSRole.WorkspaceId">
+            <summary>
+            workspace id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSRole.Workspace">
+            <summary>
+            workspace
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSRole.Description">
+            <summary>
+            Description
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSRole.Permissions">
+            <summary>
+            Permissions
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Cloud.RWSUser">
+            <summary>
+            Workspace User
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUser.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUser.RAppUserId">
+            <summary>
+            User Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUser.RAppUser">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUser.Status">
+            <summary>
+            status
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUser.InviteDate">
+            <summary>
+            invite date
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUser.MemberFrom">
+            <summary>
+            member from
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUser.RWorkspaceId">
+            <summary>
+            workspace id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUser.WorkspaceOrder">
+            <summary>
+            workspace order for user
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Cloud.RWSUserMembershipStatus">
+            <summary>
+            User Memnership status
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Cloud.RWSUserMembershipStatus.Owner">
+            <summary>
+            Owner
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Cloud.RWSUserMembershipStatus.Member">
+            <summary>
+            Member
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Cloud.RWSUserRole">
+            <summary>
+            User Workspace Role
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUserRole.Id">
+            <summary>
+            record id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUserRole.WorkspaceId">
+            <summary>
+            workspace id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUserRole.Workspace">
+            <summary>
+            workspace
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUserRole.UserId">
+            <summary>
+            user id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUserRole.User">
+            <summary>
+            user
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUserRole.RoleId">
+            <summary>
+            role id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.RWSUserRole.Role">
+            <summary>
+            role
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Cloud.ViewModels.InviteMemberViewModel">
+            <summary>
+            invite member view model
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.InviteMemberViewModel.UserEmail">
+            <summary>
+            email
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.InviteMemberViewModel.Notify">
+            <summary>
+            notify user through internal notification service
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Cloud.ViewModels.NewWorkspaceModel">
+            <summary>
+            new workspace model
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.NewWorkspaceModel.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.NewWorkspaceModel.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Cloud.ViewModels.RWSUserViewModel">
+            <summary>
+             Workspace User View Model
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.RWSUserViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.RWSUserViewModel.RAppUser">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.RWSUserViewModel.Status">
+            <summary>
+            status
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.RWSUserViewModel.InviteDate">
+            <summary>
+            invite date
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.RWSUserViewModel.MemberFrom">
+            <summary>
+            member from
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Cloud.ViewModels.WorkspaceUserInvitationViewModel">
+            <summary>
+            workspace user invitation
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.WorkspaceUserInvitationViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.WorkspaceUserInvitationViewModel.User">
+            <summary>
+            User
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.WorkspaceUserInvitationViewModel.Workspace">
+            <summary>
+            Workspace
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Cloud.ViewModels.WorkspaceViewModel">
+            <summary>
+            Workspace view model
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.WorkspaceViewModel.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.WorkspaceViewModel.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.WorkspaceViewModel.Description">
+            <summary>
+            description
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.WorkspaceViewModel.WorkspaceOrder">
+            <summary>
+            order
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.WorkspaceViewModel.CreateDate">
+            <summary>
+            worspace create date
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.WorkspaceViewModel.Active">
+            <summary>
+            active
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.ViewModels.WorkspaceViewModel.Owned">
+            <summary>
+            am I the owner?
+            </summary>
+        </member>
+        <member name="T:RSecurityBackend.Models.Cloud.WorkspaceUserInvitation">
+            <summary>
+            workspace user invitation
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.WorkspaceUserInvitation.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.WorkspaceUserInvitation.UserId">
+            <summary>
+            user id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.WorkspaceUserInvitation.User">
+            <summary>
+            user
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.WorkspaceUserInvitation.WorkspaceId">
+            <summary>
+            workspace id
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Cloud.WorkspaceUserInvitation.Workspace">
+            <summary>
+            workspace
+            </summary>
         </member>
         <member name="T:RSecurityBackend.Models.Generic.Db.RGenericOption">
             <summary>
@@ -1749,6 +2460,11 @@
         <member name="P:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus.Succeeded">
             <summary>
             finished
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus.LastUpdate">
+            <summary>
+            Last Update Time
             </summary>
         </member>
         <member name="T:RSecurityBackend.Models.Generic.PaginationMetadata">
@@ -1904,6 +2620,13 @@
             Last Modified for caching purposes
             </summary>
         </member>
+        <member name="M:RSecurityBackend.Models.Image.RImage.DuplicateExcludingId(RSecurityBackend.Models.Image.RImage)">
+            <summary>
+            duplicate RImage (excluding Id)
+            </summary>
+            <param name="src"></param>
+            <returns></returns>
+        </member>
         <member name="T:RSecurityBackend.Models.Mail.SmptConfig">
             <summary>
             smtp config
@@ -1969,6 +2692,36 @@
             Deleted
             </summary>
         </member>
+        <member name="T:RSecurityBackend.Models.Notification.NotificationType">
+            <summary>
+            notifiction type
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Notification.NotificationType.NoActionRequired">
+            <summary>
+            No action required
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Notification.NotificationType.ActionRequired">
+            <summary>
+            Action Required
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Notification.NotificationType.Warning">
+            <summary>
+            warning
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Notification.NotificationType.Error">
+            <summary>
+            Error
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Models.Notification.NotificationType.All">
+            <summary>
+            all
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Models.Notification.RUserNotification">
             <summary>
             User Notification
@@ -2009,6 +2762,11 @@
             Text
             </summary>
         </member>
+        <member name="P:RSecurityBackend.Models.Notification.RUserNotification.NotificationType">
+            <summary>
+            Notifiation Type
+            </summary>
+        </member>
         <member name="T:RSecurityBackend.Models.Notification.ViewModels.RUserNotificationViewModel">
             <summary>
             User Notification
@@ -2037,6 +2795,11 @@
         <member name="P:RSecurityBackend.Models.Notification.ViewModels.RUserNotificationViewModel.HtmlText">
             <summary>
             Text
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Models.Notification.ViewModels.RUserNotificationViewModel.NotificationType">
+            <summary>
+            Notification Type
             </summary>
         </member>
         <member name="T:RSecurityBackend.Services.IAppUserService">
@@ -2140,12 +2903,13 @@
             <param name="userId"></param>        
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.IAppUserService.GetAllUsersInformation(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetAllUsersInformation(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String)">
             <summary>
             all users informations
             </summary>
             <param name="paging"></param>
             <param name="filterByEmail"></param>
+            <param name="filterByNickName"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.IAppUserService.GetUsersHavingPermission(System.String,System.String)">
@@ -2252,7 +3016,7 @@
             <param name="secret"></param>
             <returns>associated email</returns>
         </member>
-        <member name="M:RSecurityBackend.Services.IAppUserService.FinalizeSignUp(System.String,System.String,System.String,System.String,System.String)">
+        <member name="M:RSecurityBackend.Services.IAppUserService.FinalizeSignUp(System.String,System.String,System.String,System.String,System.String,System.String)">
             <summary>
             finalize signup process using email
             </summary>
@@ -2260,7 +3024,8 @@
             <param name="secret"></param>
             <param name="password"></param>
             <param name="firstName"></param>
-            <param name="sureName"></param>
+            <param name="surName"></param>
+            <param name="phoneNumber"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.IAppUserService.ForgotPassword(System.String,System.String,System.String,System.String)">
@@ -2287,6 +3052,14 @@
             <summary>
             delete tenant
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IAppUserService.GetPrincipalFromToken(System.String,System.Boolean)">
+            <summary>
+            get principal for token
+            </summary>
+            <param name="token"></param>
+            <param name="expired"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.IAppUserService.FindUserByEmail(System.String)">
@@ -2425,7 +3198,7 @@
             Image File Service
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Services.IImageFileService.Add(Microsoft.AspNetCore.Http.IFormFile,System.IO.Stream,System.String,System.String)">
+        <member name="M:RSecurityBackend.Services.IImageFileService.Add(Microsoft.AspNetCore.Http.IFormFile,System.IO.Stream,System.String,System.String,System.Boolean,System.String)">
             <summary>
             add new picture
             </summary>
@@ -2433,6 +3206,8 @@
             <param name="stream"></param>
             <param name="originalFileNameForStreams"></param>
             <param name="imageFolderName">pass empty if you want a generic date based folder</param>
+            <param name="isImage"></param>
+            <param name="contentType"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.IImageFileService.Store(RSecurityBackend.Models.Image.RImage)">
@@ -2577,12 +3352,13 @@
             <param name="userId"></param>        
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetAllUsersInformation(RSecurityBackend.Models.Generic.PagingParameterModel,System.String)">
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetAllUsersInformation(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String)">
             <summary>
             all users informations
             </summary>
             <param name="paging"></param>
             <param name="filterByEmail"></param>
+            <param name="filterByNickName"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetUserSessions(System.Nullable{System.Guid})">
@@ -2741,7 +3517,7 @@
             <param name="secret"></param>
             <returns>associated email</returns>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.FinalizeSignUp(System.String,System.String,System.String,System.String,System.String)">
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.FinalizeSignUp(System.String,System.String,System.String,System.String,System.String,System.String)">
             <summary>
             finalize signup process using email
             </summary>
@@ -2749,7 +3525,8 @@
             <param name="secret"></param>
             <param name="password"></param>
             <param name="firstName"></param>
-            <param name="sureName"></param>
+            <param name="surName"></param>
+            <param name="phoneNumber"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.Implementation.AppUserService.ForgotPassword(System.String,System.String,System.String,System.String)">
@@ -2801,13 +3578,14 @@
             JWT Tokens Expiration Time Out
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GenerateToken(System.String,System.Guid,System.Guid)">
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GenerateToken(System.String,System.Guid,System.Guid,System.String)">
             <summary>
             Token Generation
             </summary>
             <param name="username"></param>
             <param name="userId"></param>
             <param name="sessionId"></param>
+            <param name="language"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.Implementation.AppUserService.ExtractTokenInfo(System.String,System.String@,System.Guid@,System.Guid@)">
@@ -2819,11 +3597,12 @@
             <param name="userId"></param>
             <param name="sessionId"></param>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetPrincipalFromExpiredToken(System.String)">
+        <member name="M:RSecurityBackend.Services.Implementation.AppUserService.GetPrincipalFromToken(System.String,System.Boolean)">
             <summary>
-            
+            get principal for token
             </summary>
             <param name="token"></param>
+            <param name="expired"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.Implementation.AppUserService.ErrorsToString(System.Collections.Generic.IEnumerable{Microsoft.AspNetCore.Identity.IdentityError})">
@@ -3033,7 +3812,7 @@
             Image File Service
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.ImageFileServiceEF.Add(Microsoft.AspNetCore.Http.IFormFile,System.IO.Stream,System.String,System.String)">
+        <member name="M:RSecurityBackend.Services.Implementation.ImageFileServiceEF.Add(Microsoft.AspNetCore.Http.IFormFile,System.IO.Stream,System.String,System.String,System.Boolean,System.String)">
             <summary>
             Add Image File
             </summary>
@@ -3041,6 +3820,8 @@
             <param name="stream"></param>
             <param name="originalFileNameForStreams"></param>
             <param name="imageFolderName"></param>
+            <param name="isImage"></param>
+            <param name="contentType"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.Implementation.ImageFileServiceEF.Store(RSecurityBackend.Models.Image.RImage)">
@@ -3251,11 +4032,12 @@
             <param name="auditEvent"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.InsertEventAsync(Audit.Core.AuditEvent)">
+        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.InsertEventAsync(Audit.Core.AuditEvent,System.Threading.CancellationToken)">
             <summary>
             Insert Async
             </summary>
             <param name="auditEvent"></param>
+            <param name="cancellationToken"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.ReplaceEvent(System.Object,Audit.Core.AuditEvent)">
@@ -3265,12 +4047,13 @@
             <param name="eventId"></param>
             <param name="auditEvent"></param>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.ReplaceEventAsync(System.Object,Audit.Core.AuditEvent)">
+        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.ReplaceEventAsync(System.Object,Audit.Core.AuditEvent,System.Threading.CancellationToken)">
             <summary>
             Update Async
             </summary>
             <param name="eventId"></param>
             <param name="auditEvent"></param>
+            <param name="cancellationToken"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.GetEvent``1(System.Object)">
@@ -3281,12 +4064,13 @@
             <param name="eventId"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.GetEventAsync``1(System.Object)">
+        <member name="M:RSecurityBackend.Services.Implementation.RAuditDataProvider.GetEventAsync``1(System.Object,System.Threading.CancellationToken)">
             <summary>
             Get Async
             </summary>
             <typeparam name="T"></typeparam>
             <param name="eventId"></param>
+            <param name="cancellationToken">s</param>
             <returns></returns>
         </member>
         <member name="F:RSecurityBackend.Services.Implementation.RAuditDataProvider._disposed">
@@ -3338,6 +4122,15 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RSecurityBackend.Services.Implementation.RGenericOptionsServiceEF.GetValueAsync(RSecurityBackend.DbContext.RSecurityDbContext{RSecurityBackend.Models.Auth.Db.RAppUser,RSecurityBackend.Models.Auth.Db.RAppRole,System.Guid},System.String,System.Nullable{System.Guid})">
+            <summary>
+            get option value using context
+            </summary>
+            <param name="context"></param>
+            <param name="optionName"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="F:RSecurityBackend.Services.Implementation.RGenericOptionsServiceEF._context">
             <summary>
             Database Contetxt
@@ -3354,13 +4147,14 @@
             Internal messaging system implementation
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.PushNotification(System.Guid,System.String,System.String)">
+        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.PushNotification(System.Guid,System.String,System.String,RSecurityBackend.Models.Notification.NotificationType)">
             <summary>
             Add Notification
             </summary>
             <param name="userId"></param>
             <param name="subject"></param>
             <param name="htmlText"></param>
+            <param name="notificationType"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.SwitchNotificationStatus(System.Guid,System.Guid)">
@@ -3387,26 +4181,29 @@
             <param name="userId"></param>    
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.GetUserNotifications(System.Guid)">
+        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.GetUserNotifications(System.Guid,RSecurityBackend.Models.Notification.NotificationType)">
             <summary>
             Get User Notifications
             </summary>
             <param name="userId"></param>
+            <param name="notificationType"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.GetUserNotificationsPaginated(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.GetUserNotificationsPaginated(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RSecurityBackend.Models.Notification.NotificationType)">
             <summary>
             Get User Notifications (paginated version)
             </summary>
             <param name="paging"></param>
             <param name="userId"></param>
+            <param name="notificationType"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.GetUnreadUserNotificationsCount(System.Guid)">
+        <member name="M:RSecurityBackend.Services.Implementation.RNotificationService.GetUnreadUserNotificationsCount(System.Guid,RSecurityBackend.Models.Notification.NotificationType)">
             <summary>
             Get Unread User Notifications Count
             </summary>
             <param name="userId"></param>
+            <param name="notificationType"></param>
             <returns></returns>
         </member>
         <member name="F:RSecurityBackend.Services.Implementation.RNotificationService._context">
@@ -3530,14 +4327,16 @@
             Permission checker service implementation
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.UserPermissionChecker.Check(System.Guid,System.Guid,System.String,System.String)">
+        <member name="M:RSecurityBackend.Services.Implementation.UserPermissionChecker.Check(System.Guid,System.Guid,System.String,System.String,System.String,System.Nullable{System.Guid})">
             <summary>
             check to see if user has permission to do operation
             </summary>
             <param name="userId">userId</param>
             <param name="sessionId"></param>
+            <param name="language"></param>
             <param name="securableItemShortName">form</param>
             <param name="operationShortName">operation</param>
+            <param name="workspaceId"></param>
             <returns>true if has permission</returns>
         </member>
         <member name="F:RSecurityBackend.Services.Implementation.UserPermissionChecker._appUserService">
@@ -3545,11 +4344,411 @@
             IAppUserService instance
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Services.Implementation.UserPermissionChecker.#ctor(RSecurityBackend.Services.IAppUserService)">
+        <member name="F:RSecurityBackend.Services.Implementation.UserPermissionChecker._workspaceService">
+            <summary>
+            workspace service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.UserPermissionChecker.#ctor(RSecurityBackend.Services.IAppUserService,RSecurityBackend.Services.IWorkspaceService)">
             <summary>
             constructor
             </summary>
             <param name="appUserService"></param>
+            <param name="workspaceService"></param>
+        </member>
+        <member name="T:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase">
+            <summary>
+            Workspace Role Service implementation
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase.AdministratorRoleName">
+            <summary>
+            Administrator role name
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase.GetAllRoles(System.Guid,System.String)">
+            <summary>
+            returns all user roles
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase.FindByNameAsync(System.Guid,System.String,System.String)">
+            <summary>
+            find role by name
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="name"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase.GetRoleInformation(System.Guid,System.String,System.String)">
+            <summary>
+            returns user role information
+            </summary>       
+            <param name="roleName"></param>        
+            <param name="workspaceId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase.ModifyRole(System.Guid,System.String,RSecurityBackend.Models.Cloud.RWSRole,System.String)">
+            <summary>
+            modify existing user role
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="roleName"></param>
+            <param name="updateRoleInfo"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase.DeleteRole(System.Guid,System.String,System.String)">
+            <summary>
+            delete user role
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="roleName"></param>
+            <param name="language"></param>
+            <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase.AddRole(RSecurityBackend.Models.Cloud.RWSRole,System.String)">
+            <summary>
+            adds a new user role
+            </summary>
+            <param name="newRoleInfo">new role info</param>
+            <param name="language"></param>
+            <returns>update user role info (id)</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase.HasPermission(System.Guid,System.String,System.String,System.String,System.String)">
+            <summary>
+            Has role specified permission
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="roleName"></param>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase.GetRolesHavingPermission(System.Guid,System.String,System.String,System.String)">
+            <summary>
+            roles having specific permission
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase.GetSecurableItems">
+            <summary>
+            gets list of SecurableItem, should be reimplemented in end user applications
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase.GetRoleSecurableItemsStatus(System.Guid,System.String,System.String)">
+            <summary>
+            Lists role permissions
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="roleName"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase.SetRoleSecurableItemsStatus(System.Guid,System.String,RSecurityBackend.Models.Auth.Memory.SecurableItem[],System.String)">
+            <summary>
+            Saves role permissions
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="roleName"></param>
+            <param name="securableItems"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase._context">
+            <summary>
+            Database Context
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceRolesServiceBase.#ctor(RSecurityBackend.DbContext.RSecurityDbContext{RSecurityBackend.Models.Auth.Db.RAppUser,RSecurityBackend.Models.Auth.Db.RAppRole,System.Guid})">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:RSecurityBackend.Services.Implementation.WorkspaceService">
+            <summary>
+            Workspace service implementation
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.AddWorkpspaceAsync(System.Guid,System.String,System.String,System.String)">
+            <summary>
+            add workspace
+            </summary>
+            <param name="userId"></param>
+            <param name="name"></param>
+            <param name="description"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.UpdateWorkpspaceAsync(System.Guid,System.String,RSecurityBackend.Models.Cloud.ViewModels.WorkspaceViewModel)">
+            <summary>
+            Update workspace
+            </summary>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.DeleteWorkspaceAsync(System.Guid,System.String,System.Guid)">
+            <summary>
+            delete workspace
+            </summary>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.GetMemberWorkspacesAsync(System.Guid,System.String,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            member workspaces
+            </summary>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <param name="onlyActive"></param>
+            <param name="onlyOwned"></param>
+            <param name="onlyMember"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.GetUserWorkspaceByIdAsync(System.Guid,System.Guid,System.String)">
+            <summary>
+            get user workspace information
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.GetWorkspaceMembersAsync(System.Guid,System.String)">
+            <summary>
+            get workspace members
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.IsUserWorkspaceMember(System.Guid,System.Guid,System.String)">
+            <summary>
+            is user workspace member
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.InviteMemberAsync(System.Guid,System.Guid,System.String,System.Boolean,System.String)">
+            <summary>
+            add member
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="inviterId"></param>
+            <param name="email"></param>
+            <param name="notifyUser"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.RevokeInvitationAsync(System.Guid,System.Guid,System.String)">
+            <summary>
+            revoke invitation
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.GetUserInvitationsAsync(System.Guid,System.String)">
+            <summary>
+            user invitations
+            </summary>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.GetWorkspaceInvitationsAsync(System.Guid,System.String)">
+            <summary>
+            workspace invitations
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.DeleteMemberAsync(System.Guid,System.Guid,System.String)">
+            <summary>
+            delete member
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.LeaveWorkspaceAsync(System.Guid,System.Guid,System.String)">
+            <summary>
+            leave a workspace
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.ChangeMemberStatusAsync(System.Guid,System.Guid,System.Guid,RSecurityBackend.Models.Cloud.RWSUserMembershipStatus,System.String)">
+            <summary>
+            change member status
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="ownerOrModeratorId"></param>
+            <param name="userId"></param>
+            <param name="status"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.ProcessWorkspaceInvitationAsync(System.Guid,System.Guid,System.Boolean,System.String)">
+            <summary>
+            process workspace invitation
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="reject"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.AddUserToRoleInWorkspaceAsync(System.Guid,System.Guid,System.String,System.String)">
+            <summary>
+            add user to role in a workspace
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="roleName"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.RemoveUserFromRoleInWorkspaceAsync(System.Guid,System.Guid,System.String,System.String)">
+            <summary>
+            remove user from role in workspace
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="roleName"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.IsInRoleAsync(System.Guid,System.Guid,System.String,System.String)">
+            <summary>
+            is user in role in workspace
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="roleName"></param>
+            <param name="language"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.GetUserRoles(System.Guid,System.Guid,System.String)">
+            <summary>
+            get user roles
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.HasPermission(System.Guid,System.Guid,System.String,System.String,System.String)">
+            <summary>
+            has permission
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.SetWorkspaceOrderForUserAsync(System.Guid,System.Guid,System.Int32,System.String)">
+            <summary>
+            set workspace order
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="nOrder"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.IsAdmin(System.Guid,System.Guid,System.String)">
+            <summary>
+            is admin
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.GetUserSecurableItemsStatus(System.Guid,System.Guid,System.String)">
+            <summary>
+            Lists user permissions
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.WorkspaceService.RestrictWorkspaceCreationToAuthorizarion">
+            <summary>
+            restrict workspace adding
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.WorkspaceService.AllowInvitingUsersToWorkspacesByDefault">
+            <summary>
+            allow inviting users to workspaces by default
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.WorkspaceService.RestrictWorkspaceMembersQueryToAuthorizarion">
+            <summary>
+            restrict worpspace members query
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.WorkspaceService._context">
+            <summary>
+            Database Context
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.Implementation.WorkspaceService._rolesService">
+            <summary>
+            Workspace roles servoce
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.WorkspaceService._userManager">
+            <summary>
+            Identity User Manageer
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.WorkspaceService._optionsService">
+            <summary>
+            Options service
+            </summary>
+        </member>
+        <member name="F:RSecurityBackend.Services.Implementation.WorkspaceService._notificationService">
+            <summary>
+            Notification Service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.Implementation.WorkspaceService.#ctor(RSecurityBackend.DbContext.RSecurityDbContext{RSecurityBackend.Models.Auth.Db.RAppUser,RSecurityBackend.Models.Auth.Db.RAppRole,System.Guid},RSecurityBackend.Services.IWorkspaceRolesService,Microsoft.AspNetCore.Identity.UserManager{RSecurityBackend.Models.Auth.Db.RAppUser},RSecurityBackend.Services.IRGenericOptionsService,RSecurityBackend.Services.IRNotificationService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+            <param name="rolesService"></param>
+            <param name="userManager"></param>
+            <param name="optionsService"></param>
+            <param name="notificationService"></param>
         </member>
         <member name="T:RSecurityBackend.Services.IRGenericOptionsService">
             <summary>
@@ -3567,8 +4766,17 @@
         </member>
         <member name="M:RSecurityBackend.Services.IRGenericOptionsService.GetValueAsync(System.String,System.Nullable{System.Guid})">
             <summary>
-            get option value
+            get option value, if option value is not found it returns empty string
             </summary>
+            <param name="optionName"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IRGenericOptionsService.GetValueAsync(RSecurityBackend.DbContext.RSecurityDbContext{RSecurityBackend.Models.Auth.Db.RAppUser,RSecurityBackend.Models.Auth.Db.RAppRole,System.Guid},System.String,System.Nullable{System.Guid})">
+            <summary>
+            get option value using context
+            </summary>
+            <param name="context"></param>
             <param name="optionName"></param>
             <param name="userId"></param>
             <returns></returns>
@@ -3578,35 +4786,39 @@
             Internal messaging system interface
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Services.IRNotificationService.PushNotification(System.Guid,System.String,System.String)">
+        <member name="M:RSecurityBackend.Services.IRNotificationService.PushNotification(System.Guid,System.String,System.String,RSecurityBackend.Models.Notification.NotificationType)">
             <summary>
             Add Notification
             </summary>
             <param name="userId"></param>
             <param name="subject"></param>
             <param name="htmlText"></param>
+            <param name="notificationType"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.IRNotificationService.GetUserNotifications(System.Guid)">
+        <member name="M:RSecurityBackend.Services.IRNotificationService.GetUserNotifications(System.Guid,RSecurityBackend.Models.Notification.NotificationType)">
             <summary>
             Get User Notifications
             </summary>
             <param name="userId"></param>
+            <param name="notificationType"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.IRNotificationService.GetUserNotificationsPaginated(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid)">
+        <member name="M:RSecurityBackend.Services.IRNotificationService.GetUserNotificationsPaginated(RSecurityBackend.Models.Generic.PagingParameterModel,System.Guid,RSecurityBackend.Models.Notification.NotificationType)">
             <summary>
             Get User Notifications (paginated version)
             </summary>
             <param name="paging"></param>
             <param name="userId"></param>
+            <param name="notificationType"></param>
             <returns></returns>
         </member>
-        <member name="M:RSecurityBackend.Services.IRNotificationService.GetUnreadUserNotificationsCount(System.Guid)">
+        <member name="M:RSecurityBackend.Services.IRNotificationService.GetUnreadUserNotificationsCount(System.Guid,RSecurityBackend.Models.Notification.NotificationType)">
             <summary>
             Get Unread User Notifications Count
             </summary>
             <param name="userId"></param>
+            <param name="notificationType"></param>
             <returns></returns>
         </member>
         <member name="M:RSecurityBackend.Services.IRNotificationService.SwitchNotificationStatus(System.Guid,System.Guid)">
@@ -3649,14 +4861,16 @@
             Permission checker service
             </summary>
         </member>
-        <member name="M:RSecurityBackend.Services.IUserPermissionChecker.Check(System.Guid,System.Guid,System.String,System.String)">
+        <member name="M:RSecurityBackend.Services.IUserPermissionChecker.Check(System.Guid,System.Guid,System.String,System.String,System.String,System.Nullable{System.Guid})">
             <summary>
             check to see if user has permission to do operation
             </summary>
             <param name="userId">userId</param>
             <param name="sessionId">sessionId</param>
+            <param name="language"></param>
             <param name="securableItemShortName">form</param>
             <param name="operationShortName">operation</param>
+            <param name="workspaceId"></param>
             <returns>true if has permission</returns>
         </member>
         <member name="T:RSecurityBackend.Services.IUserRoleService">
@@ -3741,6 +4955,354 @@
             <param name="roleName"></param>
             <param name="securableItems"></param>
             <returns></returns>
+        </member>
+        <member name="T:RSecurityBackend.Services.IWorkspaceRolesService">
+            <summary>
+            Workspace Role Service
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.IWorkspaceRolesService.AdministratorRoleName">
+            <summary>
+            Administrator role name
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceRolesService.GetAllRoles(System.Guid,System.String)">
+            <summary>
+            returns all user roles
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceRolesService.FindByNameAsync(System.Guid,System.String,System.String)">
+            <summary>
+            find role by name
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="name"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceRolesService.GetRoleInformation(System.Guid,System.String,System.String)">
+            <summary>
+            returns user role information
+            </summary>       
+            <param name="workspaceId"></param>
+            <param name="roleName"></param>        
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceRolesService.ModifyRole(System.Guid,System.String,RSecurityBackend.Models.Cloud.RWSRole,System.String)">
+            <summary>
+            modify existing user role
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="roleName"></param>
+            <param name="updateRoleInfo"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceRolesService.DeleteRole(System.Guid,System.String,System.String)">
+            <summary>
+            delete user role
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="roleName"></param>
+            <param name="language"></param>
+            <returns>true if succeeds</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceRolesService.AddRole(RSecurityBackend.Models.Cloud.RWSRole,System.String)">
+            <summary>
+            adds a new user role
+            </summary>
+            <param name="newRoleInfo">new role info</param>
+            <param name="language"></param>
+            <returns>update user role info (id)</returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceRolesService.HasPermission(System.Guid,System.String,System.String,System.String,System.String)">
+            <summary>
+            Has role specified permission
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="roleName"></param>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceRolesService.GetRolesHavingPermission(System.Guid,System.String,System.String,System.String)">
+            <summary>
+            roles having specific permission
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceRolesService.GetSecurableItems">
+            <summary>
+            gets list of SecurableItem, should be reimplemented in end user applications
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceRolesService.GetRoleSecurableItemsStatus(System.Guid,System.String,System.String)">
+            <summary>
+            Lists role permissions
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="roleName"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceRolesService.SetRoleSecurableItemsStatus(System.Guid,System.String,RSecurityBackend.Models.Auth.Memory.SecurableItem[],System.String)">
+            <summary>
+            Saves role permissions
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="roleName"></param>
+            <param name="securableItems"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RSecurityBackend.Services.IWorkspaceService">
+            <summary>
+            Workspace service
+            </summary>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.AddWorkpspaceAsync(System.Guid,System.String,System.String,System.String)">
+            <summary>
+            add workspace
+            </summary>
+            <param name="userId"></param>
+            <param name="name"></param>
+            <param name="description"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.UpdateWorkpspaceAsync(System.Guid,System.String,RSecurityBackend.Models.Cloud.ViewModels.WorkspaceViewModel)">
+            <summary>
+            Update workspace
+            </summary>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.DeleteWorkspaceAsync(System.Guid,System.String,System.Guid)">
+            <summary>
+            delete workspace
+            </summary>
+            <param name="userId"></param>
+            <param name="id"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.GetMemberWorkspacesAsync(System.Guid,System.String,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            member workspaces
+            </summary>
+            <param name="userId"></param>
+            <param name="onlyActive"></param>
+            <param name="onlyOwned"></param>
+            <param name="onlyMember"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.GetUserWorkspaceByIdAsync(System.Guid,System.Guid,System.String)">
+            <summary>
+            get user workspace information
+            </summary>
+            <param name="id"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.GetWorkspaceMembersAsync(System.Guid,System.String)">
+            <summary>
+            get workspace members
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.IsUserWorkspaceMember(System.Guid,System.Guid,System.String)">
+            <summary>
+            is user workspace member
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.InviteMemberAsync(System.Guid,System.Guid,System.String,System.Boolean,System.String)">
+            <summary>
+            add member (does not send any email)
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="inviterId"></param>
+            <param name="email"></param>
+            <param name="notifyUser"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.RevokeInvitationAsync(System.Guid,System.Guid,System.String)">
+            <summary>
+            revoke invitation
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.GetUserInvitationsAsync(System.Guid,System.String)">
+            <summary>
+            user invitations
+            </summary>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.GetWorkspaceInvitationsAsync(System.Guid,System.String)">
+            <summary>
+            workspace invitations
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.DeleteMemberAsync(System.Guid,System.Guid,System.String)">
+            <summary>
+            delete member
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.LeaveWorkspaceAsync(System.Guid,System.Guid,System.String)">
+            <summary>
+            leave a workspace
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.ProcessWorkspaceInvitationAsync(System.Guid,System.Guid,System.Boolean,System.String)">
+            <summary>
+            process workspace invitation
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="reject"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.ChangeMemberStatusAsync(System.Guid,System.Guid,System.Guid,RSecurityBackend.Models.Cloud.RWSUserMembershipStatus,System.String)">
+            <summary>
+            change member status
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="ownerOrModeratorId"></param>
+            <param name="userId"></param>
+            <param name="status"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.AddUserToRoleInWorkspaceAsync(System.Guid,System.Guid,System.String,System.String)">
+            <summary>
+            add user to role in a workspace
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="roleName"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.RemoveUserFromRoleInWorkspaceAsync(System.Guid,System.Guid,System.String,System.String)">
+            <summary>
+            remove user from role i
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="roleName"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.IsInRoleAsync(System.Guid,System.Guid,System.String,System.String)">
+            <summary>
+            is user in role in workspace
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="roleName"></param>
+            <param name="language"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.IsAdmin(System.Guid,System.Guid,System.String)">
+            <summary>
+            is admin
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.GetUserRoles(System.Guid,System.Guid,System.String)">
+            <summary>
+            get user roles
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.HasPermission(System.Guid,System.Guid,System.String,System.String,System.String)">
+            <summary>
+            has permission
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="securableItemShortName"></param>
+            <param name="operationShortName"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.SetWorkspaceOrderForUserAsync(System.Guid,System.Guid,System.Int32,System.String)">
+            <summary>
+            set workspace order
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="nOrder"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RSecurityBackend.Services.IWorkspaceService.GetUserSecurableItemsStatus(System.Guid,System.Guid,System.String)">
+            <summary>
+            Lists user permissions
+            </summary>
+            <param name="workspaceId"></param>
+            <param name="userId"></param>
+            <param name="language"></param>
+            <returns></returns>
+        </member>
+        <member name="P:RSecurityBackend.Services.IWorkspaceService.RestrictWorkspaceCreationToAuthorizarion">
+            <summary>
+            restrict workspace adding
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.IWorkspaceService.AllowInvitingUsersToWorkspacesByDefault">
+            <summary>
+            allow inviting users to workspaces by default
+            </summary>
+        </member>
+        <member name="P:RSecurityBackend.Services.IWorkspaceService.RestrictWorkspaceMembersQueryToAuthorizarion">
+            <summary>
+            restrict worpspace members query
+            </summary>
         </member>
         <member name="T:RSecurityBackend.Utilities.AuditNetEnvironmentSkippingContractResolver">
             <summary>

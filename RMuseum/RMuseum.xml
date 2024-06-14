@@ -12898,7 +12898,7 @@
         </member>
         <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.UserName">
             <summary>
-            User Name (FirstName + SureName)
+            User Name (FirstName + SurName)
             </summary>
         </member>
         <member name="P:RMuseum.Models.Note.ViewModels.RUserNoteViewModel.RUserImageId">
@@ -17663,7 +17663,7 @@
             <param name="secret"></param>
             <param name="password"></param>
             <param name="firstName"></param>
-            <param name="sureName"></param>
+            <param name="surName"></param>
             <param name="phoneNumber"></param>
             <returns></returns>
         </member>
