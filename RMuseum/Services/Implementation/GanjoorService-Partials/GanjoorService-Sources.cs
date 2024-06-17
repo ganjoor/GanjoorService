@@ -15,6 +15,11 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+        /// <summary>
+        /// tag with sources
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="sourceUrlSlug"></param>
         public void TagCategoryWithSource(int catId, string sourceUrlSlug)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem

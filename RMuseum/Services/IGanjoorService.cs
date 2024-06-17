@@ -1412,5 +1412,12 @@ namespace RMuseum.Services
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> ModerateGanjoorQuotedPoemAsync(GanjoorQuotedPoemModerationViewModel model, Guid userId);
+
+        /// <summary>
+        /// tag with sources
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="sourceUrlSlug"></param>
+        void TagCategoryWithSource(int catId, string sourceUrlSlug);
     }
 }
