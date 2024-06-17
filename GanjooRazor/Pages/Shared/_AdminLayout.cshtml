@@ -180,6 +180,25 @@
             });
         }
 
+        function rebuildDigitalSourcesStats() {
+            if (!confirm('آیا از بازسازی آمار منابع دیجیتال اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=RebuildDigitalSourcesStats';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('فرایند بازسازی شروع شد.')
+                },
+
+            });
+        }
+
 
 
 
