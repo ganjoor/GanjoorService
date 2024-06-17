@@ -3941,6 +3941,18 @@
         <member name="M:RMuseum.Migrations.PaperSources.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.SureNameFix">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.SureNameFix.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.SureNameFix.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.SureNameFix.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -17783,6 +17795,9 @@
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorService">
+            <summary>
+            IGanjoorService implementation
+            </summary>
             <summary>
             IGanjoorService implementation
             </summary>
