@@ -574,5 +574,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorPaperSource> GanjoorPaperSources { get; set; }
 
+        /// <summary>
+        /// digital sources
+        /// </summary>
+        public DbSet<DigitalSource> DigitalSources { get; set; }
+
     }
 }

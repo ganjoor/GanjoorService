@@ -26,5 +26,10 @@
         /// source category
         /// </summary>
         public string SourceCategory { get; set; }
+
+        /// <summary>
+        /// couplets count
+        /// </summary>
+        public int CoupletsCount { get; set; }
     }
 }
