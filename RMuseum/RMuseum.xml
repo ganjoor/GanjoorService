@@ -2187,6 +2187,14 @@
             <param name="model"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.TagCategoryWithSource(System.Int32,System.String)">
+            <summary>
+            tag category with source
+            </summary>
+            <param name="catId"></param>
+            <param name="sourceUrlSlug"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -16408,6 +16416,13 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.TagCategoryWithSource(System.Int32,System.String)">
+            <summary>
+            tag with sources
+            </summary>
+            <param name="catId"></param>
+            <param name="sourceUrlSlug"></param>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -18746,6 +18761,13 @@
             </summary>
             <param name="id"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.TagCategoryWithSource(System.Int32,System.String)">
+            <summary>
+            tag with sources
+            </summary>
+            <param name="catId"></param>
+            <param name="sourceUrlSlug"></param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBatchGenerateGDBFiles">
             <summary>

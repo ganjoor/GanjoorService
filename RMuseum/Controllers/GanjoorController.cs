@@ -4131,6 +4131,23 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// tag category with source
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="sourceUrlSlug"></param>
+        /// <returns></returns>
+        [HttpPut("source/{catId}/{sourceUrlSlug}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult TagCategoryWithSource(int catId, string sourceUrlSlug)
+        {
+
+            _ganjoorService.TagCategoryWithSource(catId, sourceUrlSlug);
+            return Ok();
+        }
+
 
         /// <summary>
         /// readonly mode
