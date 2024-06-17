@@ -186,6 +186,7 @@ namespace RMuseum.Services.Implementation
                                        }
 
                                        var noSourceUrlPoems = await context.GanjoorPoems.AsNoTracking().Where(p => string.IsNullOrEmpty(p.SourceUrlSlug)).ToArrayAsync();
+                                       int untaggaed = 0;
                                        foreach (var noSourceUrlPoem in noSourceUrlPoems)
                                        {
                                            int coupletCount = await context.GanjoorVerses.AsNoTracking()
@@ -195,9 +196,10 @@ namespace RMuseum.Services.Implementation
                                                 (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
                                                 ).CountAsync();
                                            totalCoupletsCount += coupletCount;
+                                           untaggaed += coupletCount;
                                        }
 
-                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, $"total: {totalCoupletsCount}", true);
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, $"total: {totalCoupletsCount} - untagged: {untaggaed}", true);
                                    }
                                    catch (Exception exp)
                                    {
