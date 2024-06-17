@@ -98,6 +98,13 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             Rhythms = JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmResponse.Content.ReadAsStringAsync());
 
+            if (Request.Query["id"] == "0")
+            {
+                ModifyModel = new GanjoorModifyPageViewModel();
+                PageInformation = new GanjoorPageCompleteViewModel();
+                return true;
+            }
+
             var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
             if (!pageUrlResponse.IsSuccessStatusCode)
             {
@@ -157,6 +164,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             GanjoorTOC = GanjoorTOC.Analyse;
             await PreparePage();
+            
             return Page();
         }
 
@@ -177,15 +185,32 @@ namespace GanjooRazor.Areas.Admin.Pages
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/page/{Request.Query["id"]}", new StringContent(JsonConvert.SerializeObject(ModifyModel), Encoding.UTF8, "application/json"));
-                    if (!response.IsSuccessStatusCode)
+                    if(Request.Query["id"] == "0")
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/page", new StringContent(JsonConvert.SerializeObject(ModifyModel), Encoding.UTF8, "application/json"));
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        }
+                        else
+                        {
+                            var newPage = JsonConvert.DeserializeObject<GanjoorPage>(await response.Content.ReadAsStringAsync());
+                            return Redirect($"/Admin/ModifyPage?id={newPage.Id}&edit=true");
+                        }
                     }
                     else
                     {
-                        return Redirect($"/Admin/ModifyPage?id={Request.Query["id"]}&edit=true");
+                        var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/page/{Request.Query["id"]}", new StringContent(JsonConvert.SerializeObject(ModifyModel), Encoding.UTF8, "application/json"));
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        }
+                        else
+                        {
+                            return Redirect($"/Admin/ModifyPage?id={Request.Query["id"]}&edit=true");
+                        }
                     }
+                    
                 }
                 else
                 {
