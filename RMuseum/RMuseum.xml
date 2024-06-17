@@ -979,7 +979,7 @@
         <member name="M:RMuseum.Controllers.GanjoorController.StartDeletePoet(System.Int32)">
             <summary>
             starts deleting poet job
-            </summary>
+            `</summary>
             <param name="id"></param>
             <returns></returns>
         </member>
@@ -2199,6 +2199,13 @@
             <summary>
             update digital sources stats
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.AddPageAsync(RMuseum.Models.Ganjoor.GanjoorPage)">
+            <summary>
+            add new page
+            </summary>
+            <param name="page"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">

@@ -251,7 +251,7 @@ namespace RMuseum.Controllers
 
         /// <summary>
         /// starts deleting poet job
-        /// </summary>
+        /// `</summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("poet/{id}")]
@@ -4161,6 +4161,27 @@ namespace RMuseum.Controllers
 
             _ganjoorService.UpdateDigitalSourcesStats();
             return Ok();
+        }
+
+        /// <summary>
+        /// add new page
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+
+        [HttpPost]
+        [Route("page")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPage))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> AddPageAsync([FromBody]GanjoorPage page)
+        {
+            var res = await _ganjoorService.AddPageAsync(page);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
         }
 
 
