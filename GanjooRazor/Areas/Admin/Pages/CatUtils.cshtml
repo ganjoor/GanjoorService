@@ -248,6 +248,33 @@
             }
         }
     }
+
+    function tagPoemsWithDigitalTag(catId) {
+
+        var tag = document.getElementById('digital-source-url-slug').value;
+
+        if (!confirm('آیا از برچسب‌گذاری اشعار این بخش با منبع دیجیتال با نشانی '+tag+' اطمینان دارید؟')) return;
+       
+        var url = '?handler=SetCategoryDigitalSourceTag';
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                id: catId,
+                tag: tag
+            },
+            error: function (e) {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+            },
+            success: function () {
+                alert('انجام شد.')
+            },
+
+        });
+    }
 </script>
 
 @if (!string.IsNullOrEmpty(Model.LastMessage))
@@ -742,6 +769,23 @@
 
 
 <p><a role="button" onclick="reslugCat(@Model.Cat.Cat.Id)" class="actionlink">تولید مجدد نشانی‌های اشعار بخش</a></p>
+
+<table>
+    <tr>
+        <td>
+            <span class="inputlabel">منبع دیجیتال بخش</span>
+        </td>
+        <td>
+            <input id="digital-source-url-slug" value="" />
+               
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <p><a role="button" onclick="tagPoemsWithDigitalTag(@Model.Cat.Cat.Id)" class="actionlink">تعیین منبع</a></p>
+        </td>
+    </tr>
+</table>
 
 
 
