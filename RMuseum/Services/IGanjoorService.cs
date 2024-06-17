@@ -1419,5 +1419,10 @@ namespace RMuseum.Services
         /// <param name="catId"></param>
         /// <param name="sourceUrlSlug"></param>
         void TagCategoryWithSource(int catId, string sourceUrlSlug);
+
+        /// <summary>
+        /// update digital sources stats
+        /// </summary>
+        void UpdateDigitalSourcesStats();
     }
 }

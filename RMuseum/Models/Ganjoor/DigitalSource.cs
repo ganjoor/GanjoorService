@@ -25,7 +25,7 @@
         /// <summary>
         /// source category
         /// </summary>
-        public string SourceCategory { get; set; }
+        public string SourceType { get; set; }
 
         /// <summary>
         /// couplets count

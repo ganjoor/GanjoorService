@@ -4148,6 +4148,21 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// update digital sources stats
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("source/stats/rebuild")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult UpdateDigitalSourcesStats()
+        {
+
+            _ganjoorService.UpdateDigitalSourcesStats();
+            return Ok();
+        }
+
 
         /// <summary>
         /// readonly mode

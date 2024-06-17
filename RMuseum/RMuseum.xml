@@ -2195,6 +2195,12 @@
             <param name="sourceUrlSlug"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.UpdateDigitalSourcesStats">
+            <summary>
+            update digital sources stats
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -3539,6 +3545,11 @@
         <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPaperSources">
             <summary>
             paper sources
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.DigitalSources">
+            <summary>
+            digital sources
             </summary>
         </member>
         <member name="T:RMuseum.Migrations.PictureFileExtUrl">
@@ -7164,9 +7175,14 @@
             full name
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.DigitalSource.SourceCategory">
+        <member name="P:RMuseum.Models.Ganjoor.DigitalSource.SourceType">
             <summary>
             source category
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.DigitalSource.CoupletsCount">
+            <summary>
+            couplets count
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.DiscoverQuotedQueueItem">
@@ -16448,6 +16464,11 @@
             <param name="catId"></param>
             <param name="sourceUrlSlug"></param>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.UpdateDigitalSourcesStats">
+            <summary>
+            update digital sources stats
+            </summary>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -18793,6 +18814,11 @@
             </summary>
             <param name="catId"></param>
             <param name="sourceUrlSlug"></param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdateDigitalSourcesStats">
+            <summary>
+            update digital sources stats
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBatchGenerateGDBFiles">
             <summary>
