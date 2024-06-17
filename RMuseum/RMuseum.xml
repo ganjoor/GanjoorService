@@ -7144,6 +7144,31 @@
             correction review result
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.DigitalSource.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.DigitalSource.UrlSlug">
+            <summary>
+            source url slug
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.DigitalSource.ShortName">
+            <summary>
+            short name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.DigitalSource.FullName">
+            <summary>
+            full name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.DigitalSource.SourceCategory">
+            <summary>
+            source category
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.DiscoverQuotedQueueItem">
             <summary>
             discover quoted q item
