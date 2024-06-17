@@ -1424,5 +1424,12 @@ namespace RMuseum.Services
         /// update digital sources stats
         /// </summary>
         void UpdateDigitalSourcesStats();
+
+        /// <summary>
+        /// add page
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPage>> AddPageAsync(GanjoorPage page);
     }
 }

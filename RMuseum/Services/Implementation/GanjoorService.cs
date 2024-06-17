@@ -3814,6 +3814,47 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// add page
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPage>> AddPageAsync(GanjoorPage page)
+        {
+            try
+            {
+                if (page.UrlSlug.Contains("/"))
+                    return new RServiceResult<GanjoorPage>(null, "slug could not contain /");
+                page.UrlSlug = page.UrlSlug.Trim();
+                page.Title = page.Title.Trim();
+                if (string.IsNullOrEmpty(page.UrlSlug))
+                    return new RServiceResult<GanjoorPage>(null, "empty url");
+                if (string.IsNullOrEmpty(page.Title))
+                    return new RServiceResult<GanjoorPage>(null, "empty title");
+                var newPageId = 1 + await _context.GanjoorPages.MaxAsync(p => p.Id);
+                while (await _context.GanjoorPoems.Where(p => p.Id == newPageId).AnyAsync())
+                    newPageId++;
+                page.Id = newPageId;
+                if(page.ParentId != null)
+                {
+                    var parentPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.Id == page.ParentId).SingleAsync();
+                    page.FullUrl = parentPage.FullUrl + "/" + page.UrlSlug;
+                    page.FullTitle = parentPage.FullTitle + " » " + page.Title;
+                }
+                if (true == await _context.GanjoorPages.Where(p => p.FullUrl == page.FullUrl).AnyAsync())
+                    return new RServiceResult<GanjoorPage>(null, "duplicated full url.");
+                if (true == await _context.GanjoorPages.Where(p => p.FullTitle == page.FullTitle).AnyAsync())
+                    return new RServiceResult<GanjoorPage>(null, "duplicated full title");
+                _context.Add(page);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<GanjoorPage>(page);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPage>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// aggressive cache
         /// </summary>
         public bool AggressiveCacheEnabled

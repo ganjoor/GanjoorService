@@ -16481,6 +16481,13 @@
             update digital sources stats
             </summary>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.AddPageAsync(RMuseum.Models.Ganjoor.GanjoorPage)">
+            <summary>
+            add page
+            </summary>
+            <param name="page"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -18102,6 +18109,18 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.TagCategoryWithSource(System.Int32,System.String)">
+            <summary>
+            tag with sources
+            </summary>
+            <param name="catId"></param>
+            <param name="sourceUrlSlug"></param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdateDigitalSourcesStats">
+            <summary>
+            update digital sources stats
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingCategoryPoemsDuplicates(System.Int32,System.Int32,System.Boolean)">
             <summary>
             Finding Category Poems Duplicates
@@ -18820,18 +18839,6 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.TagCategoryWithSource(System.Int32,System.String)">
-            <summary>
-            tag with sources
-            </summary>
-            <param name="catId"></param>
-            <param name="sourceUrlSlug"></param>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdateDigitalSourcesStats">
-            <summary>
-            update digital sources stats
-            </summary>
-        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBatchGenerateGDBFiles">
             <summary>
             start generating gdb files
@@ -19448,6 +19455,13 @@
             get category poem related images
             </summary>
             <param name="catId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.AddPageAsync(RMuseum.Models.Ganjoor.GanjoorPage)">
+            <summary>
+            add page
+            </summary>
+            <param name="page"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.Implementation.GanjoorService.AggressiveCacheEnabled">
