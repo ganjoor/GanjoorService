@@ -3559,6 +3559,11 @@
             digital sources
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.CategoryWordCounts">
+            <summary>
+            Category Word Counts
+            </summary>
+        </member>
         <member name="T:RMuseum.Migrations.PictureFileExtUrl">
             <inheritdoc />
         </member>
@@ -7167,6 +7172,31 @@
         <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.PinterestSuggestion.PinterestImageUrl">
             <summary>
             pinterest image url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.CategoryWordCount.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.CategoryWordCount.CatId">
+            <summary>
+            CatId
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.CategoryWordCount.Word">
+            <summary>
+            Word
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.CategoryWordCount.Count">
+            <summary>
+            Count
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.CategoryWordCount.PoetCat">
+            <summary>
+            is root cat
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.CorrectionReviewResult">

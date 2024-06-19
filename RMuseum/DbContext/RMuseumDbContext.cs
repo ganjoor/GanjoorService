@@ -195,6 +195,11 @@ namespace RMuseum.DbContext
 
             builder.Entity<GanjoorCachedRelatedSection>()
                 .HasIndex(v => new { v.PoemId, v.SectionIndex });
+
+            builder.Entity<CategoryWordCount>()
+               .HasIndex(v => new { v.CatId, v.Word })
+               .IsUnique();
+
         }
 
 
@@ -578,6 +583,11 @@ namespace RMuseum.DbContext
         /// digital sources
         /// </summary>
         public DbSet<DigitalSource> DigitalSources { get; set; }
+
+        /// <summary>
+        /// Category Word Counts
+        /// </summary>
+        public DbSet<CategoryWordCount> CategoryWordCounts { get; set; }
 
     }
 }
