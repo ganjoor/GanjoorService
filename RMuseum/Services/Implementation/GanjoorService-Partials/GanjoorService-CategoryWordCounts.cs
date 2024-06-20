@@ -55,12 +55,35 @@ namespace RMuseum.Services.Implementation
                                           var poetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poet.Id && c.ParentId == null).SingleAsync();
                                           await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname);
                                           var wordCounts = await _BuildCategoryWordStatsAsync(context, poetCat, true, jobProgressServiceEF, job);
+                                          if(true == await context.CategoryWordCounts.Where(c => c.CatId == poetCat.Id).AnyAsync())
+                                          {
+                                              List<int> catIdList = new List<int>
+                                               {
+                                                   poetCat.Id
+                                               };
+                                              await _populateCategoryChildren(context, poetCat.Id, catIdList);
+                                              await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": Removing old data");
+                                              foreach (var catId in catIdList)
+                                              {
+                                                  var oldData = await context.CategoryWordCounts.Where(c => c.CatId == catId).ToListAsync();
+                                                  context.RemoveRange(oldData);
+                                                  await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": Removing old data {catId}");
+                                              }
+                                          }
                                           await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": In Memory => DbContext - {wordCounts.Count}");
                                           if (wordCounts.Any())
                                           {
-                                              context.AddRange(wordCounts);
+                                              for (int i = 0; i < wordCounts.Count; i++)
+                                              {
+                                                  context.Add(wordCounts[i]);
+                                                  if(i % 100 == 0)
+                                                  {
+                                                      await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": Saving {i}");
+                                                  }
+                                              }
+                                              await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": Saving");
                                           }
-                                          await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + ": Saving");
+                                          
                                           RGenericOption option = await context.Options.Where(o => o.Name == "CategoryWordCountsLastPoetId" && o.RAppUserId == null).SingleOrDefaultAsync();
                                           if (option != null)
                                           {
