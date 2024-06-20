@@ -55,7 +55,7 @@ namespace RMuseum.Services.Implementation
                                           var poetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poet.Id && c.ParentId == null).SingleAsync();
                                           await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname);
                                           var wordCounts = await _BuildCategoryWordStatsAsync(context, poetCat, true, jobProgressServiceEF, job);
-                                          await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + ": In Memory => DbContext");
+                                          await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": In Memory => DbContext - {wordCounts.Count}");
                                           if (wordCounts.Any())
                                           {
                                               context.AddRange(wordCounts);
