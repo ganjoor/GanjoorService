@@ -76,12 +76,8 @@ namespace RMuseum.Services.Implementation
                                               for (int i = 0; i < wordCounts.Count; i++)
                                               {
                                                   context.Add(wordCounts[i]);
-                                                  if(i % 100 == 0)
-                                                  {
-                                                      await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": Saving {i}");
-                                                  }
+                                                  await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": Saving {i} of {wordCounts.Count}, {wordCounts[i].Word}");
                                               }
-                                              await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": Saving");
                                           }
                                           
                                           RGenericOption option = await context.Options.Where(o => o.Name == "CategoryWordCountsLastPoetId" && o.RAppUserId == null).SingleOrDefaultAsync();
@@ -148,7 +144,7 @@ namespace RMuseum.Services.Implementation
                 var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id && v.VersePosition != VersePosition.Comment).OrderBy(v => v.VOrder).ToListAsync();
                 foreach (var verse in verses)
                 {
-                    string[] words = verse.Text.Split([' ', '‌']);
+                    string[] words = LanguageUtils.MakeTextSearchable(verse.Text).Split([' ', '‌']);
                     foreach (var word in words)
                     {
                         var wordCount = counts.Where(c => c.CatId == cat.Id && c.Word == word).SingleOrDefault();
