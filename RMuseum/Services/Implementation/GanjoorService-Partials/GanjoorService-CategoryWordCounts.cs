@@ -7,6 +7,7 @@ using RMuseum.DbContext;
 using System.Collections.Generic;
 using RSecurityBackend.Services.Implementation;
 using System.Threading.Tasks;
+using Org.BouncyCastle.Utilities.Zlib;
 
 namespace RMuseum.Services.Implementation
 {
@@ -15,6 +16,9 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+        /// <summary>
+        /// build word counts
+        /// </summary>
         public void BuildCategoryWordCounts()
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
@@ -27,13 +31,24 @@ namespace RMuseum.Services.Implementation
                                   var job = (await jobProgressServiceEF.NewJob($"BuildCategoryWordCounts", "Query data")).Result;
                                   try
                                   {
+                                      var existing = await context.CategoryWordCounts.ToListAsync();
+                                      if(existing.Any())
+                                      {
+                                          context.RemoveRange(existing);
+                                          await context.SaveChangesAsync();
+                                      }
                                       var poets = await context.GanjoorPoets.AsNoTracking().Where(p => p.Published).OrderBy(p => p.Id).ToListAsync();
                                       foreach (var poet in poets)
                                       {
                                           var poetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poet.Id && c.ParentId == null).SingleAsync();
-                                          await _BuildCategoryWordStatsAsync(context, poetCat);
+                                          await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname);
+                                          var wordCounts = await _BuildCategoryWordStatsAsync(context, poetCat, true);
+                                          if(wordCounts.Any())
+                                          {
+                                              await context.AddRangeAsync(wordCounts);
+                                          }
                                       }
-                                      await jobProgressServiceEF.UpdateJob(job.Id, 100);
+                                      await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                   }
                                   catch (Exception exp)
                                   {
@@ -44,13 +59,13 @@ namespace RMuseum.Services.Implementation
                           });
         }
 
-        private async Task<List<CategoryWordCount>> _BuildCategoryWordStatsAsync(RMuseumDbContext context, GanjoorCat cat)
+        private async Task<List<CategoryWordCount>> _BuildCategoryWordStatsAsync(RMuseumDbContext context, GanjoorCat cat, bool poetCat)
         {
             List<CategoryWordCount> counts = new List<CategoryWordCount>();
             var children = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == cat.Id).ToListAsync();
             foreach (var child in children)
             {
-                var subcatCounts = await _BuildCategoryWordStatsAsync(context, child);
+                var subcatCounts = await _BuildCategoryWordStatsAsync(context, child, false);
                 if (subcatCounts.Any())
                 {
                     foreach (var count in subcatCounts)
@@ -62,7 +77,7 @@ namespace RMuseum.Services.Implementation
                         }
                         else
                         {
-                            counts.Add(new CategoryWordCount { CatId = cat.Id, Word = count.Word, Count = count.Count });
+                            counts.Add(new CategoryWordCount { CatId = cat.Id, Word = count.Word, Count = count.Count, PoetCat = poetCat });
                         }
                     }
                     counts.AddRange(subcatCounts);
@@ -85,7 +100,7 @@ namespace RMuseum.Services.Implementation
                         }
                         else
                         {
-                            counts.Add(new CategoryWordCount { CatId = cat.Id, Word = word, Count = 1 });
+                            counts.Add(new CategoryWordCount { CatId = cat.Id, Word = word, Count = 1, PoetCat = poetCat });
                         }
                     }
                 }
