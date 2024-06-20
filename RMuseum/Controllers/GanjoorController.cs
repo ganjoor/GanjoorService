@@ -4184,6 +4184,22 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// build word counts
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpPost("wordcounts/rebuild")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult BuildCategoryWordCounts()
+        {
+            _ganjoorService.BuildCategoryWordCounts();
+            return Ok();
+        }
+
+
 
         /// <summary>
         /// readonly mode

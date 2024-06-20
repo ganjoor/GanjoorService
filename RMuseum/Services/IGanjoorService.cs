@@ -1431,5 +1431,10 @@ namespace RMuseum.Services
         /// <param name="page"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorPage>> AddPageAsync(GanjoorPage page);
+
+        /// <summary>
+        /// build word counts
+        /// </summary>
+        void BuildCategoryWordCounts();
     }
 }
