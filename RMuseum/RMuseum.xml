@@ -2208,7 +2208,7 @@
             <param name="page"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.BuildCategoryWordCounts">
+        <member name="M:RMuseum.Controllers.GanjoorController.BuildCategoryWordCountsAsync(System.Boolean)">
             <summary>
             build word counts
             </summary>
@@ -16543,7 +16543,7 @@
             <param name="page"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.BuildCategoryWordCounts">
+        <member name="M:RMuseum.Services.IGanjoorService.BuildCategoryWordCountsAsync(System.Boolean)">
             <summary>
             build word counts
             </summary>
@@ -18102,7 +18102,7 @@
             <param name="q"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.BuildCategoryWordCounts">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BuildCategoryWordCountsAsync(System.Boolean)">
             <summary>
             build word counts
             </summary>

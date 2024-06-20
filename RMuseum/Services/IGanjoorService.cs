@@ -1435,6 +1435,6 @@ namespace RMuseum.Services
         /// <summary>
         /// build word counts
         /// </summary>
-        void BuildCategoryWordCounts();
+        Task BuildCategoryWordCountsAsync(bool reset);
     }
 }

@@ -4193,9 +4193,9 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult BuildCategoryWordCounts()
+        public async Task<IActionResult> BuildCategoryWordCountsAsync(bool reset = false)
         {
-            _ganjoorService.BuildCategoryWordCounts();
+            await _ganjoorService.BuildCategoryWordCountsAsync(reset);
             return Ok();
         }
 
