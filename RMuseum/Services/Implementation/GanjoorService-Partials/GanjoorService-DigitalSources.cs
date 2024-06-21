@@ -234,7 +234,7 @@ namespace RMuseum.Services.Implementation
                                        }
                                        htmlText += $"</table>{Environment.NewLine}";
 
-                                       htmlText += $"<p>جدول زیر نشان‌دهندهٔ ریز منابع دیجیتال گنجور است:</p>{Environment.NewLine}";
+                                       htmlText += $"<p>جدول زیر نشان‌دهندهٔ آمار ریز منابع دیجیتال گنجور است:</p>{Environment.NewLine}";
                                        htmlText += $"<table>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
                                             $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
