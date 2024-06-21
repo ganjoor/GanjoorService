@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using RSecurityBackend.Services.Implementation;
 using System.Threading.Tasks;
 using RSecurityBackend.Models.Generic.Db;
+using RMuseum.Models.Ganjoor.ViewModels;
+using RSecurityBackend.Models.Generic;
 
 namespace RMuseum.Services.Implementation
 {
@@ -16,6 +18,27 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+        /// <summary>
+        /// catgoru words count
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, CategoryWordCount[] Items)>> CategoryWordCountsAsync(int catId, PagingParameterModel paging)
+        {
+            var source =
+                 from cwd in _context.CategoryWordCounts
+                 where cwd.CatId == catId
+                 orderby cwd.Count descending
+                 select
+                 cwd;
+
+            (PaginationMetadata PagingMeta, CategoryWordCount[] Items) paginatedResult =
+                await QueryablePaginator<CategoryWordCount>.Paginate(source, paging);
+
+            return new RServiceResult<(PaginationMetadata PagingMeta, CategoryWordCount[] Items)>(paginatedResult);
+        }
+
         /// <summary>
         /// build word counts
         /// </summary>

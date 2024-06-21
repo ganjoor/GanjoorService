@@ -16548,6 +16548,14 @@
             build word counts
             </summary>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.CategoryWordCountsAsync(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            catgoru words count
+            </summary>
+            <param name="catId"></param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -18100,6 +18108,14 @@
             <param name="paging"></param>
             <param name="userId"></param>
             <param name="q"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.CategoryWordCountsAsync(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            catgoru words count
+            </summary>
+            <param name="catId"></param>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.BuildCategoryWordCountsAsync(System.Boolean)">

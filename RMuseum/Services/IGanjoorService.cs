@@ -1436,5 +1436,13 @@ namespace RMuseum.Services
         /// build word counts
         /// </summary>
         Task BuildCategoryWordCountsAsync(bool reset);
+
+        /// <summary>
+        /// catgoru words count
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, CategoryWordCount[] Items)>> CategoryWordCountsAsync(int catId, PagingParameterModel paging);
     }
 }
