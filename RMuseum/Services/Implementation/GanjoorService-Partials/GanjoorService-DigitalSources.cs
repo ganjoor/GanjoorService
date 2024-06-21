@@ -37,7 +37,7 @@ namespace RMuseum.Services.Implementation
                                        var pages = await context.GanjoorPages.AsNoTracking().Where(p => p.FullUrl.StartsWith("/sources/")).ToListAsync();
                                        foreach (var page in pages)
                                        {
-                                           if(false == await context.DigitalSources.Where(d => d.UrlSlug == page.UrlSlug).AnyAsync())
+                                           if (false == await context.DigitalSources.Where(d => d.UrlSlug == page.UrlSlug).AnyAsync())
                                            {
                                                string shortName = page.Title;
                                                switch (page.UrlSlug)
@@ -97,7 +97,7 @@ namespace RMuseum.Services.Implementation
                                                 .Where(v =>
                                                     v.PoemId == poem.Id
                                                     &&
-                                                    (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)                                            
+                                                    (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
                                                     ).CountAsync();
                                                digitalSource.CoupletsCount += coupletCount;
                                                await jobProgressServiceEF.UpdateJob(job.Id, progress, $"{progress} از {poemCount}");
@@ -119,7 +119,8 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// update digital sources stats
         /// </summary>
-        public void UpdateDigitalSourcesStats()
+        /// <param name="editingUserId"></param>
+        public void UpdateDigitalSourcesStats(Guid editingUserId)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
                            (
@@ -169,7 +170,7 @@ namespace RMuseum.Services.Implementation
 
                                        var digitalSources = await context.DigitalSources.ToArrayAsync();
                                        int totalCoupletsCount = 0;
-                                       foreach ( var digitalSource in digitalSources )
+                                       foreach (var digitalSource in digitalSources)
                                        {
                                            digitalSource.CoupletsCount = 0;
                                            var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.SourceUrlSlug == digitalSource.UrlSlug).ToArrayAsync();
@@ -206,9 +207,8 @@ namespace RMuseum.Services.Implementation
                                        await jobProgressServiceEF.UpdateJob(job.Id, 75, "Rebuild Sources Page");
 
                                        var sources = await context.DigitalSources.AsNoTracking().Where(d => d.CoupletsCount > 0).OrderByDescending(d => d.CoupletsCount).ToListAsync();
-                                       int totalCount = sources.Sum(s => s.CoupletsCount);
 
-                                       
+                                       int totalCount = sources.Sum(s => s.CoupletsCount);
                                        string htmlText = $"<p>بخش عمدهٔ محتوای گنجور که در حال حاضر شامل {LanguageUtils.FormatMoney(totalCount)} بیت شعر است از نرم‌افزارها و وبگاه‌های دیگر وارد شده است و در این زمینه علاقمندان ادبیات مدیون بزرگوارانی هستند که پیش و بیش از گنجور روی دیججیتالی کردن میراث ادب ایران‌زمین سرمایه‌گذاری کرده‌اند. آمار زیر نشان دهندهٔ ترکیب محتوای گنجور بر اساس نوع منبع دیجیتالی شدن آنهاست (در حال حاضر آماری روی محتوای منثور گنجور که آن هم قابل توجه است ارائه نمی‌شود).</p>{Environment.NewLine}";
                                        htmlText += $"<table>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
@@ -217,7 +217,7 @@ namespace RMuseum.Services.Implementation
                                             $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
                                             $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
                                             $"</tr>{Environment.NewLine}";
-                                      var sourcesByType = await context.DigitalSources.AsNoTracking().Where(d => d.CoupletsCount > 0).GroupBy(d => d.SourceType).Select(d => new { SourceType = d.Key, CoupletsCount = d.Sum(s => s.CoupletsCount) }).OrderByDescending(d => d.CoupletsCount).ToListAsync();
+                                       var sourcesByType = await context.DigitalSources.AsNoTracking().Where(d => d.CoupletsCount > 0).GroupBy(d => d.SourceType).Select(d => new { SourceType = d.Key, CoupletsCount = d.Sum(s => s.CoupletsCount) }).OrderByDescending(d => d.CoupletsCount).ToListAsync();
                                        for (int i = 0; i < sourcesByType.Count; i++)
                                        {
                                            if (i % 2 == 0)
@@ -234,7 +234,33 @@ namespace RMuseum.Services.Implementation
                                        }
                                        htmlText += $"</table>{Environment.NewLine}";
 
+                                       htmlText += $"<p>جدول زیر نشان‌دهندهٔ ریز منابع دیجیتال گنجور است:</p>{Environment.NewLine}";
+                                       htmlText += $"<table>{Environment.NewLine}" +
+                                            $"<tr class=\"h\">{Environment.NewLine}" +
+                                            $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
+                                            $"<td class=\"c2\">نام منبع</td>{Environment.NewLine}" +
+                                            $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
+                                            $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                                            $"</tr>{Environment.NewLine}";
+                                       
+                                       for (int i = 0; i < sources.Count; i++)
+                                       {
+                                           if (i % 2 == 0)
+                                               htmlText += $"<tr class=\"e\">{Environment.NewLine}";
+                                           else
+                                               htmlText += $"<tr>{Environment.NewLine}";
 
+                                           htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
+                                           htmlText += $"<td class=\"c2\"><a href=\"/sources/{sources[i].UrlSlug}\">{sources[i].FullName}</a></td>{Environment.NewLine}";
+                                           htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(sources[i].CoupletsCount)}</td>{Environment.NewLine}";
+                                           htmlText += $"<td class=\"c4\">{(sources[i].CoupletsCount * 100.0 / totalCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+
+                                           htmlText += $"</tr>{Environment.NewLine}";
+                                       }
+                                       htmlText += $"</table>{Environment.NewLine}";
+
+                                       var dbPage = await context.GanjoorPages.Where(p => p.FullUrl == "/sources").SingleAsync();
+                                       await _UpdatePageHtmlText(context, editingUserId, dbPage, "به روزرسانی خودکار صفحهٔ آمار منابع", htmlText);
 
 
                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, $"total: {totalCoupletsCount} - untagged: {untaggaed}", true);

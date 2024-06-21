@@ -1423,7 +1423,8 @@ namespace RMuseum.Services
         /// <summary>
         /// update digital sources stats
         /// </summary>
-        void UpdateDigitalSourcesStats();
+        /// <param name="editingUserId"></param>
+        void UpdateDigitalSourcesStats(Guid editingUserId);
 
         /// <summary>
         /// add page

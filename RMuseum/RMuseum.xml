@@ -16531,10 +16531,11 @@
             <param name="catId"></param>
             <param name="sourceUrlSlug"></param>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.UpdateDigitalSourcesStats">
+        <member name="M:RMuseum.Services.IGanjoorService.UpdateDigitalSourcesStats(System.Guid)">
             <summary>
             update digital sources stats
             </summary>
+            <param name="editingUserId"></param>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.AddPageAsync(RMuseum.Models.Ganjoor.GanjoorPage)">
             <summary>
@@ -18200,10 +18201,11 @@
             <param name="catId"></param>
             <param name="sourceUrlSlug"></param>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdateDigitalSourcesStats">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdateDigitalSourcesStats(System.Guid)">
             <summary>
             update digital sources stats
             </summary>
+            <param name="editingUserId"></param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFindingCategoryPoemsDuplicates(System.Int32,System.Int32,System.Boolean)">
             <summary>

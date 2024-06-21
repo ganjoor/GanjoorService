@@ -4158,8 +4158,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public IActionResult UpdateDigitalSourcesStats()
         {
-
-            _ganjoorService.UpdateDigitalSourcesStats();
+            Guid userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            _ganjoorService.UpdateDigitalSourcesStats(userId);
             return Ok();
         }
 
