@@ -6,6 +6,9 @@ using System.Linq;
 using RMuseum.DbContext;
 using System.Collections.Generic;
 using RSecurityBackend.Services.Implementation;
+using NAudio.Gui;
+using DNTPersianUtils.Core;
+using System.Globalization;
 
 namespace RMuseum.Services.Implementation
 {
@@ -198,6 +201,41 @@ namespace RMuseum.Services.Implementation
                                            totalCoupletsCount += coupletCount;
                                            untaggaed += coupletCount;
                                        }
+
+                                       //now rebuild /sources page contents
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 75, "Rebuild Sources Page");
+
+                                       var sources = await context.DigitalSources.AsNoTracking().Where(d => d.CoupletsCount > 0).OrderByDescending(d => d.CoupletsCount).ToListAsync();
+                                       int totalCount = sources.Sum(s => s.CoupletsCount);
+
+                                       
+                                       string htmlText = $"<p>بخش عمدهٔ محتوای گنجور که در حال حاضر شامل {LanguageUtils.FormatMoney(totalCount)} بیت شعر است از نرم‌افزارها و وبگاه‌های دیگر وارد شده است و در این زمینه علاقمندان ادبیات مدیون بزرگوارانی هستند که پیش و بیش از گنجور روی دیججیتالی کردن میراث ادب ایران‌زمین سرمایه‌گذاری کرده‌اند. آمار زیر نشان دهندهٔ ترکیب محتوای گنجور بر اساس نوع منبع دیجیتالی شدن آنهاست (در حال حاضر آماری روی محتوای منثور گنجور که آن هم قابل توجه است ارائه نمی‌شود).</p>{Environment.NewLine}";
+                                       htmlText += $"<table>{Environment.NewLine}" +
+                                            $"<tr class=\"h\">{Environment.NewLine}" +
+                                            $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
+                                            $"<td class=\"c2\">نوع منبع</td>{Environment.NewLine}" +
+                                            $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
+                                            $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                                            $"</tr>{Environment.NewLine}";
+                                      var sourcesByType = await context.DigitalSources.AsNoTracking().Where(d => d.CoupletsCount > 0).GroupBy(d => d.SourceType).Select(d => new { SourceType = d.Key, CoupletsCount = d.Sum(s => s.CoupletsCount) }).OrderByDescending(d => d.CoupletsCount).ToListAsync();
+                                       for (int i = 0; i < sourcesByType.Count; i++)
+                                       {
+                                           if (i % 2 == 0)
+                                               htmlText += $"<tr class=\"e\">{Environment.NewLine}";
+                                           else
+                                               htmlText += $"<tr>{Environment.NewLine}";
+
+                                           htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
+                                           htmlText += $"<td class=\"c2\">{sourcesByType[i].SourceType}</td>{Environment.NewLine}";
+                                           htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(sourcesByType[i].CoupletsCount)}</td>{Environment.NewLine}";
+                                           htmlText += $"<td class=\"c4\">{(sourcesByType[i].CoupletsCount * 100.0 / totalCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+
+                                           htmlText += $"</tr>{Environment.NewLine}";
+                                       }
+                                       htmlText += $"</table>{Environment.NewLine}";
+
+
+
 
                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, $"total: {totalCoupletsCount} - untagged: {untaggaed}", true);
                                    }
