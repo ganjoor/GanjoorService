@@ -209,7 +209,7 @@ namespace RMuseum.Services.Implementation
                                        var sources = await context.DigitalSources.AsNoTracking().Where(d => d.CoupletsCount > 0).OrderByDescending(d => d.CoupletsCount).ToListAsync();
 
                                        int totalCount = sources.Sum(s => s.CoupletsCount);
-                                       string htmlText = $"<p>بخش عمدهٔ محتوای گنجور که در حال حاضر شامل {LanguageUtils.FormatMoney(totalCount)} بیت شعر است از نرم‌افزارها و وبگاه‌های دیگر وارد شده است و در این زمینه علاقمندان ادبیات مدیون بزرگوارانی هستند که پیش و بیش از گنجور روی دیججیتالی کردن میراث ادب ایران‌زمین سرمایه‌گذاری کرده‌اند. آمار زیر نشان دهندهٔ ترکیب محتوای گنجور بر اساس نوع منبع دیجیتالی شدن آنهاست (در حال حاضر آماری روی محتوای منثور گنجور که آن هم قابل توجه است ارائه نمی‌شود).</p>{Environment.NewLine}";
+                                       string htmlText = $"<p>بخش عمدهٔ محتوای گنجور که در حال حاضر شامل {LanguageUtils.FormatMoney(totalCount)} بیت شعر است از نرم‌افزارها و وبگاه‌های دیگر وارد شده است و در این زمینه علاقمندان ادبیات مدیون بزرگوارانی هستند که پیش و بیش از گنجور روی دیجیتالی کردن میراث ادب ایران‌زمین سرمایه‌گذاری کرده‌اند. آمار زیر نشان دهندهٔ ترکیب محتوای گنجور بر اساس نوع منبع دیجیتالی شدن آنهاست (در حال حاضر آماری روی محتوای منثور گنجور که آن هم قابل توجه است ارائه نمی‌شود).</p>{Environment.NewLine}";
                                        htmlText += $"<table>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
                                             $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
