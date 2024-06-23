@@ -199,6 +199,25 @@
             });
         }
 
+        function rebuildRebuildWordCounts() {
+            if (!confirm('آیا از ادامه شمارش کلمات اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=RebuildWordCounts';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('فرایند بازسازی شروع شد.')
+                },
+
+            });
+        }
+
 
 
 
