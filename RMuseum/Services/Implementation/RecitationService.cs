@@ -1051,7 +1051,7 @@ namespace RMuseum.Services.Implementationa
                                                     existing.Mp3FileCheckSum = audio.FileCheckSum;
                                                     existing.Mp3SizeInBytes = mp3fileSize;
                                                     existing.FileLastUpdated = session.UploadEndTime;
-                                                    existing.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
+                                                    existing.AudioSyncStatus = AudioSyncStatus.SoundOrXMLFilesChanged;
                                                     context.Recitations.Update(existing);
 
                                                     bool recomputeOrders = false;
