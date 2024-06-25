@@ -30,7 +30,7 @@ namespace RMuseum.Services.Implementation
             var source =
                  from cwd in _context.CategoryWordCounts
                  where cwd.CatId == catId
-                 orderby cwd.Count descending
+                 orderby cwd.RowNmbrInCat
                  select
                  cwd;
 
