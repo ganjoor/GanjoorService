@@ -7217,6 +7217,11 @@
             is root cat
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.CategoryWordCount.RowNmbrInCat">
+            <summary>
+            row number in category
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.CorrectionReviewResult">
             <summary>
             correction review result

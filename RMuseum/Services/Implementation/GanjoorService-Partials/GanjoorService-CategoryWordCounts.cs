@@ -93,11 +93,13 @@ namespace RMuseum.Services.Implementation
                                                   await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": Removing old data {catId}");
                                               }
                                           }
-                                          await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": In Memory => DbContext - {wordCounts.Count}");
+                                          await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": In Memory => DbContext - {wordCounts.Count} - Sorting:");
                                           if (wordCounts.Any())
                                           {
+                                              wordCounts.Sort((a, b) => b.Count.CompareTo(a.Count));
                                               for (int i = 0; i < wordCounts.Count; i++)
                                               {
+                                                  wordCounts[i].RowNmbrInCat = i + 1;
                                                   context.Add(wordCounts[i]);
                                                   await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": Saving {i} of {wordCounts.Count}, {wordCounts[i].Word}");
                                               }
