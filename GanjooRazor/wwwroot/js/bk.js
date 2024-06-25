@@ -1139,6 +1139,7 @@ function loadCatRecitations(catId) {
 
         return;
     }
+    loadButton.remove();
 
     var divParent = document.getElementById('recitations-section');
     var imgElementId = 'loadingimg';
@@ -1148,7 +1149,7 @@ function loadCatRecitations(catId) {
         url: '?Handler=CategoryRecitations&catId=' + String(catId),
         success: function (data) {
             document.getElementById("remove-this").remove();
-            loadButton.remove();
+            
             document.getElementById('recitations-section-controller').style.display = 'block';
             $(data).appendTo(divParent);
         },
