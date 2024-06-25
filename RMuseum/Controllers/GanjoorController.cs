@@ -4200,6 +4200,20 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// one time fixer for word counts new RowNmbrInCat fields
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("wordcounts/fillwordcounts")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult FillCategoryWordCountsRowNmbrInCat()
+        {
+            _ganjoorService.FillCategoryWordCountsRowNmbrInCat();
+            return Ok();
+        }
+
 
 
         /// <summary>

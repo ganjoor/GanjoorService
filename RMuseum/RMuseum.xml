@@ -2214,6 +2214,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.FillCategoryWordCountsRowNmbrInCat">
+            <summary>
+            one time fixer for word counts new RowNmbrInCat fields
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -16554,6 +16560,11 @@
             build word counts
             </summary>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.FillCategoryWordCountsRowNmbrInCat">
+            <summary>
+            fill CategoryWordCounts.RowNmbrInCat
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.CategoryWordCountsAsync(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             catgoru words count
@@ -18127,6 +18138,11 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.BuildCategoryWordCountsAsync(System.Boolean)">
             <summary>
             build word counts
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.FillCategoryWordCountsRowNmbrInCat">
+            <summary>
+            fill CategoryWordCounts.RowNmbrInCat
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SetCategoryPoemFormatAsync(System.Int32,System.Nullable{RMuseum.Models.Ganjoor.GanjoorPoemFormat})">

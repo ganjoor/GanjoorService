@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using RSecurityBackend.Models.Generic.Db;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
+using RMuseum.Migrations;
 
 namespace RMuseum.Services.Implementation
 {
@@ -203,6 +204,64 @@ namespace RMuseum.Services.Implementation
             }
             return counts;
         }
+
+        /// <summary>
+        /// fill CategoryWordCounts.RowNmbrInCat
+        /// </summary>
+        public void FillCategoryWordCountsRowNmbrInCat()
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+              (
+              async token =>
+              {
+                  using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                  {
+                      LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                      var job = (await jobProgressServiceEF.NewJob($"FillCategoryWordCountsRowNmbrInCat", "Query data")).Result;
+                      try
+                      {
+                          var poets = await context.GanjoorPoets.AsNoTracking().Where(p => p.Published).OrderBy(p => p.Id).ToListAsync();
+                          foreach (var poet in poets)
+                          {
+                              var poetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poet.Id && c.ParentId == null).SingleAsync();
+                              await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname);
+                              if (true == await context.CategoryWordCounts.Where(c => c.CatId == poetCat.Id).AnyAsync())
+                              {
+                                  List<int> catIdList = new List<int>
+                                   {
+                                       poetCat.Id
+                                   };
+                                  await _populateCategoryChildren(context, poetCat.Id, catIdList);
+                                  foreach (var catId in catIdList)
+                                  {
+                                      var catWordCounts = await context.CategoryWordCounts.Where(w => w.CatId == catId).ToListAsync();
+                                      if (catWordCounts.Any())
+                                      {
+                                          catWordCounts.Sort((a, b) => b.Count.CompareTo(a.Count));
+                                          for (int i = 0; i < catWordCounts.Count; i++)
+                                          {
+                                              catWordCounts[i].RowNmbrInCat = i + 1;
+                                              context.Update(catWordCounts[i]);
+                                              await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": Saving {i} of {catWordCounts.Count}");
+                                          }
+                                      }
+                                  }
+                              }
+                          }
+
+
+                          await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                      }
+                      catch (Exception exp)
+                      {
+                          await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                      }
+
+                  }
+              });
+
+        }
+
 
     }
 }
