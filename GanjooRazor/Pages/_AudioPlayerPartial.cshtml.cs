@@ -1,12 +1,6 @@
-﻿using GanjooRazor.Utils;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
-using System.Net.Http;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace GanjooRazor.Pages
 {

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using NAudio.Gui;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
@@ -961,7 +960,7 @@ namespace GanjooRazor.Pages
 
             if (!catTop1RecitationsQuery.IsSuccessStatusCode)
             {
-                return BadRequest(JsonConvert.DeserializeObject<string>(await catTop1RecitationsQuery.Content.ReadAsStringAsync()));
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await catTop1RecitationsQuery.Content.ReadAsStringAsync()));
             }
             var categoryTop1Recitations = JsonConvert.DeserializeObject<PublicRecitationViewModel[]>(await catTop1RecitationsQuery.Content.ReadAsStringAsync());
             
