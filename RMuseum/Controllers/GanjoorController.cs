@@ -4214,6 +4214,32 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// category word counts
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="term">can be empty</param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("wordcounts/{catId}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCompleteViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetCategoryWordCountsAsync(int catId, string term, [FromQuery] PagingParameterModel paging)
+        {
+            var pagedResult = await _ganjoorService.GetCategoryWordCountsAsync(catId, term, paging);
+            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
+                return BadRequest(pagedResult.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+
+            return Ok(pagedResult.Result.Items);
+        }
+
+
 
 
         /// <summary>

@@ -2220,6 +2220,15 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCategoryWordCountsAsync(System.Int32,System.String,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            category word counts
+            </summary>
+            <param name="catId"></param>
+            <param name="term">can be empty</param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -16565,11 +16574,12 @@
             fill CategoryWordCounts.RowNmbrInCat
             </summary>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.CategoryWordCountsAsync(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetCategoryWordCountsAsync(System.Int32,System.String,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
-            catgoru words count
+            category words count
             </summary>
             <param name="catId"></param>
+            <param name="term"></param>
             <param name="paging"></param>
             <returns></returns>
         </member>
@@ -18127,11 +18137,12 @@
             <param name="q"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.CategoryWordCountsAsync(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryWordCountsAsync(System.Int32,System.String,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
-            catgoru words count
+            category word counts
             </summary>
             <param name="catId"></param>
+            <param name="term"></param>
             <param name="paging"></param>
             <returns></returns>
         </member>

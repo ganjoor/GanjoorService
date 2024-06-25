@@ -1447,18 +1447,10 @@ namespace RMuseum.Services
         /// category words count
         /// </summary>
         /// <param name="catId"></param>
-        /// <param name="paging"></param>
-        /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, CategoryWordCount[] Items)>> CategoryWordCountsAsync(int catId, PagingParameterModel paging);
-
-        /// <summary>
-        /// search in category words count
-        /// </summary>
-        /// <param name="catId"></param>
         /// <param name="term"></param>
         /// <param name="paging"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, CategoryWordCount[] Items)>> SearchInCategoryWordCountsAsync(int catId, string term, PagingParameterModel paging);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, CategoryWordCount[] Items)>> GetCategoryWordCountsAsync(int catId, string term, PagingParameterModel paging);
 
     }
 }

@@ -20,38 +20,17 @@ namespace RMuseum.Services.Implementation
     public partial class GanjoorService : IGanjoorService
     {
         /// <summary>
-        /// search in category words count
+        /// category word counts
         /// </summary>
         /// <param name="catId"></param>
         /// <param name="term"></param>
         /// <param name="paging"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, CategoryWordCount[] Items)>> SearchInCategoryWordCountsAsync(int catId, string term, PagingParameterModel paging)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, CategoryWordCount[] Items)>> GetCategoryWordCountsAsync(int catId, string term, PagingParameterModel paging)
         {
             var source =
                  from cwd in _context.CategoryWordCounts
-                 where cwd.CatId == catId && cwd.Word.Contains(term)
-                 orderby cwd.RowNmbrInCat
-                 select
-                 cwd;
-
-            (PaginationMetadata PagingMeta, CategoryWordCount[] Items) paginatedResult =
-                await QueryablePaginator<CategoryWordCount>.Paginate(source, paging);
-
-            return new RServiceResult<(PaginationMetadata PagingMeta, CategoryWordCount[] Items)>(paginatedResult);
-        }
-
-        /// <summary>
-        /// category word counts
-        /// </summary>
-        /// <param name="catId"></param>
-        /// <param name="paging"></param>
-        /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, CategoryWordCount[] Items)>> CategoryWordCountsAsync(int catId, PagingParameterModel paging)
-        {
-            var source =
-                 from cwd in _context.CategoryWordCounts
-                 where cwd.CatId == catId
+                 where cwd.CatId == catId && (string.IsNullOrEmpty(term) || cwd.Word.Contains(term) )
                  orderby cwd.RowNmbrInCat
                  select
                  cwd;
