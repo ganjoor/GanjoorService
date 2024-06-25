@@ -96,10 +96,26 @@ namespace RMuseum.Services.Implementation
                                           await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": In Memory => DbContext - {wordCounts.Count} - Sorting:");
                                           if (wordCounts.Any())
                                           {
-                                              wordCounts.Sort((a, b) => b.Count.CompareTo(a.Count));
+                                              List<int> catIdList = new List<int>
+                                               {
+                                                   poetCat.Id
+                                               };
+                                              await _populateCategoryChildren(context, poetCat.Id, catIdList);
+                                              foreach (var catId in catIdList)
+                                              {
+                                                  var catWordCounts = wordCounts.Where(w => w.CatId == catId).ToList();
+                                                  if (catWordCounts.Any())
+                                                  {
+                                                      catWordCounts.Sort((a, b) => b.Count.CompareTo(a.Count));
+                                                      for (int i = 0; i < catWordCounts.Count; i++)
+                                                      {
+                                                          catWordCounts[i].RowNmbrInCat = i + 1;
+                                                      }
+                                                  }
+                                              }
+
                                               for (int i = 0; i < wordCounts.Count; i++)
                                               {
-                                                  wordCounts[i].RowNmbrInCat = i + 1;
                                                   context.Add(wordCounts[i]);
                                                   await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": Saving {i} of {wordCounts.Count}, {wordCounts[i].Word}");
                                               }
