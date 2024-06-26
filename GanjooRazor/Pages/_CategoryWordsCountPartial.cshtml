@@ -1,0 +1,44 @@
+﻿@model GanjooRazor.Pages._CategoryWordsCountPartialModel
+@using DNTPersianUtils.Core
+@{
+}
+
+@if (Model.WordCounts.Length > 0)
+{
+    <div class="related-images-frame" id="wordcounts">
+        <div class="century" id="wordcounts-section-controller">
+            بسامد واژگان <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('wordcounts-section', 'wordcounts-section-collapse-button')"><i class="info-buttons expand_circle_down" id="wordcounts-section-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+        </div>
+        <div id="wordcounts-section">
+            <table>
+                <tr class="h">
+                    <td class="c1">ردیف</td>
+                    <td class="c2">واژه</td>
+                    <td class="c3">شمار</td>
+                </tr>
+                @for (int i = 0; i < Model.WordCounts.Length; i++)
+                {
+                    @if (i % 2 == 0)
+                    {
+                        <tr class="e">
+                            <td class="c1">@Model.WordCounts[i].RowNmbrInCat.ToPersianNumbers()</td>
+                            <td class="c2">@Model.WordCounts[i].Word</td>
+                            <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordCounts[i].Count)</td>
+                        </tr>
+
+                    }
+                    else
+                    {
+                        <tr>
+                            <td class="c1">@Model.WordCounts[i].RowNmbrInCat.ToPersianNumbers()</td>
+                            <td class="c2">@Model.WordCounts[i].Word</td>
+                            <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordCounts[i].Count)</td>
+                        </tr>
+                    }
+                }
+            </table>
+        </div>
+    </div>
+
+
+}
