@@ -227,158 +227,16 @@
                         @Html.Raw(Model.GanjoorPage.HtmlText)
                     }
 
-
-                    @if (
-                   ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
-                   )
-                    {
-                        <div class="related-images-frame" id="map-section">
-
-                            @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
-                            {
-                                <div class="century">
-                                    @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="century">
-                                    جای‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
-                                </div>
-                            }
-
-                            <div id="catmap"></div>
-                        </div>
-
-                    }
-
-                    @if ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
-                    {
-                        <script>
-                            var poemGeoTags = [];
-                            var map;
-                            var oms;
-                            var layerGroup;
-                            var myGeoJSONPath = '/json/world.json';
-                            var myCustomStyle = {
-                                stroke: true,
-                                weight: 1,
-                                color: '#300',
-                            }
-
-                            $.getJSON(myGeoJSONPath, function (data) {
-                                var map = L.map('catmap').setView([34, 53.6880], 4);
-                                L.geoJson(data, {
-                                    clickable: false,
-                                    style: myCustomStyle
-                                }).addTo(map);
-
-                                L.tileLayer.provider('OpenStreetMap').addTo(map);
-
-                                oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true });
-                                layerGroup = L.layerGroup().addTo(map);
-                                poemGeoTags = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategoryPoemGeoDateTags.Where(t => t.Location != null).ToArray(), Newtonsoft.Json.Formatting.Indented)));
-
-                                var popup = new L.Popup();
-                                oms.addListener('click', function (marker) {
-
-                                    var markOrder = '';
-                                    if (marker.poemGeoTag.LunarYear != null) {
-                                        markOrder = marker.order + ' - ';
-                                    }
-                                    var poemDesc = markOrder + '<a class="actionlink" onclick="viewLocation(marker.poemGeoTag.Location.Latitude, marker.poemGeoTag.Location.Longitude)">' + marker.poemGeoTag.Location.Name + '</a> <br> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
-                                    if (marker.poemGeoTag.LunarYear != null) {
-                                        poemDesc += '<br> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
-                                    }
-                                    popup.setContent(poemDesc);
-                                    popup.setLatLng(marker.getLatLng());
-                                    map.openPopup(popup);
-                                });
-
-                                var polygon = L.polyline([
-                            @foreach (var poemGeoTag in Model.CategoryPoemGeoDateTags.Where(t => t.Location != null && t.LunarYear != null).ToArray())
-                            {
-                                @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
-                            }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ]).addTo(map);
-
-                                for (var i = 0; i < poemGeoTags.length; i++) {
-                                    var poemGeoTag = poemGeoTags[i];
-                                    marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
-                                    marker.poemGeoTag = poemGeoTag
-                                    marker.order = persianizeNumerals((i + 1).toString());
-                                    marker.addTo(layerGroup);
-                                    oms.addMarker(marker);
-                                }
-                            });
-
-
-                        </script>
-                    }
-
-                    @if (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
-                    {
-                        <script>
-                            var poemGeoTags = [];
-                            var map;
-                            var oms;
-                            var layerGroup;
-                            var myGeoJSONPath = '/json/world.json';
-                            var myCustomStyle = {
-                                stroke: true,
-                                weight: 1,
-                                color: '#300',
-                            }
-
-                            $.getJSON(myGeoJSONPath, function (data) {
-                                poemGeoTags = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.GanjoorPage.Poem.GeoDateTags.Where(t => t.Location != null).ToArray(), Newtonsoft.Json.Formatting.Indented)));
-                                var map = L.map('catmap').setView([poemGeoTags[0].Location.Latitude, poemGeoTags[0].Location.Longitude], 4);
-                                L.geoJson(data, {
-                                    clickable: false,
-                                    style: myCustomStyle
-                                }).addTo(map);
-
-                                L.tileLayer.provider('OpenStreetMap').addTo(map);
-
-                                oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true });
-                                layerGroup = L.layerGroup().addTo(map);
-
-
-                                var popup = new L.Popup();
-                                oms.addListener('click', function (marker) {
-                                    var poemDesc = '<a class="actionlink" onclick="viewLocation(marker.poemGeoTag.Location.Latitude, marker.poemGeoTag.Location.Longitude)">' + marker.poemGeoTag.Location.Name + '</a>';
-                                    if (marker.poemGeoTag.LunarYear != null) {
-                                        poemDesc += '<br> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
-                                    }
-                                    popup.setContent(poemDesc);
-                                    popup.setLatLng(marker.getLatLng());
-                                    map.openPopup(popup);
-                                });
-
-
-                                for (var i = 0; i < poemGeoTags.length; i++) {
-                                    var poemGeoTag = poemGeoTags[i];
-                                    marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
-                                    marker.poemGeoTag = poemGeoTag
-                                    marker.order = persianizeNumerals((i + 1).toString());
-                                    marker.addTo(layerGroup);
-                                    oms.addMarker(marker);
-                                }
-                            });
-
-
-                        </script>
-                    }
-
-                </article>
-
-                @{
-
-                    @if(Model.IsCatPage || Model.IsPoetPage)
+                    @if (Model.IsCatPage || Model.IsPoetPage)
                     {
                         <div id="wordcounts-placeholder">
                         </div>
                     }
+
+                </article>
+
+
+
 
                     @if ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryHasRecitations)
                     {
@@ -497,19 +355,8 @@
                         <div class="spacer">&nbsp;</div>
                     }
 
-                    @if (Model.CanEdit && !Model.IsPoemPage)
-                    {
-                        <div class="spacer">&nbsp;</div>
-                        <div class="related-images-frame">
-                            <p>
-                                <a role="button" href="/Admin/ModifyPage?id=@Model.GanjoorPage.Id" class="pagebutton">ویرایش مستقیم</a>
-                            </p>
-                        </div>
-                    }
 
-
-
-                    if (Model.IsPoemPage)
+                    @if (Model.IsPoemPage)
                     {
                         <div class="spacer">&nbsp;</div>
 
@@ -1055,8 +902,150 @@
                         </div> <!-- <div id="comments"> -->
                     }
 
+                @if (
+               ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+               )
+                {
+                    <div class="related-images-frame" id="map-section">
 
-                    if (Model.GanjoorPage.Previous != null || Model.GanjoorPage.Next != null)
+                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
+                        {
+                            <div class="century">
+                                @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="century">
+                                جای‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                            </div>
+                        }
+
+                        <div id="catmap"></div>
+                    </div>
+
+                }
+
+                @if ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+                {
+                    <script>
+                        var poemGeoTags = [];
+                        var map;
+                        var oms;
+                        var layerGroup;
+                        var myGeoJSONPath = '/json/world.json';
+                        var myCustomStyle = {
+                            stroke: true,
+                            weight: 1,
+                            color: '#300',
+                        }
+
+                        $.getJSON(myGeoJSONPath, function (data) {
+                            var map = L.map('catmap').setView([34, 53.6880], 4);
+                            L.geoJson(data, {
+                                clickable: false,
+                                style: myCustomStyle
+                            }).addTo(map);
+
+                            L.tileLayer.provider('OpenStreetMap').addTo(map);
+
+                            oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true });
+                            layerGroup = L.layerGroup().addTo(map);
+                            poemGeoTags = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategoryPoemGeoDateTags.Where(t => t.Location != null).ToArray(), Newtonsoft.Json.Formatting.Indented)));
+
+                            var popup = new L.Popup();
+                            oms.addListener('click', function (marker) {
+
+                                var markOrder = '';
+                                if (marker.poemGeoTag.LunarYear != null) {
+                                    markOrder = marker.order + ' - ';
+                                }
+                                var poemDesc = markOrder + '<a class="actionlink" onclick="viewLocation(marker.poemGeoTag.Location.Latitude, marker.poemGeoTag.Location.Longitude)">' + marker.poemGeoTag.Location.Name + '</a> <br> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
+                                if (marker.poemGeoTag.LunarYear != null) {
+                                    poemDesc += '<br> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
+                                }
+                                popup.setContent(poemDesc);
+                                popup.setLatLng(marker.getLatLng());
+                                map.openPopup(popup);
+                            });
+
+                            var polygon = L.polyline([
+                        @foreach (var poemGeoTag in Model.CategoryPoemGeoDateTags.Where(t => t.Location != null && t.LunarYear != null).ToArray())
+                        {
+                            @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
+                        }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ]).addTo(map);
+
+                            for (var i = 0; i < poemGeoTags.length; i++) {
+                                var poemGeoTag = poemGeoTags[i];
+                                marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
+                                marker.poemGeoTag = poemGeoTag
+                                marker.order = persianizeNumerals((i + 1).toString());
+                                marker.addTo(layerGroup);
+                                oms.addMarker(marker);
+                            }
+                        });
+
+
+                    </script>
+                }
+
+                @if (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
+                {
+                    <script>
+                        var poemGeoTags = [];
+                        var map;
+                        var oms;
+                        var layerGroup;
+                        var myGeoJSONPath = '/json/world.json';
+                        var myCustomStyle = {
+                            stroke: true,
+                            weight: 1,
+                            color: '#300',
+                        }
+
+                        $.getJSON(myGeoJSONPath, function (data) {
+                            poemGeoTags = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.GanjoorPage.Poem.GeoDateTags.Where(t => t.Location != null).ToArray(), Newtonsoft.Json.Formatting.Indented)));
+                            var map = L.map('catmap').setView([poemGeoTags[0].Location.Latitude, poemGeoTags[0].Location.Longitude], 4);
+                            L.geoJson(data, {
+                                clickable: false,
+                                style: myCustomStyle
+                            }).addTo(map);
+
+                            L.tileLayer.provider('OpenStreetMap').addTo(map);
+
+                            oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true });
+                            layerGroup = L.layerGroup().addTo(map);
+
+
+                            var popup = new L.Popup();
+                            oms.addListener('click', function (marker) {
+                                var poemDesc = '<a class="actionlink" onclick="viewLocation(marker.poemGeoTag.Location.Latitude, marker.poemGeoTag.Location.Longitude)">' + marker.poemGeoTag.Location.Name + '</a>';
+                                if (marker.poemGeoTag.LunarYear != null) {
+                                    poemDesc += '<br> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
+                                }
+                                popup.setContent(poemDesc);
+                                popup.setLatLng(marker.getLatLng());
+                                map.openPopup(popup);
+                            });
+
+
+                            for (var i = 0; i < poemGeoTags.length; i++) {
+                                var poemGeoTag = poemGeoTags[i];
+                                marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
+                                marker.poemGeoTag = poemGeoTag
+                                marker.order = persianizeNumerals((i + 1).toString());
+                                marker.addTo(layerGroup);
+                                oms.addMarker(marker);
+                            }
+                        });
+
+
+                    </script>
+                }
+
+
+                    @if (Model.GanjoorPage.Previous != null || Model.GanjoorPage.Next != null)
                     {
                         <nav>
                             <div class="spacer">&nbsp;</div>
@@ -1082,8 +1071,15 @@
                     }
 
 
+                @if (Model.CanEdit && !Model.IsPoemPage)
+                {
+                    <div class="spacer">&nbsp;</div>
+                    <div class="related-images-frame">
+                        <p>
+                            <a role="button" href="/Admin/ModifyPage?id=@Model.GanjoorPage.Id" class="pagebutton">ویرایش مستقیم</a>
+                        </p>
+                    </div>
                 }
-
 
 
             </div>
