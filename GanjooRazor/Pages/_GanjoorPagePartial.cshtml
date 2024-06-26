@@ -373,30 +373,6 @@
                 </article>
 
                 @{
-                    if (Model.IsCatPage)
-                    {
-                        <nav>
-                            <div class="spacer">&nbsp;</div>
-                            <div class="navigation">
-                                <div class="navleft">
-                                    @if (!string.IsNullOrEmpty(Model.NextUrl))
-                                    {
-                                        <a href="@Html.Raw(Model.NextUrl)">@Model.NextTitle</a>
-                                        <span> &raquo;</span>
-                                    }
-                                </div>
-                                <div class="navright">
-                                    @if (!string.IsNullOrEmpty(Model.PreviousUrl))
-                                    {
-                                        <span>&laquo; </span>
-                                        <a href="@Html.Raw(Model.PreviousUrl)">@Model.PreviousTitle</a>
-                                    }
-                                </div>
-                            </div>
-                        </nav>
-
-
-                    }
 
                     @if(Model.IsCatPage || Model.IsPoetPage)
                     {
@@ -496,21 +472,12 @@
 
                     }
 
-                    @if (Model.CanEdit && !Model.IsPoemPage)
+                    @if (!string.IsNullOrEmpty(Model.NextUrl) || !string.IsNullOrEmpty(Model.PreviousUrl))
                     {
                         <div class="spacer">&nbsp;</div>
-                        <div class="related-images-frame">
-                            <p>
-                                <a role="button" href="/Admin/ModifyPage?id=@Model.GanjoorPage.Id" class="pagebutton">ویرایش مستقیم</a>
-                            </p>
-                        </div>
-                    }
-
-                    if (Model.IsPoemPage)
-                    {
                         <nav>
-                            <div class="spacer">&nbsp;</div>
                             <div class="navigation">
+
                                 <div class="navleft">
                                     @if (!string.IsNullOrEmpty(Model.NextUrl))
                                     {
@@ -527,7 +494,23 @@
                                 </div>
                             </div>
                         </nav>
+                        <div class="spacer">&nbsp;</div>
+                    }
 
+                    @if (Model.CanEdit && !Model.IsPoemPage)
+                    {
+                        <div class="spacer">&nbsp;</div>
+                        <div class="related-images-frame">
+                            <p>
+                                <a role="button" href="/Admin/ModifyPage?id=@Model.GanjoorPage.Id" class="pagebutton">ویرایش مستقیم</a>
+                            </p>
+                        </div>
+                    }
+
+
+
+                    if (Model.IsPoemPage)
+                    {
                         <div class="spacer">&nbsp;</div>
 
                         @if (Model.Banner != null)
