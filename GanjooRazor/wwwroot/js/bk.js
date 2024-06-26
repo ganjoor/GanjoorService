@@ -1538,7 +1538,7 @@ function loadWordCounts(catId, poetId) {
 function onSearchWordCounts(catId, poetId, totalWordCount) {
     setTimeout(function () {
         var value = document.getElementById('wordcountterm').value;
-        var divParent = document.getElementById('wordcounts-section');
+        var divParent = document.getElementById('wordcounts-table');
         var imgElementId = 'loadingwordcountsimg';
         divParent.innerHTML = '<div class="bnumdiv" id="remove-this-wordcounts"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
         $.ajax({
