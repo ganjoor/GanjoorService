@@ -1529,6 +1529,7 @@ function loadWordCounts(catId, poetId) {
         },
         success: function (data) {
             document.getElementById("remove-this-wordcounts").remove();
+            document.getElementById("percent-button").style.display = 'inline-block';
             $(data).appendTo(divParent);
         },
     });

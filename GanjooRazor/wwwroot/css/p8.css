@@ -1654,6 +1654,12 @@ audio {
     font-family: 'Material Icons';
 }
 
+.percent::after {
+    content: 'percent';
+    font-family: 'Material Icons';
+}
+
+
 
 #findpoet {
     margin-top: 10px;
