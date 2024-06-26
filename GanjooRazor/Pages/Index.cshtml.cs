@@ -1308,5 +1308,31 @@ namespace GanjooRazor.Pages
             };
         }
 
+        public async Task<ActionResult> OnGetSearchCategoryWordCountsAsync(int catId, int poetId, string term)
+        {
+            var wordCountsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/wordcounts/{catId}?PageNumber=1&PageSize=100&term={term}");
+
+            if (!wordCountsResponse.IsSuccessStatusCode)
+            {
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await wordCountsResponse.Content.ReadAsStringAsync()));
+            }
+            var wordCounts = JsonConvert.DeserializeObject<CategoryWordCount[]>(await wordCountsResponse.Content.ReadAsStringAsync());
+
+            return new PartialViewResult()
+            {
+                ViewName = "_CategoryWordsCountTablePartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _CategoryWordsCountTablePartialModel()
+                    {
+                        CatId = catId,
+                        PoetId = poetId,
+                        WordCounts = wordCounts
+                    }
+                }
+            };
+        }
+
+
     }
 }

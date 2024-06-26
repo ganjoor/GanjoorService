@@ -1534,3 +1534,25 @@ function loadWordCounts(catId, poetId) {
     });
 }
 
+function onSearchWordCounts(catId, poetId) {
+    setTimeout(function () {
+        var value = document.getElementById('wordcountterm').value;
+        var divParent = document.getElementById('wordcounts-section');
+        var imgElementId = 'loadingwordcountsimg';
+        divParent.innerHTML = '<div class="bnumdiv" id="remove-this-wordcounts"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
+        $.ajax({
+            type: "GET",
+            url: '?Handler=SearchCategoryWordCounts&catId=' + String(catId) + '&poetId=' + String(poetId) + '&term=' + value,
+            error: function () {
+                document.getElementById("remove-this-wordcounts").remove();
+            },
+            success: function (data) {
+                document.getElementById("remove-this-wordcounts").remove();
+                $(data).appendTo(divParent);
+            },
+        });
+
+    }, 500);
+}
+
+

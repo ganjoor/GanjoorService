@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using RMuseum.Models.Ganjoor;
 
 namespace GanjooRazor.Pages
 {
-    public class _CategoryWordsCountPartialModel : PageModel
+    public class _CategoryWordsCountTablePartialModel : PageModel
     {
         /// <summary>
         /// Cat Id
@@ -19,18 +20,5 @@ namespace GanjooRazor.Pages
         /// words counts
         /// </summary>
         public CategoryWordCount[] WordCounts { get; set; }
-
-        public _CategoryWordsCountTablePartialModel TableModel
-        {
-            get
-            {
-                return new _CategoryWordsCountTablePartialModel()
-                {
-                    CatId = CatId,
-                    PoetId = PoetId,
-                    WordCounts = WordCounts
-                };
-            }
-        }
     }
 }
