@@ -265,6 +265,68 @@ namespace RMuseum.Services.Implementation
 
         }
 
+        /// <summary>
+        /// fill CategoryWordCountSummaries
+        /// </summary>
+        public void FillCategoryWordCountSummaries()
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+              (
+              async token =>
+              {
+                  using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                  {
+                      LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                      var job = (await jobProgressServiceEF.NewJob($"FillCategoryWordCountSummaries", "Query data")).Result;
+                      try
+                      {
+                          var poets = await context.GanjoorPoets.AsNoTracking().Where(p => p.Published).OrderBy(p => p.Id).ToListAsync();
+                          foreach (var poet in poets)
+                          {
+                              var poetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poet.Id && c.ParentId == null).SingleAsync();
+                              await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname);
+                              if (true == await context.CategoryWordCounts.Where(c => c.CatId == poetCat.Id).AnyAsync())
+                              {
+                                  List<int> catIdList = new List<int>
+                                   {
+                                       poetCat.Id
+                                   };
+                                  await _populateCategoryChildren(context, poetCat.Id, catIdList);
+                                  foreach (var catId in catIdList)
+                                  {
+                                      var uniqueCount = await context.CategoryWordCounts.Where(w => w.CatId == catId).CountAsync();
+                                      if (uniqueCount > 0)
+                                      {
+                                          var totalCount = await context.CategoryWordCounts.Where(w => w.CatId == catId).SumAsync(w => w.Count);
+                                          context.Add
+                                          (
+                                              new CategoryWordCountSummary()
+                                              {
+                                                  CatId = catId,
+                                                  UniqueWordCount = uniqueCount,
+                                                  TotalWordCount = totalCount
+                                              }
+                                          );
+                                          await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": Saving {catId}");
+                                      }
+                                  }
+                              }
+                          }
+
+
+                          await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                      }
+                      catch (Exception exp)
+                      {
+                          await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                      }
+
+                  }
+              });
+
+        }
+
+
 
     }
 }

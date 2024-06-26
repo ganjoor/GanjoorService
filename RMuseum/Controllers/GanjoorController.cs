@@ -4213,6 +4213,21 @@ namespace RMuseum.Controllers
             _ganjoorService.FillCategoryWordCountsRowNmbrInCat();
             return Ok();
         }
+        /// <summary>
+        /// one time fixer for category word count summries
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpPut("wordcounts/fillwordcountsummeries")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult FillCategoryWordCountSummaries()
+        {
+            _ganjoorService.FillCategoryWordCountSummaries();
+            return Ok();
+        }
+
 
         /// <summary>
         /// category word counts

@@ -200,6 +200,11 @@ namespace RMuseum.DbContext
                .HasIndex(v => new { v.CatId, v.Word })
                .IsUnique();
 
+            builder.Entity<CategoryWordCountSummary>()
+            .HasIndex(v => new { v.CatId })
+            .IsUnique();
+
+
         }
 
 
@@ -588,6 +593,11 @@ namespace RMuseum.DbContext
         /// Category Word Counts
         /// </summary>
         public DbSet<CategoryWordCount> CategoryWordCounts { get; set; }
+
+        /// <summary>
+        /// Category Word Count Summaries
+        /// </summary>
+        public DbSet<CategoryWordCountSummary> CategoryWordCountSummaries { get; set; }
 
     }
 }

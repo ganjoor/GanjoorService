@@ -2220,6 +2220,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.FillCategoryWordCountSummaries">
+            <summary>
+            one time fixer for category word count summries
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetCategoryWordCountsAsync(System.Int32,System.String,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             category word counts
@@ -3583,6 +3589,11 @@
         <member name="P:RMuseum.DbContext.RMuseumDbContext.CategoryWordCounts">
             <summary>
             Category Word Counts
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.CategoryWordCountSummaries">
+            <summary>
+            Category Word Count Summaries
             </summary>
         </member>
         <member name="T:RMuseum.Migrations.PictureFileExtUrl">
@@ -7242,6 +7253,26 @@
         <member name="P:RMuseum.Models.Ganjoor.CategoryWordCount.RowNmbrInCat">
             <summary>
             row number in category
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.CategoryWordCountSummary.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.CategoryWordCountSummary.CatId">
+            <summary>
+            CatId
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.CategoryWordCountSummary.UniqueWordCount">
+            <summary>
+            unique word count
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.CategoryWordCountSummary.TotalWordCount">
+            <summary>
+            total word count
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.CorrectionReviewResult">
@@ -16581,6 +16612,11 @@
             fill CategoryWordCounts.RowNmbrInCat
             </summary>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.FillCategoryWordCountSummaries">
+            <summary>
+            fill CategoryWordCountSummaries
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetCategoryWordCountsAsync(System.Int32,System.String,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             category words count
@@ -18161,6 +18197,11 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.FillCategoryWordCountsRowNmbrInCat">
             <summary>
             fill CategoryWordCounts.RowNmbrInCat
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.FillCategoryWordCountSummaries">
+            <summary>
+            fill CategoryWordCountSummaries
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SetCategoryPoemFormatAsync(System.Int32,System.Nullable{RMuseum.Models.Ganjoor.GanjoorPoemFormat})">

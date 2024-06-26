@@ -1444,6 +1444,11 @@ namespace RMuseum.Services
         void FillCategoryWordCountsRowNmbrInCat();
 
         /// <summary>
+        /// fill CategoryWordCountSummaries
+        /// </summary>
+        void FillCategoryWordCountSummaries();
+
+        /// <summary>
         /// category words count
         /// </summary>
         /// <param name="catId"></param>
