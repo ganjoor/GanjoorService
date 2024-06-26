@@ -26,17 +26,44 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, CategoryWordCount[] Items)>> GetCategoryWordCountsAsync(int catId, string term, PagingParameterModel paging)
         {
-            var source =
-                 from cwd in _context.CategoryWordCounts
-                 where cwd.CatId == catId && (string.IsNullOrEmpty(term) || cwd.Word.Contains(term) )
-                 orderby cwd.RowNmbrInCat
-                 select
-                 cwd;
+            try
+            {
+                var source =
+                     from cwd in _context.CategoryWordCounts
+                     where cwd.CatId == catId && (string.IsNullOrEmpty(term) || cwd.Word.Contains(term))
+                     orderby cwd.RowNmbrInCat
+                     select
+                     cwd;
 
-            (PaginationMetadata PagingMeta, CategoryWordCount[] Items) paginatedResult =
-                await QueryablePaginator<CategoryWordCount>.Paginate(source, paging);
+                (PaginationMetadata PagingMeta, CategoryWordCount[] Items) paginatedResult =
+                    await QueryablePaginator<CategoryWordCount>.Paginate(source, paging);
 
-            return new RServiceResult<(PaginationMetadata PagingMeta, CategoryWordCount[] Items)>(paginatedResult);
+                return new RServiceResult<(PaginationMetadata PagingMeta, CategoryWordCount[] Items)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, CategoryWordCount[] Items)>((null, null), exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// category words summary
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<CategoryWordCountSummary>> GetCategoryWordCountSummaryAsync(int catId)
+        {
+            try
+            {
+                var res = await _context.CategoryWordCountSummaries.AsNoTracking().Where(c => c.CatId == catId).SingleOrDefaultAsync();
+                if(res == null)
+                    return new RServiceResult<CategoryWordCountSummary>(new CategoryWordCountSummary() { CatId = catId, UniqueWordCount = 0, TotalWordCount = 0 });
+                return new RServiceResult<CategoryWordCountSummary>(res);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<CategoryWordCountSummary>(null, exp.ToString());
+            }
         }
 
 

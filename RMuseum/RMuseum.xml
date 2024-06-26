@@ -16626,6 +16626,13 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetCategoryWordCountSummaryAsync(System.Int32)">
+            <summary>
+            category words summary
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -18187,6 +18194,13 @@
             <param name="catId"></param>
             <param name="term"></param>
             <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryWordCountSummaryAsync(System.Int32)">
+            <summary>
+            category words summary
+            </summary>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.BuildCategoryWordCountsAsync(System.Boolean)">

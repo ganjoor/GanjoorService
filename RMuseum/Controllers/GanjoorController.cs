@@ -4239,7 +4239,7 @@ namespace RMuseum.Controllers
         [HttpGet]
         [Route("wordcounts/{catId}")]
         [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCompleteViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<CategoryWordCount>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
         public async Task<IActionResult> GetCategoryWordCountsAsync(int catId, string term, [FromQuery] PagingParameterModel paging)
@@ -4253,6 +4253,22 @@ namespace RMuseum.Controllers
 
             return Ok(pagedResult.Result.Items);
         }
+
+        [HttpGet]
+        [Route("wordsums/{catId}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CategoryWordCountSummary))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> GetCategoryWordCountSummaryAsync(int catId)
+        {
+            var res = await _ganjoorService.GetCategoryWordCountSummaryAsync(catId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+           return Ok(res.Result);
+        }
+
 
 
 
