@@ -191,6 +191,7 @@ namespace RMuseum.Services.Implementation
                     string[] words = LanguageUtils.MakeTextSearchable(verse.Text).Split([' ', '‌']);
                     foreach (var word in words)
                     {
+                        if(string.IsNullOrEmpty(word)) continue;
                         var wordCount = counts.Where(c => c.CatId == cat.Id && c.Word == word).SingleOrDefault();
                         if (wordCount != null)
                         {
