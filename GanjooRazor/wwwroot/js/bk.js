@@ -1542,7 +1542,7 @@ function onSearchWordCounts(catId, poetId, totalWordCount) {
         divParent.innerHTML = '<div class="bnumdiv" id="remove-this-wordcounts"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
         $.ajax({
             type: "GET",
-            url: '?Handler=SearchCategoryWordCounts&catId=' + String(catId) + '&poetId=' + String(poetId) + '&totalWordCount' + String(totalWordCount) + '&term=' + value,
+            url: '?Handler=SearchCategoryWordCounts&catId=' + String(catId) + '&poetId=' + String(poetId) + '&totalWordCount=' + String(totalWordCount) + '&term=' + value,
             error: function () {
                 document.getElementById("remove-this-wordcounts").remove();
             },

@@ -38,7 +38,8 @@ namespace GanjooRazor.Pages
                 {
                     CatId = CatId,
                     PoetId = PoetId,
-                    WordCounts = WordCounts
+                    WordCounts = WordCounts,
+                    TotalWordCount = TotalWordCount,
                 };
             }
         }

@@ -1285,7 +1285,7 @@ namespace GanjooRazor.Pages
 
         public async Task<ActionResult> OnGetCategoryWordCountsAsync(int catId, int poetId)
         {
-            var wordSumsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/wordsums/{catId}");
+            var wordSumsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/wordsums/{catId}");
 
             if (!wordSumsResponse.IsSuccessStatusCode)
             {
