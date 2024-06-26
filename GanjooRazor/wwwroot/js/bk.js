@@ -1516,3 +1516,21 @@ function markAsTextOriginal(bookId, categoryId, bookName, catName) {
         },
     });
 }
+
+function loadWordCounts(catId, poetId) {
+    var divParent = document.getElementById('wordcounts-placeholder');
+    var imgElementId = 'loadingwordcountsimg';
+    divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="remove-this-wordcounts"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
+    $.ajax({
+        type: "GET",
+        url: '?Handler=CategoryWordCounts&catId=' + String(catId) + '&poetId=' + String(poetId),
+        error: function () {
+            document.getElementById("remove-this-wordcounts").remove();
+        },
+        success: function (data) {
+            document.getElementById("remove-this-wordcounts").remove();
+            $(data).appendTo(divParent);
+        },
+    });
+}
+

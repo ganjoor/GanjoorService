@@ -954,32 +954,6 @@ namespace GanjooRazor.Pages
             };
         }
 
-        public async Task<ActionResult> OnGetCategoryRecitationsAsync(int catId)
-        {
-            var catTop1RecitationsQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/cattop1/{catId}?includePoemText=false");
-
-            if (!catTop1RecitationsQuery.IsSuccessStatusCode)
-            {
-                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await catTop1RecitationsQuery.Content.ReadAsStringAsync()));
-            }
-            var categoryTop1Recitations = JsonConvert.DeserializeObject<PublicRecitationViewModel[]>(await catTop1RecitationsQuery.Content.ReadAsStringAsync());
-            
-            return new PartialViewResult()
-            {
-                ViewName = "_AudioPlayerPartial",
-                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                {
-                    Model = new _AudioPlayerPartialModel()
-                    {
-                        LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
-                        Recitations = categoryTop1Recitations,
-                        ShowAllRecitaions = true,
-                        CategoryMode = true,
-                    }
-                }
-            };
-        }
-
         public async Task<IActionResult> OnPostSwitchBookmarkAsync(int poemId, int coupletIndex)
         {
             using (HttpClient secureClient = new HttpClient())
@@ -1281,5 +1255,58 @@ namespace GanjooRazor.Pages
                 }
             }
         }
+
+        public async Task<ActionResult> OnGetCategoryRecitationsAsync(int catId)
+        {
+            var catTop1RecitationsQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/cattop1/{catId}?includePoemText=false");
+
+            if (!catTop1RecitationsQuery.IsSuccessStatusCode)
+            {
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await catTop1RecitationsQuery.Content.ReadAsStringAsync()));
+            }
+            var categoryTop1Recitations = JsonConvert.DeserializeObject<PublicRecitationViewModel[]>(await catTop1RecitationsQuery.Content.ReadAsStringAsync());
+
+            return new PartialViewResult()
+            {
+                ViewName = "_AudioPlayerPartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _AudioPlayerPartialModel()
+                    {
+                        LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
+                        Recitations = categoryTop1Recitations,
+                        ShowAllRecitaions = true,
+                        CategoryMode = true,
+                    }
+                }
+            };
+        }
+
+
+        public async Task<ActionResult> OnGetCategoryWordCountsAsync(int catId, int poetId)
+        {
+            var wordCountsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/wordcounts/{catId}?PageNumber=1&PageSize=100");
+
+            if (!wordCountsResponse.IsSuccessStatusCode)
+            {
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await wordCountsResponse.Content.ReadAsStringAsync()));
+            }
+            var wordCounts = JsonConvert.DeserializeObject<CategoryWordCount[]>(await wordCountsResponse.Content.ReadAsStringAsync());
+
+            return new PartialViewResult()
+            {
+                ViewName = "_CategoryWordsCountPartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _CategoryWordsCountPartialModel()
+                    {
+                        CatId = catId,
+                        PoetId = poetId,
+                        WordCounts = wordCounts
+                    }
+                }
+            };
+        }
+
     }
 }

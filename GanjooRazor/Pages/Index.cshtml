@@ -308,6 +308,13 @@
         </script>
     }
 
+    @if(Model.IsCatPage || Model.IsPoetPage)
+    {
+        <script>
+            loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)
+        </script>
+    }
+
 
 
 </body>
