@@ -7239,11 +7239,6 @@
             Count
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.CategoryWordCount.PoetCat">
-            <summary>
-            is root cat
-            </summary>
-        </member>
         <member name="P:RMuseum.Models.Ganjoor.CategoryWordCount.RowNmbrInCat">
             <summary>
             row number in category

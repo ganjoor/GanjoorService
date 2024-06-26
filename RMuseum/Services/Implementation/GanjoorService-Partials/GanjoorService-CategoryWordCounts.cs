@@ -80,7 +80,7 @@ namespace RMuseum.Services.Implementation
                                       {
                                           var poetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poet.Id && c.ParentId == null).SingleAsync();
                                           await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname);
-                                          var wordCounts = await _BuildCategoryWordStatsAsync(context, poetCat, true, jobProgressServiceEF, job);
+                                          var wordCounts = await _BuildCategoryWordStatsAsync(context, poetCat, jobProgressServiceEF, job);
                                           if(true == await context.CategoryWordCounts.Where(c => c.CatId == poetCat.Id).AnyAsync())
                                           {
                                               List<int> catIdList = new List<int>
@@ -157,13 +157,13 @@ namespace RMuseum.Services.Implementation
                           });
         }
 
-        private async Task<List<CategoryWordCount>> _BuildCategoryWordStatsAsync(RMuseumDbContext context, GanjoorCat cat, bool poetCat, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        private async Task<List<CategoryWordCount>> _BuildCategoryWordStatsAsync(RMuseumDbContext context, GanjoorCat cat, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
         {
             List<CategoryWordCount> counts = new List<CategoryWordCount>();
             var children = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == cat.Id).ToListAsync();
             foreach (var child in children)
             {
-                var subcatCounts = await _BuildCategoryWordStatsAsync(context, child, false, jobProgressServiceEF, job);
+                var subcatCounts = await _BuildCategoryWordStatsAsync(context, child, jobProgressServiceEF, job);
                 if (subcatCounts.Any())
                 {
                     foreach (var count in subcatCounts)
@@ -175,7 +175,7 @@ namespace RMuseum.Services.Implementation
                         }
                         else
                         {
-                            counts.Add(new CategoryWordCount { CatId = cat.Id, Word = count.Word, Count = count.Count, PoetCat = poetCat });
+                            counts.Add(new CategoryWordCount { CatId = cat.Id, Word = count.Word, Count = count.Count });
                         }
                     }
                     counts.AddRange(subcatCounts);
@@ -199,7 +199,7 @@ namespace RMuseum.Services.Implementation
                         }
                         else
                         {
-                            counts.Add(new CategoryWordCount { CatId = cat.Id, Word = word, Count = 1, PoetCat = poetCat });
+                            counts.Add(new CategoryWordCount { CatId = cat.Id, Word = word, Count = 1 });
                         }
                     }
                 }

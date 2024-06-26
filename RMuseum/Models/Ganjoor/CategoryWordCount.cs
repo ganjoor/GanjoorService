@@ -25,11 +25,6 @@ namespace RMuseum.Models.Ganjoor
         public int Count { get; set; }
 
         /// <summary>
-        /// is root cat
-        /// </summary>
-        public bool PoetCat { get; set; }
-
-        /// <summary>
         /// row number in category
         /// </summary>
         public int RowNmbrInCat { get; set; }
