@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Pages\_CategoryWordsCountPartial.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\RMuseum\RMuseum.csproj" />
   </ItemGroup>
 
@@ -34,7 +30,6 @@
 
   <ItemGroup>
     <None Include="Areas\User\Pages\SectionEdits.cshtml" />
-    <None Include="Pages\_CategoryWordsCountPartial.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

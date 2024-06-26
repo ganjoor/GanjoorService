@@ -22,7 +22,7 @@
                     {
                         <tr class="e">
                             <td class="c1">@Model.WordCounts[i].RowNmbrInCat.ToPersianNumbers()</td>
-                            <td class="c2">@Model.WordCounts[i].Word</td>
+                            <td class="c2"><a href="/search?s=@Model.WordCounts[i].Word&author=@Model.PoetId&cat=@Model.CatId">@Model.WordCounts[i].Word</a></td>
                             <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordCounts[i].Count)</td>
                         </tr>
 
@@ -31,7 +31,7 @@
                     {
                         <tr>
                             <td class="c1">@Model.WordCounts[i].RowNmbrInCat.ToPersianNumbers()</td>
-                            <td class="c2">@Model.WordCounts[i].Word</td>
+                            <td class="c2"><a href="/search?s=@Model.WordCounts[i].Word&author=@Model.PoetId&cat=@Model.CatId">@Model.WordCounts[i].Word</a></td>
                             <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordCounts[i].Count)</td>
                         </tr>
                     }
