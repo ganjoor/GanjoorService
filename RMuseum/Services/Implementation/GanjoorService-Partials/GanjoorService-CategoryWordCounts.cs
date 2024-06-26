@@ -8,9 +8,7 @@ using System.Collections.Generic;
 using RSecurityBackend.Services.Implementation;
 using System.Threading.Tasks;
 using RSecurityBackend.Models.Generic.Db;
-using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
-using RMuseum.Migrations;
 
 namespace RMuseum.Services.Implementation
 {
@@ -68,10 +66,16 @@ namespace RMuseum.Services.Implementation
                                   {
                                       if (reset)
                                       {
-                                          var existing = await context.CategoryWordCounts.ToListAsync();
-                                          if (existing.Any())
+                                          var e1 = await context.CategoryWordCounts.ToListAsync();
+                                          if (e1.Any())
                                           {
-                                              context.RemoveRange(existing);
+                                              context.RemoveRange(e1);
+                                              await context.SaveChangesAsync();
+                                          }
+                                          var e2 = await context.CategoryWordCountSummaries.ToListAsync();
+                                          if (e2.Any())
+                                          {
+                                              context.RemoveRange(e2);
                                               await context.SaveChangesAsync();
                                           }
                                       }
@@ -115,6 +119,16 @@ namespace RMuseum.Services.Implementation
                                                           catWordCounts[i].RowNmbrInCat = i + 1;
                                                       }
                                                   }
+
+                                                  context.Add
+                                                  (
+                                                      new CategoryWordCountSummary()
+                                                      {
+                                                          CatId = catId,
+                                                          UniqueWordCount = catWordCounts.Count,
+                                                          TotalWordCount = catWordCounts.Sum(w => w.Count)
+                                                      }
+                                                  );
                                               }
 
                                               for (int i = 0; i < wordCounts.Count; i++)
