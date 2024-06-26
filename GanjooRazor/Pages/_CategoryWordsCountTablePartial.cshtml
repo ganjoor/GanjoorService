@@ -3,11 +3,14 @@
 @{
 }
 
+@if (Model.TotalWordCount == 0) return;
+
 <table>
     <tr class="h">
         <td class="c1">ردیف</td>
         <td class="c2">واژه</td>
         <td class="c3">شمار</td>
+        <td class="c4">درصد از کل</td>
     </tr>
     @for (int i = 0; i < Model.WordCounts.Length; i++)
     {
@@ -17,6 +20,7 @@
                 <td class="c1">@Model.WordCounts[i].RowNmbrInCat.ToPersianNumbers()</td>
                 <td class="c2"><a href="/search?s=@Model.WordCounts[i].Word&author=@Model.PoetId&cat=@Model.CatId">@Model.WordCounts[i].Word</a></td>
                 <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordCounts[i].Count)</td>
+                <td class="c4">@(Model.WordCounts[i].Count * 100.0 / Model.TotalWordCount).ToString("N4", new CultureInfo("fa-IR")).ToPersianNumbers())</td>
             </tr>
 
         }
@@ -26,6 +30,7 @@
                 <td class="c1">@Model.WordCounts[i].RowNmbrInCat.ToPersianNumbers()</td>
                 <td class="c2"><a href="/search?s=@Model.WordCounts[i].Word&author=@Model.PoetId&cat=@Model.CatId">@Model.WordCounts[i].Word</a></td>
                 <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordCounts[i].Count)</td>
+                <td class="c4">@(Model.WordCounts[i].Count * 100.0 / Model.TotalWordCount).ToString("N4", new CultureInfo("fa-IR")).ToPersianNumbers())</td>
             </tr>
         }
     }

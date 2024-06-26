@@ -9,8 +9,11 @@
         <div class="century" id="wordcounts-section-controller">
             بسامد واژگان <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('wordcounts-section', 'wordcounts-section-collapse-button')"><i class="info-buttons expand_circle_down" id="wordcounts-section-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
         </div>
+        <p>
+            @RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.TotalWordCount) واژهٔ این بخش از @RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.UniqueWordCount) تشکیل شده است.
+        </p>
         <div class="clear-both">
-            <input type="text" id="wordcountterm" placeholder="جستجوی واژه" value="" onkeyup="onSearchWordCounts(@Model.CatId, @Model.PoetId)">
+            <input type="text" id="wordcountterm" placeholder="جستجوی واژه" value="" onkeyup="onSearchWordCounts(@Model.CatId, @Model.PoetId, @Model.TotalWordCount)">
         </div>
         <div id="wordcounts-section">
             <partial name="_CategoryWordsCountTablePartial" model="Model.TableModel">

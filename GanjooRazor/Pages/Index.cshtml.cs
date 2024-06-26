@@ -1285,6 +1285,17 @@ namespace GanjooRazor.Pages
 
         public async Task<ActionResult> OnGetCategoryWordCountsAsync(int catId, int poetId)
         {
+            var wordSumsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/wordsums/{catId}");
+
+            if (!wordSumsResponse.IsSuccessStatusCode)
+            {
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await wordSumsResponse.Content.ReadAsStringAsync()));
+            }
+            var wordSums = JsonConvert.DeserializeObject<CategoryWordCountSummary>(await wordSumsResponse.Content.ReadAsStringAsync());
+            if(wordSums.TotalWordCount == 0)
+            {
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>("شمارش واژگان انجام نشده."));
+            }
             var wordCountsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/wordcounts/{catId}?PageNumber=1&PageSize=100");
 
             if (!wordCountsResponse.IsSuccessStatusCode)
@@ -1302,13 +1313,15 @@ namespace GanjooRazor.Pages
                     {
                         CatId = catId,
                         PoetId = poetId,
-                        WordCounts = wordCounts
+                        WordCounts = wordCounts,
+                        UniqueWordCount = wordSums.UniqueWordCount,
+                        TotalWordCount = wordSums.TotalWordCount,
                     }
                 }
             };
         }
 
-        public async Task<ActionResult> OnGetSearchCategoryWordCountsAsync(int catId, int poetId, string term)
+        public async Task<ActionResult> OnGetSearchCategoryWordCountsAsync(int catId, int poetId, string term, int totalWordCount)
         {
             var wordCountsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/wordcounts/{catId}?PageNumber=1&PageSize=100&term={term}");
 
@@ -1327,7 +1340,8 @@ namespace GanjooRazor.Pages
                     {
                         CatId = catId,
                         PoetId = poetId,
-                        WordCounts = wordCounts
+                        WordCounts = wordCounts,
+                        TotalWordCount = totalWordCount,
                     }
                 }
             };

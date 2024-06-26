@@ -16,6 +16,16 @@ namespace GanjooRazor.Pages
         public int PoetId { get; set; }
 
         /// <summary>
+        /// unique word count
+        /// </summary>
+        public int UniqueWordCount { get; set; }
+
+        /// <summary>
+        /// total word count
+        /// </summary>
+        public int TotalWordCount { get; set; }
+
+        /// <summary>
         /// words counts
         /// </summary>
         public CategoryWordCount[] WordCounts { get; set; }

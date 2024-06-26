@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using RMuseum.Models.Ganjoor;
 
@@ -15,6 +14,11 @@ namespace GanjooRazor.Pages
         /// PoetId
         /// </summary>
         public int PoetId { get; set; }
+
+        /// <summary>
+        /// total word count
+        /// </summary>
+        public int TotalWordCount { get; set; }
 
         /// <summary>
         /// words counts
