@@ -122,8 +122,10 @@ namespace RMuseum.Services.Implementation
                                               await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": Removing old data");
                                               foreach (var catId in catIdList)
                                               {
-                                                  var oldData = await context.CategoryWordCounts.Where(c => c.CatId == catId).ToListAsync();
-                                                  context.RemoveRange(oldData);
+                                                  var oldData1 = await context.CategoryWordCounts.Where(c => c.CatId == catId).ToListAsync();
+                                                  context.RemoveRange(oldData1);
+                                                  var oldData2 = await context.CategoryWordCountSummaries.Where(c => c.CatId == catId).ToListAsync();
+                                                  context.RemoveRange(oldData2);
                                                   await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": Removing old data {catId}");
                                               }
                                           }
