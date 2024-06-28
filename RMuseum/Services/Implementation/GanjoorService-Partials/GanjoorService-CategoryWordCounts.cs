@@ -140,8 +140,9 @@ namespace RMuseum.Services.Implementation
                                                   var catWordCounts = wordCounts.Where(w => w.CatId == catId).ToList();
                                                   if (catWordCounts.Any())
                                                   {
+                                                      await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": In Memory => DbContext CatId: {catId} - {catWordCounts.Count} - Sorting Started.");
                                                       catWordCounts.Sort((a, b) => b.Count.CompareTo(a.Count));
-                                                      await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": In Memory => DbContext - {catWordCounts.Count} - Sorting Finished.");
+                                                      await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $": In Memory => DbContext CatId: {catId} - {catWordCounts.Count} - Sorting Finished.");
                                                       for (int i = 0; i < catWordCounts.Count; i++)
                                                       {
                                                           catWordCounts[i].RowNmbrInCat = i + 1;
