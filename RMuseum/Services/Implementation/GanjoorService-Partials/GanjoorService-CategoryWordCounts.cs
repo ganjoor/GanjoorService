@@ -112,7 +112,10 @@ namespace RMuseum.Services.Implementation
                                           var poetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poet.Id && c.ParentId == null).SingleAsync();
                                           await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname);
                                           var wordCounts = await _BuildCategoryWordStatsAsync(context, poetCat, jobProgressServiceEF, job);
-                                          if(true == await context.CategoryWordCounts.Where(c => c.CatId == poetCat.Id).AnyAsync())
+                                          if(true == await context.CategoryWordCounts.Where(c => c.CatId == poetCat.Id).AnyAsync() 
+                                              ||
+                                            true == await context.CategoryWordCountSummaries.Where(c => c.CatId == poetCat.Id).AnyAsync()
+                                          )
                                           {
                                               List<int> catIdList = new List<int>
                                                {
