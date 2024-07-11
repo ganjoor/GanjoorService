@@ -4188,15 +4188,17 @@ namespace RMuseum.Controllers
         /// <summary>
         /// build word counts
         /// </summary>
+        /// <param name="reset"></param>
+        /// <param name="poetId"></param>
         /// <returns></returns>
 
-        [HttpPost("wordcounts/rebuild")]
+        [HttpPost("wordcounts/rebuild/{poetId}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> BuildCategoryWordCountsAsync(bool reset = false)
+        public async Task<IActionResult> BuildCategoryWordCountsAsync(bool reset = false, int poetId = 0)
         {
-            await _ganjoorService.BuildCategoryWordCountsAsync(reset);
+            await _ganjoorService.BuildCategoryWordCountsAsync(reset, poetId);
             return Ok();
         }
 

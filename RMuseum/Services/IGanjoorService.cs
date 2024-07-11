@@ -1436,7 +1436,9 @@ namespace RMuseum.Services
         /// <summary>
         /// build word counts
         /// </summary>
-        Task BuildCategoryWordCountsAsync(bool reset);
+        /// <param name="reset"></param>
+        /// <param name="poetId"></param>
+        Task BuildCategoryWordCountsAsync(bool reset, int poetId);
 
         /// <summary>
         /// fill CategoryWordCounts.RowNmbrInCat

@@ -2208,10 +2208,12 @@
             <param name="page"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.BuildCategoryWordCountsAsync(System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.BuildCategoryWordCountsAsync(System.Boolean,System.Int32)">
             <summary>
             build word counts
             </summary>
+            <param name="reset"></param>
+            <param name="poetId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.FillCategoryWordCountsRowNmbrInCat">
@@ -16614,10 +16616,12 @@
             <param name="page"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.BuildCategoryWordCountsAsync(System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.BuildCategoryWordCountsAsync(System.Boolean,System.Int32)">
             <summary>
             build word counts
             </summary>
+            <param name="reset"></param>
+            <param name="poetId"></param>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.FillCategoryWordCountsRowNmbrInCat">
             <summary>
@@ -18215,10 +18219,12 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.BuildCategoryWordCountsAsync(System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BuildCategoryWordCountsAsync(System.Boolean,System.Int32)">
             <summary>
             build word counts
             </summary>
+            <param name="reset"></param>
+            <param name="poetId"></param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.FillCategoryWordCountsRowNmbrInCat">
             <summary>

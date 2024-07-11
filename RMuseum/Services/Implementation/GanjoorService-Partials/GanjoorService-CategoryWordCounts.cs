@@ -70,7 +70,9 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// build word counts
         /// </summary>
-        public async Task BuildCategoryWordCountsAsync(bool reset)
+        /// <param name="reset"></param>
+        /// <param name="poetId"></param>
+        public async Task BuildCategoryWordCountsAsync(bool reset, int poetId)
         {
             int lastFinishedPoetId = 0;
             if (!reset)
@@ -91,7 +93,8 @@ namespace RMuseum.Services.Implementation
                                   var job = (await jobProgressServiceEF.NewJob($"BuildCategoryWordCounts", "Query data")).Result;
                                   try
                                   {
-                                      var poets = await context.GanjoorPoets.AsNoTracking().Where(p => p.Published && p.Id > lastFinishedPoetId).OrderBy(p => p.Id).ToListAsync();
+                                      var poets = poetId == 0 ? await context.GanjoorPoets.AsNoTracking().Where(p => p.Published && p.Id > lastFinishedPoetId).OrderBy(p => p.Id).ToListAsync()
+                                      : await context.GanjoorPoets.AsNoTracking().Where(p => p.Published && p.Id == poetId).OrderBy(p => p.Id).ToListAsync();
                                       foreach (var poet in poets)
                                       {
                                           var poetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poet.Id && c.ParentId == null).SingleAsync();

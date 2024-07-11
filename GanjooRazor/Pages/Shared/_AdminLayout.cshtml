@@ -199,11 +199,11 @@
             });
         }
 
-        function rebuildRebuildWordCounts() {
-            if (!confirm('آیا از ادامه شمارش کلمات اطمینان دارید؟'))
+        function rebuildRebuildWordCounts(poetId) {
+            if (!confirm('آیا از شمارش واژگان برای شاعر جاری با کد '+poetId.toString() + ' اطمینان دارید؟'))
                 return;
 
-            var url = '?handler=RebuildWordCounts';
+            var url = '?handler=RebuildWordCounts?poetId=' + poetId.toString();
 
             $.ajax({
                 type: "POST",
