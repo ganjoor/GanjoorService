@@ -227,7 +227,7 @@
                         @Html.Raw(Model.GanjoorPage.HtmlText)
                     }
 
-                    @if (Model.IsCatPage || Model.IsPoetPage)
+                    @if (Model.IsCatPage || Model.IsPoetPage || Model.GanjoorPage.Id == 39401)
                     {
                         <div id="wordcounts-placeholder">
                         </div>

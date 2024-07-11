@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using RMuseum.Models.Ganjoor;
 
 namespace GanjooRazor.Pages
@@ -29,6 +29,14 @@ namespace GanjooRazor.Pages
         /// words counts
         /// </summary>
         public CategoryWordCount[] WordCounts { get; set; }
+
+        public string ThisPart
+        {
+            get
+            {
+                return CatId == 0 ? "گنجور" : "این بخش";
+            }
+        }
 
         public _CategoryWordsCountTablePartialModel TableModel
         {
