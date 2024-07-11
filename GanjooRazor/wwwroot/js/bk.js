@@ -1517,13 +1517,19 @@ function markAsTextOriginal(bookId, categoryId, bookName, catName) {
     });
 }
 
-function loadWordCounts(catId, poetId) {
+function reloadWordCounts(catId, poetId, remStopWords) {
+    var divParent = document.getElementById('wordcounts-placeholder');
+    divParent.innerHTML = '<div id="wordcounts-placeholder"><div>';
+    loadWordCounts(catId, poetId, remStopWords);
+}
+
+function loadWordCounts(catId, poetId, remStopWords) {
     var divParent = document.getElementById('wordcounts-placeholder');
     var imgElementId = 'loadingwordcountsimg';
     divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="remove-this-wordcounts"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
     $.ajax({
         type: "GET",
-        url: '?Handler=CategoryWordCounts&catId=' + String(catId) + '&poetId=' + String(poetId),
+        url: '?Handler=CategoryWordCounts&catId=' + String(catId) + '&poetId=' + String(poetId) + '&remStopWords=' + remStopWords.toString(),
         error: function () {
             document.getElementById("remove-this-wordcounts").remove();
         },
@@ -1540,6 +1546,12 @@ function loadWordCounts(catId, poetId) {
 function onSearchWordCounts(catId, poetId, totalWordCount) {
     setTimeout(function () {
         var value = document.getElementById('wordcountterm').value;
+        if (value != null && value.trim() != '') {
+            document.getElementById('remStopWords').style.display = 'none'
+        }
+        else {
+            document.getElementById('remStopWords').style.display = 'block'
+        }
         var divParent = document.getElementById('wordcounts-table');
         var imgElementId = 'loadingwordcountsimg';
         divParent.innerHTML = '<div class="bnumdiv" id="remove-this-wordcounts"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';

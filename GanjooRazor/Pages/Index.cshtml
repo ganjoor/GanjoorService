@@ -311,14 +311,14 @@
     @if(Model.IsCatPage || Model.IsPoetPage)
     {
         <script>
-            loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)
+            loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)
         </script>
     }
 
     @if (Model.GanjoorPage != null && Model.GanjoorPage.Id == 39401)
     {
         <script>
-            loadWordCounts(0, 0)
+            loadWordCounts(0, 0, false)
         </script>
     }
 

@@ -1510,7 +1510,7 @@ namespace GanjooRazor.Pages
                     "شمع",
                     "سرو",
                     ];
-                wordCounts = wordCounts.Where(w => stopWords.Contains(w.Word)).Take(100).ToArray();
+                wordCounts = wordCounts.Where(w => !stopWords.Contains(w.Word)).Take(100).ToArray();
             }
 
             return new PartialViewResult()
@@ -1525,6 +1525,7 @@ namespace GanjooRazor.Pages
                         WordCounts = wordCounts,
                         UniqueWordCount = wordSums.UniqueWordCount,
                         TotalWordCount = wordSums.TotalWordCount,
+                        RemStopWords = remStopWords,
                     }
                 }
             };
@@ -1532,6 +1533,10 @@ namespace GanjooRazor.Pages
 
         public async Task<ActionResult> OnGetSearchCategoryWordCountsAsync(int catId, int poetId, string term, int totalWordCount)
         {
+            if (!string.IsNullOrEmpty(term))
+            {
+                term = term.Trim();
+            }
             var wordCountsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/wordcounts/{catId}?PageNumber=1&PageSize=100&term={term}");
 
             if (!wordCountsResponse.IsSuccessStatusCode)

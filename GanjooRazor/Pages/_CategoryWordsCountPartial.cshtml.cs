@@ -30,6 +30,8 @@ namespace GanjooRazor.Pages
         /// </summary>
         public CategoryWordCount[] WordCounts { get; set; }
 
+        public bool RemStopWords { get; set; }
+
         public string ThisPart
         {
             get
