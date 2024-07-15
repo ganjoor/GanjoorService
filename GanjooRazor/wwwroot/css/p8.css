@@ -1863,6 +1863,12 @@ fieldset {
     font-family: 'Material Icons';
 }
 
+.print::after {
+    content: '\e8ad'; /* print */
+    font-family: 'Material Icons';
+}
+
+
 .logout-icon::after {
     content: '\ef6f'; /* run_circle */
     font-family: 'Material Icons';
@@ -1896,6 +1902,11 @@ fieldset {
 
 .right-btn::after {
     content: '\eaaa'; /* arrow_circle_right */
+    font-family: 'Material Icons';
+}
+
+.balance::after {
+    content: '\eaf6'; /* balance */
     font-family: 'Material Icons';
 }
 
