@@ -867,6 +867,8 @@ ol {
 }
 
 
+
+
 /* Change styles for span and cancel button on extra small screens */
 @media screen and (max-width: 300px) {
     span.psw {
@@ -2194,7 +2196,9 @@ mark {
     height: auto;
 }
 
-
+.footer-icon {
+    fill: #300;
+}
 
 @media(prefers-color-scheme: dark) {
     body {
@@ -2218,6 +2222,11 @@ mark {
     a .circled-number, a .noborder-btn {
         -webkit-text-fill-color: burlywood;
     }
+
+    .footer-icon {
+        fill: burlywood;
+    }
+
 
 
     #main, .poem, .sitem, .related-images-frame, .comments-like-div {
