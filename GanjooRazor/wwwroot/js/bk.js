@@ -1113,7 +1113,13 @@ function getCookie(cname) {
 }
 
 function w3_open() {
-    document.getElementById("mySidebar").style.display = "block";
+    if (document.getElementById("mySidebar").style.display == "none") {
+        document.getElementById("mySidebar").style.display = "block";
+    }
+    else {
+        document.getElementById("mySidebar").style.display = "none";
+    }
+    
 }
 
 function w3_close() {
