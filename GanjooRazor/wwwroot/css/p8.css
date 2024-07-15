@@ -1606,201 +1606,201 @@ fieldset {
 }
 
 .mouse-icon::after {
-    content: 'mouse';
+    content: '\fe323'; /* mouse */
     font-family: 'Material Icons';
 }
 
 .format_list_numbered_rtl::after {
-    content: 'format_list_numbered_rtl';
+    content: '\fe267'; /* format_list_numbered_rtl */
     font-family: 'Material Icons';
 }
 
 .copylink-icon::after {
-    content: 'link';
+    content: '\fe157'; /* link */
     font-family: 'Material Icons';
 }
 
 .copytext-icon::after {
-    content: 'content_copy';
+    content: '\fe14d'; /* content_copy */
     font-family: 'Material Icons';
 }
 
 .share-icon::after {
-    content: 'share';
+    content: '\fe80d'; /* share */
     font-family: 'Material Icons';
 }
 
 .rhyming-poems::after {
-    content: 'search';
+    content: '\fe8b6'; /* search */
     font-family: 'Material Icons';
 }
 
 .translate-button::after {
-    content: 'translate';
+    content: '\fe8e2'; /* translate */
     font-family: 'Material Icons';
 }
 
 .edit-poem-button::after {
-    content: 'edit';
+    content: '\fe3c9'; /* edit */
     font-family: 'Material Icons';
 }
 
 .edit-note-poem-button::after {
-    content: 'edit_note';
+    content: '\fe745'; /* edit_note */
     font-family: 'Material Icons';
 }
 
 .autorenew::after {
-    content: 'autorenew';
+    content: 'autorenew'; /* autorenew */
     font-family: 'Material Icons';
 }
 
 .queue_music::after {
-    content: 'queue_music';
+    content: 'queue_music'; /* queue_music */
     font-family: 'Material Icons';
 }
 
 .music_note::after {
-    content: 'music_note';
+    content: 'music_note'; /* music_note */
     font-family: 'Material Icons';
 }
 
 .photo_camera::after {
-    content: 'photo_camera';
+    content: 'photo_camera'; /* photo_camera */
     font-family: 'Material Icons';
 }
 
 .help-button::after {
-    content: 'help';
+    content: 'help'; /* help */
     font-family: 'Material Icons';
 }
 
 .close-button::after {
-    content: 'close';
+    content: 'close'; /* close */
     font-family: 'Material Icons';
 }
 
 .next-inline-result::after {
-    content: 'arrow_downward';
+    content: 'arrow_downward'; /* arrow_downward */
     font-family: 'Material Icons';
 }
 
 .prev-inline-result::after {
-    content: 'arrow_upward';
+    content: 'arrow_upward'; /* arrow_upward */
     font-family: 'Material Icons';
 }
 
 
 .recitation-download::after {
-    content: 'download';
+    content: 'download'; /* download */
     font-family: 'Material Icons';
 }
 
 .recitation-play::after {
-    content: 'play_arrow';
+    content: 'play_arrow'; /* play_arrow */
     font-family: 'Material Icons';
 }
 
 .recitation-report::after {
-    content: 'flag';
+    content: 'flag'; /* flag */
     font-family: 'Material Icons';
 }
 
 .recitation-scrollunlock::after {
-    content: 'no_encryption';
+    content: 'no_encryption'; /* no_encryption */
     font-family: 'Material Icons';
 }
 
 .recitation-scrolllock::after {
-    content: 'lock';
+    content: 'lock'; /* lock */
     font-family: 'Material Icons';
 }
 
 .recitation-novote::after {
-    content: 'thumb_up_off_alt';
+    content: 'thumb_up_off_alt'; /* thumb_up_off_alt */
     font-family: 'Material Icons';
 }
 
 .recitation-vote::after {
-    content: 'thumb_up_alt';
+    content: 'thumb_up_alt'; /* thumb_up_alt */
     font-family: 'Material Icons';
 }
 
 .recitation-score::after {
-    content: 'calculate';
+    content: 'calculate'; /* calculate */
     font-family: 'Material Icons';
 }
 
 .recitation-website::after {
-    content: 'public';
+    content: 'public'; /* public */
     font-family: 'Material Icons';
 }
 
 
 .recitation-listen::after {
-    content: 'hearing';
+    content: 'hearing'; /* hearing */
     font-family: 'Material Icons';
 }
 
 .commentary-listen::after {
-    content: 'spatial_audio_off';
+    content: 'spatial_audio_off'; /* spatial_audio_off */
     font-family: 'Material Icons';
 }
 
 .recitation-comments::after {
-    content: 'question_answer';
+    content: 'question_answer'; /* question_answer */
     font-family: 'Material Icons';
 }
 
 .recitation-explore::after {
-    content: 'travel_explore';
+    content: 'travel_explore'; /* travel_explore */
     font-family: 'Material Icons';
 }
 
 .recitation-music::after {
-    content: 'music_video';
+    content: 'music_video'; /* music_video */
     font-family: 'Material Icons';
 }
 
 .recitation-manuscripts::after {
-    content: 'auto_stories';
+    content: 'auto_stories'; /* auto_stories */
     font-family: 'Material Icons';
 }
 
 .recitation-navigation::after {
-    content: 'apps';
+    content: 'apps'; /*apps */
     font-family: 'Material Icons';
 }
 
 .quoted-poems::after {
-    content: 'format_quote';
+    content: 'format_quote'; /* format_quote */
     font-family: 'Material Icons';
 }
 
 .face-photo::after {
-    content: 'face_5';
+    content: 'face_5'; /* face_5 */
     font-family: 'Material Icons';
 }
 
 
 .map-icon::after {
-    content: 'public';
+    content: 'public'; /* public */
     font-family: 'Material Icons';
 }
 
 .query_stats::after {
-    content: 'query_stats';
+    content: 'query_stats'; /* query_stats */
     font-family: 'Material Icons';
 }
 
 .percent::after {
-    content: 'percent';
+    content: 'percent'; /* percent */
     font-family: 'Material Icons';
 }
 
 
 .expand_circle_down::after, .collapse_circle_down::after {
-    content: 'expand_circle_down';
+    content: 'expand_circle_down'; /* expand_circle_down */
     font-family: 'Material Icons';
 }
 
@@ -1813,89 +1813,89 @@ fieldset {
 }
 
 .bookmarks-icon::after {
-    content: 'hotel_class';
+    content: 'hotel_class'; /* hotel_class */
     font-family: 'Material Icons';
 }
 
 .bookmarking-icon::after {
-    content: 'star';
+    content: 'star'; /* star */
     font-family: 'Material Icons';
 }
 
 .menu-icon::after {
-    content: 'menu';
+    content: 'menu'; /* menu */
     font-family: 'Material Icons';
 }
 
 
 .notifications-icon::after {
-    content: 'notifications';
+    content: 'notifications'; /* notifications */
     font-family: 'Material Icons';
 }
 
 .home-icon::after {
-    content: 'home';
+    content: 'home'; /* home */
     font-family: 'Material Icons';
 }
 
 .user-home-icon::after {
-    content: 'manage_accounts';
+    content: 'manage_accounts'; /* manage_accounts */
     font-family: 'Material Icons';
 }
 
 .history-icon::after {
-    content: 'history';
+    content: 'history'; /* history */
     font-family: 'Material Icons';
 }
 
 .done-icon::after {
-    content: 'done';
+    content: 'done'; /* done */
     font-family: 'Material Icons';
 }
 
 .delete-icon::after {
-    content: 'delete';
+    content: 'delete'; /* delete */
     font-family: 'Material Icons';
 }
 
 .menu-book::after {
-    content: 'menu_book';
+    content: 'menu_book'; /* menu_book */
     font-family: 'Material Icons';
 }
 
 .logout-icon::after {
-    content: 'run_circle';
+    content: 'run_circle'; /* run_circle */
     font-family: 'Material Icons';
 }
 
 .account-icon::after {
-    content: 'account_circle';
+    content: 'account_circle'; /* account_circle */
     font-family: 'Material Icons';
 }
 
 
 .pin-button::after {
-    content: 'push_pin';
+    content: 'push_pin'; /* push_pin */
     font-family: 'Material Icons';
 }
 
 .up-btn::after {
-    content: 'arrow_circle_up';
+    content: 'arrow_circle_up'; /* arrow_circle_up */
     font-family: 'Material Icons';
 }
 
 .down-btn::after {
-    content: 'arrow_circle_down';
+    content: 'arrow_circle_down'; /* arrow_circle_down */
     font-family: 'Material Icons';
 }
 
 .left-btn::after {
-    content: 'arrow_circle_left';
+    content: 'arrow_circle_left'; /* arrow_circle_left */
     font-family: 'Material Icons';
 }
 
 .right-btn::after {
-    content: 'arrow_circle_right';
+    content: 'arrow_circle_right'; /* arrow_circle_right */
     font-family: 'Material Icons';
 }
 
