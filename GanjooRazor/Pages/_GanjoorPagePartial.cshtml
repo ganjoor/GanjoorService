@@ -246,7 +246,7 @@
                                 خوانش‌ها بارگذاری شوند
                             </div>
                             <div class="century" style="display:none" id="recitations-section-controller">
-                                خوانش‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('recitations-section', 'recitations-section-collapse-button')"><i class="info-buttons expand_circle_down" id="recitations-section-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                            خوانش‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('recitations-section', 'recitations-section-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="recitations-section-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                             </div>
                             <div id="recitations-section">
                             </div>
@@ -258,7 +258,7 @@
                         <div class="related-images-frame" id="photos-section">
 
                             <div class="century">
-                                تصویر چهره <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('face-photo', 'face-photo-collapse-button')"><i class="info-buttons expand_circle_down" id="face-photo-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                            تصویر چهره <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('face-photo', 'face-photo-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="face-photo-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                             </div>
 
                             <div id="face-photo">
@@ -276,7 +276,7 @@
 
                                             @if (Model.Photo.ChosenOne)
                                             {
-                                                <i class="noindent-info-button done-icon"></i>
+                                            <i class="notranslate noindent-info-button done-icon"></i>
                                             }
                                         </div>
 
@@ -301,7 +301,7 @@
                             <div class="related-images-frame" id="papersources-section">
 
                                 <div class="century">
-                                    منابع کاغذی <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('papersources', 'papersources-collapse-button')"><i class="info-buttons expand_circle_down" id="papersources-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                منابع کاغذی <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('papersources', 'papersources-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="papersources-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                 </div>
 
                                 <div id="papersources">
@@ -374,11 +374,11 @@
 
                                 <div class="related-images-frame" id="tools">
                                     <div class="century">
-                                        اطلاعات <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('tools-section', 'tools-collapse-button')"><i class="info-buttons expand_circle_down" id="tools-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                    اطلاعات <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('tools-section', 'tools-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="tools-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                     </div>
                                     <div id="tools-section">
                                         <p>
-                                            <small><i class="pageicons mouse-icon"></i> با انتخاب متن و لمس متن انتخابی می‌توانید آن را در لغتنامهٔ دهخدا جستجو کنید.</small>
+                                        <small><i class="notranslate pageicons mouse-icon"></i> با انتخاب متن و لمس متن انتخابی می‌توانید آن را در لغتنامهٔ دهخدا جستجو کنید.</small>
                                         </p>
 
                                         @if (Model.GanjoorPage.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.GanjoorMetre != null).Any() || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag) || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
@@ -451,7 +451,7 @@
                                                 {
                                                     <a href="/User/Editor?id=@Model.GanjoorPage.Id#summaries" role="button" class="w3tooltip cursor-pointer">
                                                         <div class="circled-number">
-                                                            <i class="noindent-info-button edit-poem-button"></i>
+                                                        <i class="notranslate noindent-info-button edit-poem-button"></i>
                                                         </div>
                                                         <span class="w3tooltiptext">ویرایش</span>
                                                     </a>
@@ -509,7 +509,7 @@
                                                         {
                                                             <a href="@($"/User/Editor?id={Model.GanjoorPage.Id}#summary-{Model.GanjoorPage.Poem.Verses[verseIndex].VOrder}")" role="button" class="w3tooltip cursor-pointer">
                                                                 <div class="circled-number">
-                                                                    <i class="noindent-info-button edit-poem-button"></i>
+                                                                <i class="notranslate noindent-info-button edit-poem-button"></i>
                                                                 </div>
                                                                 <span class="w3tooltiptext">ویرایش</span>
                                                             </a>
@@ -528,13 +528,13 @@
                                         @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
                                         {
                                             <div class="century">
-                                                @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                             </div>
                                         }
                                         else
                                         {
                                             <div class="century">
-                                                جای‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            جای‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                             </div>
                                         }
 
@@ -547,7 +547,7 @@
                                     @if (Model.GanjoorPage.Poem.Images.Length > 0)
                                     {
                                         <div class="century">
-                                            تصاویر مرتبط در <a href="https://museum.ganjoor.net">گنجینهٔ گنجور</a> و <a href="https://naskban.ir">نسکبان</a> <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('images-section', 'images-collapse-button')"><i class="info-buttons expand_circle_down" id="images-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                        تصاویر مرتبط در <a href="https://museum.ganjoor.net">گنجینهٔ گنجور</a> و <a href="https://naskban.ir">نسکبان</a> <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('images-section', 'images-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="images-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                         </div>
                                         <div id="images-section">
                                             <div class="related-images">
@@ -582,10 +582,10 @@
                                             </div>
                                             <div id="suggest-images">
                                                 <p>
-                                                    <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="pagebutton comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی<i class="info-buttons photo_camera"></i></a>
+                                                    <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="pagebutton comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی<i class="notranslate info-buttons photo_camera"></i></a>
                                                 </p>
                                                 <p>
-                                                    <a href="https://blog.ganjoor.net/1398/07/12/mganjoor/" class="pagebutton" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور<i class="info-buttons help-button"></i></a>
+                                                <a href="https://blog.ganjoor.net/1398/07/12/mganjoor/" class="pagebutton" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور<i class="notranslate info-buttons help-button"></i></a>
                                                 </p>
                                             </div>
                                         </div>
@@ -594,10 +594,10 @@
                                     {
                                         <div id="suggest-images">
                                             <p>
-                                                <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="pagebutton comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی<i class="info-buttons photo_camera"></i></a>
+                                                <a href="?pinterest_url=manual" onclick="wpopen(this.href); return false" class="pagebutton comments-link">پیشنهاد تصاویر مرتبط از منابع اینترنتی<i class="notranslate info-buttons photo_camera"></i></a>
                                             </p>
                                             <p>
-                                                <a href="https://blog.ganjoor.net/1398/07/12/mganjoor/" class="pagebutton" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور<i class="info-buttons help-button"></i></a>
+                                            <a href="https://blog.ganjoor.net/1398/07/12/mganjoor/" class="pagebutton" target="_blank">راهنمای نحوهٔ پیشنهاد تصاویر مرتبط از گنجینهٔ گنجور<i class="notranslate info-buttons help-button"></i></a>
                                             </p>
                                         </div>
                                     }
@@ -608,7 +608,7 @@
                                     {
                                         <div class="related-images-frame" id="recitations">
                                             <div class="century">
-                                                @(Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Count() > 1 ? "خوانش‌ها" : "خوانش") <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('recitations-section', 'recitations-collapse-button')"><i class="info-buttons expand_circle_down" id="recitations-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            @(Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Count() > 1 ? "خوانش‌ها" : "خوانش") <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('recitations-section', 'recitations-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="recitations-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                             </div>
                                             <div id="recitations-section">
                                                 <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Normal, Model.CanEdit) />
@@ -620,7 +620,7 @@
                                     {
                                         <div class="related-images-frame" id="commentaries">
                                             <div class="century">
-                                                @(Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Count() > 1 ? "شرح‌‌های صوتی" : "شرح صوتی") <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('commentaries-section', 'commentaries-collapse-button')"><i class="info-buttons expand_circle_down" id="commentaries-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            @(Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Count() > 1 ? "شرح‌‌های صوتی" : "شرح صوتی") <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('commentaries-section', 'commentaries-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="commentaries-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                             </div>
                                             <div id="commentaries-section">
                                                 <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Commentary, Model.CanEdit) />
@@ -632,7 +632,7 @@
                                     {
                                         <div class="related-images-frame" id="qpoems">
                                             <div class="century">
-                                                مشق شعر <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('qpoems-section', 'qpoems-collapse-button')"><i class="info-buttons expand_circle_down" id="qpoems-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                            مشق شعر <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('qpoems-section', 'qpoems-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="qpoems-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                             </div>
                                             <div id="qpoems-section">
                                                 @for (int i = 0; i < Math.Min(5, Model.GanjoorPage.Poem.Top6QuotedPoems.Length); i++)
@@ -644,7 +644,7 @@
                                                 {
                                                     <div id="more-quoted-placeholder"></div>
                                                     <div id="load-more-quoted">
-                                                        <a role="button" class="pagebutton" id="load-more-quoted" onclick="loadMoreQuotedPoems(@Model.GanjoorPage.Poem.Id, 5, '@Model.GanjoorPage.PoetOrCat.Poet.ImageUrl', '@Model.GanjoorPage.PoetOrCat.Poet.Nickname', @Model.CanEdit.ToString().ToLower())">بیشتر<i class="info-buttons autorenew"></i></a>
+                                                        <a role="button" class="pagebutton" id="load-more-quoted" onclick="loadMoreQuotedPoems(@Model.GanjoorPage.Poem.Id, 5, '@Model.GanjoorPage.PoetOrCat.Poet.ImageUrl', '@Model.GanjoorPage.PoetOrCat.Poet.Nickname', @Model.CanEdit.ToString().ToLower())">بیشتر<i class="notranslate info-buttons autorenew"></i></a>
                                                     </div>
                                                 }
                                             </div>
@@ -663,7 +663,7 @@
                                 {
                                     <div class="related-images-frame" id="rpoems">
                                         <div class="century">
-                                            موارد هم آهنگ <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('rpoems-section', 'rpoems-collapse-button')"><i class="info-buttons expand_circle_down" id="rpoems-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                        موارد هم آهنگ <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('rpoems-section', 'rpoems-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="rpoems-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                         </div>
                                         <div id="rpoems-section">
                                             @foreach (var s in Model.SectionsWithRelated)
@@ -685,11 +685,11 @@
                                                         {
                                                             @if (s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount > 20)
                                                             {
-                                                                <a role="button" class="pagebutton" id="@($"load-more-button-{s.Top6RelatedSections[i].PoetId}-{s.Index}")" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(s.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(s.RhymeLetters)}&amp;a={s.Top6RelatedSections[i].PoetId}")" target="_blank">مشاهدهٔ بیش از @s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @s.Top6RelatedSections[i].PoetName<i class="info-buttons autorenew"></i></a>
+                                                            <a role="button" class="pagebutton" id="@($"load-more-button-{s.Top6RelatedSections[i].PoetId}-{s.Index}")" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(s.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(s.RhymeLetters)}&amp;a={s.Top6RelatedSections[i].PoetId}")" target="_blank">مشاهدهٔ بیش از @s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @s.Top6RelatedSections[i].PoetName<i class="notranslate info-buttons autorenew"></i></a>
                                                             }
                                                             else
                                                             {
-                                                                <a role="button" class="pagebutton" id="@($"load-more-button-{s.Top6RelatedSections[i].PoetId}-{s.Index}")" onclick="loadMoreRelatedFromPoet(@s.Top6RelatedSections[i].PoetId, '@s.GanjoorMetre.Rhythm', '@s.RhymeLetters', '@Model.GanjoorPage.Poem.FullUrl', '@s.Top6RelatedSections[i].FullUrl', @s.Index)">مشاهدهٔ @s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @s.Top6RelatedSections[i].PoetName<i class="info-buttons autorenew"></i></a>
+                                                            <a role="button" class="pagebutton" id="@($"load-more-button-{s.Top6RelatedSections[i].PoetId}-{s.Index}")" onclick="loadMoreRelatedFromPoet(@s.Top6RelatedSections[i].PoetId, '@s.GanjoorMetre.Rhythm', '@s.RhymeLetters', '@Model.GanjoorPage.Poem.FullUrl', '@s.Top6RelatedSections[i].FullUrl', @s.Index)">مشاهدهٔ @s.Top6RelatedSections[i].PoetMorePoemsLikeThisCount.ToPersianNumbers() مورد هم آهنگ دیگر از @s.Top6RelatedSections[i].PoetName<i class="notranslate info-buttons autorenew"></i></a>
                                                             }
                                                         }
                                                     </div>
@@ -704,7 +704,7 @@
                                                 {
                                                     <div id="more-related-placeholder-@s.Index"></div>
                                                     <div id="load-more-related-@s.Index">
-                                                        <a role="button" class="pagebutton" id="load-more-button-@s.Index" onclick="loadMoreRelatedPoems(@Model.GanjoorPage.Poem.Id, 5, '@s.GanjoorMetre.Rhythm', '@s.RhymeLetters', '@Model.GanjoorPage.Poem.FullUrl', @s.Index)">بیشتر<i class="info-buttons autorenew"></i></a>
+                                                    <a role="button" class="pagebutton" id="load-more-button-@s.Index" onclick="loadMoreRelatedPoems(@Model.GanjoorPage.Poem.Id, 5, '@s.GanjoorMetre.Rhythm', '@s.RhymeLetters', '@Model.GanjoorPage.Poem.FullUrl', @s.Index)">بیشتر<i class="notranslate info-buttons autorenew"></i></a>
                                                     </div>
                                                 }
                                             }
@@ -717,7 +717,7 @@
                                     <div class="related-songs" id="songs">
                                         <p>
                                             <a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
-                                                معرفی آهنگهایی که در متن آنها از این شعر استفاده شده است<i class="info-buttons music_note"></i>
+                                            معرفی آهنگهایی که در متن آنها از این شعر استفاده شده است<i class="notranslate info-buttons music_note"></i>
                                             </a>
                                         </p>
                                     </div>
@@ -726,26 +726,26 @@
                                 {
                                     <div class="related-songs" id="songs">
                                         <div class="century">
-                                            این شعر را چه کسی در کدام آهنگ خوانده است؟ <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('songs-section', 'songs-collapse-button')"><i class="info-buttons expand_circle_down" id="songs-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                        این شعر را چه کسی در کدام آهنگ خوانده است؟ <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('songs-section', 'songs-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="songs-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                         </div>
                                         <div id="songs-section">
                                             @foreach (var song in Model.GanjoorPage.Poem.Songs)
                                             {
                                                 <div class="related-song">
-                                                    <i class="info-buttons queue_music"></i><a target="_blank" href="@Html.Raw(song.TrackUrl)">@Html.Raw($"{song}")</a>
+                                                <i class="notranslate info-buttons queue_music"></i><a target="_blank" href="@Html.Raw(song.TrackUrl)">@Html.Raw($"{song}")</a>
                                                     @if (song.TrackType == RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify)
                                                     {
                                                         <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img class="spotify-track-icon" src="/image/sp16.png" alt="اسپاتیفای" height="16"></a>
                                                     }
                                                     @if (Model.CanEdit)
                                                     {
-                                                        <a role="button" class="cursor-pointer" href="/User/ReviewSongs?id=@song.Id"><i class="info-buttons edit-poem-button"></i></a>
+                                                    <a role="button" class="cursor-pointer" href="/User/ReviewSongs?id=@song.Id"><i class="notranslate info-buttons edit-poem-button"></i></a>
                                                     }
                                                 </div>
                                             }
                                             <p>
                                                 <a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
-                                                    معرفی آهنگهای دیگر<i class="info-buttons music_note"></i>
+                                                معرفی آهنگهای دیگر<i class="notranslate info-buttons music_note"></i>
                                                 </a>
                                             </p>
                                         </div>
@@ -757,7 +757,7 @@
                             <div class="related-images-frame" id="discussions">
 
                                 <div class="century">
-                                    حاشیه‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('comments-section', 'comments-collapse-button')"><i class="info-buttons expand_circle_down" id="comments-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                حاشیه‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('comments-section', 'comments-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="comments-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                                 </div>
 
                                 <div id="comments-section">
@@ -911,13 +911,13 @@
                         @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
                         {
                             <div class="century">
-                                @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                             </div>
                         }
                         else
                         {
                             <div class="century">
-                                جای‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
+                                جای‌ها <a role="button" class="w3tooltip cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="catmap-collapse-button"></i><span class="w3tooltiptext">جمع شود / باز شود</span></a>
                             </div>
                         }
 

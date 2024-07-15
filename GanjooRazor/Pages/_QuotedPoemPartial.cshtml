@@ -204,7 +204,7 @@
 
     @if (Model.GanjoorQuotedPoemViewModel.ChosenForMainList && Model.GanjoorQuotedPoemViewModel.SamePoemsQuotedCount > 1)
     {
-        <a role="button" class="pagebutton" id="@($"load-more-quoted-button-{Model.GanjoorQuotedPoemViewModel.Id}")" onclick="loadMoreQuotedForRelatedPoem('@Model.GanjoorQuotedPoemViewModel.Id', @Model.GanjoorQuotedPoemViewModel.PoemId, @Model.GanjoorQuotedPoemViewModel.RelatedPoemId, '@Model.PoetImageUrl', '@Model.PoetNickName', @Model.CanEdit.ToString().ToLower())">مشاهدهٔ @((Model.GanjoorQuotedPoemViewModel.SamePoemsQuotedCount - 1).ToPersianNumbers()) نقل قول دیگر در همین شعر<i class="info-buttons autorenew"></i></a>
+        <a role="button" class="pagebutton" id="@($"load-more-quoted-button-{Model.GanjoorQuotedPoemViewModel.Id}")" onclick="loadMoreQuotedForRelatedPoem('@Model.GanjoorQuotedPoemViewModel.Id', @Model.GanjoorQuotedPoemViewModel.PoemId, @Model.GanjoorQuotedPoemViewModel.RelatedPoemId, '@Model.PoetImageUrl', '@Model.PoetNickName', @Model.CanEdit.ToString().ToLower())">مشاهدهٔ @((Model.GanjoorQuotedPoemViewModel.SamePoemsQuotedCount - 1).ToPersianNumbers()) نقل قول دیگر در همین شعر<i class="notranslate info-buttons autorenew"></i></a>
     }
 
     @if (Model.GanjoorQuotedPoemViewModel.ClaimedByBothPoets)

@@ -39,16 +39,16 @@ else
         <p>
             @if (Model.Comment.MyComment)
             {
-                <a role="button" onclick="deleteMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')" class="w3tooltip"><i class="pageicons">delete</i><span class="w3tooltiptext">حذف حاشیه</span></a>
-                <a role="button" onclick="editMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')" class="w3tooltip"><i class="pageicons">edit</i><span class="w3tooltiptext">ویرایش حاشیه</span></a>
+                <a role="button" onclick="deleteMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')" class="w3tooltip"><i class="notranslate pageicons">delete</i><span class="w3tooltiptext">حذف حاشیه</span></a>
+                <a role="button" onclick="editMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')" class="w3tooltip"><i class="notranslate pageicons">edit</i><span class="w3tooltiptext">ویرایش حاشیه</span></a>
             }
 
-            <a role="button" onclick="replyComment(@Model.Comment.Id, @(Model.LoggedIn ? "true" : "false"), '@Model.DivSuffix')" class="w3tooltip"><i class="pageicons">reply</i><span class="w3tooltiptext">پاسخگویی به این حاشیه</span></a>
-            <a href="/ReportComment/?CommentId=@Model.Comment.Id" onclick="wpopen(this.href); return false" class="w3tooltip"><i class="pageicons">flag</i><span class="w3tooltiptext">گزارش حاشیهٔ نامناسب</span></a>
-            <a role="button" onclick="copyCommentUrl(@Model.Comment.Id, '@Model.DivSuffix')" class="w3tooltip"><i class="pageicons">link</i><span class="w3tooltiptext" id="copycommentlink-tooltip-@Model.Comment.Id@Model.DivSuffix">رونوشت نشانی حاشیه</span></a>
+            <a role="button" onclick="replyComment(@Model.Comment.Id, @(Model.LoggedIn ? "true" : "false"), '@Model.DivSuffix')" class="w3tooltip"><i class="notranslate pageicons">reply</i><span class="w3tooltiptext">پاسخگویی به این حاشیه</span></a>
+            <a href="/ReportComment/?CommentId=@Model.Comment.Id" onclick="wpopen(this.href); return false" class="w3tooltip"><i class="notranslate pageicons">flag</i><span class="w3tooltiptext">گزارش حاشیهٔ نامناسب</span></a>
+            <a role="button" onclick="copyCommentUrl(@Model.Comment.Id, '@Model.DivSuffix')" class="w3tooltip"><i class="notranslate pageicons">link</i><span class="w3tooltiptext" id="copycommentlink-tooltip-@Model.Comment.Id@Model.DivSuffix">رونوشت نشانی حاشیه</span></a>
             @if (Model.LoggedIn)
             {
-                <a role="button" id="bookmark-comment-@Model.Comment.Id@Model.DivSuffix" class="w3tooltip cursor-pointer" onclick="switchBookmark(@Model.PoemId, -@Model.Comment.Id, '@Model.DivSuffix')"><i class="pageicons" id="bookmark-icon-comment-@Model.Comment.Id@Model.DivSuffix">@(@Model.Comment.IsBookmarked ? "star" : "star_border")</i><span class="w3tooltiptext">نشان کردن / حذف نشان</span></a>
+                <a role="button" id="bookmark-comment-@Model.Comment.Id@Model.DivSuffix" class="w3tooltip cursor-pointer" onclick="switchBookmark(@Model.PoemId, -@Model.Comment.Id, '@Model.DivSuffix')"><i class="notranslate pageicons" id="bookmark-icon-comment-@Model.Comment.Id@Model.DivSuffix">@(@Model.Comment.IsBookmarked ? "star" : "star_border")</i><span class="w3tooltiptext">نشان کردن / حذف نشان</span></a>
             }
         </p>
         <div class='spacer'>&nbsp;</div>
