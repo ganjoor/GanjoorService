@@ -926,6 +926,7 @@ ol {
     direction: ltr;
     -moz-font-feature-settings: 'liga';
     -moz-osx-font-smoothing: grayscale;
+    fill: white;
 }
 
 .footer-contents .material-icons {
@@ -1307,6 +1308,7 @@ ol {
 
 .color-white {
     color: white !important;
+    fill: white !important;
 }
 
 .color-gray {
@@ -1319,6 +1321,7 @@ ol {
 
 .color-disabled {
     color: #a17a7a !important;
+    fill: #a17a7a !important;
 }
 
 .clear-both {
@@ -2216,12 +2219,21 @@ mark {
         -webkit-text-fill-color: burlywood;
     }
 
+
     #main, .poem, .sitem, .related-images-frame, .comments-like-div {
         background: rgba(27, 27, 27, 0.6) url('/image/pbk-b.jpg') top center repeat scroll;
         border-color: darkgray;
         background-blend-mode: multiply;
     }
 
+    .noindent-info-button {
+        fill: burlywood;
+    }
+
+    .color-white {
+        color: burlywood !important;
+        fill: burlywood !important;
+    }
 
 
     .clear-both,
