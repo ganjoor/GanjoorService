@@ -1606,201 +1606,201 @@ fieldset {
 }
 
 .mouse-icon::after {
-    content: '\fe323'; /* mouse */
+    content: '\e323'; /* mouse */
     font-family: 'Material Icons';
 }
 
 .format_list_numbered_rtl::after {
-    content: '\fe267'; /* format_list_numbered_rtl */
+    content: '\e267'; /* format_list_numbered_rtl */
     font-family: 'Material Icons';
 }
 
 .copylink-icon::after {
-    content: '\fe157'; /* link */
+    content: '\e157'; /* link */
     font-family: 'Material Icons';
 }
 
 .copytext-icon::after {
-    content: '\fe14d'; /* content_copy */
+    content: '\e14d'; /* content_copy */
     font-family: 'Material Icons';
 }
 
 .share-icon::after {
-    content: '\fe80d'; /* share */
+    content: '\e80d'; /* share */
     font-family: 'Material Icons';
 }
 
 .rhyming-poems::after {
-    content: '\fe8b6'; /* search */
+    content: '\e8b6'; /* search */
     font-family: 'Material Icons';
 }
 
 .translate-button::after {
-    content: '\fe8e2'; /* translate */
+    content: '\e8e2'; /* translate */
     font-family: 'Material Icons';
 }
 
 .edit-poem-button::after {
-    content: '\fe3c9'; /* edit */
+    content: '\e3c9'; /* edit */
     font-family: 'Material Icons';
 }
 
 .edit-note-poem-button::after {
-    content: '\fe745'; /* edit_note */
+    content: '\e745'; /* edit_note */
     font-family: 'Material Icons';
 }
 
 .autorenew::after {
-    content: 'autorenew'; /* autorenew */
+    content: '\e863'; /* autorenew */
     font-family: 'Material Icons';
 }
 
 .queue_music::after {
-    content: 'queue_music'; /* queue_music */
+    content: '\e03d'; /* queue_music */
     font-family: 'Material Icons';
 }
 
 .music_note::after {
-    content: 'music_note'; /* music_note */
+    content: '\e405'; /* music_note */
     font-family: 'Material Icons';
 }
 
 .photo_camera::after {
-    content: 'photo_camera'; /* photo_camera */
+    content: '\e412'; /* photo_camera */
     font-family: 'Material Icons';
 }
 
 .help-button::after {
-    content: 'help'; /* help */
+    content: '\e887'; /* help */
     font-family: 'Material Icons';
 }
 
 .close-button::after {
-    content: 'close'; /* close */
+    content: '\e5cd'; /* close */
     font-family: 'Material Icons';
 }
 
 .next-inline-result::after {
-    content: 'arrow_downward'; /* arrow_downward */
+    content: '\e5db'; /* arrow_downward */
     font-family: 'Material Icons';
 }
 
 .prev-inline-result::after {
-    content: 'arrow_upward'; /* arrow_upward */
+    content: '\e5d8'; /* arrow_upward */
     font-family: 'Material Icons';
 }
 
 
 .recitation-download::after {
-    content: 'download'; /* download */
+    content: '\f090'; /* download */
     font-family: 'Material Icons';
 }
 
 .recitation-play::after {
-    content: 'play_arrow'; /* play_arrow */
+    content: '\e037'; /* play_arrow */
     font-family: 'Material Icons';
 }
 
 .recitation-report::after {
-    content: 'flag'; /* flag */
+    content: '\e153'; /* flag */
     font-family: 'Material Icons';
 }
 
 .recitation-scrollunlock::after {
-    content: 'no_encryption'; /* no_encryption */
+    content: '\e641'; /* no_encryption */
     font-family: 'Material Icons';
 }
 
 .recitation-scrolllock::after {
-    content: 'lock'; /* lock */
+    content: '\e897'; /* lock */
     font-family: 'Material Icons';
 }
 
 .recitation-novote::after {
-    content: 'thumb_up_off_alt'; /* thumb_up_off_alt */
+    content: '\e9f3'; /* thumb_up_off_alt */
     font-family: 'Material Icons';
 }
 
 .recitation-vote::after {
-    content: 'thumb_up_alt'; /* thumb_up_alt */
+    content: '\e817'; /* thumb_up_alt */
     font-family: 'Material Icons';
 }
 
 .recitation-score::after {
-    content: 'calculate'; /* calculate */
+    content: '\ea5f'; /* calculate */
     font-family: 'Material Icons';
 }
 
 .recitation-website::after {
-    content: 'public'; /* public */
+    content: '\e80b'; /* public */
     font-family: 'Material Icons';
 }
 
 
 .recitation-listen::after {
-    content: 'hearing'; /* hearing */
+    content: '\e023'; /* hearing */
     font-family: 'Material Icons';
 }
 
 .commentary-listen::after {
-    content: 'spatial_audio_off'; /* spatial_audio_off */
+    content: '\ebe8'; /* spatial_audio_off */
     font-family: 'Material Icons';
 }
 
 .recitation-comments::after {
-    content: 'question_answer'; /* question_answer */
+    content: '\e8af'; /* question_answer */
     font-family: 'Material Icons';
 }
 
 .recitation-explore::after {
-    content: 'travel_explore'; /* travel_explore */
+    content: '\e2db'; /* travel_explore */
     font-family: 'Material Icons';
 }
 
 .recitation-music::after {
-    content: 'music_video'; /* music_video */
+    content: '\e063'; /* music_video */
     font-family: 'Material Icons';
 }
 
 .recitation-manuscripts::after {
-    content: 'auto_stories'; /* auto_stories */
+    content: '\e666'; /* auto_stories */
     font-family: 'Material Icons';
 }
 
 .recitation-navigation::after {
-    content: 'apps'; /*apps */
+    content: '\e5c3'; /*apps */
     font-family: 'Material Icons';
 }
 
 .quoted-poems::after {
-    content: 'format_quote'; /* format_quote */
+    content: '\e244'; /* format_quote */
     font-family: 'Material Icons';
 }
 
 .face-photo::after {
-    content: 'face_5'; /* face_5 */
+    content: '\f8dd'; /* face_5 */
     font-family: 'Material Icons';
 }
 
 
 .map-icon::after {
-    content: 'public'; /* public */
+    content: '\e80b'; /* public */
     font-family: 'Material Icons';
 }
 
 .query_stats::after {
-    content: 'query_stats'; /* query_stats */
+    content: '\e4fc'; /* query_stats */
     font-family: 'Material Icons';
 }
 
 .percent::after {
-    content: 'percent'; /* percent */
+    content: '\eb58'; /* percent */
     font-family: 'Material Icons';
 }
 
 
 .expand_circle_down::after, .collapse_circle_down::after {
-    content: 'expand_circle_down'; /* expand_circle_down */
+    content: '\e7cd'; /* expand_circle_down */
     font-family: 'Material Icons';
 }
 
@@ -1813,89 +1813,89 @@ fieldset {
 }
 
 .bookmarks-icon::after {
-    content: 'hotel_class'; /* hotel_class */
+    content: '\e743'; /* hotel_class */
     font-family: 'Material Icons';
 }
 
 .bookmarking-icon::after {
-    content: 'star'; /* star */
+    content: '\e838'; /* star */
     font-family: 'Material Icons';
 }
 
 .menu-icon::after {
-    content: 'menu'; /* menu */
+    content: '\e5d2'; /* menu */
     font-family: 'Material Icons';
 }
 
 
 .notifications-icon::after {
-    content: 'notifications'; /* notifications */
+    content: '\e7f4'; /* notifications */
     font-family: 'Material Icons';
 }
 
 .home-icon::after {
-    content: 'home'; /* home */
+    content: '\e88a'; /* home */
     font-family: 'Material Icons';
 }
 
 .user-home-icon::after {
-    content: 'manage_accounts'; /* manage_accounts */
+    content: '\f02e'; /* manage_accounts */
     font-family: 'Material Icons';
 }
 
 .history-icon::after {
-    content: 'history'; /* history */
+    content: '\e889'; /* history */
     font-family: 'Material Icons';
 }
 
 .done-icon::after {
-    content: 'done'; /* done */
+    content: '\e876'; /* done */
     font-family: 'Material Icons';
 }
 
 .delete-icon::after {
-    content: 'delete'; /* delete */
+    content: '\e872'; /* delete */
     font-family: 'Material Icons';
 }
 
 .menu-book::after {
-    content: 'menu_book'; /* menu_book */
+    content: '\ea19'; /* menu_book */
     font-family: 'Material Icons';
 }
 
 .logout-icon::after {
-    content: 'run_circle'; /* run_circle */
+    content: '\ef6f'; /* run_circle */
     font-family: 'Material Icons';
 }
 
 .account-icon::after {
-    content: 'account_circle'; /* account_circle */
+    content: '\e853'; /* account_circle */
     font-family: 'Material Icons';
 }
 
 
 .pin-button::after {
-    content: 'push_pin'; /* push_pin */
+    content: '\f10d'; /* push_pin */
     font-family: 'Material Icons';
 }
 
 .up-btn::after {
-    content: 'arrow_circle_up'; /* arrow_circle_up */
+    content: '\f182'; /* arrow_circle_up */
     font-family: 'Material Icons';
 }
 
 .down-btn::after {
-    content: 'arrow_circle_down'; /* arrow_circle_down */
+    content: '\f181'; /* arrow_circle_down */
     font-family: 'Material Icons';
 }
 
 .left-btn::after {
-    content: 'arrow_circle_left'; /* arrow_circle_left */
+    content: '\eaa7'; /* arrow_circle_left */
     font-family: 'Material Icons';
 }
 
 .right-btn::after {
-    content: 'arrow_circle_right'; /* arrow_circle_right */
+    content: '\eaaa'; /* arrow_circle_right */
     font-family: 'Material Icons';
 }
 
