@@ -198,7 +198,7 @@
                 </a>
             }
 
-            @if (Model.GanjoorPage != null && Model.GanjoorPage.PoetOrCat != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources.Any())
+            @if (Model.GanjoorPage != null && Model.GanjoorPage.PoetOrCat != null && Model.GanjoorPage.SecondPoet == null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources.Any())
             {
                 <a href="#papersources-section" role="button" class="w3tooltip cursor-pointer">
                     <div class="circled-number">
