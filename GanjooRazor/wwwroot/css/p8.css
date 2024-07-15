@@ -1271,93 +1271,6 @@ ol {
     display: none;
 }
 
-.mouse-icon::after {
-    content: 'mouse';
-    font-family: 'Material Icons';
-}
-
-.format_list_numbered_rtl::after {
-    content: 'format_list_numbered_rtl';
-    font-family: 'Material Icons';
-}
-
-.copylink-icon::after {
-    content: 'link';
-    font-family: 'Material Icons';
-}
-
-.copytext-icon::after {
-    content: 'content_copy';
-    font-family: 'Material Icons';
-}
-
-.share-icon::after {
-    content: 'share';
-    font-family: 'Material Icons';
-}
-
-.rhyming-poems::after {
-    content: 'search';
-    font-family: 'Material Icons';
-}
-
-.translate-button::after {
-    content: 'translate';
-    font-family: 'Material Icons';
-}
-
-.edit-poem-button::after {
-    content: 'edit';
-    font-family: 'Material Icons';
-}
-
-.edit-note-poem-button::after {
-    content: 'edit_note';
-    font-family: 'Material Icons';
-}
-
-.autorenew::after {
-    content: 'autorenew';
-    font-family: 'Material Icons';
-}
-
-.queue_music::after {
-    content: 'queue_music';
-    font-family: 'Material Icons';
-}
-
-.music_note::after {
-    content: 'music_note';
-    font-family: 'Material Icons';
-}
-
-.photo_camera::after {
-    content: 'photo_camera';
-    font-family: 'Material Icons';
-}
-
-.help-button::after {
-    content: 'help';
-    font-family: 'Material Icons';
-}
-
-.close-button::after {
-    content: 'close';
-    font-family: 'Material Icons';
-}
-
-.next-inline-result::after {
-    content: 'arrow_downward';
-    font-family: 'Material Icons';
-}
-
-.prev-inline-result::after {
-    content: 'arrow_upward';
-    font-family: 'Material Icons';
-}
-
-
-
 .bnum-partial-table {
     width: 100%;
     margin-bottom: 10px;
@@ -1424,51 +1337,6 @@ ol {
 
 .recitation-icons {
     font-size: 22px;
-}
-
-.recitation-download::after {
-    content: 'download';
-    font-family: 'Material Icons';
-}
-
-.recitation-play::after {
-    content: 'play_arrow';
-    font-family: 'Material Icons';
-}
-
-.recitation-report::after {
-    content: 'flag';
-    font-family: 'Material Icons';
-}
-
-.recitation-scrollunlock::after {
-    content: 'no_encryption';
-    font-family: 'Material Icons';
-}
-
-.recitation-scrolllock::after {
-    content: 'lock';
-    font-family: 'Material Icons';
-}
-
-.recitation-novote::after {
-    content: 'thumb_up_off_alt';
-    font-family: 'Material Icons';
-}
-
-.recitation-vote::after {
-    content: 'thumb_up_alt';
-    font-family: 'Material Icons';
-}
-
-.recitation-score::after {
-    content: 'calculate';
-    font-family: 'Material Icons';
-}
-
-.recitation-website::after {
-    content: 'public';
-    font-family: 'Material Icons';
 }
 
 audio {
@@ -1565,51 +1433,6 @@ audio {
     max-width: none;
 }
 
-.recitation-listen::after {
-    content: 'hearing';
-    font-family: 'Material Icons';
-}
-
-.commentary-listen::after {
-    content: 'spatial_audio_off';
-    font-family: 'Material Icons';
-}
-
-.recitation-comments::after {
-    content: 'question_answer';
-    font-family: 'Material Icons';
-}
-
-.recitation-explore::after {
-    content: 'travel_explore';
-    font-family: 'Material Icons';
-}
-
-.recitation-music::after {
-    content: 'music_video';
-    font-family: 'Material Icons';
-}
-
-.recitation-manuscripts::after {
-    content: 'auto_stories';
-    font-family: 'Material Icons';
-}
-
-.recitation-navigation::after {
-    content: 'apps';
-    font-family: 'Material Icons';
-}
-
-.quoted-poems::after {
-    content: 'format_quote';
-    font-family: 'Material Icons';
-}
-
-.face-photo::after {
-    content: 'face_5';
-    font-family: 'Material Icons';
-}
-
 .circled-number-container {
     width: 100%;
     display: inline-table;
@@ -1644,20 +1467,6 @@ audio {
     border-radius: 10px;
 }
 
-.map-icon::after {
-    content: 'public';
-    font-family: 'Material Icons';
-}
-
-.query_stats::after {
-    content: 'query_stats';
-    font-family: 'Material Icons';
-}
-
-.percent::after {
-    content: 'percent';
-    font-family: 'Material Icons';
-}
 
 
 
@@ -1666,79 +1475,6 @@ audio {
     text-align: center;
 }
 
-.expand_circle_down::after, .collapse_circle_down::after {
-    content: 'expand_circle_down';
-    font-family: 'Material Icons';
-}
-
-.expand_circle_down {
-    transform: rotate(180deg);
-}
-
-.collapse_circle_down {
-    transform: none;
-}
-
-.bookmarks-icon::after {
-    content: 'hotel_class';
-    font-family: 'Material Icons';
-}
-
-.bookmarking-icon::after {
-    content: 'star';
-    font-family: 'Material Icons';
-}
-
-.menu-icon::after {
-    content: 'menu';
-    font-family: 'Material Icons';
-}
-
-
-.notifications-icon::after {
-    content: 'notifications';
-    font-family: 'Material Icons';
-}
-
-.home-icon::after {
-    content: 'home';
-    font-family: 'Material Icons';
-}
-
-.user-home-icon::after {
-    content: 'manage_accounts';
-    font-family: 'Material Icons';
-}
-
-.history-icon::after {
-    content: 'history';
-    font-family: 'Material Icons';
-}
-
-.done-icon::after {
-    content: 'done';
-    font-family: 'Material Icons';
-}
-
-.delete-icon::after {
-    content: 'delete';
-    font-family: 'Material Icons';
-}
-
-.menu-book::after {
-    content: 'menu_book';
-    font-family: 'Material Icons';
-}
-
-.logout-icon::after {
-    content: 'run_circle';
-    font-family: 'Material Icons';
-}
-
-.account-icon::after {
-    content: 'account_circle';
-    font-family: 'Material Icons';
-}
 
 
 .visible-notification-badge {
@@ -1868,6 +1604,275 @@ fieldset {
     z-index: 2;
     border-radius: 0px !important;
 }
+
+.mouse-icon::after {
+    content: 'mouse';
+    font-family: 'Material Icons';
+}
+
+.format_list_numbered_rtl::after {
+    content: 'format_list_numbered_rtl';
+    font-family: 'Material Icons';
+}
+
+.copylink-icon::after {
+    content: 'link';
+    font-family: 'Material Icons';
+}
+
+.copytext-icon::after {
+    content: 'content_copy';
+    font-family: 'Material Icons';
+}
+
+.share-icon::after {
+    content: 'share';
+    font-family: 'Material Icons';
+}
+
+.rhyming-poems::after {
+    content: 'search';
+    font-family: 'Material Icons';
+}
+
+.translate-button::after {
+    content: 'translate';
+    font-family: 'Material Icons';
+}
+
+.edit-poem-button::after {
+    content: 'edit';
+    font-family: 'Material Icons';
+}
+
+.edit-note-poem-button::after {
+    content: 'edit_note';
+    font-family: 'Material Icons';
+}
+
+.autorenew::after {
+    content: 'autorenew';
+    font-family: 'Material Icons';
+}
+
+.queue_music::after {
+    content: 'queue_music';
+    font-family: 'Material Icons';
+}
+
+.music_note::after {
+    content: 'music_note';
+    font-family: 'Material Icons';
+}
+
+.photo_camera::after {
+    content: 'photo_camera';
+    font-family: 'Material Icons';
+}
+
+.help-button::after {
+    content: 'help';
+    font-family: 'Material Icons';
+}
+
+.close-button::after {
+    content: 'close';
+    font-family: 'Material Icons';
+}
+
+.next-inline-result::after {
+    content: 'arrow_downward';
+    font-family: 'Material Icons';
+}
+
+.prev-inline-result::after {
+    content: 'arrow_upward';
+    font-family: 'Material Icons';
+}
+
+
+.recitation-download::after {
+    content: 'download';
+    font-family: 'Material Icons';
+}
+
+.recitation-play::after {
+    content: 'play_arrow';
+    font-family: 'Material Icons';
+}
+
+.recitation-report::after {
+    content: 'flag';
+    font-family: 'Material Icons';
+}
+
+.recitation-scrollunlock::after {
+    content: 'no_encryption';
+    font-family: 'Material Icons';
+}
+
+.recitation-scrolllock::after {
+    content: 'lock';
+    font-family: 'Material Icons';
+}
+
+.recitation-novote::after {
+    content: 'thumb_up_off_alt';
+    font-family: 'Material Icons';
+}
+
+.recitation-vote::after {
+    content: 'thumb_up_alt';
+    font-family: 'Material Icons';
+}
+
+.recitation-score::after {
+    content: 'calculate';
+    font-family: 'Material Icons';
+}
+
+.recitation-website::after {
+    content: 'public';
+    font-family: 'Material Icons';
+}
+
+
+.recitation-listen::after {
+    content: 'hearing';
+    font-family: 'Material Icons';
+}
+
+.commentary-listen::after {
+    content: 'spatial_audio_off';
+    font-family: 'Material Icons';
+}
+
+.recitation-comments::after {
+    content: 'question_answer';
+    font-family: 'Material Icons';
+}
+
+.recitation-explore::after {
+    content: 'travel_explore';
+    font-family: 'Material Icons';
+}
+
+.recitation-music::after {
+    content: 'music_video';
+    font-family: 'Material Icons';
+}
+
+.recitation-manuscripts::after {
+    content: 'auto_stories';
+    font-family: 'Material Icons';
+}
+
+.recitation-navigation::after {
+    content: 'apps';
+    font-family: 'Material Icons';
+}
+
+.quoted-poems::after {
+    content: 'format_quote';
+    font-family: 'Material Icons';
+}
+
+.face-photo::after {
+    content: 'face_5';
+    font-family: 'Material Icons';
+}
+
+
+.map-icon::after {
+    content: 'public';
+    font-family: 'Material Icons';
+}
+
+.query_stats::after {
+    content: 'query_stats';
+    font-family: 'Material Icons';
+}
+
+.percent::after {
+    content: 'percent';
+    font-family: 'Material Icons';
+}
+
+
+.expand_circle_down::after, .collapse_circle_down::after {
+    content: 'expand_circle_down';
+    font-family: 'Material Icons';
+}
+
+.expand_circle_down {
+    transform: rotate(180deg);
+}
+
+.collapse_circle_down {
+    transform: none;
+}
+
+.bookmarks-icon::after {
+    content: 'hotel_class';
+    font-family: 'Material Icons';
+}
+
+.bookmarking-icon::after {
+    content: 'star';
+    font-family: 'Material Icons';
+}
+
+.menu-icon::after {
+    content: 'menu';
+    font-family: 'Material Icons';
+}
+
+
+.notifications-icon::after {
+    content: 'notifications';
+    font-family: 'Material Icons';
+}
+
+.home-icon::after {
+    content: 'home';
+    font-family: 'Material Icons';
+}
+
+.user-home-icon::after {
+    content: 'manage_accounts';
+    font-family: 'Material Icons';
+}
+
+.history-icon::after {
+    content: 'history';
+    font-family: 'Material Icons';
+}
+
+.done-icon::after {
+    content: 'done';
+    font-family: 'Material Icons';
+}
+
+.delete-icon::after {
+    content: 'delete';
+    font-family: 'Material Icons';
+}
+
+.menu-book::after {
+    content: 'menu_book';
+    font-family: 'Material Icons';
+}
+
+.logout-icon::after {
+    content: 'run_circle';
+    font-family: 'Material Icons';
+}
+
+.account-icon::after {
+    content: 'account_circle';
+    font-family: 'Material Icons';
+}
+
 
 .pin-button::after {
     content: 'push_pin';
