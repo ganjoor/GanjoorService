@@ -301,14 +301,6 @@
         }
     }
 
-    @if ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryHasRecitations)
-    {
-        <script>
-            setTimeout(() => {
-                loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id), 5000);
-        </script>
-    }
-
 </body>
 </html>
 
