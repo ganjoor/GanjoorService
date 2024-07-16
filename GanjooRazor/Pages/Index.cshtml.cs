@@ -1283,24 +1283,24 @@ namespace GanjooRazor.Pages
         }
 
 
-        public async Task<ActionResult> OnGetCategoryWordCountsAsync(int catId, int poetId, bool remStopWords = false)
+        private async Task<_CategoryWordsCountPartialModel> _GetCategoryWordCountsAsync(int catId, int poetId, bool remStopWords = false)
         {
             var wordSumsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/wordsums/{catId}");
 
             if (!wordSumsResponse.IsSuccessStatusCode)
             {
-                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await wordSumsResponse.Content.ReadAsStringAsync()));
+                return null;
             }
             var wordSums = JsonConvert.DeserializeObject<CategoryWordCountSummary>(await wordSumsResponse.Content.ReadAsStringAsync());
-            if(wordSums.TotalWordCount == 0)
+            if (wordSums.TotalWordCount == 0)
             {
-                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>("شمارش واژگان انجام نشده."));
+                return null;
             }
             int pageSize = remStopWords ? 200 : 100;
             var wordCountsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/wordcounts/{catId}?PageNumber=1&PageSize={pageSize}");
             if (!wordCountsResponse.IsSuccessStatusCode)
             {
-                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await wordCountsResponse.Content.ReadAsStringAsync()));
+                return null;
             }
 
             var wordCounts = JsonConvert.DeserializeObject<CategoryWordCount[]>(await wordCountsResponse.Content.ReadAsStringAsync());
@@ -1409,20 +1409,32 @@ namespace GanjooRazor.Pages
                 wordCounts = wordCounts.Where(w => !stopWords.Contains(w.Word)).Take(100).ToArray();
             }
 
+            return new _CategoryWordsCountPartialModel()
+            {
+                CatId = catId,
+                PoetId = poetId,
+                WordCounts = wordCounts,
+                UniqueWordCount = wordSums.UniqueWordCount,
+                TotalWordCount = wordSums.TotalWordCount,
+                RemStopWords = remStopWords,
+            };
+        }
+
+
+        public async Task<ActionResult> OnGetCategoryWordCountsAsync(int catId, int poetId, bool remStopWords = false)
+        {
+            var res = await _GetCategoryWordCountsAsync(catId, poetId, remStopWords);
+            if(res == null)
+            {
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>("خطا در دسترسی به شمارش واژگان"));
+            }
+
             return new PartialViewResult()
             {
                 ViewName = "_CategoryWordsCountPartial",
                 ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
                 {
-                    Model = new _CategoryWordsCountPartialModel()
-                    {
-                        CatId = catId,
-                        PoetId = poetId,
-                        WordCounts = wordCounts,
-                        UniqueWordCount = wordSums.UniqueWordCount,
-                        TotalWordCount = wordSums.TotalWordCount,
-                        RemStopWords = remStopWords,
-                    }
+                    Model = res
                 }
             };
         }
