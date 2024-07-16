@@ -54,7 +54,9 @@ namespace GanjooRazor.Pages
         public PoemGeoDateTag[] CategoryPoemGeoDateTags { get; set; }
 
         public bool CategoryHasRecitations { get; set; }
-       
+
+        public _CategoryWordsCountPartialModel CategoryWordsCounts { get; set; }
+
         /// <summary>
         /// logout
         /// </summary>

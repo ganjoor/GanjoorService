@@ -857,11 +857,15 @@ namespace GanjooRazor.Pages
                 CategoryPoemGeoDateTags = JsonConvert.DeserializeObject<PoemGeoDateTag[]>(await tagsResponse.Content.ReadAsStringAsync());
             }
 
+            if (IsCatPage || IsPoetPage || (GanjoorPage != null && GanjoorPage.Id == 39401) )
+            {
+
+                CategoryWordsCounts = await _GetCategoryWordCountsAsync(GanjoorPage.PoetOrCat == null ? 0 : GanjoorPage.PoetOrCat.Cat.Id, GanjoorPage.PoetOrCat == null ? 0 : GanjoorPage.PoetOrCat.Poet.Id, false);
+            }
+
 
             return Page();
         }
-
-
         public async Task<ActionResult> OnGetBNumPartialAsync(int poemId, int coupletIndex)
         {
             var responseCoupletComments = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/comments?coupletIndex={coupletIndex}");
