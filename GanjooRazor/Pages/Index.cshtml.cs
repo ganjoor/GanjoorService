@@ -1475,7 +1475,7 @@ namespace GanjooRazor.Pages
             };
         }
 
-        public async Task<ActionResult> OnGetPoemWordCountsAsync(int poemId, int catId, int poetId)
+        public async Task<ActionResult> OnGetPoemWordCountsAsync(int poemId)
         {
             var poemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}");
             if (!poemQuery.IsSuccessStatusCode)
@@ -1510,6 +1510,14 @@ namespace GanjooRazor.Pages
                 counts[i].RowNmbrInCat = i + 1;
             }
 
+            counts.Insert(0, new CategoryWordCount()
+            {
+                Word = "* تعداد کل",
+                Count = counts.Sum(c => c.Count),
+                RowNmbrInCat = 0,
+            });
+
+
             return new PartialViewResult()
             {
                 ViewName = "_CategoryWordsCountTablePartial",
@@ -1517,9 +1525,9 @@ namespace GanjooRazor.Pages
                 {
                     Model = new _CategoryWordsCountTablePartialModel()
                     {
-                        CatId = catId,
-                        PoetId = poetId,
-                        TotalWordCount = counts.Count,
+                        CatId = -1,
+                        PoetId = -1,
+                        TotalWordCount = counts.Where(c => c.RowNmbrInCat > 0).Sum(c => c.Count),
                         WordCounts = counts.ToArray()
                     }
                 }

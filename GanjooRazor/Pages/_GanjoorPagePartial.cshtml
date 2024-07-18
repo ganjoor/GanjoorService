@@ -387,6 +387,10 @@
                                         <small><i class="notranslate pageicons mouse-icon"></i> با انتخاب متن و لمس متن انتخابی می‌توانید آن را در لغتنامهٔ دهخدا جستجو کنید.</small>
                                     </p>
 
+                                    <div id="wordcounts-placeholder">
+                                        برای مشاهدهٔ بسامد واژگان <a href="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">اینجا</a> کلیک کنید.
+                                    </div>
+
                                     @if (Model.GanjoorPage.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.GanjoorMetre != null).Any() || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag) || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
                                     {
                                         <table>
