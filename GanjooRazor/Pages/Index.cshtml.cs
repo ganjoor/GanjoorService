@@ -7,10 +7,12 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RMuseum.Migrations;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
+using RMuseum.Services.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1468,6 +1470,57 @@ namespace GanjooRazor.Pages
                         PoetId = poetId,
                         WordCounts = wordCounts,
                         TotalWordCount = totalWordCount,
+                    }
+                }
+            };
+        }
+
+        public async Task<ActionResult> OnGetPoemWordCountsAsync(int poemId, int catId, int poetId)
+        {
+            var poemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}");
+            if (!poemQuery.IsSuccessStatusCode)
+            {
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await poemQuery.Content.ReadAsStringAsync()));
+            }
+            var poem = JObject.Parse(await poemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
+
+            List<CategoryWordCount> counts = new List<CategoryWordCount>();
+            foreach (var verse in poem.Verses.Where(v => v.VersePosition != VersePosition.Comment))
+            {
+                string[] words = LanguageUtils.MakeTextSearchable(verse.Text).Split([' ', '‌']);
+                foreach (var word in words)
+                {
+                    if (string.IsNullOrEmpty(word)) continue;
+                    var wordCount = counts.Where(c => c.Word == word).SingleOrDefault();
+                    if (wordCount != null)
+                    {
+                        wordCount.Count++;
+                    }
+                    else
+                    {
+                        counts.Add(new CategoryWordCount { CatId = 0, Word = word, Count = 1 });
+                    }
+                }
+            }
+
+            counts.Sort((a, b) => b.Count.CompareTo(a.Count));
+
+            for (int i = 0; i < counts.Count; i++)
+            {
+                counts[i].RowNmbrInCat = i + 1;
+            }
+
+            return new PartialViewResult()
+            {
+                ViewName = "_CategoryWordsCountTablePartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _CategoryWordsCountTablePartialModel()
+                    {
+                        CatId = catId,
+                        PoetId = poetId,
+                        TotalWordCount = counts.Count,
+                        WordCounts = counts.ToArray()
                     }
                 }
             };
