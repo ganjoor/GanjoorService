@@ -5,6 +5,9 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Ганҷур</h1>
+    @foreach(var poet in Model.Poets)
+    {
+        <p><a href="@poet.FullUrl">@poet.Nickname</a></p>
+    }
 </div>
