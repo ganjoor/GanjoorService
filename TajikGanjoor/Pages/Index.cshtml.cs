@@ -24,6 +24,11 @@ namespace TajikGanjoor.Pages
                 return Page();
             }
 
+            foreach (var poet in Poets)
+            {
+                poet.Nickname = TajikTransilerator.Transilerate(poet.Nickname);
+            }
+
             return Page();
         }
 
