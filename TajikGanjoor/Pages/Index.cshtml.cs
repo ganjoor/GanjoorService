@@ -16,10 +16,13 @@ namespace TajikGanjoor.Pages
             return Page();
         }
 
-        private readonly IConfiguration Configuration;
-        public IndexModel(IConfiguration configuration)
+        protected readonly IConfiguration Configuration;
+
+        protected readonly HttpClient _httpClient;
+        public IndexModel(IConfiguration configuration, HttpClient httpClient)
         {
             Configuration = configuration;
+            _httpClient = httpClient;
         }
     }
 }
