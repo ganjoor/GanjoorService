@@ -9863,6 +9863,11 @@
             couplet summary
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorVerse.Tajik">
+            <summary>
+            tajik text
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseNumber.Id">
             <summary>
             id
@@ -16649,6 +16654,11 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.Transilerate">
+            <summary>
+            transilerate verse data from Persian to Tajiki
+            </summary>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -18123,6 +18133,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -19102,6 +19115,11 @@
             <param name="userId"></param>
             <param name="catId"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.Transilerate">
+            <summary>
+            transilerate verse data from Persian to Tajiki
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoets(System.Boolean,System.Boolean)">
             <summary>

@@ -75,6 +75,11 @@
         /// </summary>
         public string CoupletSummary { get; set; }
 
+        /// <summary>
+        /// tajik text
+        /// </summary>
+        public string Tajik { get; set; }
+
         public override string ToString()
         {
             return Text;

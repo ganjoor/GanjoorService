@@ -4272,7 +4272,15 @@ namespace RMuseum.Controllers
         }
 
 
-
+        [HttpPut("transilerate")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult Transilerate()
+        {
+            _ganjoorService.Transilerate();
+            return Ok();
+        }
 
 
         /// <summary>
