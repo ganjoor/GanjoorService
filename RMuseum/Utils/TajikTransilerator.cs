@@ -45,7 +45,12 @@ namespace RMuseum.Utils
 
                 int endDivIndex = responseString.IndexOf("</div>", startDivIndex);
 
-                return responseString.Substring(startDivIndex, endDivIndex - startDivIndex).Replace("<span style=\"color: red\">", "").Replace("</span>", "").Trim();
+                return responseString
+                    .Substring(startDivIndex, endDivIndex - startDivIndex)
+                    .Replace("<span style=\"color: red\">", "")
+                    .Replace("</span>", "")
+                    .Replace("<br>", "\r\n")
+                    .Trim();
             }
             return "";
         }

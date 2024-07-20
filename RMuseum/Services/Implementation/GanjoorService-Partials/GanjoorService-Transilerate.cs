@@ -29,7 +29,7 @@ namespace RMuseum.Services.Implementation
                                   var job = (await jobProgressServiceEF.NewJob($"Transilerate", "Query data")).Result;
                                   try
                                   {
-                                      var poets = await context.GanjoorPoets.AsNoTracking().Where(p => p.Published).OrderBy(p => p.Id).ToListAsync();
+                                      var poets = await context.GanjoorPoets.Where(p => p.Published).OrderBy(p => p.Id).ToListAsync();
                                       foreach (var poet in poets)
                                       {
                                           await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname);
@@ -41,18 +41,44 @@ namespace RMuseum.Services.Implementation
                                           await _populateCategoryChildren(context, poetCat.Id, catIdList);
                                           foreach (var catId in catIdList)
                                           {
-                                              var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).OrderBy(p => p.Id).ToListAsync();
+                                              var poems = await context.GanjoorPoems.Where(p => p.CatId == catId).OrderBy(p => p.Id).ToListAsync();
                                               foreach (var poem in poems)
                                               {
                                                   var verses = await context.GanjoorVerses.Where(v => v.PoemId == poem.Id && string.IsNullOrEmpty(v.Tajik)).OrderBy(v => v.VOrder).ToListAsync();
-                                                  foreach (var verse in verses)
+                                                  if(verses.Any())
                                                   {
-                                                      verse.Tajik = TajikTransilerator.Transilerate(verse.Text);
+                                                      foreach (var verse in verses)
+                                                      {
+                                                          verse.Tajik = TajikTransilerator.Transilerate(verse.Text);
+                                                      }
+                                                      context.UpdateRange(verses);
                                                   }
-                                                  context.UpdateRange(verses);
+
+                                                  if (string.IsNullOrEmpty(poem.TajikTitle))
+                                                  {
+                                                      poem.TajikTitle = TajikTransilerator.Transilerate(poem.Title);
+                                                      context.Update(poem);
+                                                  }
 
                                                   await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, poet.Nickname + $" - cat: {catId} - poem: {poem.Id}");
                                               }
+
+                                              var cat = await context.GanjoorCategories.Where(c => c.Id == catId && string.IsNullOrEmpty(c.TajikTitle)).SingleOrDefaultAsync();
+                                              if (cat != null)
+                                              {
+                                                  cat.TajikTitle = TajikTransilerator.Transilerate(cat.Title);
+                                                  cat.TajikDescription = TajikTransilerator.Transilerate(cat.Description);
+                                                  context.Update(cat);
+                                                  await context.SaveChangesAsync();
+                                              }
+                                          }
+
+                                          if (string.IsNullOrEmpty(poet.TajikNickName))
+                                          {
+                                              poet.TajikNickName = TajikTransilerator.Transilerate(poet.Nickname);
+                                              poet.TajikDescription = TajikTransilerator.Transilerate(poet.Description);
+                                              context.Update(poet);
+                                              await context.SaveChangesAsync();
                                           }
                                       }
 
