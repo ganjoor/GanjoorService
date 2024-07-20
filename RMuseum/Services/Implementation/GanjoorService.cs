@@ -423,6 +423,7 @@ namespace RMuseum.Services.Implementation
                          Title = p.Title,
                          UrlSlug = p.UrlSlug,
                          Excerpt = context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text,
+                         TajikTitle = p.TajikTitle,
                      }
                  ).AsNoTracking().ToListAsync()
                  :
@@ -1497,6 +1498,7 @@ namespace RMuseum.Services.Implementation
                          Id = comment.Poem.Id,
                          Title = comment.Poem.FullTitle,
                          UrlSlug = comment.Poem.FullUrl,
+                         TajikTitle = comment.Poem.TajikTitle,
                          Excerpt = ""
                      }
                  };
@@ -1628,6 +1630,7 @@ namespace RMuseum.Services.Implementation
                              Id = comment.Poem.Id,
                              Title = comment.Poem.FullTitle,
                              UrlSlug = comment.Poem.FullUrl,
+                             TajikTitle = comment.Poem.TajikTitle,
                              Excerpt = ""
                          }
                      }
@@ -1828,6 +1831,7 @@ namespace RMuseum.Services.Implementation
                                 Id = p.Id,
                                 Title = p.Title,
                                 UrlSlug = p.UrlSlug,
+                                TajikTitle = p.TajikTitle,
                                 Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
                             }
                             ).AsNoTracking().SingleAsync();
@@ -1858,6 +1862,7 @@ namespace RMuseum.Services.Implementation
                                 Id = p.Id,
                                 Title = p.Title,
                                 UrlSlug = p.UrlSlug,
+                                TajikTitle = p.TajikTitle,
                                 Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
                             }
                             ).AsNoTracking().SingleAsync();

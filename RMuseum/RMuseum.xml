@@ -11769,6 +11769,11 @@
             excerpt text
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel.TajikTitle">
+            <summary>
+            tajik title
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel.MainSections">
             <summary>
             whole poem sections

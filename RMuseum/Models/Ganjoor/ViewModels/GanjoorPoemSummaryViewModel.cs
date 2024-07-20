@@ -26,6 +26,11 @@
         public string Excerpt { get; set; }
 
         /// <summary>
+        /// tajik title
+        /// </summary>
+        public string TajikTitle { get; set; }
+
+        /// <summary>
         /// whole poem sections
         /// </summary>
         public GanjoorPoemSection[] MainSections { get; set; }
