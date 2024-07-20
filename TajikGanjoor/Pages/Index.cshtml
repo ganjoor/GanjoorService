@@ -17,8 +17,25 @@
 }
 
 <div class="text-center">
-    @foreach(var poet in Model.Poets)
+    @if (Model.IsHomePage)
     {
-        <p><a href="@poet.FullUrl">@poet.TajikNickName</a></p>
+        @foreach (var poet in Model.Poets)
+        {
+            <p><a href="@poet.FullUrl">@poet.TajikNickName</a></p>
+        }
+    }
+
+    @if (Model.IsPoetPage)
+    {
+        <p>
+            @Model.GanjoorPage.PoetOrCat.Poet.TajikDescription
+        </p>
+    }
+
+    @if (Model.IsCatPage && !string.IsNullOrEmpty(@Model.GanjoorPage.PoetOrCat.Cat.TajikDescription))
+    {
+        <p>
+            @Model.GanjoorPage.PoetOrCat.Cat.TajikDescription
+        </p>
     }
 </div>
