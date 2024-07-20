@@ -201,7 +201,7 @@ namespace RMuseum.Services.Implementation
                     {
                         BookName = c.BookName,
                         FullUrl = c.FullUrl,
-                        RImageId = c.RImageId
+                        RImageId = c.RImageId,
                     }
                     )
                     .ToArrayAsync()
@@ -306,6 +306,8 @@ namespace RMuseum.Services.Implementation
                     RImageId = parent.RImageId,
                     SumUpSubsGeoLocations = parent.SumUpSubsGeoLocations,
                     MapName = parent.MapName,
+                    TajikTitle = parent.TajikTitle,
+                    TajikDescription = parent.TajikDescription,
                 });
 
                 parent = await context.GanjoorCategories.Where(c => c.Id == parent.ParentId).AsNoTracking().FirstOrDefaultAsync();
@@ -339,6 +341,8 @@ namespace RMuseum.Services.Implementation
                                                     RImageId = c.RImageId,
                                                     SumUpSubsGeoLocations = c.SumUpSubsGeoLocations,
                                                     MapName = c.MapName,
+                                                    TajikTitle = c.TajikTitle,
+                                                    TajikDescription = c.TajikDescription,
                                                     //other fields null
                                                 }
                                         ).AsNoTracking().SingleOrDefaultAsync();
@@ -370,6 +374,8 @@ namespace RMuseum.Services.Implementation
                                                     RImageId = c.RImageId,
                                                     SumUpSubsGeoLocations = c.SumUpSubsGeoLocations,
                                                     MapName = c.MapName,
+                                                    TajikTitle = c.TajikTitle,
+                                                    TajikDescription = c.TajikDescription,
                                                     //other fields null
                                                 }
                                         ).AsNoTracking().SingleOrDefaultAsync();
@@ -390,6 +396,8 @@ namespace RMuseum.Services.Implementation
                 RImageId = cat.RImageId,
                 SumUpSubsGeoLocations = cat.SumUpSubsGeoLocations,
                 MapName = cat.MapName,
+                TajikTitle = cat.TajikTitle,
+                TajikDescription = cat.TajikDescription,
                 Next = nextCat,
                 Previous = preCat,
                 Ancestors = ancetors,
@@ -403,6 +411,7 @@ namespace RMuseum.Services.Implementation
                      FullUrl = c.FullUrl,
                      MixedModeOrder = c.MixedModeOrder,
                      Published = c.Published,
+                     TajikTitle = c.TajikTitle,
                  }
                  ).AsNoTracking().ToListAsync(),
                 Poems = poems ? await context.GanjoorPoems
