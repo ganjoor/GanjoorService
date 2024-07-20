@@ -38,4 +38,15 @@
             @Model.GanjoorPage.PoetOrCat.Cat.TajikDescription
         </p>
     }
+
+    @if (Model.IsPoetPage || Model.IsCatPage)
+    {
+        @foreach (var cat in Model.GanjoorPage.PoetOrCat.Cat.Children)
+        {
+            <p>
+                <a href="@cat.FullUrl">@cat.TajikTitle</a>
+            </p>
+        }
+    }
+
 </div>
