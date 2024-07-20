@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton(
                  HtmlEncoder.Create(allowedRanges: [ UnicodeRanges.BasicLatin,
-                    UnicodeRanges.Arabic ]));
+                    UnicodeRanges.Arabic, UnicodeRanges.Cyrillic ]));
 
 builder.Services.AddRazorPages(options =>
 {

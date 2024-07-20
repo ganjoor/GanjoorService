@@ -41,14 +41,16 @@ namespace TajikGanjoor.Pages
                         return false;
                     }
                     poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
+                    poets = poets ?? [];
+                    poets = poets.Where(p => !string.IsNullOrWhiteSpace(p.TajikNickName)).ToList();
                     if (AggressiveCacheEnabled)
                     {
                         _memoryCache.Set(cacheKey, poets);
                     }
                 }
-                catch
+                catch(Exception e)
                 {
-                    LastError = "خطا در دسترسی به وب سرویس گنجور";
+                    LastError = $"خطا در دسترسی به وب سرویس گنجور - {e}";
                     return false;
                 }
 
