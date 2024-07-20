@@ -199,6 +199,27 @@
             });
         }
 
+        
+
+        function transilerate() {
+            if (!confirm('آیا از شروع برگردان تاجیکی اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=Transilerate';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('فرایند شروع شد.')
+                },
+
+            });
+        }
+
         function rebuildRebuildWordCounts(poetId) {
             if (!confirm('آیا از شمارش واژگان برای شاعر جاری با کد '+poetId.toString() + ' اطمینان دارید؟'))
                 return;
