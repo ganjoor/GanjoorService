@@ -35,7 +35,7 @@ namespace TajikGanjoor.Pages
             }
 
 
-            if(false == await PreparePoetsAsync())
+            if (false == await PreparePoetsAsync())
             {
                 return Page();
             }
@@ -63,7 +63,7 @@ namespace TajikGanjoor.Pages
                     return Page();
                 }
                 GanjoorPage = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
-                if(GanjoorPage == null)
+                if (GanjoorPage == null)
                 {
                     LastError = "GanjoorPage == null";
                     return Page();
@@ -95,7 +95,7 @@ namespace TajikGanjoor.Pages
             if (IsPoetPage)
             {
                 ViewData["Title"] = $"Ганҷур - {GanjoorPage?.PoetOrCat.Poet.TajikNickName}";
-                BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.PoetOrCat.Poet.FullUrl}\">{GanjoorPage?.PoetOrCat.Poet.TajikNickName}\"</a>";
+                BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.PoetOrCat.Poet.FullUrl}\">{GanjoorPage?.PoetOrCat.Poet.TajikNickName}</a>";
             }
             else
             if (IsCatPage || IsPoemPage)
@@ -104,17 +104,14 @@ namespace TajikGanjoor.Pages
                 foreach (var gran in GanjoorPage.PoetOrCat.Cat.Ancestors)
                 {
                     title += $"{gran.TajikTitle} - ";
-                    BreadCrumpUrls += $" - <a href=\"{gran.FullUrl}\">{gran.TajikTitle}\"</a>";
+                    BreadCrumpUrls += $" - <a href=\"{gran.FullUrl}\">{gran.TajikTitle}</a>";
                 }
-                if(IsCatPage)
-                {
-                    title += GanjoorPage.PoetOrCat.Cat.TajikTitle;
-                    BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.PoetOrCat.Cat.FullUrl}\">{GanjoorPage?.PoetOrCat.Cat.TajikTitle}\"</a>";
-                }
-                else
+                title += GanjoorPage.PoetOrCat.Cat.TajikTitle;
+                BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.PoetOrCat.Cat.FullUrl}\">{GanjoorPage?.PoetOrCat.Cat.TajikTitle}</a>";
+                if (IsPoemPage)
                 {
                     title += GanjoorPage.Poem.TajikTitle;
-                    BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.FullUrl}\">{GanjoorPage?.Poem.TajikTitle}\"</a>";
+                    BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.FullUrl}\">{GanjoorPage?.Poem.TajikTitle}</a>";
                 }
                 ViewData["Title"] = title;
             }
@@ -143,7 +140,7 @@ namespace TajikGanjoor.Pages
                         _memoryCache.Set(cacheKey, poets);
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     LastError = e.ToString();
                     return false;

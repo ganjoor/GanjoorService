@@ -50,7 +50,7 @@
         @foreach (var poem in Model.GanjoorPage.PoetOrCat.Cat.Poems)
         {
             <p>
-                <a href="@($"{Model.GanjoorPage.PoetOrCat.Cat}/{poem.UrlSlug}")">@poem.TajikTitle</a>
+                <a href="@($"{Model.GanjoorPage.PoetOrCat.Cat.FullUrl}/{poem.UrlSlug}")">@poem.TajikTitle</a>
             </p>
         }
 
