@@ -118,5 +118,10 @@ namespace RMuseum.Models.Ganjoor
         /// poem is claimed by multiple poets
         /// </summary>
         public bool ClaimedByMultiplePoets { get; set; }
+
+        /// <summary>
+        /// tajik title
+        /// </summary>
+        public string TajikTitle { get; set; }
     }
 }
