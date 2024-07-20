@@ -1958,7 +1958,6 @@ namespace RMuseum.Services.Implementation
                     UrlSlug = poem.UrlSlug,
                     HtmlText = poem.HtmlText,
                     PlainText = poem.PlainText,
-
                     SourceName = poem.SourceName,
                     SourceUrlSlug = poem.SourceUrlSlug,
                     OldTag = poem.OldTag,
@@ -1979,6 +1978,7 @@ namespace RMuseum.Services.Implementation
                     GeoDateTags = geoDateTags,
                     Top6QuotedPoems = quoteds,
                     ClaimedByMultiplePoets = poem.ClaimedByMultiplePoets,
+                    TajikTitle = poem.TajikTitle,
                 };
 
                 if (AggressiveCacheEnabled)
@@ -2630,6 +2630,7 @@ namespace RMuseum.Services.Implementation
                         Published = section.Poem.Published,
                         Language = section.Poem.Language,
                         PoemSummary = section.Poem.PoemSummary,
+                        TajikTitle = section.Poem.TajikTitle,
                         Category = new GanjoorPoetCompleteViewModel()
                         {
                             Poet = new GanjoorPoetViewModel()
@@ -2718,6 +2719,7 @@ namespace RMuseum.Services.Implementation
                         Published = section.Poem.Published,
                         Language = section.Poem.Language,
                         PoemSummary = section.Poem.PoemSummary,
+                        TajikTitle = section.Poem.TajikTitle,
                         Category = new GanjoorPoetCompleteViewModel()
                         {
                             Poet = new GanjoorPoetViewModel()
@@ -2848,6 +2850,7 @@ namespace RMuseum.Services.Implementation
                         Published = poem.Published,
                         Language = poem.Language,
                         PoemSummary = poem.PoemSummary,
+                        TajikTitle = poem.TajikTitle,
                         Category = new GanjoorPoetCompleteViewModel()
                         {
                             Poet = new GanjoorPoetViewModel()

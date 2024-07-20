@@ -10554,6 +10554,16 @@
             category map name
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.TajikTitle">
+            <summary>
+            tajik title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.TajikDescription">
+            <summary>
+            additional descripion or note in Tajik
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.Next">
             <summary>
             Next Category without Ancestors/Children/Poems info
@@ -11292,6 +11302,11 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.ClaimedByMultiplePoets">
             <summary>
             poem is claimed by multiple poets
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.TajikTitle">
+            <summary>
+            tajik title
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel">
