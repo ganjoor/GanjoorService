@@ -47,6 +47,13 @@
                 <a href="@cat.FullUrl">@cat.TajikTitle</a>
             </p>
         }
+        @foreach (var poem in Model.GanjoorPage.PoetOrCat.Cat.Poems)
+        {
+            <p>
+                <a href="@($"{Model.GanjoorPage.PoetOrCat.Cat}/{poem.UrlSlug}")">@poem.TajikTitle</a>
+            </p>
+        }
+
     }
 
 </div>

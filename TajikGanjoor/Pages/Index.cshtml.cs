@@ -42,7 +42,7 @@ namespace TajikGanjoor.Pages
             IsHomePage = Request.Path == "/";
             if (!IsHomePage)
             {
-                var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Path}");
+                var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Path}&catPoems=true");
                 if (!pageQuery.IsSuccessStatusCode)
                 {
                     if (pageQuery.StatusCode == HttpStatusCode.NotFound)
