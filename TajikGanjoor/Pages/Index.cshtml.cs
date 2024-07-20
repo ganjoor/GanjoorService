@@ -25,8 +25,7 @@ namespace TajikGanjoor.Pages
         public string PreviousUrl { get; set; }
         public string PreviousTitle { get; set; }
         public string BreadCrumpUrls { get; set; }
-
-
+        public string HtmlText { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
             if (bool.Parse(Configuration["MaintenanceMode"] ?? false.ToString()))
@@ -72,14 +71,15 @@ namespace TajikGanjoor.Pages
                 {
                     case GanjoorPageType.PoemPage:
                         GanjoorPage.PoetOrCat = GanjoorPage.Poem.Category;
-                        _prepareNextPre();
+                        HtmlText = PrepareHtmlText(new List<GanjoorVerseViewModel>(GanjoorPage.Poem.Verses));
+                        PrepareNextPre();
                         IsPoemPage = true;
                         break;
                     case GanjoorPageType.PoetPage:
                         IsPoetPage = true;
                         break;
                     case GanjoorPageType.CatPage:
-                        _prepareNextPre();
+                        PrepareNextPre();
                         IsCatPage = true;
                         break;
                 }
@@ -151,9 +151,7 @@ namespace TajikGanjoor.Pages
             Poets = poets ?? [];
             return true;
         }
-
-
-        private void _prepareNextPre()
+        private void PrepareNextPre()
         {
             if (GanjoorPage == null) return;
             switch (GanjoorPage.GanjoorPageType)
@@ -216,6 +214,85 @@ namespace TajikGanjoor.Pages
                     }
                     break;
             }
+        }
+
+        private string PrepareHtmlText(List<GanjoorVerseViewModel> verses)
+        {
+            string htmlText = "";
+            int coupletIndex = 0;
+            for (int vIndex = 0; vIndex < verses.Count; vIndex++)
+            {
+                GanjoorVerseViewModel v = verses[vIndex];
+                if (v.VersePosition == VersePosition.CenteredVerse1)
+                {
+                    coupletIndex++;
+                    if (((vIndex + 1) < verses.Count) && (verses[vIndex + 1].VersePosition == VersePosition.CenteredVerse2))
+                    {
+                        htmlText += $"<div class=\"b2\" id=\"bn{coupletIndex}\"><p>{v.Tajik}</p>{Environment.NewLine}";
+                    }
+                    else
+                    {
+                        htmlText += $"<div class=\"b2\" id=\"bn{coupletIndex}\"><p>{v.Tajik}</p></div>{Environment.NewLine}";
+
+                    }
+                }
+                else
+                if (v.VersePosition == VersePosition.CenteredVerse2)
+                {
+                    htmlText += $"<p>{v.Tajik}</p></div>{Environment.NewLine}";
+                }
+                else
+
+                if (v.VersePosition == VersePosition.Right)
+                {
+                    coupletIndex++;
+                    htmlText += $"<div class=\"b\" id=\"bn{coupletIndex}\"><div class=\"m1\"><p>{v.Tajik}</p></div>{Environment.NewLine}";
+                }
+                else
+                if (v.VersePosition == VersePosition.Left)
+                {
+                    htmlText += $"<div class=\"m2\"><p>{v.Tajik}</p></div></div>{Environment.NewLine}";
+                }
+                else
+                if (v.VersePosition == VersePosition.Comment)
+                {
+                    htmlText += $"<div class=\"c\"><p>{v.Tajik}</p></div>{Environment.NewLine}";
+                }
+                else
+                if (v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single)
+                {
+                    coupletIndex++;
+                    string[] lines = v.Tajik.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    string cssClass = v.VersePosition == VersePosition.Paragraph ? "n" : "l";
+
+                    if (lines.Length != 0)
+                    {
+                        if (v.Tajik.Length / lines.Length < 150)
+                        {
+                            htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>{v.Tajik.Replace("\r\n", " ")}</p></div>{Environment.NewLine}";
+                        }
+                        else
+                        {
+                            foreach (string line in lines)
+                                htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>{line}</p></div>{Environment.NewLine}";
+                        }
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(v.Tajik))
+                        {
+                            htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>&nbsp;</p></div>{Environment.NewLine}";//empty line!
+                        }
+                        else
+                        {
+                            htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>{v.Tajik}</p></div>{Environment.NewLine}";//not brave enough to ignore it!
+                        }
+
+                    }
+                }
+            }
+            return htmlText.Trim();
         }
 
         public string? LastError { get; set; }
