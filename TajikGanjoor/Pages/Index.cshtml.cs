@@ -24,7 +24,7 @@ namespace TajikGanjoor.Pages
         public string NextTitle { get; set; }
         public string PreviousUrl { get; set; }
         public string PreviousTitle { get; set; }
-
+        public string BreadCrumpUrls { get; set; }
 
 
         public async Task<IActionResult> OnGetAsync()
@@ -33,6 +33,7 @@ namespace TajikGanjoor.Pages
             {
                 return StatusCode(503);
             }
+
 
             if(false == await PreparePoetsAsync())
             {
@@ -85,6 +86,7 @@ namespace TajikGanjoor.Pages
 
             }
 
+            BreadCrumpUrls = "<a href=\"/\">Ганҷур</a>";
             if (IsHomePage)
             {
                 ViewData["Title"] = "Ганҷур";
@@ -93,30 +95,30 @@ namespace TajikGanjoor.Pages
             if (IsPoetPage)
             {
                 ViewData["Title"] = $"Ганҷур - {GanjoorPage?.PoetOrCat.Poet.TajikNickName}";
+                BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.PoetOrCat.Poet.FullUrl}\">{GanjoorPage?.PoetOrCat.Poet.TajikNickName}\"</a>";
             }
             else
-            if (IsCatPage)
+            if (IsCatPage || IsPoemPage)
             {
                 string title = $"Ганҷур - ";
                 foreach (var gran in GanjoorPage.PoetOrCat.Cat.Ancestors)
                 {
                     title += $"{gran.TajikTitle} - ";
+                    BreadCrumpUrls += $" - <a href=\"{gran.FullUrl}\">{gran.TajikTitle}\"</a>";
                 }
-                title += GanjoorPage.PoetOrCat.Cat.TajikTitle;
-                ViewData["Title"] = title;
-            }
-            else
-            if (IsPoemPage)
-            {
-                string title = $"Ганҷур - ";
-                foreach (var gran in GanjoorPage.PoetOrCat.Cat.Ancestors)
+                if(IsCatPage)
                 {
-                    title += $"{gran.TajikTitle} - ";
+                    title += GanjoorPage.PoetOrCat.Cat.TajikTitle;
+                    BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.PoetOrCat.Cat.FullUrl}\">{GanjoorPage?.PoetOrCat.Cat.TajikTitle}\"</a>";
                 }
-                title += GanjoorPage.Poem.TajikTitle;
+                else
+                {
+                    title += GanjoorPage.Poem.TajikTitle;
+                    BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.FullUrl}\">{GanjoorPage?.Poem.TajikTitle}\"</a>";
+                }
                 ViewData["Title"] = title;
             }
-
+            ViewData["BreadCrumpUrls"] = BreadCrumpUrls;
             return Page();
         }
 
