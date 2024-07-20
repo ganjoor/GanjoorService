@@ -100,6 +100,16 @@
         /// </summary>
         public double DeathPlaceLongitude { get; set; }
 
+        /// <summary>
+        /// tajik nick name
+        /// </summary>
+        public string TajikNickName { get; set; }
+
+        /// <summary>
+        /// additional descripion or note in Tajik
+        /// </summary>
+        public string TajikDescription { get; set; }
+
         public override string ToString()
         {
             return Nickname;

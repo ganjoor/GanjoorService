@@ -10,7 +10,7 @@ namespace TajikGanjoor.Pages
 {
     public class IndexModel : PageModel
     {
-        public List<GanjoorPoetViewModel> Poets { get; set; }
+        public List<GanjoorPoetViewModel>? Poets { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -22,11 +22,6 @@ namespace TajikGanjoor.Pages
             if(false == await PreparePoetsAsync())
             {
                 return Page();
-            }
-
-            foreach (var poet in Poets)
-            {
-                poet.Nickname = TajikTransilerator.Transilerate(poet.Nickname);
             }
 
             return Page();
@@ -63,7 +58,7 @@ namespace TajikGanjoor.Pages
             return true;
         }
 
-        public string LastError { get; set; }
+        public string? LastError { get; set; }
 
         public bool AggressiveCacheEnabled
         {

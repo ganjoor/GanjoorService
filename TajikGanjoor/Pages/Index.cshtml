@@ -1,13 +1,27 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Ганҷур";
+}
+
+@if(!string.IsNullOrEmpty(Model.LastError))
+{
+    @Html.Raw(Model.LastError)
+    return;
+}
+
+@if(Model.Poets == null)
+{
+    <p>
+        Хато дар дарёфт феҳристи суханварон
+    </p>
+    return;
 }
 
 <div class="text-center">
     <h1 class="display-4">Ганҷур</h1>
     @foreach(var poet in Model.Poets)
     {
-        <p><a href="@poet.FullUrl">@poet.Nickname</a></p>
+        <p><a href="@poet.FullUrl">@poet.TajikNickName</a></p>
     }
 </div>

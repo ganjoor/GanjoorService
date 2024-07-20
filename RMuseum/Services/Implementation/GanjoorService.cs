@@ -80,6 +80,8 @@ namespace RMuseum.Services.Implementation
                       DeathPlaceLatitude = poet.DeathLocation == null ? 0 : poet.DeathLocation.Latitude,
                       DeathPlaceLongitude = poet.DeathLocation == null ? 0 : poet.DeathLocation.Longitude,
                       PinOrder = poet.PinOrder,
+                      TajikNickName = poet.TajikNickName,
+                      TajikDescription = poet.TajikDescription,
                   }
                   )
                   .AsNoTracking()
@@ -471,6 +473,8 @@ namespace RMuseum.Services.Implementation
                                             DeathPlace = poet.DeathLocation == null ? "" : poet.DeathLocation.Name,
                                             DeathPlaceLatitude = poet.DeathLocation == null ? 0 : poet.DeathLocation.Latitude,
                                             DeathPlaceLongitude = poet.DeathLocation == null ? 0 : poet.DeathLocation.Longitude,
+                                            TajikNickName = poet.TajikNickName,
+                                            TajikDescription = poet.TajikDescription,
                                         }).AsNoTracking().FirstOrDefaultAsync(),
                    Cat = catViewModel
                }
@@ -631,6 +635,8 @@ namespace RMuseum.Services.Implementation
                           ValidDeathDate = poet.ValidDeathDate,
                           DeathYearInLHijri = poet.DeathYearInLHijri,
                           PinOrder = poet.PinOrder,
+                          TajikNickName = poet.TajikNickName,
+                          TajikDescription = poet.TajikDescription,
                       }
                       )
                      .AsNoTracking().SingleAsync();

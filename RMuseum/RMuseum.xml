@@ -12030,6 +12030,16 @@
             death place longitude
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.TajikNickName">
+            <summary>
+            tajik nick name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.TajikDescription">
+            <summary>
+            additional descripion or note in Tajik
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPostReportCommentViewModel">
             <summary>
             report comment view model
