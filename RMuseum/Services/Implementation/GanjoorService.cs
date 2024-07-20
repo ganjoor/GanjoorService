@@ -1762,6 +1762,7 @@ namespace RMuseum.Services.Implementation
                                                             SectionIndex4 = v.SectionIndex4,
                                                             LanguageId = v.LanguageId,
                                                             CoupletSummary = v.CoupletSummary,
+                                                            Tajik = v.Tajik,
                                                         }
                                                     ).AsNoTracking().ToArrayAsync());
             }
@@ -1909,6 +1910,7 @@ namespace RMuseum.Services.Implementation
                                                             SectionIndex4 = v.SectionIndex4,
                                                             LanguageId = v.LanguageId,
                                                             CoupletSummary = v.CoupletSummary,
+                                                            Tajik = v.Tajik,
                                                         }
                                                     ).AsNoTracking().ToArrayAsync();
                 };

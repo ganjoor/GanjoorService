@@ -286,6 +286,7 @@ namespace RMuseum.Services.Implementation
                                     SectionIndex2 = pv.SectionIndex2,
                                     SectionIndex3 = pv.SectionIndex3,
                                     SectionIndex4 = pv.SectionIndex4,
+                                    Tajik = pv.Tajik,
                                 }
                                 ).Single(),
                             TText = v.TText
@@ -350,6 +351,7 @@ namespace RMuseum.Services.Implementation
                                             SectionIndex2 = pv.SectionIndex2,
                                             SectionIndex3 = pv.SectionIndex3,
                                             SectionIndex4 = pv.SectionIndex4,
+                                            Tajik = pv.Tajik,
                                         }
                                         ).Single(),
                                     TText = v.TText

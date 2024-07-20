@@ -12483,6 +12483,11 @@
             couplet summary
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.Tajik">
+            <summary>
+            tajik text
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel">
             <summary>
             Ganjoor Poem related music track model
