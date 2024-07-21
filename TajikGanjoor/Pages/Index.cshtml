@@ -24,40 +24,9 @@
             <p><a href="@poet.FullUrl">@poet.Nickname</a></p>
         }
     }
-
-    @if (Model.IsPoetPage)
+    else
     {
-        <p>
-            @Model.GanjoorPage.PoetOrCat.Poet.Description
-        </p>
-    }
-
-    @if (Model.IsCatPage && !string.IsNullOrEmpty(@Model.GanjoorPage.PoetOrCat.Cat.Description))
-    {
-        <p>
-            @Model.GanjoorPage.PoetOrCat.Cat.Description
-        </p>
-    }
-
-    @if (Model.IsPoetPage || Model.IsCatPage)
-    {
-        @foreach (var cat in Model.GanjoorPage.PoetOrCat.Cat.Children)
-        {
-            <p>
-                <a href="@cat.FullUrl">@cat.Title</a>
-            </p>
-        }
-        @foreach (var poem in Model.GanjoorPage.PoetOrCat.Cat.Poems)
-        {
-            <p>
-                <a href="@($"{Model.GanjoorPage.PoetOrCat.Cat.FullUrl}/{poem.UrlSlug}")">@poem.Title</a>
-            </p>
-        }
-    }
-
-    @if(Model.IsPoemPage)
-    {
-        @Html.Raw(Model.HtmlText)
+        @Html.Raw(Model.GanjoorPage.HtmlText)
     }
 
 </div>
