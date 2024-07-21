@@ -4287,6 +4287,21 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// one time fix for transilerations
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("fixtransilerations")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult FixTransilerations()
+        {
+            _ganjoorService.FixTransilerations();
+            return Ok();
+        }
+
+
+        /// <summary>
         /// tajik poets
         /// </summary>
         /// <returns></returns>

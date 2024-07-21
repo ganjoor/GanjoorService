@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using RSecurityBackend.Services.Implementation;
 using RMuseum.Utils;
 using RMuseum.Models.Ganjoor;
-using NAudio.Gui;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
@@ -151,6 +150,7 @@ namespace RMuseum.Services.Implementation
                                           context.Add(page);
                                           await context.SaveChangesAsync();
                                       }
+                                      await jobProgressServiceEF.UpdateJob(job.Id, 1, "cats");
 
                                       var cats = await context.TajikCats.ToListAsync();
                                       foreach (var cat in cats)
@@ -170,13 +170,34 @@ namespace RMuseum.Services.Implementation
                                           await context.SaveChangesAsync();
                                       }
 
+                                      await jobProgressServiceEF.UpdateJob(job.Id, 2, "poems");
+
                                       var poems = await context.TajikPoems.ToListAsync();
                                       foreach(var poem in poems)
                                       {
                                           poem.TajikTitle = LanguageUtils.CleanTextForTransileration(poem.TajikTitle);
                                           context.Update(poem);
                                           await context.SaveChangesAsync();
+
+                                          var poemPage = await context.GanjoorPages.AsNoTracking().Where(p => p.Id == poem.Id).SingleAsync();
+                                          var poemVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync();
+                                          var tajikVerses = await context.TajikVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync();
+                                          foreach (var poemVerse in poemVerses)
+                                          {
+                                              poemVerse.Text = LanguageUtils.CleanTextForTransileration(tajikVerses.Where(v => v.VOrder == poemVerse.VOrder).Single().TajikText);
+                                          }
+
+                                          GanjoorTajikPage page = new GanjoorTajikPage()
+                                          {
+                                              Id = poemPage.Id,
+                                              TajikHtmlText = PrepareHtmlText(poemVerses)
+                                          };
+                                          context.Add(page);
+                                          await context.SaveChangesAsync();
+
                                       }
+
+                                      await jobProgressServiceEF.UpdateJob(job.Id, 2, "verses");
 
                                       var verses = await context.TajikVerses.ToListAsync();
                                       foreach (var verse in verses)
