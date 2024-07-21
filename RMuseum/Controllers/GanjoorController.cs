@@ -4246,11 +4246,6 @@ namespace RMuseum.Controllers
 
         public async Task<IActionResult> GetCategoryWordCountsAsync(int catId, string term, [FromQuery] PagingParameterModel paging)
         {
-            if (!bool.Parse(Configuration["WordCounts"]))
-            {
-                return BadRequest();
-            }
-
             var pagedResult = await _ganjoorService.GetCategoryWordCountsAsync(catId, term, paging);
             if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
                 return BadRequest(pagedResult.ExceptionString);
@@ -4269,10 +4264,6 @@ namespace RMuseum.Controllers
 
         public async Task<IActionResult> GetCategoryWordCountSummaryAsync(int catId)
         {
-            if(!bool.Parse(Configuration["WordCounts"]))
-            {
-                return BadRequest();
-            }
             var res = await _ganjoorService.GetCategoryWordCountSummaryAsync(catId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);

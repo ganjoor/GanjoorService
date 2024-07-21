@@ -80,8 +80,6 @@ namespace RMuseum.Services.Implementation
                       DeathPlaceLatitude = poet.DeathLocation == null ? 0 : poet.DeathLocation.Latitude,
                       DeathPlaceLongitude = poet.DeathLocation == null ? 0 : poet.DeathLocation.Longitude,
                       PinOrder = poet.PinOrder,
-                      TajikNickName = poet.TajikNickName,
-                      TajikDescription = poet.TajikDescription,
                   }
                   )
                   .AsNoTracking()
@@ -306,8 +304,6 @@ namespace RMuseum.Services.Implementation
                     RImageId = parent.RImageId,
                     SumUpSubsGeoLocations = parent.SumUpSubsGeoLocations,
                     MapName = parent.MapName,
-                    TajikTitle = parent.TajikTitle,
-                    TajikDescription = parent.TajikDescription,
                 });
 
                 parent = await context.GanjoorCategories.Where(c => c.Id == parent.ParentId).AsNoTracking().FirstOrDefaultAsync();
@@ -341,8 +337,6 @@ namespace RMuseum.Services.Implementation
                                                     RImageId = c.RImageId,
                                                     SumUpSubsGeoLocations = c.SumUpSubsGeoLocations,
                                                     MapName = c.MapName,
-                                                    TajikTitle = c.TajikTitle,
-                                                    TajikDescription = c.TajikDescription,
                                                     //other fields null
                                                 }
                                         ).AsNoTracking().SingleOrDefaultAsync();
@@ -374,8 +368,6 @@ namespace RMuseum.Services.Implementation
                                                     RImageId = c.RImageId,
                                                     SumUpSubsGeoLocations = c.SumUpSubsGeoLocations,
                                                     MapName = c.MapName,
-                                                    TajikTitle = c.TajikTitle,
-                                                    TajikDescription = c.TajikDescription,
                                                     //other fields null
                                                 }
                                         ).AsNoTracking().SingleOrDefaultAsync();
@@ -396,8 +388,6 @@ namespace RMuseum.Services.Implementation
                 RImageId = cat.RImageId,
                 SumUpSubsGeoLocations = cat.SumUpSubsGeoLocations,
                 MapName = cat.MapName,
-                TajikTitle = cat.TajikTitle,
-                TajikDescription = cat.TajikDescription,
                 Next = nextCat,
                 Previous = preCat,
                 Ancestors = ancetors,
@@ -411,7 +401,6 @@ namespace RMuseum.Services.Implementation
                      FullUrl = c.FullUrl,
                      MixedModeOrder = c.MixedModeOrder,
                      Published = c.Published,
-                     TajikTitle = c.TajikTitle,
                  }
                  ).AsNoTracking().ToListAsync(),
                 Poems = poems ? await context.GanjoorPoems
@@ -423,7 +412,6 @@ namespace RMuseum.Services.Implementation
                          Title = p.Title,
                          UrlSlug = p.UrlSlug,
                          Excerpt = context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text,
-                         TajikTitle = p.TajikTitle,
                      }
                  ).AsNoTracking().ToListAsync()
                  :
@@ -483,8 +471,6 @@ namespace RMuseum.Services.Implementation
                                             DeathPlace = poet.DeathLocation == null ? "" : poet.DeathLocation.Name,
                                             DeathPlaceLatitude = poet.DeathLocation == null ? 0 : poet.DeathLocation.Latitude,
                                             DeathPlaceLongitude = poet.DeathLocation == null ? 0 : poet.DeathLocation.Longitude,
-                                            TajikNickName = poet.TajikNickName,
-                                            TajikDescription = poet.TajikDescription,
                                         }).AsNoTracking().FirstOrDefaultAsync(),
                    Cat = catViewModel
                }
@@ -645,8 +631,6 @@ namespace RMuseum.Services.Implementation
                           ValidDeathDate = poet.ValidDeathDate,
                           DeathYearInLHijri = poet.DeathYearInLHijri,
                           PinOrder = poet.PinOrder,
-                          TajikNickName = poet.TajikNickName,
-                          TajikDescription = poet.TajikDescription,
                       }
                       )
                      .AsNoTracking().SingleAsync();
@@ -1498,7 +1482,6 @@ namespace RMuseum.Services.Implementation
                          Id = comment.Poem.Id,
                          Title = comment.Poem.FullTitle,
                          UrlSlug = comment.Poem.FullUrl,
-                         TajikTitle = comment.Poem.TajikTitle,
                          Excerpt = ""
                      }
                  };
@@ -1630,7 +1613,6 @@ namespace RMuseum.Services.Implementation
                              Id = comment.Poem.Id,
                              Title = comment.Poem.FullTitle,
                              UrlSlug = comment.Poem.FullUrl,
-                             TajikTitle = comment.Poem.TajikTitle,
                              Excerpt = ""
                          }
                      }
@@ -1762,7 +1744,6 @@ namespace RMuseum.Services.Implementation
                                                             SectionIndex4 = v.SectionIndex4,
                                                             LanguageId = v.LanguageId,
                                                             CoupletSummary = v.CoupletSummary,
-                                                            Tajik = v.Tajik,
                                                         }
                                                     ).AsNoTracking().ToArrayAsync());
             }
@@ -1832,7 +1813,6 @@ namespace RMuseum.Services.Implementation
                                 Id = p.Id,
                                 Title = p.Title,
                                 UrlSlug = p.UrlSlug,
-                                TajikTitle = p.TajikTitle,
                                 Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
                             }
                             ).AsNoTracking().SingleAsync();
@@ -1863,7 +1843,6 @@ namespace RMuseum.Services.Implementation
                                 Id = p.Id,
                                 Title = p.Title,
                                 UrlSlug = p.UrlSlug,
-                                TajikTitle = p.TajikTitle,
                                 Excerpt = _context.GanjoorVerses.Where(v => v.PoemId == p.Id && v.VOrder == 1).FirstOrDefault().Text
                             }
                             ).AsNoTracking().SingleAsync();
@@ -1910,7 +1889,6 @@ namespace RMuseum.Services.Implementation
                                                             SectionIndex4 = v.SectionIndex4,
                                                             LanguageId = v.LanguageId,
                                                             CoupletSummary = v.CoupletSummary,
-                                                            Tajik = v.Tajik,
                                                         }
                                                     ).AsNoTracking().ToArrayAsync();
                 };
@@ -1985,7 +1963,6 @@ namespace RMuseum.Services.Implementation
                     GeoDateTags = geoDateTags,
                     Top6QuotedPoems = quoteds,
                     ClaimedByMultiplePoets = poem.ClaimedByMultiplePoets,
-                    TajikTitle = poem.TajikTitle,
                 };
 
                 if (AggressiveCacheEnabled)
@@ -2637,7 +2614,6 @@ namespace RMuseum.Services.Implementation
                         Published = section.Poem.Published,
                         Language = section.Poem.Language,
                         PoemSummary = section.Poem.PoemSummary,
-                        TajikTitle = section.Poem.TajikTitle,
                         Category = new GanjoorPoetCompleteViewModel()
                         {
                             Poet = new GanjoorPoetViewModel()
@@ -2726,7 +2702,6 @@ namespace RMuseum.Services.Implementation
                         Published = section.Poem.Published,
                         Language = section.Poem.Language,
                         PoemSummary = section.Poem.PoemSummary,
-                        TajikTitle = section.Poem.TajikTitle,
                         Category = new GanjoorPoetCompleteViewModel()
                         {
                             Poet = new GanjoorPoetViewModel()
@@ -2857,7 +2832,6 @@ namespace RMuseum.Services.Implementation
                         Published = poem.Published,
                         Language = poem.Language,
                         PoemSummary = poem.PoemSummary,
-                        TajikTitle = poem.TajikTitle,
                         Category = new GanjoorPoetCompleteViewModel()
                         {
                             Poet = new GanjoorPoetViewModel()

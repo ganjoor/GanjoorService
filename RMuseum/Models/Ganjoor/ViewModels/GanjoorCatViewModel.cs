@@ -81,16 +81,6 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public string MapName { get; set; }
 
         /// <summary>
-        /// tajik title
-        /// </summary>
-        public string TajikTitle { get; set; }
-
-        /// <summary>
-        /// additional descripion or note in Tajik
-        /// </summary>
-        public string TajikDescription { get; set; }
-
-        /// <summary>
         /// Next Category without Ancestors/Children/Poems info
         /// </summary>
         public GanjoorCatViewModel Next { get; set; }
