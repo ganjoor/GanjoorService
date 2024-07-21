@@ -4130,6 +4130,18 @@
         <member name="M:RMuseum.Migrations.NewTajikFields.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.NewTajikEntities">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.NewTajikEntities.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.NewTajikEntities.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.NewTajikEntities.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -19282,6 +19294,20 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetTajikPoetsAsync">
+            <summary>
+            tajik poets
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetTajikPageByUrlAsync(System.String,System.Boolean)">
+            <summary>
+            tajik page by url
+            </summary>
+            <param name="url"></param>
+            <param name="catPoems"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartRegeneratingTOCs(System.Guid)">
             <summary>
             regenerate TOCs
@@ -19301,20 +19327,6 @@
             <summary>
             transilerate verse data from Persian to Tajiki
             </summary>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetTajikPoetsAsync">
-            <summary>
-            tajik poets
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetTajikPageByUrlAsync(System.String,System.Boolean)">
-            <summary>
-            tajik page by url
-            </summary>
-            <param name="url"></param>
-            <param name="catPoems"></param>
-            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoets(System.Boolean,System.Boolean)">
             <summary>

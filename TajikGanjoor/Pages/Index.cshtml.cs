@@ -42,7 +42,7 @@ namespace TajikGanjoor.Pages
             IsHomePage = Request.Path == "/";
             if (!IsHomePage)
             {
-                var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Path}&catPoems=true");
+                var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/tajik/page?url={Request.Path}&catPoems=true");
                 if (!pageQuery.IsSuccessStatusCode)
                 {
                     if (pageQuery.StatusCode == HttpStatusCode.NotFound)
@@ -122,7 +122,7 @@ namespace TajikGanjoor.Pages
         private async Task<bool> PreparePoetsAsync()
         {
             var cacheKey = $"/api/ganjoor/poets";
-            if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel>? ganjoorPoets))
+            if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel>? poets))
             {
                 try
                 {
@@ -132,7 +132,7 @@ namespace TajikGanjoor.Pages
                         LastError = JsonConvert.DeserializeObject<string>(await res1.Content.ReadAsStringAsync()) ?? "!res1.IsSuccessStatusCode";
                         return false;
                     }
-                    ganjoorPoets = JArray.Parse(await res1.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
+                    var ganjoorPoets = JArray.Parse(await res1.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
                     ganjoorPoets = ganjoorPoets ?? [];
 
                     var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/tajik/poets");
@@ -143,7 +143,7 @@ namespace TajikGanjoor.Pages
                     }
                     var tajkPoets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorTajikPoet>>();
 
-                    List<GanjoorPoetViewModel> poets = new List<GanjoorPoetViewModel>();
+                    poets = new List<GanjoorPoetViewModel>();
                     foreach (var tajikPoet in tajkPoets)
                     {
                         var poet = ganjoorPoets.Where(p => p.Id == tajikPoet.Id).Single();
@@ -167,7 +167,7 @@ namespace TajikGanjoor.Pages
 
             }
 
-            Poets = ganjoorPoets ?? [];
+            Poets = poets ?? [];
             return true;
         }
         private void PrepareNextPre()
