@@ -141,6 +141,26 @@
             });
         }
 
+        function rebuildTajikSitemap() {
+            if (!confirm('آیا از بازسازی نقشهٔ سایت تاجیکی اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=RebuildTajikSitemap';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('فرایند بازسازی نقشهٔ سایت تاجیکی شروع شد.')
+                },
+
+            });
+        }
+
+
 
         function rebuildStats() {
             if (!confirm('آیا از بازسازی صفحات آمار اطمینان دارید؟'))
