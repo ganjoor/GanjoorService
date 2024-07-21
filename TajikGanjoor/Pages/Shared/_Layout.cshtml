@@ -23,6 +23,7 @@
     </div>
 
     <footer class="border-top footer text-muted">
+        Ба неруии <a href="http://persian-tajik.ir/FarsiTotajiki.aspx" target="_blank">пиршяни тоҷик</a>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -30,5 +31,21 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
+
+    @if (ViewData["GoogleAnalyticsCode"] != null && !string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
+    {
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=@(ViewData["GoogleAnalyticsCode"])"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+
+            gtag('config', '@(ViewData["GoogleAnalyticsCode"])');
+        </script>
+    }
+
 </body>
 </html>
