@@ -105,17 +105,5 @@ namespace RMuseum.Models.Ganjoor
         /// category map name
         /// </summary>
         public string MapName { get; set; }
-
-        /// <summary>
-        /// tajik title
-        /// </summary>
-        public string TajikTitle { get; set; }
-
-        /// <summary>
-        /// additional descripion or note in Tajik
-        /// </summary>
-        public string TajikDescription { get; set; }
-
-
     }
 }

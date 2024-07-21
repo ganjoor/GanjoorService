@@ -113,8 +113,6 @@ namespace GanjooRazor.Areas.Admin.Pages
                     BookName = Cat.Cat.BookName,
                     SumUpSubsGeoLocations = Cat.Cat.SumUpSubsGeoLocations,
                     MapName = Cat.Cat.MapName,
-                    TajikTitle = Cat.Cat.TajikTitle,
-                    TajikDescription = Cat.Cat.TajikDescription,
                 };
             }
            
