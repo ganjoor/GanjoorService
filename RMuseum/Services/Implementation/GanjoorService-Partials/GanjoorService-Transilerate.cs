@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using RSecurityBackend.Services.Implementation;
 using RMuseum.Utils;
 using RMuseum.Models.Ganjoor;
+using NAudio.Gui;
 
 namespace RMuseum.Services.Implementation
 {
@@ -115,7 +116,67 @@ namespace RMuseum.Services.Implementation
                           });
         }
 
-       
+
+        /// <summary>
+        /// one time fix for transilerations
+        /// </summary>
+        public void FixTransilerations()
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                          (
+                          async token =>
+                          {
+                              using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                              {
+                                  LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                  var job = (await jobProgressServiceEF.NewJob($"FixTransilerations", "Query data")).Result;
+                                  try
+                                  {
+                                      
+                                      var poets = await context.TajikPoets.ToListAsync();
+                                      foreach (var poet in poets)
+                                      {
+                                          poet.TajikNickname = LanguageUtils.CleanTextForTransileration(poet.TajikNickname);
+                                          poet.TajikDescription = LanguageUtils.CleanTextForTransileration(poet.TajikDescription);
+                                          context.Update(poet);
+                                          await context.SaveChangesAsync();
+                                      }
+
+                                      var cats = await context.TajikCats.ToListAsync();
+                                      foreach (var cat in cats)
+                                      {
+                                          cat.TajikTitle = LanguageUtils.CleanTextForTransileration(cat.TajikTitle);
+                                          cat.TajikDescription = LanguageUtils.CleanTextForTransileration(cat.TajikTitle);
+                                          context.Update(cat);
+                                          await context.SaveChangesAsync();
+                                      }
+
+                                      var poems = await context.TajikPoems.ToListAsync();
+                                      foreach(var poem in poems)
+                                      {
+                                          poem.TajikTitle = LanguageUtils.CleanTextForTransileration(poem.TajikTitle);
+                                          context.Update(poem);
+                                          await context.SaveChangesAsync();
+                                      }
+
+                                      var verses = await context.TajikVerses.ToListAsync();
+                                      foreach (var verse in verses)
+                                      {
+                                          verse.TajikText = LanguageUtils.CleanTextForTransileration(verse.TajikText);
+                                          context.Update(verse);
+                                          await context.SaveChangesAsync();
+                                      }
+
+                                      await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                  }
+                                  catch (Exception exp)
+                                  {
+                                      await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                  }
+
+                              }
+                          });
+        }
 
     }
 

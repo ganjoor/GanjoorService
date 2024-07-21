@@ -76,6 +76,22 @@ namespace RMuseum.Services.Implementation
                        ;
         }
 
+        public static string CleanTextForTransileration(string text)
+        {
+            return text.Replace("‌", " ")//replace zwnj with space
+                       .Replace("ّ", "")//tashdid
+                       .Replace("َ", "")//a
+                       .Replace("ِ", "")//e
+                       .Replace("ُ", "")//o
+                       .Replace("ً", "")//an
+                       .Replace("ٍ", "")//en
+                       .Replace("ٌ", "")//on
+                       .Replace("ٔ", "")//ye
+                       .Replace("ْ", "")//sokoon
+                       ;
+        }
+
+
         public static string SameSoundLetters(string text)
         {
             return text.Replace("آ", "ا").Replace("ث", "س").Replace("ح", "ه").Replace("ذ", "ز").Replace("ص", "س").Replace("ض", "ز").Replace("ط", "ت").Replace("ظ", "ز").Replace("غ", "ق");

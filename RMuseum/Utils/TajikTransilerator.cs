@@ -10,7 +10,7 @@ namespace RMuseum.Utils
     {
         public static string Transilerate(string input, string formDataForHassan)
         {
-            input = LanguageUtils.MakeTextSearchable(input);
+            input = LanguageUtils.CleanTextForTransileration(input);
             formDataForHassan = formDataForHassan.Replace("%D8%AD%D8%B3%D9%86", HttpUtility.UrlEncode(input));
 
             HttpWebRequest request = HttpWebRequest.Create("http://persian-tajik.ir/farsitotajiki.aspx") as HttpWebRequest;
