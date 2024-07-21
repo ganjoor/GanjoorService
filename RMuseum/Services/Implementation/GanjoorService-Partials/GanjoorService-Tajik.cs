@@ -156,7 +156,7 @@ namespace RMuseum.Services.Implementation
                         var prePoem = await _context.TajikPoems.AsNoTracking().Where(p => p.Id == page.Poem.Previous.Id).SingleOrDefaultAsync();
                         if (prePoem != null)
                         {
-                            page.Poem.Next.Title = prePoem.TajikTitle;
+                            page.Poem.Previous.Title = prePoem.TajikTitle;
                         }
                     }
                 }
