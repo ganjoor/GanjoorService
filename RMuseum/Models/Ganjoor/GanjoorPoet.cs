@@ -95,16 +95,5 @@ namespace RMuseum.Models.Ganjoor
         /// death location
         /// </summary>
         public virtual GanjoorGeoLocation DeathLocation { get; set; }
-
-        /// <summary>
-        /// tajik nick name
-        /// </summary>
-        public string TajikNickName { get; set; }
-
-        /// <summary>
-        /// additional descripion or note in Tajik
-        /// </summary>
-        public string TajikDescription { get; set; }
-
     }
 }
