@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RMuseum.Models.Ganjoor
 {
-    public class GanjoorTajikPoem
+    public class GanjoorTajikPage
     {
         /// <summary>
         /// id
@@ -12,18 +12,9 @@ namespace RMuseum.Models.Ganjoor
         public int Id { get; set; }
 
         /// <summary>
-        /// cat id
+        /// verses text as html (ganjoor.net format)
         /// </summary>
-        public int CatId { get; set; }
+        public string TajikHtmlText { get; set; }
 
-        /// <summary>
-        /// title
-        /// </summary>
-        public string TajikTitle { get; set; }
-
-        /// <summary>
-        /// verses text
-        /// </summary>
-        public string TajikPlainText { get; set; }
     }
 }

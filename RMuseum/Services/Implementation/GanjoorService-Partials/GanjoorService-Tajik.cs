@@ -47,6 +47,12 @@ namespace RMuseum.Services.Implementation
 
                 int poetId = page.Poem != null ? page.Poem.Category.Poet.Id : page.PoetOrCat.Poet.Id;
 
+                var tajikPage = await _context.TajikPages.AsNoTracking().Where(p => p.Id == page.Id).SingleOrDefaultAsync();
+                if (tajikPage == null)
+                    return new RServiceResult<GanjoorPageCompleteViewModel>(null, "Ин сафҳа ҳануз ба тоҷикии баргардонида нашуда.");
+
+                page.HtmlText = tajikPage.TajikHtmlText;
+
                 var tajikPoet = await _context.TajikPoets.AsNoTracking().Where(p => p.Id == poetId).SingleOrDefaultAsync();
                 if (tajikPoet == null)
                     return new RServiceResult<GanjoorPageCompleteViewModel>(null, "Ин суханвар ҳануз ба тоҷикӣ дар дастрас нест.");
@@ -129,7 +135,7 @@ namespace RMuseum.Services.Implementation
                     var tajikPoem = await _context.TajikPoems.AsNoTracking().Where(p => p.Id == page.Poem.Id).SingleAsync();
                     page.Poem.Title = tajikPoem.TajikTitle;
                     page.Poem.PlainText = tajikPoem.TajikPlainText;
-                    page.Poem.HtmlText = tajikPoem.TajikHtmlText;
+
 
                     var tajikVerses = await _context.TajikVerses.AsNoTracking().Where(v => v.PoemId ==  page.Poem.Id).OrderBy(v => v.VOrder).ToListAsync();
                     foreach( var verse in page.Poem.Verses)

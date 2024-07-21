@@ -619,5 +619,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorTajikVerse> TajikVerses { get; set; }
 
+        /// <summary>
+        /// tajik pages
+        /// </summary>
+        public DbSet<GanjoorTajikPage> TajikPages { get; set; }
+
     }
 }

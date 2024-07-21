@@ -116,6 +116,7 @@ namespace TajikGanjoor.Pages
                 ViewData["Title"] = title;
             }
             ViewData["BreadCrumpUrls"] = BreadCrumpUrls;
+            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
             return Page();
         }
 

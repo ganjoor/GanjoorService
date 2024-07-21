@@ -3638,6 +3638,11 @@
             tajik verse
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.TajikPages">
+            <summary>
+            tajik pages
+            </summary>
+        </member>
         <member name="T:RMuseum.Migrations.PictureFileExtUrl">
             <inheritdoc />
         </member>
@@ -9794,6 +9799,16 @@
             additional descripion or note in Tajik
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPage.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPage.TajikHtmlText">
+            <summary>
+            verses text as html (ganjoor.net format)
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoem.Id">
             <summary>
             id
@@ -9812,11 +9827,6 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoem.TajikPlainText">
             <summary>
             verses text
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoem.TajikHtmlText">
-            <summary>
-            verses text as html (ganjoor.net format)
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoet.Id">
