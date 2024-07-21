@@ -2682,6 +2682,26 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// build tj.ganjoor.net site map
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("sitemap/tajik")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public IActionResult StartBuildingTajikSitemap()
+        {
+            var res = _ganjoorService.StartBuildingTajikSitemap();
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok();
+        }
+
+
+        /// <summary>
         /// regenerate stats page
         /// </summary>
         /// <returns></returns>

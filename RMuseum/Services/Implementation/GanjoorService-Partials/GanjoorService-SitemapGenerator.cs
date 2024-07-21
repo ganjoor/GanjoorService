@@ -17,7 +17,7 @@ namespace RMuseum.Services.Implementation
     public partial class GanjoorService : IGanjoorService
     {
 
-        private void WriteSitemap(string filePath, List<string> urls)
+        private void WriteSitemap(string filePath, List<string> urls, string baseUrl)
         {
             if (File.Exists(filePath))
                 File.Delete(filePath);
@@ -32,7 +32,7 @@ namespace RMuseum.Services.Implementation
                     "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"),
                 from url in urls
                 select new XElement(ns + "url",
-                    new XElement(ns + "loc", $"https://ganjoor.net{url}"))
+                    new XElement(ns + "loc", $"{baseUrl}{url}"))
                 )
             );
 
@@ -86,7 +86,8 @@ namespace RMuseum.Services.Implementation
                                        urls.Remove("/hashieha");
 
                                        WriteSitemap(firstSitemap,
-                                              urls
+                                              urls,
+                                              "https://ganjoor.net"
                                               );
 
                                        foreach (var poet in await context.GanjoorPoets.Where(p => p.Published).ToListAsync())
@@ -96,7 +97,8 @@ namespace RMuseum.Services.Implementation
                                            string poetSitemap = Path.Combine(dir, $"{poet.Id}.xml");
 
                                            WriteSitemap(poetSitemap,
-                                               await context.GanjoorPages.Where(p => p.PoetId == poet.Id && p.UrlSlug != "vazn").OrderBy(p => p.Id).Select(p => p.FullUrl).ToListAsync()
+                                               await context.GanjoorPages.Where(p => p.PoetId == poet.Id && p.UrlSlug != "vazn").OrderBy(p => p.Id).Select(p => p.FullUrl).ToListAsync(),
+                                               "https://ganjoor.net"
                                                );
 
                                            sitemaps.Add(poetSitemap);
@@ -130,6 +132,82 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(true);
             }
             catch(Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// build tj.ganjoor.net site map
+        /// </summary>
+        /// <returns></returns>
+        public RServiceResult<bool> StartBuildingTajikSitemap()
+        {
+            try
+            {
+
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                           (
+                           async token =>
+                           {
+                               using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                               {
+                                   LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                   var job = (await jobProgressServiceEF.NewJob("BuildTajikSitemap", "Query data")).Result;
+                                   try
+                                   {
+                                       string xmlSitemap = Configuration.GetSection("Ganjoor")["TajikSitemapLocation"];
+                                       if (File.Exists(xmlSitemap))
+                                           File.Delete(xmlSitemap);
+
+                                       string dir = Path.GetDirectoryName(xmlSitemap);
+
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 0, "", false);
+
+                                       List<string> sitemaps = new List<string>();
+
+                                       foreach (var poet in await context.TajikPoets.AsNoTracking().ToListAsync())
+                                       {
+                                           await jobProgressServiceEF.UpdateJob(job.Id, poet.Id, "", false);
+
+                                           string poetSitemap = Path.Combine(dir, $"{poet.Id}.xml");
+
+                                           WriteSitemap(poetSitemap,
+                                               await context.GanjoorPages.Where(p => p.PoetId == poet.Id && (p.GanjoorPageType == Models.Ganjoor.GanjoorPageType.PoetPage || p.GanjoorPageType == Models.Ganjoor.GanjoorPageType.CatPage || p.GanjoorPageType == Models.Ganjoor.GanjoorPageType.PoemPage)).OrderBy(p => p.Id).Select(p => p.FullUrl).ToListAsync(),
+                                               "https://tj.ganjoor.net"
+                                               );
+
+                                           sitemaps.Add(poetSitemap);
+                                       }
+
+                                       XNamespace ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
+                                       XNamespace xsiNs = "http://www.w3.org/2001/XMLSchema-instance";
+                                       XDocument xDoc = new XDocument(
+                                            new XDeclaration("1.0", "UTF-8", "no"),
+                                            new XElement(ns + "sitemapindex",
+                                            new XAttribute(XNamespace.Xmlns + "xsi", xsiNs),
+                                            new XAttribute(xsiNs + "schemaLocation",
+                                                "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"),
+                                            from sitemap in sitemaps
+                                            select new XElement(ns + "sitemap",
+                                                new XElement(ns + "loc", $"https://tj.ganjoor.net/{Path.GetFileName(sitemap)}"))
+                                            )
+                                        );
+
+                                       xDoc.Save(xmlSitemap);
+
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                   }
+                                   catch (Exception exp)
+                                   {
+                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                   }
+
+                               }
+                           });
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }

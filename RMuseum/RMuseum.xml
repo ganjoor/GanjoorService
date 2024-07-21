@@ -1699,6 +1699,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartBuildingTajikSitemap">
+            <summary>
+            build tj.ganjoor.net site map
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.StartUpdatingStatsPage">
             <summary>
             regenerate stats page
@@ -16172,6 +16178,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartBuildingTajikSitemap">
+            <summary>
+            build tj.ganjoor.net site map
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.StartUpdatingStatsPage(System.Guid)">
             <summary>
             start updating stats page
@@ -19173,6 +19185,12 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBuildingSitemap">
             <summary>
             build sitemap
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBuildingTajikSitemap">
+            <summary>
+            build tj.ganjoor.net site map
             </summary>
             <returns></returns>
         </member>

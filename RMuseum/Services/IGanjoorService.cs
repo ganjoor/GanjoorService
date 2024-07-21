@@ -788,6 +788,12 @@ namespace RMuseum.Services
         RServiceResult<bool> StartBuildingSitemap();
 
         /// <summary>
+        /// build tj.ganjoor.net site map
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartBuildingTajikSitemap();
+
+        /// <summary>
         /// start updating stats page
         /// </summary>
         /// <returns></returns>
