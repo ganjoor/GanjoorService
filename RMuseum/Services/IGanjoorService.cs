@@ -1479,11 +1479,6 @@ namespace RMuseum.Services
         void Transilerate();
 
         /// <summary>
-        /// one time fix for transilerations
-        /// </summary>
-        void FixTransilerations();
-
-        /// <summary>
         /// tajik poets
         /// </summary>
         /// <returns></returns>
