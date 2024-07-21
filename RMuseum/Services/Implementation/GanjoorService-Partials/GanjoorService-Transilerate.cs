@@ -156,18 +156,21 @@ namespace RMuseum.Services.Implementation
                                       foreach (var cat in cats)
                                       {
                                           cat.TajikTitle = LanguageUtils.CleanTextForTransileration(cat.TajikTitle);
-                                          cat.TajikDescription = LanguageUtils.CleanTextForTransileration(cat.TajikTitle);
+                                          cat.TajikDescription = LanguageUtils.CleanTextForTransileration(cat.TajikDescription);
                                           context.Update(cat);
                                           await context.SaveChangesAsync();
 
-                                          var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == cat.Id).SingleAsync();
-                                          GanjoorTajikPage page = new GanjoorTajikPage()
+                                          var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == cat.Id).SingleOrDefaultAsync();
+                                          if (catPage != null)
                                           {
-                                              Id = catPage.Id,
-                                              TajikHtmlText = await PrepareTajikCatHtmlTextAsync(context, cat),
-                                          };
-                                          context.Add(page);
-                                          await context.SaveChangesAsync();
+                                              GanjoorTajikPage page = new GanjoorTajikPage()
+                                              {
+                                                  Id = catPage.Id,
+                                                  TajikHtmlText = await PrepareTajikCatHtmlTextAsync(context, cat),
+                                              };
+                                              context.Add(page);
+                                              await context.SaveChangesAsync();
+                                          }
                                       }
 
                                       await jobProgressServiceEF.UpdateJob(job.Id, 2, "poems");
