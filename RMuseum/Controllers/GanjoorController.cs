@@ -4272,6 +4272,10 @@ namespace RMuseum.Controllers
         }
 
 
+        /// <summary>
+        /// transilerate from farsi to tajiki
+        /// </summary>
+        /// <returns></returns>
         [HttpPut("transilerate")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -4281,6 +4285,34 @@ namespace RMuseum.Controllers
             _ganjoorService.Transilerate();
             return Ok();
         }
+
+        /// <summary>
+        /// tajik poets
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("tajik/poets")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorTajikPoet[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetTajikPoetsAsync()
+        {
+            var cacheKey = $"ganjoor/tajik/poets";
+            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorTajikPoet[] poets))
+            {
+                RServiceResult<GanjoorTajikPoet[]> res =
+                await _ganjoorService.GetTajikPoetsAsync();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+
+                poets = res.Result;
+                if (AggressiveCacheEnabled)
+                    _memoryCache.Set(cacheKey, poets);
+
+            }
+            return Ok(poets);
+        }
+
 
 
         /// <summary>
