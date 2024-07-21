@@ -20,6 +20,7 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         public void Transilerate()
         {
+            string formData = Configuration["TransilerateFormData"];
             _backgroundTaskQueue.QueueBackgroundWorkItem
                           (
                           async token =>
@@ -55,7 +56,7 @@ namespace RMuseum.Services.Implementation
                                                               Id = verse.Id,
                                                               PoemId = verse.PoemId,
                                                               VOrder = verse.VOrder,
-                                                              TajikText = TajikTransilerator.Transilerate(verse.Text),
+                                                              TajikText = TajikTransilerator.Transilerate(verse.Text, formData),
                                                           };
                                                           context.Add(tajikVerse);
                                                       }
@@ -67,7 +68,7 @@ namespace RMuseum.Services.Implementation
                                                       {
                                                           Id = poem.Id,
                                                           CatId = poem.CatId,
-                                                          TajikTitle = TajikTransilerator.Transilerate(poem.Title),
+                                                          TajikTitle = TajikTransilerator.Transilerate(poem.Title, formData),
                                                       };
                                                       context.Add(tajikPoem);
                                                   }
@@ -81,8 +82,8 @@ namespace RMuseum.Services.Implementation
                                                   GanjoorTajikCat tajikCat = new GanjoorTajikCat()
                                                   {
                                                       Id = catId,
-                                                      TajikTitle = TajikTransilerator.Transilerate(cat.Title),
-                                                      TajikDescription = TajikTransilerator.Transilerate(cat.Description),
+                                                      TajikTitle = TajikTransilerator.Transilerate(cat.Title, formData),
+                                                      TajikDescription = TajikTransilerator.Transilerate(cat.Description, formData),
                                                   };
                                                   context.Add(tajikCat);
                                                   await context.SaveChangesAsync();
@@ -94,8 +95,8 @@ namespace RMuseum.Services.Implementation
                                               GanjoorTajikPoet tajikPoet = new GanjoorTajikPoet()
                                               {
                                                   Id = poet.Id,
-                                                  TajikNickname = TajikTransilerator.Transilerate(poet.Nickname),
-                                                  TajikDescription = TajikTransilerator.Transilerate(poet.Description),
+                                                  TajikNickname = TajikTransilerator.Transilerate(poet.Nickname, formData),
+                                                  TajikDescription = TajikTransilerator.Transilerate(poet.Description, formData),
                                               };
                                               context.Add(tajikPoet);
                                               await context.SaveChangesAsync();
