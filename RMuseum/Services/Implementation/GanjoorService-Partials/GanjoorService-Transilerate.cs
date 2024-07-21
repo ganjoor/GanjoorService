@@ -8,6 +8,7 @@ using RSecurityBackend.Services.Implementation;
 using RMuseum.Utils;
 using RMuseum.Models.Ganjoor;
 using NAudio.Gui;
+using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
 {
@@ -140,6 +141,15 @@ namespace RMuseum.Services.Implementation
                                           poet.TajikDescription = LanguageUtils.CleanTextForTransileration(poet.TajikDescription);
                                           context.Update(poet);
                                           await context.SaveChangesAsync();
+
+                                          var poetPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == poet.Id).SingleAsync();
+                                          GanjoorTajikPage page = new GanjoorTajikPage()
+                                          {
+                                              Id = poetPage.Id,
+                                              TajikHtmlText = await PrepareTajikPoetHtmlTextAsync(context, poet),
+                                          };
+                                          context.Add(page);
+                                          await context.SaveChangesAsync();
                                       }
 
                                       var cats = await context.TajikCats.ToListAsync();
@@ -176,6 +186,33 @@ namespace RMuseum.Services.Implementation
 
                               }
                           });
+        }
+
+        private async Task<string> PrepareTajikPoetHtmlTextAsync(RMuseumDbContext context, GanjoorTajikPoet poet)
+        {
+
+            string[] lines = poet.TajikDescription.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+            string html = "";
+            foreach (var line in lines)
+            {
+                html += $"<p>{line}</p>";
+            }
+            var poetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poet.Id && c.ParentId == null).SingleAsync();
+            var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == poetCat.Id).OrderBy(p => p.Id).ToListAsync();
+            foreach (var subCat in subCats)
+            {
+                var tajikCat = await context.TajikCats.AsNoTracking().Where(t => t.Id == subCat.Id).SingleAsync();
+                html += $"<p><a href=\"{subCat.FullUrl}\">{LanguageUtils.CleanTextForTransileration(tajikCat.TajikTitle)}</a></p>";
+            }
+
+            var catPoems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == poetCat.Id).OrderBy(p => p.Id).ToListAsync();
+            var tajikPoems = await context.TajikPoems.AsNoTracking().Where(p => p.CatId == poetCat.Id).OrderBy(p => p.Id).ToListAsync();
+            foreach (var catPoem in catPoems)
+            {
+                var tajikPoem = tajikPoems.Where(p => p.Id == catPoem.Id).Single();
+                html += $"<p><a href=\"{catPoem.FullUrl}\">{LanguageUtils.CleanTextForTransileration(tajikPoem.TajikTitle)}</a></p>";
+            }
+            return html;
         }
 
     }
