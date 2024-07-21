@@ -176,8 +176,6 @@ namespace RMuseum.Services.Implementation
                                       foreach(var poem in poems)
                                       {
                                           poem.TajikTitle = LanguageUtils.CleanTextForTransileration(poem.TajikTitle);
-                                          context.Update(poem);
-                                          await context.SaveChangesAsync();
 
                                           var poemPage = await context.GanjoorPages.AsNoTracking().Where(p => p.Id == poem.Id).SingleAsync();
                                           var poemVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync();
@@ -195,9 +193,12 @@ namespace RMuseum.Services.Implementation
                                           context.Add(page);
                                           await context.SaveChangesAsync();
 
+                                          poem.TajikPlainText = PreparePlainText(poemVerses);
+                                          context.Update(poem);
+                                          await context.SaveChangesAsync();
                                       }
 
-                                      await jobProgressServiceEF.UpdateJob(job.Id, 2, "verses");
+                                      await jobProgressServiceEF.UpdateJob(job.Id, 3, "verses");
 
                                       var verses = await context.TajikVerses.ToListAsync();
                                       foreach (var verse in verses)
@@ -217,7 +218,6 @@ namespace RMuseum.Services.Implementation
                               }
                           });
         }
-
         private async Task<string> PrepareTajikPoetHtmlTextAsync(RMuseumDbContext context, GanjoorTajikPoet poet)
         {
 
