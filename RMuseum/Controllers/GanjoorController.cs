@@ -4313,6 +4313,30 @@ namespace RMuseum.Controllers
             return Ok(poets);
         }
 
+        /// <summary>
+        /// tajik page by url
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="catPoems"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("tajik/page")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetTajikPageByUrlAsync(string url, bool catPoems = false)
+        {
+            RServiceResult<GanjoorPageCompleteViewModel> res =
+                await _ganjoorService.GetTajikPageByUrlAsync(url, catPoems);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
+        }
+
+
 
 
         /// <summary>

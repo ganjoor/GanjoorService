@@ -2237,6 +2237,26 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.Transilerate">
+            <summary>
+            transilerate from farsi to tajiki
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetTajikPoetsAsync">
+            <summary>
+            tajik poets
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetTajikPageByUrlAsync(System.String,System.Boolean)">
+            <summary>
+            tajik page by url
+            </summary>
+            <param name="url"></param>
+            <param name="catPoems"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
