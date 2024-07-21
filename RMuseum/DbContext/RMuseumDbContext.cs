@@ -602,22 +602,22 @@ namespace RMuseum.DbContext
         /// <summary>
         /// tajik poets
         /// </summary>
-        public DbSet<TajikPoet> TajikPoets { get; set; }
+        public DbSet<GanjoorTajikPoet> TajikPoets { get; set; }
 
         /// <summary>
         /// tajik cats
         /// </summary>
-        public DbSet<TajikCat> TajikCats { get; set; }
+        public DbSet<GanjoorTajikCat> TajikCats { get; set; }
 
         /// <summary>
         /// tajik poems
         /// </summary>
-        public DbSet<TajikPoem> TajikPoems { get; set; }
+        public DbSet<GanjoorTajikPoem> TajikPoems { get; set; }
 
         /// <summary>
         /// tajik verse
         /// </summary>
-        public DbSet<TajikVerse> TajikVerses { get; set; }
+        public DbSet<GanjoorTajikVerse> TajikVerses { get; set; }
 
     }
 }
