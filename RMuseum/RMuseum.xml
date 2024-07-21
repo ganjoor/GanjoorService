@@ -3598,6 +3598,26 @@
             Category Word Count Summaries
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.TajikPoets">
+            <summary>
+            tajik poets
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.TajikCats">
+            <summary>
+            tajik cats
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.TajikPoems">
+            <summary>
+            tajik poems
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.TajikVerses">
+            <summary>
+            tajik verse
+            </summary>
+        </member>
         <member name="T:RMuseum.Migrations.PictureFileExtUrl">
             <inheritdoc />
         </member>
@@ -9740,6 +9760,66 @@
             active
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikCat.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikCat.TajikTitle">
+            <summary>
+            tajik title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikCat.TajikDescription">
+            <summary>
+            additional descripion or note in Tajik
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoem.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoem.TajikTitle">
+            <summary>
+            title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoem.TajikPlainText">
+            <summary>
+            verses text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoem.TajikHtmlText">
+            <summary>
+            verses text as html (ganjoor.net format)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoet.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoet.TajikNickName">
+            <summary>
+            tajik nick name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoet.TajikDescription">
+            <summary>
+            additional descripion or note in Tajik
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikVerse.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikVerse.TajikText">
+            <summary>
+            tajik text
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorTOC">
             <summary>
             ganjoor TOC options
@@ -10554,16 +10634,6 @@
             category map name
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.TajikTitle">
-            <summary>
-            tajik title
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.TajikDescription">
-            <summary>
-            additional descripion or note in Tajik
-            </summary>
-        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel.Next">
             <summary>
             Next Category without Ancestors/Children/Poems info
@@ -11304,11 +11374,6 @@
             poem is claimed by multiple poets
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel.TajikTitle">
-            <summary>
-            tajik title
-            </summary>
-        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel">
             <summary>
             poem correction view model
@@ -11769,11 +11834,6 @@
             excerpt text
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel.TajikTitle">
-            <summary>
-            tajik title
-            </summary>
-        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSummaryViewModel.MainSections">
             <summary>
             whole poem sections
@@ -12048,16 +12108,6 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.DeathPlaceLongitude">
             <summary>
             death place longitude
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.TajikNickName">
-            <summary>
-            tajik nick name
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel.TajikDescription">
-            <summary>
-            additional descripion or note in Tajik
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPostReportCommentViewModel">
@@ -12481,11 +12531,6 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.CoupletSummary">
             <summary>
             couplet summary
-            </summary>
-        </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.Tajik">
-            <summary>
-            tajik text
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel">
@@ -18220,6 +18265,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -19204,6 +19252,12 @@
             <summary>
             transilerate verse data from Persian to Tajiki
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetTajikPoetsAsync">
+            <summary>
+            tajik poets
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoets(System.Boolean,System.Boolean)">
             <summary>
