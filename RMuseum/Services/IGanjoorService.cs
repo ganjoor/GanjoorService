@@ -1472,5 +1472,19 @@ namespace RMuseum.Services
         /// </summary>
         void Transilerate();
 
+        /// <summary>
+        /// tajik poets
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorTajikPoet[]>> GetTajikPoetsAsync();
+
+        /// <summary>
+        /// tajik page by url
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="catPoems"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPageCompleteViewModel>> GetTajikPageByUrlAsync(string url, bool catPoems = false);
+
     }
 }

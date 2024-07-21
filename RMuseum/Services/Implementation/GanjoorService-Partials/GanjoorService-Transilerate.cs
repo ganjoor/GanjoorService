@@ -53,7 +53,9 @@ namespace RMuseum.Services.Implementation
                                                           GanjoorTajikVerse tajikVerse = new GanjoorTajikVerse()
                                                           {
                                                               Id = verse.Id,
-                                                              TajikText = TajikTransilerator.Transilerate(verse.Text)
+                                                              PoemId = verse.PoemId,
+                                                              VOrder = verse.VOrder,
+                                                              TajikText = TajikTransilerator.Transilerate(verse.Text),
                                                           };
                                                           context.Add(tajikVerse);
                                                       }
@@ -64,6 +66,7 @@ namespace RMuseum.Services.Implementation
                                                       GanjoorTajikPoem tajikPoem = new GanjoorTajikPoem()
                                                       {
                                                           Id = poem.Id,
+                                                          CatId = poem.CatId,
                                                           TajikTitle = TajikTransilerator.Transilerate(poem.Title),
                                                       };
                                                       context.Add(tajikPoem);
@@ -91,7 +94,7 @@ namespace RMuseum.Services.Implementation
                                               GanjoorTajikPoet tajikPoet = new GanjoorTajikPoet()
                                               {
                                                   Id = poet.Id,
-                                                  TajikNickName = TajikTransilerator.Transilerate(poet.Nickname),
+                                                  TajikNickname = TajikTransilerator.Transilerate(poet.Nickname),
                                                   TajikDescription = TajikTransilerator.Transilerate(poet.Description),
                                               };
                                               context.Add(tajikPoet);

@@ -12,6 +12,11 @@ namespace RMuseum.Models.Ganjoor
         public int Id { get; set; }
 
         /// <summary>
+        /// cat id
+        /// </summary>
+        public int CatId { get; set; }
+
+        /// <summary>
         /// title
         /// </summary>
         public string TajikTitle { get; set; }

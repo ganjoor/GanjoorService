@@ -9780,6 +9780,11 @@
             id
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoem.CatId">
+            <summary>
+            cat id
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoem.TajikTitle">
             <summary>
             title
@@ -9800,7 +9805,7 @@
             id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoet.TajikNickName">
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoet.TajikNickname">
             <summary>
             tajik nick name
             </summary>
@@ -9813,6 +9818,16 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikVerse.Id">
             <summary>
             id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikVerse.PoemId">
+            <summary>
+            poem_id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikVerse.VOrder">
+            <summary>
+            vorder
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikVerse.TajikText">
@@ -16788,6 +16803,20 @@
             transilerate verse data from Persian to Tajiki
             </summary>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetTajikPoetsAsync">
+            <summary>
+            tajik poets
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetTajikPageByUrlAsync(System.String,System.Boolean)">
+            <summary>
+            tajik page by url
+            </summary>
+            <param name="url"></param>
+            <param name="catPoems"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -19257,6 +19286,14 @@
             <summary>
             tajik poets
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetTajikPageByUrlAsync(System.String,System.Boolean)">
+            <summary>
+            tajik page by url
+            </summary>
+            <param name="url"></param>
+            <param name="catPoems"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoets(System.Boolean,System.Boolean)">
