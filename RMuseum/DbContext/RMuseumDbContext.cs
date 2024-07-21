@@ -599,5 +599,25 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<CategoryWordCountSummary> CategoryWordCountSummaries { get; set; }
 
+        /// <summary>
+        /// tajik poets
+        /// </summary>
+        public DbSet<TajikPoet> TajikPoets { get; set; }
+
+        /// <summary>
+        /// tajik cats
+        /// </summary>
+        public DbSet<TajikCat> TajikCats { get; set; }
+
+        /// <summary>
+        /// tajik poems
+        /// </summary>
+        public DbSet<TajikPoem> TajikPoems { get; set; }
+
+        /// <summary>
+        /// tajik verse
+        /// </summary>
+        public DbSet<TajikVerse> TajikVerses { get; set; }
+
     }
 }
