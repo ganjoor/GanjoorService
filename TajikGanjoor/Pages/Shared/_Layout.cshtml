@@ -25,6 +25,14 @@
     <footer class="border-top footer text-muted">
         <span>Ба неруии <a href="http://persian-tajik.ir/FarsiTotajiki.aspx" target="_blank">пиршяни тоҷик</a></span>
         <span><a href="@ViewData["GoogleTranslateLink"]" target="_blank">Дар ганҷури форсӣ</a></span>
+        @if (ViewData["PreviousUrl"] != null && !string.IsNullOrEmpty(ViewData["PreviousUrl"].ToString()))
+        {
+            <span><a href="@ViewData["PreviousUrl"]">қаблӣ</a></span>
+        }
+        @if (ViewData["NextUrl"] != null && !string.IsNullOrEmpty(ViewData["NextUrl"].ToString()))
+        {
+            <span><a href="@ViewData["NextUrl"]">баъдӣ</a></span>
+        }
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

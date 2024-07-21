@@ -116,6 +116,8 @@ namespace TajikGanjoor.Pages
             ViewData["BreadCrumpUrls"] = BreadCrumpUrls;
             ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
             ViewData["GoogleTranslateLink"] = $"https://translate.google.com/translate?hl=fa&sl=fa&tl=tg&u={Uri.EscapeDataString(stringToEscape: $"https://ganjoor.net{Request.Path}")}";
+            ViewData["NextUrl"] = NextUrl;
+            ViewData["PreviousUrl"] = PreviousUrl;
             return Page();
         }
 
