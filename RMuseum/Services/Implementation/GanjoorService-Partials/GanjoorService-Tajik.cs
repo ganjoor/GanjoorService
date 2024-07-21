@@ -140,19 +140,24 @@ namespace RMuseum.Services.Implementation
                     var tajikVerses = await _context.TajikVerses.AsNoTracking().Where(v => v.PoemId ==  page.Poem.Id).OrderBy(v => v.VOrder).ToListAsync();
                     foreach( var verse in page.Poem.Verses)
                     {
-                        verse.Text = tajikVerses.Where(v => v.VOrder == verse.VOrder).SingleOrDefault().TajikText;
+                        verse.Text = tajikVerses.Where(v => v.VOrder == verse.VOrder).Single().TajikText;
                     }
 
                     if(page.Poem.Next != null)
                     {
-                        var nextPoem = await _context.TajikPoems.AsNoTracking().Where(p => p.Id == page.Poem.Next.Id).SingleAsync();
-                        page.Poem.Next.Title = nextPoem.TajikTitle;
-
+                        var nextPoem = await _context.TajikPoems.AsNoTracking().Where(p => p.Id == page.Poem.Next.Id).SingleOrDefaultAsync();
+                        if(nextPoem != null)
+                        {
+                            page.Poem.Next.Title = nextPoem.TajikTitle;
+                        }
                     }
                     if (page.Poem.Previous != null)
                     {
-                        var prePoem = await _context.TajikPoems.AsNoTracking().Where(p => p.Id == page.Poem.Previous.Id).SingleAsync();
-                        page.Poem.Next.Title = prePoem.TajikTitle;
+                        var prePoem = await _context.TajikPoems.AsNoTracking().Where(p => p.Id == page.Poem.Previous.Id).SingleOrDefaultAsync();
+                        if (prePoem != null)
+                        {
+                            page.Poem.Next.Title = prePoem.TajikTitle;
+                        }
                     }
                 }
                 return new RServiceResult<GanjoorPageCompleteViewModel>(page);
