@@ -94,8 +94,8 @@ namespace TajikGanjoor.Pages
             else
             if (IsPoetPage)
             {
-                ViewData["Title"] = $"Ганҷур - {GanjoorPage?.PoetOrCat.Poet.TajikNickName}";
-                BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.PoetOrCat.Poet.FullUrl}\">{GanjoorPage?.PoetOrCat.Poet.TajikNickName}</a>";
+                ViewData["Title"] = $"Ганҷур - {GanjoorPage?.PoetOrCat.Poet.Nickname}";
+                BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.PoetOrCat.Poet.FullUrl}\">{GanjoorPage?.PoetOrCat.Poet.Nickname}</a>";
             }
             else
             if (IsCatPage || IsPoemPage)
@@ -103,15 +103,15 @@ namespace TajikGanjoor.Pages
                 string title = $"Ганҷур - ";
                 foreach (var gran in GanjoorPage.PoetOrCat.Cat.Ancestors)
                 {
-                    title += $"{gran.TajikTitle} - ";
-                    BreadCrumpUrls += $" - <a href=\"{gran.FullUrl}\">{gran.TajikTitle}</a>";
+                    title += $"{gran.Title} - ";
+                    BreadCrumpUrls += $" - <a href=\"{gran.FullUrl}\">{gran.Title}</a>";
                 }
-                title += GanjoorPage.PoetOrCat.Cat.TajikTitle;
-                BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.PoetOrCat.Cat.FullUrl}\">{GanjoorPage?.PoetOrCat.Cat.TajikTitle}</a>";
+                title += GanjoorPage.PoetOrCat.Cat.Title;
+                BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.PoetOrCat.Cat.FullUrl}\">{GanjoorPage?.PoetOrCat.Cat.Title}</a>";
                 if (IsPoemPage)
                 {
-                    title += GanjoorPage.Poem.TajikTitle;
-                    BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.FullUrl}\">{GanjoorPage?.Poem.TajikTitle}</a>";
+                    title += GanjoorPage.Poem.Title;
+                    BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.FullUrl}\">{GanjoorPage?.Poem.Title}</a>";
                 }
                 ViewData["Title"] = title;
             }
@@ -122,19 +122,38 @@ namespace TajikGanjoor.Pages
         private async Task<bool> PreparePoetsAsync()
         {
             var cacheKey = $"/api/ganjoor/poets";
-            if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel>? poets))
+            if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel>? ganjoorPoets))
             {
                 try
                 {
-                    var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
+                    var res1 = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
+                    if (!res1.IsSuccessStatusCode)
+                    {
+                        LastError = JsonConvert.DeserializeObject<string>(await res1.Content.ReadAsStringAsync()) ?? "!res1.IsSuccessStatusCode";
+                        return false;
+                    }
+                    ganjoorPoets = JArray.Parse(await res1.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
+                    ganjoorPoets = ganjoorPoets ?? [];
+
+                    var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/tajik/poets");
                     if (!response.IsSuccessStatusCode)
                     {
                         LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()) ?? "!response.IsSuccessStatusCode";
                         return false;
                     }
-                    poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
-                    poets = poets ?? [];
-                    poets = poets.Where(p => !string.IsNullOrWhiteSpace(p.TajikNickName)).ToList();
+                    var tajkPoets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorTajikPoet>>();
+
+                    List<GanjoorPoetViewModel> poets = new List<GanjoorPoetViewModel>();
+                    foreach (var tajikPoet in tajkPoets)
+                    {
+                        var poet = ganjoorPoets.Where(p => p.Id == tajikPoet.Id).Single();
+                        poet.Nickname = tajikPoet.TajikNickname;
+                        poet.Description = tajikPoet.TajikDescription;
+                        poets.Add(poet);
+                        
+                    }
+                    Poets = poets;
+                    
                     if (AggressiveCacheEnabled)
                     {
                         _memoryCache.Set(cacheKey, poets);
@@ -148,7 +167,7 @@ namespace TajikGanjoor.Pages
 
             }
 
-            Poets = poets ?? [];
+            Poets = ganjoorPoets ?? [];
             return true;
         }
         private void PrepareNextPre()
@@ -228,49 +247,49 @@ namespace TajikGanjoor.Pages
                     coupletIndex++;
                     if (((vIndex + 1) < verses.Count) && (verses[vIndex + 1].VersePosition == VersePosition.CenteredVerse2))
                     {
-                        htmlText += $"<div class=\"b2\" id=\"bn{coupletIndex}\"><p>{v.Tajik}</p>{Environment.NewLine}";
+                        htmlText += $"<div class=\"b2\" id=\"bn{coupletIndex}\"><p>{v.Text}</p>{Environment.NewLine}";
                     }
                     else
                     {
-                        htmlText += $"<div class=\"b2\" id=\"bn{coupletIndex}\"><p>{v.Tajik}</p></div>{Environment.NewLine}";
+                        htmlText += $"<div class=\"b2\" id=\"bn{coupletIndex}\"><p>{v.Text}</p></div>{Environment.NewLine}";
 
                     }
                 }
                 else
                 if (v.VersePosition == VersePosition.CenteredVerse2)
                 {
-                    htmlText += $"<p>{v.Tajik}</p></div>{Environment.NewLine}";
+                    htmlText += $"<p>{v.Text}</p></div>{Environment.NewLine}";
                 }
                 else
 
                 if (v.VersePosition == VersePosition.Right)
                 {
                     coupletIndex++;
-                    htmlText += $"<div class=\"b\" id=\"bn{coupletIndex}\"><div class=\"m1\"><p>{v.Tajik}</p></div>{Environment.NewLine}";
+                    htmlText += $"<div class=\"b\" id=\"bn{coupletIndex}\"><div class=\"m1\"><p>{v.Text}</p></div>{Environment.NewLine}";
                 }
                 else
                 if (v.VersePosition == VersePosition.Left)
                 {
-                    htmlText += $"<div class=\"m2\"><p>{v.Tajik}</p></div></div>{Environment.NewLine}";
+                    htmlText += $"<div class=\"m2\"><p>{v.Text}</p></div></div>{Environment.NewLine}";
                 }
                 else
                 if (v.VersePosition == VersePosition.Comment)
                 {
-                    htmlText += $"<div class=\"c\"><p>{v.Tajik}</p></div>{Environment.NewLine}";
+                    htmlText += $"<div class=\"c\"><p>{v.Text}</p></div>{Environment.NewLine}";
                 }
                 else
                 if (v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single)
                 {
                     coupletIndex++;
-                    string[] lines = v.Tajik.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] lines = v.Text.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
                     string cssClass = v.VersePosition == VersePosition.Paragraph ? "n" : "l";
 
                     if (lines.Length != 0)
                     {
-                        if (v.Tajik.Length / lines.Length < 150)
+                        if (v.Text.Length / lines.Length < 150)
                         {
-                            htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>{v.Tajik.Replace("\r\n", " ")}</p></div>{Environment.NewLine}";
+                            htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>{v.Text.Replace("\r\n", " ")}</p></div>{Environment.NewLine}";
                         }
                         else
                         {
@@ -280,13 +299,13 @@ namespace TajikGanjoor.Pages
                     }
                     else
                     {
-                        if (string.IsNullOrEmpty(v.Tajik))
+                        if (string.IsNullOrEmpty(v.Text))
                         {
                             htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>&nbsp;</p></div>{Environment.NewLine}";//empty line!
                         }
                         else
                         {
-                            htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>{v.Tajik}</p></div>{Environment.NewLine}";//not brave enough to ignore it!
+                            htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>{v.Text}</p></div>{Environment.NewLine}";//not brave enough to ignore it!
                         }
 
                     }

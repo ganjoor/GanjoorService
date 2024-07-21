@@ -505,7 +505,7 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="verses"></param>
         /// <returns></returns>
-        private static string PrepareHtmlText(List<GanjoorVerse> verses)
+        public static string PrepareHtmlText(List<GanjoorVerse> verses)
         {
             string htmlText = "";
             int coupletIndex = 0;
