@@ -329,9 +329,12 @@
 
     <p><a role="button" onclick="rebuildDigitalSourcesStats()" class="actionlink" title="بازسازی آمار منابع دیجیتال">بازسازی آمار منابع دیجیتال</a></p>
 
-    <p><a role="button" onclick="rebuildRebuildWordCounts(@Model.PageInformation.PoetOrCat.Poet.Id)" class="actionlink" title="شمارش واژگان">شمارش واژگان</a></p>
+    @if (Model.PageInformation.PoetOrCat != null)
+    {
+        <p><a role="button" onclick="rebuildRebuildWordCounts(@Model.PageInformation.PoetOrCat.Poet.Id)" class="actionlink" title="شمارش واژگان">شمارش واژگان</a></p>
+        <p><a role="button" onclick="discoverNaskbanPaperSources(@Model.PageInformation.PoetOrCat.Poet.Id)" class="actionlink" title="فهرست کردن کتابهای نسکبان">فهرست کردن کتابهای نسکبان</a></p>
+    }
 
-    <p><a role="button" onclick="discoverNaskbanPaperSources(@Model.PageInformation.PoetOrCat.Poet.Id)" class="actionlink" title="فهرست کردن کتابهای نسکبان">فهرست کردن کتابهای نسکبان</a></p>
 
     <p><a role="button" onclick="transilerate()" class="actionlink" title="برگردان تاجیکی">برگردان تاجیکی</a></p>
 
