@@ -244,10 +244,13 @@
             if (!confirm('آیا از شمارش واژگان برای شاعر جاری با کد '+poetId.toString() + ' اطمینان دارید؟'))
                 return;
 
-            var url = '?handler=RebuildWordCounts?poetId=' + poetId.toString();
+            var url = '?handler=RebuildWordCounts';
 
             $.ajax({
                 type: "POST",
+                data: {
+                    poetId: poetId
+                },
                 url: url,
                 error: function () {
                     alert('خطا رخ داد.')
