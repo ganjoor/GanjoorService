@@ -1242,11 +1242,20 @@ namespace RMuseum.Services
         void ImportPaperSourcesFromMuseum();
 
         /// <summary>
+        /// discover poet naskban paper sources
+        /// </summary>
+        /// <param name="poetid"></param>
+        /// <param name="naskbanUserName"></param>
+        /// <param name="naskbanPassword"></param>
+        void DiscoverPoetNaskbanPaperSources(int poetid, string naskbanUserName, string naskbanPassword);
+
+        /// <summary>
         /// category paper sources
         /// </summary>
         /// <param name="categoryId"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorPaperSource[]>> GetCategoryPaperSourcesAsync(int categoryId);
+
 
         /// <summary>
         /// mark naskban links as human reviewed

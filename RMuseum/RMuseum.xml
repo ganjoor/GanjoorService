@@ -2046,6 +2046,14 @@
             <param name="loginViewModel"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DiscoverPoetNaskbanPaperSources(System.Int32,RSecurityBackend.Models.Auth.ViewModels.LoginViewModel)">
+            <summary>
+            discover poet naskban paper sources
+            </summary>
+            <param name="poetId"></param>
+            <param name="loginViewModel"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.DeletePoemRelatedNaskbanImagesByNaskbanUrlAsync(System.String)">
             <summary>
             delete poem related naskban images by url
@@ -16616,6 +16624,14 @@
             import paper sources from museum
             </summary>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DiscoverPoetNaskbanPaperSources(System.Int32,System.String,System.String)">
+            <summary>
+            discover poet naskban paper sources
+            </summary>
+            <param name="poetid"></param>
+            <param name="naskbanUserName"></param>
+            <param name="naskbanPassword"></param>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetCategoryPaperSourcesAsync(System.Int32)">
             <summary>
             category paper sources
@@ -18789,6 +18805,14 @@
             </summary>
             <param name="categoryId"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DiscoverPoetNaskbanPaperSources(System.Int32,System.String,System.String)">
+            <summary>
+            discover poet naskban paper sources
+            </summary>
+            <param name="poetid"></param>
+            <param name="naskbanUserName"></param>
+            <param name="naskbanPassword"></param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportPaperSourcesFromMuseum">
             <summary>

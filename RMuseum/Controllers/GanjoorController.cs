@@ -3744,6 +3744,28 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// discover poet naskban paper sources
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="loginViewModel"></param>
+        /// <returns></returns>
+
+        [HttpPut("naskban/import/poetbooks/{poetId}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult DiscoverPoetNaskbanPaperSources(
+            int poetId,
+           [AuditIgnore]
+            [FromBody]
+            LoginViewModel loginViewModel
+           )
+        {
+            _ganjoorService.DiscoverPoetNaskbanPaperSources(poetId, loginViewModel.Username, loginViewModel.Password);
+            return Ok();
+        }
+
+        /// <summary>
         /// delete poem related naskban images by url
         /// </summary>
         /// <param name="naskbanUrl"></param>
