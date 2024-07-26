@@ -262,6 +262,33 @@
             });
         }
 
+        function discoverNaskbanPaperSources(poetId) {
+            var username = window.prompt('username:');
+            var password = window.prompt('password:');
+
+            var url = '?handler=ImportNaskbanPaperSources';
+
+            $.ajax({
+                type: "POST",
+                data: {
+                    poetId: poetId,
+                    username: username,
+                    password: password,
+                },
+                url: url,
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('فرایند بازسازی شروع شد.')
+                },
+
+            });
+        }
+
+
+        
+
 
 
 

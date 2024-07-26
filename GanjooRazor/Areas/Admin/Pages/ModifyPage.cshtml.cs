@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RSecurityBackend.Models.Auth.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -428,6 +429,35 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             return new OkObjectResult(false);
         }
+
+        public async Task<IActionResult> OnPostImportNaskbanPaperSourcesAsync(int poetId, string username, string password)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    LoginViewModel model = new LoginViewModel()
+                    {
+                        Username = username,
+                        Password = password,
+                        ClientAppName = "GanjooRazor",
+                        Language = "fa-IR"
+                    };
+                    var stringContent = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/naskban/import/poetbooks/{poetId}", stringContent);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
+
+
+        
 
 
 
