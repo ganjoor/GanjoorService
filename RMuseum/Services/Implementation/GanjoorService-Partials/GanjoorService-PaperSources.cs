@@ -163,7 +163,8 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// import paper sources from museum
         /// </summary>
-        public void ImportPaperSourcesFromMuseum()
+        /// <param name="poetid"></param>
+        public void ImportPaperSourcesFromMuseum(int poetid)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
                            (
@@ -173,13 +174,13 @@ namespace RMuseum.Services.Implementation
                                {
                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                                    var job = (await jobProgressServiceEF.NewJob("ImportPaperSourcesFromMuseum", "Query data")).Result;
-                                   await _ImportPaperSourcesFromMuseumAsync(context, jobProgressServiceEF, job);
+                                   await _ImportPaperSourcesFromMuseumAsync(context, jobProgressServiceEF, job, poetid);
 
                                }
                            });
         }
 
-        private async Task _ImportPaperSourcesFromMuseumAsync(RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        private async Task _ImportPaperSourcesFromMuseumAsync(RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, int poetid)
         {
             try
             {
@@ -197,6 +198,10 @@ namespace RMuseum.Services.Implementation
                         if (poem == null) continue;
                         var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == poem.CatId).SingleOrDefaultAsync();
                         if (cat == null) continue;
+                        if(poetid !=0)
+                        {
+                            if(cat.PoetId != poetid) continue;
+                        }
                         if (poets.ContainsKey(cat.PoetId))
                         {
                             poets[cat.PoetId]++;
@@ -222,24 +227,27 @@ namespace RMuseum.Services.Implementation
                         {
                             var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == mainPoet.Key).SingleAsync();
                             var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poet.Id & c.ParentId == null).SingleAsync();
-                            GanjoorPaperSource paperSource = new GanjoorPaperSource()
+                            if (false == await context.GanjoorPaperSources.Where(p => p.BookFullUrl == $"https://museum.ganjoor.net/items/{artifact.FriendlyUrl}" && p.GanjoorCatId == cat.Id).AnyAsync())
                             {
-                                GanjoorPoetId = poet.Id,
-                                GanjoorCatId = cat.Id,
-                                GanjoorCatFullTitle = poet.Nickname,
-                                GanjoorCatFullUrl = cat.FullUrl,
-                                BookType = LinkType.Museum,
-                                BookFullUrl = $"https://museum.ganjoor.net/items/{artifact.FriendlyUrl}",
-                                NaskbanBookId = 0,
-                                BookFullTitle = artifact.Name,
-                                CoverThumbnailImageUrl = artifact.CoverImage.ExternalNormalSizeImageUrl.Replace("/norm/", "/thumb/").Replace("/orig/", "/thumb/"),
-                                Description = "",
-                                IsTextOriginalSource = await context.GanjoorLinks.AsNoTracking().Where(l => l.ArtifactId == artifact.Id && l.IsTextOriginalSource == true).AnyAsync(),
-                                MatchPercent = 100,
-                                HumanReviewed = true,
-                                OrderIndicator = 1,
-                            };
-                            context.GanjoorPaperSources.Add(paperSource);
+                                GanjoorPaperSource paperSource = new GanjoorPaperSource()
+                                {
+                                    GanjoorPoetId = poet.Id,
+                                    GanjoorCatId = cat.Id,
+                                    GanjoorCatFullTitle = poet.Nickname,
+                                    GanjoorCatFullUrl = cat.FullUrl,
+                                    BookType = LinkType.Museum,
+                                    BookFullUrl = $"https://museum.ganjoor.net/items/{artifact.FriendlyUrl}",
+                                    NaskbanBookId = 0,
+                                    BookFullTitle = artifact.Name,
+                                    CoverThumbnailImageUrl = artifact.CoverImage.ExternalNormalSizeImageUrl.Replace("/norm/", "/thumb/").Replace("/orig/", "/thumb/"),
+                                    Description = "",
+                                    IsTextOriginalSource = await context.GanjoorLinks.AsNoTracking().Where(l => l.ArtifactId == artifact.Id && l.IsTextOriginalSource == true).AnyAsync(),
+                                    MatchPercent = 100,
+                                    HumanReviewed = true,
+                                    OrderIndicator = 1,
+                                };
+                                context.GanjoorPaperSources.Add(paperSource);
+                            }
                         }
                     }
                 }

@@ -3792,9 +3792,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public IActionResult ImportPaperSourcesFromMuseum()
+        public IActionResult ImportPaperSourcesFromMuseum(int poetid = 0)
         {
-            _ganjoorService.ImportPaperSourcesFromMuseum();
+            _ganjoorService.ImportPaperSourcesFromMuseum(poetid);
             return Ok();
         }
 

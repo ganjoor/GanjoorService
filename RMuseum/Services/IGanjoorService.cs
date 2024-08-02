@@ -1239,7 +1239,8 @@ namespace RMuseum.Services
         /// <summary>
         /// import paper sources from museum
         /// </summary>
-        void ImportPaperSourcesFromMuseum();
+        /// <param name="poetid"></param>
+        void ImportPaperSourcesFromMuseum(int poetid);
 
         /// <summary>
         /// discover poet naskban paper sources
