@@ -25,12 +25,12 @@
     </tr>
     <tr>
         <td>
-            <img src="@GanjooRazor.APIRoot.InternetUrl/api/images/thumb/@(Model.MainImage.EntityImageId).jpg" />
+            <img src="@Model.MainImage.ExternalNormalSizeImageUrl" />
         </td>
         <td>
             @if (Model.PreviouslyLinkedImage != null)
             {
-                <img src="@GanjooRazor.APIRoot.InternetUrl/api/images/thumb/@(Model.PreviouslyLinkedImage.EntityImageId).jpg" />
+                    <img src="@Model.PreviouslyLinkedImage.ExternalNormalSizeImageUrl" />
             }
         </td>
     </tr>
