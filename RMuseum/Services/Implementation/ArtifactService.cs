@@ -2630,7 +2630,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorLinkViewModel>> SuggestGanjoorLink(Guid userId, LinkSuggestion link)
         {
-            RArtifactMasterRecord artifact = await _context.Artifacts.Where(a => a.FriendlyUrl == link.ArtifactFriendlyUrl).SingleOrDefaultAsync();
+            RArtifactMasterRecord artifact = await _context.Artifacts.AsNoTracking().Include(a => a.CoverImage).Where(a => a.FriendlyUrl == link.ArtifactFriendlyUrl).SingleOrDefaultAsync();
 
             GanjoorLink alreadySuggest =
             await _context.GanjoorLinks.
@@ -2657,12 +2657,13 @@ namespace RMuseum.Services.Implementation
 
             string entityName, entityFriendlyUrl;
             Guid entityImageId;
-
+            string externalNormalSizeImageUrl;
             if (suggestion.ItemId == null)
             {
                 entityName = artifact.Name;
                 entityFriendlyUrl = $"/items/{artifact.FriendlyUrl}";
                 entityImageId = artifact.CoverImageId;
+                externalNormalSizeImageUrl = artifact.CoverImage.ExternalNormalSizeImageUrl;
             }
             else
             {
@@ -2670,6 +2671,7 @@ namespace RMuseum.Services.Implementation
                 entityName = artifact.Name + " » " + item.Name;
                 entityFriendlyUrl = $"/items/{artifact.FriendlyUrl}/{item.FriendlyUrl}";
                 entityImageId = item.Images.First().Id;
+                externalNormalSizeImageUrl = item.Images.First().ExternalNormalSizeImageUrl;
             }
 
             var user = (await _userService.GetUserInformation(userId)).Result;
@@ -2701,7 +2703,8 @@ namespace RMuseum.Services.Implementation
                         Bio = user.Bio,
                         EmailConfirmed = user.EmailConfirmed
                     },
-                    IsTextOriginalSource = suggestion.IsTextOriginalSource
+                    IsTextOriginalSource = suggestion.IsTextOriginalSource,
+                    ExternalNormalSizeImageUrl = externalNormalSizeImageUrl,
                 };
             return new RServiceResult<GanjoorLinkViewModel>(viewModel);
         }
@@ -2832,7 +2835,7 @@ namespace RMuseum.Services.Implementation
             GanjoorLink[] links =
             await _context.GanjoorLinks.AsNoTracking()
                  .Include(l => l.SuggestedBy)
-                 .Include(l => l.Artifact)
+                 .Include(l => l.Artifact).ThenInclude(a => a.CoverImage)
                  .Include(l => l.Item).ThenInclude(i => i.Images)
                  .Where(l => l.ReviewResult == status && (notSynced == false || !l.Synchronized))
                  .OrderBy(l => l.SuggestionDate)
@@ -2868,7 +2871,8 @@ namespace RMuseum.Services.Implementation
                             Bio = link.SuggestedBy.Bio,
                             EmailConfirmed = link.SuggestedBy.EmailConfirmed
                         },
-                        IsTextOriginalSource = link.IsTextOriginalSource
+                        IsTextOriginalSource = link.IsTextOriginalSource,
+                        ExternalNormalSizeImageUrl = link.Item == null ? link.Artifact.CoverImage.ExternalNormalSizeImageUrl : link.Item.Images.First().ExternalNormalSizeImageUrl,
                     }
                     );
             }
