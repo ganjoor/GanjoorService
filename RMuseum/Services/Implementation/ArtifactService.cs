@@ -2733,7 +2733,7 @@ namespace RMuseum.Services.Implementation
             GanjoorLink link =
             await _context.GanjoorLinks.AsNoTracking()
                  .Include(l => l.SuggestedBy)
-                 .Include(l => l.Artifact)
+                 .Include(l => l.Artifact).ThenInclude(l => l.CoverImage)
                  .Include(l => l.Item).ThenInclude(i => i.Images)
                  .Where(l => l.ReviewResult == ReviewResult.Approved && !l.Synchronized)
                  .OrderBy(l => l.SuggestionDate)
@@ -2770,13 +2770,14 @@ namespace RMuseum.Services.Implementation
                              Bio = link.SuggestedBy.Bio,
                              EmailConfirmed = link.SuggestedBy.EmailConfirmed
                          },
-                         IsTextOriginalSource = link.IsTextOriginalSource
+                         IsTextOriginalSource = link.IsTextOriginalSource,
+                         ExternalNormalSizeImageUrl = link.Item == null ? link.Artifact.CoverImage.ExternalNormalSizeImageUrl : link.Item.Images.First().ExternalNormalSizeImageUrl,
                      }
                      );
             GanjoorLink preLink =
             await _context.GanjoorLinks.AsNoTracking()
                  .Include(l => l.SuggestedBy)
-                 .Include(l => l.Artifact)
+                 .Include(l => l.Artifact).ThenInclude(l => l.CoverImage)
                  .Include(l => l.Item).ThenInclude(i => i.Images)
                  .Where(l => l.ReviewResult == ReviewResult.Approved && l.DisplayOnPage && l.GanjoorPostId == link.GanjoorPostId && l.ArtifactId == link.ArtifactId)
                  .OrderBy(l => l.SuggestionDate)
@@ -2811,7 +2812,8 @@ namespace RMuseum.Services.Implementation
                              Bio = preLink.SuggestedBy.Bio,
                              EmailConfirmed = preLink.SuggestedBy.EmailConfirmed
                          },
-                         IsTextOriginalSource = preLink.IsTextOriginalSource
+                         IsTextOriginalSource = preLink.IsTextOriginalSource,
+                         ExternalNormalSizeImageUrl = preLink.Item == null ? preLink.Artifact.CoverImage.ExternalNormalSizeImageUrl : preLink.Item.Images.First().ExternalNormalSizeImageUrl,
                      }
                      );
             }

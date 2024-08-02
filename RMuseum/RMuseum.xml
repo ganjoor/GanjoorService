@@ -7193,6 +7193,13 @@
             is text original source
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorIntegration.ViewModels.GanjoorLinkViewModel.ExternalNormalSizeImageUrl">
+            <summary>
+            url to access this image from THE external host, contains '/norm/' which when
+            you replace it with '/thumb/' you would have ExternalThumbnailImageUrl
+            and if you replace it with '/orig/' you would have a url for ExternalOriginalSizeImageUrl which MIGHT NOT EXIST and end in a 404 error
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.GanjoorIntegration.ViewModels.LinkSuggestion">
             <summary>
             Link Suggestion
