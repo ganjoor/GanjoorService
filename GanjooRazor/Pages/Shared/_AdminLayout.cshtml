@@ -286,6 +286,27 @@
             });
         }
 
+        function discoverMusuemPaperSources(poetId) {
+
+            var url = '?handler=ImportMuseumPaperSources';
+
+            $.ajax({
+                type: "POST",
+                data: {
+                    poetId: poetId,
+                },
+                url: url,
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    alert('فرایند بازسازی شروع شد.')
+                },
+
+            });
+        }
+
+
 
         
 

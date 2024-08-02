@@ -3787,7 +3787,7 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPut]
-        [Route("papersources/import")]
+        [Route("papersources/import/{poetid}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ModerateOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]

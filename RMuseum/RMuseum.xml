@@ -2061,7 +2061,7 @@
             <param name="naskbanUrl"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.ImportPaperSourcesFromMuseum">
+        <member name="M:RMuseum.Controllers.GanjoorController.ImportPaperSourcesFromMuseum(System.Int32)">
             <summary>
             import paper sources from museum
             </summary>
@@ -16626,10 +16626,11 @@
             <param name="naskbanUserName"></param>
             <param name="naskbanPassword"></param>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.ImportPaperSourcesFromMuseum">
+        <member name="M:RMuseum.Services.IGanjoorService.ImportPaperSourcesFromMuseum(System.Int32)">
             <summary>
             import paper sources from museum
             </summary>
+            <param name="poetid"></param>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.DiscoverPoetNaskbanPaperSources(System.Int32,System.String,System.String)">
             <summary>
@@ -18821,10 +18822,11 @@
             <param name="naskbanUserName"></param>
             <param name="naskbanPassword"></param>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportPaperSourcesFromMuseum">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportPaperSourcesFromMuseum(System.Int32)">
             <summary>
             import paper sources from museum
             </summary>
+            <param name="poetid"></param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoetSuggestedSpecLinesAsync(System.Int32)">
             <summary>
