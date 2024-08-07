@@ -78,6 +78,7 @@ namespace RMuseum.Services.Implementation
 
         public static string CleanTextForTransileration(string text)
         {
+            if (string.IsNullOrEmpty(text)) return text;
             return text.Replace("‌", " ")//replace zwnj with space
                        .Replace("ّ", "")//tashdid
                        .Replace("َ", "")//a
