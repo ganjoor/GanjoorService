@@ -49,6 +49,7 @@ namespace RMuseum.Services.Implementation
                                               foreach (var poem in poems)
                                               {
                                                   var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync();
+                                                  bool error = false;
                                                   foreach (var verse in verses)
                                                   {
                                                       if (false == await context.TajikVerses.Where(t => t.Id == verse.Id).AnyAsync())
@@ -60,12 +61,17 @@ namespace RMuseum.Services.Implementation
                                                               VOrder = verse.VOrder,
                                                               TajikText = TajikTransilerator.Transilerate(verse.Text, formData),
                                                           };
+                                                          if (!string.IsNullOrEmpty(verse.Text) && string.IsNullOrEmpty(tajikVerse.TajikText))
+                                                          {
+                                                              error = true;
+                                                              break;
+                                                          }
                                                           context.Add(tajikVerse);
                                                           verse.Text = tajikVerse.TajikText;
                                                       }
                                                   }
 
-                                                  if (false == await context.TajikPoems.Where(p => p.Id == poem.Id).AnyAsync())
+                                                  if (!error && false == await context.TajikPoems.Where(p => p.Id == poem.Id).AnyAsync())
                                                   {
                                                       GanjoorTajikPoem tajikPoem = new GanjoorTajikPoem()
                                                       {
@@ -74,6 +80,8 @@ namespace RMuseum.Services.Implementation
                                                           TajikTitle = TajikTransilerator.Transilerate(poem.Title, formData),
                                                           TajikPlainText = PreparePlainText(verses)
                                                       };
+                                                      if (string.IsNullOrEmpty(tajikPoem.TajikTitle))
+                                                          continue;
                                                       context.Add(tajikPoem);
 
                                                       GanjoorTajikPage page = new GanjoorTajikPage()
@@ -97,6 +105,7 @@ namespace RMuseum.Services.Implementation
                                                       TajikTitle = TajikTransilerator.Transilerate(cat.Title, formData),
                                                       TajikDescription = TajikTransilerator.Transilerate(cat.Description, formData),
                                                   };
+                                                  if (string.IsNullOrEmpty(tajikCat.TajikTitle)) continue;
                                                   context.Add(tajikCat);
                                                   await context.SaveChangesAsync();
 
@@ -122,6 +131,7 @@ namespace RMuseum.Services.Implementation
                                                   TajikNickname = TajikTransilerator.Transilerate(poet.Nickname, formData),
                                                   TajikDescription = TajikTransilerator.Transilerate(poet.Description, formData),
                                               };
+                                              if (string.IsNullOrEmpty(tajikPoet.TajikNickname)) continue;
                                               context.Add(tajikPoet);
                                               await context.SaveChangesAsync();
 
