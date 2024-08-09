@@ -19383,6 +19383,11 @@
             transilerate verse data from Persian to Tajiki
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.FixTransilerations">
+            <summary>
+            one time fix for transilerations
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoets(System.Boolean,System.Boolean)">
             <summary>
             Get List of poets

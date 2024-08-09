@@ -3,13 +3,17 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Web;
+using System.Windows.Forms;
 
 namespace RMuseum.Utils
 {
     public static class TajikTransilerator
     {
-        public static string Transilerate(string input, string formDataForHassan)
+        public static string Transilerate(string input, string formDataForHassan, out string error)
         {
+            
+            error = "";
+            if (string.IsNullOrEmpty(input)) return input;
             input = LanguageUtils.CleanTextForTransileration(input);
             formDataForHassan = formDataForHassan.Replace("%D8%AD%D8%B3%D9%86", HttpUtility.UrlEncode(input));
 
@@ -31,7 +35,15 @@ namespace RMuseum.Utils
 
             var response = (HttpWebResponse)request.GetResponse();
 
+            
+
             var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+            if (responseString == "0|error|500||")
+            {
+                error = responseString;
+                return "";
+            }
 
 
             int startIndex = responseString.IndexOf("ContentPlaceHolder2_txtCirlic");
