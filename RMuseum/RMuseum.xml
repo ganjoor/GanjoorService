@@ -4185,6 +4185,18 @@
         <member name="M:RMuseum.Migrations.TajikFixes.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.TajikAdditionalFields">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.TajikAdditionalFields.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.TajikAdditionalFields.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.TajikAdditionalFields.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures

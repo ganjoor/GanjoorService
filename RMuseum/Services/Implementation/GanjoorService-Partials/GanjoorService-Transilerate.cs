@@ -170,78 +170,47 @@ namespace RMuseum.Services.Implementation
                                   try
                                   {
                                       
-                                      var poets = await context.TajikPoets.ToListAsync();
-                                      foreach (var poet in poets)
+                                      var tajikPoets = await context.TajikPoets.ToListAsync();
+                                      foreach (var tajikPoet in tajikPoets)
                                       {
-                                          poet.TajikNickname = LanguageUtils.CleanTextForTransileration(poet.TajikNickname);
-                                          poet.TajikDescription = LanguageUtils.CleanTextForTransileration(poet.TajikDescription);
-                                          context.Update(poet);
-                                          await context.SaveChangesAsync();
-
-                                          var poetPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == poet.Id).SingleAsync();
-                                          GanjoorTajikPage page = new GanjoorTajikPage()
-                                          {
-                                              Id = poetPage.Id,
-                                              TajikHtmlText = await PrepareTajikPoetHtmlTextAsync(context, poet),
-                                          };
-                                          context.Add(page);
+                                          var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == tajikPoet.Id).SingleAsync();
+                                          tajikPoet.BirthYearInLHijri = poet.BirthYearInLHijri;
+                                          context.Update(tajikPoet);
                                           await context.SaveChangesAsync();
                                       }
                                       await jobProgressServiceEF.UpdateJob(job.Id, 1, "cats");
 
-                                      var cats = await context.TajikCats.ToListAsync();
-                                      foreach (var cat in cats)
+                                      var tajikCats = await context.TajikCats.ToListAsync();
+                                      foreach (var tajikCat in tajikCats)
                                       {
-                                          cat.TajikTitle = LanguageUtils.CleanTextForTransileration(cat.TajikTitle);
-                                          cat.TajikDescription = LanguageUtils.CleanTextForTransileration(cat.TajikTitle);
-                                          context.Update(cat);
-                                          await context.SaveChangesAsync();
-
-                                          var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == cat.Id).SingleAsync();
-                                          GanjoorTajikPage page = new GanjoorTajikPage()
-                                          {
-                                              Id = catPage.Id,
-                                              TajikHtmlText = await PrepareTajikCatHtmlTextAsync(context, cat),
-                                          };
-                                          context.Add(page);
+                                          var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == tajikCat.Id).SingleAsync();
+                                          tajikCat.PoetId = cat.PoetId;
+                                          context.Update(tajikCat);
                                           await context.SaveChangesAsync();
                                       }
 
                                       await jobProgressServiceEF.UpdateJob(job.Id, 2, "poems");
 
-                                      var poems = await context.TajikPoems.ToListAsync();
-                                      foreach(var poem in poems)
+                                      var tajikPoems = await context.TajikPoems.ToListAsync();
+                                      foreach(var tajikPoem in tajikPoems)
                                       {
-                                          poem.TajikTitle = LanguageUtils.CleanTextForTransileration(poem.TajikTitle);
+                                          var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == tajikPoem.Id).SingleAsync();
+                                          tajikPoem.FullUrl = poem.FullUrl;
 
-                                          var poemPage = await context.GanjoorPages.AsNoTracking().Where(p => p.Id == poem.Id).SingleAsync();
-                                          var poemVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync();
-                                          var tajikVerses = await context.TajikVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync();
-                                          foreach (var poemVerse in poemVerses)
+                                          string fullTitle = tajikPoem.TajikTitle;
+
+                                          int catId = tajikPoem.CatId;
+                                          while(catId != 0)
                                           {
-                                              poemVerse.Text = LanguageUtils.CleanTextForTransileration(tajikVerses.Where(v => v.VOrder == poemVerse.VOrder).Single().TajikText);
+                                              var tajikCat = await context.TajikCats.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
+                                              var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == tajikCat.Id).SingleAsync();
+                                              
+                                              fullTitle = tajikCat.TajikTitle + " - " + catId;
+                                              catId = cat.ParentId ?? 0;
                                           }
 
-                                          GanjoorTajikPage page = new GanjoorTajikPage()
-                                          {
-                                              Id = poemPage.Id,
-                                              TajikHtmlText = PrepareHtmlText(poemVerses)
-                                          };
-                                          context.Add(page);
-                                          await context.SaveChangesAsync();
-
-                                          poem.TajikPlainText = PreparePlainText(poemVerses);
-                                          context.Update(poem);
-                                          await context.SaveChangesAsync();
-                                      }
-
-                                      await jobProgressServiceEF.UpdateJob(job.Id, 3, "verses");
-
-                                      var verses = await context.TajikVerses.ToListAsync();
-                                      foreach (var verse in verses)
-                                      {
-                                          verse.TajikText = LanguageUtils.CleanTextForTransileration(verse.TajikText);
-                                          context.Update(verse);
+                                          tajikPoem.FullTitle = fullTitle;
+                                          context.Update(tajikPoem);
                                           await context.SaveChangesAsync();
                                       }
 
