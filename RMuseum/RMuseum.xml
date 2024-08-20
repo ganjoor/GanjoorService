@@ -9832,6 +9832,16 @@
             additional descripion or note in Tajik
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikCat.PoetId">
+            <summary>
+            poet_id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikCat.Poet">
+            <summary>
+            poet
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPage.Id">
             <summary>
             id
@@ -9862,6 +9872,21 @@
             verses text
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoem.FullUrl">
+            <summary>
+            sample: /hafez/ghazal/sh1
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoem.FullTitle">
+            <summary>
+            cat + parent cats title + title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoem.Cat">
+            <summary>
+            cat
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoet.Id">
             <summary>
             id
@@ -9875,6 +9900,11 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoet.TajikDescription">
             <summary>
             additional descripion or note in Tajik
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikPoet.BirthYearInLHijri">
+            <summary>
+            birth year in lunar hijri
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorTajikVerse.Id">
@@ -19361,6 +19391,24 @@
             </summary>
             <param name="url"></param>
             <param name="catPoems"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SearchTajikAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            Search
+            You need to run this scripts manually on the database before using this method:
+            
+            CREATE FULLTEXT CATALOG [TajikPoemPlainTextCatalog] WITH ACCENT_SENSITIVITY = OFF AS DEFAULT
+            
+            CREATE FULLTEXT INDEX ON [dbo].[TajikPoems](
+            [TajikPlainText] LANGUAGE 'English')
+            KEY INDEX [PK_TajikPoems] ON ([TajikPoemPlainTextCatalog], FILEGROUP [PRIMARY])
+            WITH (CHANGE_TRACKING = AUTO, STOPLIST = SYSTEM)
+            </summary>
+            <param name="paging"></param>
+            <param name="term"></param>
+            <param name="poetId"></param>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartRegeneratingTOCs(System.Guid)">

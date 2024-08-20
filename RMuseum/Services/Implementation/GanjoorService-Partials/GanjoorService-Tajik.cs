@@ -6,6 +6,9 @@ using RSecurityBackend.Models.Generic;
 using RMuseum.Models.Ganjoor.ViewModels;
 using System.Linq;
 using Org.BouncyCastle.Asn1.Ocsp;
+using DNTPersianUtils.Core;
+using RSecurityBackend.Services.Implementation;
+using System.Collections.Generic;
 
 namespace RMuseum.Services.Implementation
 {
@@ -167,5 +170,128 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorPageCompleteViewModel>(null, exp.ToString());
             }
         }
+
+
+
+        /// <summary>
+        /// Search
+        /// You need to run this scripts manually on the database before using this method:
+        /// 
+        /// CREATE FULLTEXT CATALOG [TajikPoemPlainTextCatalog] WITH ACCENT_SENSITIVITY = OFF AS DEFAULT
+        /// 
+        /// CREATE FULLTEXT INDEX ON [dbo].[TajikPoems](
+        /// [TajikPlainText] LANGUAGE 'English')
+        /// KEY INDEX [PK_TajikPoems] ON ([TajikPoemPlainTextCatalog], FILEGROUP [PRIMARY])
+        /// WITH (CHANGE_TRACKING = AUTO, STOPLIST = SYSTEM)
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <param name="poetId"></param>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> SearchTajikAsync(PagingParameterModel paging, string term, int? poetId, int? catId)
+        {
+            term = term.Trim();
+
+            if (string.IsNullOrEmpty(term))
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), "خطای جستجوی عبارت خالی");
+            }
+
+
+            string searchConditions;
+            if (term.IndexOf('"') == 0 && term.LastIndexOf('"') == (term.Length - 1))
+            {
+                searchConditions = term.Replace("\"", "").Replace("'", "");
+                searchConditions = $"\"{searchConditions}\"";
+            }
+            else
+            {
+                string[] words = term.Replace("\"", "").Replace("'", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                searchConditions = "";
+                string emptyOrAnd = "";
+                foreach (string word in words)
+                {
+                    searchConditions += $" {emptyOrAnd} \"*{word}*\" ";
+                    emptyOrAnd = " AND ";
+                }
+            }
+            if (poetId == null)
+            {
+                catId = null;
+            }
+            if (poetId != null && catId == null)
+            {
+                var poetRes = await GetPoetById((int)poetId);
+                if (!string.IsNullOrEmpty(poetRes.ExceptionString))
+                    return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), poetRes.ExceptionString);
+                catId = poetRes.Result.Cat.Id;
+            }
+            List<int> catIdList = new List<int>();
+            if (catId != null)
+            {
+                catIdList.Add((int)catId);
+                await _populateCategoryChildren(_context, (int)catId, catIdList);
+            }
+
+            var source =
+                _context.TajikPoems
+                .Where(p =>
+                        (catId == null || catIdList.Contains(p.CatId))
+                        &&
+                       EF.Functions.Contains(p.TajikPlainText, searchConditions)
+                        )
+                .Include(p => p.Cat).ThenInclude(c => c.Poet)
+                .OrderBy(p => p.Cat.Poet.BirthYearInLHijri).ThenBy(p => p.Cat.Poet.TajikNickname).ThenBy(p => p.Id)
+                .Select
+                (
+                    poem =>
+                    new GanjoorPoemCompleteViewModel()
+                    {
+                        Id = poem.Id,
+                        Title = poem.TajikTitle,
+                        FullTitle = poem.FullTitle,
+                        FullUrl = poem.FullUrl,
+                        Category = new GanjoorPoetCompleteViewModel()
+                        {
+                            Poet = new GanjoorPoetViewModel()
+                            {
+                                Id = poem.Cat.Poet.Id,
+                            }
+                        },
+                    }
+                ).AsNoTracking();
+
+
+
+            (PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items) paginatedResult =
+               await QueryablePaginator<GanjoorPoemCompleteViewModel>.Paginate(source, paging);
+
+
+            Dictionary<int, GanjoorPoetCompleteViewModel> cachedPoets = new Dictionary<int, GanjoorPoetCompleteViewModel>();
+
+            foreach (var item in paginatedResult.Items)
+            {
+                if (cachedPoets.TryGetValue(item.Category.Poet.Id, out GanjoorPoetCompleteViewModel poet))
+                {
+                    item.Category = poet;
+                }
+                else
+                {
+                    poet = (await GetPoetById(item.Category.Poet.Id)).Result;
+
+                    var tajikPoet = await _context.TajikPoets.AsNoTracking().Where(p => p.Id == item.Category.Poet.Id).SingleAsync();
+                    poet.Poet.Nickname = tajikPoet.TajikNickname;
+
+                    cachedPoets.Add(item.Category.Poet.Id, poet);
+
+                    item.Category = poet;
+                }
+
+            }
+            return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>(paginatedResult);
+        }
+
     }
 }

@@ -21,5 +21,16 @@ namespace RMuseum.Models.Ganjoor
         /// </summary>
         public string TajikDescription { get; set; }
 
+        /// <summary>
+        /// poet_id
+        /// </summary>
+        public int PoetId { get; set; }
+
+        /// <summary>
+        /// poet
+        /// </summary>
+        public GanjoorTajikPoet Poet { get; set; }
+
+
     }
 }

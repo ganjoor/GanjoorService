@@ -20,5 +20,10 @@ namespace RMuseum.Models.Ganjoor
         /// additional descripion or note in Tajik
         /// </summary>
         public string TajikDescription { get; set; }
+
+        /// <summary>
+        /// birth year in lunar hijri
+        /// </summary>
+        public int BirthYearInLHijri { get; set; }
     }
 }

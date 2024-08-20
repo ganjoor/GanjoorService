@@ -25,5 +25,21 @@ namespace RMuseum.Models.Ganjoor
         /// verses text
         /// </summary>
         public string TajikPlainText { get; set; }
+
+        /// <summary>
+        /// sample: /hafez/ghazal/sh1
+        /// </summary>
+        public string FullUrl { get; set; }
+
+        /// <summary>
+        /// cat + parent cats title + title
+        /// </summary>
+        public string FullTitle { get; set; }
+
+        /// <summary>
+        /// cat
+        /// </summary>
+        public GanjoorTajikCat Cat { get; set; }
+
     }
 }
