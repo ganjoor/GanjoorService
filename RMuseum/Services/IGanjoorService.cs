@@ -1502,5 +1502,16 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<GanjoorPageCompleteViewModel>> GetTajikPageByUrlAsync(string url, bool catPoems = false);
 
+
+        /// <summary>
+        /// search tajik poems
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <param name="poetId"></param>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> SearchTajikAsync(PagingParameterModel paging, string term, int? poetId, int? catId);
+
     }
 }

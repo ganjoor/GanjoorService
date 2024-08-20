@@ -4378,6 +4378,32 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// search tajik poems
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="term"></param>
+        /// <param name="poetId"></param>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("tajik/search")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCompleteViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+
+        public async Task<IActionResult> SearchTajikAsync([FromQuery] PagingParameterModel paging, string term, int poetId = 0, int catId = 0)
+        {
+            var pagedResult = await _ganjoorService.SearchTajikAsync(paging, term, poetId == 0 ? (int?)null : poetId, catId == 0 ? (int?)null : catId);
+            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
+                return BadRequest(pagedResult.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+
+            return Ok(pagedResult.Result.Items);
+        }
+
 
 
 

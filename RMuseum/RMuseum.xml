@@ -2271,6 +2271,16 @@
             <param name="catPoems"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.SearchTajikAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Int32,System.Int32)">
+            <summary>
+            search tajik poems
+            </summary>
+            <param name="paging"></param>
+            <param name="term"></param>
+            <param name="poetId"></param>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -16929,6 +16939,16 @@
             </summary>
             <param name="url"></param>
             <param name="catPoems"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SearchTajikAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            search tajik poems
+            </summary>
+            <param name="paging"></param>
+            <param name="term"></param>
+            <param name="poetId"></param>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">

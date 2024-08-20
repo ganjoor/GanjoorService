@@ -195,7 +195,7 @@ namespace RMuseum.Services.Implementation
 
             if (string.IsNullOrEmpty(term))
             {
-                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), "خطای جستجوی عبارت خالی");
+                return new RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>((null, null), "Лутфан иборатиро ворид кунед");
             }
 
 
