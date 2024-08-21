@@ -2257,6 +2257,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.FixTransilerations">
+            <summary>
+             one time fix for transilerations
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetTajikPoetsAsync">
             <summary>
             tajik poets
@@ -16925,6 +16931,11 @@
         <member name="M:RMuseum.Services.IGanjoorService.Transilerate">
             <summary>
             transilerate verse data from Persian to Tajiki
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.FixTransilerations">
+            <summary>
+            one time fix for transilerations
             </summary>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetTajikPoetsAsync">
