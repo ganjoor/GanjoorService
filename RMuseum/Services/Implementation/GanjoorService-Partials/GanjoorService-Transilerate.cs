@@ -170,7 +170,7 @@ namespace RMuseum.Services.Implementation
                                   try
                                   {
                                       
-                                      var tajikPoets = await context.TajikPoets.ToListAsync();
+                                      var tajikPoets = await context.TajikPoets.Where(p => p.Id > 0).ToListAsync();
                                       foreach (var tajikPoet in tajikPoets)
                                       {
                                           var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == tajikPoet.Id).SingleAsync();
@@ -180,7 +180,7 @@ namespace RMuseum.Services.Implementation
                                       }
                                       await jobProgressServiceEF.UpdateJob(job.Id, 1, "cats");
 
-                                      var tajikCats = await context.TajikCats.ToListAsync();
+                                      var tajikCats = await context.TajikCats.Where(c => c.Id > 0).ToListAsync();
                                       foreach (var tajikCat in tajikCats)
                                       {
                                           var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == tajikCat.Id).SingleAsync();
