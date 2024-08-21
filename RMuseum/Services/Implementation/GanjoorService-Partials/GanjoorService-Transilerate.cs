@@ -205,7 +205,7 @@ namespace RMuseum.Services.Implementation
                                               var tajikCat = await context.TajikCats.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
                                               var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == tajikCat.Id).SingleAsync();
                                               
-                                              fullTitle = tajikCat.TajikTitle + " - " + catId;
+                                              fullTitle = tajikCat.TajikTitle + " - " + fullTitle;
                                               catId = cat.ParentId ?? 0;
                                           }
 
