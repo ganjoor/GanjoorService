@@ -253,6 +253,7 @@ namespace RMuseum.Services.Implementation
                         Title = poem.TajikTitle,
                         FullTitle = poem.FullTitle,
                         FullUrl = poem.FullUrl,
+                        PlainText = poem.TajikPlainText,
                         Category = new GanjoorPoetCompleteViewModel()
                         {
                             Poet = new GanjoorPoetViewModel()
