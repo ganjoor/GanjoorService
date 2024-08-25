@@ -374,7 +374,7 @@ namespace TajikGanjoor.Pages
             {
                 if (paginationMetadata.currentPage > 3)
                 {
-                    htmlText += $"<a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page=1\"><div class=\"circled-number\">۱</div></a>{Environment.NewLine} …";
+                    htmlText += $"<a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page=1\"><div class=\"circled-number\">1</div></a>{Environment.NewLine} …";
                 }
                 for (int i = paginationMetadata.currentPage - 2; i <= (paginationMetadata.currentPage + 2); i++)
                 {
