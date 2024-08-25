@@ -4,10 +4,12 @@ using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor.ViewModels;
-using NAudio.Gui;
 using RMuseum.Models.Ganjoor;
 using System.Net;
-using System.Reflection;
+using DNTPersianUtils.Core;
+using System.Drawing;
+using RSecurityBackend.Models.Generic;
+using System.Text.RegularExpressions;
 
 
 namespace TajikGanjoor.Pages
@@ -15,6 +17,9 @@ namespace TajikGanjoor.Pages
     public class IndexModel : PageModel
     {
         public bool IsHomePage { get; set; }
+        public bool IsSearchPage { get; set; }
+
+        public string Query { get; set; }
         public List<GanjoorPoetViewModel>? Poets { get; set; }
         public bool IsPoetPage { get; set; }
         public bool IsCatPage { get; set; }
@@ -25,6 +30,8 @@ namespace TajikGanjoor.Pages
         public string PreviousUrl { get; set; }
         public string PreviousTitle { get; set; }
         public string BreadCrumpUrls { get; set; }
+
+        public List<GanjoorPoemCompleteViewModel> Poems { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
             if (bool.Parse(Configuration["MaintenanceMode"] ?? false.ToString()))
@@ -37,8 +44,106 @@ namespace TajikGanjoor.Pages
             {
                 return Page();
             }
+            IsSearchPage = !string.IsNullOrEmpty(Request.Query["s"]);
+            IsHomePage = !IsSearchPage && Request.Path == "/";
+            if(IsSearchPage)
+            {
+                Query = Request.Query["s"].ToString().Trim();
+                int pageNumber = 1;
+                if (!string.IsNullOrEmpty(Request.Query["page"]))
+                {
+                    pageNumber = int.Parse(Request.Query["page"]);
+                }
 
-            IsHomePage = Request.Path == "/";
+                HttpResponseMessage searchQueryResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/tajik/search?term={Query}&PageNumber={pageNumber}&PageSize=20");
+
+                if (!searchQueryResponse.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await searchQueryResponse.Content.ReadAsStringAsync());
+                    return Page();
+                }
+
+                Poems = JArray.Parse(await searchQueryResponse.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCompleteViewModel>>();
+                if (Poems != null && Poems.Count == 0)
+                {
+                    Poems = null;
+                }
+
+                if (Poems != null)
+                {
+                    // highlight searched word
+                    string[] queryParts = Query.IndexOf('"') == 0 && Query.LastIndexOf('"') == (Query.Length - 1) ?
+                           [Query.Replace("\"", "")]
+                           :
+                           Query.Replace("\"", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (var poem in Poems)
+                    {
+                        string[] lines = poem.PlainText.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+                        List<int> linesInExcerpt = new List<int>();
+                        for (int i = 0; i < lines.Length; i++)
+                        {
+                            foreach (var queryPart in queryParts)
+                            {
+                                if (lines[i].IndexOf(queryPart) != -1)
+                                {
+                                    if (i > 0)
+                                    {
+                                        if (linesInExcerpt.IndexOf(i - 1) == -1)
+                                        {
+                                            linesInExcerpt.Add(i - 1);
+                                        }
+                                    }
+                                    if (linesInExcerpt.IndexOf(i) == -1)
+                                    {
+                                        linesInExcerpt.Add(i);
+                                    }
+
+                                    if (i < (lines.Length - 1))
+                                        linesInExcerpt.Add(i + 1);
+
+                                    break;
+                                }
+                            }
+                        }
+
+
+
+
+                        string plainText = "";
+                        for (int i = 0; i < linesInExcerpt.Count; i++)
+                        {
+                            if (linesInExcerpt[i] > 0 && linesInExcerpt.IndexOf(linesInExcerpt[i] - 1) == -1)
+                                plainText += "... ";
+                            plainText += $"{lines[linesInExcerpt[i]]}";
+                            if (linesInExcerpt[i] < (lines.Length - 1) && linesInExcerpt.IndexOf(linesInExcerpt[i] + 1) == -1)
+                                plainText += " ...";
+                            plainText += $"{Environment.NewLine}";
+                        }
+
+                        string finalPlainText = "";
+                        foreach (string line in plainText.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            finalPlainText += $"<p>{line}</p>";
+                        }
+                        if (linesInExcerpt.Count > 0)
+                        {
+                            poem.PlainText = finalPlainText;
+                        }
+
+                        for (int i = 0; i < queryParts.Length; i++)
+                        {
+                            string cssClass = i % 3 == 0 ? "hilite" : i % 3 == 1 ? "hilite2" : "hilite3";
+                            poem.PlainText = Regex.Replace(poem.PlainText, queryParts[i], $"<span class=\"{cssClass}\">{queryParts[i]}</span>", RegexOptions.IgnoreCase | RegexOptions.RightToLeft); ;
+                        }
+
+
+                    }
+                    
+
+                }
+            }
+            else
             if (!IsHomePage)
             {
                 var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/tajik/page?url={Request.Path}&catPoems=true");

@@ -20,3 +20,23 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.hilite {
+    color: #000;
+    background-color: #9cf
+}
+
+.hilite1 {
+    color: #000;
+    background-color: #fc6
+}
+
+.hilite2 {
+    color: #000;
+    background-color: #9f6
+}
+
+.hilite3 {
+    color: #000;
+    background-color: #f99
+}
