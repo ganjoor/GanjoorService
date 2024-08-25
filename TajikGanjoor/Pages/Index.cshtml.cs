@@ -190,6 +190,11 @@ namespace TajikGanjoor.Pages
             }
 
             BreadCrumpUrls = "<a href=\"/\">Ганҷур</a>";
+            if (IsSearchPage)
+            {
+                ViewData["Title"] = $"Ганҷур - ҷустуҷӯ - {Query}";
+            }
+            else
             if (IsHomePage)
             {
                 ViewData["Title"] = "Ганҷур";
