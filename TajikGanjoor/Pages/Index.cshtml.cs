@@ -6,10 +6,9 @@ using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.Ganjoor;
 using System.Net;
-using DNTPersianUtils.Core;
-using System.Drawing;
-using RSecurityBackend.Models.Generic;
 using System.Text.RegularExpressions;
+using RSecurityBackend.Models.Generic;
+
 
 
 namespace TajikGanjoor.Pages
@@ -18,8 +17,6 @@ namespace TajikGanjoor.Pages
     {
         public bool IsHomePage { get; set; }
         public bool IsSearchPage { get; set; }
-
-        public string Query { get; set; }
         public List<GanjoorPoetViewModel>? Poets { get; set; }
         public bool IsPoetPage { get; set; }
         public bool IsCatPage { get; set; }
@@ -30,6 +27,9 @@ namespace TajikGanjoor.Pages
         public string PreviousUrl { get; set; }
         public string PreviousTitle { get; set; }
         public string BreadCrumpUrls { get; set; }
+        public string Query { get; set; }
+        public PaginationMetadata PaginationMetadata { get; set; }
+        public string PagingToolsHtml { get; set; }
 
         public List<GanjoorPoemCompleteViewModel> Poems { get; set; }
         public async Task<IActionResult> OnGetAsync()
@@ -46,10 +46,11 @@ namespace TajikGanjoor.Pages
             }
             IsSearchPage = !string.IsNullOrEmpty(Request.Query["s"]);
             IsHomePage = !IsSearchPage && Request.Path == "/";
-            if(IsSearchPage)
+            int pageNumber = 1;
+            if (IsSearchPage)
             {
                 Query = Request.Query["s"].ToString().Trim();
-                int pageNumber = 1;
+               
                 if (!string.IsNullOrEmpty(Request.Query["page"]))
                 {
                     pageNumber = int.Parse(Request.Query["page"]);
@@ -139,7 +140,20 @@ namespace TajikGanjoor.Pages
 
 
                     }
-                    
+
+
+                    string paginationMetadataJsonValue = searchQueryResponse.Headers.GetValues("paging-headers").FirstOrDefault();
+
+                    if (!string.IsNullOrEmpty(paginationMetadataJsonValue))
+                    {
+                        PaginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginationMetadataJsonValue);
+                        string catQuery = "";
+                        if (!string.IsNullOrEmpty(Request.Query["cat"]))
+                        {
+                            catQuery = $"&cat={Request.Query["cat"]}";
+                        }
+                        PagingToolsHtml = GeneratePagingBarHtml(PaginationMetadata, $"/?s={WebUtility.UrlEncode(Query)}");
+                    }
 
                 }
             }
@@ -193,6 +207,10 @@ namespace TajikGanjoor.Pages
             if (IsSearchPage)
             {
                 ViewData["Title"] = $"Ганҷур - ҷустуҷӯ - {Query}";
+                if(pageNumber > 1)
+                {
+                    ViewData["Title"] += "Сафҳа ӣ " + pageNumber.ToString();
+                }
             }
             else
             if (IsHomePage)
@@ -347,7 +365,44 @@ namespace TajikGanjoor.Pages
             }
         }
 
-        public string? LastError { get; set; }
+        private string GeneratePagingBarHtml(PaginationMetadata paginationMetadata, string routeStartWithQueryStrings)
+        {
+            string htmlText = $"<div>{Environment.NewLine}";
+
+
+            if (paginationMetadata != null && paginationMetadata.totalPages > 1)
+            {
+                if (paginationMetadata.currentPage > 3)
+                {
+                    htmlText += $"<a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page=1\"><div class=\"circled-number\">۱</div></a>{Environment.NewLine} …";
+                }
+                for (int i = paginationMetadata.currentPage - 2; i <= (paginationMetadata.currentPage + 2); i++)
+                {
+                    if (i >= 1 && i <= paginationMetadata.totalPages)
+                    {
+                        if (i == paginationMetadata.currentPage)
+                        {
+                            htmlText += $"<div class=\"circled-number-diff\">{i}</div>";
+                        }
+                        else
+                        {
+                            htmlText += $"<a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page={i}\"><div class=\"circled-number\">{i}</div></a>{Environment.NewLine}";
+                        }
+                    }
+                }
+                if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
+                {
+                    htmlText += $"… <a href=\"{routeStartWithQueryStrings.Replace("\"", "%22")}&amp;page={paginationMetadata.totalPages}\"><div class=\"circled-number\">{paginationMetadata.totalPages}</div></a>{Environment.NewLine}";
+                }
+            }
+
+            htmlText += $"</div>{Environment.NewLine}";
+            return htmlText;
+        }
+
+
+
+    public string? LastError { get; set; }
 
         public bool AggressiveCacheEnabled
         {
