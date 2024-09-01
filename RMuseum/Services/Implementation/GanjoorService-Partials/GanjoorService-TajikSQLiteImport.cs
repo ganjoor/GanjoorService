@@ -61,48 +61,63 @@ namespace RMuseum.Services.Implementation
                                             foreach (var poet in poets)
                                             {
                                                 int poetId = poet.id;
+                                                if (await context.GanjoorPoets.AnyAsync(p => p.Id == poetId) == false) continue;
                                                 if (await context.TajikPoets.AnyAsync(p => p.Id == poetId) == false)
                                                 {
                                                     var tajikPoet = new GanjoorTajikPoet()
                                                     {
                                                         Id = poetId,
                                                         TajikNickname = poet.name,
+                                                        TajikDescription = poet.description,
                                                         BirthYearInLHijri = (await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poetId).SingleAsync()).BirthYearInLHijri
                                                     };
                                                     context.Add(tajikPoet);
                                                     await context.SaveChangesAsync();
                                                     var poetPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == poetId).SingleAsync();
-                                                    GanjoorTajikPage page = new GanjoorTajikPage()
+                                                    if (await context.TajikPages.AnyAsync(p => p.Id == poetPage.Id) == false)
                                                     {
-                                                        Id = poetPage.Id,
-                                                        TajikHtmlText = await PrepareTajikPoetHtmlTextAsync(context, tajikPoet),
-                                                    };
-                                                    context.Add(page);
-                                                    await context.SaveChangesAsync();
+                                                        GanjoorTajikPage page = new GanjoorTajikPage()
+                                                        {
+                                                            Id = poetPage.Id,
+                                                            TajikHtmlText = await PrepareTajikPoetHtmlTextAsync(context, tajikPoet),
+                                                        };
+                                                        context.Add(page);
+                                                        await context.SaveChangesAsync();
+                                                    }
                                                 }
-                                                var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poetId && c.ParentId == null).SingleAsync();
-                                                var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.FullUrl == cat.FullUrl).SingleAsync();
-
-                                                await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Importing");
-
-                                                var resImport = await _ImportSQLiteCatChildren(context, sqlite, poetId, await sqlite.QuerySingleAsync<int>($"SELECT id FROM cat WHERE parent_id = 0"), cat, poet.Nickname, jobProgressServiceEF, job, catPage.Id);
-
-                                                if (string.IsNullOrEmpty(resImport))
+                                                var cats = (await sqlite.QueryAsync($"SELECT * FROM cat WHERE poet_id = {poetId} ORDER BY id")).ToList();
+                                                foreach (var cat in cats)
                                                 {
-                                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
-                                                }
-                                                else
-                                                {
-                                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, resImport);
+                                                    int catId = cat.Id;
+                                                    if (await context.GanjoorCategories.AnyAsync(c => c.Id == catId) == false) continue;
+                                                    if(await context.TajikCats.AnyAsync(c => c.Id == catId) == false)
+                                                    {
+                                                        var tajikCat = new GanjoorTajikCat()
+                                                        {
+                                                            Id = catId,
+                                                            PoetId = poetId,
+                                                            TajikTitle = cat.text
+                                                        };
+                                                        context.Add(tajikCat);
+                                                        await context.SaveChangesAsync();
+
+                                                        var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleAsync();
+                                                        if (await context.TajikPages.AnyAsync(p => p.Id == catPage.Id) == false)
+                                                        {
+                                                            GanjoorTajikPage page = new GanjoorTajikPage()
+                                                            {
+                                                                Id = catPage.Id,
+                                                                TajikHtmlText = await PrepareTajikCatHtmlTextAsync(context, tajikCat),
+                                                            };
+                                                            context.Add(page);
+                                                            await context.SaveChangesAsync();
+                                                        }
+                                                       
+                                                    }
                                                 }
                                             }
-
-
-                                            
-                                            
-
-
                                         }
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                     }
                                     catch (Exception exp)
                                     {
