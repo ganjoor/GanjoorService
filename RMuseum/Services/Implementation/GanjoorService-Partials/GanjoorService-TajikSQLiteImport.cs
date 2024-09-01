@@ -3,10 +3,8 @@ using System;
 using RMuseum.Models.Ganjoor;
 using System.Threading.Tasks;
 using RSecurityBackend.Models.Generic;
-using RMuseum.Models.Ganjoor.ViewModels;
 using System.Linq;
 using RSecurityBackend.Services.Implementation;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
 using RMuseum.DbContext;
@@ -63,7 +61,16 @@ namespace RMuseum.Services.Implementation
                                             foreach (var poet in poets)
                                             {
                                                 int poetId = poet.id;
-                                                if (await context.TajikPoets.AnyAsync(p => p.Id == poetId)) continue;
+                                                if (await context.TajikPoets.AnyAsync(p => p.Id == poetId) == false)
+                                                {
+                                                    context.Add(new GanjoorTajikPoet()
+                                                    {
+                                                        Id = poetId,
+                                                        TajikNickname = poet.name,
+                                                        BirthYearInLHijri = (await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poetId).SingleAsync()).BirthYearInLHijri
+                                                    });
+                                                    await context.SaveChangesAsync();
+                                                }
                                                 var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poetId && c.ParentId == null).SingleAsync();
                                                 var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.FullUrl == cat.FullUrl).SingleAsync();
 
