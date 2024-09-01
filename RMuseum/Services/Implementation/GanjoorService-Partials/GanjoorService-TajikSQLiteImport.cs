@@ -63,12 +63,21 @@ namespace RMuseum.Services.Implementation
                                                 int poetId = poet.id;
                                                 if (await context.TajikPoets.AnyAsync(p => p.Id == poetId) == false)
                                                 {
-                                                    context.Add(new GanjoorTajikPoet()
+                                                    var tajikPoet = new GanjoorTajikPoet()
                                                     {
                                                         Id = poetId,
                                                         TajikNickname = poet.name,
                                                         BirthYearInLHijri = (await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poetId).SingleAsync()).BirthYearInLHijri
-                                                    });
+                                                    };
+                                                    context.Add(tajikPoet);
+                                                    await context.SaveChangesAsync();
+                                                    var poetPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == poetId).SingleAsync();
+                                                    GanjoorTajikPage page = new GanjoorTajikPage()
+                                                    {
+                                                        Id = poetPage.Id,
+                                                        TajikHtmlText = await PrepareTajikPoetHtmlTextAsync(context, tajikPoet),
+                                                    };
+                                                    context.Add(page);
                                                     await context.SaveChangesAsync();
                                                 }
                                                 var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poetId && c.ParentId == null).SingleAsync();
