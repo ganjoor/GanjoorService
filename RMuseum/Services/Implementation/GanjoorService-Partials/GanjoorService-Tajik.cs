@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using RSecurityBackend.Models.Generic;
 using RMuseum.Models.Ganjoor.ViewModels;
 using System.Linq;
-using Org.BouncyCastle.Asn1.Ocsp;
-using DNTPersianUtils.Core;
 using RSecurityBackend.Services.Implementation;
 using System.Collections.Generic;
 
