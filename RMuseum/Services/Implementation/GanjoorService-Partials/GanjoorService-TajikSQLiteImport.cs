@@ -114,7 +114,41 @@ namespace RMuseum.Services.Implementation
                                                         }
                                                        
                                                     }
+                                                    var poems = (await sqlite.QueryAsync($"SELECT * FROM poem WHERE cat_id = {catId} ORDER BY id")).ToList();
+                                                    foreach (var poem in poems)
+                                                    {
+                                                        int poemId = poem.Id;
+                                                        if (await context.GanjoorPoems.AnyAsync(p => p.Id == poemId) == false) continue;
+                                                        if(await context.TajikPoems.AnyAsync(p => p.Id == poemId) == false)
+                                                        {
+                                                            int currentCatId = catId;
+                                                            string fullTitle = poem.title;
+                                                            while (currentCatId != 0)
+                                                            {
+                                                                var tajikCat = await context.TajikCats.AsNoTracking().Where(c => c.Id == currentCatId).SingleAsync();
+                                                                var gCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == tajikCat.Id).SingleAsync();
+
+                                                                fullTitle = tajikCat.TajikTitle + " - " + fullTitle;
+                                                                currentCatId = gCat.ParentId ?? 0;
+                                                            }
+
+                                                            var ganjoorPoem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == poemId).SingleAsync();
+                                                            var tajikPoem = new GanjoorTajikPoem()
+                                                            {
+                                                                Id = poemId,
+                                                                CatId = catId,
+                                                                FullUrl = ganjoorPoem.FullUrl,
+                                                                FullTitle = fullTitle,
+                                                                TajikTitle = poem.title,
+                                                                TajikPlainText = "",
+                                                            };
+                                                            context.Add(tajikPoem);
+                                                            //TODO
+                                                        }
+                                                    }
                                                 }
+
+                                                
                                             }
                                         }
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
