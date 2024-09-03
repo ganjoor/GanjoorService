@@ -61,6 +61,7 @@ namespace RMuseum.Services.Implementation
                                             foreach (var poet in poets)
                                             {
                                                 int poetId = poet.id;
+                                                await jobProgressServiceEF.UpdateJob(job.Id, poetId, $"poet: {poetId}");
                                                 if (await context.GanjoorPoets.AnyAsync(p => p.Id == poetId) == false) continue;
                                                 if (await context.TajikPoets.AnyAsync(p => p.Id == poetId) == false)
                                                 {
@@ -89,6 +90,7 @@ namespace RMuseum.Services.Implementation
                                                 foreach (var cat in cats)
                                                 {
                                                     int catId = cat.Id;
+                                                    await jobProgressServiceEF.UpdateJob(job.Id, poetId, $"poet: {poetId} - cat: {catId}");
                                                     if (await context.GanjoorCategories.AnyAsync(c => c.Id == catId) == false) continue;
                                                     if(await context.TajikCats.AnyAsync(c => c.Id == catId) == false)
                                                     {
@@ -121,6 +123,8 @@ namespace RMuseum.Services.Implementation
                                                         if (await context.GanjoorPoems.AnyAsync(p => p.Id == poemId) == false) continue;
                                                         if(await context.TajikPoems.AnyAsync(p => p.Id == poemId) == false)
                                                         {
+
+                                                            await jobProgressServiceEF.UpdateJob(job.Id, poetId, $"poet: {poetId} - cat: {catId} - poem: {poemId}");
                                                             int currentCatId = catId;
                                                             string fullTitle = poem.title;
                                                             while (currentCatId != 0)
@@ -143,8 +147,50 @@ namespace RMuseum.Services.Implementation
                                                                 TajikPlainText = "",
                                                             };
                                                             context.Add(tajikPoem);
-                                                            //TODO
+                                                            await context.SaveChangesAsync();
+
+                                                            var verses = (await sqlite.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poemId} ORDER BY vorder")).ToList();
+                                                            string plaintText = "";
+                                                            foreach (var verse in verses)
+                                                            {
+                                                                var tajikVerse = new GanjoorTajikVerse()
+                                                                {
+                                                                    PoemId = poemId,
+                                                                    TajikText = verse.text,
+                                                                    VOrder = verse.order,
+                                                                };
+                                                                context.Add(tajikVerse);
+                                                                plaintText += tajikVerse.TajikText;
+                                                                plaintText += "\r\n";
+                                                            }
+                                                            await context.SaveChangesAsync();
+                                                            tajikPoem.TajikPlainText = plaintText;
+                                                            context.Update(tajikPoem);
+                                                            await context.SaveChangesAsync();
+
+                                                            if (await context.TajikPages.AnyAsync(p => p.Id == poemId) == false)
+                                                            {
+                                                                GanjoorTajikPage page = new GanjoorTajikPage()
+                                                                {
+                                                                    Id = poemId,
+                                                                    TajikHtmlText = PrepareHtmlText
+                                                                    (
+                                                                        
+                                                                        verses.Select(s => new GanjoorVerse()
+                                                                        {
+                                                                            VOrder = s.order,
+                                                                            Text = s.text,
+                                                                            VersePosition = (VersePosition) ((int)s.position)
+                                                                        }
+                                                                        ).ToList()
+                                                                    ),
+                                                                };
+                                                                context.Add(page);
+                                                                await context.SaveChangesAsync();
+                                                            }
+
                                                         }
+
                                                     }
                                                 }
 

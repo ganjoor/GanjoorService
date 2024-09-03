@@ -15,7 +15,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace RMuseum.Services.Implementation
 {

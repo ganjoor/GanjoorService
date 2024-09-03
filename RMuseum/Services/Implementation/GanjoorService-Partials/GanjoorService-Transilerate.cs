@@ -276,7 +276,6 @@ namespace RMuseum.Services.Implementation
             }
             return html;
         }
-
     }
 
 
