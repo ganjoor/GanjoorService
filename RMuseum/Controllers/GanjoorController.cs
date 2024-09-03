@@ -4343,6 +4343,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// import tajik from sqlite
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("tajik/sqlite/import/{poetId}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> TajikImportFromSqlite(int poetId = 0)
+        {
+            IFormFile file = Request.Form.Files[0];
+
+            RServiceResult<bool> res =
+                await _ganjoorService.TajikImportFromSqlite(poetId, file);
+            if (res.Result)
+                return Ok();
+            return BadRequest(res.ExceptionString);
+        }
+
+        /// <summary>
         /// tajik poets
         /// </summary>
         /// <returns></returns>

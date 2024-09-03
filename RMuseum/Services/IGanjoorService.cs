@@ -1493,6 +1493,15 @@ namespace RMuseum.Services
         /// </summary>
         void FixTransilerations();
 
+
+        /// <summary>
+        /// tajik import from sqlite
+        /// </summary>
+        /// <param name="poetId"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> TajikImportFromSqlite(int poetId, IFormFile file);
+
         /// <summary>
         /// tajik poets
         /// </summary>
