@@ -292,11 +292,15 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetPoetImage(string url)
+        public async Task<IActionResult> GetPoetImage(string url, bool nocache = false)
         {
 
             var cacheKey = $"poet/image/{url}.gif";
             var cacheKeyForLastModified = $"{cacheKey}/lastModified";
+            if (nocache && _memoryCache.TryGetValue(cacheKey, out string oldImagePath))
+            {
+                _memoryCache.Remove(cacheKey);
+            }
             if (!_memoryCache.TryGetValue(cacheKey, out string imagePath) || !_memoryCache.TryGetValue(cacheKeyForLastModified, out DateTime lastModified))
             {
                 RServiceResult<Guid> poet = await _ganjoorService.GetPoetImageIdByUrl($"/{url}");
