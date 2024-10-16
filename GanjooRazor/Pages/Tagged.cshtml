@@ -197,11 +197,10 @@
                             <div>
                                 @if (Model.LoggedIn)
                                 {
-                                    <a href="/User/Section?poemId=@poem.Id&index=@poem.SectionIndex" role="button" class="w3tooltip cursor-pointer">
+                                    <a href="/User/Section?poemId=@poem.Id&index=@poem.SectionIndex" role="button" class="cursor-pointer" title="ویرایش">
                                         <div class="circled-number">
                                             <i class="notranslate noindent-info-button edit-poem-button"></i>
                                         </div>
-                                        <span class="w3tooltiptext">ویرایش</span>
                                     </a>
                                 }
 

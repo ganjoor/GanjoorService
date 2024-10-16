@@ -44,11 +44,10 @@
                     <svg class="noindent-info-button" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><rect fill="none" height="24" width="24" /><path d="m11 8.89.94 3.11h2.82l-2.27 1.62.93 3.01L11 14.79l-2.42 1.84.93-3.01L7.24 12h2.82L11 8.89zM8.58 10H1l6.17 4.41L4.83 22 11 17.31 17.18 22l-2.35-7.59L21 10h-7.58L11 2l-2.42 8zm12.78 12-1.86-6.01L23.68 13h-3.44l-3.08 2.2 1.46 4.72L21.36 22zM17 8l-1.82-6-1.04 3.45.77 2.55H17z" /></svg>
                 </div>
             </a>
-            <a href="/User/Notifications" role="button" class="w3tooltip cursor-pointer">
+            <a href="/User/Notifications" role="button" class="cursor-pointer" title="اعلان‌های من">
                 <div class="circled-number">
                     <i class="notranslate noindent-info-button notifications-icon"><span id="notification-badge" class="display-none"></span></i>
                 </div>
-                <span class="w3tooltiptext">اعلان‌های من</span>
             </a>
             <a href="/User/History" role="button" class="cursor-pointer" title="ادامهٔ مطالعه">
                 <div class="circled-number">
@@ -130,20 +129,18 @@
       
 
         <div class="w3-bar-item w3-button">
-            <a onclick="copyPoemLink()" role="button" class="cursor-pointer">
+            <a onclick="copyPoemLink()" role="button" class="cursor-pointer" title="رونوشت نشانی">
                 <div class="circled-number">
                     <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm-3-4h8v2H8z" /></svg>
                 </div>
-                <span class="w3tooltiptext">رونوشت نشانی</span>
             </a>
         </div>
 
         <div class="w3-bar-item w3-button">
-            <a onclick="copyPoemText()" role="button" class="cursor-pointer">
+            <a onclick="copyPoemText()" role="button" class="cursor-pointer" title="رونوشت متن">
                 <div class="circled-number">
                     <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" /></svg>
                 </div>
-                <span class="w3tooltiptext">رونوشت متن</span>
             </a>
         </div>
 
@@ -292,7 +289,7 @@
         @if (!string.IsNullOrEmpty(Model.NextUrl))
         {
             <div class="w3-bar-item w3-button">
-                <a href="@Html.Raw(Model.NextUrl)" role="button" class="w3tooltip cursor-pointer">
+                <a href="@Html.Raw(Model.NextUrl)" role="button" class="cursor-pointer">
                     <div class="circled-number">
                         <svg class="noindent-info-button" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><g><rect fill="none" height="24" width="24" /></g><g><path d="M2,12c0,5.52,4.48,10,10,10c5.52,0,10-4.48,10-10S17.52,2,12,2C6.48,2,2,6.48,2,12z M20,12c0,4.42-3.58,8-8,8 c-4.42,0-8-3.58-8-8s3.58-8,8-8C16.42,4,20,7.58,20,12z M8,12l4-4l1.41,1.41L11.83,11H16v2h-4.17l1.59,1.59L12,16L8,12z" /></g></svg>
                     </div>

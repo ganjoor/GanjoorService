@@ -42,11 +42,10 @@
             <p>@verse.CoupletSummary</p>
             @if (Model.LoggedIn)
             {
-                <a href="@($"/User/Editor?id={Model.PoemId}#summary-{verse.VOrder}")" role="button" class="w3tooltip cursor-pointer">
+                <a href="@($"/User/Editor?id={Model.PoemId}#summary-{verse.VOrder}")" role="button" class="cursor-pointer" title="ویرایش">
                     <div class="circled-number">
                         <i class="notranslate noindent-info-button edit-poem-button"></i>
                     </div>
-                    <span class="w3tooltiptext">ویرایش</span>
                 </a>
             }
         </div>
@@ -62,8 +61,8 @@
 </script>
 
 <div class="bnum-partial-action-box">
-    <a role="button" class="w3tooltip cursor-pointer" id="copylink-@Model.CoupletIndex" onclick="copyCoupletUrl(@Model.CoupletIndex)"><i class="notranslate material-icons color-white">link</i><span class="w3tooltiptext" id="copylink-tooltip-@Model.CoupletIndex">رونوشت نشانی</span></a>
-    <a role="button" class="w3tooltip cursor-pointer" id="copytext-@Model.CoupletIndex" onclick="copyCoupletText(@Model.CoupletIndex)"><i class="notranslate material-icons color-white">content_copy</i><span class="w3tooltiptext" id="copytext-tooltip-@Model.CoupletIndex">رونوشت متن</span></a>
+    <a role="button" title="رونوشت نشانی" class="cursor-pointer" id="copylink-@Model.CoupletIndex" onclick="copyCoupletUrl(@Model.CoupletIndex)"><i class="notranslate material-icons color-white">link</i></a>
+    <a role="button" title="رونوشت متن" class="cursor-pointer" id="copytext-@Model.CoupletIndex" onclick="copyCoupletText(@Model.CoupletIndex)"><i class="notranslate material-icons color-white">content_copy</i></a>
     <a role="button" id="share-@Model.CoupletIndex" class="cursor-pointer" onclick="webShareCouplet(@Model.CoupletIndex)" title="همرسانی"><i class="notranslate material-icons color-white">share</i></a>
     @if (Model.LoggedIn)
     {
@@ -75,13 +74,13 @@
     @if (Model.SectionsWithMetreAndRhymes.Any())
     {
         <text>
-            <a role="button" class="cursor-pointer w3tooltip" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")"><i class="notranslate material-icons color-white">search</i><span class="w3tooltiptext">موارد هم آهنگ</span></a>
+            <a role="button" title="موارد هم آهنگ" class="cursor-pointer" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")"><i class="notranslate material-icons color-white">search</i></a>
         </text>
 
         @for (int nSectionIndex = 1; nSectionIndex < Model.SectionsWithMetreAndRhymes.Count; nSectionIndex++)
         {
             <text>
-                <a role="button" class="cursor-pointer w3tooltip" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")"><i class="notranslate material-icons color-white">search</i><span class="w3tooltiptext">موارد هم آهنگ (وزن یا قافیهٔ @((nSectionIndex + 1).ToPersianNumbers()))</span></a>
+                <a role="button" title="موارد هم آهنگ (وزن یا قافیهٔ @((nSectionIndex + 1).ToPersianNumbers()))" class="cursor-pointer" href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")"><i class="notranslate material-icons color-white">search</i></a>
             </text>
         }
     }

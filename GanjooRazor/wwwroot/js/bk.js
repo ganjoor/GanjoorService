@@ -497,7 +497,7 @@ function checkIfBookmarked(poemId) {
                     else if (bookmark.coupletIndex < 0) {
                         var commentBookmark = document.getElementById('bookmark-comment-' + (-bookmark.coupletIndex).toString());
                         if (commentBookmark != null) {
-                            commentBookmark.innerHTML = '<i class="pageicons" id="bookmark-icon-comment-' + (-bookmark.coupletIndex).toString() + '">star</i><span class="w3tooltiptext">نشان کردن / حذف نشان</span>';
+                            commentBookmark.innerHTML = '<i class="pageicons" id="bookmark-icon-comment-' + (-bookmark.coupletIndex).toString() + '">star</i>';
                         }
                     }
                 }
@@ -576,8 +576,7 @@ async function webSharePoem() {
 function copyPoemText() {
     var text = getPoemText();
     navigator.clipboard.writeText(text);
-    var tooltip = document.getElementById("copytext-tooltip");
-    tooltip.innerHTML = "متن در حافظه رونوشت شد.";
+    alert('متن در حافظه رونوشت شد.');
 }
 
 function copyPoemLink() {
@@ -586,8 +585,7 @@ function copyPoemLink() {
         url = url.substring(0, url.indexOf('#'));
     }
     navigator.clipboard.writeText(url);
-    var tooltip = document.getElementById("copylink-tooltip");
-    tooltip.innerHTML = "نشانی در حافظه رونوشت شد.";
+    alert('نشانی در حافظه رونوشت شد.');
 }
 
 function copyCoupletUrl(coupletIndex) {
@@ -597,8 +595,7 @@ function copyCoupletUrl(coupletIndex) {
     }
     url += ('#bn' + String(coupletIndex + 1));
     navigator.clipboard.writeText(url);
-    var tooltip = document.getElementById("copylink-tooltip-" + String(coupletIndex));
-    tooltip.innerHTML = "نشانی در حافظه رونوشت شد.";
+    alert('نشانی در حافظه رونوشت شد.');
 }
 
 function getCoupletText(coupletIndex) {
@@ -629,8 +626,7 @@ async function webShareCouplet(coupletIndex) {
 function copyCoupletText(coupletIndex) {
     var text = getCoupletText(coupletIndex);
     navigator.clipboard.writeText(text);
-    var tooltip = document.getElementById("copytext-tooltip-" + String(coupletIndex));
-    tooltip.innerHTML = "متن در حافظه رونوشت شد.";
+    alert('متن در حافظه رونوشت شد.');
 }
 
 
@@ -862,8 +858,7 @@ function copyCommentUrl(commentId, divSuffix) {
     }
     url += ('#comment-' + String(commentId));
     navigator.clipboard.writeText(url);
-    var tooltip = document.getElementById("copycommentlink-tooltip-" + String(commentId) + divSuffix);
-    tooltip.innerHTML = "نشانی در حافظه رونوشت شد.";
+    alert('نشانی در حافظه رونوشت شد.');
 }
 
 function onSelectedPoetChanged() {

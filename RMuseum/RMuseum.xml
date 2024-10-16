@@ -990,7 +990,7 @@
             <param name="url">sample: hafez</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetPoetImage(System.String)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoetImage(System.String,System.Boolean)">
             <summary>
             get poet image
             </summary>
@@ -2261,6 +2261,13 @@
             <summary>
              one time fix for transilerations
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.TajikImportFromSqlite(System.Int32)">
+            <summary>
+            import tajik from sqlite
+            </summary>
+            <param name="poetId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetTajikPoetsAsync">
@@ -16938,6 +16945,14 @@
             one time fix for transilerations
             </summary>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.TajikImportFromSqlite(System.Int32,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            tajik import from sqlite
+            </summary>
+            <param name="poetId"></param>
+            <param name="file"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetTajikPoetsAsync">
             <summary>
             tajik poets
@@ -18349,6 +18364,9 @@
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorService">
+            <summary>
+            IGanjoorService implementation
+            </summary>
             <summary>
             IGanjoorService implementation
             </summary>

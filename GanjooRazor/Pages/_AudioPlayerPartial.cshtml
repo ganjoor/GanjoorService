@@ -37,17 +37,17 @@
             @if(!Model.CategoryMode)
             {
                 <div class="audio-partial-action-box">
-                    <a role="button" class="w3tooltip cursor-pointer recitation-button" onclick="document.getElementById('audio-@recitaion.Id').play()"><i class="notranslate recitation-icons recitation-play"></i><span class="w3tooltiptext">پخش</span></a>
-                    <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@($"/AudioClip/?a={recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="notranslate recitation-icons recitation-download"></i><span class="w3tooltiptext">دریافت خوانش</span></a>
-                    <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@($"/ReportRecitation/?a={recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="notranslate recitation-icons recitation-report"></i><span class="w3tooltiptext">گزارش خطا</span></a>
+                    <a role="button" title="پخش" class="cursor-pointer recitation-button" onclick="document.getElementById('audio-@recitaion.Id').play()"><i class="notranslate recitation-icons recitation-play"></i></a>
+                    <a role="button" title="دریافت خوانش" class="cursor-pointer recitation-button" href="@($"/AudioClip/?a={recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="notranslate recitation-icons recitation-download"></i></a>
+                    <a role="button" title="گزارش خطا" class="cursor-pointer recitation-button" href="@($"/ReportRecitation/?a={recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="notranslate recitation-icons recitation-report"></i></a>
                     @if (Model.LoggedIn)
                     {
-                        <a role="button" class="w3tooltip cursor-pointer recitation-button" onclick="switchRecitationVote(@recitaion.Id)"><i class="notranslate recitation-icons @(recitaion.UpVotedByUser ? "recitation-vote" : "recitation-novote")" id="@($"recitaion-{recitaion.Id}")"></i><span class="w3tooltiptext">رأی به خوانش</span></a>
+                        <a role="button" title="رأی به خوانش" class="cursor-pointer recitation-button" onclick="switchRecitationVote(@recitaion.Id)"><i class="notranslate recitation-icons @(recitaion.UpVotedByUser ? "recitation-vote" : "recitation-novote")" id="@($"recitaion-{recitaion.Id}")"></i></a>
                     }
-                    <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@($"/RecitationsOrder/?p={recitaion.PoemId}#a{recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="notranslate recitation-icons recitation-score"></i><span class="w3tooltiptext">اطلاعات رتبه‌بندی</span></a>
+                    <a role="button" title="اطلاعات رتبه‌بندی" class="cursor-pointer recitation-button" href="@($"/RecitationsOrder/?p={recitaion.PoemId}#a{recitaion.Id}")" onclick="wpopen(this.href); return false"><i class="notranslate recitation-icons recitation-score"></i></a>
                     @if (recitaion.AudioArtistUrl.IndexOf("http") == 0)
                     {
-                        <a role="button" class="w3tooltip cursor-pointer recitation-button" href="@Html.Raw(recitaion.AudioArtistUrl)" target="_blank"><i class="notranslate recitation-icons recitation-website"></i><span class="w3tooltiptext">@recitaion.AudioArtist</span></a>
+                        <a role="button" title="@recitaion.AudioArtist" class="cursor-pointer recitation-button" href="@Html.Raw(recitaion.AudioArtistUrl)" target="_blank"><i class="notranslate recitation-icons recitation-website"></i></a>
                     }
                 </div>
                 @if (recitaion.Mistakes.Length > 0)
@@ -68,8 +68,8 @@
                                 </p>
                                 @if(Model.IsAdmin)
                                 {
-                                    <a role="button" onclick="deleteMistake(@mistake.Id)" class="w3tooltip"><i class="notranslate pageicons">delete</i><span class="w3tooltiptext">حذف خطا</span></a>
-                                    <a role="button" onclick="editMistakeReason(@mistake.Id, '@mistake.Mistake.Replace("\r\n", "<br>")')" class="w3tooltip"><i class="notranslate pageicons">edit</i><span class="w3tooltiptext">ویرایش خطا</span></a>
+                                    <a role="button" title="حذف خطا" onclick="deleteMistake(@mistake.Id)"><i class="notranslate pageicons">delete</i></a>
+                                    <a role="button" title="ویرایش خطا" onclick="editMistakeReason(@mistake.Id, '@mistake.Mistake.Replace("\r\n", "<br>")')"><i class="notranslate pageicons">edit</i></a>
                                 }
                             </div>
                         }
