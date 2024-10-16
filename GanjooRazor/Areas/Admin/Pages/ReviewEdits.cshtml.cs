@@ -407,6 +407,11 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                                 if (Correction.VerseOrderText[i].CoupletSummary != null)
                                 {
+                                    if(pms.verseSummaryResults.Length <= i)
+                                    {
+                                        Correction.VerseOrderText[i].SummaryReviewResult = CorrectionReviewResult.Rejected;
+                                    }
+                                    else
                                     if (pms.verseSummaryResults[i] == null)
                                     {
                                         return new BadRequestObjectResult("لطفاً تکلیف بررسی تمام مصرعهای پیشنهادی را مشخص کنید.");
