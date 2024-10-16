@@ -356,7 +356,7 @@ namespace RMuseum.Services.Implementation
                         {
                             html += "<div class=\"related-images-frame\" id=\"related-poets\">";
                             html += $"<div class=\"century\">{Environment.NewLine}";
-                            html += $" مشق شعر <a role=\"button\" class=\"w3tooltip cursor-pointer\" onclick=\"switch_section('related-poets-section', 'related-poets-collapse-button')\"><i class=\"notranslate info-buttons expand_circle_down\" id=\"related-poets-collapse-button\"></i><span class=\"w3tooltiptext\">جمع شود / باز شود</span></a>{Environment.NewLine}";
+                            html += $" مشق شعر <a role=\"button\" title=\"جمع شود / باز شود\" class=\"cursor-pointer\" onclick=\"switch_section('related-poets-section', 'related-poets-collapse-button')\"><i class=\"notranslate info-buttons expand_circle_down\" id=\"related-poets-collapse-button\"></i></a>{Environment.NewLine}";
                             html += $"</div>{Environment.NewLine}";
                             html += $"<div id=\"related-poets-section\">{Environment.NewLine}";
 

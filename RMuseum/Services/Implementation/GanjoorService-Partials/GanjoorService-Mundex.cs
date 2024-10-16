@@ -184,7 +184,7 @@ namespace RMuseum.Services.Implementation
 
                     htmlText += $"<div class=\"century\">{Environment.NewLine}";
                     htmlText += $"{singer.TrackCount.ToPersianNumbers()} قطعه";
-                    htmlText += $"<a role=\"button\" class=\"w3tooltip cursor-pointer\" onclick=\"switch_section('item-section-{nSinger}', 'item-collapse-button-{nSinger}')\"><i class=\"notranslate info-buttons collapse_circle_down\" id=\"item-collapse-button-{nSinger}\"></i><span class=\"w3tooltiptext\">جمع شود / باز شود</span></a>";
+                    htmlText += $"<a role=\"button\" title=\"جمع شود / باز شود\" class=\"cursor-pointer\" onclick=\"switch_section('item-section-{nSinger}', 'item-collapse-button-{nSinger}')\"><i class=\"notranslate info-buttons collapse_circle_down\" id=\"item-collapse-button-{nSinger}\"></i></a>";
                     htmlText += $"</div>{Environment.NewLine}";
                     htmlText += $"<div id=\"item-section-{nSinger}\" style=\"display:none\">{Environment.NewLine}";
                     htmlText += $"<ol>{Environment.NewLine}";
@@ -248,7 +248,7 @@ namespace RMuseum.Services.Implementation
 
                     htmlText += $"<div class=\"century\">{Environment.NewLine}";
                     htmlText += $"{tracks.Count.ToPersianNumbers()} قطعه";
-                    htmlText += $"<a role=\"button\" class=\"w3tooltip cursor-pointer\" onclick=\"switch_section('item-section-{nPoetIndex}', 'item-collapse-button-{nPoetIndex}')\"><i class=\"notranslate info-buttons collapse_circle_down\" id=\"item-collapse-button-{nPoetIndex}\"></i><span class=\"w3tooltiptext\">جمع شود / باز شود</span></a>";
+                    htmlText += $"<a role=\"button\" title=\"جمع شود / باز شود\" class=\"cursor-pointer\" onclick=\"switch_section('item-section-{nPoetIndex}', 'item-collapse-button-{nPoetIndex}')\"><i class=\"notranslate info-buttons collapse_circle_down\" id=\"item-collapse-button-{nPoetIndex}\"></i></a>";
                     htmlText += $"</div>{Environment.NewLine}";
                     htmlText += $"<div id=\"item-section-{nPoetIndex}\" style=\"display:none\">{Environment.NewLine}";
 
