@@ -1436,13 +1436,13 @@ audio {
 
 .visible-notification-badge {
     position: absolute;
-    top: 0px;
-    right: 0px;
-    padding: 1px 1px;
+    padding: 1px;
     border-radius: 100%;
-    background: red none repeat scroll 0% 0%;
-    bottom: 25px;
-    left: 25px;
+    background: red;
+    width: 16px;
+    height: 16px;
+    margin-top: -10px;
+    margin-right: -5px;
 }
 
 fieldset {
