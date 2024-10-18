@@ -1,16 +1,16 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using GanjooRazor.Utils;
+﻿using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor.ViewModels;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
-    public class PageDelModel : PageModel
+    public class CatDelModel : PageModel
     {
         /// <summary>
         /// HttpClient instance
@@ -21,15 +21,15 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
-        public PageDelModel(HttpClient httpClient)
+        public CatDelModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
         /// <summary>
-        /// page
+        /// category
         /// </summary>
-        public GanjoorPageCompleteViewModel PageInformation { get; set; }
+        public GanjoorPoetCompleteViewModel Cat { get; set; }
 
 
         /// <summary>
@@ -43,13 +43,13 @@ namespace GanjooRazor.Areas.Admin.Pages
                 return Redirect("/");
 
             LastResult = "";
-            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Query["url"]}");
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{Request.Query["id"]}");
             if (!response.IsSuccessStatusCode)
             {
                 LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                 return Page();
             }
-            PageInformation = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+            Cat = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
             return Page();
         }
 
@@ -60,29 +60,24 @@ namespace GanjooRazor.Areas.Admin.Pages
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
 
-                HttpResponseMessage response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/page/cache/{Request.Query["id"]}");
+  
+
+                var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/cat/{Request.Query["id"]}");
+
                 if (!response.IsSuccessStatusCode)
-                {
-                    LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                    return Page();
-                }
-
-
-                response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/page/{Request.Query["id"]}");
-
-                if(!response.IsSuccessStatusCode)
                 {
                     LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                 }
                 else
                 {
-                    LastResult = "عملیات حذف صفحه انجام شد.";
+                    LastResult = "عملیات حذف بخش انجام شد.";
                 }
-               
+
 
                 return Page();
 
             }
         }
+
     }
 }

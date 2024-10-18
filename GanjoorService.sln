@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RMuseum", "RMuseum\RMuseum.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GanjooRazor", "GanjooRazor\GanjooRazor.csproj", "{48F9CDFA-625F-4743-BF21-BD556F6F33E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TajikGanjoor", "TajikGanjoor\TajikGanjoor.csproj", "{1C51EB06-5190-4646-84C7-5EE712C86F57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TajikGanjoor", "TajikGanjoor\TajikGanjoor.csproj", "{1C51EB06-5190-4646-84C7-5EE712C86F57}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
