@@ -3427,6 +3427,10 @@ namespace RMuseum.Services.Implementation
                 {
                     return new RServiceResult<bool>(false, "cat has poems!");
                 }
+                if(true == await _context.GanjoorCategories.Where(p => p.ParentId == id).AnyAsync())
+                {
+                    return new RServiceResult<bool>(false, "cat has subcats");
+                }
 
                 var page = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == id).SingleAsync();
                 _context.Remove(page);
