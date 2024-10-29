@@ -82,7 +82,7 @@ document.addEventListener('selectionchange', function() {
 	})
 
 	$quran.attr({
-		href: 'http://www.parsquran.com/data/search.php?page=1&user=far&quantity=' + encodeURI(text) + '&tran=100',
+		href: 'https://tanzil.ir/#search/quran/' + encodeURI(text),
 		title: 'جستجوی عبارت در قرآن',
 		target: '_blank'
 	})
