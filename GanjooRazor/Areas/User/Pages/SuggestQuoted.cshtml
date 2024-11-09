@@ -74,7 +74,7 @@
                     x.length = 0;
                     for (var i = 0; i < coupletIndices.length; i++) {
                         var option = document.createElement("option");
-                        option.text = coupletTexts[i];
+                        option.text = bshfarsinum((i + 1).toString()) + ' - ' + coupletTexts[i];
                         option.value = coupletIndices[i];
                         x.add(option);
                     }
