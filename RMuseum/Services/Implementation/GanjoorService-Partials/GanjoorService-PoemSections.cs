@@ -286,6 +286,10 @@ namespace RMuseum.Services.Implementation
         {
             if (true == await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == poem.Id).AnyAsync())
                 return true;
+            if(poem.Cat == null)
+            {
+                poem.Cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == poem.CatId).SingleAsync();
+            }
 
             var nonCommentVerses = await context.GanjoorVerses.Where(v => v.PoemId == poem.Id && v.VersePosition != VersePosition.Comment).OrderBy(v => v.VOrder).ToListAsync();
             if (!nonCommentVerses.Where(v => v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single).Any())
