@@ -87,6 +87,28 @@
 
 </div>
 
+@if (Model.Sections.Where(s => s.GanjoorMetre != null).Any())
+{
+    <div>
+        <table>
+            @foreach (var s in Model.Sections)
+            {
+                if (s.GanjoorMetre != null)
+                {
+                    <tr>
+                        <td>
+                            وزن:
+                        </td>
+                        <td>
+                            <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(s.GanjoorMetre.Rhythm)}")">@s.GanjoorMetre.Rhythm</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+}
+
 <div id="letters-stat-@Model.CoupletIndex">
 
 
@@ -104,10 +126,14 @@
         <script>
             countAndDisplayCharacters('@verseSameSound', 'letters-stat-resultTableContainer-samev-@verse.Id', 'letters-stat-sourceStringContainer-samev-@verse.Id');
         </script>
-       
+
     }
 
 </div>
+
+
+
+
 
 
 <div id="comments-block-@Model.CoupletIndex" class="clear-both">
