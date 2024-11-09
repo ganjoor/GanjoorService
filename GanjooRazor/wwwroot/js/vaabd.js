@@ -52,7 +52,8 @@ var $tooltip = $('<div>').addClass('tooltip').css({
     justifyContent: 'space-around',
     alignItems: 'center',
     background: 'rgba(14,17,17,0.9)',
-    transition: 'transform 0.2s ease-out' // Add transition for scale effect
+    transition: 'transform 0.2s ease-out', // Add transition for scale effect
+    zIndex: '2000',
 }).append($close, $meaning, $abjad, $quran, $search, $vazn);
 
 // Append tooltip to body
