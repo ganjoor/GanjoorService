@@ -405,6 +405,12 @@
                                                             </td>
                                                             <td>
                                                                 <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(s.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@s.GanjoorMetre.Rhythm</a>
+                                                                @if (Model.LoggedIn)
+                                                                {
+                                                                    <a href="/User/Section?poemId=@Model.GanjoorPage.Id&index=@s.Index#metre" role="button" class="cursor-pointer" title="ویرایش وزن">
+                                                                        <i class="notranslate noindent-info-button edit-poem-button"></i>
+                                                                    </a>
+                                                                }
                                                             </td>
                                                         </tr>
                                                     }
