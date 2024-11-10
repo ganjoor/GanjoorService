@@ -33,8 +33,49 @@
                 var meter = document.getElementById("v").value;
                 window.location.href = "/Admin/TransferMeter?m=" + encodeURIComponent(meter);
             }
+
+            function sendSectionMetreSuggection(poemId, sectionIndex) {
+
+                var ext = '-' + poemId.toString() + '-' + sectionIndex.toString();
+
+                var elName = '#rhythm-new' + '-' + poemId.toString() + '-' + sectionIndex.toString();
+
+                var rhythm_new = $(elName).val();
+
+                $('#savecorrections' + ext).hide();
+
+
+                var url = '?handler=SendSectionMetreSuggection';
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {
+                        poemId: poemId,
+                        sectionIndex: sectionIndex,
+                        rhythm: rhythm_new,
+                    },
+                    success: function () {
+                        var block = "#poem-" + poemId.toString() + "-section-" + sectionIndex.toString();
+                        $(block).remove();
+                    },
+                    error: function (e) {
+                        if (e.responseText == null)
+                            alert(e);
+                        else
+                            alert(e.responseText);
+                    }
+
+                });
+
+
+            }
+
         </script>
+
     }
+
+    
 </head>
 <body>
 
@@ -55,11 +96,11 @@
                         @{
                             if (Model.PoetId != 0)
                             {
-                                <option value="0">در آثار همهٔ سخنوران</option>
+                                        <option value="0">در آثار همهٔ سخنوران</option>
                             }
                             else
                             {
-                                <option value="0" selected>در آثار همهٔ سخنوران</option>
+                                        <option value="0" selected>در آثار همهٔ سخنوران</option>
                             }
 
                             if (Model.Poets != null)
@@ -68,11 +109,11 @@
                                 {
                                     if (poet.Id == Model.PoetId)
                                     {
-                                        <option value="@poet.Id" selected>@poet.Nickname</option>
+                                                <option value="@poet.Id" selected>@poet.Nickname</option>
                                     }
                                     else
                                     {
-                                        <option value="@poet.Id">@poet.Nickname</option>
+                                                <option value="@poet.Id">@poet.Nickname</option>
                                     }
 
                                 }
@@ -82,20 +123,20 @@
                     @{
                         if (Model.Poet != null)
                         {
-                            <select name="cat" id="cat" style="width:150px">
-                                <option value="0" selected>در همهٔ بخشها</option>
-                                @{
+                                    <select name="cat" id="cat" style="width:150px">
+                                        <option value="0" selected>در همهٔ بخشها</option>
+                                        @{
                                     foreach (var gran in Model.Poet.Cat.Ancestors)
                                     {
-                                        <option value="@gran.Id">@gran.Title</option>
+                                                        <option value="@gran.Id">@gran.Title</option>
                                     }
-                                    <option value="@Model.Poet.Cat.Id">@Model.Poet.Cat.Title</option>
+                                                    <option value="@Model.Poet.Cat.Id">@Model.Poet.Cat.Title</option>
                                     foreach (var child in Model.Poet.Cat.Children)
                                     {
-                                        <option value="@child.Id">@child.Title</option>
+                                                        <option value="@child.Id">@child.Title</option>
                                     }
-                                }
-                            </select>
+                                        }
+                                    </select>
                         }
                     }
 
@@ -135,11 +176,11 @@
                                 @{
                                     if (Model.PoetId != 0)
                                     {
-                                        <option value="0">در آثار همهٔ سخنوران</option>
+                                                <option value="0">در آثار همهٔ سخنوران</option>
                                     }
                                     else
                                     {
-                                        <option value="0" selected>در آثار همهٔ سخنوران</option>
+                                                <option value="0" selected>در آثار همهٔ سخنوران</option>
                                     }
 
                                     if (Model.Poets != null)
@@ -148,11 +189,11 @@
                                         {
                                             if (poet.Id == Model.PoetId)
                                             {
-                                                <option value="@poet.Id" selected>@poet.Nickname</option>
+                                                        <option value="@poet.Id" selected>@poet.Nickname</option>
                                             }
                                             else
                                             {
-                                                <option value="@poet.Id">@poet.Nickname</option>
+                                                        <option value="@poet.Id">@poet.Nickname</option>
                                             }
                                         }
                                     }
@@ -276,7 +317,7 @@
                     foreach (var poem in Model.Poems)
                     {
 
-                        <div class="sitem">
+                        <div class="sitem" id="poem-@poem.Id-section-@poem.SectionIndex">
                             <h2>
                                 <a href="@poem.FullUrl">@poem.FullTitle</a>
                             </h2>
@@ -297,6 +338,44 @@
                                             <i class="notranslate noindent-info-button edit-poem-button"></i>
                                         </div>
                                     </a>
+
+                                    if (Model.CanEdit && Model.Metre == "null")
+                                    {
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label for="select-search-@poem.Id-@poem.SectionIndex">جستجوی وزن:</label><br />
+                                                    <input type="text" id="select-search-@poem.Id-@poem.SectionIndex" value="" oninput="doSearchInRhythmsCombo('select-search-@poem.Id-@poem.SectionIndex', 'rhythm-new-@poem.Id-@poem.SectionIndex')" list="inputRhythms-@poem.Id-@poem.SectionIndex" autocomplete="off" size="50" />
+                                                    <datalist id="inputRhythms-@poem.Id-@poem.SectionIndex">
+                                                        @if (Model.RhythmsByVerseCount != null)
+                                                            @foreach (var rhythm in Model.RhythmsByVerseCount)
+                                                            {
+                                                                <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                                                            }
+                                                    </datalist>
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <label for="rhythm-new-@poem.Id-@poem.SectionIndex">وزن انتخاب شده:</label>
+                                                    <br />
+                                                    <select id="rhythm-new-@poem.Id-@poem.SectionIndex" name="rhythm-new-@poem.Id-@poem.SectionIndex">
+                                                        @foreach (var rhythm in Model.RhythmsAlphabetically)
+                                                        {
+                                                            <option value="@rhythm.Rhythm">@(rhythm.Rhythm == "" ? "هیچکدام" : rhythm.Rhythm == "null" ? "وزن‌یابی نشده" : rhythm.Rhythm)</option>
+                                                        }
+                                                    </select>
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <a role="button" id="savecorrections-@poem.Id-@poem.SectionIndex" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="sendSectionMetreSuggection(@poem.Id, @poem.SectionIndex)">ذخیره</a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    }
                                 }
 
                             </div>

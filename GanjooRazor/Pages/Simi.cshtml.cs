@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using DNTPersianUtils.Core;
+using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -432,6 +434,55 @@ namespace GanjooRazor.Pages
             return Page();
         }
         public string HtmlText { get; set; }
-        
+
+
+        public async Task<IActionResult> OnPostSendSectionMetreSuggectionAsync(int poemId, int sectionIndex, string rhythm)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+
+                    if (rhythm == "null")
+                        rhythm = "";
+
+                    if(string.IsNullOrEmpty(rhythm))
+                    {
+                        return new BadRequestObjectResult("وزن انتخاب نشده");
+                    }
+
+                    var sectionsResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/sections/{poemId}");
+                    if (!sectionsResponse.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await sectionsResponse.Content.ReadAsStringAsync()));
+                    }
+                    var sections = JsonConvert.DeserializeObject<GanjoorPoemSection[]>(await sectionsResponse.Content.ReadAsStringAsync());
+
+                    var section = sections.Where(s => s.Index == sectionIndex).Single();
+
+                    GanjoorPoemSectionCorrectionViewModel correction = new GanjoorPoemSectionCorrectionViewModel()
+                    {
+                        SectionId = section.Id,
+                        Rhythm = rhythm,
+                    };
+
+                    HttpResponseMessage response = await secureClient.PostAsync(
+                        $"{APIRoot.Url}/api/ganjoor/section/correction",
+                        new StringContent(JsonConvert.SerializeObject(correction),
+                        Encoding.UTF8,
+                        "application/json"));
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    return new OkObjectResult(true);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+        }
+
     }
 }
