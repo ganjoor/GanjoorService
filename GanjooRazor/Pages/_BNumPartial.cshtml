@@ -91,7 +91,7 @@
 {
     <div>
         <table>
-            @foreach (var s in Model.Sections)
+            @foreach (var s in Model.Sections.Where(sec => sec.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem))
             {
                 if (s.GanjoorMetre != null)
                 {
