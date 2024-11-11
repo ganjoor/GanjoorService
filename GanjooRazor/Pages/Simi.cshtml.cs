@@ -435,8 +435,7 @@ namespace GanjooRazor.Pages
         }
         public string HtmlText { get; set; }
 
-
-        public async Task<IActionResult> OnPostSendSectionMetreSuggectionAsync(int poemId, int sectionIndex, string rhythm)
+        public async Task<IActionResult> OnPostSendSectionMetreSuggestionAsync(int poemId, int sectionIndex, string rhythm)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -451,14 +450,26 @@ namespace GanjooRazor.Pages
                         return new BadRequestObjectResult("وزن انتخاب نشده");
                     }
 
-                    var sectionsResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/sections/{poemId}");
-                    if (!sectionsResponse.IsSuccessStatusCode)
+                    var sectionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/sections/{poemId}");
+                    if (!sectionResponse.IsSuccessStatusCode)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await sectionsResponse.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await sectionResponse.Content.ReadAsStringAsync()));
                     }
-                    var sections = JsonConvert.DeserializeObject<GanjoorPoemSection[]>(await sectionsResponse.Content.ReadAsStringAsync());
+                    var sections = JsonConvert.DeserializeObject<GanjoorPoemSection[]>(await sectionResponse.Content.ReadAsStringAsync());
 
                     var section = sections.Where(s => s.Index == sectionIndex).Single();
+
+                    var correctionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/section/correction/last/{section.Id}");
+                    if (!correctionResponse.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await correctionResponse.Content.ReadAsStringAsync()));
+                        
+                    }
+
+                    if(null != JsonConvert.DeserializeObject<GanjoorPoemSectionCorrectionViewModel>(await correctionResponse.Content.ReadAsStringAsync()))
+                    {
+                        return new BadRequestObjectResult("شما پیشتر پیشنهادی تصحیحی برای این قطع ثبت کرده‌اید.");
+                    }
 
                     GanjoorPoemSectionCorrectionViewModel correction = new GanjoorPoemSectionCorrectionViewModel()
                     {

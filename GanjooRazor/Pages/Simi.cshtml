@@ -44,7 +44,7 @@
                 var elName = '#rhythm-new' + '-' + poemId.toString() + '-' + sectionIndex.toString();
                 var rhythm_new = $(elName).val();
                 $('#savecorrections' + ext).hide();
-                var url = '?handler=SendSectionMetreSuggection';
+                var url = '?handler=SendSectionMetreSuggestion';
                 $.ajax({
                     type: "POST",
                     url: url,
