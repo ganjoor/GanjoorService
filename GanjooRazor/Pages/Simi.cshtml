@@ -33,20 +33,18 @@
                 var meter = document.getElementById("v").value;
                 window.location.href = "/Admin/TransferMeter?m=" + encodeURIComponent(meter);
             }
+        </script>
+    }
 
+    @if(Model.LoggedIn)
+    {
+        <script>
             function sendSectionMetreSuggection(poemId, sectionIndex) {
-
                 var ext = '-' + poemId.toString() + '-' + sectionIndex.toString();
-
                 var elName = '#rhythm-new' + '-' + poemId.toString() + '-' + sectionIndex.toString();
-
                 var rhythm_new = $(elName).val();
-
                 $('#savecorrections' + ext).hide();
-
-
                 var url = '?handler=SendSectionMetreSuggection';
-
                 $.ajax({
                     type: "POST",
                     url: url,
@@ -65,14 +63,9 @@
                         else
                             alert(e.responseText);
                     }
-
                 });
-
-
             }
-
         </script>
-
     }
 
     
@@ -339,7 +332,7 @@
                                         </div>
                                     </a>
 
-                                    if (Model.CanEdit && Model.Metre == "null")
+                                    if (Model.LoggedIn && Model.Metre == "null")
                                     {
                                         <table>
                                             <tr>
