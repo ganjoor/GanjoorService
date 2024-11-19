@@ -14,7 +14,7 @@
         @ViewData["Title"]
     </title>
 
-    <link href="/css/p8.css?version=72" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=73" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="/lib/jquery/dist/jquery.min.js"></script>
@@ -155,37 +155,38 @@
                     else
                         foreach (var comment in Model.Comments)
                         {
-                            <p>
-                                @if (comment.UserId == null)
-                                {
-                                    @comment.AuthorName
-                                }
-                                else
-                                {
-                                    <a href="/hashieha/?userid=@comment.UserId">@comment.AuthorName</a>
-                                }
-                                <small>
-                                    در @comment.CommentDate.ToFriendlyPersianDateTextify()
-                                    @if (comment.InReplyTo != null)
+                            <div class="ganjoor-comment">
+                                <p>
+                                    @if (comment.UserId == null)
                                     {
-                                        <text>
-                                            @(" ")در پاسخ به @comment.InReplyTo.AuthorName
-                                        </text>
+                                        @comment.AuthorName
                                     }
-                                </small>
-                                @(" ")دربارهٔ <a href="@comment.Poem.UrlSlug#comment-@comment.Id">@comment.Poem.Title</a>:
-                            </p>
-                            @if (comment.CoupletIndex != -1)
-                            {
-                                <div class="commentquote">
-                                    @comment.CoupletSummary
-                                </div>
-                            }
-                            <blockquote>
-                                @Html.Raw(comment.HtmlComment)
-                            </blockquote>
-                            <div class="spacer">&nbsp;</div>
-                            <hr />
+                                    else
+                                    {
+                                        <a href="/hashieha/?userid=@comment.UserId">@comment.AuthorName</a>
+                                    }
+                                    <small>
+                                        در @comment.CommentDate.ToFriendlyPersianDateTextify()
+                                        @if (comment.InReplyTo != null)
+                                        {
+                                            <text>
+                                                @(" ")در پاسخ به @comment.InReplyTo.AuthorName
+                                            </text>
+                                        }
+                                    </small>
+                                    @(" ")دربارهٔ <a href="@comment.Poem.UrlSlug#comment-@comment.Id">@comment.Poem.Title</a>:
+                                </p>
+                                @if (comment.CoupletIndex != -1)
+                                {
+                                    <div class="commentquote">
+                                        @comment.CoupletSummary
+                                    </div>
+                                }
+                                <blockquote>
+                                    @Html.Raw(comment.HtmlComment)
+                                </blockquote>
+                            </div>
+                           
                         }
                 </div>
 

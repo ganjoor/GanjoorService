@@ -286,12 +286,14 @@ select {
 }
 
 
-
-
 a img {
     border: none;
     width: 100%;
     display: block
+}
+
+.ganjoor-comment img{
+    max-width: 100%;
 }
 
 
