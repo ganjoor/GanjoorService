@@ -245,8 +245,12 @@ namespace RMuseum.Services.Implementation
             var tajikPoems = await context.TajikPoems.AsNoTracking().Where(p => p.CatId == poetCat.Id).OrderBy(p => p.Id).ToListAsync();
             foreach (var catPoem in catPoems)
             {
-                var tajikPoem = tajikPoems.Where(p => p.Id == catPoem.Id).Single();
-                html += $"<p><a href=\"{catPoem.FullUrl}\">{LanguageUtils.CleanTextForTransileration(tajikPoem.TajikTitle)}</a></p>";
+                var tajikPoem = tajikPoems.Where(p => p.Id == catPoem.Id).SingleOrDefault();
+                if(tajikPoem != null)
+                {
+                    html += $"<p><a href=\"{catPoem.FullUrl}\">{LanguageUtils.CleanTextForTransileration(tajikPoem.TajikTitle)}</a></p>";
+                }
+                
             }
             return html;
         }
