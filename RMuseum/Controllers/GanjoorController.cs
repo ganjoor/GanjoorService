@@ -4346,6 +4346,7 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /*
         /// <summary>
         /// import tajik from sqlite
         /// </summary>
@@ -4362,6 +4363,22 @@ namespace RMuseum.Controllers
 
             RServiceResult<bool> res =
                 await _ganjoorService.TajikImportFromSqlite(poetId, file);
+            if (res.Result)
+                return Ok();
+            return BadRequest(res.ExceptionString);
+        }*/
+
+        [HttpPut]
+        [Route("tajik/sqlite/onetime/import")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> TajikOneTimeImportFromSqlite()
+        {
+            IFormFile file = Request.Form.Files[0];
+
+            RServiceResult<bool> res =
+                await _ganjoorService.TajikImportFromSqlite(0, "C:\\Tools\\import\\output.s3db");
             if (res.Result)
                 return Ok();
             return BadRequest(res.ExceptionString);

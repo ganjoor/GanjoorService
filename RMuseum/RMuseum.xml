@@ -2263,13 +2263,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.TajikImportFromSqlite(System.Int32)">
-            <summary>
-            import tajik from sqlite
-            </summary>
-            <param name="poetId"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetTajikPoetsAsync">
             <summary>
             tajik poets
@@ -16945,12 +16938,11 @@
             one time fix for transilerations
             </summary>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.TajikImportFromSqlite(System.Int32,Microsoft.AspNetCore.Http.IFormFile)">
+        <member name="M:RMuseum.Services.IGanjoorService.TajikImportFromSqlite(System.Int32,System.String)">
             <summary>
             tajik import from sqlite
             </summary>
             <param name="poetId"></param>
-            <param name="file"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetTajikPoetsAsync">

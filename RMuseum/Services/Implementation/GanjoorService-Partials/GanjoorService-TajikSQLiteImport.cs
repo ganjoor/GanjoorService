@@ -19,22 +19,10 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
-        public async Task<RServiceResult<bool>> TajikImportFromSqlite(int poetId, IFormFile file)
+        public async Task<RServiceResult<bool>> TajikImportFromSqlite(int poetId, string filePath)
         {
             try
             {
-                string dir = Path.Combine($"{Configuration.GetSection("PictureFileService")["StoragePath"]}", "SQLiteImports");
-                if (!Directory.Exists(dir))
-                    Directory.CreateDirectory(dir);
-
-                string filePath = Path.Combine(dir, file.FileName);
-                if (File.Exists(filePath))
-                    File.Delete(filePath);
-                using (FileStream fsMain = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fsMain);
-                }
-
                 _backgroundTaskQueue.QueueBackgroundWorkItem
                             (
                             async token =>
@@ -63,6 +51,8 @@ namespace RMuseum.Services.Implementation
                                                 int poetId = poet.id;
                                                 await jobProgressServiceEF.UpdateJob(job.Id, poetId, $"poet: {poetId}");
                                                 if (await context.GanjoorPoets.AnyAsync(p => p.Id == poetId) == false) continue;
+                                                var cats = (await sqlite.QueryAsync($"SELECT * FROM cat WHERE poet_id = {poetId} ORDER BY id")).ToList();
+                                                if(cats.Count == 0) continue;
                                                 if (await context.TajikPoets.AnyAsync(p => p.Id == poetId) == false)
                                                 {
                                                     var tajikPoet = new GanjoorTajikPoet()
@@ -86,7 +76,7 @@ namespace RMuseum.Services.Implementation
                                                         await context.SaveChangesAsync();
                                                     }
                                                 }
-                                                var cats = (await sqlite.QueryAsync($"SELECT * FROM cat WHERE poet_id = {poetId} ORDER BY id")).ToList();
+                                                
                                                 foreach (var cat in cats)
                                                 {
                                                     int catId = cat.Id;

@@ -1498,9 +1498,8 @@ namespace RMuseum.Services
         /// tajik import from sqlite
         /// </summary>
         /// <param name="poetId"></param>
-        /// <param name="file"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> TajikImportFromSqlite(int poetId, IFormFile file);
+        Task<RServiceResult<bool>> TajikImportFromSqlite(int poetId, string filePath);
 
         /// <summary>
         /// tajik poets
