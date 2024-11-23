@@ -48,7 +48,7 @@ namespace RMuseum.Services.Implementation
 
                                             foreach (var poet in poets)
                                             {
-                                                int poetId = poet.id;
+                                                int poetId = (int)poet.id;
                                                 await jobProgressServiceEF.UpdateJob(job.Id, poetId, $"poet: {poetId}");
                                                 if (await context.GanjoorPoets.AnyAsync(p => p.Id == poetId) == false) continue;
                                                 var cats = (await sqlite.QueryAsync($"SELECT * FROM cat WHERE poet_id = {poetId} ORDER BY id")).ToList();
@@ -64,22 +64,11 @@ namespace RMuseum.Services.Implementation
                                                     };
                                                     context.Add(tajikPoet);
                                                     await context.SaveChangesAsync();
-                                                    var poetPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == poetId).SingleAsync();
-                                                    if (await context.TajikPages.AnyAsync(p => p.Id == poetPage.Id) == false)
-                                                    {
-                                                        GanjoorTajikPage page = new GanjoorTajikPage()
-                                                        {
-                                                            Id = poetPage.Id,
-                                                            TajikHtmlText = await PrepareTajikPoetHtmlTextAsync(context, tajikPoet),
-                                                        };
-                                                        context.Add(page);
-                                                        await context.SaveChangesAsync();
-                                                    }
                                                 }
                                                 
                                                 foreach (var cat in cats)
                                                 {
-                                                    int catId = cat.Id;
+                                                    int catId = (int)cat.id;
                                                     await jobProgressServiceEF.UpdateJob(job.Id, poetId, $"poet: {poetId} - cat: {catId}");
                                                     if (await context.GanjoorCategories.AnyAsync(c => c.Id == catId) == false) continue;
                                                     if(await context.TajikCats.AnyAsync(c => c.Id == catId) == false)
@@ -92,27 +81,18 @@ namespace RMuseum.Services.Implementation
                                                         };
                                                         context.Add(tajikCat);
                                                         await context.SaveChangesAsync();
-
-                                                        var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleAsync();
-                                                        if (await context.TajikPages.AnyAsync(p => p.Id == catPage.Id) == false)
-                                                        {
-                                                            GanjoorTajikPage page = new GanjoorTajikPage()
-                                                            {
-                                                                Id = catPage.Id,
-                                                                TajikHtmlText = await PrepareTajikCatHtmlTextAsync(context, tajikCat),
-                                                            };
-                                                            context.Add(page);
-                                                            await context.SaveChangesAsync();
-                                                        }
-                                                       
                                                     }
                                                     var poems = (await sqlite.QueryAsync($"SELECT * FROM poem WHERE cat_id = {catId} ORDER BY id")).ToList();
                                                     foreach (var poem in poems)
                                                     {
-                                                        int poemId = poem.Id;
+                                                        int poemId = (int)poem.id;
                                                         if (await context.GanjoorPoems.AnyAsync(p => p.Id == poemId) == false) continue;
                                                         if(await context.TajikPoems.AnyAsync(p => p.Id == poemId) == false)
                                                         {
+                                                            var verses = (await sqlite.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poemId} ORDER BY vorder")).ToList();
+                                                            var ganjoorVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poemId).ToListAsync();
+
+                                                            if (verses.Count != ganjoorVerses.Count) continue;
 
                                                             await jobProgressServiceEF.UpdateJob(job.Id, poetId, $"poet: {poetId} - cat: {catId} - poem: {poemId}");
                                                             int currentCatId = catId;
@@ -138,16 +118,19 @@ namespace RMuseum.Services.Implementation
                                                             };
                                                             context.Add(tajikPoem);
                                                             await context.SaveChangesAsync();
-
-                                                            var verses = (await sqlite.QueryAsync($"SELECT * FROM verse WHERE poem_id = {poemId} ORDER BY vorder")).ToList();
+                                                            await jobProgressServiceEF.UpdateJob(job.Id, poetId, $"poet: {poetId} - cat: {catId} - poem: {poemId} - query verses");
                                                             string plaintText = "";
                                                             foreach (var verse in verses)
                                                             {
+                                                                await jobProgressServiceEF.UpdateJob(job.Id, poetId, $"poet: {poetId} - cat: {catId} - poem: {poemId} - verse: {verse.vorder}");
+                                                                var ganjoorVerse = ganjoorVerses.Where(v => v.VOrder == (int)verse.vorder).SingleOrDefault();
+                                                                if (ganjoorVerse == null) continue;
                                                                 var tajikVerse = new GanjoorTajikVerse()
                                                                 {
+                                                                    Id = ganjoorVerse.Id,
                                                                     PoemId = poemId,
                                                                     TajikText = verse.text,
-                                                                    VOrder = verse.order,
+                                                                    VOrder = (int)verse.vorder,
                                                                 };
                                                                 context.Add(tajikVerse);
                                                                 plaintText += tajikVerse.TajikText;
@@ -158,6 +141,7 @@ namespace RMuseum.Services.Implementation
                                                             context.Update(tajikPoem);
                                                             await context.SaveChangesAsync();
 
+                                                            await jobProgressServiceEF.UpdateJob(job.Id, poetId, $"poet: {poetId} - cat: {catId} - poem: {poemId} - page");
                                                             if (await context.TajikPages.AnyAsync(p => p.Id == poemId) == false)
                                                             {
                                                                 GanjoorTajikPage page = new GanjoorTajikPage()
@@ -168,7 +152,7 @@ namespace RMuseum.Services.Implementation
                                                                         
                                                                         verses.Select(s => new GanjoorVerse()
                                                                         {
-                                                                            VOrder = s.order,
+                                                                            VOrder = (int)s.vorder,
                                                                             Text = s.text,
                                                                             VersePosition = (VersePosition) ((int)s.position)
                                                                         }
@@ -184,7 +168,37 @@ namespace RMuseum.Services.Implementation
                                                     }
                                                 }
 
-                                                
+                                                foreach (var cat in cats)
+                                                {
+                                                    int catId = (int)cat.id;
+                                                    await jobProgressServiceEF.UpdateJob(job.Id, poetId, $"poet: {poetId} - cat: {catId} - page");
+                                                    var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleAsync();
+                                                    if (await context.TajikPages.AnyAsync(p => p.Id == catPage.Id) == false)
+                                                    {
+                                                        var tajikCat = await context.TajikCats.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
+                                                        GanjoorTajikPage page = new GanjoorTajikPage()
+                                                        {
+                                                            Id = catPage.Id,
+                                                            TajikHtmlText = await PrepareTajikCatHtmlTextAsync(context, tajikCat),
+                                                        };
+                                                        context.Add(page);
+                                                        await context.SaveChangesAsync();
+                                                    }
+                                                }
+
+                                                var poetPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == poetId).SingleAsync();
+                                                if (await context.TajikPages.AnyAsync(p => p.Id == poetPage.Id) == false)
+                                                {
+                                                    await jobProgressServiceEF.UpdateJob(job.Id, poetId, $"poet: {poetId} - page");
+                                                    var tajikPoet = await context.TajikPoets.AsNoTracking().Where(p => p.Id == poetId).SingleAsync();
+                                                    GanjoorTajikPage page = new GanjoorTajikPage()
+                                                    {
+                                                        Id = poetPage.Id,
+                                                        TajikHtmlText = await PrepareTajikPoetHtmlTextAsync(context, tajikPoet),
+                                                    };
+                                                    context.Add(page);
+                                                    await context.SaveChangesAsync();
+                                                }
                                             }
                                         }
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);

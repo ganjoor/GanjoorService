@@ -4375,8 +4375,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> TajikOneTimeImportFromSqlite()
         {
-            IFormFile file = Request.Form.Files[0];
-
+            
             RServiceResult<bool> res =
                 await _ganjoorService.TajikImportFromSqlite(0, "C:\\Tools\\import\\output.s3db");
             if (res.Result)
