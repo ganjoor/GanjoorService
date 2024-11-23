@@ -253,7 +253,10 @@ namespace RMuseum.Services.Implementation
 
         private async Task<string> PrepareTajikCatHtmlTextAsync(RMuseumDbContext context, GanjoorTajikCat cat)
         {
-
+            if(cat.TajikDescription == null)
+            {
+                cat.TajikDescription = "";
+            }
             string[] lines = cat.TajikDescription.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
             string html = "";
             foreach (var line in lines)
