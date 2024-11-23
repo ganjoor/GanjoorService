@@ -171,8 +171,10 @@ namespace RMuseum.Services.Implementation
                                                 foreach (var cat in cats)
                                                 {
                                                     int catId = (int)cat.id;
+                                                    if (await context.GanjoorCategories.AnyAsync(c => c.Id == catId) == false) continue;
                                                     await jobProgressServiceEF.UpdateJob(job.Id, poetId, $"poet: {poetId} - cat: {catId} - page");
-                                                    var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleAsync();
+                                                    var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == catId).SingleOrDefaultAsync();
+                                                    if(catPage == null) continue;
                                                     if (await context.TajikPages.AnyAsync(p => p.Id == catPage.Id) == false)
                                                     {
                                                         var tajikCat = await context.TajikCats.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
