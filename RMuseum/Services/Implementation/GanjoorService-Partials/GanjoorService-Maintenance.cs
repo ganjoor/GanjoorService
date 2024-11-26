@@ -2,6 +2,7 @@
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Models.Generic.Db;
 using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
@@ -23,98 +24,111 @@ namespace RMuseum.Services.Implementation
             {
                 LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                 var job = (await jobProgressServiceEF.NewJob($"FindCategoryPoemsRhythms Cat {catId}", "Query data")).Result;
-                try
+                await _FindCategoryPoemsRhythmsMoreInternal(context, jobProgressServiceEF, job, catId, retag, rhythm);
+                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+            }
+        }
+
+        private async Task _FindCategoryPoemsRhythmsMoreInternal(RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, int catId, bool retag, string rhythm)
+        {
+            try
+            {
+                var metres = await context.GanjoorMetres.OrderBy(m => m.Rhythm).AsNoTracking().ToArrayAsync();
+                var rhythms = metres.Select(m => m.Rhythm).ToArray();
+
+                GanjoorMetre preDeterminedMetre = string.IsNullOrEmpty(rhythm) ? null : metres.Where(m => m.Rhythm == rhythm).Single();
+
+                var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).ToListAsync();
+
+                int i = 0;
+                List<Tuple<int, string>> updateList = new List<Tuple<int, string>>();
+                using (HttpClient httpClient = new HttpClient())
                 {
-                    var metres = await context.GanjoorMetres.OrderBy(m => m.Rhythm).AsNoTracking().ToArrayAsync();
-                    var rhythms = metres.Select(m => m.Rhythm).ToArray();
 
-                    GanjoorMetre preDeterminedMetre = string.IsNullOrEmpty(rhythm) ? null : metres.Where(m => m.Rhythm == rhythm).Single();
-
-                    var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).ToListAsync();
-
-                    int i = 0;
-                    List<Tuple<int, string>> updateList = new List<Tuple<int, string>>();
-                    using (HttpClient httpClient = new HttpClient())
+                    foreach (var poem in poems)
                     {
-                        
-                        foreach (var poem in poems)
-                        {
 
-                            var sections = await context.GanjoorPoemSections.Where(p => p.PoemId == poem.Id).ToListAsync();
-                            foreach (var section in sections.Where(s => s.GanjoorMetreRefSectionIndex == null).ToList())
+                        var sections = await context.GanjoorPoemSections.Where(p => p.PoemId == poem.Id).ToListAsync();
+                        foreach (var section in sections.Where(s => s.GanjoorMetreRefSectionIndex == null).ToList())
+                        {
+                            if (retag || section.GanjoorMetreId == null)
                             {
-                                if (retag || section.GanjoorMetreId == null)
+
+                                if (preDeterminedMetre == null)
                                 {
-                                    
-                                    if (preDeterminedMetre == null)
+                                    var res = await _FindSectionRhythm(section, context, httpClient, rhythms);
+                                    if (!string.IsNullOrEmpty(res.Result))
                                     {
-                                        var res = await _FindSectionRhythm(section, context, httpClient, rhythms);
-                                        if (!string.IsNullOrEmpty(res.Result))
-                                        {
-                                            section.GanjoorMetreId = metres.Where(m => m.Rhythm == res.Result).Single().Id;
-                                            context.GanjoorPoemSections.Update(section);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        section.GanjoorMetreId = preDeterminedMetre.Id;
+                                        section.GanjoorMetreId = metres.Where(m => m.Rhythm == res.Result).Single().Id;
                                         context.GanjoorPoemSections.Update(section);
                                     }
-
-                                    if(section.GanjoorMetreId != null)
-                                    {
-                                        var dependentSections = sections.Where(s => s.GanjoorMetreRefSectionIndex == section.Index).ToList();
-                                        foreach (var dsection in dependentSections)
-                                        {
-                                            dsection.GanjoorMetreId = section.GanjoorMetreId;
-                                            context.GanjoorPoemSections.Update(dsection);
-                                        }
-                                    }
-
-                                    if (section.GanjoorMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters))
-                                    {
-                                        if(!updateList.Any(u  => u.Item1  == section.GanjoorMetreId && u.Item2 == section.RhymeLetters))
-                                        {
-                                            updateList.Add(new Tuple<int, string>((int)section.GanjoorMetreId, section.RhymeLetters));
-                                        }
-
-                                    }
-
-                                    if (section.GanjoorMetreId != null)
-                                    {
-                                        var dependentSections = sections.Where(s => s.GanjoorMetreRefSectionIndex == section.Index).ToList();
-                                        foreach (var dsection in dependentSections)
-                                        {
-                                            if(dsection.GanjoorMetreId != null && !string.IsNullOrEmpty(dsection.RhymeLetters))
-                                            {
-                                                if (!updateList.Any(u => u.Item1 == dsection.GanjoorMetreId && u.Item2 == dsection.RhymeLetters))
-                                                {
-                                                    updateList.Add(new Tuple<int, string>((int)dsection.GanjoorMetreId, dsection.RhymeLetters));
-                                                }
-
-                                            }
-                                        }
-                                    }
-
-                                    await jobProgressServiceEF.UpdateJob(job.Id, i++);
                                 }
+                                else
+                                {
+                                    section.GanjoorMetreId = preDeterminedMetre.Id;
+                                    context.GanjoorPoemSections.Update(section);
+                                }
+
+                                if (section.GanjoorMetreId != null)
+                                {
+                                    var dependentSections = sections.Where(s => s.GanjoorMetreRefSectionIndex == section.Index).ToList();
+                                    foreach (var dsection in dependentSections)
+                                    {
+                                        dsection.GanjoorMetreId = section.GanjoorMetreId;
+                                        context.GanjoorPoemSections.Update(dsection);
+                                    }
+                                }
+
+                                if (section.GanjoorMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters))
+                                {
+                                    if (!updateList.Any(u => u.Item1 == section.GanjoorMetreId && u.Item2 == section.RhymeLetters))
+                                    {
+                                        updateList.Add(new Tuple<int, string>((int)section.GanjoorMetreId, section.RhymeLetters));
+                                    }
+
+                                }
+
+                                if (section.GanjoorMetreId != null)
+                                {
+                                    var dependentSections = sections.Where(s => s.GanjoorMetreRefSectionIndex == section.Index).ToList();
+                                    foreach (var dsection in dependentSections)
+                                    {
+                                        if (dsection.GanjoorMetreId != null && !string.IsNullOrEmpty(dsection.RhymeLetters))
+                                        {
+                                            if (!updateList.Any(u => u.Item1 == dsection.GanjoorMetreId && u.Item2 == dsection.RhymeLetters))
+                                            {
+                                                updateList.Add(new Tuple<int, string>((int)dsection.GanjoorMetreId, dsection.RhymeLetters));
+                                            }
+
+                                        }
+                                    }
+                                }
+
+                                await jobProgressServiceEF.UpdateJob(job.Id, i++);
                             }
-
-                            
                         }
-                    }
 
-                    foreach (var item in updateList)
-                    {
-                        await _UpdateRelatedSections(context, item.Item1, item.Item2, jobProgressServiceEF, job);
-                    }
 
-                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                    }
                 }
-                catch (Exception exp)
+
+                foreach (var item in updateList)
                 {
-                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                    await _UpdateRelatedSections(context, item.Item1, item.Item2, jobProgressServiceEF, job);
                 }
+
+                var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).ToListAsync();
+                foreach (var subCat in subCats)
+                {
+                    await jobProgressServiceEF.UpdateJob(job.Id, 0, $"FindCategoryPoemsRhythms Cat {subCat.Id}");
+                    await _FindCategoryPoemsRhythmsMoreInternal(context, jobProgressServiceEF, job, subCat.Id, retag, rhythm);
+                }
+
+                
+            }
+            catch (Exception exp)
+            {
+                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
             }
         }
 
@@ -137,8 +151,8 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<bool>(true);
         }
 
-      
- 
+
+
         /// <summary>
         /// directly insert generated TOC
         /// </summary>
@@ -160,9 +174,9 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<string>> GenerateTableOfContents(Guid userId, int catId, GanjoorTOC options)
         {
-            return await _GenerateTableOfContents(_context, catId, options, userId );
+            return await _GenerateTableOfContents(_context, catId, options, userId);
         }
-      
+
 
         /// <summary>
         /// make plain text
@@ -687,7 +701,7 @@ namespace RMuseum.Services.Implementation
                     try
                     {
                         var poemIds = await context.GanjoorPoems.AsNoTracking().Select(p => p.Id).ToListAsync();
-                        
+
                         for (int i = 0; i < poemIds.Count; i++)
                         {
                             if (i * 100 / poemIds.Count > percent)
@@ -698,18 +712,18 @@ namespace RMuseum.Services.Implementation
 
                             var poem = await context.GanjoorPoems.Where(p => p.Id == poemIds[i]).SingleOrDefaultAsync();
                             var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == poem.CatId).SingleOrDefaultAsync();
-                            if(catPage == null)
+                            if (catPage == null)
                             {
                                 catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.CatId == poem.CatId).SingleOrDefaultAsync();
                             }
                             var title = $"{catPage.FullTitle} » {poem.Title}";
-                            if(title != poem.FullTitle)
+                            if (title != poem.FullTitle)
                             {
                                 poem.FullTitle = title;
                                 context.Update(poem);
-                            }                          
+                            }
                             var page = await context.GanjoorPages.Where(p => p.Id == poem.Id).SingleOrDefaultAsync();
-                            if(title != page.FullTitle)
+                            if (title != page.FullTitle)
                             {
                                 page.FullTitle = title;
                                 context.Update(page);
@@ -761,9 +775,9 @@ namespace RMuseum.Services.Implementation
                             }
 
                             var res = await _FindSectionRhyme(context, sections[i].Id);
-                            if(string.IsNullOrEmpty(res.ExceptionString))
+                            if (string.IsNullOrEmpty(res.ExceptionString))
                             {
-                                if(!string.IsNullOrEmpty(res.Result.Rhyme) && res.Result.Rhyme != sections[i].RhymeLetters)
+                                if (!string.IsNullOrEmpty(res.Result.Rhyme) && res.Result.Rhyme != sections[i].RhymeLetters)
                                 {
                                     var sectionTracked = await context.GanjoorPoemSections.Where(s => s.Id == sections[i].Id).SingleAsync();
                                     var oldRhyme = sectionTracked.RhymeLetters;
