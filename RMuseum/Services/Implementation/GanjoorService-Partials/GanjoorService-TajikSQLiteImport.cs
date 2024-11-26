@@ -99,10 +99,12 @@ namespace RMuseum.Services.Implementation
                                                             string fullTitle = poem.title;
                                                             while (currentCatId != 0)
                                                             {
-                                                                var tajikCat = await context.TajikCats.AsNoTracking().Where(c => c.Id == currentCatId).SingleAsync();
+                                                                var tajikCat = await context.TajikCats.AsNoTracking().Where(c => c.Id == currentCatId).SingleOrDefaultAsync();
                                                                 var gCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == tajikCat.Id).SingleAsync();
-
-                                                                fullTitle = tajikCat.TajikTitle + " - " + fullTitle;
+                                                                if(tajikCat != null)
+                                                                {
+                                                                    fullTitle = tajikCat.TajikTitle + " - " + fullTitle;
+                                                                }
                                                                 currentCatId = gCat.ParentId ?? 0;
                                                             }
 
