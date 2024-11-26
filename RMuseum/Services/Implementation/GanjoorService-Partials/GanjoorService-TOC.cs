@@ -708,7 +708,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task _GeneratingSubCatsTOC(Guid userId, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, int catId)
+        private async Task _GeneratingSubCatsTOC(Guid userId, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, int catId, GanjoorTOC ganjoorTOC)
         {
             foreach (var cat in await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).ToListAsync())
             {
@@ -727,11 +727,11 @@ namespace RMuseum.Services.Implementation
                            }
                            );
 
-                page.HtmlText = (await _GenerateTableOfContents(context, cat.Id, GanjoorTOC.TitlesAndFirstCouplet, userId)).Result;
+                page.HtmlText = (await _GenerateTableOfContents(context, cat.Id, ganjoorTOC, userId)).Result;
                 context.GanjoorPages.Update(page);
                 await context.SaveChangesAsync();
 
-                await _GeneratingSubCatsTOC(userId, context, jobProgressServiceEF, job, cat.Id);
+                await _GeneratingSubCatsTOC(userId, context, jobProgressServiceEF, job, cat.Id, ganjoorTOC);
             }
         }
 
@@ -740,8 +740,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="catId"></param>
+        /// <param name="ganjoorTOC"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartGeneratingSubCatsTOC(Guid userId, int catId)
+        public RServiceResult<bool> StartGeneratingSubCatsTOC(Guid userId, int catId, GanjoorTOC ganjoorTOC = GanjoorTOC.TitlesAndFirstVerse)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
                         (
@@ -753,7 +754,7 @@ namespace RMuseum.Services.Implementation
                                 var job = (await jobProgressServiceEF.NewJob($"GeneratingSubCatsTOC {catId}", "Query data")).Result;
                                 try
                                 {
-                                    await _GeneratingSubCatsTOC(userId, context, jobProgressServiceEF, job, catId);
+                                    await _GeneratingSubCatsTOC(userId, context, jobProgressServiceEF, job, catId, ganjoorTOC);
                                     await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                 }
                                 catch (Exception exp)

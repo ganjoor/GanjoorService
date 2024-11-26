@@ -777,8 +777,9 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="catId"></param>
+        /// <param name="ganjoorTOC"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartGeneratingSubCatsTOC(Guid userId, int catId);
+        RServiceResult<bool> StartGeneratingSubCatsTOC(Guid userId, int catId, GanjoorTOC ganjoorTOC);
 
 
         /// <summary>

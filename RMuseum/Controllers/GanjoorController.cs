@@ -790,17 +790,18 @@ namespace RMuseum.Controllers
         /// start generating sub cats TOC
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="ganjoorTOC"></param>
         /// <returns></returns>
 
         [HttpPut("cat/subcats/startgentoc/{id}")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult StartGeneratingSubCatsTOC(int id)
+        public IActionResult StartGeneratingSubCatsTOC(int id, GanjoorTOC ganjoorTOC = GanjoorTOC.TitlesAndFirstVerse)
         {
             Guid userId =
                new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-            var res = _ganjoorService.StartGeneratingSubCatsTOC(userId, id);
+            var res = _ganjoorService.StartGeneratingSubCatsTOC(userId, id, ganjoorTOC);
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
