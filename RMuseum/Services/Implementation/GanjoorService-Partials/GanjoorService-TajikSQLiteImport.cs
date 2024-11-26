@@ -100,13 +100,25 @@ namespace RMuseum.Services.Implementation
                                                             while (currentCatId != 0)
                                                             {
                                                                 var tajikCat = await context.TajikCats.AsNoTracking().Where(c => c.Id == currentCatId).SingleOrDefaultAsync();
-                                                                var gCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == tajikCat.Id).SingleAsync();
-                                                                if(tajikCat != null)
+                                                                
+                                                                if(tajikCat == null)
                                                                 {
-                                                                    fullTitle = tajikCat.TajikTitle + " - " + fullTitle;
+                                                                    if(null == await context.TajikCats.AsNoTracking().Where(c => c.Id == catId).SingleOrDefaultAsync())
+                                                                    {
+                                                                        currentCatId = -1;
+                                                                    }
+                                                                    
+                                                                    break;
                                                                 }
+
+                                                                var gCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == tajikCat.Id).SingleAsync();
+                                                                fullTitle = tajikCat.TajikTitle + " - " + fullTitle;
                                                                 currentCatId = gCat.ParentId ?? 0;
                                                             }
+
+                                                            if (currentCatId == -1)
+                                                                continue;
+                                                            
 
                                                             var ganjoorPoem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == poemId).SingleAsync();
                                                             var tajikPoem = new GanjoorTajikPoem()
