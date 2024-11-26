@@ -3399,8 +3399,11 @@ namespace RMuseum.Services.Implementation
                 var corrections = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Where(c => c.PoemId == id).ToListAsync();
                 _context.RemoveRange(corrections);
 
-                var page = await _context.GanjoorPages.Where(p => p.Id == id && p.GanjoorPageType == GanjoorPageType.PoemPage).SingleAsync();
-                _context.Remove(page);
+                var page = await _context.GanjoorPages.Where(p => p.Id == id && p.GanjoorPageType == GanjoorPageType.PoemPage).SingleOrDefaultAsync();
+                if(page != null)
+                {
+                    _context.Remove(page);
+                }
 
                 _context.Remove(poem);
 
