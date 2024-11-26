@@ -3426,13 +3426,19 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                if (true == await _context.GanjoorPoems.Where(p => p.CatId == id).AnyAsync())
+                var poems = await _context.GanjoorPoems.Where(p => p.CatId == id).ToListAsync();
+                foreach (var poem in poems)
                 {
-                    return new RServiceResult<bool>(false, "cat has poems!");
+                    var res = await DeletePoemAsync(poem.Id);
+                    if (!string.IsNullOrEmpty(res.ExceptionString))
+                        return res;
                 }
-                if(true == await _context.GanjoorCategories.Where(p => p.ParentId == id).AnyAsync())
+                var subCats = await _context.GanjoorCategories.Where(c => c.ParentId == id).ToListAsync();
+                foreach (var subCat in subCats)
                 {
-                    return new RServiceResult<bool>(false, "cat has subcats");
+                    var res = await DeleteCategoryAsync(subCat.Id);
+                    if (!string.IsNullOrEmpty(res.ExceptionString))
+                        return res;
                 }
 
                 var page = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == id).SingleAsync();
