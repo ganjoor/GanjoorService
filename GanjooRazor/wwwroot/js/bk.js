@@ -119,7 +119,6 @@ function btshmr_internal(poemId) {
             }
         }
     }
-    setCookie("lineNumbers", lineNumbers ? "true" : "false", 365);
     var btnLineNumbers = document.getElementById("bnum-button");
     if (lineNumbers) {
         btnLineNumbers.classList.remove("color-disabled");
