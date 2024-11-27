@@ -29,7 +29,7 @@
 
     </script>
 
-    @if (Model.GanjoorPage != null && Model.GanjoorPage.NoIndex)
+    @if ((Model.GanjoorPage != null && Model.GanjoorPage.NoIndex) || !string.IsNullOrEmpty(Model.PinterestUrl))
     {
         <meta name="robots" content="noindex, nofollow">
     }
