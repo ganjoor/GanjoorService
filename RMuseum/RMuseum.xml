@@ -2582,12 +2582,12 @@
             </summary>
             <param name="catalogueService"></param>
         </member>
-        <member name="T:RMuseum.Controllers.NoificationController">
+        <member name="T:RMuseum.Controllers.NotificationController">
             <summary>
             Notifications controller
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.NoificationController.#ctor(RSecurityBackend.Services.IRNotificationService)">
+        <member name="M:RMuseum.Controllers.NotificationController.#ctor(RSecurityBackend.Services.IRNotificationService)">
             <summary>
             constructor
             </summary>
