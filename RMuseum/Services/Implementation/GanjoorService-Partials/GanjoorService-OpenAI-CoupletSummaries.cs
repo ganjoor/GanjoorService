@@ -35,8 +35,8 @@ namespace RMuseum.Services.Implementation
 
                           var openAiService = new OpenAIService(new OpenAIOptions()
                           {
-                              ApiKey = Configuration["OpenAPIBaseUrl"],
-                              BaseDomain = Configuration["Configuration"]
+                              ApiKey = Configuration["OpenAIAPIKey"],
+                              BaseDomain = Configuration["OpenAIBaseUrl"]
                           });
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
