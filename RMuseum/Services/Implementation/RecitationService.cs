@@ -776,14 +776,14 @@ namespace RMuseum.Services.Implementationa
 
             if (!string.IsNullOrEmpty(defProfile.ArtistUrl))
             {
-                if (defProfile.ArtistUrl.ToLower().IndexOf("http") != 0)
+                if (defProfile.ArtistUrl.ToLower().IndexOf("http://") != 0 && defProfile.ArtistUrl.ToLower().IndexOf("https://") != 0)
                 {
                     return new RServiceResult<UploadSession>(null, $"نشانی سایت یا صفحهٔ‌اینستاگرام یا کانال تلگرام نمایهٔ شما باید با http:// یا https:// شروع شود. {defProfile.ArtistUrl} قابل پذیرش نیست.");
                 }
             }
             if (!string.IsNullOrEmpty(defProfile.AudioSrcUrl))
             {
-                if (defProfile.AudioSrcUrl.ToLower().IndexOf("http") != 0)
+                if (defProfile.AudioSrcUrl.ToLower().IndexOf("http://") != 0 && defProfile.AudioSrcUrl.ToLower().IndexOf("https://") != 0)
                 {
                     return new RServiceResult<UploadSession>(null, $"نشانی وب منبع در نمایهٔ شما باید با http:// یا https:// شروع شود. {defProfile.AudioSrcUrl} قابل پذیرش نیست.");
                 }
