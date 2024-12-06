@@ -1,4 +1,5 @@
 ﻿using Audit.WebApi;
+using Betalgo.Ranul.OpenAI.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -322,6 +323,8 @@ namespace RMuseum
 
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+
+            services.AddOpenAIService();
 
         }
 

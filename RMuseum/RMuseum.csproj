@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Betalgo.Ranul.OpenAI" Version="9.0.1" />
     <PackageReference Include="DNTPersianUtils.Core" Version="6.3.1" />
     <PackageReference Include="FluentFTP" Version="50.0.1" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.6" />
