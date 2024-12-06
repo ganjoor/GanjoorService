@@ -1527,5 +1527,12 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> SearchTajikAsync(PagingParameterModel paging, string term, int? poetId, int? catId);
 
+
+
+        /// <summary>
+        /// fill couplet summaries using open ai
+        /// </summary>
+        public void OpenAIStartFillingCoupletSummaries();
+
     }
 }

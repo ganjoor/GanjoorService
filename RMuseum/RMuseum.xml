@@ -2288,6 +2288,12 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingCoupletSummaries">
+            <summary>
+            fill couplet summaries using open ai
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -16971,6 +16977,11 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingCoupletSummaries">
+            <summary>
+            fill couplet summaries using open ai
+            </summary>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -18454,6 +18465,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -18891,6 +18905,11 @@
             <param name="naskbanUserName"></param>
             <param name="naskbanPassword"></param>
             <returns>number of synched items</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingCoupletSummaries">
+            <summary>
+            fill couplet summaries using open ai
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryPaperSourcesAsync(System.Int32)">
             <summary>

@@ -4460,6 +4460,20 @@ namespace RMuseum.Controllers
             return Ok(pagedResult.Result.Items);
         }
 
+        /// <summary>
+        /// fill couplet summaries using open ai
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("ai/generate/summaries")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult OpenAIStartFillingCoupletSummaries()
+        {
+            _ganjoorService.OpenAIStartFillingCoupletSummaries();
+            return Ok();
+        }
+
 
 
 
