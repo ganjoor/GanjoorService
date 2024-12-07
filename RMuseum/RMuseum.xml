@@ -2289,16 +2289,20 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingCoupletSummaries">
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32)">
             <summary>
             fill couplet summaries using open ai
             </summary>
+            <param name="startFrom"></param>
+            <param name="count"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingPoemSummaries">
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32)">
             <summary>
             fill poem summaries using open ai
             </summary>
+            <param name="startFrom"></param>
+            <param name="count"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
@@ -16985,15 +16989,19 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingCoupletSummaries">
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32)">
             <summary>
             fill couplet summaries using open ai
             </summary>
+            <param name="startFrom"></param>
+            <param name="count"></param>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingPoemSummaries">
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32)">
             <summary>
             fill poem summaries using open ai
             </summary>
+            <param name="startFrom"></param>
+            <param name="count"></param>
         </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
@@ -18919,15 +18927,19 @@
             <param name="naskbanPassword"></param>
             <returns>number of synched items</returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingCoupletSummaries">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32)">
             <summary>
             fill couplet summaries using open ai
             </summary>
+            <param name="startFrom"></param>
+            <param name="count"></param>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingPoemSummaries">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32)">
             <summary>
             fill poem summaries using open ai
             </summary>
+            <param name="startFrom"></param>
+            <param name="count"></param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryPaperSourcesAsync(System.Int32)">
             <summary>

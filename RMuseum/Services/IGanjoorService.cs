@@ -1533,13 +1533,17 @@ namespace RMuseum.Services
         /// <summary>
         /// fill couplet summaries using open ai
         /// </summary>
-        void OpenAIStartFillingCoupletSummaries();
+        /// <param name="startFrom"></param>
+        /// <param name="count"></param>
+        void OpenAIStartFillingCoupletSummaries(int startFrom, int count);
 
 
         /// <summary>
         /// fill poem summaries using open ai
         /// </summary>
-        void OpenAIStartFillingPoemSummaries();
+        /// <param name="startFrom"></param>
+        /// <param name="count"></param>
+        void OpenAIStartFillingPoemSummaries(int startFrom, int count);
 
     }
 }

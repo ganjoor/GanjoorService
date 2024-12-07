@@ -20,7 +20,9 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// fill couplet summaries using open ai
         /// </summary>
-        public void OpenAIStartFillingCoupletSummaries()
+        /// <param name="startFrom"></param>
+        /// <param name="count"></param>
+        public void OpenAIStartFillingCoupletSummaries(int startFrom, int count)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
               (
@@ -29,7 +31,7 @@ namespace RMuseum.Services.Implementation
                   using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                   {
                       LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                      var job = (await jobProgressServiceEF.NewJob($"OpenAIFillCoupletSummaries", "Open AI initialization")).Result;
+                      var job = (await jobProgressServiceEF.NewJob($"OpenAIFillCoupletSummaries - start: {startFrom} - count: {count}", "Open AI initialization")).Result;
                       try
                       {
 
@@ -41,7 +43,10 @@ namespace RMuseum.Services.Implementation
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
 
-                          var verses = await context.GanjoorVerses.AsNoTracking()
+                          var verses =
+                            count == 0 ?
+                                startFrom == 0 ?
+                                await context.GanjoorVerses.AsNoTracking()
                                 .Where(v => 
                                         (    
                                         v.VersePosition == VersePosition.Right
@@ -55,7 +60,42 @@ namespace RMuseum.Services.Implementation
                                         &&
                                         string.IsNullOrEmpty(v.CoupletSummary)
                                 )
-                                .ToListAsync();
+                                .ToListAsync()
+                                :
+                                await context.GanjoorVerses.AsNoTracking()
+                                .Where(v =>
+                                        (
+                                        v.VersePosition == VersePosition.Right
+                                        ||
+                                        v.VersePosition == VersePosition.CenteredVerse1
+                                        ||
+                                        v.VersePosition == VersePosition.Paragraph
+                                        )
+                                        &&
+                                        v.CoupletIndex != null
+                                        &&
+                                        string.IsNullOrEmpty(v.CoupletSummary)
+                                )
+                                .Skip(startFrom)
+                                .ToListAsync()
+                                :
+                                await context.GanjoorVerses.AsNoTracking()
+                                .Where(v =>
+                                        (
+                                        v.VersePosition == VersePosition.Right
+                                        ||
+                                        v.VersePosition == VersePosition.CenteredVerse1
+                                        ||
+                                        v.VersePosition == VersePosition.Paragraph
+                                        )
+                                        &&
+                                        v.CoupletIndex != null
+                                        &&
+                                        string.IsNullOrEmpty(v.CoupletSummary)
+                                )
+                                .Skip(startFrom).Take(count)
+                                .ToListAsync()
+                                ;
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Verse count = {verses.Count}");
 
                           for ( var i = 0; i < verses.Count; i++ )
@@ -128,7 +168,9 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// fill poem summaries using open ai
         /// </summary>
-        public void OpenAIStartFillingPoemSummaries()
+        /// <param name="startFrom"></param>
+        /// <param name="count"></param>
+        public void OpenAIStartFillingPoemSummaries(int startFrom, int count)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
               (
@@ -137,7 +179,7 @@ namespace RMuseum.Services.Implementation
                   using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                   {
                       LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                      var job = (await jobProgressServiceEF.NewJob($"OpenAIStartFillingPoemSummaries", "Open AI initialization")).Result;
+                      var job = (await jobProgressServiceEF.NewJob($"OpenAIStartFillingPoemSummaries - start: {startFrom} - count: {count}", "Open AI initialization")).Result;
                       try
                       {
 
@@ -149,10 +191,28 @@ namespace RMuseum.Services.Implementation
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
 
-                          var poems = await context.GanjoorPoems.AsNoTracking()
+                          var poems =
+                            count == 0 ?
+                            startFrom == 0 ?
+                            await context.GanjoorPoems.AsNoTracking()
                                 .Where(
                                     p => string.IsNullOrEmpty(p.PoemSummary)
                                 )
+                                .ToListAsync()
+                                :
+                                await context.GanjoorPoems.AsNoTracking()
+                                .Where(
+                                    p => string.IsNullOrEmpty(p.PoemSummary)
+                                )
+                                .Skip(startFrom)
+                                .ToListAsync()
+                                :
+                            await context.GanjoorPoems.AsNoTracking()
+                                .Where(
+                                    p => string.IsNullOrEmpty(p.PoemSummary)
+                                )
+                                .Skip(startFrom)
+                                .Take(count)
                                 .ToListAsync();
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Poems count = {poems.Count}");
 
@@ -162,7 +222,7 @@ namespace RMuseum.Services.Implementation
 
                               if (!string.IsNullOrEmpty(poem.PlainText))
                               {
-                                  await jobProgressServiceEF.UpdateJob(job.Id, i, $"{i} از {poems.Count}");
+                                  await jobProgressServiceEF.UpdateJob(job.Id, i, $"{i} از {poems.Count} - {poem.FullTitle}");
                                   string command = "به فارسی روان خلاصه کن:";
                                   var completionResult = await openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
                                   {

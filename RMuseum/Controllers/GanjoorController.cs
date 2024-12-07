@@ -4464,28 +4464,32 @@ namespace RMuseum.Controllers
         /// <summary>
         /// fill couplet summaries using open ai
         /// </summary>
+        /// <param name="startFrom"></param>
+        /// <param name="count"></param>
         /// <returns></returns>
         [HttpPut("ai/generate/summaries")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult OpenAIStartFillingCoupletSummaries()
+        public IActionResult OpenAIStartFillingCoupletSummaries(int startFrom = 0, int count = 0)
         {
-            _ganjoorService.OpenAIStartFillingCoupletSummaries();
+            _ganjoorService.OpenAIStartFillingCoupletSummaries(startFrom, count);
             return Ok();
         }
 
         /// <summary>
         /// fill poem summaries using open ai
         /// </summary>
+        /// <param name="startFrom"></param>
+        /// <param name="count"></param>
         /// <returns></returns>
         [HttpPut("ai/generate/poem/summaries")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult OpenAIStartFillingPoemSummaries()
+        public IActionResult OpenAIStartFillingPoemSummaries(int startFrom = 0, int count = 0)
         {
-            _ganjoorService.OpenAIStartFillingPoemSummaries();
+            _ganjoorService.OpenAIStartFillingPoemSummaries(startFrom, count);
             return Ok();
         }
 
