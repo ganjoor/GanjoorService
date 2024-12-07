@@ -287,6 +287,7 @@ namespace RMuseum.Controllers
         /// get poet image
         /// </summary>
         /// <param name="url">sample: hafez</param>
+        /// <param name="nocache"></param>
         /// <returns></returns>
         [HttpGet("poet/image/{url}.gif")]
         [AllowAnonymous]
@@ -4374,11 +4375,11 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> TajikOneTimeImportFromSqlite()
+        public IActionResult TajikOneTimeImportFromSqlite()
         {
             
             RServiceResult<bool> res =
-                await _ganjoorService.TajikImportFromSqlite(0, "C:\\Tools\\import\\output.s3db");
+                _ganjoorService.TajikImportFromSqlite(0, "C:\\Tools\\import\\output.s3db");
             if (res.Result)
                 return Ok();
             return BadRequest(res.ExceptionString);
@@ -4471,6 +4472,20 @@ namespace RMuseum.Controllers
         public IActionResult OpenAIStartFillingCoupletSummaries()
         {
             _ganjoorService.OpenAIStartFillingCoupletSummaries();
+            return Ok();
+        }
+
+        /// <summary>
+        /// fill poem summaries using open ai
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("ai/generate/poem/summaries")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult OpenAIStartFillingPoemSummaries()
+        {
+            _ganjoorService.OpenAIStartFillingPoemSummaries();
             return Ok();
         }
 

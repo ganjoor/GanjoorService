@@ -1499,8 +1499,9 @@ namespace RMuseum.Services
         /// tajik import from sqlite
         /// </summary>
         /// <param name="poetId"></param>
+        /// <param name="filePath"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> TajikImportFromSqlite(int poetId, string filePath);
+        RServiceResult<bool> TajikImportFromSqlite(int poetId, string filePath);
 
         /// <summary>
         /// tajik poets
@@ -1532,7 +1533,13 @@ namespace RMuseum.Services
         /// <summary>
         /// fill couplet summaries using open ai
         /// </summary>
-        public void OpenAIStartFillingCoupletSummaries();
+        void OpenAIStartFillingCoupletSummaries();
+
+
+        /// <summary>
+        /// fill poem summaries using open ai
+        /// </summary>
+        void OpenAIStartFillingPoemSummaries();
 
     }
 }

@@ -995,6 +995,7 @@
             get poet image
             </summary>
             <param name="url">sample: hafez</param>
+            <param name="nocache"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.UploadPoetImage(System.Int32)">
@@ -2291,6 +2292,12 @@
         <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingCoupletSummaries">
             <summary>
             fill couplet summaries using open ai
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingPoemSummaries">
+            <summary>
+            fill poem summaries using open ai
             </summary>
             <returns></returns>
         </member>
@@ -16951,6 +16958,7 @@
             tajik import from sqlite
             </summary>
             <param name="poetId"></param>
+            <param name="filePath"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetTajikPoetsAsync">
@@ -16980,6 +16988,11 @@
         <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingCoupletSummaries">
             <summary>
             fill couplet summaries using open ai
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingPoemSummaries">
+            <summary>
+            fill poem summaries using open ai
             </summary>
         </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
@@ -18909,6 +18922,11 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingCoupletSummaries">
             <summary>
             fill couplet summaries using open ai
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingPoemSummaries">
+            <summary>
+            fill poem summaries using open ai
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryPaperSourcesAsync(System.Int32)">

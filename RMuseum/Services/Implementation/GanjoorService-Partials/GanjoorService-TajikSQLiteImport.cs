@@ -1,11 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using RMuseum.Models.Ganjoor;
-using System.Threading.Tasks;
 using RSecurityBackend.Models.Generic;
 using System.Linq;
 using RSecurityBackend.Services.Implementation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
 using RMuseum.DbContext;
 using System.Data;
@@ -19,7 +17,7 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
-        public async Task<RServiceResult<bool>> TajikImportFromSqlite(int poetId, string filePath)
+        public RServiceResult<bool> TajikImportFromSqlite(int poetId, string filePath)
         {
             try
             {

@@ -123,5 +123,91 @@ namespace RMuseum.Services.Implementation
               });
 
         }
+
+
+        /// <summary>
+        /// fill poem summaries using open ai
+        /// </summary>
+        public void OpenAIStartFillingPoemSummaries()
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+              (
+              async token =>
+              {
+                  using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                  {
+                      LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                      var job = (await jobProgressServiceEF.NewJob($"OpenAIStartFillingPoemSummaries", "Open AI initialization")).Result;
+                      try
+                      {
+
+                          var openAiService = new OpenAIService(new OpenAIOptions()
+                          {
+                              ApiKey = Configuration["OpenAIAPIKey"],
+                              BaseDomain = Configuration["OpenAIBaseUrl"]
+                          });
+
+                          await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
+
+                          var poems = await context.GanjoorPoems.AsNoTracking()
+                                .Where(
+                                    p => string.IsNullOrEmpty(p.PoemSummary)
+                                )
+                                .ToListAsync();
+                          await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Poems count = {poems.Count}");
+
+                          for (var i = 0; i < poems.Count; i++)
+                          {
+                              var poem = poems[i];
+
+                              if (!string.IsNullOrEmpty(poem.PlainText))
+                              {
+                                  await jobProgressServiceEF.UpdateJob(job.Id, i, $"{i} از {poems.Count}");
+                                  string command = "به فارسی روان خلاصه کن:";
+                                  var completionResult = await openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
+                                  {
+                                      Messages = new List<ChatMessage>
+                                        {
+                                            ChatMessage.FromSystem(command
+                                                    +
+                                                    Environment.NewLine
+                                                    +
+                                                    poem.PlainText
+                                                    ),
+                                        },
+                                      Model = Betalgo.Ranul.OpenAI.ObjectModels.Models.Gpt_4o_mini,
+                                  });
+                                  if (completionResult.Successful)
+                                  {
+                                      string summary = completionResult.Choices.First().Message.Content;
+                                      if (summary.Contains("اکتبر"))
+                                      {
+                                          summary = "";
+                                      }
+                                      if (!string.IsNullOrEmpty(summary))
+                                      {
+                                          summary = "هوش مصنوعی: " + summary;
+                                          var editablePoem = await context.GanjoorPoems.Where(p => p.Id == poem.Id).SingleAsync();
+                                          editablePoem.PoemSummary = summary;
+                                          context.Update(editablePoem);
+                                          await context.SaveChangesAsync();
+                                      }
+                                  }
+                              }
+
+                          }
+
+
+                          await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                      }
+                      catch (Exception exp)
+                      {
+                          await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                      }
+
+                  }
+              });
+
+        }
     }
 }
