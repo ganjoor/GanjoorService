@@ -404,6 +404,10 @@ namespace GanjooRazor.Areas.User.Pages
                             if (vOrder == 0)
                             {
                                 poemSummary = vParts.Length > 1 ? vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک") : "";
+                                if (poemSummary.Contains("هوش مصنوعی"))
+                                {
+                                    return new BadRequestObjectResult("لطفاً در صورت ویرایش خروجی‌های هوش مصنوعی عبارت هوش مصنوعی را از متن برگردان یا خلاصه حذف کنید.");
+                                }
                             }
                             else
                             {
@@ -413,6 +417,11 @@ namespace GanjooRazor.Areas.User.Pages
                                 }
                                 else
                                 {
+                                    var coupletSummary = vParts.Length > 1 ? vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک") : "";
+                                    if(coupletSummary.Contains("هوش مصنوعی"))
+                                    {
+                                        return new BadRequestObjectResult("لطفاً در صورت ویرایش خروجی‌های هوش مصنوعی عبارت هوش مصنوعی را از متن برگردان یا خلاصه حذف کنید.");
+                                    }
                                     vOrderTexts.Add
                                     (
                                     new GanjoorVerseVOrderText()
@@ -421,9 +430,10 @@ namespace GanjooRazor.Areas.User.Pages
                                         Text = null,
                                         MarkForDelete = false,
                                         VersePosition = null,
-                                        CoupletSummary = vParts.Length > 1 ? vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک") : "",
+                                        CoupletSummary = coupletSummary,
                                     }
                                     );
+                                    
                                 }
                             }
                         }
