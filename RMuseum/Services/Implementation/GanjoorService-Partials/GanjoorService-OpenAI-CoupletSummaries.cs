@@ -101,6 +101,9 @@ namespace RMuseum.Services.Implementation
                           for ( var i = 0; i < verses.Count; i++ )
                           {
                               var verse = verses[i];
+                              var editableVerse = await context.GanjoorVerses.Where(v => v.Id == verse.Id).SingleAsync();
+                              if (!string.IsNullOrEmpty(editableVerse.CoupletSummary))
+                                  continue;
                               var relatedVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == verse.PoemId && v.CoupletIndex == verse.CoupletIndex).OrderBy(v => v.VOrder).ToListAsync();
                               string couplet = "";
                               foreach (var relatedVerse in relatedVerses)
@@ -141,7 +144,7 @@ namespace RMuseum.Services.Implementation
                                       if (!string.IsNullOrEmpty(summary))
                                       {
                                           summary = "هوش مصنوعی: " + summary;
-                                          var editableVerse = await context.GanjoorVerses.Where(v => v.Id == verse.Id).SingleAsync();
+                                          
                                           editableVerse.CoupletSummary = summary;
                                           context.Update(editableVerse);
                                           await context.SaveChangesAsync();
@@ -219,9 +222,14 @@ namespace RMuseum.Services.Implementation
                           for (var i = 0; i < poems.Count; i++)
                           {
                               var poem = poems[i];
+                              
 
                               if (!string.IsNullOrEmpty(poem.PlainText))
                               {
+                                  var editablePoem = await context.GanjoorPoems.Where(p => p.Id == poem.Id).SingleAsync();
+                                  if(!string.IsNullOrEmpty(editablePoem.PoemSummary))
+                                      continue;
+                                
                                   await jobProgressServiceEF.UpdateJob(job.Id, i, $"{i} از {poems.Count} - {poem.FullTitle}");
                                   string command = "به فارسی روان خلاصه کن:";
                                   var completionResult = await openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
@@ -247,7 +255,7 @@ namespace RMuseum.Services.Implementation
                                       if (!string.IsNullOrEmpty(summary))
                                       {
                                           summary = "هوش مصنوعی: " + summary;
-                                          var editablePoem = await context.GanjoorPoems.Where(p => p.Id == poem.Id).SingleAsync();
+                                          
                                           editablePoem.PoemSummary = summary;
                                           context.Update(editablePoem);
                                           await context.SaveChangesAsync();
