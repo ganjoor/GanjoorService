@@ -936,16 +936,19 @@ namespace RMuseum.Services.Implementationa
                                     var preUploadedPoem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == preUploadedRecitaion.GanjoorPostId).SingleOrDefaultAsync();
                                     session.UploadedFiles.Where(f => f.Id == file.Id).SingleOrDefault().ProcessResultMsg
                                             = $"فایل صوتیی همسان با فایل ارسالی پیشتر بارگذاری شده است.{Environment.NewLine}" +
-                                            $"مشخصات فایل موجود: {preUploadedRecitaion.AudioTitle} - {preUploadedRecitaion.AudioArtist} - شناسهٔ شعر: {preUploadedRecitaion.GanjoorPostId} {Environment.NewLine}" +
-                                            $"{(preUploadedPoem == null ? "شعر نامشخص" : preUploadedPoem.FullTitle)} - کاربر: {preUploadedRecitaion.Owner.NickName}";
+                                            $"مشخصات فایل پیشتر بارگذاری شده: {preUploadedRecitaion.AudioTitle} - {preUploadedRecitaion.AudioArtist} {Environment.NewLine} شناسهٔ شعر: {preUploadedRecitaion.GanjoorPostId} {Environment.NewLine}" +
+                                            $"{(preUploadedPoem == null ? "شعر نامشخص" : preUploadedPoem.FullTitle)} {Environment.NewLine} کاربر: {preUploadedRecitaion.Owner.NickName}";
                                     context.UploadSessions.Update(session);
 
                                     await new RNotificationService(context).PushNotification
                                      (
                                          session.UseId,
                                          "خطا در پردازش فایل ارسالی",
-                                         $"فایل صوتیی همسان با فایل ارسالی پیشتر آپلود شده است.{Environment.NewLine}" +
-                                         $"{file.FileName}"
+                                         $"{file.FileName}{Environment.NewLine}" +
+                                         $"فایل صوتیی همسان با فایل ارسالی پیشتر بارگذاری شده است.{Environment.NewLine}" +
+                                         $"مشخصات فایل پیشتر بارگذاری شده: {Environment.NewLine}{preUploadedRecitaion.AudioTitle} - {preUploadedRecitaion.AudioArtist} {Environment.NewLine} شناسهٔ شعر: {preUploadedRecitaion.GanjoorPostId} {Environment.NewLine}" +
+                                         $"{(preUploadedPoem == null ? "شعر نامشخص" : preUploadedPoem.FullTitle)} {Environment.NewLine} کاربر: {preUploadedRecitaion.Owner.NickName}"
+
                                          , NotificationType.Error
                                      );
                                 }
