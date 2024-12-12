@@ -24,5 +24,10 @@
         /// Longitude
         /// </summary>
         public double Longitude { get; set; }
+
+        /// <summary>
+        /// AI generated
+        /// </summary>
+        public bool MachineGenerated { get; set; }
     }
 }

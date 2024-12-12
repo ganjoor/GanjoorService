@@ -64,5 +64,10 @@
         /// death location
         /// </summary>
         public virtual GanjoorGeoLocation DeathLocation { get; set; }
+
+        /// <summary>
+        /// AI generated
+        /// </summary>
+        public bool MachineGenerated { get; set; }
     }
 }

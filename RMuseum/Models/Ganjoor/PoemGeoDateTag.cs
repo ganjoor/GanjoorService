@@ -74,5 +74,10 @@
         /// related person
         /// </summary>
         public virtual GanjoorRelatedPerson Person { get; set; }
+
+        /// <summary>
+        /// AI generated
+        /// </summary>
+        public bool MachineGenerated { get; set; }
     }
 }

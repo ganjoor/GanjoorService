@@ -8023,6 +8023,11 @@
             Longitude
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorGeoLocation.MachineGenerated">
+            <summary>
+            AI generated
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorHealthCheckError">
             <summary>
             Ganjoor Page Health Check log
@@ -9828,6 +9833,11 @@
             death location
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.MachineGenerated">
+            <summary>
+            AI generated
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorSiteBanner">
             <summary>
             ganjoor.net site banner
@@ -10388,6 +10398,11 @@
         <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.Person">
             <summary>
             related person
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.MachineGenerated">
+            <summary>
+            AI generated
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PoemMusicTrack">
