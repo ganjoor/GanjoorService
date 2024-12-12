@@ -4493,6 +4493,22 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// geo tag poems using AI
+        /// </summary>
+        /// <param name="startFrom"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        [HttpPut("ai/generate/poem/geo")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult OpenAIStartFillingGeoLocations(int startFrom = 0, int count = 0)
+        {
+            _ganjoorService.OpenAIStartFillingGeoLocations(startFrom, count);
+            return Ok();
+        }
+
 
 
 

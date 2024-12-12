@@ -1545,5 +1545,12 @@ namespace RMuseum.Services
         /// <param name="count"></param>
         void OpenAIStartFillingPoemSummaries(int startFrom, int count);
 
+        /// <summary>
+        /// geo tag poems using AI
+        /// </summary>
+        /// <param name="startFrom"></param>
+        /// <param name="count"></param>
+        void OpenAIStartFillingGeoLocations(int startFrom, int count);
+
     }
 }

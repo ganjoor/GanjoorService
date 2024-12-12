@@ -2305,6 +2305,14 @@
             <param name="count"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingGeoLocations(System.Int32,System.Int32)">
+            <summary>
+            geo tag poems using AI
+            </summary>
+            <param name="startFrom"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -4229,6 +4237,18 @@
             <inheritdoc />
         </member>
         <member name="M:RMuseum.Migrations.TajikAdditionalFields.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.GeoAIFields">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.GeoAIFields.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.GeoAIFields.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.GeoAIFields.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -17018,6 +17038,13 @@
             <param name="startFrom"></param>
             <param name="count"></param>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingGeoLocations(System.Int32,System.Int32)">
+            <summary>
+            geo tag poems using AI
+            </summary>
+            <param name="startFrom"></param>
+            <param name="count"></param>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -18952,6 +18979,13 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32)">
             <summary>
             fill poem summaries using open ai
+            </summary>
+            <param name="startFrom"></param>
+            <param name="count"></param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingGeoLocations(System.Int32,System.Int32)">
+            <summary>
+            geo tag poems using AI
             </summary>
             <param name="startFrom"></param>
             <param name="count"></param>
