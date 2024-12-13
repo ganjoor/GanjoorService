@@ -4320,33 +4320,7 @@ namespace RMuseum.Controllers
         }
 
 
-        /// <summary>
-        /// transilerate from farsi to tajiki
-        /// </summary>
-        /// <returns></returns>
-        [HttpPut("transilerate")]
-        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult Transilerate()
-        {
-            _ganjoorService.Transilerate();
-            return Ok();
-        }
-
-        /// <summary>
-        ///  one time fix for transilerations
-        /// </summary>
-        /// <returns></returns>
-        [HttpPut("fixtajik")]
-        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult FixTransilerations()
-        {
-            _ganjoorService.FixTransilerations();
-            return Ok();
-        }
+        
 
         /*
         /// <summary>

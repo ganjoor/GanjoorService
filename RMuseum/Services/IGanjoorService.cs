@@ -1483,18 +1483,6 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<CategoryWordCountSummary>> GetCategoryWordCountSummaryAsync(int catId);
 
-
-        /// <summary>
-        /// transilerate verse data from Persian to Tajiki
-        /// </summary>
-        void Transilerate();
-
-        /// <summary>
-        /// one time fix for transilerations
-        /// </summary>
-        void FixTransilerations();
-
-
         /// <summary>
         /// tajik import from sqlite
         /// </summary>

@@ -2253,18 +2253,6 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.Transilerate">
-            <summary>
-            transilerate from farsi to tajiki
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.FixTransilerations">
-            <summary>
-             one time fix for transilerations
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetTajikPoetsAsync">
             <summary>
             tajik poets
@@ -16982,16 +16970,6 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.Transilerate">
-            <summary>
-            transilerate verse data from Persian to Tajiki
-            </summary>
-        </member>
-        <member name="M:RMuseum.Services.IGanjoorService.FixTransilerations">
-            <summary>
-            one time fix for transilerations
-            </summary>
-        </member>
         <member name="M:RMuseum.Services.IGanjoorService.TajikImportFromSqlite(System.Int32,System.String)">
             <summary>
             tajik import from sqlite
@@ -19579,16 +19557,6 @@
             <param name="catId"></param>
             <param name="ganjoorTOC"></param>
             <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.Transilerate">
-            <summary>
-            transilerate verse data from Persian to Tajiki
-            </summary>
-        </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.FixTransilerations">
-            <summary>
-            one time fix for transilerations
-            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoets(System.Boolean,System.Boolean)">
             <summary>
