@@ -15,6 +15,7 @@ using System.Drawing;
 using FluentFTP;
 using System.Threading.Tasks;
 using RMuseum.Models.GanjoorIntegration;
+using RMuseum.Models.Ganjoor;
 
 namespace RMuseum.Services.Implementation
 {
@@ -23,7 +24,7 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class ArtifactService : IArtifactService
     {
-        public async Task OpenAIStartCreatingImagesForPoemsAsync(int startFrom, int count)
+        public async Task OpenAIStartCreatingImagesForPoemsAsync(int startFrom, int count, int poetId)
         {
             string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
             var systemUserId = (Guid)(await _userService.FindUserByEmail(systemEmail)).Result.Id;
@@ -47,11 +48,14 @@ namespace RMuseum.Services.Implementation
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
 
+                          List<GanjoorCat> cats = poetId == 0 ? new List<GanjoorCat>() : await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == poetId).ToListAsync();
+
                           var poems =
+                            poetId != 0 ?
+                            await context.GanjoorPoems.AsNoTracking().Where(p => cats.Any(c => c.Id == p.CatId)).ToListAsync() :
                             count == 0 ?
                             startFrom == 0 ?
-                            await context.GanjoorPoems.AsNoTracking()
-                                .ToListAsync()
+                            await context.GanjoorPoems.AsNoTracking().ToListAsync()
                                 :
                                 await context.GanjoorPoems.AsNoTracking()
                                 .Skip(startFrom)
@@ -91,6 +95,7 @@ namespace RMuseum.Services.Implementation
 
                                   if (!string.IsNullOrEmpty(poem.PlainText))
                                   {
+                                      await jobProgressServiceEF.UpdateJob(job.Id, i, $"{i} از {poems.Count} - {poem.FullTitle} - 1");
                                       //1
                                       bool hasStories = false;
                                       var hasStoriesResult = await openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
@@ -122,6 +127,7 @@ namespace RMuseum.Services.Implementation
                                       if (!hasStories) continue;
 
                                       //2
+                                      await jobProgressServiceEF.UpdateJob(job.Id, i, $"{i} از {poems.Count} - {poem.FullTitle} - 2");
                                       var storyResult = await openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
                                       {
                                           Messages = new List<ChatMessage>
@@ -152,6 +158,8 @@ namespace RMuseum.Services.Implementation
 
                                       if (string.IsNullOrEmpty(story)) continue;
 
+                                      await jobProgressServiceEF.UpdateJob(job.Id, i, $"{i} از {poems.Count} - {poem.FullTitle} - 3");
+
                                       //3
                                       var depictionResult = await openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
                                       {
@@ -176,6 +184,8 @@ namespace RMuseum.Services.Implementation
                                       }
 
                                       if (string.IsNullOrEmpty(prompt)) continue;
+
+                                      await jobProgressServiceEF.UpdateJob(job.Id, i, $"{i} از {poems.Count} - {poem.FullTitle} - 4");
 
                                       //4
                                       var imageCreationResult = await openAiService.Image.CreateImage(new ImageCreateRequest

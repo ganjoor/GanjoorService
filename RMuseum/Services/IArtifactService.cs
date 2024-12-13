@@ -604,8 +604,9 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="startFrom"></param>
         /// <param name="count"></param>
+        /// <param name="poetId"></param>
         /// <returns></returns>
-        Task OpenAIStartCreatingImagesForPoemsAsync(int startFrom, int count);
+        Task OpenAIStartCreatingImagesForPoemsAsync(int startFrom, int count, int poetId);
 
     }
 }
