@@ -51,22 +51,13 @@ namespace RMuseum.Services.Implementation
                             count == 0 ?
                             startFrom == 0 ?
                             await context.GanjoorPoems.AsNoTracking()
-                                .Where(
-                                    p => string.IsNullOrEmpty(p.PoemSummary)
-                                )
                                 .ToListAsync()
                                 :
                                 await context.GanjoorPoems.AsNoTracking()
-                                .Where(
-                                    p => string.IsNullOrEmpty(p.PoemSummary)
-                                )
                                 .Skip(startFrom)
                                 .ToListAsync()
                                 :
                             await context.GanjoorPoems.AsNoTracking()
-                                .Where(
-                                    p => string.IsNullOrEmpty(p.PoemSummary)
-                                )
                                 .Skip(startFrom)
                                 .Take(count)
                                 .ToListAsync();
