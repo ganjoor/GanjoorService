@@ -2110,6 +2110,31 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// create images for ganjoor
+        /// </summary>
+        /// <param name="startFrom"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+
+        [HttpPut("ai/create/images")]
+        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> OpenAIStartCreatingImagesForPoemsAsync(int startFrom, int count)
+        {
+            try
+            {
+                await _artifactService.OpenAIStartCreatingImagesForPoemsAsync(startFrom, count);
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode

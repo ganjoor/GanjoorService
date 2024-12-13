@@ -599,5 +599,13 @@ namespace RMuseum.Services
         /// <returns></returns>
         RServiceResult<bool> StartUploadingArtifactToExternalServer(Guid artifactId, bool skipUpload);
 
+        /// <summary>
+        /// create images for ganjoor
+        /// </summary>
+        /// <param name="startFrom"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        Task OpenAIStartCreatingImagesForPoemsAsync(int startFrom, int count);
+
     }
 }

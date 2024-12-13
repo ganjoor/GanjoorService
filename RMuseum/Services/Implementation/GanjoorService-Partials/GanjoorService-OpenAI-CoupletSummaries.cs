@@ -9,6 +9,12 @@ using RMuseum.Models.Ganjoor;
 using Betalgo.Ranul.OpenAI.Managers;
 using Betalgo.Ranul.OpenAI;
 using Betalgo.Ranul.OpenAI.ObjectModels.RequestModels;
+using RMuseum.Models.Artifact;
+using System.Security.Policy;
+using Azure;
+using System.Diagnostics;
+using System.Net.Http;
+using System.IO;
 
 namespace RMuseum.Services.Implementation
 {
@@ -432,5 +438,6 @@ namespace RMuseum.Services.Implementation
               });
 
         }
+
     }
 }
