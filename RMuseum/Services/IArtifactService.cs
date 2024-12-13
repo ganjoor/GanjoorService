@@ -602,11 +602,9 @@ namespace RMuseum.Services
         /// <summary>
         /// create images for ganjoor
         /// </summary>
-        /// <param name="startFrom"></param>
-        /// <param name="count"></param>
         /// <param name="poetId"></param>
         /// <returns></returns>
-        Task OpenAIStartCreatingImagesForPoemsAsync(int startFrom, int count, int poetId);
+        Task OpenAIStartCreatingImagesForPoemsAsync(int poetId);
 
     }
 }

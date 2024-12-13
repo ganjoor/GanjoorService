@@ -636,12 +636,10 @@
             <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ArtifactController.OpenAIStartCreatingImagesForPoemsAsync(System.Int32,System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.ArtifactController.OpenAIStartCreatingImagesForPoemsAsync(System.Int32)">
             <summary>
             create images for ganjoor
             </summary>
-            <param name="startFrom"></param>
-            <param name="count"></param>
             <param name="poetId"></param>
             <returns></returns>
         </member>
@@ -15268,12 +15266,10 @@
             <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IArtifactService.OpenAIStartCreatingImagesForPoemsAsync(System.Int32,System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.IArtifactService.OpenAIStartCreatingImagesForPoemsAsync(System.Int32)">
             <summary>
             create images for ganjoor
             </summary>
-            <param name="startFrom"></param>
-            <param name="count"></param>
             <param name="poetId"></param>
             <returns></returns>
         </member>

@@ -2112,8 +2112,6 @@ namespace RMuseum.Controllers
         /// <summary>
         /// create images for ganjoor
         /// </summary>
-        /// <param name="startFrom"></param>
-        /// <param name="count"></param>
         /// <param name="poetId"></param>
         /// <returns></returns>
 
@@ -2122,11 +2120,11 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public async Task<IActionResult> OpenAIStartCreatingImagesForPoemsAsync(int startFrom = 0, int count = 0, int poetId = 0)
+        public async Task<IActionResult> OpenAIStartCreatingImagesForPoemsAsync(int poetId = 0)
         {
             try
             {
-                await _artifactService.OpenAIStartCreatingImagesForPoemsAsync(startFrom, count, poetId);
+                await _artifactService.OpenAIStartCreatingImagesForPoemsAsync(poetId);
                 return Ok();
             }
             catch (Exception exp)
