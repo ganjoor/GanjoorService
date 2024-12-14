@@ -2112,7 +2112,7 @@ namespace RMuseum.Controllers
         /// <summary>
         /// create images for ganjoor
         /// </summary>
-        /// <param name="poetId"></param>
+        /// <param name="startPoetId"></param>
         /// <returns></returns>
 
         [HttpPut("ai/create/images")]
@@ -2120,11 +2120,11 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public async Task<IActionResult> OpenAIStartCreatingImagesForPoemsAsync(int poetId = 0)
+        public async Task<IActionResult> OpenAIStartCreatingImagesForPoemsAsync(int startPoetId = 0)
         {
             try
             {
-                await _artifactService.OpenAIStartCreatingImagesForPoemsAsync(poetId);
+                await _artifactService.OpenAIStartCreatingImagesForPoemsAsync(startPoetId);
                 return Ok();
             }
             catch (Exception exp)

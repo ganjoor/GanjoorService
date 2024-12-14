@@ -24,7 +24,7 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class ArtifactService : IArtifactService
     {
-        public async Task OpenAIStartCreatingImagesForPoemsAsync(int poetId)
+        public async Task OpenAIStartCreatingImagesForPoemsAsync(int startPoetId)
         {
             string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
             var systemUserId = (Guid)(await _userService.FindUserByEmail(systemEmail)).Result.Id;
@@ -72,13 +72,13 @@ namespace RMuseum.Services.Implementation
                           }
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Query Poems");
 
-                          var poets = await context.GanjoorPoets.AsNoTracking().Where(p => poetId == 0 || p.Id == poetId).OrderBy(p => p.Id).ToListAsync();
+                          var poets = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id >= startPoetId).OrderBy(p => p.Id).ToListAsync();
                           foreach (var poet in poets)
                           {
                               if (poet.Id < 5) continue;
                               
                               var poems = await context.GanjoorPoems.Include(p => p.Cat).AsNoTracking().Where(p => p.Cat.PoetId == poet.Id).ToListAsync();
-                              await jobProgressServiceEF.UpdateJob(job.Id, 0, $"PoetId = {poetId}, Starting, {poems.Count}");
+                              await jobProgressServiceEF.UpdateJob(job.Id, 0, $"PoetId = {poet.Id}, Starting, {poems.Count}");
                               for (var i = 0; i < poems.Count; i++)
                               {
                                   var poem = poems[i];
