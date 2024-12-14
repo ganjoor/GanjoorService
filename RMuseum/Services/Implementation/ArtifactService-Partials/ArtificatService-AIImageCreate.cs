@@ -75,12 +75,14 @@ namespace RMuseum.Services.Implementation
                           var poets = await context.GanjoorPoets.AsNoTracking().Where(p => poetId == 0 || p.Id == poetId).OrderBy(p => p.Id).ToListAsync();
                           foreach (var poet in poets)
                           {
-
+                              if (poet.Id < 5) continue;
+                              
                               var poems = await context.GanjoorPoems.Include(p => p.Cat).AsNoTracking().Where(p => p.Cat.PoetId == poet.Id).ToListAsync();
                               await jobProgressServiceEF.UpdateJob(job.Id, 0, $"PoetId = {poetId}, Starting, {poems.Count}");
                               for (var i = 0; i < poems.Count; i++)
                               {
                                   var poem = poems[i];
+
                                   await jobProgressServiceEF.UpdateJob(job.Id, i, $"{i} از {poems.Count} - {poem.FullTitle}");
 
                                   if (true == await context.GanjoorLinks.Where(l => l.ArtifactId == book.Id && l.GanjoorPostId == poem.Id).AnyAsync())
@@ -151,6 +153,10 @@ namespace RMuseum.Services.Implementation
                                               story = "";
                                           }
                                           story = story.Trim();
+                                          if(story.Split(' ').Length < 10 && story.Contains("داستان"))
+                                          {
+                                              story = "";
+                                          }
                                       }
 
                                       if (string.IsNullOrEmpty(story))
