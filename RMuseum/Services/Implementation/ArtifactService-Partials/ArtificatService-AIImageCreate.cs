@@ -153,7 +153,7 @@ namespace RMuseum.Services.Implementation
                                               story = "";
                                           }
                                           story = story.Trim();
-                                          if(story.Split(' ').Length < 10 && story.Contains("داستان"))
+                                          if(story.Split(' ').Length < 20)
                                           {
                                               story = "";
                                           }
