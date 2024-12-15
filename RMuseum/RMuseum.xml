@@ -643,6 +643,12 @@
             <param name="startPoetId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.FillOriginalTextForAICreatedImagesForPoems">
+            <summary>
+            fill ai created images original text tag value
+            </summary>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.ArtifactController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -15272,6 +15278,11 @@
             </summary>
             <param name="startPoetId"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.FillOriginalTextForAICreatedImagesForPoems">
+            <summary>
+            fill ai created images original text tag value
+            </summary>
         </member>
         <member name="T:RMuseum.Services.IDonationService">
             <summary>

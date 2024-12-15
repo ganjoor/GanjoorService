@@ -606,5 +606,10 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task OpenAIStartCreatingImagesForPoemsAsync(int startPoetId);
 
+        /// <summary>
+        /// fill ai created images original text tag value
+        /// </summary>
+        void FillOriginalTextForAICreatedImagesForPoems();
+
     }
 }

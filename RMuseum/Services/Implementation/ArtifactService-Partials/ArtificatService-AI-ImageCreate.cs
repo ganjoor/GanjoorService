@@ -479,5 +479,51 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }
+
+        public void FillOriginalTextForAICreatedImagesForPoems()
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+              (
+              async token =>
+              {
+                  using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                  {
+                      LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                      var job = (await jobProgressServiceEF.NewJob($"FillOriginalTextForAICreatedImagesForPoems", "Query data")).Result;
+                      try
+                      {
+                          string friendlyUrl = "ai";
+                          RArtifactMasterRecord book = await context.Artifacts.AsNoTracking().Where(b => b.FriendlyUrl == friendlyUrl).SingleAsync();
+                          var ganjoorLinkTag = await context.Tags.AsNoTracking().Where(t => t.NameInEnglish == "Ganjoor Link").SingleAsync();
+                          var originalTextTag = await context.Tags.AsNoTracking().Where(t => t.NameInEnglish == "Original Text").SingleAsync();
+                          var items = await context.Items.AsNoTracking().Include(i => i.Tags).Where(i => i.RArtifactMasterRecordId == book.Id).ToListAsync();
+                          foreach (var item in items)
+                          {
+                              if (!item.Tags.Where(t => t.RTagId == originalTextTag.Id).Any())
+                              {
+                                  var ganjoorLink = item.Tags.Where(t => t.RTagId == ganjoorLinkTag.Id).FirstOrDefault();
+                                  if (ganjoorLink != null)
+                                  {
+                                      string url = ganjoorLink.ValueSupplement.Replace("https://ganjoor.net", "");
+                                      var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.FullUrl == url).SingleOrDefaultAsync();
+                                      var poemTextTag = await TagHandler.PrepareAttribute(context, "Original Text", poem.PlainText, 1);
+                                      RArtifactItemRecord page = await context.Items.Include(i => i.Tags).Where(i => i.Id == item.Id).SingleAsync();
+                                      page.Tags.Add(poemTextTag);
+                                      context.Update(page);
+                                      await jobProgressServiceEF.UpdateJob(job.Id, item.Order);
+                                  }
+                              }
+                          }
+
+                          await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                      }
+                      catch (Exception exp)
+                      {
+                          await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                      }
+                  }
+              }
+              );
+        }
     }
 }

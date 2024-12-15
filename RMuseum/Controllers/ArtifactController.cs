@@ -2134,6 +2134,28 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// fill ai created images original text tag value
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("ai/create/filltag")]
+        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public IActionResult FillOriginalTextForAICreatedImagesForPoems()
+        {
+            try
+            {
+                _artifactService.FillOriginalTextForAICreatedImagesForPoems();
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode
