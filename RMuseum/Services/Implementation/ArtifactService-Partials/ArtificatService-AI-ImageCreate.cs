@@ -256,7 +256,8 @@ namespace RMuseum.Services.Implementation
                                               var ganjoorTag = await TagHandler.PrepareAttribute(context, "Ganjoor Link", poem.FullTitle, 1);
                                               ganjoorTag.ValueSupplement = $"https://ganjoor.net{poem.FullUrl}";
                                               var storyTag = await TagHandler.PrepareAttribute(context, "Story", story, 1);
-                                              page.Tags = [promptTag, ganjoorTag, storyTag];
+                                              var poemTextTag = await TagHandler.PrepareAttribute(context, "Original Text", poem.PlainText, 1);
+                                              page.Tags = [promptTag, ganjoorTag, storyTag, poemTextTag];
 
                                               if (
                                                                File.Exists
