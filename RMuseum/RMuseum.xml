@@ -640,7 +640,7 @@
             <summary>
             create images for ganjoor
             </summary>
-            <param name="poetId"></param>
+            <param name="startPoetId"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Controllers.ArtifactController.ReadOnlyMode">
@@ -15270,7 +15270,7 @@
             <summary>
             create images for ganjoor
             </summary>
-            <param name="poetId"></param>
+            <param name="startPoetId"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IDonationService">

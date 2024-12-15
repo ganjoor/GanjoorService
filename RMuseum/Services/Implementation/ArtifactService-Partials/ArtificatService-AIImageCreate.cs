@@ -70,13 +70,36 @@ namespace RMuseum.Services.Implementation
                               await context.Artifacts.AddAsync(book);
                               await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Creating book - 3");
                           }
+                          //query for a not uploaded item:
+                          if (book.ItemCount > 0)
+                          {
+                              var items = await context.Items.AsNoTracking().Include(i => i.Images).Where(i => i.RArtifactMasterRecordId == book.Id).ToListAsync();
+                              foreach (var item in items)
+                              {
+                                  if (item.Images.Count > 0)
+                                  {
+                                      if (string.IsNullOrEmpty(item.Images.First().ExternalNormalSizeImageUrl))
+                                      {
+                                          var resUpload = await _UploadArtifactPageToExternalServer(item, context, friendlyUrl, false);
+                                          if (resUpload.Result != true)
+                                          {
+                                              await jobProgressServiceEF.UpdateJob(job.Id, 100, "retrying upload", false, resUpload.ExceptionString);
+                                              return;
+                                          }
+                                          //you must delete remaining images manually
+                                      }
+                                  }
+                              }
+                          }
+
+                          
+
+
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Query Poems");
 
                           var poets = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id >= startPoetId).OrderBy(p => p.Id).ToListAsync();
                           foreach (var poet in poets)
-                          {
-                              if (poet.Id < 5) continue;
-                              
+                          {                              
                               var poems = await context.GanjoorPoems.Include(p => p.Cat).AsNoTracking().Where(p => p.Cat.PoetId == poet.Id).ToListAsync();
                               await jobProgressServiceEF.UpdateJob(job.Id, 0, $"PoetId = {poet.Id}, Starting, {poems.Count}");
                               for (var i = 0; i < poems.Count; i++)
