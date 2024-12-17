@@ -233,6 +233,67 @@ namespace RMuseum.Controllers
 
             return Ok(itemInfo.Result);
         }
+        /// <summary>
+        /// get specific artifact info with limited number of images
+        /// </summary>
+        /// <param name="friendlyUrl"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+
+        [HttpGet("limited/{friendlyUrl}/{count}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RArtifactMasterRecordViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetByFriendlyUrlLimitedItemsAsync(string friendlyUrl, int count = 21)
+        {
+            var cacheKey = $"artifacts/friendlyUrl/limited/{friendlyUrl}";
+            if (!_memoryCache.TryGetValue(cacheKey, out RServiceResult<RArtifactMasterRecordViewModel> itemInfo))
+            {
+                itemInfo = await _artifactService.GetByFriendlyUrlLimitedItemsAsync(friendlyUrl, [PublishStatus.Published], count);
+                if (!string.IsNullOrEmpty(itemInfo.ExceptionString))
+                {
+                    return BadRequest(itemInfo.ExceptionString);
+                }
+                if (itemInfo.Result == null)
+                    return NotFound();
+
+                _memoryCache.Set(cacheKey, itemInfo);
+            }
+
+
+            Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
+
+            var requestHeaders = Request.GetTypedHeaders();
+            if (requestHeaders.IfModifiedSince.HasValue &&
+                requestHeaders.IfModifiedSince.Value >= itemInfo.Result.LastModified)
+            {
+                return StatusCode(StatusCodes.Status304NotModified);
+            }
+
+            return Ok(itemInfo.Result);
+        }
+
+        /// <summary>
+        /// get artifact images according to start and count params
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="start"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        [HttpGet("itemsof/{id}/{start}/{count}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RArtifactMasterRecordViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetArtifactItemsAsync(Guid id, int start, int count = 21)
+        {
+            var result = await _artifactService.GetArtifactItemsAsync(id, start, count);
+            if(!string.IsNullOrEmpty(result.ExceptionString))
+                return BadRequest(result.ExceptionString);
+
+            return Ok(result.Result);
+        }
 
         /// <summary>
         /// remove unpublished artifact having no notes and not bookmarked

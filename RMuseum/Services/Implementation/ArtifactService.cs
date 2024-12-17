@@ -117,6 +117,75 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get specific artifact info with limited number of images
+        /// </summary>
+        /// <param name="friendlyUrl"></param>
+        /// <param name="statusArray"></param>
+        /// <param name="imageCount"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<RArtifactMasterRecordViewModel>> GetByFriendlyUrlLimitedItemsAsync(string friendlyUrl, PublishStatus[] statusArray, int imageCount)
+        {
+            try
+            {
+                RArtifactMasterRecord artifact =
+                 await _context.Artifacts
+                 .Include(a => a.CoverImage)
+                 .Include(a => a.Tags).ThenInclude(t => t.RTag)
+                 .Where(a => statusArray.Contains(a.Status) && a.FriendlyUrl == friendlyUrl)
+                 .AsNoTracking()
+                .SingleOrDefaultAsync();
+
+                if (artifact != null)
+                {
+                    artifact.Items =
+                        await _context.Items.AsNoTracking()
+                        .Include(i => i.Images)
+                        .Include(i => i.Tags).ThenInclude(t => t.RTag)
+                        .Where(i => i.RArtifactMasterRecordId == artifact.Id)
+                        .OrderBy(i => i.Order)
+                        .Take(imageCount)
+                        .ToListAsync();
+                }
+                return new RServiceResult<RArtifactMasterRecordViewModel>(RArtifactMasterRecord.ToViewModel(artifact));
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<RArtifactMasterRecordViewModel>(null, exp.ToString());
+            }
+            
+        }
+
+        /// <summary>
+        /// get artifact images according to start and count params
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="start"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<RArtifactItemRecord[]>> GetArtifactItemsAsync(Guid id, int start, int count)
+        {
+            try
+            {
+                return new RServiceResult<RArtifactItemRecord[]>
+                (
+                await _context.Items.AsNoTracking()
+                    .Include(i => i.Images)
+                    .Include(i => i.Tags).ThenInclude(t => t.RTag)
+                    .Where(i => i.RArtifactMasterRecordId == id)
+                    .OrderBy(i => i.Order)
+                    .Skip(start)
+                    .Take(count)
+                    .ToArrayAsync()
+                );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<RArtifactItemRecord[]>(null, exp.ToString());
+            }
+            
+        }
+
+        /// <summary>
         /// gets specified artifact info (including CoverImage + images +  tagibutes)
         /// </summary>
         /// <param name="friendlyUrl"></param>

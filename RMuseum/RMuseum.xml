@@ -70,6 +70,23 @@
             <param name="friendlyUrl"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetByFriendlyUrlLimitedItemsAsync(System.String,System.Int32)">
+            <summary>
+            get specific artifact info with limited number of images
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetArtifactItemsAsync(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            get artifact images according to start and count params
+            </summary>
+            <param name="id"></param>
+            <param name="start"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.ArtifactController.RemoveArtifact(System.Guid)">
             <summary>
             remove unpublished artifact having no notes and not bookmarked
@@ -14731,6 +14748,24 @@
             <param name="statusArray"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetByFriendlyUrlLimitedItemsAsync(System.String,RMuseum.Models.Artifact.PublishStatus[],System.Int32)">
+            <summary>
+            get specific artifact info with limited number of images
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="statusArray"></param>
+            <param name="imageCount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.GetArtifactItemsAsync(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            get artifact images according to start and count params
+            </summary>
+            <param name="id"></param>
+            <param name="start"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IArtifactService.GetByFriendlyUrlFilterItemsByTag(System.String,RMuseum.Models.Artifact.PublishStatus[],System.String,System.String)">
             <summary>
             gets specified artifact info (including CoverImage + images +  tagibutes)
@@ -17400,6 +17435,24 @@
             </summary>
             <param name="friendlyUrl"></param>
             <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetByFriendlyUrlLimitedItemsAsync(System.String,RMuseum.Models.Artifact.PublishStatus[],System.Int32)">
+            <summary>
+            get specific artifact info with limited number of images
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="statusArray"></param>
+            <param name="imageCount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.GetArtifactItemsAsync(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            get artifact images according to start and count params
+            </summary>
+            <param name="id"></param>
+            <param name="start"></param>
+            <param name="count"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.GetByFriendlyUrlFilterItemsByTag(System.String,RMuseum.Models.Artifact.PublishStatus[],System.String,System.String)">

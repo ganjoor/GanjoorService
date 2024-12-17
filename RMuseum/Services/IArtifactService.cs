@@ -47,6 +47,25 @@ namespace RMuseum.Services
         Task<RServiceResult<RArtifactMasterRecordViewModel>> GetByFriendlyUrl(string friendlyUrl, PublishStatus[] statusArray);
 
         /// <summary>
+        /// get specific artifact info with limited number of images
+        /// </summary>
+        /// <param name="friendlyUrl"></param>
+        /// <param name="statusArray"></param>
+        /// <param name="imageCount"></param>
+        /// <returns></returns>
+        Task<RServiceResult<RArtifactMasterRecordViewModel>> GetByFriendlyUrlLimitedItemsAsync(string friendlyUrl, PublishStatus[] statusArray, int imageCount);
+
+        /// <summary>
+        /// get artifact images according to start and count params
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="start"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        Task<RServiceResult<RArtifactItemRecord[]>> GetArtifactItemsAsync(Guid id, int start, int count);
+
+
+        /// <summary>
         /// gets specified artifact info (including CoverImage + images +  tagibutes)
         /// </summary>
         /// <param name="friendlyUrl"></param>
