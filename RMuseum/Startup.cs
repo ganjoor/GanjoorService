@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -69,8 +70,11 @@ namespace RMuseum
                                 providerOptions.EnableRetryOnFailure();
                                 providerOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
                                 }
-                            )
+                            ).ConfigureWarnings(warnings =>
+               warnings.Ignore(RelationalEventId.PendingModelChangesWarning))
                         );
+
+            
 
             //Audit.Core.Configuration.JsonSettings.ContractResolver = AuditNetEnvironmentSkippingContractResolver.Instance;
             Audit.Core.Configuration.DataProvider = new RAuditDataProvider(Configuration.GetConnectionString("DefaultConnection"));

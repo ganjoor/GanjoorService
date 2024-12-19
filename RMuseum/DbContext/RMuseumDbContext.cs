@@ -17,6 +17,7 @@ using System.IO;
 using RMuseum.Models.FAQ;
 using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.ExternalFTPUpload;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace RMuseum.DbContext
 {
@@ -204,6 +205,51 @@ namespace RMuseum.DbContext
             .HasIndex(v => new { v.CatId })
             .IsUnique();
 
+
+            builder.Entity<GanjoorVerse>()
+              .Property(e => e.CoupletSummary)
+              .HasMaxLength(4000);
+
+           builder.Entity<GanjoorPoem>()
+            .Property(e => e.Title)
+            .HasMaxLength(1500);
+
+            builder.Entity<GanjoorPoem>()
+            .Property(e => e.FullTitle)
+            .HasMaxLength(1500);
+
+            builder.Entity<GanjoorPoem>()
+            .Property(e => e.UrlSlug)
+            .HasMaxLength(32);
+
+            builder.Entity<GanjoorPoem>()
+           .Property(e => e.RhymeLetters)
+           .HasMaxLength(64);
+
+            builder.Entity<GanjoorPoem>()
+              .Property(e => e.SourceName)
+              .HasMaxLength(64);
+
+            builder.Entity<GanjoorPoem>()
+
+             .Property(e => e.SourceUrlSlug)
+             .HasMaxLength(16);
+
+            builder.Entity<GanjoorPoem>()
+              .Property(e => e.OldTag)
+              .HasMaxLength(16);
+
+            builder.Entity<GanjoorPoem>()
+             .Property(e => e.OldTagPageUrl)
+             .HasMaxLength(32);
+
+            builder.Entity<GanjoorPoem>()
+            .Property(e => e.Language)
+            .HasMaxLength(8);
+
+            builder.Entity<GanjoorPoem>()
+            .Property(e => e.PoemSummary)
+            .HasMaxLength(3000);
 
         }
 
