@@ -17,7 +17,6 @@ using System.IO;
 using RMuseum.Models.FAQ;
 using RMuseum.Models.PDFLibrary;
 using RMuseum.Models.ExternalFTPUpload;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace RMuseum.DbContext
 {
@@ -251,6 +250,49 @@ namespace RMuseum.DbContext
             .Property(e => e.PoemSummary)
             .HasMaxLength(3000);
 
+            /*
+            Phase 2:
+
+            builder.Entity<RArtifactMasterRecord>()
+                .Property(e => e.FriendlyUrl)
+                .HasMaxLength(40);
+
+            builder.Entity<RArtifactMasterRecord>()
+               .Property(e => e.Name)
+               .HasMaxLength(1200);
+
+            builder.Entity<RArtifactMasterRecord>()
+               .Property(e => e.NameInEnglish)
+               .HasMaxLength(1200);
+
+            builder.Entity<RArtifactItemRecord>()
+              .Property(e => e.FriendlyUrl)
+              .HasMaxLength(16);
+
+            builder.Entity<RArtifactItemRecord>()
+               .Property(e => e.Name)
+               .HasMaxLength(1200);
+
+            builder.Entity<RArtifactItemRecord>()
+               .Property(e => e.NameInEnglish)
+               .HasMaxLength(1200);
+
+            builder.Entity<RTag>()
+              .Property(e => e.Name)
+              .HasMaxLength(128);
+
+            builder.Entity<RTag>()
+               .Property(e => e.NameInEnglish)
+               .HasMaxLength(128);
+
+            builder.Entity<RTag>()
+              .Property(e => e.PluralName)
+              .HasMaxLength(128);
+
+            builder.Entity<RTag>()
+               .Property(e => e.PluralNameInEnglish)
+               .HasMaxLength(128);
+            */
         }
 
 
