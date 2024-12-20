@@ -2195,19 +2195,19 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// fill ai created images original text tag value
+        /// create images for ganjoor - offline
         /// </summary>
         /// <returns></returns>
-        [HttpPut("ai/create/filltag")]
+        [HttpPut("ai/create/images/offline")]
         [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public IActionResult FillOriginalTextForAICreatedImagesForPoems()
+        public async Task<IActionResult> OpenAIStartCreatingImagesForPoemsOfflineAsync()
         {
             try
             {
-                _artifactService.FillOriginalTextForAICreatedImagesForPoems();
+                await _artifactService.OpenAIStartCreatingImagesForPoemsOfflineAsync();
                 return Ok();
             }
             catch (Exception exp)

@@ -480,8 +480,11 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        public void FillOriginalTextForAICreatedImagesForPoems()
+        public async Task OpenAIStartCreatingImagesForPoemsOfflineAsync()
         {
+            string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
+            var systemUserId = (Guid)(await _userService.FindUserByEmail(systemEmail)).Result.Id;
+
             _backgroundTaskQueue.QueueBackgroundWorkItem
               (
               async token =>
@@ -489,31 +492,244 @@ namespace RMuseum.Services.Implementation
                   using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                   {
                       LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                      var job = (await jobProgressServiceEF.NewJob($"FillOriginalTextForAICreatedImagesForPoems", "Query data")).Result;
+                      var job = (await jobProgressServiceEF.NewJob($"OpenAIStartCreatingImagesForPoems", "Open AI initialization")).Result;
                       try
                       {
+                          await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
+
                           string friendlyUrl = "ai";
-                          RArtifactMasterRecord book = await context.Artifacts.AsNoTracking().Where(b => b.FriendlyUrl == friendlyUrl).SingleAsync();
-                          var ganjoorLinkTag = await context.Tags.AsNoTracking().Where(t => t.NameInEnglish == "Ganjoor Link").SingleAsync();
-                          var originalTextTag = await context.Tags.AsNoTracking().Where(t => t.NameInEnglish == "Original Text").SingleAsync();
-                          var items = await context.Items.AsNoTracking().Include(i => i.Tags).Where(i => i.RArtifactMasterRecordId == book.Id).ToListAsync();
-                          foreach (var item in items)
+                          RArtifactMasterRecord book = await context.Artifacts.Include(a => a.CoverImage).Where(b => b.FriendlyUrl == friendlyUrl).SingleOrDefaultAsync();
+                          if (book == null)
                           {
-                              if (!item.Tags.Where(t => t.RTagId == originalTextTag.Id).Any())
+                              await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Creating book");
+                              book = new RArtifactMasterRecord("فانوس خیال", "تصاویر تولید شده توسط هوش مصنوعی بر اساس متون گنجور")
                               {
-                                  var ganjoorLink = item.Tags.Where(t => t.RTagId == ganjoorLinkTag.Id).FirstOrDefault();
-                                  if (ganjoorLink != null)
+                                  Status = PublishStatus.Draft,
+                                  DateTime = DateTime.Now,
+                                  LastModified = DateTime.Now,
+                                  CoverItemIndex = 0,
+                                  CoverImageId = Guid.Parse("f9088a13-ea28-4e77-7c84-08dd0fdb87dc"),
+                                  FriendlyUrl = friendlyUrl,
+                                  NameInEnglish = "AI Generated images from ganjoor.net text",
+                                  ItemCount = 0,
+                                  Items = new List<RArtifactItemRecord>(),
+                                  Tags = new List<RTagValue>(),
+                              };
+                              await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Creating book - 2");
+                              await context.Artifacts.AddAsync(book);
+                              await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Creating book - 3");
+                          }
+                          //query for a not uploaded item:
+                          if (book.ItemCount > 0)
+                          {
+                              var items = await context.Items.AsNoTracking().Include(i => i.Images).Where(i => i.RArtifactMasterRecordId == book.Id).ToListAsync();
+                              foreach (var item in items)
+                              {
+                                  if (item.Images.Count > 0)
                                   {
-                                      string url = ganjoorLink.ValueSupplement.Replace("https://ganjoor.net", "");
-                                      var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.FullUrl == url).SingleOrDefaultAsync();
-                                      var poemTextTag = await TagHandler.PrepareAttribute(context, "Original Text", poem.PlainText, 1);
-                                      RArtifactItemRecord page = await context.Items.Include(i => i.Tags).Where(i => i.Id == item.Id).SingleAsync();
-                                      page.Tags.Add(poemTextTag);
-                                      context.Update(page);
-                                      await jobProgressServiceEF.UpdateJob(job.Id, item.Order);
+                                      if (string.IsNullOrEmpty(item.Images.First().ExternalNormalSizeImageUrl))
+                                      {
+                                          var resUpload = await _UploadArtifactPageToExternalServer(item, context, friendlyUrl, false);
+                                          if (resUpload.Result != true)
+                                          {
+                                              await jobProgressServiceEF.UpdateJob(job.Id, 100, "retrying upload", false, resUpload.ExceptionString);
+                                              return;
+                                          }
+                                          //you must delete remaining images manually
+                                      }
                                   }
                               }
                           }
+
+
+
+
+                          await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Query Poems");
+
+                          var poets = await context.GanjoorPoets.AsNoTracking().OrderBy(p => p.Id).ToListAsync();
+                          foreach (var poet in poets)
+                          {
+                              if (!Directory.Exists($"C:\\ai\\{poet.Id}"))
+                                  continue;
+                              var poems = await context.GanjoorPoems.Include(p => p.Cat).AsNoTracking().Where(p => p.Cat.PoetId == poet.Id).ToListAsync();
+                              await jobProgressServiceEF.UpdateJob(job.Id, 0, $"PoetId = {poet.Id}, Starting, {poems.Count}");
+                              for (var i = 0; i < poems.Count; i++)
+                              {
+                                  var poem = poems[i];
+
+                                  string imageFile = $"C:\\ai\\{poet.Id}\\{poem.Id}.jpg";
+                                  if (!File.Exists(imageFile))
+                                      continue;
+
+                                  await jobProgressServiceEF.UpdateJob(job.Id, i, $"{i} از {poems.Count} - {poem.FullTitle}");
+
+                                  if (true == await context.GanjoorLinks.Where(l => l.ArtifactId == book.Id && l.GanjoorPostId == poem.Id).AnyAsync())
+                                      continue;
+
+                                  string story = File.ReadAllText($"C:\\ai\\{poet.Id}\\{poem.Id}.txt");
+                                  string prompt = File.ReadAllText($"C:\\ai\\{poet.Id}\\{poem.Id}-p.txt");
+
+
+                                  int order = 1 + await context.Items.Where(i => i.RArtifactMasterRecordId == book.Id).CountAsync();
+
+                                  RArtifactItemRecord page = new RArtifactItemRecord()
+                                  {
+                                      Name = $"تصویر {order} - {poem.FullTitle}",
+                                      NameInEnglish = $"Image {order} of {book.NameInEnglish}",
+                                      Description = story,
+                                      DescriptionInEnglish = prompt,
+                                      Order = order,
+                                      FriendlyUrl = $"p{$"{order}".PadLeft(7, '0')}",
+                                      LastModified = DateTime.Now,
+                                      RArtifactMasterRecordId = book.Id,
+                                  };
+
+                                  var promptTag = await TagHandler.PrepareAttribute(context, "AI Prompt", prompt, 1);
+                                  var ganjoorTag = await TagHandler.PrepareAttribute(context, "Ganjoor Link", poem.FullTitle, 1);
+                                  ganjoorTag.ValueSupplement = $"https://ganjoor.net{poem.FullUrl}";
+                                  var storyTag = await TagHandler.PrepareAttribute(context, "Story", story, 1);
+                                  var poemTextTag = await TagHandler.PrepareAttribute(context, "Original Text", poem.PlainText, 1);
+                                  page.Tags = [promptTag, ganjoorTag, storyTag, poemTextTag];
+
+                                  if (
+                                                   File.Exists
+                                                   (
+                                                   Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "orig"), $"{order}".PadLeft(7, '0') + ".jpg")
+                                                   )
+
+                                               )
+                                  {
+                                      File.Delete
+                                     (
+                                     Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "orig"), $"{order}".PadLeft(7, '0') + ".jpg")
+                                     );
+                                  }
+                                  if (
+
+                                     File.Exists
+                                     (
+                                     Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "norm"), $"{order}".PadLeft(7, '0') + ".jpg")
+                                     )
+
+                                 )
+                                  {
+                                      File.Delete
+                                      (
+                                      Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "norm"), $"{order}".PadLeft(7, '0') + ".jpg")
+                                      );
+                                  }
+                                  if (
+
+                                     File.Exists
+                                     (
+                                     Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "thumb"), $"{order}".PadLeft(7, '0') + ".jpg")
+                                     )
+                                 )
+                                  {
+                                      File.Delete
+                                      (
+                                      Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "thumb"), $"{order}".PadLeft(7, '0') + ".jpg")
+                                      );
+                                  }
+
+                                  using (var httpClient = new HttpClient())
+                                  {
+                                      using var stream = new FileStream(imageFile, FileMode.Open, FileAccess.Read);
+                                      using var originalImage = Image.FromStream(stream);
+                                      using (Stream jpegStream = new MemoryStream())
+                                      {
+                                          originalImage.Save(jpegStream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                                          jpegStream.Seek(0, SeekOrigin.Begin);
+
+                                          RServiceResult<RPictureFile> picture = await _pictureFileService.Add(page.Name, page.Description, 1, null, "", jpegStream, $"{order}".PadLeft(7, '0') + ".jpg", friendlyUrl);
+                                          if (picture.Result == null)
+                                          {
+                                              throw new Exception($"_pictureFileService.Add : {picture.ExceptionString}");
+                                          }
+                                          page.Images = [picture.Result];
+                                          page.CoverImageIndex = 0;
+                                      }
+                                      context.Add(page);
+                                      await context.SaveChangesAsync();
+                                  }
+
+
+                                  if (book.ItemCount == 0)
+                                  {
+                                      book.CoverImage = RPictureFile.Duplicate(page.Images.First());
+                                      book.Status = PublishStatus.Published;
+                                      book.ItemCount = order;
+                                      context.Update(book);
+                                      await context.SaveChangesAsync();
+
+                                      var resFTPUpload = await _UploadArtifactToExternalServer(book, context, false);
+                                      if (!string.IsNullOrEmpty(resFTPUpload.ExceptionString))
+                                      {
+                                          await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, $"UploadArtifactToExternalServer: {resFTPUpload.ExceptionString}");
+                                          context.Update(job);
+                                          await context.SaveChangesAsync();
+                                          return;
+                                      }
+                                  }
+                                  else
+                                  {
+                                      book.ItemCount = order;
+                                      context.Update(book);
+                                      await context.SaveChangesAsync();
+                                  }
+
+                                  File.Delete(imageFile);
+                                  File.Delete($"C:\\ai\\{poet.Id}\\{poem.Id}.txt");
+                                  File.Delete($"C:\\ai\\{poet.Id}\\{poem.Id}-p.txt");
+
+                                  var resUpload = await _UploadArtifactPageToExternalServer(page, context, friendlyUrl, false);
+                                  if (resUpload.Result != true)
+                                  {
+                                      await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, resUpload.ExceptionString);
+                                      return;
+                                  }
+
+
+                                  File.Delete
+                                 (
+                                 Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "orig"), $"{order}".PadLeft(7, '0') + ".jpg")
+                                 );
+
+                                  File.Delete
+                                  (
+                                  Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "norm"), $"{order}".PadLeft(7, '0') + ".jpg")
+                                  );
+                                  File.Delete
+                                  (
+                                  Path.Combine(Path.Combine(Path.Combine(_pictureFileService.ImageStoragePath, friendlyUrl), "thumb"), $"{order}".PadLeft(7, '0') + ".jpg")
+                                  );
+
+
+                                  GanjoorLink suggestion =
+                                   new GanjoorLink()
+                                   {
+                                       GanjoorPostId = poem.Id,
+                                       GanjoorTitle = poem.FullTitle,
+                                       GanjoorUrl = $"https://ganjoor.net{poem.FullUrl}",
+                                       ArtifactId = book.Id,
+                                       ItemId = page.Id,
+                                       SuggestedById = systemUserId,
+                                       SuggestionDate = DateTime.Now,
+                                       ReviewResult = ReviewResult.Approved,
+                                       DisplayOnPage = true,
+                                       Synchronized = true,
+                                   };
+
+                                  context.GanjoorLinks.Add(suggestion);
+                                  await context.SaveChangesAsync();
+                              }
+                              Directory.Delete($"C:\\ai\\{poet.Id}");
+                          }
+
+
+
+
+
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                       }
@@ -521,9 +737,9 @@ namespace RMuseum.Services.Implementation
                       {
                           await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
                       }
+
                   }
-              }
-              );
+              });
         }
     }
 }

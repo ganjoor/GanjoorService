@@ -660,9 +660,9 @@
             <param name="startPoetId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ArtifactController.FillOriginalTextForAICreatedImagesForPoems">
+        <member name="M:RMuseum.Controllers.ArtifactController.OpenAIStartCreatingImagesForPoemsOfflineAsync">
             <summary>
-            fill ai created images original text tag value
+            create images for ganjoor - offline
             </summary>
             <returns></returns>
         </member>
@@ -15326,9 +15326,9 @@
             <param name="startPoetId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IArtifactService.FillOriginalTextForAICreatedImagesForPoems">
+        <member name="M:RMuseum.Services.IArtifactService.OpenAIStartCreatingImagesForPoemsOfflineAsync">
             <summary>
-            fill ai created images original text tag value
+            create images for ganjoor - offline
             </summary>
         </member>
         <member name="T:RMuseum.Services.IDonationService">

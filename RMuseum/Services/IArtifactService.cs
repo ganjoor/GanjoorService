@@ -626,9 +626,9 @@ namespace RMuseum.Services
         Task OpenAIStartCreatingImagesForPoemsAsync(int startPoetId);
 
         /// <summary>
-        /// fill ai created images original text tag value
+        /// create images for ganjoor - offline
         /// </summary>
-        void FillOriginalTextForAICreatedImagesForPoems();
+        Task OpenAIStartCreatingImagesForPoemsOfflineAsync();
 
     }
 }
