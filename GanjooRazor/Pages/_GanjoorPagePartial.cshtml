@@ -642,33 +642,34 @@
                                     </div>
                                 }
 
-                                if (Model.GanjoorPage.Poem.Top6QuotedPoems.Any())
-                                {
-                                    <div class="related-images-frame" id="qpoems">
-                                        <div class="century">
-                                            مشق شعر <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('qpoems-section', 'qpoems-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="qpoems-collapse-button"></i></a>
-                                        </div>
-                                        <div id="qpoems-section">
-                                            @for (int i = 0; i < Math.Min(5, Model.GanjoorPage.Poem.Top6QuotedPoems.Length); i++)
-                                            {
-                                                <partial name="_QuotedPoemPartial" model=@Model.GetQuotedPoemModel(Model.GanjoorPage.Poem.Top6QuotedPoems[i], Model.GanjoorPage, Model.CanEdit) />
-                                            }
-
-                                            @if (Model.GanjoorPage.Poem.Top6QuotedPoems.Length == 6)
-                                            {
-                                                <div id="more-quoted-placeholder"></div>
-                                                <div id="load-more-quoted">
-                                                    <a role="button" class="pagebutton" id="load-more-quoted" onclick="loadMoreQuotedPoems(@Model.GanjoorPage.Poem.Id, 5, '@Model.GanjoorPage.PoetOrCat.Poet.ImageUrl', '@Model.GanjoorPage.PoetOrCat.Poet.Nickname', @Model.CanEdit.ToString().ToLower())">بیشتر<i class="notranslate info-buttons autorenew"></i></a>
-                                                </div>
-                                            }
-                                        </div>
+                                <div class="related-images-frame" id="qpoems">
+                                    <div class="century">
+                                        مشق شعر <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('qpoems-section', 'qpoems-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="qpoems-collapse-button"></i></a>
                                     </div>
-                                }
+                                    <div id="qpoems-section">
+                                        @for (int i = 0; i < Math.Min(5, Model.GanjoorPage.Poem.Top6QuotedPoems.Length); i++)
+                                        {
+                                            <partial name="_QuotedPoemPartial" model=@Model.GetQuotedPoemModel(Model.GanjoorPage.Poem.Top6QuotedPoems[i], Model.GanjoorPage, Model.CanEdit) />
+                                        }
 
-                                @if (Model.LoggedIn)
-                                {
-                                    <a href="/User/SuggestQuoted/?p=@Model.GanjoorPage.Id" class="pagebutton comments-link">پیشنهاد مشق شعر</a>
-                                }
+                                        @if (Model.GanjoorPage.Poem.Top6QuotedPoems.Length == 6)
+                                        {
+                                            <div id="more-quoted-placeholder"></div>
+                                            <div id="load-more-quoted">
+                                                <a role="button" class="pagebutton" id="load-more-quoted" onclick="loadMoreQuotedPoems(@Model.GanjoorPage.Poem.Id, 5, '@Model.GanjoorPage.PoetOrCat.Poet.ImageUrl', '@Model.GanjoorPage.PoetOrCat.Poet.Nickname', @Model.CanEdit.ToString().ToLower())">بیشتر<i class="notranslate info-buttons autorenew"></i></a>
+                                            </div>
+                                        }
+                                    </div>
+                                    @if (Model.LoggedIn)
+                                    {
+                                        <div>
+                                            <a href="/User/SuggestQuoted/?p=@Model.GanjoorPage.Id" class="pagebutton comments-link">پیشنهاد مشق شعر</a>
+                                        </div>
+                                    }
+                                </div>
+
+
+
                             }
 
 
