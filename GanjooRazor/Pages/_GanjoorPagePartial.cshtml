@@ -458,7 +458,7 @@
 
                                     @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.PoemSummary))
                                     {
-                                        <div class="notice" id="summary">
+                                        <div class="notice" id="summary" data-nosnippet>
                                             <div class="century">خلاصه</div>
                                             <p>
                                                 @Html.Raw(Model.GanjoorPage.Poem.PoemSummary.Replace("\n", "<br />"))
@@ -476,7 +476,7 @@
 
                                     @if (Model.GanjoorPage.Poem.Verses.Any(v => !string.IsNullOrEmpty(v.CoupletSummary)))
                                     {
-                                        <div class="century" id="summaries">برگردان به زبان ساده</div>
+                                        <div class="century" id="summaries" data-nosnippet>برگردان به زبان ساده</div>
                                         @for (int verseIndex = 0; verseIndex < Model.GanjoorPage.Poem.Verses.Length; verseIndex++)
                                         {
                                             @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary))
