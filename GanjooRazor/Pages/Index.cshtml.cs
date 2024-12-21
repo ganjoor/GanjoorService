@@ -812,9 +812,22 @@ namespace GanjooRazor.Pages
                     poetCat = false;
                 }
                 breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Cat.Title, GanjoorPage.PoetOrCat.Cat.FullUrl, "https://i.ganjoor.net/cat.png");
-                breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, "https://i.ganjoor.net/poem.png");
-
-
+                if(GanjoorPage.Poem.Images.Where(i => i.TargetPageUrl.StartsWith("https://museum.ganjoor.net/items/ai")).Any())
+                {
+                    breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, 
+                        GanjoorPage.Poem.Images.Where(i => i.TargetPageUrl.StartsWith("https://museum.ganjoor.net/items/ai")).First().ThumbnailImageUrl.Replace("/thumb/", "/orig/"));
+                }
+                else
+                if (GanjoorPage.Poem.Images.Any())
+                {
+                    breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl,
+                        GanjoorPage.Poem.Images.First().ThumbnailImageUrl.Replace("/thumb/", "/orig/"));
+                }
+                else
+                {
+                    breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, "https://i.ganjoor.net/poem.png");
+                }
+                
             }
             else
             {
