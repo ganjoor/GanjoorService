@@ -25,7 +25,8 @@
         cookieValue = getCookie("stickyEnabled");
         var stickyEnabled = cookieValue != "false";
 
-        var lineNumbers = true;
+        cookieValue = getCookie("lineNumbers");
+        var lineNumbers = cookieValue != "false";
 
     </script>
 
@@ -48,7 +49,9 @@
                 <script>
                     $(document).ready(function () {
                         checkWebShareSupport();
-                        btshmr(@Model.GanjoorPage.Id);
+                        if (lineNumbers) {
+                            btshmr(@Model.GanjoorPage.Id);
+                        }
                         checkIfBookmarked(@Model.GanjoorPage.Id);
                     });
                 </script>
@@ -166,9 +169,9 @@
                     if (recitation.InSyncWithText)
                     {
                         <text>
-                            narrators.push('@Html.Raw(recitation.AudioArtist)');
-                            audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
-                            recitaionIds.push(@recitation.Id);
+                                    narrators.push('@Html.Raw(recitation.AudioArtist)');
+                                    audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
+                                    recitaionIds.push(@recitation.Id);
                         </text>
                     }
                 }
@@ -208,16 +211,16 @@
     @{
         if (!string.IsNullOrEmpty(Model.PinterestUrl))
         {
-                <script>
-                    $(function () {
-                        $("a").attr('href', function (i, h) {
-                            if (h != null) {
-                                return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
-                            }
-                            return h;
-                        });
+            <script>
+                $(function () {
+                    $("a").attr('href', function (i, h) {
+                        if (h != null) {
+                            return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
+                        }
+                        return h;
                     });
-                </script>
+                });
+            </script>
         }
     }
 
