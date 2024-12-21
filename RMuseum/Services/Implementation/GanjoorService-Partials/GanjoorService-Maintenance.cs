@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Esf;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RSecurityBackend.Models.Generic;
@@ -25,6 +26,14 @@ namespace RMuseum.Services.Implementation
                 LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                 var job = (await jobProgressServiceEF.NewJob($"FindCategoryPoemsRhythms Cat {catId}", "Query data")).Result;
                 await _FindCategoryPoemsRhythmsMoreInternal(context, jobProgressServiceEF, job, catId, retag, rhythm);
+                await jobProgressServiceEF.UpdateJob(job.Id, 0, "SubCats");
+                List<int> catListId = new List<int>();
+                await _populateCategoryChildren(context, catId, catListId);
+                foreach (var subCatId in catListId)
+                {
+                    await jobProgressServiceEF.UpdateJob(job.Id, subCatId, "SubCats");
+                    await _FindCategoryPoemsRhythmsMoreInternal(context, jobProgressServiceEF, job, subCatId, retag, rhythm);
+                }
                 await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
             }
         }
