@@ -377,15 +377,37 @@
                     <div id="comments">
 
                         <div class="tab" id="tab-items">
-                            <button class="tablinks active" onclick="switchTab(event, 'tools')">اطّلاعات</button>
+                            @if(string.IsNullOrEmpty(Model.ActiveTab))
+                            {
+                                <button class="tablinks active" onclick="switchTab(event, 'tools')">اطّلاعات</button>
+                            }
+                            else
+                            {
+                                <button class="tablinks" onclick="switchTab(event, 'tools')">اطّلاعات</button>
+                            }
+                            
                             <button class="tablinks" onclick="switchTab(event, 'manuscripts')">تصاویر</button>
                             @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
                             {
-                                <button class="tablinks" onclick="switchTab(event, 'recitations')">خوانش‌ها</button>
+                                if (Model.ActiveTab == "recitations")
+                                {
+                                    <button class="tablinks active" onclick="switchTab(event, 'recitations')">خوانش‌ها</button>
+                                }
+                                else
+                                {
+                                    <button class="tablinks" onclick="switchTab(event, 'recitations')">خوانش‌ها</button>
+                                }
                             }
                             @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
                             {
-                                <button class="tablinks" onclick="switchTab(event, 'commentaries')">شرح‌های صوتی</button>
+                                if (Model.ActiveTab == "commentaries")
+                                {
+                                     <button class="tablinks active" onclick="switchTab(event, 'commentaries')">شرح‌های صوتی</button>
+                                }
+                                else
+                                {
+                                     <button class="tablinks" onclick="switchTab(event, 'commentaries')">شرح‌های صوتی</button>
+                                }
                             }
                             <button class="tablinks" onclick="switchTab(event, 'qpoems')">مشق شعر</button>
                             @if (Model.SectionsWithRelated.Count > 0)
@@ -393,19 +415,20 @@
                                 <button class="tablinks" onclick="switchTab(event, 'rpoems')">هم‌آهنگ‌ها</button>
                             }
                             <button class="tablinks" onclick="switchTab(event, 'songs')">ترانه‌ها</button>
-                            <button class="tablinks" onclick="switchTab(event, 'discussions')">حاشیه‌ها</button>
+                            @if (Model.ActiveTab == "discussions")
+                            {
+                                 <button class="tablinks active" onclick="switchTab(event, 'discussions')">حاشیه‌ها</button>
+                            }
+                            else
+                            {
+                                 <button class="tablinks" onclick="switchTab(event, 'discussions')">حاشیه‌ها</button>
+                            }
                         </div>
                         <div class="poem-info">
-
-
-
-                            <div class="related-images-frame tabcontent" id="tools" style="display:block">
-
-
+                            <div class="related-images-frame tabcontent" id="tools" style="@(string.IsNullOrEmpty(Model.ActiveTab) ? "display:block" : "display:none")">
                                 <p>
                                     <small><i class="notranslate pageicons mouse-icon"></i> با انتخاب متن و لمس متن انتخابی می‌توانید آن را در لغتنامهٔ دهخدا جستجو کنید.</small>
                                 </p>
-
 
                                 @if (Model.GanjoorPage.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.GanjoorMetre != null).Any() || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag) || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
                                 {
@@ -478,21 +501,6 @@
                                     </a>
                                 </div>
 
-                                <a onclick="copyPoemText()" role="button" class="pagebutton comments-link" title="رونوشت متن">
-                                    رونوشت متن
-                                    <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" /></svg>
-                                </a>
-
-                                <a onclick="copyPoemLink()" role="button" class="pagebutton comments-link" title="رونوشت نشانی">
-                                    رونوشت نشانی
-                                    <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm-3-4h8v2H8z" /></svg>
-                                </a>
-
-                                <a href="/t6e?p=@Model.GanjoorPage.Id" role="button" class="pagebutton comments-link" target="_blank">
-                                    نمای مشابه کتابهای چاپی (فقط رایانه)
-                                    <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12v2H8v-4h8v2zm2-2v-2H6v2H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2z" /><circle cx="18" cy="11.5" r="1" /></svg>
-                                </a>
-
 
                                 @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.PoemSummary))
                                 {
@@ -511,6 +519,7 @@
                                         }
                                     </div>
                                 }
+
 
                                 @if (Model.GanjoorPage.Poem.Verses.Any(v => !string.IsNullOrEmpty(v.CoupletSummary)))
                                 {
@@ -570,6 +579,21 @@
                                         }
                                     }
                                 }
+
+                                <a onclick="copyPoemText()" role="button" class="pagebutton comments-link" title="رونوشت متن">
+                                    رونوشت متن
+                                    <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" /></svg>
+                                </a>
+
+                                <a onclick="copyPoemLink()" role="button" class="pagebutton comments-link" title="رونوشت نشانی">
+                                    رونوشت نشانی
+                                    <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm-3-4h8v2H8z" /></svg>
+                                </a>
+
+                                <a href="/t6e?p=@Model.GanjoorPage.Id" role="button" class="pagebutton comments-link" target="_blank">
+                                    نمای مشابه کتابهای چاپی (فقط رایانه)
+                                    <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12v2H8v-4h8v2zm2-2v-2H6v2H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2z" /><circle cx="18" cy="11.5" r="1" /></svg>
+                                </a>
 
                                 @if (Model.GanjoorPage.Poem.GeoDateTags.Any())
                                 {
@@ -639,7 +663,7 @@
                             @{
                                 if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
                                 {
-                                    <div class="tabcontent" id="recitations">
+                                     <div class="tabcontent" id="recitations" style="@(Model.ActiveTab == "recitations" ? "display:block" : "display:none")">
                                         <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Normal, Model.CanEdit) />
 
                                         <a onclick="switchPlayerScrollLock()" role="button" class="pagebutton comments-link">
@@ -652,7 +676,7 @@
 
                                 if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
                                 {
-                                    <div class="tabcontent" id="commentaries">
+                                    <div class="tabcontent" id="commentaries" style="@(Model.ActiveTab == "commentaries" ? "display:block" : "display:none")">
                                         <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Commentary, Model.CanEdit) />
                                         <a onclick="switchPlayerScrollLock()" role="button" class="pagebutton comments-link">
                                             فعال یا غیرفعال‌سازی قفل متن روی خوانش
@@ -685,26 +709,6 @@
                             @if (Model.SectionsWithRelated.Any() || Model.SectionsWithMetreAndRhymes.Any())
                             {
                                 <div class="tabcontent" id="rpoems">
-                                    @if (Model.SectionsWithMetreAndRhymes.Any())
-                                    {
-                                        <p>
-                                            <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")" class="pagebutton comments-link">
-                                                مشابه‌یابی بر اساس وزن و قافیه
-                                                <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
-                                            </a>
-                                        </p>
-
-                                        @for (int nSectionIndex = 1; nSectionIndex < Model.SectionsWithMetreAndRhymes.Count; nSectionIndex++)
-                                        {
-                                            <p>
-                                                <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")" class="pagebutton comments-link">
-                                                    مشابه‌یابی بر اساس وزن و قافیه (وزن @((nSectionIndex + 1).ToPersianNumbers()))
-                                                    <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
-                                                </a>
-                                            </p>
-                                        }
-                                    }
-
                                     @foreach (var s in Model.SectionsWithRelated)
                                     {
                                         @for (int i = 0; i < Math.Min(5, s.Top6RelatedSections.Length); i++)
@@ -747,6 +751,23 @@
                                             </div>
                                         }
                                     }
+
+                                    @if (Model.SectionsWithMetreAndRhymes.Any())
+                                    {
+                                                            <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")" class="pagebutton comments-link">
+                                                                مشابه‌یابی بر اساس وزن و قافیه
+                                                                <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
+                                                            </a>
+
+                                        @for (int nSectionIndex = 1; nSectionIndex < Model.SectionsWithMetreAndRhymes.Count; nSectionIndex++)
+                                        {
+                                                                    <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")" class="pagebutton comments-link">
+                                                                        مشابه‌یابی بر اساس وزن و قافیه (وزن @((nSectionIndex + 1).ToPersianNumbers()))
+                                                                        <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
+                                                                    </a>
+                                        }
+                                    }
+
                                 </div>
                             }
 
@@ -786,7 +807,7 @@
                             }
                         </div>
 
-                        <div class="related-images-frame tabcontent" id="discussions">
+                         <div class="related-images-frame tabcontent" id="discussions" style="@(Model.ActiveTab == "discussions" ? "display:block" : "display:none")">
 
                             <div id="comments-section">
                                 @switch (Model.GanjoorPage.Poem.Comments.Length)

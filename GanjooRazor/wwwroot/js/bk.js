@@ -852,11 +852,18 @@ function editComment() {
     });
 }
 
-function copyCommentUrl(commentId, divSuffix) {
+function copyCommentUrl(commentId) {
     var url = window.location.href;
     if (url.indexOf('#') != -1) {
         url = url.substring(0, url.indexOf('#'));
     }
+    if (url.indexOf('?') != -1) {
+        url += '&';
+    }
+    else {
+        url += '?'
+    }
+    url += 'tab=discussions';
     url += ('#comment-' + String(commentId));
     navigator.clipboard.writeText(url);
     alert('نشانی در حافظه رونوشت شد.');

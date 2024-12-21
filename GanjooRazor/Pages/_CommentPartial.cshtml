@@ -45,10 +45,10 @@ else
 
             <a role="button" title="پاسخگویی به این حاشیه" onclick="replyComment(@Model.Comment.Id, @(Model.LoggedIn ? "true" : "false"), '@Model.DivSuffix')"><i class="notranslate pageicons">reply</i></a>
             <a href="/ReportComment/?CommentId=@Model.Comment.Id" title="گزارش حاشیهٔ نامناسب" onclick="wpopen(this.href); return false"><i class="notranslate pageicons">flag</i></a>
-            <a role="button" href="رونوشت نشانی حاشیه" onclick="copyCommentUrl(@Model.Comment.Id, '@Model.DivSuffix')"><i class="notranslate pageicons">link</i></a>
+            <a role="button" onclick="copyCommentUrl(@Model.Comment.Id)"><i class="notranslate pageicons">link</i></a>
             @if (Model.LoggedIn)
             {
-                <a role="button" href="نشان کردن / حذف نشان" id="bookmark-comment-@Model.Comment.Id@Model.DivSuffix" class="cursor-pointer" onclick="switchBookmark(@Model.PoemId, -@Model.Comment.Id, '@Model.DivSuffix')"><i class="notranslate pageicons" id="bookmark-icon-comment-@Model.Comment.Id@Model.DivSuffix">@(@Model.Comment.IsBookmarked ? "star" : "star_border")</i></a>
+                <a role="button" id="bookmark-comment-@Model.Comment.Id@Model.DivSuffix" class="cursor-pointer" onclick="switchBookmark(@Model.PoemId, -@Model.Comment.Id, '@Model.DivSuffix')"><i class="notranslate pageicons" id="bookmark-icon-comment-@Model.Comment.Id@Model.DivSuffix">@(@Model.Comment.IsBookmarked ? "star" : "star_border")</i></a>
             }
         </p>
         <div class='spacer'>&nbsp;</div>

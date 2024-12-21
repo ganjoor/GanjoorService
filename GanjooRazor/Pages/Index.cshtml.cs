@@ -324,6 +324,11 @@ namespace GanjooRazor.Pages
         public bool ShowAllRecitaions { get; set; }
 
         /// <summary>
+        /// active tab
+        /// </summary>
+        public string ActiveTab { get; set; }
+
+        /// <summary>
         /// prepare poem except
         /// </summary>
         /// <param name="poem"></param>
@@ -662,7 +667,8 @@ namespace GanjooRazor.Pages
             PinterestUrl = Request.Query["pinterest_url"];
             ShowAllRecitaions = Request.Query["allaudio"] == "1";
             ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
-            
+            ActiveTab = Request.Query["tab"];
+
             GoogleBreadCrumbList breadCrumbList = new GoogleBreadCrumbList();
             Banner = null;
 
