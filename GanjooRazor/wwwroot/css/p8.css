@@ -2158,10 +2158,6 @@ mark {
     display: none;
 }
 
-.tab {
-    background-color: rgb(51, 0, 0);
-    padding:5px;
-}
 
     .tab button {
         background-color: inherit;

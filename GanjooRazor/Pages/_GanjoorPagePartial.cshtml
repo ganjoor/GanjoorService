@@ -364,25 +364,7 @@
 
                 @if (Model.IsPoemPage)
                 {
-                    <div class="tab">
-                        <button class="tablinks active" onclick="switchTab(event, 'tools')">اطّلاعات</button>
-                        <button class="tablinks" onclick="switchTab(event, 'manuscripts')">تصاویر</button>
-                        @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
-                        {
-                            <button class="tablinks" onclick="switchTab(event, 'recitations')">خوانش‌ها</button>
-                        }
-                        @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
-                        {
-                            <button class="tablinks" onclick="switchTab(event, 'commentaries')">شرح‌های صوتی</button>
-                        }
-                        <button class="tablinks" onclick="switchTab(event, 'qpoems')">مشق شعر</button>
-                        @if (Model.SectionsWithRelated.Count > 0)
-                        {
-                            <button class="tablinks" onclick="switchTab(event, 'rpoems')">هم‌آهنگ‌ها</button>
-                        }
-                        <button class="tablinks" onclick="switchTab(event, 'songs')">ترانه‌ها</button>
-                        <button class="tablinks" onclick="switchTab(event, 'discussions')">حاشیه‌ها</button>
-                    </div>
+                   
                     <div class="spacer">&nbsp;</div>
 
                     @if (Model.Banner != null)
@@ -394,16 +376,32 @@
 
                     <div id="comments">
 
-
+                        <div class="tab">
+                            <button class="tablinks active" onclick="switchTab(event, 'tools')">اطّلاعات</button>
+                            <button class="tablinks" onclick="switchTab(event, 'manuscripts')">تصاویر</button>
+                            @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
+                            {
+                                <button class="tablinks" onclick="switchTab(event, 'recitations')">خوانش‌ها</button>
+                            }
+                            @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
+                            {
+                                <button class="tablinks" onclick="switchTab(event, 'commentaries')">شرح‌های صوتی</button>
+                            }
+                            <button class="tablinks" onclick="switchTab(event, 'qpoems')">مشق شعر</button>
+                            @if (Model.SectionsWithRelated.Count > 0)
+                            {
+                                <button class="tablinks" onclick="switchTab(event, 'rpoems')">هم‌آهنگ‌ها</button>
+                            }
+                            <button class="tablinks" onclick="switchTab(event, 'songs')">ترانه‌ها</button>
+                            <button class="tablinks" onclick="switchTab(event, 'discussions')">حاشیه‌ها</button>
+                        </div>
                         <div class="poem-info">
 
 
 
                             <div class="related-images-frame tabcontent" id="tools" style="display:block">
-                                <div class="century">
-                                    اطلاعات <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('tools-section', 'tools-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="tools-collapse-button"></i></a>
-                                </div>
-                                <div id="tools-section">
+                               
+                                
                                     <p>
                                         <small><i class="notranslate pageicons mouse-icon"></i> با انتخاب متن و لمس متن انتخابی می‌توانید آن را در لغتنامهٔ دهخدا جستجو کنید.</small>
                                     </p>
@@ -571,7 +569,7 @@
 
                                         <div id="catmap"></div>
                                     }
-                                </div>
+
                             </div>
 
 
@@ -579,9 +577,6 @@
                             <div class="related-images-frame tabcontent" id="manuscripts">
                                 @if (Model.GanjoorPage.Poem.Images.Length > 0)
                                 {
-                                    <div class="century">
-                                        تصاویر مرتبط در <a href="https://museum.ganjoor.net">گنجینهٔ گنجور</a> و <a href="https://naskban.ir">نسکبان</a> <a role="button" class="cursor-pointer" title="جمع شود / باز شود" onclick="switch_section('images-section', 'images-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="images-collapse-button"></i></a>
-                                    </div>
                                     <div id="images-section">
                                         <div class="related-images">
                                             @foreach (var image in Model.GanjoorPage.Poem.Images.Where(image => image.IsTextOriginalSource))
@@ -639,13 +634,8 @@
                             @{
                                 if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
                                 {
-                                    <div class="related-images-frame tabcontent" id="recitations">
-                                        <div class="century">
-                                            @(Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Count() > 1 ? "خوانش‌ها" : "خوانش") <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('recitations-section', 'recitations-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="recitations-collapse-button"></i></a>
-                                        </div>
-                                        <div id="recitations-section">
-                                            <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Normal, Model.CanEdit) />
-                                        </div>
+                                    <div class="tabcontent" id="recitations">
+                                        <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Normal, Model.CanEdit) />
                                     </div>
                                 }
 
