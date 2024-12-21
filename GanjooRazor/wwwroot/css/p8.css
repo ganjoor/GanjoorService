@@ -2154,6 +2154,38 @@ mark {
     fill: #300;
 }
 
+.tabcontent {
+    display: none;
+}
+
+.tab {
+    background-color: rgb(51, 0, 0);
+    padding:5px;
+}
+
+    .tab button {
+        background-color: inherit;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        transition: 0.3s;
+        border-radius: 5px;
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px 0px;
+        padding: 5px;
+        margin: 1px;
+        background-color: darkred;
+        color: white;
+    }
+
+        .tab button:hover {
+            font-weight: bold;
+            background-color: #300;
+        }
+
+        .tab button.active {
+            background-color: rgb(51, 0, 0);
+        }
+
 @media(prefers-color-scheme: dark) {
     body {
         background: rgba(0, 0, 0, 0.9);

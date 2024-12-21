@@ -364,6 +364,25 @@
 
                 @if (Model.IsPoemPage)
                 {
+                    <div class="tab">
+                        <button class="tablinks active" onclick="switchTab(event, 'tools')">اطّلاعات</button>
+                        <button class="tablinks" onclick="switchTab(event, 'manuscripts')">تصاویر</button>
+                        @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
+                        {
+                            <button class="tablinks" onclick="switchTab(event, 'recitations')">خوانش‌ها</button>
+                        }
+                        @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
+                        {
+                            <button class="tablinks" onclick="switchTab(event, 'commentaries')">شرح‌های صوتی</button>
+                        }
+                        <button class="tablinks" onclick="switchTab(event, 'qpoems')">مشق شعر</button>
+                        @if (Model.SectionsWithRelated.Count > 0)
+                        {
+                            <button class="tablinks" onclick="switchTab(event, 'rpoems')">هم‌آهنگ‌ها</button>
+                        }
+                        <button class="tablinks" onclick="switchTab(event, 'songs')">ترانه‌ها</button>
+                        <button class="tablinks" onclick="switchTab(event, 'discussions')">حاشیه‌ها</button>
+                    </div>
                     <div class="spacer">&nbsp;</div>
 
                     @if (Model.Banner != null)
@@ -378,7 +397,9 @@
 
                         <div class="poem-info">
 
-                            <div class="related-images-frame" id="tools">
+
+
+                            <div class="related-images-frame tabcontent" id="tools" style="display:block">
                                 <div class="century">
                                     اطلاعات <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('tools-section', 'tools-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="tools-collapse-button"></i></a>
                                 </div>
@@ -532,32 +553,30 @@
                                             }
                                         }
                                     }
+
+                                    @if (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
+                                    {
+                                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
+                                        {
+                                            <div class="century" id="map-section">
+                                                @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="catmap-collapse-button"></i></a>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="century" id="map-section">
+                                                جای‌ها <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="catmap-collapse-button"></i></a>
+                                            </div>
+                                        }
+
+                                        <div id="catmap"></div>
+                                    }
                                 </div>
                             </div>
 
-                            @if (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
-                            {
-                                <div class="related-images-frame" id="map-section">
 
-                                    @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
-                                    {
-                                        <div class="century">
-                                            @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="catmap-collapse-button"></i></a>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <div class="century">
-                                            جای‌ها <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="catmap-collapse-button"></i></a>
-                                        </div>
-                                    }
 
-                                    <div id="catmap"></div>
-                                </div>
-
-                            }
-
-                            <div class="related-images-frame" id="manuscripts">
+                            <div class="related-images-frame tabcontent" id="manuscripts">
                                 @if (Model.GanjoorPage.Poem.Images.Length > 0)
                                 {
                                     <div class="century">
@@ -620,7 +639,7 @@
                             @{
                                 if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
                                 {
-                                    <div class="related-images-frame" id="recitations">
+                                    <div class="related-images-frame tabcontent" id="recitations">
                                         <div class="century">
                                             @(Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Count() > 1 ? "خوانش‌ها" : "خوانش") <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('recitations-section', 'recitations-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="recitations-collapse-button"></i></a>
                                         </div>
@@ -632,7 +651,7 @@
 
                                 if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
                                 {
-                                    <div class="related-images-frame" id="commentaries">
+                                    <div class="related-images-frame tabcontent" id="commentaries">
                                         <div class="century">
                                             @(Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Count() > 1 ? "شرح‌‌های صوتی" : "شرح صوتی") <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('commentaries-section', 'commentaries-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="commentaries-collapse-button"></i></a>
                                         </div>
@@ -642,7 +661,7 @@
                                     </div>
                                 }
 
-                                <div class="related-images-frame" id="qpoems">
+                                <div class="related-images-frame tabcontent" id="qpoems">
                                     <div class="century">
                                         مشق شعر <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('qpoems-section', 'qpoems-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="qpoems-collapse-button"></i></a>
                                     </div>
@@ -659,13 +678,14 @@
                                                 <a role="button" class="pagebutton" id="load-more-quoted" onclick="loadMoreQuotedPoems(@Model.GanjoorPage.Poem.Id, 5, '@Model.GanjoorPage.PoetOrCat.Poet.ImageUrl', '@Model.GanjoorPage.PoetOrCat.Poet.Nickname', @Model.CanEdit.ToString().ToLower())">بیشتر<i class="notranslate info-buttons autorenew"></i></a>
                                             </div>
                                         }
+                                        @if (Model.LoggedIn)
+                                        {
+                                            <div>
+                                                <a href="/User/SuggestQuoted/?p=@Model.GanjoorPage.Id" class="pagebutton comments-link">پیشنهاد مشق شعر</a>
+                                            </div>
+                                        }
                                     </div>
-                                    @if (Model.LoggedIn)
-                                    {
-                                        <div>
-                                            <a href="/User/SuggestQuoted/?p=@Model.GanjoorPage.Id" class="pagebutton comments-link">پیشنهاد مشق شعر</a>
-                                        </div>
-                                    }
+
                                 </div>
 
 
@@ -676,7 +696,7 @@
 
                             @if (Model.SectionsWithRelated.Count > 0)
                             {
-                                <div class="related-images-frame" id="rpoems">
+                                <div class="related-images-frame tabcontent" id="rpoems">
                                     <div class="century">
                                         موارد هم آهنگ <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('rpoems-section', 'rpoems-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="rpoems-collapse-button"></i></a>
                                     </div>
@@ -729,7 +749,7 @@
 
                             @if (Model.GanjoorPage.Poem.Songs.Length == 0)
                             {
-                                <div class="related-songs" id="songs">
+                                <div class="related-songs tabcontent" id="songs">
                                     <p>
                                         <a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
                                             معرفی آهنگهایی که در متن آنها از این شعر استفاده شده است<i class="notranslate info-buttons music_note"></i>
@@ -739,7 +759,7 @@
                             }
                             else
                             {
-                                <div class="related-songs" id="songs">
+                                <div class="related-songs tabcontent" id="songs">
                                     <div class="century">
                                         این شعر را چه کسی در کدام آهنگ خوانده است؟ <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('songs-section', 'songs-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="songs-collapse-button"></i></a>
                                     </div>
@@ -769,7 +789,7 @@
 
                         </div>
 
-                        <div class="related-images-frame" id="discussions">
+                        <div class="related-images-frame tabcontent" id="discussions">
 
                             <div class="century">
                                 حاشیه‌ها <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('comments-section', 'comments-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="comments-collapse-button"></i></a>
