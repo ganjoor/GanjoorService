@@ -80,7 +80,7 @@ namespace GanjooRazor.Pages
         /// </summary>
         public GanjoorSiteBannerViewModel Banner { get; set; }
 
-        
+
 
         public _CommentPartialModel GetCommentModel(GanjoorCommentSummaryViewModel comment, int poemId)
         {
@@ -108,14 +108,14 @@ namespace GanjooRazor.Pages
             };
         }
 
-        public _QuotedPoemPartialModel GetQuotedPoemModel(GanjoorQuotedPoemViewModel  quotedPoem, GanjoorPageCompleteViewModel page, bool canEdit)
+        public _QuotedPoemPartialModel GetQuotedPoemModel(GanjoorQuotedPoemViewModel quotedPoem, GanjoorPageCompleteViewModel page, bool canEdit)
         {
             return new _QuotedPoemPartialModel()
             {
-               GanjoorQuotedPoemViewModel = quotedPoem,
-               PoetImageUrl = page.PoetOrCat.Poet.ImageUrl,
-               PoetNickName = page.PoetOrCat.Poet.Nickname,
-               CanEdit = canEdit,
+                GanjoorQuotedPoemViewModel = quotedPoem,
+                PoetImageUrl = page.PoetOrCat.Poet.ImageUrl,
+                PoetNickName = page.PoetOrCat.Poet.Nickname,
+                CanEdit = canEdit,
             };
         }
 
@@ -384,7 +384,7 @@ namespace GanjooRazor.Pages
                 _markMyReplies(comment, userId, null);
             }
 
-            if(GanjoorPage.Poem.Recitations.Length > 0)
+            if (GanjoorPage.Poem.Recitations.Length > 0)
             {
                 using (HttpClient secureClient = new HttpClient())
                 {
@@ -394,7 +394,7 @@ namespace GanjooRazor.Pages
                         if (response.IsSuccessStatusCode)
                         {
                             var upVotedIds = JsonConvert.DeserializeObject<int[]>(await response.Content.ReadAsStringAsync());
-                            if(upVotedIds.Length > 0)
+                            if (upVotedIds.Length > 0)
                             {
                                 foreach (var recitation in GanjoorPage.Poem.Recitations)
                                 {
@@ -484,7 +484,7 @@ namespace GanjooRazor.Pages
                     LastError = "خطا در دسترسی به وب سرویس گنجور";
                     return false;
                 }
-               
+
             }
 
             Poets = poets;
@@ -504,7 +504,7 @@ namespace GanjooRazor.Pages
                     return BadRequest(JsonConvert.DeserializeObject<string>(await poetResponse.Content.ReadAsStringAsync()));
                 }
                 poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
-                if(AggressiveCacheEnabled)
+                if (AggressiveCacheEnabled)
                 {
                     _memoryCache.Set(cacheKey, poet);
                 }
@@ -530,7 +530,7 @@ namespace GanjooRazor.Pages
                 LastError = "خطا در دسترسی به وب سرویس گنجور";
                 return false;
             }
-            
+
         }
 
         /// <summary>
@@ -544,17 +544,17 @@ namespace GanjooRazor.Pages
         public string HtmlLanguage { get; set; } = "fa-IR";
         private void _prepareNextPre()
         {
-            switch(GanjoorPage.GanjoorPageType)
+            switch (GanjoorPage.GanjoorPageType)
             {
                 case GanjoorPageType.PoemPage:
                     {
-                        if(GanjoorPage.Poem.Next != null)
+                        if (GanjoorPage.Poem.Next != null)
                         {
                             NextUrl = GanjoorPage.PoetOrCat.Cat.FullUrl + "/" + GanjoorPage.Poem.Next.UrlSlug;
                             NextTitle = GanjoorPage.Poem.Next.Title + ": " + GanjoorPage.Poem.Next.Excerpt;
                         }
                         else
-                        if(GanjoorPage.Poem.MixedModeOrder > 0 
+                        if (GanjoorPage.Poem.MixedModeOrder > 0
                             && GanjoorPage.Poem.Category.Cat.Children.Where(c => c.MixedModeOrder == 0 || c.MixedModeOrder > GanjoorPage.Poem.MixedModeOrder).Any())
                         {
                             var nextCat = GanjoorPage.Poem.Category.Cat.Children.Where(c => c.MixedModeOrder == 0 || c.MixedModeOrder > GanjoorPage.Poem.MixedModeOrder).OrderBy(c => c.MixedModeOrder).First();
@@ -562,7 +562,7 @@ namespace GanjooRazor.Pages
                             NextTitle = nextCat.Title;
                         }
                         else
-                        if(GanjoorPage.Poem.Category.Cat.Next != null)
+                        if (GanjoorPage.Poem.Category.Cat.Next != null)
                         {
                             NextUrl = GanjoorPage.Poem.Category.Cat.Next.FullUrl;
                             NextTitle = GanjoorPage.Poem.Category.Cat.Next.Title;
@@ -591,12 +591,12 @@ namespace GanjooRazor.Pages
                     break;
                 case GanjoorPageType.CatPage:
                     {
-                        if(GanjoorPage.PoetOrCat.Cat.Next != null)
+                        if (GanjoorPage.PoetOrCat.Cat.Next != null)
                         {
                             NextUrl = GanjoorPage.PoetOrCat.Cat.Next.FullUrl;
                             NextTitle = GanjoorPage.PoetOrCat.Cat.Next.Title;
                         }
-                        if(GanjoorPage.PoetOrCat.Cat.Previous != null)
+                        if (GanjoorPage.PoetOrCat.Cat.Previous != null)
                         {
                             PreviousUrl = GanjoorPage.PoetOrCat.Cat.Previous.FullUrl;
                             PreviousTitle = GanjoorPage.PoetOrCat.Cat.Previous.Title;
@@ -641,7 +641,7 @@ namespace GanjooRazor.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnGetAsync()
         {
-            if(bool.Parse(Configuration["MaintenanceMode"]))
+            if (bool.Parse(Configuration["MaintenanceMode"]))
             {
                 return StatusCode(503);
             }
@@ -668,6 +668,15 @@ namespace GanjooRazor.Pages
             ShowAllRecitaions = Request.Query["allaudio"] == "1";
             ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
             ActiveTab = Request.Query["tab"];
+            if (ShowAllRecitaions && string.IsNullOrEmpty(ActiveTab))
+            {
+                ActiveTab = "recitations";
+            }
+            else
+                if (ActiveTab == "recitations" || ActiveTab == "commentaries")
+            {
+                ShowAllRecitaions = true;
+            }
 
             GoogleBreadCrumbList breadCrumbList = new GoogleBreadCrumbList();
             Banner = null;
@@ -694,7 +703,7 @@ namespace GanjooRazor.Pages
                     if (pageQuery.StatusCode == HttpStatusCode.NotFound)
                     {
                         var redirectQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/redirecturl?url={Request.Path}");
-                        if(redirectQuery.IsSuccessStatusCode)
+                        if (redirectQuery.IsSuccessStatusCode)
                         {
                             var redirectUrl = JsonConvert.DeserializeObject<string>(await redirectQuery.Content.ReadAsStringAsync());
                             return Redirect(redirectUrl);
@@ -708,7 +717,7 @@ namespace GanjooRazor.Pages
                     return Page();
                 }
                 GanjoorPage = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
-                if(!string.IsNullOrEmpty(GanjoorPage.HtmlText))
+                if (!string.IsNullOrEmpty(GanjoorPage.HtmlText))
                 {
                     GanjoorPage.HtmlText = GanjoorPage.HtmlText.Replace("https://ganjoor.net/", "/").Replace("http://ganjoor.net/", "/");
                 }
@@ -722,19 +731,19 @@ namespace GanjooRazor.Pages
                         _prepareNextPre();
                         _prepareRelatedSecions();
                         IsPoemPage = true;
-                        
+
                         break;
                     case GanjoorPageType.PoetPage:
                         IsPoetPage = true;
                         break;
                     case GanjoorPageType.CatPage:
                         _prepareNextPre();
-                        
+
                         IsCatPage = true;
                         break;
                 }
 
-                if(IsPoetPage || IsCatPage)
+                if (IsPoetPage || IsCatPage)
                 {
                     var catHasAnyRecitationQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/catany/{GanjoorPage.PoetOrCat.Cat.Id}");
 
@@ -746,7 +755,7 @@ namespace GanjooRazor.Pages
                     CategoryHasRecitations = JsonConvert.DeserializeObject<bool>(await catHasAnyRecitationQuery.Content.ReadAsStringAsync());
                 }
 
-                if(IsPoetPage)
+                if (IsPoetPage)
                 {
                     var responsePhotos = await _httpClient.GetAsync($"{APIRoot.Url}/api/poetphotos/poet/{GanjoorPage.PoetOrCat.Poet.Id}");
                     if (!responsePhotos.IsSuccessStatusCode)
@@ -755,7 +764,7 @@ namespace GanjooRazor.Pages
                         return Page();
                     }
                     var photos = JArray.Parse(await responsePhotos.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetSuggestedPictureViewModel>>();
-                    if(photos.Any())
+                    if (photos.Any())
                     {
                         Photo = photos.First();
                     }
@@ -818,9 +827,9 @@ namespace GanjooRazor.Pages
                     poetCat = false;
                 }
                 breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Cat.Title, GanjoorPage.PoetOrCat.Cat.FullUrl, "https://i.ganjoor.net/cat.png");
-                if(GanjoorPage.Poem.Images.Where(i => i.TargetPageUrl.StartsWith("https://museum.ganjoor.net/items/ai")).Any())
+                if (GanjoorPage.Poem.Images.Where(i => i.TargetPageUrl.StartsWith("https://museum.ganjoor.net/items/ai")).Any())
                 {
-                    breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, 
+                    breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl,
                         GanjoorPage.Poem.Images.Where(i => i.TargetPageUrl.StartsWith("https://museum.ganjoor.net/items/ai")).First().ThumbnailImageUrl.Replace("/thumb/", "/orig/"));
                 }
                 else
@@ -833,7 +842,7 @@ namespace GanjooRazor.Pages
                 {
                     breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, "https://i.ganjoor.net/poem.png");
                 }
-                
+
             }
             else
             {
@@ -865,7 +874,7 @@ namespace GanjooRazor.Pages
 
             ViewData["BrearCrumpList"] = breadCrumbList.ToString();
 
-            if(IsCatPage || IsPoetPage)
+            if (IsCatPage || IsPoetPage)
             {
                 var tagsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{GanjoorPage.PoetOrCat.Cat.Id}/geotag");
                 if (!tagsResponse.IsSuccessStatusCode)
@@ -897,7 +906,7 @@ namespace GanjooRazor.Pages
             var numbers = JArray.Parse(await responseCoupletNumbers.Content.ReadAsStringAsync()).ToObject<List<GanjoorCoupletNumberViewModel>>();
 
             var responseCoupletSections = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/couplet/{poemId}/{coupletIndex}/sections");
-            if(!responseCoupletSections.IsSuccessStatusCode)
+            if (!responseCoupletSections.IsSuccessStatusCode)
             {
                 return BadRequest(JsonConvert.DeserializeObject<string>(await responseCoupletSections.Content.ReadAsStringAsync()));
             }
@@ -911,9 +920,9 @@ namespace GanjooRazor.Pages
             var sectionsWithMetreAndRhymes = new List<GanjoorPoemSection>();
             foreach (var section in sections)
             {
-                if(section.GanjoorMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters))
+                if (section.GanjoorMetreId != null && !string.IsNullOrEmpty(section.RhymeLetters))
                 {
-                    if(!sectionsWithMetreAndRhymes.Any(s => s.GanjoorMetreId == section.GanjoorMetreId && s.RhymeLetters == section.RhymeLetters))
+                    if (!sectionsWithMetreAndRhymes.Any(s => s.GanjoorMetreId == section.GanjoorMetreId && s.RhymeLetters == section.RhymeLetters))
                     {
                         sectionsWithMetreAndRhymes.Add(section);
                     }
@@ -1088,7 +1097,7 @@ namespace GanjooRazor.Pages
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
                     var res = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
-                    if(res == false)
+                    if (res == false)
                     {
                         if (Request.Cookies["KeepHistory"] != null)
                         {
@@ -1190,26 +1199,26 @@ namespace GanjooRazor.Pages
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
                 return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-           
+
             var quoteds = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorQuotedPoemViewModel>>();
-            if(!quoteds.Any())
+            if (!quoteds.Any())
             {
                 return new BadRequestObjectResult("مورد دیگری یافت نشد.");
             }
 
-            if(quoteds.Any(q => q.ChosenForMainList))
+            if (quoteds.Any(q => q.ChosenForMainList))
             {
                 var mainList = quoteds.Where(q => q.ChosenForMainList).First();
                 quoteds.Remove(mainList);
             }
-            
+
 
             return new PartialViewResult()
             {
                 ViewName = "_MultipleQuotedPoemsPartial",
                 ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
                 {
-                    Model =  new _MultipleQuotedPoemsPartialModel()
+                    Model = new _MultipleQuotedPoemsPartialModel()
                     {
                         GanjoorQuotedPoems = quoteds.ToArray(),
                         PoetImageUrl = poetImageUrl,
@@ -1228,7 +1237,7 @@ namespace GanjooRazor.Pages
                 return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
 
             var quoteds = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorQuotedPoemViewModel>>();
- 
+
             return new PartialViewResult()
             {
                 ViewName = "_MultipleQuotedPoemsPartial",
@@ -1245,7 +1254,7 @@ namespace GanjooRazor.Pages
             };
         }
 
-        public string PoemBlockClass 
+        public string PoemBlockClass
         {
             get
             {
@@ -1442,7 +1451,7 @@ namespace GanjooRazor.Pages
         public async Task<ActionResult> OnGetCategoryWordCountsAsync(int catId, int poetId, bool remStopWords = false)
         {
             var res = await _GetCategoryWordCountsAsync(catId, poetId, remStopWords);
-            if(res == null)
+            if (res == null)
             {
                 return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>("خطا در دسترسی به شمارش واژگان"));
             }
