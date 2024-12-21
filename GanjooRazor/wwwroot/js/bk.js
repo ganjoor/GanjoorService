@@ -153,6 +153,7 @@ function switchPlayerScrollLock() {
             lockButton.classList.toggle('recitation-scrollunlock');
             lockButton.classList.toggle('recitation-scrolllock');
         });
+        alert('قفل متن روی خوانش فعال شد.');
     }
     else {
         const lockButtons = document.querySelectorAll('.recitation-scrolllock');
@@ -160,6 +161,7 @@ function switchPlayerScrollLock() {
             lockButtons.classList.toggle('recitation-scrollunlock');
             lockButtons.classList.toggle('recitation-scrolllock');
         });
+        alert('قفل متن روی خوانش غیرفعال شد.');
     }
 }
 
