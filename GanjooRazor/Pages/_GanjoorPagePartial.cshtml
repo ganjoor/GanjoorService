@@ -667,9 +667,27 @@
                                     }
                                 </div>
                             }
-                            @if (Model.SectionsWithRelated.Count > 0)
+                            @if (Model.SectionsWithRelated.Any() || Model.SectionsWithMetreAndRhymes.Any())
                             {
                                 <div class="tabcontent" id="rpoems">
+                                    @if (Model.SectionsWithMetreAndRhymes.Any())
+                                    {
+                                        <p>
+                                            <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")" class="pagebutton comments-link">
+                                                جستجوی موارد هم‌آهنگ
+                                            </a>
+                                        </p>
+
+                                        @for (int nSectionIndex = 1; nSectionIndex < Model.SectionsWithMetreAndRhymes.Count; nSectionIndex++)
+                                        {
+                                            <p>
+                                                <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")" class="pagebutton comments-link">
+                                                    جستجوی موارد هم آهنگ (وزن @((nSectionIndex + 1).ToPersianNumbers()))
+                                                </a>
+                                            </p>
+                                        }
+                                    }
+
                                     @foreach (var s in Model.SectionsWithRelated)
                                     {
                                         @for (int i = 0; i < Math.Min(5, s.Top6RelatedSections.Length); i++)
@@ -785,7 +803,7 @@
 
                                     <form method="post" id="commentform" action="?handler=Comment">
                                         <fieldset>
-                                            <legend>💬 شما حاشیه بگذارید ...</legend>
+                                            <legend>💬 من حاشیه بگذارم ...</legend>
                                             <table class="comment-table">
                                                 <tr>
                                                     <td>
