@@ -339,7 +339,7 @@
                 @if (!string.IsNullOrEmpty(Model.NextUrl) || !string.IsNullOrEmpty(Model.PreviousUrl))
                 {
                     <div class="spacer">&nbsp;</div>
-                    <nav>
+                    <nav id="nav">
                         <div class="navigation">
 
                             <div class="navleft">
@@ -376,7 +376,7 @@
 
                     <div id="comments">
 
-                        <div class="tab">
+                        <div class="tab" id="tab-items">
                             <button class="tablinks active" onclick="switchTab(event, 'tools')">اطّلاعات</button>
                             <button class="tablinks" onclick="switchTab(event, 'manuscripts')">تصاویر</button>
                             @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
@@ -674,7 +674,7 @@
                                     {
                                         <p>
                                             <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")" class="pagebutton comments-link">
-                                                جستجوی موارد هم‌آهنگ
+                                                مشابه‌یابی بر اساس وزن و قافیه
                                             </a>
                                         </p>
 
@@ -682,7 +682,7 @@
                                         {
                                             <p>
                                                 <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")" class="pagebutton comments-link">
-                                                    جستجوی موارد هم آهنگ (وزن @((nSectionIndex + 1).ToPersianNumbers()))
+                                                    مشابه‌یابی بر اساس وزن و قافیه (وزن @((nSectionIndex + 1).ToPersianNumbers()))
                                                 </a>
                                             </p>
                                         }
