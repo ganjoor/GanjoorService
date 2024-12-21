@@ -715,53 +715,43 @@
                                 </div>
                             }
 
-                            @if (Model.GanjoorPage.Poem.Songs.Length == 0)
+                            @if (!Model.GanjoorPage.Poem.Songs.Any())
                             {
-                                <div class="related-songs tabcontent" id="songs">
+                                <div class="tabcontent" id="songs">
                                     <p>
                                         <a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
-                                            معرفی آهنگهایی که در متن آنها از این شعر استفاده شده است<i class="notranslate info-buttons music_note"></i>
+                                            معرفی ترانه‌هایی که در متن آنها از این شعر استفاده شده است<i class="notranslate info-buttons music_note"></i>
                                         </a>
                                     </p>
                                 </div>
                             }
                             else
                             {
-                                <div class="related-songs tabcontent" id="songs">
-                                    <div class="century">
-                                        این شعر را چه کسی در کدام آهنگ خوانده است؟ <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('songs-section', 'songs-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="songs-collapse-button"></i></a>
-                                    </div>
-                                    <div id="songs-section">
-                                        @foreach (var song in Model.GanjoorPage.Poem.Songs)
-                                        {
-                                            <div class="related-song">
-                                                <i class="notranslate info-buttons queue_music"></i><a target="_blank" href="@Html.Raw(song.TrackUrl)">@Html.Raw($"{song}")</a>
-                                                @if (song.TrackType == RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify)
-                                                {
-                                                    <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img class="spotify-track-icon" src="/image/sp16.png" alt="اسپاتیفای" height="16"></a>
-                                                }
-                                                @if (Model.CanEdit)
-                                                {
-                                                    <a role="button" class="cursor-pointer" href="/User/ReviewSongs?id=@song.Id"><i class="notranslate info-buttons edit-poem-button"></i></a>
-                                                }
-                                            </div>
-                                        }
-                                        <p>
-                                            <a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
-                                                معرفی آهنگهای دیگر<i class="notranslate info-buttons music_note"></i>
-                                            </a>
-                                        </p>
-                                    </div>
+                                <div class="tabcontent" id="songs">
+                                    @foreach (var song in Model.GanjoorPage.Poem.Songs)
+                                    {
+                                        <div class="related-song">
+                                            <i class="notranslate info-buttons queue_music"></i><a target="_blank" href="@Html.Raw(song.TrackUrl)">@Html.Raw($"{song}")</a>
+                                            @if (song.TrackType == RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify)
+                                            {
+                                                <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img class="spotify-track-icon" src="/image/sp16.png" alt="اسپاتیفای" height="16"></a>
+                                            }
+                                            @if (Model.CanEdit)
+                                            {
+                                                <a role="button" class="cursor-pointer" href="/User/ReviewSongs?id=@song.Id"><i class="notranslate info-buttons edit-poem-button"></i></a>
+                                            }
+                                        </div>
+                                    }
+                                    <p>
+                                        <a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
+                                            معرفی ترانه‌های دیگر<i class="notranslate info-buttons music_note"></i>
+                                        </a>
+                                    </p>
                                 </div>
                             }
-
                         </div>
 
                         <div class="related-images-frame tabcontent" id="discussions">
-
-                            <div class="century">
-                                حاشیه‌ها <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('comments-section', 'comments-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="comments-collapse-button"></i></a>
-                            </div>
 
                             <div id="comments-section">
                                 @switch (Model.GanjoorPage.Poem.Comments.Length)
