@@ -364,7 +364,7 @@
 
                 @if (Model.IsPoemPage)
                 {
-                   
+
                     <div class="spacer">&nbsp;</div>
 
                     @if (Model.Banner != null)
@@ -400,175 +400,175 @@
 
 
                             <div class="related-images-frame tabcontent" id="tools" style="display:block">
-                               
-                                
-                                    <p>
-                                        <small><i class="notranslate pageicons mouse-icon"></i> با انتخاب متن و لمس متن انتخابی می‌توانید آن را در لغتنامهٔ دهخدا جستجو کنید.</small>
-                                    </p>
 
-                                    <div id="wordcounts-placeholder">
-                                        برای مشاهدهٔ بسامد واژگان <a href="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">اینجا</a> کلیک کنید.
-                                    </div>
 
-                                    @if (Model.GanjoorPage.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.GanjoorMetre != null).Any() || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag) || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
-                                    {
-                                        <table>
-                                            @if (!Model.MutiPartPoemPage)
-                                                @foreach (var s in Model.GanjoorPage.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem).ToList())
+                                <p>
+                                    <small><i class="notranslate pageicons mouse-icon"></i> با انتخاب متن و لمس متن انتخابی می‌توانید آن را در لغتنامهٔ دهخدا جستجو کنید.</small>
+                                </p>
+
+                                <div id="wordcounts-placeholder">
+                                    برای مشاهدهٔ بسامد واژگان <a href="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">اینجا</a> کلیک کنید.
+                                </div>
+
+                                @if (Model.GanjoorPage.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.GanjoorMetre != null).Any() || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag) || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
+                                {
+                                    <table>
+                                        @if (!Model.MutiPartPoemPage)
+                                            @foreach (var s in Model.GanjoorPage.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem).ToList())
+                                            {
+                                                @if (s.GanjoorMetre != null)
                                                 {
-                                                    @if (s.GanjoorMetre != null)
-                                                    {
-                                                        <tr>
-                                                            <td>
-                                                                وزن:
-                                                            </td>
-                                                            <td>
-                                                                <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(s.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@s.GanjoorMetre.Rhythm</a>
-                                                                @if (Model.LoggedIn)
-                                                                {
-                                                                    <a href="/User/Section?poemId=@Model.GanjoorPage.Id&index=@s.Index#metre" role="button" class="cursor-pointer" title="ویرایش وزن">
-                                                                        <i class="notranslate noindent-info-button edit-poem-button"></i>
-                                                                    </a>
-                                                                }
-                                                            </td>
-                                                        </tr>
-                                                    }
-                                                    @if (s.PoemFormat != null && s.PoemFormat != RMuseum.Models.Ganjoor.GanjoorPoemFormat.Unknown)
-                                                    {
-                                                        <tr>
-                                                            <td>
-                                                                قالب شعری:
-                                                            </td>
-                                                            <td>
-                                                                <a href="/simi/?a=@Model.GanjoorPage.PoetOrCat.Poet.Id&amp;f=@((int)s.PoemFormat)">
-                                                                    @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)s.PoemFormat)
+                                                    <tr>
+                                                        <td>
+                                                            وزن:
+                                                        </td>
+                                                        <td>
+                                                            <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(s.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@s.GanjoorMetre.Rhythm</a>
+                                                            @if (Model.LoggedIn)
+                                                            {
+                                                                <a href="/User/Section?poemId=@Model.GanjoorPage.Id&index=@s.Index#metre" role="button" class="cursor-pointer" title="ویرایش وزن">
+                                                                    <i class="notranslate noindent-info-button edit-poem-button"></i>
                                                                 </a>
-                                                            </td>
-                                                        </tr>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                @if (s.PoemFormat != null && s.PoemFormat != RMuseum.Models.Ganjoor.GanjoorPoemFormat.Unknown)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            قالب شعری:
+                                                        </td>
+                                                        <td>
+                                                            <a href="/simi/?a=@Model.GanjoorPage.PoetOrCat.Poet.Id&amp;f=@((int)s.PoemFormat)">
+                                                                @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)s.PoemFormat)
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                }
+
+                                            }
+                                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    دسته:
+                                                </td>
+                                                <td>
+                                                    <a href="@Html.Raw($"{Model.GanjoorPage.Poem.OldTagPageUrl}/")">@Model.GanjoorPage.Poem.OldTag</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    منبع اولیه:
+                                                </td>
+                                                <td>
+                                                    <a href="@Html.Raw($"/sources/{Model.GanjoorPage.Poem.SourceUrlSlug}/")">@Model.GanjoorPage.Poem.SourceName</a>
+                                                </td>
+                                            </tr>
+                                        }
+
+                                    </table>
+                                }
+
+
+                                @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.PoemSummary))
+                                {
+                                    <div class="notice" id="summary" data-nosnippet>
+                                        <div class="century">خلاصه</div>
+                                        <p>
+                                            @Html.Raw(Model.GanjoorPage.Poem.PoemSummary.Replace("\n", "<br />"))
+                                        </p>
+                                        @if (Model.LoggedIn)
+                                        {
+                                            <a href="/User/Editor?id=@Model.GanjoorPage.Id#summaries" role="button" class="cursor-pointer" title="ویرایش">
+                                                <div class="circled-number">
+                                                    <i class="notranslate noindent-info-button edit-poem-button"></i>
+                                                </div>
+                                            </a>
+                                        }
+                                    </div>
+                                }
+
+                                @if (Model.GanjoorPage.Poem.Verses.Any(v => !string.IsNullOrEmpty(v.CoupletSummary)))
+                                {
+                                    <div class="century" id="summaries" data-nosnippet>برگردان به زبان ساده</div>
+                                    @for (int verseIndex = 0; verseIndex < Model.GanjoorPage.Poem.Verses.Length; verseIndex++)
+                                    {
+                                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary))
+                                        {
+                                            <blockquote id="summaey-@Model.GanjoorPage.Poem.Verses[verseIndex].VOrder">
+                                                @if (Model.GanjoorPage.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph)
+                                                {
+                                                    <p><a href="#bn@(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletIndex + 1)">#</a> @Model.GanjoorPage.Poem.Verses[verseIndex].Text</p>
+                                                }
+                                                else
+                                                {
+
+                                                    @for (int nIndex = verseIndex; nIndex < Model.GanjoorPage.Poem.Verses.Length &&
+
+                                                   (nIndex == verseIndex
+                                                   ||
+                                                   (
+                                                   Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Right
+                                                   && Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1
+                                                   && Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Paragraph
+                                                   ))
+                                                   ; nIndex++)
+                                                    {
+                                                        if (nIndex == verseIndex)
+                                                        {
+                                                            <p>
+                                                                <a href="#bn@(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletIndex + 1)">#</a> @Model.GanjoorPage.Poem.Verses[nIndex].Text
+                                                            </p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p>
+                                                                @Model.GanjoorPage.Poem.Verses[nIndex].Text
+                                                            </p>
+                                                        }
+
                                                     }
+
 
                                                 }
-                                            @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag))
-                                            {
-                                                <tr>
-                                                    <td>
-                                                        دسته:
-                                                    </td>
-                                                    <td>
-                                                        <a href="@Html.Raw($"{Model.GanjoorPage.Poem.OldTagPageUrl}/")">@Model.GanjoorPage.Poem.OldTag</a>
-                                                    </td>
-                                                </tr>
-                                            }
-                                            @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
-                                            {
-                                                <tr>
-                                                    <td>
-                                                        منبع اولیه:
-                                                    </td>
-                                                    <td>
-                                                        <a href="@Html.Raw($"/sources/{Model.GanjoorPage.Poem.SourceUrlSlug}/")">@Model.GanjoorPage.Poem.SourceName</a>
-                                                    </td>
-                                                </tr>
-                                            }
-
-                                        </table>
+                                            </blockquote>
+                                            <div class="notice">
+                                                <p>@Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary</p>
+                                                @if (Model.LoggedIn)
+                                                {
+                                                    <a href="@($"/User/Editor?id={Model.GanjoorPage.Id}#summary-{Model.GanjoorPage.Poem.Verses[verseIndex].VOrder}")" role="button" class="cursor-pointer" title="ویرایش">
+                                                        <div class="circled-number">
+                                                            <i class="notranslate noindent-info-button edit-poem-button"></i>
+                                                        </div>
+                                                    </a>
+                                                }
+                                            </div>
+                                        }
                                     }
+                                }
 
-
-                                    @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.PoemSummary))
+                                @if (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
+                                {
+                                    @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
                                     {
-                                        <div class="notice" id="summary" data-nosnippet>
-                                            <div class="century">خلاصه</div>
-                                            <p>
-                                                @Html.Raw(Model.GanjoorPage.Poem.PoemSummary.Replace("\n", "<br />"))
-                                            </p>
-                                            @if (Model.LoggedIn)
-                                            {
-                                                <a href="/User/Editor?id=@Model.GanjoorPage.Id#summaries" role="button" class="cursor-pointer" title="ویرایش">
-                                                    <div class="circled-number">
-                                                        <i class="notranslate noindent-info-button edit-poem-button"></i>
-                                                    </div>
-                                                </a>
-                                            }
+                                        <div class="century" id="map-section">
+                                            @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="catmap-collapse-button"></i></a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="century" id="map-section">
+                                            جای‌ها <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="catmap-collapse-button"></i></a>
                                         </div>
                                     }
 
-                                    @if (Model.GanjoorPage.Poem.Verses.Any(v => !string.IsNullOrEmpty(v.CoupletSummary)))
-                                    {
-                                        <div class="century" id="summaries" data-nosnippet>برگردان به زبان ساده</div>
-                                        @for (int verseIndex = 0; verseIndex < Model.GanjoorPage.Poem.Verses.Length; verseIndex++)
-                                        {
-                                            @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary))
-                                            {
-                                                <blockquote id="summaey-@Model.GanjoorPage.Poem.Verses[verseIndex].VOrder">
-                                                    @if (Model.GanjoorPage.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph)
-                                                    {
-                                                        <p><a href="#bn@(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletIndex + 1)">#</a> @Model.GanjoorPage.Poem.Verses[verseIndex].Text</p>
-                                                    }
-                                                    else
-                                                    {
-
-                                                        @for (int nIndex = verseIndex; nIndex < Model.GanjoorPage.Poem.Verses.Length &&
-
-                                                       (nIndex == verseIndex
-                                                       ||
-                                                       (
-                                                       Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Right
-                                                       && Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1
-                                                       && Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Paragraph
-                                                       ))
-                                                       ; nIndex++)
-                                                        {
-                                                            if (nIndex == verseIndex)
-                                                            {
-                                                                <p>
-                                                                    <a href="#bn@(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletIndex + 1)">#</a> @Model.GanjoorPage.Poem.Verses[nIndex].Text
-                                                                </p>
-                                                            }
-                                                            else
-                                                            {
-                                                                <p>
-                                                                    @Model.GanjoorPage.Poem.Verses[nIndex].Text
-                                                                </p>
-                                                            }
-
-                                                        }
-
-
-                                                    }
-                                                </blockquote>
-                                                <div class="notice">
-                                                    <p>@Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary</p>
-                                                    @if (Model.LoggedIn)
-                                                    {
-                                                        <a href="@($"/User/Editor?id={Model.GanjoorPage.Id}#summary-{Model.GanjoorPage.Poem.Verses[verseIndex].VOrder}")" role="button" class="cursor-pointer" title="ویرایش">
-                                                            <div class="circled-number">
-                                                                <i class="notranslate noindent-info-button edit-poem-button"></i>
-                                                            </div>
-                                                        </a>
-                                                    }
-                                                </div>
-                                            }
-                                        }
-                                    }
-
-                                    @if (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
-                                    {
-                                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
-                                        {
-                                            <div class="century" id="map-section">
-                                                @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="catmap-collapse-button"></i></a>
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="century" id="map-section">
-                                                جای‌ها <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="catmap-collapse-button"></i></a>
-                                            </div>
-                                        }
-
-                                        <div id="catmap"></div>
-                                    }
+                                    <div id="catmap"></div>
+                                }
 
                             </div>
 
@@ -641,42 +641,32 @@
 
                                 if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
                                 {
-                                    <div class="related-images-frame tabcontent" id="commentaries">
-                                        <div class="century">
-                                            @(Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Count() > 1 ? "شرح‌‌های صوتی" : "شرح صوتی") <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('commentaries-section', 'commentaries-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="commentaries-collapse-button"></i></a>
-                                        </div>
-                                        <div id="commentaries-section">
-                                            <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Commentary, Model.CanEdit) />
-                                        </div>
+                                    <div class="tabcontent" id="commentaries">
+                                        <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Commentary, Model.CanEdit) />
                                     </div>
                                 }
 
-                                <div class="related-images-frame tabcontent" id="qpoems">
-                                    <div class="century">
-                                        مشق شعر <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('qpoems-section', 'qpoems-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="qpoems-collapse-button"></i></a>
-                                    </div>
-                                    <div id="qpoems-section">
-                                        @for (int i = 0; i < Math.Min(5, Model.GanjoorPage.Poem.Top6QuotedPoems.Length); i++)
-                                        {
-                                            <partial name="_QuotedPoemPartial" model=@Model.GetQuotedPoemModel(Model.GanjoorPage.Poem.Top6QuotedPoems[i], Model.GanjoorPage, Model.CanEdit) />
-                                        }
+                                <div class="tabcontent" id="qpoems">
+                                    @for (int i = 0; i < Math.Min(5, Model.GanjoorPage.Poem.Top6QuotedPoems.Length); i++)
+                                    {
+                                        <partial name="_QuotedPoemPartial" model=@Model.GetQuotedPoemModel(Model.GanjoorPage.Poem.Top6QuotedPoems[i], Model.GanjoorPage, Model.CanEdit) />
+                                    }
 
-                                        @if (Model.GanjoorPage.Poem.Top6QuotedPoems.Length == 6)
-                                        {
-                                            <div id="more-quoted-placeholder"></div>
-                                            <div id="load-more-quoted">
-                                                <a role="button" class="pagebutton" id="load-more-quoted" onclick="loadMoreQuotedPoems(@Model.GanjoorPage.Poem.Id, 5, '@Model.GanjoorPage.PoetOrCat.Poet.ImageUrl', '@Model.GanjoorPage.PoetOrCat.Poet.Nickname', @Model.CanEdit.ToString().ToLower())">بیشتر<i class="notranslate info-buttons autorenew"></i></a>
-                                            </div>
-                                        }
-                                        @if (Model.LoggedIn)
-                                        {
-                                            <div>
-                                                <a href="/User/SuggestQuoted/?p=@Model.GanjoorPage.Id" class="pagebutton comments-link">پیشنهاد مشق شعر</a>
-                                            </div>
-                                        }
-                                    </div>
-
+                                    @if (Model.GanjoorPage.Poem.Top6QuotedPoems.Length == 6)
+                                    {
+                                        <div id="more-quoted-placeholder"></div>
+                                        <div id="load-more-quoted">
+                                            <a role="button" class="pagebutton" id="load-more-quoted" onclick="loadMoreQuotedPoems(@Model.GanjoorPage.Poem.Id, 5, '@Model.GanjoorPage.PoetOrCat.Poet.ImageUrl', '@Model.GanjoorPage.PoetOrCat.Poet.Nickname', @Model.CanEdit.ToString().ToLower())">بیشتر<i class="notranslate info-buttons autorenew"></i></a>
+                                        </div>
+                                    }
+                                    @if (Model.LoggedIn)
+                                    {
+                                        <div>
+                                            <a href="/User/SuggestQuoted/?p=@Model.GanjoorPage.Id" class="pagebutton comments-link" target="_blank">پیشنهاد مشق شعر</a>
+                                        </div>
+                                    }
                                 </div>
+
 
 
 
