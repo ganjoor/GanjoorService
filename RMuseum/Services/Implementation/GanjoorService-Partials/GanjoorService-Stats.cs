@@ -1,9 +1,7 @@
 ﻿using DNTPersianUtils.Core;
 using Microsoft.EntityFrameworkCore;
-using NAudio.Gui;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
-using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
 using System;
@@ -400,10 +398,7 @@ namespace RMuseum.Services.Implementation
                 stats = $"{LanguageUtils.FormatMoney(sumRhythmsCouplets - secondMetreCoupletCount)} بیت شعر موجود";
             }
 
-            string htmlText = "<div class=\"related-images-frame\" id=\"cat-stats\">";
-            htmlText += $"<div class=\"century\">{Environment.NewLine}";
-            htmlText += $" آمار <a role=\"button\" title=\"جمع شود / باز شود\" class=\"cursor-pointer\" onclick=\"switch_section('stats-section', 'stats-collapse-button')\"><i class=\"notranslate info-buttons expand_circle_down\" id=\"stats-collapse-button\"></i></a>{Environment.NewLine}";
-            htmlText += $"</div>{Environment.NewLine}";
+            string htmlText = "<div class=\"tabcontent\" id=\"stats\">";
 
             htmlText += $"<div id=\"stats-section\">{Environment.NewLine}";
 

@@ -330,6 +330,19 @@ namespace RMuseum.Services.Implementation
                         }
                     }
 
+                    html += "<div class=\"tab\" id=\"tab-items\">";
+                    html += "<button class=\"tablinks active\" onclick=\"switchTab(event, 'tools')\">اطّلاعات</button>";
+                    html += "<button class=\"tablinks\" onclick=\"switchTab(event, 'stats')\">آمار</button>";
+                    html += "<button class=\"tablinks\" onclick=\"switchTab(event, 'quoteds')\">مشق شعر</button>";
+                    html += $"<button class=\"tablinks\" onclick=\"switchToCatTab(event, 'recitations', {cat.Id})\">خوانش‌ها</button>";
+                    if(cat.ParentId == null)
+                    {
+                        html += "<button class=\"tablinks\" onclick=\"switchTab(event, 'photos')\">تصاویر چهره</button>";
+                        html += "<button class=\"tablinks\" onclick=\"switchTab(event, 'papersources')\">منابع کاغذی</button>";
+                    }
+                   
+                    html += "</div>";
+
                     if (cat.ParentId == null)
                     {
                         //poet page
@@ -354,16 +367,11 @@ namespace RMuseum.Services.Implementation
 
                         if (hasQuotes)
                         {
-                            html += "<div class=\"related-images-frame\" id=\"related-poets\">";
-                            html += $"<div class=\"century\">{Environment.NewLine}";
-                            html += $" مشق شعر <a role=\"button\" title=\"جمع شود / باز شود\" class=\"cursor-pointer\" onclick=\"switch_section('related-poets-section', 'related-poets-collapse-button')\"><i class=\"notranslate info-buttons expand_circle_down\" id=\"related-poets-collapse-button\"></i></a>{Environment.NewLine}";
-                            html += $"</div>{Environment.NewLine}";
+                            html += "<div class=\"tabcontent\" id=\"quoteds\">";
                             html += $"<div id=\"related-poets-section\">{Environment.NewLine}";
 
 
-                            html += $"<div class=\"part-title-block-alt\" id=\"quotes-{poet.Id}\">{Environment.NewLine}";
-                            html += $"<a href=\"/quotes?p={cat.UrlSlug}\">همهٔ نقل قول‌ها و شعرهای مرتبط {poet.Nickname}</a>{Environment.NewLine}";
-                            html += $"</div>{Environment.NewLine}";
+                            html += $"<a href=\"/quotes?p={cat.UrlSlug}\" role=\"button\" class=\"pagebutton comments-link\">همهٔ نقل قول‌ها و شعرهای مرتبط {poet.Nickname}</a>{Environment.NewLine}";
 
                             html += $"<div class=\"spacer\">{Environment.NewLine}";
 

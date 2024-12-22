@@ -243,6 +243,7 @@
 
                 @if (Model.IsCatPage || Model.IsPoetPage)
                 {
+                    <div id="pretab"></div>
                     <div class="tab" id="tab-items">
                         <button class="tablinks active" onclick="switchTab(event, 'tools')">اطّلاعات</button>
                         <button class="tablinks" onclick="switchToCatTab(event, 'recitations', @Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</button>                        @if (Model.IsPoetPage)
@@ -253,7 +254,6 @@
                                 <button class="tablinks" onclick="switchTab(event, 'papersources')">منابع کاغذی</button>
                             }
                         }
-
                     </div>
 
                     <div class="tabcontent related-images-frame" id="tools" style="display:block">
@@ -292,15 +292,9 @@
                     @if (Model.IsPoetPage)
                     {
                         <div class="tabcontent" id="photos">
-                            @if (Model.Photo == null)
-                            {
-                                <div class="part-title-block-alt" id="photos">
-                                    <a href="/photos?p=@Model.GanjoorPage.PoetOrCat.Cat.UrlSlug">پیشنهاد تصویر چهره برای @Model.GanjoorPage.PoetOrCat.Poet.Nickname</a>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="related-images-frame">
+                            <div class="related-images-frame">
+                                @if (Model.Photo != null)
+                                {
                                     <div class="century">
                                         @Model.Photo.Title
 
@@ -317,34 +311,40 @@
                                     <div class="comments-like-div">
                                         @Html.Raw(Model.Photo.Description)
                                     </div>
-
-                                    <div class="part-title-block-alt" id="photos">
-                                        <a href="/photos?p=@Model.GanjoorPage.PoetOrCat.Cat.UrlSlug">مشاهده و پیشنهاد تصاویر چهره برای @Model.GanjoorPage.PoetOrCat.Poet.Nickname</a>
-                                    </div>
-                                </div>
-                            }
+                                }
+                                <a href="/photos?p=@Model.GanjoorPage.PoetOrCat.Cat.UrlSlug" role="button" class="pagebutton comments-link">مشاهده و پیشنهاد تصاویر چهره برای @Model.GanjoorPage.PoetOrCat.Poet.Nickname</a>
+                            </div>
+                            
                         </div>
-                        if (Model.GanjoorPage.SecondPoet == null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources.Any())
+                        if (Model.GanjoorPage.SecondPoet == null)
                         {
                             <div class="tabcontent related-images-frame" id="papersources">
                                 <div class="related-images">
-                                    @foreach (var book in Model.GanjoorPage.PoetOrCat.Cat.PaperSources)
+                                    @if (Model.GanjoorPage.PoetOrCat.Cat.PaperSources != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources.Any())
                                     {
-                                        <div class="related-image-container">
-                                            <a target="_blank" href="@Html.Raw(book.BookFullUrl)">
-                                                <img src="@Html.Raw(book.CoverThumbnailImageUrl)" alt="@book.BookFullTitle" loading="lazy" class="related-image">
-                                            </a>
-                                            <div class="related-image-is-text-source">
-                                                <a target="_blank" href="@Html.Raw(book.BookFullUrl)">@book.BookFullTitle</a>
-                                            </div>
-                                            @if (Model.CanEdit)
-                                            {
-                                                <div>
-                                                    <a onclick="markAsTextOriginal(@book.NaskbanBookId, @Model.GanjoorPage.PoetOrCat.Cat.Id, '@book.BookFullTitle', '@Model.GanjoorPage.PoetOrCat.Cat.Title')" class="pagebutton" role="button">منبع کاغذی شود</a>
+                                        @foreach (var book in Model.GanjoorPage.PoetOrCat.Cat.PaperSources)
+                                        {
+                                            <div class="related-image-container">
+                                                <a target="_blank" href="@Html.Raw(book.BookFullUrl)">
+                                                    <img src="@Html.Raw(book.CoverThumbnailImageUrl)" alt="@book.BookFullTitle" loading="lazy" class="related-image">
+                                                </a>
+                                                <div class="related-image-is-text-source">
+                                                    <a target="_blank" href="@Html.Raw(book.BookFullUrl)">@book.BookFullTitle</a>
                                                 </div>
-                                            }
-                                        </div>
+                                                @if (Model.CanEdit)
+                                                {
+                                                    <div>
+                                                        <a onclick="markAsTextOriginal(@book.NaskbanBookId, @Model.GanjoorPage.PoetOrCat.Cat.Id, '@book.BookFullTitle', '@Model.GanjoorPage.PoetOrCat.Cat.Title')" class="pagebutton" role="button">منبع کاغذی شود</a>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
                                     }
+                                    else
+                                    {
+                                        <p>برای این بخش هنوز منبع کاغذی خاصی مشخص نشده است.</p>
+                                    }
+
                                 </div>
                             </div>
                         }
@@ -395,7 +395,7 @@
                     }
 
                     <div id="comments">
-
+                        <div id="pretab"></div>
                         <div class="tab" id="tab-items">
                             @if (string.IsNullOrEmpty(Model.ActiveTab))
                             {

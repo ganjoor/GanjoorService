@@ -12,11 +12,23 @@
                 </div>
             </a>
 
-            <a onclick="document.getElementById('navbarhelp').style.display='block'" role="button" class="cursor-pointer" title="راهنما">
-                <div class="noborder-btn color-white">
-                    <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" /></svg>
-                </div>
-            </a>
+            @if (Model.GanjoorPage != null && Model.GanjoorPage.PoetOrCat != null && Model.GanjoorPage.SecondPoet == null)
+            {
+                <a href="#pretab" role="button" class="cursor-pointer" title="اطلاعات">
+                    <div class="noborder-btn color-white">
+                        <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" /></svg>
+                    </div>
+                </a>
+            }
+            else
+            {
+                <a onclick="document.getElementById('navbarhelp').style.display='block'" role="button" class="cursor-pointer" title="راهنما">
+                    <div class="noborder-btn color-white">
+                        <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" /></svg>
+                    </div>
+                </a>
+            }
+
 
 
         </div>
@@ -107,7 +119,7 @@ else
     <!-- The Modal -->
     <div id="id01" class="modal">
         <span onclick="document.getElementById('id01').style.display='none'"
-          class="close" title="بستن">&times;</span>
+              class="close" title="بستن">&times;</span>
 
         <!-- Modal Content -->
         <form class="modal-content animate" method="post" action="?handler=Login">
@@ -394,7 +406,7 @@ else
 {
     <div id="bookmark-note-dialog" class="modal">
         <span onclick="document.getElementById('bookmark-note-dialog').style.display='none'"
-          class="close" title="بستن">&times;</span>
+              class="close" title="بستن">&times;</span>
         <form class="modal-content animate" method="post" id="editnoteform">
             <table class="max-width-100per width-100per">
                 <tr>

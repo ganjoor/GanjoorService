@@ -682,6 +682,10 @@ td.c2 {
     margin: auto;
 }
 
+#pretab {
+    margin-bottom: 60px;
+}
+
 
 @media(max-width: 768px) {
     .b {
