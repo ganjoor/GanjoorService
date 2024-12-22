@@ -1596,6 +1596,11 @@ function countPoemWords(poemId) {
         },
     });
 }
+
+function switchToCatTab(evt, tabId, catId) {
+    loadCatRecitations(catId);
+    switchTab(evt, tabId);
+}
 function switchTab(evt, tabId) {
     // Declare all variables
     var i, tabcontent, tablinks;

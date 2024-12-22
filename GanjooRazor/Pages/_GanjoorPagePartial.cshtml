@@ -233,7 +233,7 @@
                             @if (Model.CategoryWordsCounts != null)
                             {
                                 <text>
-                                    <partial name="_CategoryWordsCountPartial" model="Model.CategoryWordsCounts">
+                                        <partial name="_CategoryWordsCountPartial" model="Model.CategoryWordsCounts">
                                 </text>
                             }
                         </div>
@@ -245,13 +245,9 @@
                 {
                     <div class="tab" id="tab-items">
                         <button class="tablinks active" onclick="switchTab(event, 'tools')">اطّلاعات</button>
-                        @if (Model.CategoryHasRecitations)
+                        <button class="tablinks" onclick="switchToCatTab(event, 'recitations', @Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</button>                        @if (Model.IsPoetPage)
                         {
-                            <button class="tablinks" onclick="switchTab(event, 'recitations')">خوانش‌ها</button>
-                        }
-                        @if (Model.IsPoetPage)
-                        {
-                            <button class="tablinks" onclick="switchTab(event, 'photos')">تصویر چهره</button>
+                            <button class="tablinks" onclick="switchTab(event, 'photos')">تصاویر چهره</button>
                             if (Model.GanjoorPage.SecondPoet == null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources.Any())
                             {
                                 <button class="tablinks" onclick="switchTab(event, 'papersources')">منابع کاغذی</button>
@@ -265,28 +261,34 @@
                             @if (Model.CategoryWordsCounts != null)
                             {
                                 <text>
-                                    <partial name="_CategoryWordsCountPartial" model="Model.CategoryWordsCounts">
+                                        <partial name="_CategoryWordsCountPartial" model="Model.CategoryWordsCounts">
                                 </text>
                             }
                         </div>
                         @if (
-                       Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0
-                       )
+                      Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0
+                      )
                         {
                             <div id="catmap"></div>
                         }
                     </div>
 
-                    @if (Model.CategoryHasRecitations)
-                    {
-                        <div class="tabcontent related-images-frame" id="recitations">
+
+                    <div class="tabcontent related-images-frame" id="recitations">
+                        @if (Model.CategoryHasRecitations)
+                        {
                             <div class="century cursor-pointer" id="load-cat-recitations" onclick="loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">
                                 برای بارگذاری خوانش‌ها کلیک کنید.
                             </div>
                             <div id="recitations-section">
                             </div>
-                        </div>
-                    }
+                        }
+                        else
+                        {
+                            <p>این بخش هنوز خوانشی ندارد.</p>
+                        }
+                    </div>
+                    
                     @if (Model.IsPoetPage)
                     {
                         <div class="tabcontent" id="photos">
