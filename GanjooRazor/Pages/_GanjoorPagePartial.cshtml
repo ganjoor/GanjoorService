@@ -243,19 +243,6 @@
 
                 @if (Model.IsCatPage || Model.IsPoetPage)
                 {
-                    <div id="pretab"></div>
-                    <div class="tab" id="tab-items">
-                        <button class="tablinks active" onclick="switchTab(event, 'tools')">اطّلاعات</button>
-                        <button class="tablinks" onclick="switchToCatTab(event, 'recitations', @Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</button>                        @if (Model.IsPoetPage)
-                        {
-                            <button class="tablinks" onclick="switchTab(event, 'photos')">تصاویر چهره</button>
-                            if (Model.GanjoorPage.SecondPoet == null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources.Any())
-                            {
-                                <button class="tablinks" onclick="switchTab(event, 'papersources')">منابع کاغذی</button>
-                            }
-                        }
-                    </div>
-
                     <div class="tabcontent related-images-frame" id="tools" style="display:block">
                         <div id="wordcounts-placeholder">
                             @if (Model.CategoryWordsCounts != null)

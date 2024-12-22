@@ -330,6 +330,7 @@ namespace RMuseum.Services.Implementation
                         }
                     }
 
+                    html += "<div id=\"pretab\"></div>";
                     html += "<div class=\"tab\" id=\"tab-items\">";
                     html += "<button class=\"tablinks active\" onclick=\"switchTab(event, 'tools')\">اطّلاعات</button>";
                     html += "<button class=\"tablinks\" onclick=\"switchTab(event, 'stats')\">آمار</button>";
