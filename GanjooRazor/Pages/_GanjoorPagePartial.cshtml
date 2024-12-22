@@ -227,7 +227,7 @@
                         @Html.Raw(Model.GanjoorPage.HtmlText)
                     }
 
-                    @if (Model.IsCatPage || Model.IsPoetPage || Model.GanjoorPage.Id == 39401)
+                    @if (Model.GanjoorPage.Id == 39401)
                     {
                         <div id="wordcounts-placeholder">
                             @if (Model.CategoryWordsCounts != null)
@@ -241,33 +241,58 @@
 
                 </article>
 
-
-
-
-                @if ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryHasRecitations)
+                @if (Model.IsCatPage || Model.IsPoetPage)
                 {
-                    <div class="spacer">&nbsp;</div>
-                    <div class="related-images-frame" id="recitations">
-                        <div class="century cursor-pointer" id="load-cat-recitations" onclick="loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">
-                            برای بارگذاری خوانش‌ها کلیک کنید.
-                        </div>
-                        <div class="century" style="display:none" id="recitations-section-controller">
-                            خوانش‌ها <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('recitations-section', 'recitations-section-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="recitations-section-collapse-button"></i></a>
-                        </div>
-                        <div id="recitations-section">
+                    <div class="tab" id="tab-items">
+                        <button class="tablinks active" onclick="switchTab(event, 'tools')">اطّلاعات</button>
+                        <button class="tablinks" onclick="switchTab(event, 'wordscount')">بسامد واژگان</button>
+                        @if (Model.CategoryHasRecitations)
+                        {
+                            <button class="tablinks" onclick="switchTab(event, 'recitations')">خوانش‌ها</button>
+                        }
+                        @if (Model.IsPoetPage)
+                        {
+                            <button class="tablinks" onclick="switchTab(event, 'photos')">تصاویر</button>
+                            if (Model.GanjoorPage.SecondPoet == null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources.Any())
+                            {
+                                <button class="tablinks" onclick="switchTab(event, 'papersources')">منابع کاغذی</button>
+                            }
+                        }
+
+                    </div>
+
+                    <div class="tabcontent related-images-frame" id="tools" style="display:block">
+                        @if (
+                       Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0
+                       )
+                        {
+                            <div id="catmap"></div>
+                        }
+                    </div>
+
+                    <div class="tabcontent" id="wordscount">
+                        <div id="wordcounts-placeholder">
+                            @if (Model.CategoryWordsCounts != null)
+                            {
+                                <text>
+                                    <partial name="_CategoryWordsCountPartial" model="Model.CategoryWordsCounts">
+                                </text>
+                            }
                         </div>
                     </div>
-                }
-
-                @if (Model.IsPoetPage)
-                {
-                    <div class="related-images-frame" id="photos-section">
-
-                        <div class="century">
-                            تصویر چهره <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('face-photo', 'face-photo-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="face-photo-collapse-button"></i></a>
+                    @if (Model.CategoryHasRecitations)
+                    {
+                        <div class="tabcontent related-images-frame" id="recitations">
+                            <div class="century cursor-pointer" id="load-cat-recitations" onclick="loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">
+                                برای بارگذاری خوانش‌ها کلیک کنید.
+                            </div>
+                            <div id="recitations-section">
+                            </div>
                         </div>
-
-                        <div id="face-photo">
+                    }
+                    @if (Model.IsPoetPage)
+                    {
+                        <div class="tabcontent" id="photos">
                             @if (Model.Photo == null)
                             {
                                 <div class="part-title-block-alt" id="photos">
@@ -276,7 +301,7 @@
                             }
                             else
                             {
-                                <div class="ganjoor-comment">
+                                <div class="related-images-frame">
                                     <div class="century">
                                         @Model.Photo.Title
 
@@ -300,17 +325,9 @@
                                 </div>
                             }
                         </div>
-                    </div>
-
-                    @if (Model.GanjoorPage.SecondPoet == null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources.Any())
-                    {
-                        <div class="related-images-frame" id="papersources-section">
-
-                            <div class="century">
-                                منابع کاغذی <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('papersources', 'papersources-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="papersources-collapse-button"></i></a>
-                            </div>
-
-                            <div id="papersources">
+                        if (Model.GanjoorPage.SecondPoet == null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources.Any())
+                        {
+                            <div class="tabcontent related-images-frame" id="papersources">
                                 <div class="related-images">
                                     @foreach (var book in Model.GanjoorPage.PoetOrCat.Cat.PaperSources)
                                     {
@@ -331,10 +348,14 @@
                                     }
                                 </div>
                             </div>
-                        </div>
+                        }
                     }
 
+
                 }
+
+
+
 
                 @if (!string.IsNullOrEmpty(Model.NextUrl) || !string.IsNullOrEmpty(Model.PreviousUrl))
                 {
@@ -377,7 +398,7 @@
                     <div id="comments">
 
                         <div class="tab" id="tab-items">
-                            @if(string.IsNullOrEmpty(Model.ActiveTab))
+                            @if (string.IsNullOrEmpty(Model.ActiveTab))
                             {
                                 <button class="tablinks active" onclick="switchTab(event, 'tools')">اطّلاعات</button>
                             }
@@ -385,7 +406,7 @@
                             {
                                 <button class="tablinks" onclick="switchTab(event, 'tools')">اطّلاعات</button>
                             }
-                            
+
                             <button class="tablinks" onclick="switchTab(event, 'manuscripts')">تصاویر</button>
                             @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
                             {
@@ -402,11 +423,11 @@
                             {
                                 if (Model.ActiveTab == "commentaries")
                                 {
-                                     <button class="tablinks active" onclick="switchTab(event, 'commentaries')">شرح‌های صوتی</button>
+                                    <button class="tablinks active" onclick="switchTab(event, 'commentaries')">شرح‌های صوتی</button>
                                 }
                                 else
                                 {
-                                     <button class="tablinks" onclick="switchTab(event, 'commentaries')">شرح‌های صوتی</button>
+                                    <button class="tablinks" onclick="switchTab(event, 'commentaries')">شرح‌های صوتی</button>
                                 }
                             }
                             <button class="tablinks" onclick="switchTab(event, 'qpoems')">مشق شعر</button>
@@ -417,11 +438,11 @@
                             <button class="tablinks" onclick="switchTab(event, 'songs')">ترانه‌ها</button>
                             @if (Model.ActiveTab == "discussions")
                             {
-                                 <button class="tablinks active" onclick="switchTab(event, 'discussions')">حاشیه‌ها</button>
+                                <button class="tablinks active" onclick="switchTab(event, 'discussions')">حاشیه‌ها</button>
                             }
                             else
                             {
-                                 <button class="tablinks" onclick="switchTab(event, 'discussions')">حاشیه‌ها</button>
+                                <button class="tablinks" onclick="switchTab(event, 'discussions')">حاشیه‌ها</button>
                             }
                         </div>
                         <div class="poem-info">
@@ -663,7 +684,7 @@
                             @{
                                 if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
                                 {
-                                     <div class="tabcontent" id="recitations" style="@(Model.ActiveTab == "recitations" ? "display:block" : "display:none")">
+                                    <div class="tabcontent" id="recitations" style="@(Model.ActiveTab == "recitations" ? "display:block" : "display:none")">
                                         <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Normal, Model.CanEdit) />
 
                                         <a onclick="switchPlayerScrollLock()" role="button" class="pagebutton comments-link">
@@ -754,17 +775,17 @@
 
                                     @if (Model.SectionsWithMetreAndRhymes.Any())
                                     {
-                                                            <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")" class="pagebutton comments-link">
-                                                                مشابه‌یابی بر اساس وزن و قافیه
-                                                                <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
-                                                            </a>
+                                        <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes.First().RhymeLetters)}")" class="pagebutton comments-link">
+                                            مشابه‌یابی بر اساس وزن و قافیه
+                                            <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
+                                        </a>
 
                                         @for (int nSectionIndex = 1; nSectionIndex < Model.SectionsWithMetreAndRhymes.Count; nSectionIndex++)
                                         {
-                                                                    <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")" class="pagebutton comments-link">
-                                                                        مشابه‌یابی بر اساس وزن و قافیه (وزن @((nSectionIndex + 1).ToPersianNumbers()))
-                                                                        <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
-                                                                    </a>
+                                            <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(Model.SectionsWithMetreAndRhymes[nSectionIndex].RhymeLetters)}")" class="pagebutton comments-link">
+                                                مشابه‌یابی بر اساس وزن و قافیه (وزن @((nSectionIndex + 1).ToPersianNumbers()))
+                                                <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" /></svg>
+                                            </a>
                                         }
                                     }
 
@@ -807,7 +828,7 @@
                             }
                         </div>
 
-                         <div class="related-images-frame tabcontent" id="discussions" style="@(Model.ActiveTab == "discussions" ? "display:block" : "display:none")">
+                        <div class="related-images-frame tabcontent" id="discussions" style="@(Model.ActiveTab == "discussions" ? "display:block" : "display:none")">
 
                             <div id="comments-section">
                                 @switch (Model.GanjoorPage.Poem.Comments.Length)
@@ -951,29 +972,8 @@
                     </div> <!-- <div id="comments"> -->
                 }
 
-                @if (
-               ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
-               )
-                {
-                    <div class="related-images-frame" id="map-section">
 
-                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.PoetOrCat.Cat.MapName))
-                        {
-                            <div class="century">
-                                @Model.GanjoorPage.PoetOrCat.Cat.MapName <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="catmap-collapse-button"></i></a>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="century">
-                                جای‌ها <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('catmap', 'catmap-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="catmap-collapse-button"></i></a>
-                            </div>
-                        }
 
-                        <div id="catmap"></div>
-                    </div>
-
-                }
 
                 @if ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
                 {

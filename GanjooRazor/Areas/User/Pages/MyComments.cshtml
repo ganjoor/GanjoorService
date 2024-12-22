@@ -118,7 +118,7 @@ else
                     @Html.Raw(comment.HtmlComment)
                 </div>
                 <p>
-                    @Model.UserInfo.NickName <small>در @comment.CommentDate.ToFriendlyPersianDateTextify()</small> دربارهٔ <a href="@comment.Poem.UrlSlug#comment-@comment.Id">@comment.Poem.Title</a>
+                    @Model.UserInfo.NickName <small>در @comment.CommentDate.ToFriendlyPersianDateTextify()</small> دربارهٔ <a href="@comment.Poem.UrlSlug?tab=discussions#comment-@comment.Id">@comment.Poem.Title</a>
                 </p>
             </blockquote>
             <p>

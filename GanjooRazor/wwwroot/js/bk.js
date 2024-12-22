@@ -1159,8 +1159,6 @@ function loadCatRecitations(catId) {
         url: '?Handler=CategoryRecitations&catId=' + String(catId),
         success: function (data) {
             document.getElementById("remove-this").remove();
-            
-            document.getElementById('recitations-section-controller').style.display = 'block';
             $(data).appendTo(divParent);
         },
     });
