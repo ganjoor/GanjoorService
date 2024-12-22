@@ -243,7 +243,11 @@
 
                 @if (Model.IsCatPage || Model.IsPoetPage)
                 {
-                    <div class="tabcontent related-images-frame" id="tools" style="display:block">
+                            <div class="tabcontent related-images-frame" id="words">
+                                <div class="century cursor-pointer" id="load-word-counts" onclick="loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">
+                                            برای بارگذاری بسامد واژٰگان کلیک کنید.
+                                </div>
+
                         <div id="wordcounts-placeholder">
                             @if (Model.CategoryWordsCounts != null)
                             {
@@ -252,12 +256,6 @@
                                 </text>
                             }
                         </div>
-                        @if (
-                      Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0
-                      )
-                        {
-                            <div id="catmap"></div>
-                        }
                     </div>
 
 
@@ -337,6 +335,12 @@
                         }
                     }
 
+                    @if (
+                     Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0
+                     )
+                    {
+                                        <div id="catmap"></div>
+                    }
 
                 }
 

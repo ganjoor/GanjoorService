@@ -1531,6 +1531,16 @@ function reloadWordCounts(catId, poetId, remStopWords) {
     loadWordCounts(catId, poetId, remStopWords);
 }
 
+
+function switchTabWords(evt, tabId, catId, poetId) {
+    var loadButton = document.getElementById("load-word-counts");
+    if (loadButton != null) {
+        loadButton.remove();
+        loadWordCounts(catId, poetId, false);
+    }
+    
+    switchTab(evt, tabId);
+}
 function loadWordCounts(catId, poetId, remStopWords) {
     var divParent = document.getElementById('wordcounts-placeholder');
     var imgElementId = 'loadingwordcountsimg';
@@ -1543,7 +1553,7 @@ function loadWordCounts(catId, poetId, remStopWords) {
         },
         success: function (data) {
             document.getElementById("remove-this-wordcounts").remove();
-            if (document.getElementById("percent-button") != null) {
+            if (document.getElementById("load-word-counts") != null) {
                 document.getElementById("percent-button").style.display = 'inline-block';
             }
             $(data).appendTo(divParent);

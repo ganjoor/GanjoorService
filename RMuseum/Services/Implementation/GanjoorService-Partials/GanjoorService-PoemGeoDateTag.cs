@@ -113,7 +113,8 @@ namespace RMuseum.Services.Implementation
            
             try
             {
-                var tags = await _context.PoemGeoDateTags.AsNoTracking().Include(t => t.Location).Include(t => t.Person).Where(t => t.PoemId == poemId)
+                var tags = await _context.PoemGeoDateTags.AsNoTracking().Include(t => t.Location).Include(t => t.Person)
+                               .Where(t => t.PoemId == poemId && t.MachineGenerated == false)
                                .OrderBy(t => t.LunarDateTotalNumber)
                                .ThenBy(t => t.Id)
                                .ToArrayAsync();
@@ -139,7 +140,8 @@ namespace RMuseum.Services.Implementation
             {
                 var cat = await _context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
 
-                var tags = await _context.PoemGeoDateTags.AsNoTracking().Include(t => t.Location).Include(t => t.Poem).Where(t => t.Poem.CatId == catId && t.IgnoreInCategory == false)
+                var tags = await _context.PoemGeoDateTags.AsNoTracking().Include(t => t.Location).Include(t => t.Poem)
+                                .Where(t => t.Poem.CatId == catId && t.MachineGenerated == false && t.IgnoreInCategory == false)
                                 .OrderBy(t => t.LunarDateTotalNumber)
                                 .ThenBy(t => t.PoemId)
                                 .ToArrayAsync();

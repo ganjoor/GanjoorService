@@ -330,24 +330,14 @@ namespace RMuseum.Services.Implementation
                         }
                     }
 
-                    html += "<div id=\"pretab\"></div>";
-                    html += "<div class=\"tab\" id=\"tab-items\">";
-                    html += "<button class=\"tablinks active\" onclick=\"switchTab(event, 'tools')\">اطّلاعات</button>";
-                    html += "<button class=\"tablinks\" onclick=\"switchTab(event, 'stats')\">آمار</button>";
-                    html += "<button class=\"tablinks\" onclick=\"switchTab(event, 'quoteds')\">مشق شعر</button>";
-                    html += $"<button class=\"tablinks\" onclick=\"switchToCatTab(event, 'recitations', {cat.Id})\">خوانش‌ها</button>";
-                    if(cat.ParentId == null)
-                    {
-                        html += "<button class=\"tablinks\" onclick=\"switchTab(event, 'photos')\">تصاویر چهره</button>";
-                        html += "<button class=\"tablinks\" onclick=\"switchTab(event, 'papersources')\">منابع کاغذی</button>";
-                    }
-                   
-                    html += "</div>";
+
+                    html = _AddTabs(html, cat);
 
                     if (cat.ParentId == null)
                     {
                         //poet page
                         var poetPage = await context.GanjoorPages.AsNoTracking().Where(p => p.ParentId == null && p.PoetId == cat.PoetId && p.GanjoorPageType == GanjoorPageType.PoetPage).SingleAsync();
+
 
 
 
@@ -707,6 +697,8 @@ namespace RMuseum.Services.Implementation
                     html += $"</p>{Environment.NewLine}";
                 }
 
+
+                html =  _AddTabs(html, cat);
                 html += await _GetCategoryStatsPage(poet.Id, catId, rhythms, context);
 
                 return new RServiceResult<string>(html);
@@ -715,6 +707,24 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<string>(null, exp.ToString());
             }
+        }
+
+        private string _AddTabs(string html, GanjoorCat cat)
+        {
+            html += $"<div id=\"pretab\"></div>{Environment.NewLine}";
+            html += $"<div class=\"tab\" id=\"tab-items\">{Environment.NewLine}";
+            html += $"<button class=\"tablinks active\" onclick=\"switchTab(event, 'stats')\">آمار</button> {Environment.NewLine}";
+            html += $"<button class=\"tablinks\" onclick=\"switchTabWords(event, 'words', {cat.Id}, {cat.PoetId})\">واژگان</button> {Environment.NewLine}";
+            html += $"<button class=\"tablinks\" onclick=\"switchToCatTab(event, 'recitations', {cat.Id})\">خوانش‌ها</button>{Environment.NewLine}";
+            if (cat.ParentId == null)
+            {
+                html += $"<button class=\"tablinks\" onclick=\"switchTab(event, 'quoteds')\">مشق شعر</button> {Environment.NewLine}";
+                html += $"<button class=\"tablinks\" onclick=\"switchTab(event, 'photos')\">تصاویر چهره</button> {Environment.NewLine}";
+                html += $"<button class=\"tablinks\" onclick=\"switchTab(event, 'papersources')\">منابع کاغذی</button> {Environment.NewLine}";
+            }
+
+            html += $"</div> {Environment.NewLine}";
+            return html;
         }
 
         private async Task _GeneratingSubCatsTOC(Guid userId, RMuseumDbContext context, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, int catId, GanjoorTOC ganjoorTOC)
