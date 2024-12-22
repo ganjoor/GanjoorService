@@ -1531,7 +1531,15 @@ function reloadWordCounts(catId, poetId, remStopWords) {
     loadWordCounts(catId, poetId, remStopWords);
 }
 
+function switchTabWordsForPoem(evt, tabId, id, catId, poetId) {
+    var loadButton = document.getElementById("load-word-counts");
+    if (loadButton != null) {
+        loadButton.remove();
+        countPoemWords(id, catId, poetId);
+    }
 
+    switchTab(evt, tabId);
+}
 function switchTabWords(evt, tabId, catId, poetId) {
     var loadButton = document.getElementById("load-word-counts");
     if (loadButton != null) {

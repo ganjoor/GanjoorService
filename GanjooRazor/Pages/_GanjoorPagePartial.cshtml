@@ -396,8 +396,8 @@
                             {
                                 <button class="tablinks" onclick="switchTab(event, 'tools')">اطّلاعات</button>
                             }
-
-                            <button class="tablinks" onclick="switchTab(event, 'manuscripts')">تصاویر</button>
+                                    <button class="tablinks" onclick="switchTabWordsForPoem(event, 'words', @Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">واژگان</button>
+                                    <button class="tablinks" onclick="switchTab(event, 'manuscripts')">تصاویر</button>
                             @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
                             {
                                 if (Model.ActiveTab == "recitations")
@@ -505,12 +505,6 @@
                                     </table>
                                 }
 
-                                <div id="wordcounts-placeholder">
-                                    <a href="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)" class="pagebutton comments-link">
-                                        بسامد واژگان
-                                        <svg class="noindent-info-button" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><g><rect fill="none" height="24" width="24" /></g><g><g><g><path d="M7.5,4C5.57,4,4,5.57,4,7.5S5.57,11,7.5,11S11,9.43,11,7.5S9.43,4,7.5,4z M7.5,9C6.67,9,6,8.33,6,7.5S6.67,6,7.5,6 S9,6.67,9,7.5S8.33,9,7.5,9z M16.5,13c-1.93,0-3.5,1.57-3.5,3.5s1.57,3.5,3.5,3.5s3.5-1.57,3.5-3.5S18.43,13,16.5,13z M16.5,18 c-0.83,0-1.5-0.67-1.5-1.5s0.67-1.5,1.5-1.5s1.5,0.67,1.5,1.5S17.33,18,16.5,18z M5.41,20L4,18.59L18.59,4L20,5.41L5.41,20z" /></g></g></g></svg>
-                                    </a>
-                                </div>
 
 
                                 @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.PoemSummary))
@@ -610,6 +604,15 @@
                                 {
                                     <div id="catmap"></div>
                                 }
+                            </div>
+
+                            <div class="related-images-frame tabcontent" id="words">
+                                        <div id="wordcounts-placeholder">
+                                                    <a href="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)" id="load-word-counts" class="pagebutton comments-link">
+                                                بسامد واژگان
+                                                <svg class="noindent-info-button" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><g><rect fill="none" height="24" width="24" /></g><g><g><g><path d="M7.5,4C5.57,4,4,5.57,4,7.5S5.57,11,7.5,11S11,9.43,11,7.5S9.43,4,7.5,4z M7.5,9C6.67,9,6,8.33,6,7.5S6.67,6,7.5,6 S9,6.67,9,7.5S8.33,9,7.5,9z M16.5,13c-1.93,0-3.5,1.57-3.5,3.5s1.57,3.5,3.5,3.5s3.5-1.57,3.5-3.5S18.43,13,16.5,13z M16.5,18 c-0.83,0-1.5-0.67-1.5-1.5s0.67-1.5,1.5-1.5s1.5,0.67,1.5,1.5S17.33,18,16.5,18z M5.41,20L4,18.59L18.59,4L20,5.41L5.41,20z" /></g></g></g></svg>
+                                            </a>
+                                        </div>
                             </div>
 
 
