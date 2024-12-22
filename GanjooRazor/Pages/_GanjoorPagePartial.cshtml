@@ -245,14 +245,13 @@
                 {
                     <div class="tab" id="tab-items">
                         <button class="tablinks active" onclick="switchTab(event, 'tools')">اطّلاعات</button>
-                        <button class="tablinks" onclick="switchTab(event, 'wordscount')">بسامد واژگان</button>
                         @if (Model.CategoryHasRecitations)
                         {
                             <button class="tablinks" onclick="switchTab(event, 'recitations')">خوانش‌ها</button>
                         }
                         @if (Model.IsPoetPage)
                         {
-                            <button class="tablinks" onclick="switchTab(event, 'photos')">تصاویر</button>
+                            <button class="tablinks" onclick="switchTab(event, 'photos')">تصویر چهره</button>
                             if (Model.GanjoorPage.SecondPoet == null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources.Any())
                             {
                                 <button class="tablinks" onclick="switchTab(event, 'papersources')">منابع کاغذی</button>
@@ -262,15 +261,6 @@
                     </div>
 
                     <div class="tabcontent related-images-frame" id="tools" style="display:block">
-                        @if (
-                       Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0
-                       )
-                        {
-                            <div id="catmap"></div>
-                        }
-                    </div>
-
-                    <div class="tabcontent" id="wordscount">
                         <div id="wordcounts-placeholder">
                             @if (Model.CategoryWordsCounts != null)
                             {
@@ -279,7 +269,14 @@
                                 </text>
                             }
                         </div>
+                        @if (
+                       Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0
+                       )
+                        {
+                            <div id="catmap"></div>
+                        }
                     </div>
+
                     @if (Model.CategoryHasRecitations)
                     {
                         <div class="tabcontent related-images-frame" id="recitations">

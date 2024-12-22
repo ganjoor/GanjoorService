@@ -5,28 +5,26 @@
 
 @if (Model.WordCounts.Length > 0)
 {
-    <div class="related-images-frame" id="wordcounts">
-        <div class="century" id="wordcounts-section-controller">
-            بسامد واژگان <a role="button" title="جمع شود / باز شود" class="cursor-pointer" onclick="switch_section('wordcounts-section', 'wordcounts-section-collapse-button')"><i class="notranslate info-buttons expand_circle_down" id="wordcounts-section-collapse-button"></i></a>
+    <h2>
+        بسامد واژگان
+    </h2>
+    <div id="wordcounts-section">
+        <p>
+            در متن @Model.ThisPart @RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.TotalWordCount) واژه را شمرده‌ایم (در تعریفمان از <i>واژه</i> ایرادات جدی وجود دارد، <a href="https://blog.ganjoor.net/1403/04/06/words-frequency/" target="_blank">اینجا</a> را ببینید). شمار واژگان یاد شده به شکل غیرتکراری برابر با @RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.UniqueWordCount) واژه است.
+        </p>
+        @if (Model.RemStopWords)
+        {
+            <p id="remStopWords">جهت مشاهدهٔ آمار با واژگان کم‌هوادار <a href="javascript:reloadWordCounts(@Model.CatId, @Model.PoetId, false)">اینجا</a> کلیک کنید.</p>
+        }
+        else
+        {
+            <p id="remStopWords">جهت مشاهدهٔ آمار بدون واژگان کم‌هوادار <a href="javascript:reloadWordCounts(@Model.CatId, @Model.PoetId, true)">اینجا</a> کلیک کنید.</p>
+        }
+        <div class="clear-both">
+            <input type="text" id="wordcountterm" placeholder="جستجوی واژه" value="" onkeyup="onSearchWordCounts(@Model.CatId, @Model.PoetId, @Model.TotalWordCount)">
         </div>
-        <div id="wordcounts-section">
-            <p>
-                در متن @Model.ThisPart @RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.TotalWordCount) واژه را شمرده‌ایم (در تعریفمان از <i>واژه</i> ایرادات جدی وجود دارد، <a href="https://blog.ganjoor.net/1403/04/06/words-frequency/" target="_blank">اینجا</a> را ببینید). شمار واژگان یاد شده به شکل غیرتکراری برابر با @RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.UniqueWordCount) واژه است.
-            </p>
-            @if(Model.RemStopWords)
-            {
-                <p id="remStopWords">جهت مشاهدهٔ آمار با واژگان کم‌هوادار <a href="javascript:reloadWordCounts(@Model.CatId, @Model.PoetId, false)">اینجا</a> کلیک کنید.</p>
-            }
-            else
-            {
-                <p id="remStopWords">جهت مشاهدهٔ آمار بدون واژگان کم‌هوادار <a href="javascript:reloadWordCounts(@Model.CatId, @Model.PoetId, true)">اینجا</a> کلیک کنید.</p>
-            }
-            <div class="clear-both">
-                <input type="text" id="wordcountterm" placeholder="جستجوی واژه" value="" onkeyup="onSearchWordCounts(@Model.CatId, @Model.PoetId, @Model.TotalWordCount)">
-            </div>
-            <div id="wordcounts-table">
-                <partial name="_CategoryWordsCountTablePartial" model="Model.TableModel">
-            </div>
+        <div id="wordcounts-table">
+            <partial name="_CategoryWordsCountTablePartial" model="Model.TableModel">
         </div>
     </div>
 }
