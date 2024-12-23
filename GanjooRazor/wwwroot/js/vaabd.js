@@ -158,7 +158,7 @@ function vaabSelectionChanged() {
     });
     $google.attr({
         href: 'https://www.google.com/search?q=' + encodeURI(text),
-        title: 'جستجو در گپگل',
+        title: 'جستجو در گوگل',
         target: '_blank',
     });
 

@@ -738,10 +738,12 @@ td.c2 {
         display: block;
         border-left: 0.5em solid transparent;
         border-right: 0.5em solid transparent;
-        border-bottom: 0.5em solid rgba(14,17,17,0.9);
+        border-bottom: 0.5em solid rgba(14, 17, 17, 0.9);
         position: absolute;
         top: 0;
         margin-top: -0.5em;
+        left: 50%; /* Position the pointer at the center of the tooltip */
+        transform: translateX(-50%); /* Center-align the pointer */
     }
 
 .jp-video-270p {
