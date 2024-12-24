@@ -247,7 +247,7 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetByFriendlyUrlLimitedItemsAsync(string friendlyUrl, int count = 21)
         {
-            var cacheKey = $"artifacts/friendlyUrl/limited/{friendlyUrl}";
+            var cacheKey = $"artifacts/friendlyUrl/limited/{friendlyUrl}/{count}";
             if (!_memoryCache.TryGetValue(cacheKey, out RServiceResult<RArtifactMasterRecordViewModel> itemInfo))
             {
                 itemInfo = await _artifactService.GetByFriendlyUrlLimitedItemsAsync(friendlyUrl, [PublishStatus.Published], count);
@@ -415,6 +415,69 @@ namespace RMuseum.Controllers
             if (itemInfo == null)
             {
                 itemInfo = await _artifactService.GetByFriendlyUrl(friendlyUrl, visibleItems);
+            }
+
+            if (!string.IsNullOrEmpty(itemInfo.ExceptionString))
+            {
+                return BadRequest(itemInfo.ExceptionString);
+            }
+            if (itemInfo.Result == null)
+                return NotFound();
+
+            Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
+
+            var requestHeaders = Request.GetTypedHeaders();
+            if (requestHeaders.IfModifiedSince.HasValue &&
+                requestHeaders.IfModifiedSince.Value >= itemInfo.Result.LastModified)
+            {
+                return StatusCode(StatusCodes.Status304NotModified);
+            }
+
+
+            return Ok(itemInfo.Result);
+        }
+
+        /// <summary>
+        /// gets specified publish artifact info (including CoverImage + images)
+        /// </summary>
+        /// <param name="friendlyUrl"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        [HttpGet("secure/limited/{friendlyUrl}/{count}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RArtifactMasterRecordViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetUserVisibleLimitedItemsAsync(string friendlyUrl, int count = 21)
+        {
+            RServiceResult<PublishStatus[]> v = await _GetUserVisibleArtifactStatusSet
+               (
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value),
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "SessionId").Value)
+               );
+            if (!string.IsNullOrEmpty(v.ExceptionString))
+                return BadRequest(v.ExceptionString);
+            PublishStatus[] visibleItems = v.Result;
+            RServiceResult<RArtifactMasterRecordViewModel> itemInfo = null;
+            if (visibleItems.Length == 1 && visibleItems[0] == PublishStatus.Published)
+            {
+                var cacheKey = $"artifacts/friendlyUrl/limited/{friendlyUrl}/{count}";
+                if (!_memoryCache.TryGetValue(cacheKey, out itemInfo))
+                {
+                    itemInfo = await _artifactService.GetByFriendlyUrlLimitedItemsAsync(friendlyUrl, [PublishStatus.Published], count);
+                    if (!string.IsNullOrEmpty(itemInfo.ExceptionString))
+                    {
+                        return BadRequest(itemInfo.ExceptionString);
+                    }
+                    if (itemInfo.Result == null)
+                        return NotFound();
+
+                    _memoryCache.Set(cacheKey, itemInfo);
+                }
+            }
+            if (itemInfo == null)
+            {
+                itemInfo = await _artifactService.GetByFriendlyUrlLimitedItemsAsync(friendlyUrl, visibleItems, count);
             }
 
             if (!string.IsNullOrEmpty(itemInfo.ExceptionString))

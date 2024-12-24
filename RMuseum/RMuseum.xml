@@ -118,6 +118,14 @@
             <param name="friendlyUrl"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.GetUserVisibleLimitedItemsAsync(System.String,System.Int32)">
+            <summary>
+            gets specified publish artifact info (including CoverImage + images)
+            </summary>
+            <param name="friendlyUrl"></param>
+            <param name="count"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.ArtifactController.GetUserVisibleByFriendlyUrlFilterItemsByTag(System.String,System.String)">
             <summary>
             gets specified publish artifact info (including CoverImage + images) where its items are filteted by tag
