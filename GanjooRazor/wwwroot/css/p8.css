@@ -243,7 +243,11 @@ select {
     margin-right: 1px;
 }
 
-    .poet .caption {
+.poemtablinks {
+    display: inline-table;
+}
+
+    .poet .caption{
         display: block;
         width: 100%;
         font-family: Vazir;
@@ -253,7 +257,7 @@ select {
         margin-bottom: 30px;
     }
 
-        .poet .caption a {
+        .poet .caption a, .poemtablinks a {
             border-radius: 5px;
             display: block;
             box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
@@ -264,18 +268,27 @@ select {
         }
 
 
-.caption {
+.caption, .poemtablinks {
     max-height: 20px;
 }
 
-#fa .poet .caption a {
+.poemtablinks {
+    font-size: 0.8em;
+}
+
+#fa .poet .caption a, #fa .poemtablinks a {
     color: white;
 }
 
-#fa .caption a:hover {
-    font-weight: bold;
-    background-color: #300;
-}
+    #fa .caption a:hover, #fa .poemtablinks a:hover {
+        font-weight: bold;
+        background-color: #300;
+    }
+
+    #fa .active a{
+        font-weight: bold;
+        background-color: #300;
+    }
 
 .width-100per {
     width: 100% !important;
@@ -292,7 +305,7 @@ a img {
     display: block
 }
 
-.ganjoor-comment img{
+.ganjoor-comment img {
     max-width: 100%;
 }
 
@@ -682,7 +695,7 @@ td.c2 {
     margin: auto;
 }
 
-#pretab {
+#pretab, .poempretab {
     margin-bottom: 60px;
 }
 
@@ -2159,34 +2172,32 @@ mark {
 .footer-icon {
     fill: #300;
 }
-
 .tabcontent {
     display: none;
 }
 
+.tab button {
+    background-color: inherit;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: 0.3s;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px 0px;
+    padding: 5px;
+    margin: 1px;
+    background-color: darkred;
+    color: white;
+}
 
-    .tab button {
-        background-color: inherit;
-        border: none;
-        outline: none;
-        cursor: pointer;
-        transition: 0.3s;
-        border-radius: 5px;
-        box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px 0px;
-        padding: 5px;
-        margin: 1px;
-        background-color: darkred;
-        color: white;
+    .tab button:hover {
+        font-weight: bold;
+        background-color: #300;
     }
 
-        .tab button:hover {
-            font-weight: bold;
-            background-color: #300;
-        }
-
-        .tab button.active {
-            background-color: rgb(51, 0, 0);
-        }
+    .tab button.active {
+        background-color: rgb(51, 0, 0);
+    }
 
 @media(prefers-color-scheme: dark) {
     body {

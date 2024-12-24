@@ -233,7 +233,7 @@
                             @if (Model.CategoryWordsCounts != null)
                             {
                                 <text>
-                                        <partial name="_CategoryWordsCountPartial" model="Model.CategoryWordsCounts">
+                                    <partial name="_CategoryWordsCountPartial" model="Model.CategoryWordsCounts">
                                 </text>
                             }
                         </div>
@@ -243,16 +243,16 @@
 
                 @if (Model.IsCatPage || Model.IsPoetPage)
                 {
-                            <div class="tabcontent related-images-frame" id="words">
-                                <div class="century cursor-pointer" id="load-word-counts" onclick="loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">
-                                            برای بارگذاری بسامد واژٰگان کلیک کنید.
-                                </div>
+                    <div class="tabcontent related-images-frame" id="words">
+                        <div class="century cursor-pointer" id="load-word-counts" onclick="loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">
+                            محاسبهٔ بسامد واژٰگان.
+                        </div>
 
                         <div id="wordcounts-placeholder">
                             @if (Model.CategoryWordsCounts != null)
                             {
                                 <text>
-                                        <partial name="_CategoryWordsCountPartial" model="Model.CategoryWordsCounts">
+                                    <partial name="_CategoryWordsCountPartial" model="Model.CategoryWordsCounts">
                                 </text>
                             }
                         </div>
@@ -273,7 +273,7 @@
                             <p>این بخش هنوز خوانشی ندارد.</p>
                         }
                     </div>
-                    
+
                     @if (Model.IsPoetPage)
                     {
                         <div class="tabcontent" id="photos">
@@ -299,7 +299,7 @@
                                 }
                                 <a href="/photos?p=@Model.GanjoorPage.PoetOrCat.Cat.UrlSlug" role="button" class="pagebutton comments-link">مشاهده و پیشنهاد تصاویر چهره برای @Model.GanjoorPage.PoetOrCat.Poet.Nickname</a>
                             </div>
-                            
+
                         </div>
                         if (Model.GanjoorPage.SecondPoet == null)
                         {
@@ -336,10 +336,10 @@
                     }
 
                     @if (
-                     Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0
-                     )
+                   Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0
+                   )
                     {
-                                        <div id="catmap"></div>
+                        <div id="catmap"></div>
                     }
 
                 }
@@ -386,57 +386,31 @@
                     }
 
                     <div id="comments">
-                        <div id="pretab"></div>
-                        <div class="tab" id="tab-items">
-                            @if (string.IsNullOrEmpty(Model.ActiveTab))
-                            {
-                                <button class="tablinks active" onclick="switchTab(event, 'tools')">اطّلاعات</button>
-                            }
-                            else
-                            {
-                                <button class="tablinks" onclick="switchTab(event, 'tools')">اطّلاعات</button>
-                            }
-                                    <button class="tablinks" onclick="switchTabWordsForPoem(event, 'words', @Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">واژگان</button>
-                                    <button class="tablinks" onclick="switchTab(event, 'manuscripts')">تصاویر</button>
+                        <div class="poempretab" id="pretab"></div>
+                        <div class="poemtab" id="tab-items">
+                            <div class="poemtablinks active"><a href="#pretab">اطّلاعات</a></div>
+                            <div class="poemtablinks"><a href="#words" onclick="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">واژگان</a></div>
+                            <div class="poemtablinks"><a href="#manuscripts">تصاویر</a></div>
                             @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
                             {
-                                if (Model.ActiveTab == "recitations")
-                                {
-                                    <button class="tablinks active" onclick="switchTab(event, 'recitations')">خوانش‌ها</button>
-                                }
-                                else
-                                {
-                                    <button class="tablinks" onclick="switchTab(event, 'recitations')">خوانش‌ها</button>
-                                }
+                                <div class="poemtablinks"><a href="#recitations">خوانش‌ها</a></div>
                             }
                             @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
                             {
-                                if (Model.ActiveTab == "commentaries")
-                                {
-                                    <button class="tablinks active" onclick="switchTab(event, 'commentaries')">شرح‌های صوتی</button>
-                                }
-                                else
-                                {
-                                    <button class="tablinks" onclick="switchTab(event, 'commentaries')">شرح‌های صوتی</button>
-                                }
+                                <div class="poemtablinks"><a href="#commentaries">شرح‌های صوتی</a></div>
                             }
-                            <button class="tablinks" onclick="switchTab(event, 'qpoems')">مشق شعر</button>
+                            <div class="poemtablinks"><a href="#qpoems">مشق شعر</a></div>
                             @if (Model.SectionsWithRelated.Count > 0)
                             {
-                                <button class="tablinks" onclick="switchTab(event, 'rpoems')">هم‌آهنگ‌ها</button>
+                                <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
                             }
-                            <button class="tablinks" onclick="switchTab(event, 'songs')">ترانه‌ها</button>
-                            @if (Model.ActiveTab == "discussions")
-                            {
-                                <button class="tablinks active" onclick="switchTab(event, 'discussions')">حاشیه‌ها</button>
-                            }
-                            else
-                            {
-                                <button class="tablinks" onclick="switchTab(event, 'discussions')">حاشیه‌ها</button>
-                            }
+                            <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                            <div class="poemtablinks">
+                                <a href="#discussions">حاشیه‌ها</a>
+                            </div>
                         </div>
                         <div class="poem-info">
-                            <div class="related-images-frame tabcontent" id="tools" style="@(string.IsNullOrEmpty(Model.ActiveTab) ? "display:block" : "display:none")">
+                            <div class="related-images-frame poemtabcontent">
                                 <p>
                                     <small><i class="notranslate pageicons mouse-icon"></i> با انتخاب متن و لمس متن انتخابی می‌توانید آن را در لغتنامهٔ دهخدا جستجو کنید.</small>
                                 </p>
@@ -606,18 +580,65 @@
                                 }
                             </div>
 
-                            <div class="related-images-frame tabcontent" id="words">
-                                        <div id="wordcounts-placeholder">
-                                                    <a href="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)" id="load-word-counts" class="pagebutton comments-link">
-                                                بسامد واژگان
-                                                <svg class="noindent-info-button" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><g><rect fill="none" height="24" width="24" /></g><g><g><g><path d="M7.5,4C5.57,4,4,5.57,4,7.5S5.57,11,7.5,11S11,9.43,11,7.5S9.43,4,7.5,4z M7.5,9C6.67,9,6,8.33,6,7.5S6.67,6,7.5,6 S9,6.67,9,7.5S8.33,9,7.5,9z M16.5,13c-1.93,0-3.5,1.57-3.5,3.5s1.57,3.5,3.5,3.5s3.5-1.57,3.5-3.5S18.43,13,16.5,13z M16.5,18 c-0.83,0-1.5-0.67-1.5-1.5s0.67-1.5,1.5-1.5s1.5,0.67,1.5,1.5S17.33,18,16.5,18z M5.41,20L4,18.59L18.59,4L20,5.41L5.41,20z" /></g></g></g></svg>
-                                            </a>
-                                        </div>
+                            <div class="poempretab" id="words"></div>
+                            <div class="poemtab">
+                                <div class="poemtablinks"><a href="#pretab">اطّلاعات</a></div>
+                                <div class="poemtablinks active"><a href="#words" onclick="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">واژگان</a></div>
+                                <div class="poemtablinks"><a href="#manuscripts">تصاویر</a></div>
+                                @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
+                                {
+                                    <div class="poemtablinks"><a href="#recitations">خوانش‌ها</a></div>
+                                }
+
+                                @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
+                                {
+                                    <div class="poemtablinks"><a href="#commentaries">شرح‌های صوتی</a></div>
+                                }
+                                <div class="poemtablinks"><a href="#qpoems">مشق شعر</a></div>
+                                @if (Model.SectionsWithRelated.Count > 0)
+                                {
+                                    <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
+                                }
+                                <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                                <div class="poemtablinks">
+                                    <a href="#discussions">حاشیه‌ها</a>
+                                </div>
+                            </div>
+                            <div class="related-images-frame poemtabcontent">
+                                <div id="wordcounts-placeholder">
+                                    <a href="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)" id="load-word-counts" class="pagebutton comments-link">
+                                        محاسبهٔ بسامد واژگان
+                                        <svg class="noindent-info-button" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><g><rect fill="none" height="24" width="24" /></g><g><g><g><path d="M7.5,4C5.57,4,4,5.57,4,7.5S5.57,11,7.5,11S11,9.43,11,7.5S9.43,4,7.5,4z M7.5,9C6.67,9,6,8.33,6,7.5S6.67,6,7.5,6 S9,6.67,9,7.5S8.33,9,7.5,9z M16.5,13c-1.93,0-3.5,1.57-3.5,3.5s1.57,3.5,3.5,3.5s3.5-1.57,3.5-3.5S18.43,13,16.5,13z M16.5,18 c-0.83,0-1.5-0.67-1.5-1.5s0.67-1.5,1.5-1.5s1.5,0.67,1.5,1.5S17.33,18,16.5,18z M5.41,20L4,18.59L18.59,4L20,5.41L5.41,20z" /></g></g></g></svg>
+                                    </a>
+                                </div>
                             </div>
 
 
+                            <div class="poempretab" id="manuscripts"></div>
+                            <div class="poemtab">
+                                <div class="poemtablinks"><a href="#pretab">اطّلاعات</a></div>
+                                <div class="poemtablinks"><a href="#words" onclick="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">واژگان</a></div>
+                                <div class="poemtablinks active"><a href="#manuscripts">تصاویر</a></div>
+                                @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
+                                {
+                                    <div class="poemtablinks"><a href="#recitations">خوانش‌ها</a></div>
+                                }
 
-                            <div class="related-images-frame tabcontent" id="manuscripts">
+                                @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
+                                {
+                                    <div class="poemtablinks"><a href="#commentaries">شرح‌های صوتی</a></div>
+                                }
+                                <div class="poemtablinks"><a href="#qpoems">مشق شعر</a></div>
+                                @if (Model.SectionsWithRelated.Count > 0)
+                                {
+                                    <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
+                                }
+                                <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                                <div class="poemtablinks">
+                                    <a href="#discussions">حاشیه‌ها</a>
+                                </div>
+                            </div>
+                            <div class="related-images-frame poemtabcontent">
                                 @if (Model.GanjoorPage.Poem.Images.Length > 0)
                                 {
                                     <div id="images-section">
@@ -677,7 +698,33 @@
                             @{
                                 if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
                                 {
-                                    <div class="tabcontent" id="recitations" style="@(Model.ActiveTab == "recitations" ? "display:block" : "display:none")">
+
+                                    <div class="poempretab" id="recitations"></div>
+                                    <div class="poemtab">
+                                        <div class="poemtablinks"><a href="#pretab">اطّلاعات</a></div>
+                                        <div class="poemtablinks"><a href="#words" onclick="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">واژگان</a></div>
+                                        <div class="poemtablinks"><a href="#manuscripts">تصاویر</a></div>
+                                        @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
+                                        {
+                                            <div class="poemtablinks active"><a href="#recitations">خوانش‌ها</a></div>
+                                        }
+
+                                        @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
+                                        {
+                                            <div class="poemtablinks"><a href="#commentaries">شرح‌های صوتی</a></div>
+                                        }
+                                        <div class="poemtablinks"><a href="#qpoems">مشق شعر</a></div>
+                                        @if (Model.SectionsWithRelated.Count > 0)
+                                        {
+                                            <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
+                                        }
+                                        <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                                        <div class="poemtablinks">
+                                            <a href="#discussions">حاشیه‌ها</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="poemtabcontent">
                                         <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Normal, Model.CanEdit) />
 
                                         <a onclick="switchPlayerScrollLock()" role="button" class="pagebutton comments-link">
@@ -690,7 +737,32 @@
 
                                 if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
                                 {
-                                    <div class="tabcontent" id="commentaries" style="@(Model.ActiveTab == "commentaries" ? "display:block" : "display:none")">
+                                    <div class="poempretab" id="commentaries"></div>
+                                    <div class="poemtab">
+                                        <div class="poemtablinks"><a href="#pretab">اطّلاعات</a></div>
+                                        <div class="poemtablinks"><a href="#words" onclick="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">واژگان</a></div>
+                                        <div class="poemtablinks"><a href="#manuscripts">تصاویر</a></div>
+                                        @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
+                                        {
+                                            <div class="poemtablinks"><a href="#recitations">خوانش‌ها</a></div>
+                                        }
+
+                                        @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
+                                        {
+                                            <div class="poemtablinks active"><a href="#commentaries">شرح‌های صوتی</a></div>
+                                        }
+                                        <div class="poemtablinks"><a href="#qpoems">مشق شعر</a></div>
+                                        @if (Model.SectionsWithRelated.Count > 0)
+                                        {
+                                            <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
+                                        }
+                                        <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                                        <div class="poemtablinks">
+                                            <a href="#discussions">حاشیه‌ها</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="poemtabcontent">
                                         <partial name="_AudioPlayerPartial" model=@Model.GetRecitationsModel(Model.GanjoorPage.Poem.Recitations, false, RMuseum.Models.GanjoorAudio.RecitationType.Commentary, Model.CanEdit) />
                                         <a onclick="switchPlayerScrollLock()" role="button" class="pagebutton comments-link">
                                             فعال یا غیرفعال‌سازی قفل متن روی خوانش
@@ -699,7 +771,31 @@
                                     </div>
                                 }
 
-                                <div class="tabcontent" id="qpoems">
+                                <div class="poempretab" id="qpoems"></div>
+                                <div class="poemtab">
+                                    <div class="poemtablinks"><a href="#pretab">اطّلاعات</a></div>
+                                    <div class="poemtablinks"><a href="#words" onclick="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">واژگان</a></div>
+                                    <div class="poemtablinks"><a href="#manuscripts">تصاویر</a></div>
+                                    @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
+                                    {
+                                        <div class="poemtablinks"><a href="#recitations">خوانش‌ها</a></div>
+                                    }
+
+                                    @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
+                                    {
+                                        <div class="poemtablinks"><a href="#commentaries">شرح‌های صوتی</a></div>
+                                    }
+                                    <div class="poemtablinks active"><a href="#qpoems">مشق شعر</a></div>
+                                    @if (Model.SectionsWithRelated.Count > 0)
+                                    {
+                                        <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
+                                    }
+                                    <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                                    <div class="poemtablinks">
+                                        <a href="#discussions">حاشیه‌ها</a>
+                                    </div>
+                                </div>
+                                <div class="poemtabcontent">
                                     @for (int i = 0; i < Math.Min(5, Model.GanjoorPage.Poem.Top6QuotedPoems.Length); i++)
                                     {
                                         <partial name="_QuotedPoemPartial" model=@Model.GetQuotedPoemModel(Model.GanjoorPage.Poem.Top6QuotedPoems[i], Model.GanjoorPage, Model.CanEdit) />
@@ -722,7 +818,31 @@
                             }
                             @if (Model.SectionsWithRelated.Any() || Model.SectionsWithMetreAndRhymes.Any())
                             {
-                                <div class="tabcontent" id="rpoems">
+                                <div class="poempretab" id="rpoems"></div>
+                                <div class="poemtab">
+                                    <div class="poemtablinks"><a href="#pretab">اطّلاعات</a></div>
+                                    <div class="poemtablinks"><a href="#words" onclick="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">واژگان</a></div>
+                                    <div class="poemtablinks"><a href="#manuscripts">تصاویر</a></div>
+                                    @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
+                                    {
+                                        <div class="poemtablinks"><a href="#recitations">خوانش‌ها</a></div>
+                                    }
+
+                                    @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
+                                    {
+                                        <div class="poemtablinks"><a href="#commentaries">شرح‌های صوتی</a></div>
+                                    }
+                                    <div class="poemtablinks"><a href="#qpoems">مشق شعر</a></div>
+                                    @if (Model.SectionsWithRelated.Count > 0)
+                                    {
+                                        <div class="poemtablinks active"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
+                                    }
+                                    <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                                    <div class="poemtablinks">
+                                        <a href="#discussions">حاشیه‌ها</a>
+                                    </div>
+                                </div>
+                                <div class="poemtabcontent">
                                     @foreach (var s in Model.SectionsWithRelated)
                                     {
                                         @for (int i = 0; i < Math.Min(5, s.Top6RelatedSections.Length); i++)
@@ -785,9 +905,33 @@
                                 </div>
                             }
 
+                            <div class="poempretab" id="songs"></div>
+                            <div class="poemtab">
+                                <div class="poemtablinks"><a href="#pretab">اطّلاعات</a></div>
+                                <div class="poemtablinks"><a href="#words" onclick="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">واژگان</a></div>
+                                <div class="poemtablinks"><a href="#manuscripts">تصاویر</a></div>
+                                @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
+                                {
+                                    <div class="poemtablinks"><a href="#recitations">خوانش‌ها</a></div>
+                                }
+
+                                @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
+                                {
+                                    <div class="poemtablinks"><a href="#commentaries">شرح‌های صوتی</a></div>
+                                }
+                                <div class="poemtablinks"><a href="#qpoems">مشق شعر</a></div>
+                                @if (Model.SectionsWithRelated.Count > 0)
+                                {
+                                    <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
+                                }
+                                <div class="poemtablinks active"><a href="#songs">ترانه‌ها</a></div>
+                                <div class="poemtablinks">
+                                    <a href="#discussions">حاشیه‌ها</a>
+                                </div>
+                            </div>
                             @if (!Model.GanjoorPage.Poem.Songs.Any())
                             {
-                                <div class="tabcontent" id="songs">
+                                <div class="poemtabcontent">
                                     <p>
                                         <a href="@Html.Raw($"/spotify?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
                                             معرفی ترانه‌هایی که در متن آنها از این شعر استفاده شده است<i class="notranslate info-buttons music_note"></i>
@@ -797,7 +941,7 @@
                             }
                             else
                             {
-                                <div class="tabcontent" id="songs">
+                                <div class="poemtabcontent" id="songs">
                                     @foreach (var song in Model.GanjoorPage.Poem.Songs)
                                     {
                                         <div class="related-song">
@@ -821,7 +965,31 @@
                             }
                         </div>
 
-                        <div class="related-images-frame tabcontent" id="discussions" style="@(Model.ActiveTab == "discussions" ? "display:block" : "display:none")">
+                        <div class="poempretab" id="discussions"></div>
+                        <div class="poemtab">
+                            <div class="poemtablinks"><a href="#pretab">اطّلاعات</a></div>
+                            <div class="poemtablinks"><a href="#words" onclick="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">واژگان</a></div>
+                            <div class="poemtablinks"><a href="#manuscripts">تصاویر</a></div>
+                            @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
+                            {
+                                <div class="poemtablinks"><a href="#recitations">خوانش‌ها</a></div>
+                            }
+
+                            @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
+                            {
+                                <div class="poemtablinks"><a href="#commentaries">شرح‌های صوتی</a></div>
+                            }
+                            <div class="poemtablinks"><a href="#qpoems">مشق شعر</a></div>
+                            @if (Model.SectionsWithRelated.Count > 0)
+                            {
+                                <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
+                            }
+                            <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                            <div class="poemtablinks active">
+                                <a href="#discussions">حاشیه‌ها</a>
+                            </div>
+                        </div>
+                        <div class="related-images-frame poemtabcontent">
 
                             <div id="comments-section">
                                 @switch (Model.GanjoorPage.Poem.Comments.Length)

@@ -46,12 +46,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public string GetRecitationUrl(PublicRecitationViewModel upvote)
         {
-            if(upvote.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary)
-            {
-                return $"{Configuration["SiteUrl"]}{upvote.PoemFullUrl}?tab=commentaries#{upvote.Id}";
-            }
-
-            return $"{Configuration["SiteUrl"]}{upvote.PoemFullUrl}?tab=recitations#{upvote.Id}";
+            return $"{Configuration["SiteUrl"]}{upvote.PoemFullUrl}#{upvote.Id}";
         }
 
         public async Task<IActionResult> OnGetAsync()

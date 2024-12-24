@@ -1598,6 +1598,10 @@ function onSearchWordCounts(catId, poetId, totalWordCount) {
 
 
 function countPoemWords(poemId) {
+    var loadButton = document.getElementById("load-word-counts");
+    if (loadButton != null) {
+        loadButton.remove();
+    }
     var divParent = document.getElementById('wordcounts-placeholder');
     var imgElementId = 'loadingwordcountsimg';
     divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="remove-this-wordcounts"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';

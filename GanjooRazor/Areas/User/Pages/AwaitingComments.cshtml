@@ -167,7 +167,7 @@ else
                     @Html.Raw(comment.HtmlComment)
                 </div>
                 <p>
-                    @comment.AuthorName <small>در @comment.CommentDate.ToFriendlyPersianDateTextify()</small> دربارهٔ <a href="@comment.Poem.UrlSlug?tab=discussions#comment-@comment.Id">@comment.Poem.Title</a>
+                    @comment.AuthorName <small>در @comment.CommentDate.ToFriendlyPersianDateTextify()</small> دربارهٔ <a href="@comment.Poem.UrlSlug#comment-@comment.Id">@comment.Poem.Title</a>
                 </p>
                 <p>
                     <a href="/Admin/ExamineUser?id=@comment.UserId">#</a>
