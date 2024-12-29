@@ -1122,8 +1122,6 @@ namespace RMuseum.Services.Implementation
             RArtifactMasterRecord parent =
                  await _context.Artifacts
                  .Include(a => a.CoverImage)
-                 .Include(a => a.Items).ThenInclude(i => i.Images)
-                 .Include(a => a.Items).ThenInclude(i => i.Tags).ThenInclude(t => t.RTag)
                  .Where(a => statusArray.Contains(a.Status) && a.FriendlyUrl == artifactUrl)
                  .AsNoTracking()
                  .SingleOrDefaultAsync();
@@ -1131,17 +1129,10 @@ namespace RMuseum.Services.Implementation
             if (parent == null)
                 return new RServiceResult<RArtifactItemRecordViewModel>(null);
 
-            if (parent.Items != null)
-                parent.Items = parent.Items.OrderBy(i => i.Order).ToArray();
-            if (parent.Tags != null)
-                parent.Tags = parent.Tags.OrderBy(a => a.RTag.Order).ToArray();
 
-
-
-            RArtifactItemRecord item =
-                 parent.Items
-                 .Where(i => i.FriendlyUrl == itemUrl)
-                 .SingleOrDefault();
+            RArtifactItemRecord item = 
+                    await _context.Items.AsNoTracking().Include(i => i.Images).Include(i => i.Tags).
+                        Where(i => i.RArtifactMasterRecordId == parent.Id && i.FriendlyUrl == itemUrl).SingleAsync();
 
             if (item == null)
                 return new RServiceResult<RArtifactItemRecordViewModel>(null);
@@ -1151,17 +1142,19 @@ namespace RMuseum.Services.Implementation
             if (item.Tags != null)
                 item.Tags = item.Tags.OrderBy(a => a.RTag.Order).ToArray();
 
-            RArtifactItemRecord nextItem = parent.Items.Where(i => i.Order > item.Order).OrderBy(i => i.Order).FirstOrDefault();
-            RArtifactItemRecord prevItem = parent.Items.Where(i => i.Order < item.Order).OrderByDescending(i => i.Order).FirstOrDefault();
+            RArtifactItemRecord nextItem =
+                await _context.Items.AsNoTracking().Include(i => i.Images).Where(i => i.RArtifactMasterRecordId == parent.Id && i.Order > item.Order).OrderBy(i => i.Order).FirstOrDefaultAsync();
+            RArtifactItemRecord prevItem =
+                await _context.Items.AsNoTracking().Include(i => i.Images).Where(i => i.RArtifactMasterRecordId == parent.Id && i.Order < item.Order).OrderByDescending(i => i.Order).FirstOrDefaultAsync();
 
             RArtifactItemRecordViewModel res = new RArtifactItemRecordViewModel()
             {
                 Item = item,
                 ParentFriendlyUrl = parent.FriendlyUrl,
                 ParentName = parent.Name,
-                ParentImageId = parent.CoverImage.Id,
+                ParentImageId = parent.CoverImageId,
                 ParentExternalNormalSizeImageUrl = parent.CoverImage.ExternalNormalSizeImageUrl,
-                ParentItemCount = parent.Items.Count(),
+                ParentItemCount = parent.ItemCount,
                 NextItemFriendlyUrl = nextItem == null ? "" : nextItem.FriendlyUrl,
                 NextItemImageId = nextItem == null ? null : nextItem.Images.First().Id,
                 NextItemExternalNormalSizeImageUrl = nextItem == null ? null : nextItem.Images.First().ExternalNormalSizeImageUrl,
