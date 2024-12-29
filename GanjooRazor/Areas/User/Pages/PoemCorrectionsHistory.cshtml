@@ -66,6 +66,13 @@ else
 
         <div style="background-color:@color" id="correction-@correction.Id">
             <table>
+                @if(Model.CanEdit)
+                {
+                    <tr>
+                        <td colspan="2"><a href="/User/Edits?UserId=@correction.UserId" target="_blank">@correction.UserId</a></td>
+                    </tr>
+
+                }
                 <tr>
                     <td colspan="2"><a href="/?p=@correction.PoemId" target="_blank">مشاهدهٔ متن شعر یا بخش</a></td>
                 </tr>

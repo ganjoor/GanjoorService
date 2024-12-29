@@ -19,6 +19,7 @@ namespace GanjooRazor.Areas.User.Pages
     [IgnoreAntiforgeryToken(Order = 1001)]
     public class PoemCorrectionsHistoryModel : PageModel
     {
+
         /// <summary>
         /// Last Error
         /// </summary>
@@ -33,6 +34,11 @@ namespace GanjooRazor.Areas.User.Pages
         /// Corrections
         /// </summary>
         public List<GanjoorPoemCorrectionViewModel> Corrections { get; set; }
+
+        /// <summary>
+        /// can edit
+        /// </summary>
+        public bool CanEdit { get; set; }
 
         public GanjoorLanguage[] Languages { get; set; }
         private async Task ReadLanguagesAsync(HttpClient secureClient)
@@ -50,6 +56,8 @@ namespace GanjooRazor.Areas.User.Pages
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
                 return Redirect("/");
+
+            CanEdit = Request.Cookies["CanEdit"] == "True";
 
             LastError = "";
             using (HttpClient secureClient = new HttpClient())
