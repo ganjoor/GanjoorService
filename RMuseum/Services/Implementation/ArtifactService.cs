@@ -1131,7 +1131,7 @@ namespace RMuseum.Services.Implementation
 
 
             RArtifactItemRecord item = 
-                    await _context.Items.AsNoTracking().Include(i => i.Images).Include(i => i.Tags).
+                    await _context.Items.AsNoTracking().Include(i => i.Images).Include(i => i.Tags).ThenInclude(t => t.RTag).
                         Where(i => i.RArtifactMasterRecordId == parent.Id && i.FriendlyUrl == itemUrl).SingleAsync();
 
             if (item == null)
