@@ -29,6 +29,17 @@
         cookieValue = getCookie("stickyEnabled");
         var stickyEnabled = cookieValue != "false";
     </script>
+
+    <script>
+        function deletePoetFromSearch(poetId, poetName){
+            if(!confirm('آیا می‌خواهید '+ poetName+ ' را از نتایج حذف کنید؟')) return;
+            const currentUrl = new URL(window.location.href);
+            const params = currentUrl.searchParams;
+            params.append('e', poetId.toString());
+            currentUrl.search = params.toString();
+            window.location.href = currentUrl.toString();
+        }
+    </script>
 </head>
 <body>
 
@@ -188,20 +199,25 @@
                         var poem = Model.Poems[poemIndex];
 
                         <div class="sitem">
-                            @if(Model.PaginationMetadata != null)
+                            @if (Model.PaginationMetadata != null)
                             {
                                 <div class="circled-number-diff">@(((Model.PaginationMetadata.currentPage - 1) * Model.PaginationMetadata.pageSize + poemIndex + 1).ToPersianNumbers())</div>
                             }
-                            
+
                             <h2>
-                                 <a href="@poem.FullUrl">@poem.FullTitle</a>
+                                <a href="@poem.FullUrl">@poem.FullTitle</a>
                             </h2>
                             <div class="spacer">&nbsp;</div>
                             <div class="sit">
                                 @Html.Raw(poem.PlainText)
                             </div>
 
-                            <img src="@($"{GanjooRazor.APIRoot.InternetUrl}{poem.Category.Poet.ImageUrl}")" alt="@($"{poem.Category.Poet.Nickname}")" />
+                            <div class="poet">
+                                <img src="@($"{GanjooRazor.APIRoot.InternetUrl}{poem.Category.Poet.ImageUrl}")" alt="@($"{poem.Category.Poet.Nickname}")" />
+                                <a role="button" onclick="deletePoetFromSearch(@poem.Category.Poet.Id, '@(poem.Category.Poet.Nickname)')" class="actionlink" title="حذف @($"{poem.Category.Poet.Nickname}") از نتایج"><i class="notranslate noindent-info-button delete-icon"></i></a>
+                            </div>
+
+
 
                             <div class="spacer">&nbsp;</div>
 
