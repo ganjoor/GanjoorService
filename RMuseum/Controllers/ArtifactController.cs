@@ -2282,17 +2282,17 @@ namespace RMuseum.Controllers
         /// <summary>
         /// add a new item to an artifact
         /// </summary>
-        /// <param name="artifactId"></param>
+        /// <param name="artifactFriendlyUrl"></param>
         /// <param name="jpeg"></param>
         /// <returns></returns>
-        [HttpPut("item/{artifactId}")]
+        [HttpPut("item/{artifactFriendlyUrl}")]
         [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RArtifactItemRecord))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public async Task<IActionResult> AddItemToArtifactAsync(Guid artifactId, IFormFile jpeg)
+        public async Task<IActionResult> AddItemToArtifactAsync(string artifactFriendlyUrl, IFormFile jpeg)
         {
-            var res = await _artifactService.AddItemToArtifactAsync(artifactId, jpeg, null);
+            var res = await _artifactService.AddItemToArtifactAsync(artifactFriendlyUrl, jpeg, null);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

@@ -3637,16 +3637,16 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// add item to an artifact
         /// </summary>
-        /// <param name="artifactId"></param>
+        /// <param name="artifactFriendlyUrl"></param>
         /// <param name="file"></param>
         /// <param name="jpegStream"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<RArtifactItemRecord>> AddItemToArtifactAsync(Guid artifactId, IFormFile file, Stream jpegStream)
+        public async Task<RServiceResult<RArtifactItemRecord>> AddItemToArtifactAsync(string artifactFriendlyUrl, IFormFile file, Stream jpegStream)
         {
             try
             {
-                RArtifactMasterRecord book = await _context.Artifacts.Where(b => b.Id == artifactId).SingleAsync();
-                RArtifactItemRecord firstItem = await _context.Items.AsNoTracking().Where(i => i.RArtifactMasterRecordId == artifactId).FirstOrDefaultAsync();
+                RArtifactMasterRecord book = await _context.Artifacts.Where(b => b.FriendlyUrl == artifactFriendlyUrl).SingleAsync();
+                RArtifactItemRecord firstItem = await _context.Items.AsNoTracking().Where(i => i.RArtifactMasterRecordId == book.Id).FirstOrDefaultAsync();
                 int zeroPads = 4;
                 if(firstItem != null)
                 {
