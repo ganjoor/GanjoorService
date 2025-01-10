@@ -31,6 +31,7 @@ using RSecurityBackend.Models.Notification;
 using RMuseum.Models.PDFLibrary;
 using Microsoft.Identity.Client;
 using Org.BouncyCastle.Utilities.Collections;
+using static System.Windows.Forms.LinkLabel;
 
 namespace RMuseum.Services.Implementation
 {
@@ -155,7 +156,7 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<RArtifactMasterRecordViewModel>(null, exp.ToString());
             }
-            
+
         }
 
         /// <summary>
@@ -185,7 +186,7 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<RArtifactItemRecord[]>(null, exp.ToString());
             }
-            
+
         }
 
         /// <summary>
@@ -1133,7 +1134,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<RArtifactItemRecordViewModel>(null);
 
 
-            RArtifactItemRecord item = 
+            RArtifactItemRecord item =
                     await _context.Items.AsNoTracking().Include(i => i.Images).Include(i => i.Tags).ThenInclude(t => t.RTag).
                         Where(i => i.RArtifactMasterRecordId == parent.Id && i.FriendlyUrl == itemUrl).SingleAsync();
 
@@ -1298,11 +1299,11 @@ namespace RMuseum.Services.Implementation
                                        var book = await context.Artifacts.Include(a => a.Items).ThenInclude(i => i.Images).Include(a => a.CoverImage).SingleAsync();
                                        await jobProgressServiceEF.UpdateJob(job.Id, 2, $"بارگذاری {book.Name}");
                                        var resUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
-                                       if(!string.IsNullOrEmpty(resUpload.ExceptionString))
+                                       if (!string.IsNullOrEmpty(resUpload.ExceptionString))
                                        {
                                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, resUpload.ExceptionString);
                                        }
-                                       if(!resUpload.Result)
+                                       if (!resUpload.Result)
                                        {
                                            await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, "_UploadArtifactToExternalServer returned false");
                                        }
@@ -1347,7 +1348,7 @@ namespace RMuseum.Services.Implementation
                         Configuration.GetSection("ExternalFTPServer")["Password"]
                     );
 
-                   
+
 
                     if (!skipUpload)
                     {
@@ -1355,7 +1356,7 @@ namespace RMuseum.Services.Implementation
                         await ftpClient.AutoConnect();
                         ftpClient.Config.RetryAttempts = 3;
                     }
-                   
+
 
                     foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
                     {
@@ -1365,14 +1366,14 @@ namespace RMuseum.Services.Implementation
                             book.CoverImage.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/{book.CoverImage.FolderName}/orig/{Path.GetFileName(localFilePath)}";
                             context.Update(book.CoverImage);
                         }
-                        if(!skipUpload)
+                        if (!skipUpload)
                         {
                             await jobProgressServiceEF.UpdateJob(job.Id, 0, localFilePath);
 
                             var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{book.CoverImage.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
                             await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
                         }
-                      
+
                     }
 
 
@@ -1388,18 +1389,18 @@ namespace RMuseum.Services.Implementation
                                     image.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/{image.FolderName}/orig/{Path.GetFileName(localFilePath)}";
                                     context.Update(image);
                                 }
-                                if(!skipUpload)
+                                if (!skipUpload)
                                 {
                                     await jobProgressServiceEF.UpdateJob(job.Id, 0, localFilePath);
                                     var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{book.CoverImage.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
                                     await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
                                 }
-                               
+
                             }
                         }
                     }
 
-                    if(!skipUpload)
+                    if (!skipUpload)
                     {
                         await ftpClient.Disconnect();
                     }
@@ -3055,6 +3056,28 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// remove ganjoor link
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> RemoveGanjoorLinkAsync(Guid id)
+        {
+            try
+            {
+                GanjoorLink link =
+                    await _context.GanjoorLinks
+                    .Where(l => l.Id == id)
+                    .SingleAsync();
+                _context.Remove(link);
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Temporary api
         /// </summary>
         /// <returns></returns>
@@ -3440,6 +3463,28 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// remove pinterest link
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> RemovePinterestLinkAsync(Guid id)
+        {
+            try
+            {
+                PinterestLink link =
+                    await _context.PinterestLinks
+                    .Where(l => l.Id == id)
+                    .SingleAsync();
+                _context.Remove(link);
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
         private void FtpClient_ValidateCertificate(FluentFTP.Client.BaseClient.BaseFtpClient control, FtpSslValidationEventArgs e)
         {
             e.Accept = true;
@@ -3648,7 +3693,7 @@ namespace RMuseum.Services.Implementation
                 RArtifactMasterRecord book = await _context.Artifacts.Where(b => b.FriendlyUrl == artifactFriendlyUrl).SingleAsync();
                 RArtifactItemRecord firstItem = await _context.Items.AsNoTracking().Where(i => i.RArtifactMasterRecordId == book.Id).FirstOrDefaultAsync();
                 int zeroPads = 4;
-                if(firstItem != null)
+                if (firstItem != null)
                 {
                     zeroPads = firstItem.FriendlyUrl.Length - 1; //removing p at the start
                 }

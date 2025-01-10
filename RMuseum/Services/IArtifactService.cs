@@ -487,6 +487,13 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> ReviewSuggestedLink(Guid linkId, Guid userId, ReviewResult result);
 
         /// <summary>
+        /// remove ganjoor link
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> RemoveGanjoorLinkAsync(Guid id);
+
+        /// <summary>
         /// Temporary api
         /// </summary>
         /// <returns></returns>
@@ -527,6 +534,13 @@ namespace RMuseum.Services
         /// <param name="imageUrl"></param>
         /// <returns></returns>
         Task<RServiceResult<bool>> ReviewSuggestedPinterestLink(Guid linkId, Guid userId, string altText, ReviewResult result, string reviewDesc, string imageUrl);
+
+        /// <summary>
+        /// remove pinterest link
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> RemovePinterestLinkAsync(Guid id);
 
         /// <summary>
         /// Synchronize suggested pinterest link

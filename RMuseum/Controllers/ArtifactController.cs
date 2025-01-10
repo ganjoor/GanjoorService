@@ -1986,6 +1986,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// remove ganjoor link
+        /// </summary>
+        /// <param name="linkId"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("ganjoor")]
+        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> RemoveGanjoorLinkAsync(Guid linkId)
+        {
+            RServiceResult<bool> suggestion = await _artifactService.RemoveGanjoorLinkAsync(linkId);
+            if (!string.IsNullOrEmpty(suggestion.ExceptionString))
+                return BadRequest(suggestion.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
         ///toc / temporary one time api / to be removed
         /// </summary>
         /// <returns></returns>
@@ -2077,6 +2095,24 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> SynchronizeSuggestedPinterestLink(Guid linkId)
         {
             RServiceResult<bool> suggestion = await _artifactService.SynchronizeSuggestedPinterestLink(linkId);
+            if (!string.IsNullOrEmpty(suggestion.ExceptionString))
+                return BadRequest(suggestion.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// remove pinterest link
+        /// </summary>
+        /// <param name="linkId"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("pinterest")]
+        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> RemovePinterestLinkAsync(Guid linkId)
+        {
+            RServiceResult<bool> suggestion = await _artifactService.RemovePinterestLinkAsync(linkId);
             if (!string.IsNullOrEmpty(suggestion.ExceptionString))
                 return BadRequest(suggestion.ExceptionString);
             return Ok();

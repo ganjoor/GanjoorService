@@ -578,6 +578,13 @@
             <param name="displayOnPage">display ogn page</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.RemoveGanjoorLinkAsync(System.Guid)">
+            <summary>
+            remove ganjoor link
+            </summary>
+            <param name="linkId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.ArtifactController.AddTOCForSuggestedLinks">
              <summary>
             toc / temporary one time api / to be removed
@@ -613,6 +620,13 @@
         <member name="M:RMuseum.Controllers.ArtifactController.SynchronizeSuggestedPinterestLink(System.Guid)">
             <summary>
             mark suggested pinterest ganjoor link as synchronized
+            </summary>
+            <param name="linkId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.RemovePinterestLinkAsync(System.Guid)">
+            <summary>
+            remove pinterest link
             </summary>
             <param name="linkId"></param>
             <returns></returns>
@@ -15204,6 +15218,13 @@
             <param name="result"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IArtifactService.RemoveGanjoorLinkAsync(System.Guid)">
+            <summary>
+            remove ganjoor link
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IArtifactService.AddTOCForSuggestedLinks">
             <summary>
             Temporary api
@@ -15244,6 +15265,13 @@
             <param name="result"></param>
             <param name="reviewDesc"></param>
             <param name="imageUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IArtifactService.RemovePinterestLinkAsync(System.Guid)">
+            <summary>
+            remove pinterest link
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IArtifactService.SynchronizeSuggestedPinterestLink(System.Guid)">
@@ -17973,6 +18001,13 @@
             <param name="result"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.RemoveGanjoorLinkAsync(System.Guid)">
+            <summary>
+            remove ganjoor link
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.AddTOCForSuggestedLinks">
             <summary>
             Temporary api
@@ -18013,6 +18048,13 @@
             <param name="result"></param>
             <param name="reviewDesc"></param>
             <param name="imageUrl"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.RemovePinterestLinkAsync(System.Guid)">
+            <summary>
+            remove pinterest link
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.SynchronizeSuggestedPinterestLink(System.Guid)">
