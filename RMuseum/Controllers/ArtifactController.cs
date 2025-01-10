@@ -2280,6 +2280,25 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// add a new item to an artifact
+        /// </summary>
+        /// <param name="artifactId"></param>
+        /// <param name="jpeg"></param>
+        /// <returns></returns>
+        [HttpPut("item/{artifactId}")]
+        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RArtifactItemRecord))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> AddItemToArtifactAsync(Guid artifactId, IFormFile jpeg)
+        {
+            var res = await _artifactService.AddItemToArtifactAsync(artifactId, jpeg, null);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// readonly mode
         /// </summary>
         public bool ReadOnlyMode

@@ -674,6 +674,14 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.AddItemToArtifactAsync(System.Guid,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            add a new item to an artifact
+            </summary>
+            <param name="artifactId"></param>
+            <param name="jpeg"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.ArtifactController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -15339,6 +15347,15 @@
             create images for ganjoor - offline
             </summary>
         </member>
+        <member name="M:RMuseum.Services.IArtifactService.AddItemToArtifactAsync(System.Guid,Microsoft.AspNetCore.Http.IFormFile,System.IO.Stream)">
+            <summary>
+            add item to an artifact
+            </summary>
+            <param name="artifactId"></param>
+            <param name="file"></param>
+            <param name="jpegStream"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IDonationService">
             <summary>
             donation service
@@ -18019,6 +18036,15 @@
             </summary>
             <param name="paging"></param>
             <param name="term"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.AddItemToArtifactAsync(System.Guid,Microsoft.AspNetCore.Http.IFormFile,System.IO.Stream)">
+            <summary>
+            add item to an artifact
+            </summary>
+            <param name="artifactId"></param>
+            <param name="file"></param>
+            <param name="jpegStream"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.ArtifactService._context">
