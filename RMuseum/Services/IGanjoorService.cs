@@ -687,8 +687,9 @@ namespace RMuseum.Services
         /// <param name="term"></param>
         /// <param name="poetId"></param>
         /// <param name="catId"></param>
+        /// <param name="exceptPoetId"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> Search(PagingParameterModel paging, string term, int? poetId, int? catId);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> Search(PagingParameterModel paging, string term, int? poetId, int? catId, int[] exceptPoetId);
 
         /// <summary>
         /// batch rename

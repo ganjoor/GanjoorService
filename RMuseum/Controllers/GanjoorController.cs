@@ -2474,6 +2474,7 @@ namespace RMuseum.Controllers
         /// <param name="term"></param>
         /// <param name="poetId"></param>
         /// <param name="catId"></param>
+        /// <param name="exceptPoetId"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("poems/search")]
@@ -2481,9 +2482,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCompleteViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
-        public async Task<IActionResult> Search([FromQuery] PagingParameterModel paging, string term, int poetId = 0, int catId = 0)
+        public async Task<IActionResult> Search([FromQuery] PagingParameterModel paging, string term, int poetId = 0, int catId = 0, int[] exceptPoetId = null)
         {
-            var pagedResult = await _ganjoorService.Search(paging, term, poetId == 0 ? (int?)null : poetId, catId == 0 ? (int?)null : catId);
+            var pagedResult = await _ganjoorService.Search(paging, term, poetId == 0 ? (int?)null : poetId, catId == 0 ? (int?)null : catId, exceptPoetId == null ?[] : exceptPoetId);
             if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
                 return BadRequest(pagedResult.ExceptionString);
 

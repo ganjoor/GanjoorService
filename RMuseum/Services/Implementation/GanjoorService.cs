@@ -2758,8 +2758,9 @@ namespace RMuseum.Services.Implementation
         /// <param name="term"></param>
         /// <param name="poetId"></param>
         /// <param name="catId"></param>
+        /// <param name="exceptPoetId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> Search(PagingParameterModel paging, string term, int? poetId, int? catId)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> Search(PagingParameterModel paging, string term, int? poetId, int? catId, int[] exceptPoetId)
         {
             term = term.Trim().ApplyCorrectYeKe();
 
@@ -2811,6 +2812,8 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorPoems
                 .Where(p =>
                         (catId == null || catIdList.Contains(p.CatId))
+                        &&
+                        (exceptPoetId.Length == 0 || !exceptPoetId.Contains(p.Cat.PoetId))
                         &&
                        EF.Functions.Contains(p.PlainText, searchConditions)
                         )
