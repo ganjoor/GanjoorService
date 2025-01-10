@@ -419,6 +419,30 @@ function editCouplet(poemId, coupletIndex, blockId) {
 }
 
 function switchBookmark(poemId, coupletIndex, divSuffix) {
+    $.ajax({
+        type: "GET",
+        url: '?Handler=PoemBookmarks&poemId=' + String(poemId),
+        error: function (err) {
+            console.log(err);
+        },
+        success: function (bookmarks) {
+            for (var i = 0; i < bookmarks.length; i++) {
+                var bookmark = bookmarks[i];
+                if (bookmark.coupletIndex == coupletIndex) {
+                    if (bookmark.privateNote != null && bookmark.privateNote != '') {
+                        if (!confirm('با حذف این نشان یادداشت آن نیز حذف خواهد شد. از این کار اطمینان دارید؟')) {
+                            return;
+                        }
+                    }
+                    break;
+                }
+            }
+            switchBookmarkInternal(poemId, coupletIndex, divSuffix);
+        },
+    });
+}
+
+function switchBookmarkInternal(poemId, coupletIndex, divSuffix) {
     var iconElementId = coupletIndex < 0 ? 'bookmark-icon-comment-' + String(-coupletIndex) + divSuffix : 'bookmark-icon-' + String(coupletIndex);
     var secondIconElementId = divSuffix != '' && coupletIndex < 0 ? 'bookmark-icon-comment-' + String(-coupletIndex) : null;
     if (document.getElementById(iconElementId) != null) {
