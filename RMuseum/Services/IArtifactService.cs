@@ -630,5 +630,14 @@ namespace RMuseum.Services
         /// </summary>
         Task OpenAIStartCreatingImagesForPoemsOfflineAsync();
 
+        /// <summary>
+        /// add item to an artifact
+        /// </summary>
+        /// <param name="artifactId"></param>
+        /// <param name="file"></param>
+        /// <param name="jpegStream"></param>
+        /// <returns></returns>
+        Task<RServiceResult<RArtifactItemRecord>> AddItemToArtifactAsync(Guid artifactId, IFormFile file, Stream jpegStream);
+
     }
 }

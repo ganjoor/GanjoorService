@@ -28,6 +28,9 @@ using System.Threading.Tasks;
 using DNTPersianUtils.Core;
 using FluentFTP;
 using RSecurityBackend.Models.Notification;
+using RMuseum.Models.PDFLibrary;
+using Microsoft.Identity.Client;
+using Org.BouncyCastle.Utilities.Collections;
 
 namespace RMuseum.Services.Implementation
 {
@@ -3629,6 +3632,67 @@ namespace RMuseum.Services.Implementation
             }
 
             return new RServiceResult<(PaginationMetadata PagingMeta, RArtifactItemRecordViewModel[] Items)>((paginatedResult.PagingMeta, viewModels.ToArray()));
+        }
+
+        /// <summary>
+        /// add item to an artifact
+        /// </summary>
+        /// <param name="artifactId"></param>
+        /// <param name="file"></param>
+        /// <param name="jpegStream"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<RArtifactItemRecord>> AddItemToArtifactAsync(Guid artifactId, IFormFile file, Stream jpegStream)
+        {
+            try
+            {
+                RArtifactMasterRecord book = await _context.Artifacts.Where(b => b.Id == artifactId).SingleAsync();
+                RArtifactItemRecord firstItem = await _context.Items.AsNoTracking().Where(i => i.RArtifactMasterRecordId == artifactId).FirstOrDefaultAsync();
+                int zeroPads = 4;
+                if(firstItem != null)
+                {
+                    zeroPads = firstItem.FriendlyUrl.Length - 1; //removing p at the start
+                }
+                int order = 1 + await _context.Items.Where(i => i.RArtifactMasterRecordId == book.Id).CountAsync();
+
+                RArtifactItemRecord page = new RArtifactItemRecord()
+                {
+                    Name = $"تصویر {order}",
+                    NameInEnglish = $"Image {order} of {book.NameInEnglish}",
+                    Description = "",
+                    DescriptionInEnglish = "",
+                    Order = order,
+                    FriendlyUrl = $"p{$"{order}".PadLeft(zeroPads, '0')}",
+                    LastModified = DateTime.Now,
+                    RArtifactMasterRecordId = book.Id,
+                };
+
+                RServiceResult<RPictureFile> picture = await _pictureFileService.Add(page.Name, page.Description, 1, file, "", jpegStream, $"{order}".PadLeft(zeroPads, '0') + ".jpg", book.FriendlyUrl);
+                if (picture.Result == null)
+                {
+                    return new RServiceResult<RArtifactItemRecord>(null, ($"_pictureFileService.Add : {picture.ExceptionString}"));
+                }
+                page.Images = [picture.Result];
+                page.CoverImageIndex = 0;
+                _context.Add(page);
+                await _context.SaveChangesAsync();
+
+                book.ItemCount = order;
+                _context.Update(book);
+                await _context.SaveChangesAsync();
+
+                var resUpload = await _UploadArtifactPageToExternalServer(page, _context, book.FriendlyUrl, false);
+                if (resUpload.Result != true)
+                {
+                    return new RServiceResult<RArtifactItemRecord>(null, resUpload.ExceptionString);
+                }
+
+                return new RServiceResult<RArtifactItemRecord>(page);
+
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<RArtifactItemRecord>(null, exp.ToString());
+            }
         }
 
 
