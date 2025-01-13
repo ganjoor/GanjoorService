@@ -625,7 +625,10 @@ namespace RMuseum.Services.Implementation
                 int subCatWholeCoupletsCount = subCatCoupletCounts[0].Count;
                 if (subCatWholeCoupletsCount == 0)
                 {
-                    skippedSomeCats = true;
+                    if(subCat.Id != catId)
+                    {
+                        skippedSomeCats = true;
+                    }
                     continue;
                 }
                 if (subCatIndex % 2 == 0)
