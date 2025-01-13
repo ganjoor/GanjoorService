@@ -583,6 +583,71 @@ namespace RMuseum.Services.Implementation
             }
             htmlText += $"</table>{Environment.NewLine}";
 
+
+
+            //آمار شعرهای زیربخشها
+            string subCatsHtmlText = "";
+            var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).ToListAsync();
+            subCats.Add(await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync());
+            int subCatIndex = 0;
+            foreach (var subCat in subCats)
+            {
+                List<int> subcatIdList = [subCat.Id];
+                if(subCat.Id != catId)
+                {
+                    await _populateCategoryChildren(context, subCat.Id, subcatIdList);
+                }
+                else
+                {
+                    subCat.Title = "بخش‌بندی نشده";
+                }
+
+                var subCatCoupletCounts =
+                                                  await context.GanjoorVerses.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
+                                                  .Where(v =>
+                                                  v.Poem.Cat.Poet.Published
+                                                  &&
+                                                  (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
+                                                  &&
+                                                  subcatIdList.Contains(v.Poem.CatId)
+                                                  )
+                                                  .GroupBy(v => new { v.Poem.Cat.PoetId })
+                                                  .Select(g => new { g.Key.PoetId, Count = g.Count() })
+                                                  .ToListAsync();
+                if (subCatCoupletCounts.Count != 1)
+                    continue;
+                int subCatWholeCoupletsCount = subCatCoupletCounts[0].Count;
+                if (subCatWholeCoupletsCount == 0) continue;
+                if (subCatIndex % 2 == 0)
+                    subCatsHtmlText += $"<tr class=\"e\">{Environment.NewLine}";
+                else
+                    subCatsHtmlText += $"<tr>{Environment.NewLine}";
+
+                subCatsHtmlText += $"<td class=\"c1\">{(subCatIndex + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
+                subCatsHtmlText += $"<td class=\"c2\"><a href=\"{subCat.FullUrl}\">{subCat.Title}</a></td>{Environment.NewLine}";
+                subCatsHtmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(subCatWholeCoupletsCount)}</td>{Environment.NewLine}";
+                subCatsHtmlText += $"<td class=\"c4\">{(subCatWholeCoupletsCount * 100.0 / wholeCoupletsCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+
+                subCatsHtmlText += $"</tr>{Environment.NewLine}";
+                subCatIndex++;
+            }
+
+            if (!string.IsNullOrEmpty(subCatsHtmlText))
+            {
+                htmlText += $"<p>آمار ابیات به تفکیک زیربخش‌های این قسمت به شرح زیر است (بخش‌هایی که در این جدول نیامده‌اند فاقد شعر بوده‌اند):</p>{Environment.NewLine}";
+                htmlText += $"<table>{Environment.NewLine}" +
+                       $"<tr class=\"h\">{Environment.NewLine}" +
+                       $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
+                       $"<td class=\"c2\">بخش</td>{Environment.NewLine}" +
+                       $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
+                       $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                       $"</tr>{Environment.NewLine}";
+                htmlText += subCatsHtmlText;
+                htmlText += $"</table>{Environment.NewLine}";
+            }
+
+
+
             htmlText += $"</div>{Environment.NewLine}";
 
 
