@@ -1695,7 +1695,7 @@
             <param name="term"></param>
             <param name="poetId"></param>
             <param name="catId"></param>
-            <param name="exceptPoetId"></param>
+            <param name="e"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetGanjoorMetres(System.Boolean)">

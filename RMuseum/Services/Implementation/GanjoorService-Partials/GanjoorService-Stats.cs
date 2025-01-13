@@ -586,20 +586,23 @@ namespace RMuseum.Services.Implementation
 
 
             //آمار شعرهای زیربخشها
-            string subCatsHtmlText = "";
+            
             var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).ToListAsync();
+            
             subCats.Add(await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync());
             int subCatIndex = 0;
+            string subCatsHtmlText = "";
+            bool skippedSomeCats = false;
             foreach (var subCat in subCats)
             {
+                if(subCat.Id == catId && subCatsHtmlText == "")
+                {
+                    break;
+                }
                 List<int> subcatIdList = [subCat.Id];
                 if(subCat.Id != catId)
                 {
                     await _populateCategoryChildren(context, subCat.Id, subcatIdList);
-                }
-                else
-                {
-                    subCat.Title = "بخش‌بندی نشده";
                 }
 
                 var subCatCoupletCounts =
@@ -615,16 +618,31 @@ namespace RMuseum.Services.Implementation
                                                   .Select(g => new { g.Key.PoetId, Count = g.Count() })
                                                   .ToListAsync();
                 if (subCatCoupletCounts.Count != 1)
+                {
+                    skippedSomeCats = true;
                     continue;
+                }
                 int subCatWholeCoupletsCount = subCatCoupletCounts[0].Count;
-                if (subCatWholeCoupletsCount == 0) continue;
+                if (subCatWholeCoupletsCount == 0)
+                {
+                    skippedSomeCats = true;
+                    continue;
+                }
                 if (subCatIndex % 2 == 0)
                     subCatsHtmlText += $"<tr class=\"e\">{Environment.NewLine}";
                 else
                     subCatsHtmlText += $"<tr>{Environment.NewLine}";
 
                 subCatsHtmlText += $"<td class=\"c1\">{(subCatIndex + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
-                subCatsHtmlText += $"<td class=\"c2\"><a href=\"{subCat.FullUrl}\">{subCat.Title}</a></td>{Environment.NewLine}";
+                if(subCat.Id == catId)
+                {
+                    subCatsHtmlText += $"<td class=\"c2\">بخش‌بندی نشده</td>{Environment.NewLine}";
+                }
+                else
+                {
+                    subCatsHtmlText += $"<td class=\"c2\"><a href=\"{subCat.FullUrl}\">{subCat.Title}</a></td>{Environment.NewLine}";
+                }
+                
                 subCatsHtmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(subCatWholeCoupletsCount)}</td>{Environment.NewLine}";
                 subCatsHtmlText += $"<td class=\"c4\">{(subCatWholeCoupletsCount * 100.0 / wholeCoupletsCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
 
@@ -634,7 +652,12 @@ namespace RMuseum.Services.Implementation
 
             if (!string.IsNullOrEmpty(subCatsHtmlText))
             {
-                htmlText += $"<p>آمار ابیات به تفکیک زیربخش‌های این قسمت به شرح زیر است (بخش‌هایی که در این جدول نیامده‌اند فاقد شعر بوده‌اند):</p>{Environment.NewLine}";
+                htmlText += $"<p>آمار ابیات به تفکیک زیربخش‌های این قسمت به شرح زیر است";
+                if(skippedSomeCats)
+                {
+                    htmlText += " (بخش‌هایی که در این جدول نیامده‌اند فاقد شعر بوده‌اند)";
+                }
+                htmlText += $":</p>{Environment.NewLine}";
                 htmlText += $"<table>{Environment.NewLine}" +
                        $"<tr class=\"h\">{Environment.NewLine}" +
                        $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
