@@ -243,6 +243,14 @@ select {
     margin-right: 1px;
 }
 
+.poemtab {
+    border-top: 1px dashed;
+}
+
+#tab-items{
+    border:none !important;
+}
+
 .poemtablinks {
     display: inline-table;
 }
