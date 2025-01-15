@@ -639,7 +639,7 @@ namespace RMuseum.Services.Implementation
                 subCatsHtmlText += $"<td class=\"c1\">{(subCatIndex + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
                 if(subCat.Id == catId)
                 {
-                    subCatsHtmlText += $"<td class=\"c2\">بخش‌بندی نشده</td>{Environment.NewLine}";
+                    subCatsHtmlText += $"<td class=\"c2\">اشعار همین بخش</td>{Environment.NewLine}";
                 }
                 else
                 {
