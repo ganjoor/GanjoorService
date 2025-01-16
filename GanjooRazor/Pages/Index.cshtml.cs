@@ -11,6 +11,7 @@ using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
+using RMuseum.Models.PDFLibrary;
 using RMuseum.Services.Implementation;
 using System;
 using System.Collections.Generic;
@@ -1270,6 +1271,31 @@ namespace GanjooRazor.Pages
                 {
                     HttpResponseMessage response = await secureClient.PutAsync(
                         $"{APIRoot.Url}/api/ganjoor/naskban/textoriginal/{bookId}/{categoryId}/true", null);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    return new OkObjectResult(true);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+        }
+
+        public async Task<ActionResult> OnDeleteRelatedImageLinkAsync(PoemRelatedImageType relatedImageType, Guid linkId)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.DeleteAsync(
+                        relatedImageType == PoemRelatedImageType.MuseumLink ?
+                        $"{APIRoot.Url}/api/artifacts/ganjoor?linkId={linkId}"
+                        :
+                        $"{APIRoot.Url}/api/artifacts/pinterest?linkId={linkId}"
+                        );
                     if (!response.IsSuccessStatusCode)
                     {
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));

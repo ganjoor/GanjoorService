@@ -423,7 +423,7 @@ function switchBookmark(poemId, coupletIndex, divSuffix) {
         type: "GET",
         url: '?Handler=PoemBookmarks&poemId=' + String(poemId),
         error: function (err) {
-            console.log(err);
+            alert(err);
         },
         success: function (bookmarks) {
             for (var i = 0; i < bookmarks.length; i++) {
@@ -511,7 +511,7 @@ function checkIfBookmarked(poemId) {
             type: "GET",
             url: '?Handler=PoemBookmarks&poemId=' + String(poemId),
             error: function (err) {
-                console.log(err);
+                alert(err);
             },
             success: function (bookmarks) {
                 var isBookmarked = false;
@@ -595,7 +595,7 @@ async function webSharePoem() {
     try {
         await navigator.share({ title, text, url });
     } catch (error) {
-        console.log('Error sharing: ' + error);
+        alert('Error sharing: ' + error);
     }
 }
 
@@ -645,7 +645,7 @@ async function webShareCouplet(coupletIndex) {
         await navigator.share({ title, text, url });
     } catch (error) {
         alert('از همرسانی روی مرورگر جاری شما پشتیبانی نمی‌شود.')
-        console.log('Error sharing: ' + error);
+        alert('Error sharing: ' + error);
     }
 }
 
@@ -1031,7 +1031,7 @@ function MarkUserUpvotedRecitations(poemId) {
             type: "GET",
             url: '?Handler=UserUpvotedRecitations&poemId=' + String(poemId),
             error: function (err) {
-                console.log(err);
+                alert(err);
             },
             success: function (result) {
                 for (var i = 0; i < result.length; i++) {
@@ -1078,7 +1078,7 @@ function AddToMyHistory(poemId) {
             type: "POST",
             url: '?Handler=AddToMyHistory&poemId=' + String(poemId),
             error: function (err) {
-                console.log(err);
+                alert(err);
             },
         });
     }, 1);
@@ -1090,7 +1090,7 @@ function CheckIfHasNotificationsForHomePage() {
             type: "GET",
             url: '?Handler=CheckIfHasNotifications',
             error: function (err) {
-                console.log(err);
+                alert(err);
             },
             success: function (result) {
                 if (result != '') {
@@ -1545,6 +1545,28 @@ function markAsTextOriginal(bookId, categoryId, bookName, catName) {
         },
         success: function () {
             alert('فرایند کار شروع شد.');
+        },
+    });
+}
+
+function deleteRelatedImage(relatedImageType, linkId, altText) {
+    if (!confirm('آیا از قطع ارتباط ' + altText + ' با این بخش اطمینان دارید؟'))
+        return;
+    var url = '?handler=RelatedImageLink';
+
+    $.ajax({
+        type: "DELETE",
+        url: url,
+        data: {
+            relatedImageType: relatedImageType,
+            linkId: linkId
+        },
+        error: function (err) {
+            alert(err);
+        },
+        success: function () {
+            alert('انجام شد.');
+            location.reload();
         },
     });
 }

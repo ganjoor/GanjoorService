@@ -3069,6 +3069,7 @@ namespace RMuseum.Services.Implementation
                     .Where(l => l.Id == id)
                     .SingleAsync();
                 _context.Remove(link);
+                await _context.SaveChangesAsync();
                 return new RServiceResult<bool>(true);
             }
             catch (Exception exp)
@@ -3477,6 +3478,7 @@ namespace RMuseum.Services.Implementation
                     .Where(l => l.Id == id)
                     .SingleAsync();
                 _context.Remove(link);
+                await _context.SaveChangesAsync();
                 return new RServiceResult<bool>(true);
             }
             catch (Exception exp)

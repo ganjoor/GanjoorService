@@ -656,6 +656,10 @@
                                                                 </div>
                                                             </div>
                                                         </a>
+                                                        @if (Model.CanEdit)
+                                                        {
+                                                            <a onclick="deleteRelatedImage(@((int)image.PoemRelatedImageType), '@image.Id', '@image.AltText')" class="pagebutton comments-link">حذف این ارتباط<i class="notranslate info-buttons delete-icon"></i></a>
+                                                        }
                                                     </div>
                                                 </div>
 
@@ -669,6 +673,10 @@
                                                         <img src="@Html.Raw(image.ThumbnailImageUrl)" alt="@image.AltText" loading="lazy" class="related-image">
                                                     </a>
                                                     <div class="related-image-is-text-source"><a target="_blank" href="@Html.Raw(image.TargetPageUrl)">@image.AltText.ToPersianNumbers()</a></div>
+                                                    @if (Model.CanEdit)
+                                                    {
+                                                        <a onclick="deleteRelatedImage(@((int)image.PoemRelatedImageType), '@image.Id', '@image.AltText')" class="pagebutton comments-link">حذف این ارتباط<i class="notranslate info-buttons delete-icon"></i></a>
+                                                    }
                                                 </div>
                                             }
                                         </div>
