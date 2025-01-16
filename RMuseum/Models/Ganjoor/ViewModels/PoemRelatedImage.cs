@@ -1,4 +1,6 @@
-﻿namespace RMuseum.Models.Ganjoor.ViewModels
+﻿using System;
+
+namespace RMuseum.Models.Ganjoor.ViewModels
 {
     /// <summary>
     /// Related Image Type
@@ -20,6 +22,10 @@
     /// </summary>
     public class PoemRelatedImage
     {
+        /// <summary>
+        /// link id
+        /// </summary>
+        public Guid Id { get; set; }
         /// <summary>
         /// Image Order
         /// </summary>

@@ -1652,6 +1652,7 @@ namespace RMuseum.Services.Implementation
                  orderby link.IsTextOriginalSource descending, link.ReviewDate
                  select new PoemRelatedImage()
                  {
+                     Id = link.Id,
                      PoemRelatedImageType = PoemRelatedImageType.MuseumLink,
                      ThumbnailImageUrl = link.Item.Images.First().ExternalNormalSizeImageUrl.Replace("/norm/", "/thumb/").Replace("/orig/", "/thumb/"),
                      TargetPageUrl = link.LinkToOriginalSource ? link.OriginalSourceUrl : $"https://museum.ganjoor.net/items/{link.Artifact.FriendlyUrl}/{link.Item.FriendlyUrl}",
@@ -1671,6 +1672,7 @@ namespace RMuseum.Services.Implementation
                  orderby link.ReviewDate
                  select new PoemRelatedImage()
                  {
+                     Id = link.Id,
                      PoemRelatedImageType = PoemRelatedImageType.ExternalLink,
                      ThumbnailImageUrl = link.LinkType == LinkType.Naskban ? link.PinterestImageUrl : link.Item.Images.First().ExternalNormalSizeImageUrl.Replace("/norm/", "/thumb/").Replace("/orig/", "/thumb/"),
                      TargetPageUrl = link.PinterestUrl,
