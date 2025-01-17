@@ -230,9 +230,14 @@ namespace RMuseum.Services.Implementation
             using (var client = new HttpClient())
             {
                 var parsed = JObject.Parse(json);
-                book.Name = book.NameInEnglish = book.Description = book.DescriptionInEnglish =
+                string bookName =
                     parsed.SelectToken("label").Value<string>();
 
+                if(parsed.SelectToken("description") != null)
+                {
+                    bookName += " - " + parsed.SelectToken("description").Value<string>();
+                }
+                book.Name = book.NameInEnglish = book.Description = book.DescriptionInEnglish = bookName;
 
                 RTagValue tag;
 
@@ -241,6 +246,14 @@ namespace RMuseum.Services.Implementation
 
                 tag = await TagHandler.PrepareAttribute(context, "Contributor Names", "تعیین نشده", 1);
                 meta.Add(tag);
+
+                if (parsed.SelectToken("attribution") != null)
+                {
+                    tag = await TagHandler.PrepareAttribute(context, "Attribution", parsed.SelectToken("attribution").Value<string>(), 1);
+                    meta.Add(tag);
+                }
+
+
 
                 List<string> labels = new List<string>();
                 foreach (JToken structure in parsed.SelectTokens("$.structures[*].label"))

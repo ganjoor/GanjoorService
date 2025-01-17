@@ -17415,7 +17415,7 @@
             <summary>
             from IIIF manifest
             </summary>
-            <param name="url">example: https://viewer.cbl.ie/viewer/api/v1/records/Per_268/manifest/</param>
+            <param name="url">example: https://viewer.cbl.ie/viewer/api/v1/records/Per_268/manifest/ or https://iiif.bodleian.ox.ac.uk/iiif/manifest/bcbfd832-086b-4874-80f8-87500e0de704.json</param>
             <param name="friendlyUrl"></param>
             <param name="skipUpload"></param>
             <returns></returns>
