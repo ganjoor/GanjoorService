@@ -264,9 +264,17 @@ namespace RMuseum.Services.Implementation
                     if (labels.Where(l => l.IndexOf(label) != -1).SingleOrDefault() != null)
                         label = labels.Where(l => l.IndexOf(label) != -1).SingleOrDefault();
                     string imageUrl = canvas.SelectTokens("images[*]").First().SelectToken("resource").SelectToken("@id").Value<string>();
-                    Uri uri = new Uri(imageUrl);
-                    string baseImageUrl = uri.GetLeftPart(UriPartial.Path).Split(new[] { "/full/" }, StringSplitOptions.None)[0];
-                    imageUrl = $"{baseImageUrl}/full/full/0/default.jpg";
+                    if (imageUrl.Contains("default.jpg"))
+                    {
+                        Uri uri = new Uri(imageUrl);
+                        string baseImageUrl = uri.GetLeftPart(UriPartial.Path).Split(new[] { "/full/" }, StringSplitOptions.None)[0];
+                        imageUrl = $"{baseImageUrl}/full/full/0/default.jpg";
+                    }
+                    else
+                    {
+                        imageUrl += "/full/full/0/default.jpg";
+                    }
+                    
                     RArtifactItemRecord page = new RArtifactItemRecord()
                     {
                         Name = $"تصویر {order}",
