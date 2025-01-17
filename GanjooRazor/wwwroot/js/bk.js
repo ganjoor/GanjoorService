@@ -582,6 +582,10 @@ function getPoemText() {
                         text += '\n';
                     text += elementSub.innerText;
                 }
+                if (elementSub.className == 'm2' || elementSub.className == 'b2') {
+                    if (text != '')
+                        text += '\n';
+                }
             }
         }
     }
