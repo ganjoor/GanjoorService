@@ -1205,7 +1205,7 @@ namespace RMuseum.Controllers
         /// <summary>
         /// import from external resources
         /// </summary>
-        /// <param name="srcType">pdf/loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl/append</param>
+        /// <param name="srcType">pdf/loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl/append/iiif</param>
         /// <param name="resourceNumber">119/foldername</param>
         /// <param name="friendlyUrl">golestan-baysonghori/artifact id</param>
         /// <param name="resourcePrefix"></param>

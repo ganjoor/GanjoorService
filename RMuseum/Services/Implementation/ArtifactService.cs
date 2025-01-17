@@ -1225,7 +1225,7 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// import from external resources
         /// </summary>
-        /// <param name="srcType">pdf/loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl/append</param>
+        /// <param name="srcType">pdf/loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl/append/iiif</param>
         /// <param name="resourceNumber">119/foldername</param>
         /// <param name="friendlyUrl">golestan-baysonghori/artifact id</param>
         /// <param name="resourcePrefix"></param>
@@ -1268,6 +1268,9 @@ namespace RMuseum.Services.Implementation
                   :
                  srcType == "cbl" ?
                  await StartImportingFromChesterBeatty(resourceNumber, friendlyUrl, skipUpload)
+                 :
+                 srcType == "iiif" ?
+                 await StartImportingFromIIIF(resourceNumber, friendlyUrl, skipUpload)
                  :
                  await StartImportingFromTheLibraryOfCongress(resourceNumber, friendlyUrl, resourcePrefix, skipUpload);
         }
@@ -1483,6 +1486,9 @@ namespace RMuseum.Services.Implementation
                   :
                  job.JobType == JobType.ChesterBeatty ?
                  await StartImportingFromChesterBeatty(job.ResourceNumber, job.FriendlyUrl, skipUpload)
+                 :
+                 job.JobType == JobType.IIIF ?
+                 await StartImportingFromIIIF(job.ResourceNumber, job.FriendlyUrl, skipUpload)
                  :
                  new RServiceResult<bool>(false, "StartImportingFromTheLibraryOfCongress NOT SUPPORTED");
 

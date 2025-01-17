@@ -18,5 +18,6 @@
         Walters = 10,
         ChesterBeatty = 11,
         AppendFromServerFolder = 12,
+        IIIF = 13,
     }
 }

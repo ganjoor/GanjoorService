@@ -342,7 +342,7 @@
             <summary>
             import from external resources
             </summary>
-            <param name="srcType">pdf/loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl/append</param>
+            <param name="srcType">pdf/loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl/append/iiif</param>
             <param name="resourceNumber">119/foldername</param>
             <param name="friendlyUrl">golestan-baysonghori/artifact id</param>
             <param name="resourcePrefix"></param>
@@ -17324,6 +17324,9 @@
             <summary>
             IArtifactService implementation
             </summary>
+            <summary>
+            IArtifactService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.StartSettingArtifactAsTextOriginalSource(System.Int32,System.Guid)">
             <summary>
@@ -17390,6 +17393,15 @@
             from https://catalog.hathitrust.org
             </summary>
             <param name="resourceNumber">006814127</param>
+            <param name="friendlyUrl"></param>
+            <param name="skipUpload"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartImportingFromIIIF(System.String,System.String,System.Boolean)">
+            <summary>
+            from IIIF manifest
+            </summary>
+            <param name="url">example: https://viewer.cbl.ie/viewer/api/v1/records/Per_268/manifest/</param>
             <param name="friendlyUrl"></param>
             <param name="skipUpload"></param>
             <returns></returns>
@@ -17732,7 +17744,7 @@
             <summary>
             import from external resources
             </summary>
-            <param name="srcType">pdf/loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl/append</param>
+            <param name="srcType">pdf/loc/princeton/harvard/qajarwomen/hathitrust/penn/cam/bl/folder/walters/cbl/append/iiif</param>
             <param name="resourceNumber">119/foldername</param>
             <param name="friendlyUrl">golestan-baysonghori/artifact id</param>
             <param name="resourcePrefix"></param>
