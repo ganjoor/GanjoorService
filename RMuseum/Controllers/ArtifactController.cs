@@ -1101,6 +1101,25 @@ namespace RMuseum.Controllers
 
             return Ok(itemInfo.Result);
         }
+
+        /// <summary>
+        /// update an artifact item info
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [HttpPut("item")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> UpdateArtifactItemRecordAsync([FromBody]RArtifactItemRecord item)
+        {
+            var res = await _artifactService.UpdateArtifactItemRecordAsync(item);
+            if(!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
         /// <summary>
         /// gets specified publish artifact item info (including images + attributes) 
         /// </summary>

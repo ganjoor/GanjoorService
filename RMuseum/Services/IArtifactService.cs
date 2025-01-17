@@ -248,6 +248,12 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<RArtifactItemRecordViewModel>> GetArtifactItemByFrienlyUrl(string artifactUrl, string itemUrl, PublishStatus[] statusArray);
 
+        /// <summary>
+        /// update artifact item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> UpdateArtifactItemRecordAsync(RArtifactItemRecord item);
 
 
         /// <summary>

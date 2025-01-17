@@ -1166,6 +1166,27 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<RArtifactItemRecordViewModel>(res);
         }
 
+        /// <summary>
+        /// update artifact item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> UpdateArtifactItemRecordAsync(RArtifactItemRecord item)
+        {
+            try
+            {
+                var dbItem = await _context.Items.Where(i => i.Id == item.Id).SingleAsync();
+                _context.Entry(dbItem).CurrentValues.SetValues(item);
+                _context.Update(dbItem);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+        }
+
 
 
         /// <summary>

@@ -312,6 +312,13 @@
             <param name="itemUrl"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.UpdateArtifactItemRecordAsync(RMuseum.Models.Artifact.RArtifactItemRecord)">
+            <summary>
+            update an artifact item info
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.ArtifactController.GetArtifactItemByFrienlyUrlUserVisible(System.String,System.String)">
             <summary>
             gets specified publish artifact item info (including images + attributes) 
@@ -14994,6 +15001,13 @@
             <param name="statusArray"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IArtifactService.UpdateArtifactItemRecordAsync(RMuseum.Models.Artifact.RArtifactItemRecord)">
+            <summary>
+            update artifact item
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IArtifactService.Add(System.String,System.String,System.String,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile,System.String,System.IO.Stream)">
             <summary>
             add new artifact
@@ -17724,6 +17738,13 @@
             <param name="artifactUrl"></param>
             <param name="itemUrl"></param>
             <param name="statusArray"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.UpdateArtifactItemRecordAsync(RMuseum.Models.Artifact.RArtifactItemRecord)">
+            <summary>
+            update artifact item
+            </summary>
+            <param name="item"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.Add(System.String,System.String,System.String,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile,System.String,System.IO.Stream)">
