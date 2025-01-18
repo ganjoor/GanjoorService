@@ -674,11 +674,11 @@
             <param name="artifactId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ArtifactController.StartUploadingArtifactToExternalServer(System.Guid,System.Boolean)">
+        <member name="M:RMuseum.Controllers.ArtifactController.StartUploadingArtifactToExternalServer(System.String,System.Boolean)">
             <summary>
             upload artifact to external server
             </summary>
-            <param name="artifactId"></param>
+            <param name="friendlyUrl"></param>
             <param name="skipUpload"></param>
             <returns></returns>
         </member>
@@ -15375,11 +15375,11 @@
             <param name="artifactId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IArtifactService.StartUploadingArtifactToExternalServer(System.Guid,System.Boolean)">
+        <member name="M:RMuseum.Services.IArtifactService.StartUploadingArtifactToExternalServer(System.String,System.Boolean)">
             <summary>
             upload artifact to external server
             </summary>
-            <param name="artifactId"></param>
+            <param name="friendlyUrl"></param>
             <param name="skipUpload"></param>
             <returns></returns>
         </member>
@@ -17772,11 +17772,11 @@
             <param name="skipUpload"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartUploadingArtifactToExternalServer(System.Guid,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.StartUploadingArtifactToExternalServer(System.String,System.Boolean)">
             <summary>
             upload artifact to external server
             </summary>
-            <param name="artifactId"></param>
+            <param name="friendlyUrl"></param>
             <param name="skipUpload"></param>
             <returns></returns>
         </member>

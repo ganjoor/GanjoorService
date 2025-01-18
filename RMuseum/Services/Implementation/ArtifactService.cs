@@ -1299,10 +1299,10 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// upload artifact to external server
         /// </summary>
-        /// <param name="artifactId"></param>
+        /// <param name="friendlyUrl"></param>
         /// <param name="skipUpload"></param>
         /// <returns></returns>
-        public RServiceResult<bool> StartUploadingArtifactToExternalServer(Guid artifactId, bool skipUpload)
+        public RServiceResult<bool> StartUploadingArtifactToExternalServer(string friendlyUrl, bool skipUpload)
         {
             try
             {
@@ -1313,11 +1313,11 @@ namespace RMuseum.Services.Implementation
                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                                {
                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                                   var job = (await jobProgressServiceEF.NewJob($"StartUploadingArtifactToExternalServer : {artifactId}", "Query data")).Result;
+                                   var job = (await jobProgressServiceEF.NewJob($"StartUploadingArtifactToExternalServer : {friendlyUrl}", "Query data")).Result;
 
                                    try
                                    {
-                                       var book = await context.Artifacts.Include(a => a.Items).ThenInclude(i => i.Images).Include(a => a.CoverImage).SingleAsync();
+                                       var book = await context.Artifacts.Include(a => a.Items).ThenInclude(i => i.Images).Include(a => a.CoverImage).Where(a => a.FriendlyUrl == friendlyUrl).SingleAsync();
                                        await jobProgressServiceEF.UpdateJob(job.Id, 2, $"بارگذاری {book.Name}");
                                        var resUpload = await _UploadArtifactToExternalServer(book, context, skipUpload);
                                        if (!string.IsNullOrEmpty(resUpload.ExceptionString))

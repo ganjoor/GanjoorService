@@ -2264,20 +2264,20 @@ namespace RMuseum.Controllers
         /// <summary>
         /// upload artifact to external server
         /// </summary>
-        /// <param name="artifactId"></param>
+        /// <param name="friendlyUrl"></param>
         /// <param name="skipUpload"></param>
         /// <returns></returns>
 
-        [HttpPut("upload/external/{artifactId}")]
+        [HttpPut("upload/external/{friendlyUrl}")]
         [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public IActionResult StartUploadingArtifactToExternalServer(Guid artifactId, bool skipUpload)
+        public IActionResult StartUploadingArtifactToExternalServer(string friendlyUrl, bool skipUpload)
         {
             try
             {
-                var res = _artifactService.StartUploadingArtifactToExternalServer(artifactId, skipUpload);
+                var res = _artifactService.StartUploadingArtifactToExternalServer(friendlyUrl, skipUpload);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 return Ok();

@@ -633,10 +633,10 @@ namespace RMuseum.Services
         /// <summary>
         /// upload artifact to external server
         /// </summary>
-        /// <param name="artifactId"></param>
+        /// <param name="friendlyUrl"></param>
         /// <param name="skipUpload"></param>
         /// <returns></returns>
-        RServiceResult<bool> StartUploadingArtifactToExternalServer(Guid artifactId, bool skipUpload);
+        RServiceResult<bool> StartUploadingArtifactToExternalServer(string friendlyUrl, bool skipUpload);
 
         /// <summary>
         /// create images for ganjoor
