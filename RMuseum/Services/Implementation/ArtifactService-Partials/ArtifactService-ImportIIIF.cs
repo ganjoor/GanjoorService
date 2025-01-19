@@ -255,7 +255,7 @@ namespace RMuseum.Services.Implementation
 
                 if (parsed.SelectToken("metadata") != null)
                 {
-                    foreach (JToken metadata in parsed.SelectTokens("metadata"))
+                    foreach (JToken metadata in parsed.SelectToken("metadata"))
                     {
                         if(metadata.SelectToken("label") != null && metadata.SelectToken("value") != null)
                         {
