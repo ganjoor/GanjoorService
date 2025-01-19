@@ -127,10 +127,13 @@ namespace RMuseum.Services.Implementation
 
                                                 tag = await TagHandler.PrepareAttribute(context, "Source", "IIIF Manifest", 1);
                                                 tag.ValueSupplement = $"{job.SrcUrl}";
-
                                                 meta.Add(tag);
 
-                                               
+                                                tag = await TagHandler.PrepareAttribute(context, "IIIF Manifest", "IIIF Manifest", 1);
+                                                tag.ValueSupplement = job.SrcUrl;
+                                                meta.Add(tag);
+
+
                                                 List<RArtifactItemRecord> pages = (await _InternalIIIFImport(json, job, friendlyUrl, context, book, meta)).Result;
                                                 if (pages == null)
                                                 {

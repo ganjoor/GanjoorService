@@ -4851,6 +4851,11 @@
             عنوان در فهرست
             </summary>
         </member>
+        <member name="F:RMuseum.Models.Artifact.RTagType.IIIF">
+            <summary>
+            IIIF
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Artifact.RTagValue">
             <summary>
             Attribute Value

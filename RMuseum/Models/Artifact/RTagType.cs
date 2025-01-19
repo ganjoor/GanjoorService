@@ -33,5 +33,9 @@
         /// عنوان در فهرست
         /// </summary>
         TitleInContents = 6,
+        /// <summary>
+        /// IIIF
+        /// </summary>
+        IIIF = 7,
     }
 }
