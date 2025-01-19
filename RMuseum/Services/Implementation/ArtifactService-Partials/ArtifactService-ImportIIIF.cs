@@ -253,7 +253,18 @@ namespace RMuseum.Services.Implementation
                     meta.Add(tag);
                 }
 
-
+                if (parsed.SelectToken("metadata") != null)
+                {
+                    foreach (JToken metadata in parsed.SelectTokens("metadata"))
+                    {
+                        if(metadata.SelectToken("label") != null && metadata.SelectToken("value") != null)
+                        {
+                            tag = await TagHandler.PrepareAttribute(context, metadata.SelectToken("label").Value<string>(), metadata.SelectToken("value").Value<string>(), 1);
+                            meta.Add(tag);
+                        }
+                    }
+                }
+                
 
                 List<string> labels = new List<string>();
                 foreach (JToken structure in parsed.SelectTokens("$.structures[*].label"))
