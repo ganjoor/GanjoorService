@@ -510,9 +510,6 @@ function checkIfBookmarked(poemId) {
         $.ajax({
             type: "GET",
             url: '?Handler=PoemBookmarks&poemId=' + String(poemId),
-            error: function (err) {
-                alert('checkIfBookmarked: ' +err);
-            },
             success: function (bookmarks) {
                 var isBookmarked = false;
                 for (var i = 0; i < bookmarks.length; i++) {
@@ -649,7 +646,7 @@ async function webShareCouplet(coupletIndex) {
         await navigator.share({ title, text, url });
     } catch (error) {
         alert('از همرسانی روی مرورگر جاری شما پشتیبانی نمی‌شود.')
-        alert('Error sharing: ' + error);
+
     }
 }
 
@@ -1034,9 +1031,6 @@ function MarkUserUpvotedRecitations(poemId) {
         $.ajax({
             type: "GET",
             url: '?Handler=UserUpvotedRecitations&poemId=' + String(poemId),
-            error: function (err) {
-                alert('UserUpvotedRecitationsl: ' + err.toString());
-            },
             success: function (result) {
                 for (var i = 0; i < result.length; i++) {
                     document.getElementById('recitaion-' + String(result[i])).classList.add('recitation-vote');
@@ -1081,9 +1075,6 @@ function AddToMyHistory(poemId) {
         $.ajax({
             type: "POST",
             url: '?Handler=AddToMyHistory&poemId=' + String(poemId),
-            error: function (err) {
-                alert('AddToMyHistory: ' + err.toString());
-            },
         });
     }, 1);
 }
@@ -1093,9 +1084,6 @@ function CheckIfHasNotificationsForHomePage() {
         $.ajax({
             type: "GET",
             url: '?Handler=CheckIfHasNotifications',
-            error: function (err) {
-                alert('CheckIfHasNotifications: ' + err.toString());
-            },
             success: function (result) {
                 if (result != '') {
                     document.getElementById('notification-badge').classList.toggle('display-none');
