@@ -31,6 +31,39 @@ namespace RMuseum.Controllers
     public class ArtifactController : Controller
     {
         /// <summary>
+        /// gets specified publish artifact item info (including images + attributes)
+        /// </summary>
+        /// <param name="artifactUrl"></param>
+        /// <param name="itemUrl"></param>
+        /// <returns></returns>
+        [HttpGet("{artifactUrl}/{itemUrl}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RArtifactItemRecordViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetArtifactItemByFrienlyUrl(string artifactUrl, string itemUrl)
+        {
+            RServiceResult<RArtifactItemRecordViewModel> itemInfo = await _artifactService.GetArtifactItemByFrienlyUrl(artifactUrl, itemUrl, new PublishStatus[] { PublishStatus.Published });
+            if (!string.IsNullOrEmpty(itemInfo.ExceptionString))
+            {
+                return BadRequest(itemInfo.ExceptionString);
+            }
+            if (itemInfo.Result == null)
+                return NotFound();
+
+            Response.GetTypedHeaders().LastModified = itemInfo.Result.Item.LastModified;
+
+            var requestHeaders = Request.GetTypedHeaders();
+            if (requestHeaders.IfModifiedSince.HasValue &&
+                requestHeaders.IfModifiedSince.Value >= itemInfo.Result.Item.LastModified)
+            {
+                return StatusCode(StatusCodes.Status304NotModified);
+            }
+
+            return Ok(itemInfo.Result);
+        }
+
+        /// <summary>
         /// get all published artifacts (including CoverImage info but not items info)
         /// </summary>
         /// <param name="paging"></param>
@@ -1068,39 +1101,6 @@ namespace RMuseum.Controllers
         }
 
 
-
-        /// <summary>
-        /// gets specified publish artifact item info (including images + attributes)
-        /// </summary>
-        /// <param name="artifactUrl"></param>
-        /// <param name="itemUrl"></param>
-        /// <returns></returns>
-        [HttpGet("{artifactUrl}/{itemUrl}")]
-        [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RArtifactItemRecordViewModel))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetArtifactItemByFrienlyUrl(string artifactUrl, string itemUrl)
-        {
-            RServiceResult<RArtifactItemRecordViewModel> itemInfo = await _artifactService.GetArtifactItemByFrienlyUrl(artifactUrl, itemUrl, new PublishStatus[] { PublishStatus.Published });
-            if (!string.IsNullOrEmpty(itemInfo.ExceptionString))
-            {
-                return BadRequest(itemInfo.ExceptionString);
-            }
-            if (itemInfo.Result == null)
-                return NotFound();
-
-            Response.GetTypedHeaders().LastModified = itemInfo.Result.Item.LastModified;
-
-            var requestHeaders = Request.GetTypedHeaders();
-            if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= itemInfo.Result.Item.LastModified)
-            {
-                return StatusCode(StatusCodes.Status304NotModified);
-            }
-
-            return Ok(itemInfo.Result);
-        }
 
         /// <summary>
         /// update an artifact item info
