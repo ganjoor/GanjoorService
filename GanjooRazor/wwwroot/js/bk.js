@@ -423,7 +423,7 @@ function switchBookmark(poemId, coupletIndex, divSuffix) {
         type: "GET",
         url: '?Handler=PoemBookmarks&poemId=' + String(poemId),
         error: function (err) {
-            alert(err);
+            alert('PoemBookmarks: ' + err.toString());
         },
         success: function (bookmarks) {
             for (var i = 0; i < bookmarks.length; i++) {
@@ -464,7 +464,7 @@ function switchBookmarkInternal(poemId, coupletIndex, divSuffix) {
             coupletIndex: coupletIndex
         },
         error: function (err) {
-            alert(err)
+            alert('SwitchBookmark: ' + err.toString())
         },
         success: function (bookmarkId) {
             var isBookmarked = bookmarkId != '0';
@@ -511,7 +511,7 @@ function checkIfBookmarked(poemId) {
             type: "GET",
             url: '?Handler=PoemBookmarks&poemId=' + String(poemId),
             error: function (err) {
-                alert(err);
+                alert('checkIfBookmarked: ' +err);
             },
             success: function (bookmarks) {
                 var isBookmarked = false;
@@ -1022,9 +1022,9 @@ function switchRecitationVote(recitationId) {
         },
         error: function (e) {
             if (e.responseText == null)
-                alert(e);
+                alert('SwitchRecitationUpVote: ' + e.toString());
             else
-                alert(e.responseText);
+                alert('SwitchRecitationUpVote: ' +e.responseText);
         },
     });
 }
@@ -1035,7 +1035,7 @@ function MarkUserUpvotedRecitations(poemId) {
             type: "GET",
             url: '?Handler=UserUpvotedRecitations&poemId=' + String(poemId),
             error: function (err) {
-                alert(err);
+                alert('UserUpvotedRecitationsl: ' + err.toString());
             },
             success: function (result) {
                 for (var i = 0; i < result.length; i++) {
@@ -1082,7 +1082,7 @@ function AddToMyHistory(poemId) {
             type: "POST",
             url: '?Handler=AddToMyHistory&poemId=' + String(poemId),
             error: function (err) {
-                alert(err);
+                alert('AddToMyHistory: ' + err.toString());
             },
         });
     }, 1);
@@ -1094,7 +1094,7 @@ function CheckIfHasNotificationsForHomePage() {
             type: "GET",
             url: '?Handler=CheckIfHasNotifications',
             error: function (err) {
-                alert(err);
+                alert('CheckIfHasNotifications: ' + err.toString());
             },
             success: function (result) {
                 if (result != '') {
@@ -1566,7 +1566,7 @@ function deleteRelatedImage(relatedImageType, linkId, altText) {
             linkId: linkId
         },
         error: function (err) {
-            alert(err);
+            alert('RelatedImageLink: ' + err.toString());
         },
         success: function () {
             alert('انجام شد.');
