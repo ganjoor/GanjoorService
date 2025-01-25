@@ -77,7 +77,7 @@ namespace RMuseum.Services.Implementation
             int lastFinishedPoetId = 0;
             if (!reset)
             {
-                var resOption = await _optionsService.GetValueAsync("CategoryWordCountsLastPoetId", null, null);
+                var resOption = await _optionsService.GetValueAsync("CategoryWordCountsLastPoetId", null);
                 if (!string.IsNullOrEmpty(resOption.Result))
                 {
                     lastFinishedPoetId = int.Parse(resOption.Result);
