@@ -250,12 +250,12 @@ namespace RMuseum.DbContext
             .Property(e => e.PoemSummary)
             .HasMaxLength(3000);
 
-            /*
-            Phase 2:
+            
+            //Phase 2:
 
             builder.Entity<RArtifactMasterRecord>()
                 .Property(e => e.FriendlyUrl)
-                .HasMaxLength(40);
+                .HasMaxLength(64);
 
             builder.Entity<RArtifactMasterRecord>()
                .Property(e => e.Name)
@@ -292,7 +292,7 @@ namespace RMuseum.DbContext
             builder.Entity<RTag>()
                .Property(e => e.PluralNameInEnglish)
                .HasMaxLength(128);
-            */
+            
         }
 
 
