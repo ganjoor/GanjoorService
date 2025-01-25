@@ -26,7 +26,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<bool>> AddAsync(Guid userId, int poemId)
         {
             bool keepHistory = false;
-            var kRes = await _optionsService.GetValueAsync("KeepHistory", userId);
+            var kRes = await _optionsService.GetValueAsync("KeepHistory", userId, null);
             if (!string.IsNullOrEmpty(kRes.Result))
                 bool.TryParse(kRes.Result, out keepHistory);
             if (!keepHistory)
@@ -75,7 +75,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> SwitchTrackingAsync(Guid userId, bool start)
         {
-            var res = await _optionsService.SetAsync("KeepHistory", start.ToString(), userId);
+            var res = await _optionsService.SetAsync("KeepHistory", start.ToString(), userId, null);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return new RServiceResult<bool>(false, res.ExceptionString);
             if(!start)

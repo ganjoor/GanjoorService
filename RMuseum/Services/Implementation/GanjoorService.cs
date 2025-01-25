@@ -1040,7 +1040,7 @@ namespace RMuseum.Services.Implementation
             }
 
             PublishStatus status = PublishStatus.Published;
-            var keepFirstTimeUsersComments = await _optionsService.GetValueAsync("KeepFirstTimeUsersComments", null);
+            var keepFirstTimeUsersComments = await _optionsService.GetValueAsync("KeepFirstTimeUsersComments", null, null);
             if (keepFirstTimeUsersComments.Result == true.ToString())
             {
                 if ((await _context.GanjoorComments.AsNoTracking().Where(c => c.UserId == userId && c.Status == PublishStatus.Published).AnyAsync()) == false)//First time commenter

@@ -50,7 +50,7 @@ namespace RMuseum.Controllers
             var l = res.Result;
 
             bool keepHistory = false;
-            var kRes = await _optionsService.GetValueAsync("KeepHistory", l.User.Id);
+            var kRes = await _optionsService.GetValueAsync("KeepHistory", l.User.Id, null);
             if (!string.IsNullOrEmpty(kRes.Result))
                 bool.TryParse(kRes.Result, out keepHistory);
 
@@ -92,7 +92,7 @@ namespace RMuseum.Controllers
             var l = res.Result;
 
             bool keepHistory = false;
-            var kRes = await _optionsService.GetValueAsync("KeepHistory", l.User.Id);
+            var kRes = await _optionsService.GetValueAsync("KeepHistory", l.User.Id, null);
             if (!string.IsNullOrEmpty(kRes.Result))
                 bool.TryParse(kRes.Result, out keepHistory);
 
