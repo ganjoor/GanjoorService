@@ -17,5954 +17,5933 @@ namespace RMuseum.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimValue")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("RoleId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
+                b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
-                });
+                b.ToTable("AspNetRoleClaims", (string)null);
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimValue")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
+                b.ToTable("AspNetUserClaims", (string)null);
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+            {
+                b.Property<string>("LoginProvider")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ProviderKey")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ProviderDisplayName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("LoginProvider", "ProviderKey");
+                b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
+                b.ToTable("AspNetUserLogins", (string)null);
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("RoleId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("UserId", "RoleId");
+                b.HasKey("UserId", "RoleId");
 
-                    b.HasIndex("RoleId");
+                b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
-                });
+                b.ToTable("AspNetUserRoles", (string)null);
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("LoginProvider")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Value")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId", "LoginProvider", "Name");
+                b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
-                });
+                b.ToTable("AspNetUserTokens", (string)null);
+            });
 
             modelBuilder.Entity("RMuseum.Models.Accounting.DonationExpenditure", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                b.Property<decimal>("Amount")
+                    .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("GanjoorDonationId")
-                        .HasColumnType("int");
+                b.Property<int>("GanjoorDonationId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("GanjoorExpenseId")
-                        .HasColumnType("int");
+                b.Property<int?>("GanjoorExpenseId")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GanjoorDonationId");
+                b.HasIndex("GanjoorDonationId");
 
-                    b.HasIndex("GanjoorExpenseId");
+                b.HasIndex("GanjoorExpenseId");
 
-                    b.ToTable("DonationExpenditure");
-                });
+                b.ToTable("DonationExpenditure");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Accounting.GanjoorDonation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                b.Property<decimal>("Amount")
+                    .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("AmountString")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AmountString")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DateString")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("DateString")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DonorLink")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("DonorLink")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DonorName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("DonorName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExpenditureDesc")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ExpenditureDesc")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("ImportedRecord")
-                        .HasColumnType("bit");
+                b.Property<bool>("ImportedRecord")
+                    .HasColumnType("bit");
 
-                    b.Property<DateTime>("RecordDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("RecordDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Remaining")
-                        .HasColumnType("decimal(18,2)");
+                b.Property<decimal>("Remaining")
+                    .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Unit")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Unit")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("GanjoorDonations");
-                });
+                b.ToTable("GanjoorDonations");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Accounting.GanjoorExpense", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                b.Property<decimal>("Amount")
+                    .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ExpenseDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("ExpenseDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Unit")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Unit")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("GanjoorExpenses");
-                });
+                b.ToTable("GanjoorExpenses");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Artifact.RArtifactItemRecord", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CoverImageIndex")
-                        .HasColumnType("int");
+                b.Property<int>("CoverImageIndex")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DescriptionInEnglish")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("DescriptionInEnglish")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FriendlyUrl")
-                        .HasMaxLength(16)
-                        .HasColumnType("nvarchar(16)");
+                b.Property<string>("FriendlyUrl")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("LastModified")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("LastModified")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(1200)
-                        .HasColumnType("nvarchar(1200)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NameInEnglish")
-                        .HasMaxLength(1200)
-                        .HasColumnType("nvarchar(1200)");
+                b.Property<string>("NameInEnglish")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
+                b.Property<int>("Order")
+                    .HasColumnType("int");
 
-                    b.Property<Guid>("RArtifactMasterRecordId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("RArtifactMasterRecordId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RArtifactMasterRecordId", "FriendlyUrl")
-                        .IsUnique()
-                        .HasFilter("[FriendlyUrl] IS NOT NULL");
+                b.HasIndex("RArtifactMasterRecordId", "FriendlyUrl")
+                    .IsUnique()
+                    .HasFilter("[FriendlyUrl] IS NOT NULL");
 
-                    b.HasIndex("RArtifactMasterRecordId", "Order")
-                        .IsUnique();
+                b.HasIndex("RArtifactMasterRecordId", "Order")
+                    .IsUnique();
 
-                    b.ToTable("Items");
-                });
+                b.ToTable("Items");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Artifact.RArtifactMasterRecord", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CoverImageId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("CoverImageId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CoverItemIndex")
-                        .HasColumnType("int");
+                b.Property<int>("CoverItemIndex")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DateTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DescriptionInEnglish")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("DescriptionInEnglish")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FriendlyUrl")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                b.Property<string>("FriendlyUrl")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("ItemCount")
-                        .HasColumnType("int");
+                b.Property<int>("ItemCount")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("LastModified")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("LastModified")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(1200)
-                        .HasColumnType("nvarchar(1200)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NameInEnglish")
-                        .HasMaxLength(1200)
-                        .HasColumnType("nvarchar(1200)");
+                b.Property<string>("NameInEnglish")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                b.Property<int>("Status")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CoverImageId");
+                b.HasIndex("CoverImageId");
 
-                    b.HasIndex("FriendlyUrl")
-                        .IsUnique()
-                        .HasFilter("[FriendlyUrl] IS NOT NULL");
+                b.HasIndex("FriendlyUrl")
+                    .IsUnique()
+                    .HasFilter("[FriendlyUrl] IS NOT NULL");
 
-                    b.HasIndex("LastModified");
+                b.HasIndex("LastModified");
 
-                    b.HasIndex("CoverItemIndex", "Status");
+                b.HasIndex("CoverItemIndex", "Status");
 
-                    b.ToTable("Artifacts");
-                });
+                b.ToTable("Artifacts");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Artifact.RTag", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("FriendlyUrl")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("FriendlyUrl")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("GlobalValue")
-                        .HasColumnType("bit");
+                b.Property<bool>("GlobalValue")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NameInEnglish")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                b.Property<string>("NameInEnglish")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
+                b.Property<int>("Order")
+                    .HasColumnType("int");
 
-                    b.Property<string>("PluralName")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                b.Property<string>("PluralName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PluralNameInEnglish")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                b.Property<string>("PluralNameInEnglish")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                b.Property<int>("Status")
+                    .HasColumnType("int");
 
-                    b.Property<int>("TagType")
-                        .HasColumnType("int");
+                b.Property<int>("TagType")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("FriendlyUrl");
+                b.HasIndex("FriendlyUrl");
 
-                    b.ToTable("Tags");
-                });
+                b.ToTable("Tags");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Artifact.RTagValue", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("BookId")
-                        .HasColumnType("int");
+                b.Property<int?>("BookId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("FriendlyUrl")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("FriendlyUrl")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
+                b.Property<int>("Order")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("PDFBookId")
-                        .HasColumnType("int");
+                b.Property<int?>("PDFBookId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("PDFPageId")
-                        .HasColumnType("int");
+                b.Property<int?>("PDFPageId")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("RArtifactItemRecordId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RArtifactItemRecordId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("RArtifactMasterRecordId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RArtifactMasterRecordId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("RTagId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("RTagId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                b.Property<int>("Status")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Value")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ValueInEnglish")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ValueInEnglish")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ValueSupplement")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ValueSupplement")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("BookId");
+                b.HasIndex("BookId");
 
-                    b.HasIndex("FriendlyUrl");
+                b.HasIndex("FriendlyUrl");
 
-                    b.HasIndex("PDFBookId");
+                b.HasIndex("PDFBookId");
 
-                    b.HasIndex("PDFPageId");
+                b.HasIndex("PDFPageId");
 
-                    b.HasIndex("RArtifactItemRecordId");
+                b.HasIndex("RArtifactItemRecordId");
 
-                    b.HasIndex("RArtifactMasterRecordId");
+                b.HasIndex("RArtifactMasterRecordId");
 
-                    b.HasIndex("RTagId");
+                b.HasIndex("RTagId");
 
-                    b.ToTable("TagValues");
-                });
+                b.ToTable("TagValues");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Bookmark.RUserBookmark", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DateTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Note")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("RAppUserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("RAppUserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("RArtifactItemRecordId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RArtifactItemRecordId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("RArtifactMasterRecordId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RArtifactMasterRecordId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("RBookmarkType")
-                        .HasColumnType("int");
+                b.Property<int>("RBookmarkType")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RAppUserId");
+                b.HasIndex("RAppUserId");
 
-                    b.HasIndex("RArtifactItemRecordId");
+                b.HasIndex("RArtifactItemRecordId");
 
-                    b.HasIndex("RArtifactMasterRecordId");
+                b.HasIndex("RArtifactMasterRecordId");
 
-                    b.ToTable("UserBookmarks");
-                });
+                b.ToTable("UserBookmarks");
+            });
 
             modelBuilder.Entity("RMuseum.Models.ExternalFTPUpload.QueuedFTPUpload", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("DeleteFileAfterUpload")
-                        .HasColumnType("bit");
+                b.Property<bool>("DeleteFileAfterUpload")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Error")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Error")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LocalFilePath")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("LocalFilePath")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("ProcessDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("ProcessDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<bool>("Processing")
-                        .HasColumnType("bit");
+                b.Property<bool>("Processing")
+                    .HasColumnType("bit");
 
-                    b.Property<DateTime>("QueueDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("QueueDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("RemoteFilePath")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RemoteFilePath")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("QueuedFTPUploads");
-                });
+                b.ToTable("QueuedFTPUploads");
+            });
 
             modelBuilder.Entity("RMuseum.Models.FAQ.FAQCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CatOrder")
-                        .HasColumnType("int");
+                b.Property<int>("CatOrder")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Published")
-                        .HasColumnType("bit");
+                b.Property<bool>("Published")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Title")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("FAQCategories");
-                });
+                b.ToTable("FAQCategories");
+            });
 
             modelBuilder.Entity("RMuseum.Models.FAQ.FAQItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AnswerExcerpt")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AnswerExcerpt")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                b.Property<int>("CategoryId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("ContentForSearch")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ContentForSearch")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullAnswer")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FullAnswer")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HashTag1")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("HashTag1")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HashTag2")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("HashTag2")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HashTag3")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("HashTag3")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HashTag4")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("HashTag4")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ItemOrderInCategory")
-                        .HasColumnType("int");
+                b.Property<int>("ItemOrderInCategory")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("Pinned")
-                        .HasColumnType("bit");
+                b.Property<bool>("Pinned")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("PinnedItemOrder")
-                        .HasColumnType("int");
+                b.Property<int>("PinnedItemOrder")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("Published")
-                        .HasColumnType("bit");
+                b.Property<bool>("Published")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Question")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Question")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                b.HasIndex("CategoryId");
 
-                    b.ToTable("FAQItems");
-                });
+                b.ToTable("FAQItems");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.CategoryWordCount", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CatId")
-                        .HasColumnType("int");
+                b.Property<int>("CatId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
+                b.Property<int>("Count")
+                    .HasColumnType("int");
 
-                    b.Property<int>("RowNmbrInCat")
-                        .HasColumnType("int");
+                b.Property<int>("RowNmbrInCat")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Word")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("Word")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CatId", "Word")
-                        .IsUnique()
-                        .HasFilter("[Word] IS NOT NULL");
+                b.HasIndex("CatId", "Word")
+                    .IsUnique()
+                    .HasFilter("[Word] IS NOT NULL");
 
-                    b.ToTable("CategoryWordCounts");
-                });
+                b.ToTable("CategoryWordCounts");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.CategoryWordCountSummary", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CatId")
-                        .HasColumnType("int");
+                b.Property<int>("CatId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("TotalWordCount")
-                        .HasColumnType("int");
+                b.Property<int>("TotalWordCount")
+                    .HasColumnType("int");
 
-                    b.Property<int>("UniqueWordCount")
-                        .HasColumnType("int");
+                b.Property<int>("UniqueWordCount")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CatId")
-                        .IsUnique();
+                b.HasIndex("CatId")
+                    .IsUnique();
 
-                    b.ToTable("CategoryWordCountSummaries");
-                });
+                b.ToTable("CategoryWordCountSummaries");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.DigitalSource", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CoupletsCount")
-                        .HasColumnType("int");
+                b.Property<int>("CoupletsCount")
+                    .HasColumnType("int");
 
-                    b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FullName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ShortName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ShortName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SourceType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SourceType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UrlSlug")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UrlSlug")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("DigitalSources");
-                });
+                b.ToTable("DigitalSources");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.DiscoverQuotedQueueItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoetId")
-                        .HasColumnType("int");
+                b.Property<int>("PoetId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("RelatedPoemId")
-                        .HasColumnType("int");
+                b.Property<int>("RelatedPoemId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("RelatedPoetId")
-                        .HasColumnType("int");
+                b.Property<int>("RelatedPoetId")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("DiscoverQuotedQueueItems");
-                });
+                b.ToTable("DiscoverQuotedQueueItems");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCachedRelatedPoem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("FullTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FullTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullUrl")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("FullUrl")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("HtmlExcerpt")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("HtmlExcerpt")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoetId")
-                        .HasColumnType("int");
+                b.Property<int>("PoetId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("PoetImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PoetImageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PoetMorePoemsLikeThisCount")
-                        .HasColumnType("int");
+                b.Property<int>("PoetMorePoemsLikeThisCount")
+                    .HasColumnType("int");
 
-                    b.Property<string>("PoetName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PoetName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RelationOrder")
-                        .HasColumnType("int");
+                b.Property<int>("RelationOrder")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("FullUrl");
+                b.HasIndex("FullUrl");
 
-                    b.HasIndex("PoemId");
+                b.HasIndex("PoemId");
 
-                    b.ToTable("GanjoorCachedRelatedPoems");
-                });
+                b.ToTable("GanjoorCachedRelatedPoems");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("FullTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FullTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FullUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HtmlExcerpt")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("HtmlExcerpt")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoetId")
-                        .HasColumnType("int");
+                b.Property<int>("PoetId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("PoetImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PoetImageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PoetMorePoemsLikeThisCount")
-                        .HasColumnType("int");
+                b.Property<int>("PoetMorePoemsLikeThisCount")
+                    .HasColumnType("int");
 
-                    b.Property<string>("PoetName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PoetName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RelationOrder")
-                        .HasColumnType("int");
+                b.Property<int>("RelationOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int>("SectionIndex")
-                        .HasColumnType("int");
+                b.Property<int>("SectionIndex")
+                    .HasColumnType("int");
 
-                    b.Property<int>("TargetPoemId")
-                        .HasColumnType("int");
+                b.Property<int>("TargetPoemId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("TargetSectionIndex")
-                        .HasColumnType("int");
+                b.Property<int>("TargetSectionIndex")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("PoemId", "SectionIndex");
+                b.HasIndex("PoemId", "SectionIndex");
 
-                    b.ToTable("GanjoorCachedRelatedSections");
-                });
+                b.ToTable("GanjoorCachedRelatedSections");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCat", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .HasColumnType("int");
 
-                    b.Property<string>("BookName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("BookName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CatType")
-                        .HasColumnType("int");
+                b.Property<int>("CatType")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DescriptionHtml")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("DescriptionHtml")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullUrl")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("FullUrl")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("MapName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("MapName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("MixedModeOrder")
-                        .HasColumnType("int");
+                b.Property<int>("MixedModeOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
+                b.Property<int?>("ParentId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoetId")
-                        .HasColumnType("int");
+                b.Property<int>("PoetId")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("Published")
-                        .HasColumnType("bit");
+                b.Property<bool>("Published")
+                    .HasColumnType("bit");
 
-                    b.Property<Guid?>("RImageId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RImageId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("SumUpSubsGeoLocations")
-                        .HasColumnType("bit");
+                b.Property<bool>("SumUpSubsGeoLocations")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("TableOfContentsStyle")
-                        .HasColumnType("int");
+                b.Property<int>("TableOfContentsStyle")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Title")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UrlSlug")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UrlSlug")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("FullUrl");
+                b.HasIndex("FullUrl");
 
-                    b.HasIndex("PoetId");
+                b.HasIndex("PoetId");
 
-                    b.HasIndex("RImageId");
+                b.HasIndex("RImageId");
 
-                    b.HasIndex("ParentId", "PoetId");
+                b.HasIndex("ParentId", "PoetId");
 
-                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("ParentId", "PoetId"), new[] { "Id" });
+                SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("ParentId", "PoetId"), new[] { "Id" });
 
-                    b.ToTable("GanjoorCategories");
-                });
+                b.ToTable("GanjoorCategories");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCentury", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("EndYear")
-                        .HasColumnType("int");
+                b.Property<int>("EndYear")
+                    .HasColumnType("int");
 
-                    b.Property<int>("HalfCenturyOrder")
-                        .HasColumnType("int");
+                b.Property<int>("HalfCenturyOrder")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("ShowInTimeLine")
-                        .HasColumnType("bit");
+                b.Property<bool>("ShowInTimeLine")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("StartYear")
-                        .HasColumnType("int");
+                b.Property<int>("StartYear")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("GanjoorCenturies");
-                });
+                b.ToTable("GanjoorCenturies");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCenturyPoet", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("GanjoorCenturyId")
-                        .HasColumnType("int");
+                b.Property<int?>("GanjoorCenturyId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("PoetId")
-                        .HasColumnType("int");
+                b.Property<int?>("PoetId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoetOrder")
-                        .HasColumnType("int");
+                b.Property<int>("PoetOrder")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GanjoorCenturyId");
+                b.HasIndex("GanjoorCenturyId");
 
-                    b.HasIndex("PoetId");
+                b.HasIndex("PoetId");
 
-                    b.ToTable("GanjoorCenturyPoet");
-                });
+                b.ToTable("GanjoorCenturyPoet");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorComment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AuthorEmail")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AuthorEmail")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AuthorIpAddress")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AuthorIpAddress")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AuthorName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AuthorName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AuthorUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AuthorUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CommentDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CommentDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int?>("CoupletIndex")
-                        .HasColumnType("int");
+                b.Property<int?>("CoupletIndex")
+                    .HasColumnType("int");
 
-                    b.Property<string>("HtmlComment")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("HtmlComment")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("InReplyToId")
-                        .HasColumnType("int");
+                b.Property<int?>("InReplyToId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                b.Property<int>("Status")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("Verse12d")
-                        .HasColumnType("int");
+                b.Property<int?>("Verse12d")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("Verse1Id")
-                        .HasColumnType("int");
+                b.Property<int?>("Verse1Id")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("Verse2Id")
-                        .HasColumnType("int");
+                b.Property<int?>("Verse2Id")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CommentDate");
+                b.HasIndex("CommentDate");
 
-                    b.HasIndex("InReplyToId");
+                b.HasIndex("InReplyToId");
 
-                    b.HasIndex("PoemId");
+                b.HasIndex("PoemId");
 
-                    b.HasIndex("Status");
+                b.HasIndex("Status");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.HasIndex("Verse1Id");
+                b.HasIndex("Verse1Id");
 
-                    b.HasIndex("Verse2Id");
+                b.HasIndex("Verse2Id");
 
-                    b.ToTable("GanjoorComments");
-                });
+                b.ToTable("GanjoorComments");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCommentAbuseReport", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("GanjoorCommentId")
-                        .HasColumnType("int");
+                b.Property<int>("GanjoorCommentId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("ReasonCode")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ReasonCode")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ReasonText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ReasonText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("ReportedById")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ReportedById")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GanjoorCommentId");
+                b.HasIndex("GanjoorCommentId");
 
-                    b.HasIndex("ReportedById");
+                b.HasIndex("ReportedById");
 
-                    b.ToTable("GanjoorReportedComments");
-                });
+                b.ToTable("GanjoorReportedComments");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorDuplicate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("DestPoemId")
-                        .HasColumnType("int");
+                b.Property<int?>("DestPoemId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("SrcCatId")
-                        .HasColumnType("int");
+                b.Property<int>("SrcCatId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("SrcPoemId")
-                        .HasColumnType("int");
+                b.Property<int>("SrcPoemId")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("DestPoemId");
+                b.HasIndex("DestPoemId");
 
-                    b.HasIndex("SrcPoemId");
+                b.HasIndex("SrcPoemId");
 
-                    b.ToTable("GanjoorDuplicates");
-                });
+                b.ToTable("GanjoorDuplicates");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorGeoLocation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Latitude")
-                        .HasColumnType("decimal(12,9)");
+                b.Property<decimal>("Latitude")
+                    .HasColumnType("decimal(12,9)");
 
-                    b.Property<decimal>("Longitude")
-                        .HasColumnType("decimal(12,9)");
+                b.Property<decimal>("Longitude")
+                    .HasColumnType("decimal(12,9)");
 
-                    b.Property<bool>("MachineGenerated")
-                        .HasColumnType("bit");
+                b.Property<bool>("MachineGenerated")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("GanjoorGeoLocations");
-                });
+                b.ToTable("GanjoorGeoLocations");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorHealthCheckError", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("BrokenLink")
-                        .HasColumnType("bit");
+                b.Property<bool>("BrokenLink")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("MulipleTargets")
-                        .HasColumnType("bit");
+                b.Property<bool>("MulipleTargets")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("ReferrerPageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ReferrerPageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TargetUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TargetUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("GanjoorHealthCheckErrors");
-                });
+                b.ToTable("GanjoorHealthCheckErrors");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorLanguage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Code")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Code")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("NativeName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("NativeName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("RightToLeft")
-                        .HasColumnType("bit");
+                b.Property<bool>("RightToLeft")
+                    .HasColumnType("bit");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasFilter("[Name] IS NOT NULL");
+                b.HasIndex("Name")
+                    .IsUnique()
+                    .HasFilter("[Name] IS NOT NULL");
 
-                    b.ToTable("GanjoorLanguages");
-                });
+                b.ToTable("GanjoorLanguages");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorMetre", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Rhythm")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Rhythm")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UrlSlug")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UrlSlug")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VerseCount")
-                        .HasColumnType("int");
+                b.Property<int>("VerseCount")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("GanjoorMetres");
-                });
+                b.ToTable("GanjoorMetres");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorNumbering", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("EndCatId")
-                        .HasColumnType("int");
+                b.Property<int?>("EndCatId")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("LastCountingDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("LastCountingDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("StartCatId")
-                        .HasColumnType("int");
+                b.Property<int>("StartCatId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("TotalCouplets")
-                        .HasColumnType("int");
+                b.Property<int>("TotalCouplets")
+                    .HasColumnType("int");
 
-                    b.Property<int>("TotalLines")
-                        .HasColumnType("int");
+                b.Property<int>("TotalLines")
+                    .HasColumnType("int");
 
-                    b.Property<int>("TotalParagraphs")
-                        .HasColumnType("int");
+                b.Property<int>("TotalParagraphs")
+                    .HasColumnType("int");
 
-                    b.Property<int>("TotalVerses")
-                        .HasColumnType("int");
+                b.Property<int>("TotalVerses")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("EndCatId");
+                b.HasIndex("EndCatId");
 
-                    b.HasIndex("StartCatId");
+                b.HasIndex("StartCatId");
 
-                    b.ToTable("GanjoorNumberings");
-                });
+                b.ToTable("GanjoorNumberings");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPage", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("CatId")
-                        .HasColumnType("int");
+                b.Property<int?>("CatId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("FullTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FullTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullUrl")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("FullUrl")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("GanjoorPageType")
-                        .HasColumnType("int");
+                b.Property<int>("GanjoorPageType")
+                    .HasColumnType("int");
 
-                    b.Property<string>("HtmlText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("HtmlText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("NoIndex")
-                        .HasColumnType("bit");
+                b.Property<bool>("NoIndex")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("PageOrder")
-                        .HasColumnType("int");
+                b.Property<int>("PageOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
+                b.Property<int?>("ParentId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int?>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("PoetId")
-                        .HasColumnType("int");
+                b.Property<int?>("PoetId")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("PostDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("PostDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<bool>("Published")
-                        .HasColumnType("bit");
+                b.Property<bool>("Published")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("RedirectFromFullUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RedirectFromFullUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SecondPoetId")
-                        .HasColumnType("int");
+                b.Property<int?>("SecondPoetId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Title")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UrlSlug")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UrlSlug")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CatId");
+                b.HasIndex("CatId");
 
-                    b.HasIndex("FullUrl");
+                b.HasIndex("FullUrl");
 
-                    b.HasIndex("ParentId");
+                b.HasIndex("ParentId");
 
-                    b.HasIndex("PoemId");
+                b.HasIndex("PoemId");
 
-                    b.HasIndex("PoetId");
+                b.HasIndex("PoetId");
 
-                    b.HasIndex("SecondPoetId");
+                b.HasIndex("SecondPoetId");
 
-                    b.ToTable("GanjoorPages");
-                });
+                b.ToTable("GanjoorPages");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPageSnapshot", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("GanjoorPageId")
-                        .HasColumnType("int");
+                b.Property<int>("GanjoorPageId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("HtmlText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("HtmlText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("MadeObsoleteByUserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("MadeObsoleteByUserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Note")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OldTag")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OldTag")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OldTagPageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OldTagPageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("RecordDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("RecordDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("RhymeLetters")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RhymeLetters")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Rhythm")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Rhythm")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SourceName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SourceName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SourceUrlSlug")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SourceUrlSlug")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Title")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UrlSlug")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UrlSlug")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GanjoorPageId");
+                b.HasIndex("GanjoorPageId");
 
-                    b.HasIndex("MadeObsoleteByUserId");
+                b.HasIndex("MadeObsoleteByUserId");
 
-                    b.ToTable("GanjoorPageSnapshots");
-                });
+                b.ToTable("GanjoorPageSnapshots");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoem", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .HasColumnType("int");
 
-                    b.Property<int>("CatId")
-                        .HasColumnType("int");
+                b.Property<int>("CatId")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("ClaimedByMultiplePoets")
-                        .HasColumnType("bit");
+                b.Property<bool>("ClaimedByMultiplePoets")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("FullTitle")
-                        .HasMaxLength(1500)
-                        .HasColumnType("nvarchar(1500)");
+                b.Property<string>("FullTitle")
+                    .HasMaxLength(1500)
+                    .HasColumnType("nvarchar(1500)");
 
-                    b.Property<string>("FullUrl")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("FullUrl")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("GanjoorMetreId")
-                        .HasColumnType("int");
+                b.Property<int?>("GanjoorMetreId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("HtmlText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("HtmlText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Language")
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
+                b.Property<string>("Language")
+                    .HasMaxLength(8)
+                    .HasColumnType("nvarchar(8)");
 
-                    b.Property<int>("MixedModeOrder")
-                        .HasColumnType("int");
+                b.Property<int>("MixedModeOrder")
+                    .HasColumnType("int");
 
-                    b.Property<string>("OldTag")
-                        .HasMaxLength(16)
-                        .HasColumnType("nvarchar(16)");
+                b.Property<string>("OldTag")
+                    .HasMaxLength(16)
+                    .HasColumnType("nvarchar(16)");
 
-                    b.Property<string>("OldTagPageUrl")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                b.Property<string>("OldTagPageUrl")
+                    .HasMaxLength(32)
+                    .HasColumnType("nvarchar(32)");
 
-                    b.Property<string>("PlainText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PlainText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PoemSummary")
-                        .HasMaxLength(3000)
-                        .HasColumnType("nvarchar(3000)");
+                b.Property<string>("PoemSummary")
+                    .HasMaxLength(3000)
+                    .HasColumnType("nvarchar(3000)");
 
-                    b.Property<bool>("Published")
-                        .HasColumnType("bit");
+                b.Property<bool>("Published")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("RhymeLetters")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                b.Property<string>("RhymeLetters")
+                    .HasMaxLength(64)
+                    .HasColumnType("nvarchar(64)");
 
-                    b.Property<string>("SourceName")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                b.Property<string>("SourceName")
+                    .HasMaxLength(64)
+                    .HasColumnType("nvarchar(64)");
 
-                    b.Property<string>("SourceUrlSlug")
-                        .HasMaxLength(16)
-                        .HasColumnType("nvarchar(16)");
+                b.Property<string>("SourceUrlSlug")
+                    .HasMaxLength(16)
+                    .HasColumnType("nvarchar(16)");
 
-                    b.Property<string>("Title")
-                        .HasMaxLength(1500)
-                        .HasColumnType("nvarchar(1500)");
+                b.Property<string>("Title")
+                    .HasMaxLength(1500)
+                    .HasColumnType("nvarchar(1500)");
 
-                    b.Property<string>("UrlSlug")
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                b.Property<string>("UrlSlug")
+                    .HasMaxLength(32)
+                    .HasColumnType("nvarchar(32)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CatId");
+                b.HasIndex("CatId");
 
-                    b.HasIndex("FullUrl");
+                b.HasIndex("FullUrl");
 
-                    b.HasIndex("GanjoorMetreId");
+                b.HasIndex("GanjoorMetreId");
 
-                    b.HasIndex("Id");
+                b.HasIndex("Id");
 
-                    b.ToTable("GanjoorPoems");
-                });
+                b.ToTable("GanjoorPoems");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemCorrection", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("AffectedThePoem")
-                        .HasColumnType("bit");
+                b.Property<bool>("AffectedThePoem")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("ApplicationOrder")
-                        .HasColumnType("int");
+                b.Property<int>("ApplicationOrder")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("Date")
+                    .HasColumnType("datetime2");
 
-                    b.Property<bool>("HideMyName")
-                        .HasColumnType("bit");
+                b.Property<bool>("HideMyName")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Language")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Language")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LanguageReviewResult")
-                        .HasColumnType("int");
+                b.Property<int>("LanguageReviewResult")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Note")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalLanguage")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalLanguage")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OriginalPoemFormat")
-                        .HasColumnType("int");
+                b.Property<int?>("OriginalPoemFormat")
+                    .HasColumnType("int");
 
-                    b.Property<string>("OriginalPoemSummary")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalPoemSummary")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalRhymeLetters")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalRhymeLetters")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalRhythm")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalRhythm")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalRhythm2")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalRhythm2")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalRhythm3")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalRhythm3")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalRhythm4")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalRhythm4")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PoemFormat")
-                        .HasColumnType("int");
+                b.Property<int?>("PoemFormat")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoemFormatReviewResult")
-                        .HasColumnType("int");
+                b.Property<int>("PoemFormatReviewResult")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("PoemSummary")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PoemSummary")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Result")
-                        .HasColumnType("int");
+                b.Property<int>("Result")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("ReviewDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("ReviewNote")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ReviewNote")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Reviewed")
-                        .HasColumnType("bit");
+                b.Property<bool>("Reviewed")
+                    .HasColumnType("bit");
 
-                    b.Property<Guid?>("ReviewerUserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ReviewerUserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("RhymeLetters")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RhymeLetters")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RhymeLettersReviewResult")
-                        .HasColumnType("int");
+                b.Property<int>("RhymeLettersReviewResult")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Rhythm")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Rhythm")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Rhythm2")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Rhythm2")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Rhythm2Result")
-                        .HasColumnType("int");
+                b.Property<int>("Rhythm2Result")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Rhythm3")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Rhythm3")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Rhythm3Result")
-                        .HasColumnType("int");
+                b.Property<int>("Rhythm3Result")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Rhythm4")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Rhythm4")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Rhythm4Result")
-                        .HasColumnType("int");
+                b.Property<int>("Rhythm4Result")
+                    .HasColumnType("int");
 
-                    b.Property<int>("RhythmResult")
-                        .HasColumnType("int");
+                b.Property<int>("RhythmResult")
+                    .HasColumnType("int");
 
-                    b.Property<int>("SummaryReviewResult")
-                        .HasColumnType("int");
+                b.Property<int>("SummaryReviewResult")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Title")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("PoemId");
+                b.HasIndex("PoemId");
 
-                    b.HasIndex("ReviewerUserId");
+                b.HasIndex("ReviewerUserId");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("GanjoorPoemCorrections");
-                });
+                b.ToTable("GanjoorPoemCorrections");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemProbableMetre", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Metre")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Metre")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("SectionId")
-                        .HasColumnType("int");
+                b.Property<int>("SectionId")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("PoemId");
+                b.HasIndex("PoemId");
 
-                    b.ToTable("GanjoorPoemProbableMetres");
-                });
+                b.ToTable("GanjoorPoemProbableMetres");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemSection", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CachedFirstCoupletIndex")
-                        .HasColumnType("int");
+                b.Property<int>("CachedFirstCoupletIndex")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("GanjoorMetreId")
-                        .HasColumnType("int");
+                b.Property<int?>("GanjoorMetreId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("GanjoorMetreRefSectionIndex")
-                        .HasColumnType("int");
+                b.Property<int?>("GanjoorMetreRefSectionIndex")
+                    .HasColumnType("int");
 
-                    b.Property<string>("HtmlText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("HtmlText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Index")
-                        .HasColumnType("int");
+                b.Property<int>("Index")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Language")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Language")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Number")
-                        .HasColumnType("int");
+                b.Property<int>("Number")
+                    .HasColumnType("int");
 
-                    b.Property<string>("PlainText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PlainText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PoemFormat")
-                        .HasColumnType("int");
+                b.Property<int?>("PoemFormat")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("PoetId")
-                        .HasColumnType("int");
+                b.Property<int?>("PoetId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("RhymeLetters")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("RhymeLetters")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("SectionType")
-                        .HasColumnType("int");
+                b.Property<int>("SectionType")
+                    .HasColumnType("int");
 
-                    b.Property<int>("VerseType")
-                        .HasColumnType("int");
+                b.Property<int>("VerseType")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("PoetId");
+                b.HasIndex("PoetId");
 
-                    b.HasIndex("RhymeLetters");
+                b.HasIndex("RhymeLetters");
 
-                    b.HasIndex("GanjoorMetreId", "RhymeLetters");
+                b.HasIndex("GanjoorMetreId", "RhymeLetters");
 
-                    b.HasIndex("PoemId", "Index");
+                b.HasIndex("PoemId", "Index");
 
-                    b.HasIndex("GanjoorMetreId", "RhymeLetters", "Id");
+                b.HasIndex("GanjoorMetreId", "RhymeLetters", "Id");
 
-                    b.HasIndex("GanjoorMetreId", "RhymeLetters", "SectionType");
+                b.HasIndex("GanjoorMetreId", "RhymeLetters", "SectionType");
 
-                    b.ToTable("GanjoorPoemSections");
-                });
+                b.ToTable("GanjoorPoemSections");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("AffectedThePoem")
-                        .HasColumnType("bit");
+                b.Property<bool>("AffectedThePoem")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("ApplicationOrder")
-                        .HasColumnType("int");
+                b.Property<int>("ApplicationOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("BreakFromVerse10VOrder")
-                        .HasColumnType("int");
+                b.Property<int?>("BreakFromVerse10VOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int>("BreakFromVerse10VOrderResult")
-                        .HasColumnType("int");
+                b.Property<int>("BreakFromVerse10VOrderResult")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("BreakFromVerse1VOrder")
-                        .HasColumnType("int");
+                b.Property<int?>("BreakFromVerse1VOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int>("BreakFromVerse1VOrderResult")
-                        .HasColumnType("int");
+                b.Property<int>("BreakFromVerse1VOrderResult")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("BreakFromVerse2VOrder")
-                        .HasColumnType("int");
+                b.Property<int?>("BreakFromVerse2VOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int>("BreakFromVerse2VOrderResult")
-                        .HasColumnType("int");
+                b.Property<int>("BreakFromVerse2VOrderResult")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("BreakFromVerse3VOrder")
-                        .HasColumnType("int");
+                b.Property<int?>("BreakFromVerse3VOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int>("BreakFromVerse3VOrderResult")
-                        .HasColumnType("int");
+                b.Property<int>("BreakFromVerse3VOrderResult")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("BreakFromVerse4VOrder")
-                        .HasColumnType("int");
+                b.Property<int?>("BreakFromVerse4VOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int>("BreakFromVerse4VOrderResult")
-                        .HasColumnType("int");
+                b.Property<int>("BreakFromVerse4VOrderResult")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("BreakFromVerse5VOrder")
-                        .HasColumnType("int");
+                b.Property<int?>("BreakFromVerse5VOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int>("BreakFromVerse5VOrderResult")
-                        .HasColumnType("int");
+                b.Property<int>("BreakFromVerse5VOrderResult")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("BreakFromVerse6VOrder")
-                        .HasColumnType("int");
+                b.Property<int?>("BreakFromVerse6VOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int>("BreakFromVerse6VOrderResult")
-                        .HasColumnType("int");
+                b.Property<int>("BreakFromVerse6VOrderResult")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("BreakFromVerse7VOrder")
-                        .HasColumnType("int");
+                b.Property<int?>("BreakFromVerse7VOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int>("BreakFromVerse7VOrderResult")
-                        .HasColumnType("int");
+                b.Property<int>("BreakFromVerse7VOrderResult")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("BreakFromVerse8VOrder")
-                        .HasColumnType("int");
+                b.Property<int?>("BreakFromVerse8VOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int>("BreakFromVerse8VOrderResult")
-                        .HasColumnType("int");
+                b.Property<int>("BreakFromVerse8VOrderResult")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("BreakFromVerse9VOrder")
-                        .HasColumnType("int");
+                b.Property<int?>("BreakFromVerse9VOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int>("BreakFromVerse9VOrderResult")
-                        .HasColumnType("int");
+                b.Property<int>("BreakFromVerse9VOrderResult")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("Date")
+                    .HasColumnType("datetime2");
 
-                    b.Property<bool>("HideMyName")
-                        .HasColumnType("bit");
+                b.Property<bool>("HideMyName")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Language")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Language")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LanguageReviewResult")
-                        .HasColumnType("int");
+                b.Property<int>("LanguageReviewResult")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Note")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalLanguage")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalLanguage")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OriginalPoemFormat")
-                        .HasColumnType("int");
+                b.Property<int?>("OriginalPoemFormat")
+                    .HasColumnType("int");
 
-                    b.Property<string>("OriginalRhymeLetters")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalRhymeLetters")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalRhythm")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalRhythm")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalRhythm2")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalRhythm2")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PoemFormat")
-                        .HasColumnType("int");
+                b.Property<int?>("PoemFormat")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoemFormatReviewResult")
-                        .HasColumnType("int");
+                b.Property<int>("PoemFormatReviewResult")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("ReviewDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("ReviewNote")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ReviewNote")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Reviewed")
-                        .HasColumnType("bit");
+                b.Property<bool>("Reviewed")
+                    .HasColumnType("bit");
 
-                    b.Property<Guid?>("ReviewerUserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ReviewerUserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("RhymeLetters")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RhymeLetters")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RhymeLettersReviewResult")
-                        .HasColumnType("int");
+                b.Property<int>("RhymeLettersReviewResult")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Rhythm")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Rhythm")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Rhythm2")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Rhythm2")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RhythmResult")
-                        .HasColumnType("int");
+                b.Property<int>("RhythmResult")
+                    .HasColumnType("int");
 
-                    b.Property<int>("RhythmResult2")
-                        .HasColumnType("int");
+                b.Property<int>("RhythmResult2")
+                    .HasColumnType("int");
 
-                    b.Property<int>("SectionId")
-                        .HasColumnType("int");
+                b.Property<int>("SectionId")
+                    .HasColumnType("int");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ReviewerUserId");
+                b.HasIndex("ReviewerUserId");
 
-                    b.HasIndex("SectionId");
+                b.HasIndex("SectionId");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("GanjoorPoemSectionCorrections");
-                });
+                b.ToTable("GanjoorPoemSectionCorrections");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemTranslation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DateTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LanguageId")
-                        .HasColumnType("int");
+                b.Property<int>("LanguageId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("Published")
-                        .HasColumnType("bit");
+                b.Property<bool>("Published")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Title")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("LanguageId");
+                b.HasIndex("LanguageId");
 
-                    b.HasIndex("PoemId");
+                b.HasIndex("PoemId");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("GanjoorPoemTranslations");
-                });
+                b.ToTable("GanjoorPoemTranslations");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoet", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("BirthLocationId")
-                        .HasColumnType("int");
+                b.Property<int?>("BirthLocationId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("BirthYearInLHijri")
-                        .HasColumnType("int");
+                b.Property<int>("BirthYearInLHijri")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("DeathLocationId")
-                        .HasColumnType("int");
+                b.Property<int?>("DeathLocationId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("DeathYearInLHijri")
-                        .HasColumnType("int");
+                b.Property<int>("DeathYearInLHijri")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Nickname")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Nickname")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PinOrder")
-                        .HasColumnType("int");
+                b.Property<int>("PinOrder")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("Published")
-                        .HasColumnType("bit");
+                b.Property<bool>("Published")
+                    .HasColumnType("bit");
 
-                    b.Property<Guid?>("RImageId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RImageId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("ValidBirthDate")
-                        .HasColumnType("bit");
+                b.Property<bool>("ValidBirthDate")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("ValidDeathDate")
-                        .HasColumnType("bit");
+                b.Property<bool>("ValidDeathDate")
+                    .HasColumnType("bit");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("BirthLocationId");
+                b.HasIndex("BirthLocationId");
 
-                    b.HasIndex("DeathLocationId");
+                b.HasIndex("DeathLocationId");
 
-                    b.HasIndex("RImageId");
+                b.HasIndex("RImageId");
 
-                    b.HasIndex("Published", "Id");
+                b.HasIndex("Published", "Id");
 
-                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("Published", "Id"), new[] { "Name", "Nickname", "RImageId" });
+                SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("Published", "Id"), new[] { "Name", "Nickname", "RImageId" });
 
-                    b.ToTable("GanjoorPoets");
-                });
+                b.ToTable("GanjoorPoets");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoetSuggestedPicture", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("ChosenOne")
-                        .HasColumnType("bit");
+                b.Property<bool>("ChosenOne")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("PicOrder")
-                        .HasColumnType("int");
+                b.Property<int>("PicOrder")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("PictureId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("PictureId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("PoetId")
-                        .HasColumnType("int");
+                b.Property<int>("PoetId")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("Published")
-                        .HasColumnType("bit");
+                b.Property<bool>("Published")
+                    .HasColumnType("bit");
 
-                    b.Property<Guid?>("SuggestedById")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("SuggestedById")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("PictureId");
+                b.HasIndex("PictureId");
 
-                    b.HasIndex("PoetId");
+                b.HasIndex("PoetId");
 
-                    b.HasIndex("SuggestedById");
+                b.HasIndex("SuggestedById");
 
-                    b.ToTable("GanjoorPoetSuggestedPictures");
-                });
+                b.ToTable("GanjoorPoetSuggestedPictures");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoetSuggestedSpecLine", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Contents")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Contents")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LineOrder")
-                        .HasColumnType("int");
+                b.Property<int>("LineOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoetId")
-                        .HasColumnType("int");
+                b.Property<int>("PoetId")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("Published")
-                        .HasColumnType("bit");
+                b.Property<bool>("Published")
+                    .HasColumnType("bit");
 
-                    b.Property<Guid?>("SuggestedById")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("SuggestedById")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("PoetId");
+                b.HasIndex("PoetId");
 
-                    b.HasIndex("SuggestedById");
+                b.HasIndex("SuggestedById");
 
-                    b.ToTable("GanjoorPoetSuggestedSpecLines");
-                });
+                b.ToTable("GanjoorPoetSuggestedSpecLines");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorQuotedPoem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CachedRelatedPoemFullTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CachedRelatedPoemFullTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CachedRelatedPoemFullUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CachedRelatedPoemFullUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CachedRelatedPoemPoetDeathYearInLHijri")
-                        .HasColumnType("int");
+                b.Property<int>("CachedRelatedPoemPoetDeathYearInLHijri")
+                    .HasColumnType("int");
 
-                    b.Property<string>("CachedRelatedPoemPoetImage")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CachedRelatedPoemPoetImage")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CachedRelatedPoemPoetName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CachedRelatedPoemPoetName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CachedRelatedPoemPoetUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CachedRelatedPoemPoetUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("ChosenForMainList")
-                        .HasColumnType("bit");
+                b.Property<bool>("ChosenForMainList")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("ClaimedByBothPoets")
-                        .HasColumnType("bit");
+                b.Property<bool>("ClaimedByBothPoets")
+                    .HasColumnType("bit");
 
-                    b.Property<int?>("CoupletIndex")
-                        .HasColumnType("int");
+                b.Property<int?>("CoupletIndex")
+                    .HasColumnType("int");
 
-                    b.Property<string>("CoupletVerse1")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CoupletVerse1")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("CoupletVerse1ShouldBeEmphasized")
-                        .HasColumnType("bit");
+                b.Property<bool>("CoupletVerse1ShouldBeEmphasized")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("CoupletVerse2")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CoupletVerse2")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("CoupletVerse2ShouldBeEmphasized")
-                        .HasColumnType("bit");
+                b.Property<bool>("CoupletVerse2ShouldBeEmphasized")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("IndirectQuotation")
-                        .HasColumnType("bit");
+                b.Property<bool>("IndirectQuotation")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("IsPriorToRelated")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsPriorToRelated")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Note")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoetId")
-                        .HasColumnType("int");
+                b.Property<int>("PoetId")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("Published")
-                        .HasColumnType("bit");
+                b.Property<bool>("Published")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("Rejected")
-                        .HasColumnType("bit");
+                b.Property<bool>("Rejected")
+                    .HasColumnType("bit");
 
-                    b.Property<int?>("RelatedCoupletIndex")
-                        .HasColumnType("int");
+                b.Property<int?>("RelatedCoupletIndex")
+                    .HasColumnType("int");
 
-                    b.Property<string>("RelatedCoupletVerse1")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RelatedCoupletVerse1")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("RelatedCoupletVerse1ShouldBeEmphasized")
-                        .HasColumnType("bit");
+                b.Property<bool>("RelatedCoupletVerse1ShouldBeEmphasized")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("RelatedCoupletVerse2")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RelatedCoupletVerse2")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("RelatedCoupletVerse2ShouldBeEmphasized")
-                        .HasColumnType("bit");
+                b.Property<bool>("RelatedCoupletVerse2ShouldBeEmphasized")
+                    .HasColumnType("bit");
 
-                    b.Property<int?>("RelatedPoemId")
-                        .HasColumnType("int");
+                b.Property<int?>("RelatedPoemId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("RelatedPoetId")
-                        .HasColumnType("int");
+                b.Property<int?>("RelatedPoetId")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime?>("ReviewDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("ReviewDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("ReviewNote")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ReviewNote")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("ReviewerUserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ReviewerUserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("SamePoemsQuotedCount")
-                        .HasColumnType("int");
+                b.Property<int>("SamePoemsQuotedCount")
+                    .HasColumnType("int");
 
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("int");
+                b.Property<int>("SortOrder")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("SuggestedById")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("SuggestedById")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("SuggestionDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("SuggestionDate")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("PoemId");
+                b.HasIndex("PoemId");
 
-                    b.HasIndex("ReviewerUserId");
+                b.HasIndex("ReviewerUserId");
 
-                    b.HasIndex("SuggestedById");
+                b.HasIndex("SuggestedById");
 
-                    b.ToTable("GanjoorQuotedPoems");
-                });
+                b.ToTable("GanjoorQuotedPoems");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorRelatedPerson", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BirthLocationId")
-                        .HasColumnType("int");
+                b.Property<int?>("BirthLocationId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("BirthYearInLHijri")
-                        .HasColumnType("int");
+                b.Property<int>("BirthYearInLHijri")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("DeathLocationId")
-                        .HasColumnType("int");
+                b.Property<int?>("DeathLocationId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("DeathYearInLHijri")
-                        .HasColumnType("int");
+                b.Property<int>("DeathYearInLHijri")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("MachineGenerated")
-                        .HasColumnType("bit");
+                b.Property<bool>("MachineGenerated")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("ValidBirthDate")
-                        .HasColumnType("bit");
+                b.Property<bool>("ValidBirthDate")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("ValidDeathDate")
-                        .HasColumnType("bit");
+                b.Property<bool>("ValidDeathDate")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("WikiUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("WikiUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("BirthLocationId");
+                b.HasIndex("BirthLocationId");
 
-                    b.HasIndex("DeathLocationId");
+                b.HasIndex("DeathLocationId");
 
-                    b.ToTable("GanjoorRelatedPersons");
-                });
+                b.ToTable("GanjoorRelatedPersons");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorSiteBanner", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
+                b.Property<bool>("Active")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("AlternateText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AlternateText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("RImageId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("RImageId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("TargetUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TargetUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RImageId");
+                b.HasIndex("RImageId");
 
-                    b.ToTable("GanjoorSiteBanners");
-                });
+                b.ToTable("GanjoorSiteBanners");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorTajikCat", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoetId")
-                        .HasColumnType("int");
+                b.Property<int>("PoetId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("TajikDescription")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TajikDescription")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TajikTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TajikTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("PoetId");
+                b.HasIndex("PoetId");
 
-                    b.ToTable("TajikCats");
-                });
+                b.ToTable("TajikCats");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorTajikPage", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .HasColumnType("int");
 
-                    b.Property<string>("TajikHtmlText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TajikHtmlText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("TajikPages");
-                });
+                b.ToTable("TajikPages");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorTajikPoem", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .HasColumnType("int");
 
-                    b.Property<int>("CatId")
-                        .HasColumnType("int");
+                b.Property<int>("CatId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("FullTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FullTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FullUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TajikPlainText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TajikPlainText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TajikTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TajikTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CatId");
+                b.HasIndex("CatId");
 
-                    b.ToTable("TajikPoems");
-                });
+                b.ToTable("TajikPoems");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorTajikPoet", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .HasColumnType("int");
 
-                    b.Property<int>("BirthYearInLHijri")
-                        .HasColumnType("int");
+                b.Property<int>("BirthYearInLHijri")
+                    .HasColumnType("int");
 
-                    b.Property<string>("TajikDescription")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TajikDescription")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TajikNickname")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TajikNickname")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("TajikPoets");
-                });
+                b.ToTable("TajikPoets");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorTajikVerse", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("TajikText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TajikText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VOrder")
-                        .HasColumnType("int");
+                b.Property<int>("VOrder")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("TajikVerses");
-                });
+                b.ToTable("TajikVerses");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorUserBookmark", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CoupletIndex")
-                        .HasColumnType("int");
+                b.Property<int>("CoupletIndex")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DateTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("PrivateNote")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PrivateNote")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("Verse2Id")
-                        .HasColumnType("int");
+                b.Property<int?>("Verse2Id")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("VerseId")
-                        .HasColumnType("int");
+                b.Property<int?>("VerseId")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("PoemId");
+                b.HasIndex("PoemId");
 
-                    b.HasIndex("UserId", "PoemId", "CoupletIndex");
+                b.HasIndex("UserId", "PoemId", "CoupletIndex");
 
-                    b.ToTable("GanjoorUserBookmarks");
-                });
+                b.ToTable("GanjoorUserBookmarks");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorUserPoemVisit", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DateTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("PoemId");
+                b.HasIndex("PoemId");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.HasIndex("UserId", "PoemId");
+                b.HasIndex("UserId", "PoemId");
 
-                    b.ToTable("GanjoorUserPoemVisits");
-                });
+                b.ToTable("GanjoorUserPoemVisits");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorVerse", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CoupletIndex")
-                        .HasColumnType("int");
+                b.Property<int?>("CoupletIndex")
+                    .HasColumnType("int");
 
-                    b.Property<string>("CoupletSummary")
-                        .HasMaxLength(4000)
-                        .HasColumnType("nvarchar(4000)");
+                b.Property<string>("CoupletSummary")
+                    .HasMaxLength(4000)
+                    .HasColumnType("nvarchar(4000)");
 
-                    b.Property<int?>("LanguageId")
-                        .HasColumnType("int");
+                b.Property<int?>("LanguageId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("SectionIndex1")
-                        .HasColumnType("int");
+                b.Property<int?>("SectionIndex1")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("SectionIndex2")
-                        .HasColumnType("int");
+                b.Property<int?>("SectionIndex2")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("SectionIndex3")
-                        .HasColumnType("int");
+                b.Property<int?>("SectionIndex3")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("SectionIndex4")
-                        .HasColumnType("int");
+                b.Property<int?>("SectionIndex4")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Text")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VOrder")
-                        .HasColumnType("int");
+                b.Property<int>("VOrder")
+                    .HasColumnType("int");
 
-                    b.Property<int>("VersePosition")
-                        .HasColumnType("int");
+                b.Property<int>("VersePosition")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("LanguageId");
+                b.HasIndex("LanguageId");
 
-                    b.HasIndex("PoemId");
+                b.HasIndex("PoemId");
 
-                    b.HasIndex("PoemId", "CoupletIndex");
+                b.HasIndex("PoemId", "CoupletIndex");
 
-                    b.ToTable("GanjoorVerses");
-                });
+                b.ToTable("GanjoorVerses");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorVerseNumber", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CoupletIndex")
-                        .HasColumnType("int");
+                b.Property<int>("CoupletIndex")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("IsPoemVerse")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsPoemVerse")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("Number")
-                        .HasColumnType("int");
+                b.Property<int>("Number")
+                    .HasColumnType("int");
 
-                    b.Property<int>("NumberingId")
-                        .HasColumnType("int");
+                b.Property<int>("NumberingId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("SameTypeNumber")
-                        .HasColumnType("int");
+                b.Property<int>("SameTypeNumber")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("PoemId", "CoupletIndex");
+                b.HasIndex("PoemId", "CoupletIndex");
 
-                    b.HasIndex("NumberingId", "PoemId", "CoupletIndex")
-                        .IsUnique();
+                b.HasIndex("NumberingId", "PoemId", "CoupletIndex")
+                    .IsUnique();
 
-                    b.ToTable("GanjoorVerseNumbers");
-                });
+                b.ToTable("GanjoorVerseNumbers");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorVerseTranslation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("GanjoorPoemTranslationId")
-                        .HasColumnType("int");
+                b.Property<int?>("GanjoorPoemTranslationId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("TText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VerseId")
-                        .HasColumnType("int");
+                b.Property<int>("VerseId")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GanjoorPoemTranslationId");
+                b.HasIndex("GanjoorPoemTranslationId");
 
-                    b.HasIndex("VerseId");
+                b.HasIndex("VerseId");
 
-                    b.ToTable("GanjoorVerseTranslation");
-                });
+                b.ToTable("GanjoorVerseTranslation");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorVerseVOrderText", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CoupletIndex")
-                        .HasColumnType("int");
+                b.Property<int?>("CoupletIndex")
+                    .HasColumnType("int");
 
-                    b.Property<string>("CoupletSummary")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CoupletSummary")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("GanjoorPoemCorrectionId")
-                        .HasColumnType("int");
+                b.Property<int?>("GanjoorPoemCorrectionId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("LanguageId")
-                        .HasColumnType("int");
+                b.Property<int?>("LanguageId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("LanguageReviewResult")
-                        .HasColumnType("int");
+                b.Property<int>("LanguageReviewResult")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("MarkForDelete")
-                        .HasColumnType("bit");
+                b.Property<bool>("MarkForDelete")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("MarkForDeleteResult")
-                        .HasColumnType("int");
+                b.Property<int>("MarkForDeleteResult")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("NewVerse")
-                        .HasColumnType("bit");
+                b.Property<bool>("NewVerse")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("NewVerseResult")
-                        .HasColumnType("int");
+                b.Property<int>("NewVerseResult")
+                    .HasColumnType("int");
 
-                    b.Property<string>("OriginalCoupletSummary")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalCoupletSummary")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OriginalLanguageId")
-                        .HasColumnType("int");
+                b.Property<int?>("OriginalLanguageId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("OriginalText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OriginalVersePosition")
-                        .HasColumnType("int");
+                b.Property<int?>("OriginalVersePosition")
+                    .HasColumnType("int");
 
-                    b.Property<int>("Result")
-                        .HasColumnType("int");
+                b.Property<int>("Result")
+                    .HasColumnType("int");
 
-                    b.Property<string>("ReviewNote")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ReviewNote")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SummaryReviewResult")
-                        .HasColumnType("int");
+                b.Property<int>("SummaryReviewResult")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Text")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VORder")
-                        .HasColumnType("int");
+                b.Property<int>("VORder")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("VersePosition")
-                        .HasColumnType("int");
+                b.Property<int?>("VersePosition")
+                    .HasColumnType("int");
 
-                    b.Property<int>("VersePositionResult")
-                        .HasColumnType("int");
+                b.Property<int>("VersePositionResult")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GanjoorPoemCorrectionId");
+                b.HasIndex("GanjoorPoemCorrectionId");
 
-                    b.ToTable("GanjoorVerseVOrderText");
-                });
+                b.ToTable("GanjoorVerseVOrderText");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.PoemGeoDateTag", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CoupletIndex")
-                        .HasColumnType("int");
+                b.Property<int>("CoupletIndex")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("IgnoreInCategory")
-                        .HasColumnType("bit");
+                b.Property<bool>("IgnoreInCategory")
+                    .HasColumnType("bit");
 
-                    b.Property<int?>("LocationId")
-                        .HasColumnType("int");
+                b.Property<int?>("LocationId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("LunarDateTotalNumber")
-                        .HasColumnType("int");
+                b.Property<int?>("LunarDateTotalNumber")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("LunarDay")
-                        .HasColumnType("int");
+                b.Property<int?>("LunarDay")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("LunarMonth")
-                        .HasColumnType("int");
+                b.Property<int?>("LunarMonth")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("LunarYear")
-                        .HasColumnType("int");
+                b.Property<int?>("LunarYear")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("MachineGenerated")
-                        .HasColumnType("bit");
+                b.Property<bool>("MachineGenerated")
+                    .HasColumnType("bit");
 
-                    b.Property<int?>("PersonId")
-                        .HasColumnType("int");
+                b.Property<int?>("PersonId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("VerifiedDate")
-                        .HasColumnType("bit");
+                b.Property<bool>("VerifiedDate")
+                    .HasColumnType("bit");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("LocationId");
+                b.HasIndex("LocationId");
 
-                    b.HasIndex("PersonId");
+                b.HasIndex("PersonId");
 
-                    b.HasIndex("PoemId");
+                b.HasIndex("PoemId");
 
-                    b.ToTable("PoemGeoDateTags");
-                });
+                b.ToTable("PoemGeoDateTags");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.PoemMusicTrack", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AlbumName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AlbumName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AlbumUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AlbumUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ApprovalDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("ApprovalDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<bool>("Approved")
-                        .HasColumnType("bit");
+                b.Property<bool>("Approved")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("ArtistName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ArtistName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ArtistUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ArtistUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("BrokenLink")
-                        .HasColumnType("bit");
+                b.Property<bool>("BrokenLink")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("GanjoorTrackId")
-                        .HasColumnType("int");
+                b.Property<int?>("GanjoorTrackId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("GolhaTrackId")
-                        .HasColumnType("int");
+                b.Property<int?>("GolhaTrackId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PoemId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemId")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("Rejected")
-                        .HasColumnType("bit");
+                b.Property<bool>("Rejected")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("RejectionCause")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RejectionCause")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SingerId")
-                        .HasColumnType("int");
+                b.Property<int?>("SingerId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("SongOrder")
-                        .HasColumnType("int");
+                b.Property<int>("SongOrder")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("SuggestedById")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("SuggestedById")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("TrackName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TrackName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TrackType")
-                        .HasColumnType("int");
+                b.Property<int>("TrackType")
+                    .HasColumnType("int");
 
-                    b.Property<string>("TrackUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TrackUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GanjoorTrackId");
+                b.HasIndex("GanjoorTrackId");
 
-                    b.HasIndex("GolhaTrackId");
+                b.HasIndex("GolhaTrackId");
 
-                    b.HasIndex("PoemId");
+                b.HasIndex("PoemId");
 
-                    b.HasIndex("SingerId");
+                b.HasIndex("SingerId");
 
-                    b.HasIndex("SuggestedById");
+                b.HasIndex("SuggestedById");
 
-                    b.HasIndex("Approved", "Rejected");
+                b.HasIndex("Approved", "Rejected");
 
-                    b.ToTable("GanjoorPoemMusicTracks");
-                });
+                b.ToTable("GanjoorPoemMusicTracks");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.UpdatingRelSectsLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DateTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("MeterId")
-                        .HasColumnType("int");
+                b.Property<int>("MeterId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("RhymeLettes")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RhymeLettes")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("UpdatingRelSectsLogs");
-                });
+                b.ToTable("UpdatingRelSectsLogs");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.Recitation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AudioArtist")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AudioArtist")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AudioArtistUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AudioArtistUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("AudioOrder")
-                        .HasColumnType("int");
+                b.Property<int>("AudioOrder")
+                    .HasColumnType("int");
 
-                    b.Property<string>("AudioSrc")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AudioSrc")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AudioSrcUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AudioSrcUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("AudioSyncStatus")
-                        .HasColumnType("int");
+                b.Property<int>("AudioSyncStatus")
+                    .HasColumnType("int");
 
-                    b.Property<string>("AudioTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AudioTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("FileLastUpdated")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("FileLastUpdated")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("FileNameWithoutExtension")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FileNameWithoutExtension")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GanjoorAudioId")
-                        .HasColumnType("int");
+                b.Property<int>("GanjoorAudioId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("GanjoorPostId")
-                        .HasColumnType("int");
+                b.Property<int>("GanjoorPostId")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("InSyncWithText")
-                        .HasColumnType("bit");
+                b.Property<bool>("InSyncWithText")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("InitialScore")
-                        .HasColumnType("int");
+                b.Property<int>("InitialScore")
+                    .HasColumnType("int");
 
-                    b.Property<Guid>("LegacyAudioGuid")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("LegacyAudioGuid")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("LocalMp3FilePath")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("LocalMp3FilePath")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LocalXmlFilePath")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("LocalXmlFilePath")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Mp3FileCheckSum")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Mp3FileCheckSum")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Mp3SizeInBytes")
-                        .HasColumnType("int");
+                b.Property<int>("Mp3SizeInBytes")
+                    .HasColumnType("int");
 
-                    b.Property<int>("OggSizeInBytes")
-                        .HasColumnType("int");
+                b.Property<int>("OggSizeInBytes")
+                    .HasColumnType("int");
 
-                    b.Property<Guid>("OwnerId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("OwnerId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("RecitationType")
-                        .HasColumnType("int");
+                b.Property<int>("RecitationType")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("ReviewDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("ReviewMsg")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ReviewMsg")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ReviewStatus")
-                        .HasColumnType("int");
+                b.Property<int>("ReviewStatus")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("ReviewerId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ReviewerId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("SoundFilesFolder")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SoundFilesFolder")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("UploadDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("UploadDate")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GanjoorAudioId");
+                b.HasIndex("GanjoorAudioId");
 
-                    b.HasIndex("GanjoorPostId");
+                b.HasIndex("GanjoorPostId");
 
-                    b.HasIndex("OwnerId");
+                b.HasIndex("OwnerId");
 
-                    b.HasIndex("ReviewerId");
+                b.HasIndex("ReviewerId");
 
-                    b.HasIndex("ReviewStatus", "GanjoorPostId");
+                b.HasIndex("ReviewStatus", "GanjoorPostId");
 
-                    b.ToTable("Recitations");
-                });
+                b.ToTable("Recitations");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.RecitationApprovedMistake", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CoupletIndex")
-                        .HasColumnType("int");
+                b.Property<int>("CoupletIndex")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Mistake")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Mistake")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("NumberOfLinesAffected")
-                        .HasColumnType("int");
+                b.Property<int>("NumberOfLinesAffected")
+                    .HasColumnType("int");
 
-                    b.Property<int>("RecitationId")
-                        .HasColumnType("int");
+                b.Property<int>("RecitationId")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RecitationId");
+                b.HasIndex("RecitationId");
 
-                    b.ToTable("RecitationApprovedMistakes");
-                });
+                b.ToTable("RecitationApprovedMistakes");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.RecitationErrorReport", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CoupletIndex")
-                        .HasColumnType("int");
+                b.Property<int>("CoupletIndex")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DateTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("NumberOfLinesAffected")
-                        .HasColumnType("int");
+                b.Property<int>("NumberOfLinesAffected")
+                    .HasColumnType("int");
 
-                    b.Property<string>("ReasonText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ReasonText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RecitationId")
-                        .HasColumnType("int");
+                b.Property<int>("RecitationId")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("ReporterId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ReporterId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RecitationId");
+                b.HasIndex("RecitationId");
 
-                    b.HasIndex("ReporterId");
+                b.HasIndex("ReporterId");
 
-                    b.ToTable("RecitationErrorReports");
-                });
+                b.ToTable("RecitationErrorReports");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.RecitationPublishingTracker", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("FinishDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("FinishDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<bool>("Finished")
-                        .HasColumnType("bit");
+                b.Property<bool>("Finished")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("FirstDbUpdated")
-                        .HasColumnType("bit");
+                b.Property<bool>("FirstDbUpdated")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("LastException")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("LastException")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Mp3FileCopied")
-                        .HasColumnType("bit");
+                b.Property<bool>("Mp3FileCopied")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("PoemNarrationId")
-                        .HasColumnType("int");
+                b.Property<int>("PoemNarrationId")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("SecondDbUpdated")
-                        .HasColumnType("bit");
+                b.Property<bool>("SecondDbUpdated")
+                    .HasColumnType("bit");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("StartDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<bool>("XmlFileCopied")
-                        .HasColumnType("bit");
+                b.Property<bool>("XmlFileCopied")
+                    .HasColumnType("bit");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("PoemNarrationId");
+                b.HasIndex("PoemNarrationId");
 
-                    b.ToTable("RecitationPublishingTrackers");
-                });
+                b.ToTable("RecitationPublishingTrackers");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.RecitationUserUpVote", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DateTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("RecitationId")
-                        .HasColumnType("int");
+                b.Property<int>("RecitationId")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.HasIndex("RecitationId", "UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                b.HasIndex("RecitationId", "UserId")
+                    .IsUnique()
+                    .HasFilter("[UserId] IS NOT NULL");
 
-                    b.ToTable("RecitationUserUpVotes");
-                });
+                b.ToTable("RecitationUserUpVotes");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.UserRecitationProfile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ArtistName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ArtistName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ArtistUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ArtistUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AudioSrc")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AudioSrc")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AudioSrcUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AudioSrcUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FileSuffixWithoutDash")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FileSuffixWithoutDash")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDefault")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsDefault")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("UserRecitationProfiles");
-                });
+                b.ToTable("UserRecitationProfiles");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorIntegration.GanjoorLink", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ArtifactId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("ArtifactId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("DisplayOnPage")
-                        .HasColumnType("bit");
+                b.Property<bool>("DisplayOnPage")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("GanjoorPostId")
-                        .HasColumnType("int");
+                b.Property<int>("GanjoorPostId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("GanjoorTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("GanjoorTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("GanjoorUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("GanjoorUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsTextOriginalSource")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsTextOriginalSource")
+                    .HasColumnType("bit");
 
-                    b.Property<Guid?>("ItemId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ItemId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("LinkToOriginalSource")
-                        .HasColumnType("bit");
+                b.Property<bool>("LinkToOriginalSource")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("OriginalSourceUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalSourceUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("ReviewDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("ReviewResult")
-                        .HasColumnType("int");
+                b.Property<int>("ReviewResult")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("ReviewerId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ReviewerId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("SuggestedById")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("SuggestedById")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("SuggestionDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("SuggestionDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<bool>("Synchronized")
-                        .HasColumnType("bit");
+                b.Property<bool>("Synchronized")
+                    .HasColumnType("bit");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ArtifactId");
+                b.HasIndex("ArtifactId");
 
-                    b.HasIndex("ItemId");
+                b.HasIndex("ItemId");
 
-                    b.HasIndex("ReviewerId");
+                b.HasIndex("ReviewerId");
 
-                    b.HasIndex("SuggestedById");
+                b.HasIndex("SuggestedById");
 
-                    b.ToTable("GanjoorLinks");
-                });
+                b.ToTable("GanjoorLinks");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorIntegration.GanjoorPaperSource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("BookFullTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("BookFullTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("BookFullUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("BookFullUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("BookType")
-                        .HasColumnType("int");
+                b.Property<int>("BookType")
+                    .HasColumnType("int");
 
-                    b.Property<string>("CoverThumbnailImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CoverThumbnailImageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("GanjoorCatFullTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("GanjoorCatFullTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("GanjoorCatFullUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("GanjoorCatFullUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GanjoorCatId")
-                        .HasColumnType("int");
+                b.Property<int>("GanjoorCatId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("GanjoorPoetId")
-                        .HasColumnType("int");
+                b.Property<int>("GanjoorPoetId")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("HumanReviewed")
-                        .HasColumnType("bit");
+                b.Property<bool>("HumanReviewed")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("IsTextOriginalSource")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsTextOriginalSource")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("MatchPercent")
-                        .HasColumnType("int");
+                b.Property<int>("MatchPercent")
+                    .HasColumnType("int");
 
-                    b.Property<int>("NaskbanBookId")
-                        .HasColumnType("int");
+                b.Property<int>("NaskbanBookId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("OrderIndicator")
-                        .HasColumnType("int");
+                b.Property<int>("OrderIndicator")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("GanjoorPaperSources");
-                });
+                b.ToTable("GanjoorPaperSources");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorIntegration.PDFGanjoorLink", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ExternalThumbnailImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ExternalThumbnailImageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GanjoorPostId")
-                        .HasColumnType("int");
+                b.Property<int>("GanjoorPostId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("GanjoorTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("GanjoorTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("GanjoorUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("GanjoorUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsTextOriginalSource")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsTextOriginalSource")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("PDFBookId")
-                        .HasColumnType("int");
+                b.Property<int>("PDFBookId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("PDFPageTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PDFPageTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PageNumber")
-                        .HasColumnType("int");
+                b.Property<int>("PageNumber")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("ReviewDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("ReviewResult")
-                        .HasColumnType("int");
+                b.Property<int>("ReviewResult")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("ReviewerId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ReviewerId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("SuggestedById")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("SuggestedById")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("SuggestedByMachine")
-                        .HasColumnType("bit");
+                b.Property<bool>("SuggestedByMachine")
+                    .HasColumnType("bit");
 
-                    b.Property<DateTime>("SuggestionDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("SuggestionDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<bool>("Synchronized")
-                        .HasColumnType("bit");
+                b.Property<bool>("Synchronized")
+                    .HasColumnType("bit");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ReviewerId");
+                b.HasIndex("ReviewerId");
 
-                    b.HasIndex("SuggestedById");
+                b.HasIndex("SuggestedById");
 
-                    b.ToTable("PDFGanjoorLinks");
-                });
+                b.ToTable("PDFGanjoorLinks");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorIntegration.PinterestLink", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AltText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AltText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("ArtifactId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ArtifactId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("GanjoorPostId")
-                        .HasColumnType("int");
+                b.Property<int>("GanjoorPostId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("GanjoorTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("GanjoorTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("GanjoorUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("GanjoorUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("HumanReviewed")
-                        .HasColumnType("bit");
+                b.Property<bool>("HumanReviewed")
+                    .HasColumnType("bit");
 
-                    b.Property<bool>("IsTextOriginalSource")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsTextOriginalSource")
+                    .HasColumnType("bit");
 
-                    b.Property<Guid?>("ItemId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ItemId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("LinkType")
-                        .HasColumnType("int");
+                b.Property<int>("LinkType")
+                    .HasColumnType("int");
 
-                    b.Property<int>("MatchPercent")
-                        .HasColumnType("int");
+                b.Property<int>("MatchPercent")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("NaskbanLinkId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("NaskbanLinkId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("PDFBookId")
-                        .HasColumnType("int");
+                b.Property<int>("PDFBookId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PageNumber")
-                        .HasColumnType("int");
+                b.Property<int>("PageNumber")
+                    .HasColumnType("int");
 
-                    b.Property<string>("PinterestImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PinterestImageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PinterestUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PinterestUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("ReviewDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("ReviewDesc")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ReviewDesc")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ReviewResult")
-                        .HasColumnType("int");
+                b.Property<int>("ReviewResult")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("ReviewerId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ReviewerId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("SuggestedById")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("SuggestedById")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("SuggestionDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("SuggestionDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<bool>("Synchronized")
-                        .HasColumnType("bit");
+                b.Property<bool>("Synchronized")
+                    .HasColumnType("bit");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ArtifactId");
+                b.HasIndex("ArtifactId");
 
-                    b.HasIndex("ItemId");
+                b.HasIndex("ItemId");
 
-                    b.HasIndex("ReviewerId");
+                b.HasIndex("ReviewerId");
 
-                    b.HasIndex("SuggestedById");
+                b.HasIndex("SuggestedById");
 
-                    b.ToTable("PinterestLinks");
-                });
+                b.ToTable("PinterestLinks");
+            });
 
             modelBuilder.Entity("RMuseum.Models.ImportJob.ImportJob", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ArtifactId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ArtifactId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("EndTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Exception")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Exception")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FriendlyUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FriendlyUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("JobType")
-                        .HasColumnType("int");
+                b.Property<int>("JobType")
+                    .HasColumnType("int");
 
-                    b.Property<decimal>("ProgressPercent")
-                        .HasColumnType("decimal(18,2)");
+                b.Property<decimal>("ProgressPercent")
+                    .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("QueueTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("QueueTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("ResourceNumber")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ResourceNumber")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SrcContent")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SrcContent")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SrcUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SrcUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("StartTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                b.Property<int>("Status")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ArtifactId");
+                b.HasIndex("ArtifactId");
 
-                    b.ToTable("ImportJobs");
-                });
+                b.ToTable("ImportJobs");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GanjoorAlbum", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SingerId")
-                        .HasColumnType("int");
+                b.Property<int>("SingerId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Url")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Url")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("SingerId");
+                b.HasIndex("SingerId");
 
-                    b.ToTable("GanjoorAlbum");
-                });
+                b.ToTable("GanjoorAlbum");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GanjoorSinger", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid?>("RImageId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RImageId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Url")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Url")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("Name");
+                b.HasIndex("Name");
 
-                    b.HasIndex("RImageId");
+                b.HasIndex("RImageId");
 
-                    b.ToTable("GanjoorSingers");
-                });
+                b.ToTable("GanjoorSingers");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GanjoorTrack", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AlbumId")
-                        .HasColumnType("int");
+                b.Property<int>("AlbumId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("BlockReason")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("BlockReason")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Blocked")
-                        .HasColumnType("bit");
+                b.Property<bool>("Blocked")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Url")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Url")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("AlbumId");
+                b.HasIndex("AlbumId");
 
-                    b.HasIndex("Name");
+                b.HasIndex("Name");
 
-                    b.ToTable("GanjoorMusicCatalogueTracks");
-                });
+                b.ToTable("GanjoorMusicCatalogueTracks");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GolhaCollection", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("GolhaCollections");
-                });
+                b.ToTable("GolhaCollections");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GolhaProgram", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .HasColumnType("int");
 
-                    b.Property<int>("GolhaCollectionId")
-                        .HasColumnType("int");
+                b.Property<int>("GolhaCollectionId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Mp3")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Mp3")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProgramOrder")
-                        .HasColumnType("int");
+                b.Property<int>("ProgramOrder")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Title")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Url")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Url")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GolhaCollectionId");
+                b.HasIndex("GolhaCollectionId");
 
-                    b.ToTable("GolhaPrograms");
-                });
+                b.ToTable("GolhaPrograms");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GolhaTrack", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .HasColumnType("int");
 
-                    b.Property<string>("BlockReason")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("BlockReason")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Blocked")
-                        .HasColumnType("bit");
+                b.Property<bool>("Blocked")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("GolhaProgramId")
-                        .HasColumnType("int");
+                b.Property<int>("GolhaProgramId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("SingerId")
-                        .HasColumnType("int");
+                b.Property<int?>("SingerId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Timing")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Timing")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Title")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TrackNo")
-                        .HasColumnType("int");
+                b.Property<int>("TrackNo")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("GolhaProgramId");
+                b.HasIndex("GolhaProgramId");
 
-                    b.HasIndex("SingerId");
+                b.HasIndex("SingerId");
 
-                    b.ToTable("GolhaTracks");
-                });
+                b.ToTable("GolhaTracks");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Note.RUserNote", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DateTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("HtmlContent")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("HtmlContent")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("LastModified")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("LastModified")
+                    .HasColumnType("datetime2");
 
-                    b.Property<bool>("Modified")
-                        .HasColumnType("bit");
+                b.Property<bool>("Modified")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("NoteType")
-                        .HasColumnType("int");
+                b.Property<int>("NoteType")
+                    .HasColumnType("int");
 
-                    b.Property<Guid>("RAppUserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("RAppUserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("RArtifactItemRecordId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RArtifactItemRecordId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("RArtifactMasterRecordId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RArtifactMasterRecordId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ReferenceNoteId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ReferenceNoteId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                b.Property<int>("Status")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RAppUserId");
+                b.HasIndex("RAppUserId");
 
-                    b.HasIndex("RArtifactItemRecordId");
+                b.HasIndex("RArtifactItemRecordId");
 
-                    b.HasIndex("RArtifactMasterRecordId");
+                b.HasIndex("RArtifactMasterRecordId");
 
-                    b.HasIndex("ReferenceNoteId");
+                b.HasIndex("ReferenceNoteId");
 
-                    b.ToTable("UserNotes");
-                });
+                b.ToTable("UserNotes");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Note.RUserNoteAbuseReport", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("NoteId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("NoteId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ReasonText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ReasonText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("ReporterId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ReporterId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("NoteId");
+                b.HasIndex("NoteId");
 
-                    b.HasIndex("ReporterId");
+                b.HasIndex("ReporterId");
 
-                    b.ToTable("ReportedUserNotes");
-                });
+                b.ToTable("ReportedUserNotes");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.Author", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Bio")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Bio")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExtenalImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ExtenalImageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("ImageId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ImageId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("LastModified")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("LastModified")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NameInOriginalLanguage")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("NameInOriginalLanguage")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("ImageId");
+                b.HasIndex("ImageId");
 
-                    b.ToTable("Authors");
-                });
+                b.ToTable("Authors");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.AuthorRole", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AuthorId")
-                        .HasColumnType("int");
+                b.Property<int?>("AuthorId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("BookId")
-                        .HasColumnType("int");
+                b.Property<int?>("BookId")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("PDFBookId")
-                        .HasColumnType("int");
+                b.Property<int?>("PDFBookId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Role")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
+                b.HasIndex("AuthorId");
 
-                    b.HasIndex("BookId");
+                b.HasIndex("BookId");
 
-                    b.HasIndex("PDFBookId");
+                b.HasIndex("PDFBookId");
 
-                    b.ToTable("AuthorRole");
-                });
+                b.ToTable("AuthorRole");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.Book", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid?>("CoverImageId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("CoverImageId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExtenalCoverImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ExtenalCoverImageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("LastModified")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("LastModified")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CoverImageId");
+                b.HasIndex("CoverImageId");
 
-                    b.ToTable("Books");
-                });
+                b.ToTable("Books");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.MultiVolumePDFCollection", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
+                b.Property<int>("BookId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VolumeCount")
-                        .HasColumnType("int");
+                b.Property<int>("VolumeCount")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("BookId");
+                b.HasIndex("BookId");
 
-                    b.ToTable("MultiVolumePDFCollections");
-                });
+                b.ToTable("MultiVolumePDFCollections");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.OCRQueue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("PDFBookId")
-                        .HasColumnType("int");
+                b.Property<int>("PDFBookId")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("OCRQueuedItems");
-                });
+                b.ToTable("OCRQueuedItems");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.PDFBook", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AuthorsLine")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AuthorsLine")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
+                b.Property<int>("BookId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("BookScriptType")
-                        .HasColumnType("int");
+                b.Property<int>("BookScriptType")
+                    .HasColumnType("int");
 
-                    b.Property<string>("BookText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("BookText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ClaimedPageCount")
-                        .HasColumnType("int");
+                b.Property<int?>("ClaimedPageCount")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("CoverImageId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("CoverImageId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DateTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExtenalCoverImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ExtenalCoverImageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExternalPDFFileUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ExternalPDFFileUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FileMD5CheckSum")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FileMD5CheckSum")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ISBN")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ISBN")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsTranslation")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsTranslation")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Language")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Language")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("LastModified")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("LastModified")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int?>("MultiVolumePDFCollectionId")
-                        .HasColumnType("int");
+                b.Property<int?>("MultiVolumePDFCollectionId")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("OCRTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("OCRTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<bool>("OCRed")
-                        .HasColumnType("bit");
+                b.Property<bool>("OCRed")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("OriginalFileName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalFileName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalFileUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalFileUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalSourceName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalSourceName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalSourceUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalSourceUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("PDFFileId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("PDFFileId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("PDFSourceId")
-                        .HasColumnType("int");
+                b.Property<int?>("PDFSourceId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PageCount")
-                        .HasColumnType("int");
+                b.Property<int>("PageCount")
+                    .HasColumnType("int");
 
-                    b.Property<string>("PublisherLine")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PublisherLine")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PublishingDate")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PublishingDate")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PublishingLocation")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PublishingLocation")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PublishingNumber")
-                        .HasColumnType("int");
+                b.Property<int?>("PublishingNumber")
+                    .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                b.Property<int>("Status")
+                    .HasColumnType("int");
 
-                    b.Property<string>("StorageFolderName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("StorageFolderName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SubTitle")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SubTitle")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Title")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TitleInOriginalLanguage")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TitleInOriginalLanguage")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TranslatorsLine")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TranslatorsLine")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VolumeOrder")
-                        .HasColumnType("int");
+                b.Property<int>("VolumeOrder")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("BookId");
+                b.HasIndex("BookId");
 
-                    b.HasIndex("CoverImageId");
+                b.HasIndex("CoverImageId");
 
-                    b.HasIndex("MultiVolumePDFCollectionId");
+                b.HasIndex("MultiVolumePDFCollectionId");
 
-                    b.HasIndex("PDFFileId");
+                b.HasIndex("PDFFileId");
 
-                    b.HasIndex("PDFSourceId");
+                b.HasIndex("PDFSourceId");
 
-                    b.ToTable("PDFBooks");
-                });
+                b.ToTable("PDFBooks");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.PDFPage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExtenalThumbnailImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ExtenalThumbnailImageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FullResolutionImageHeight")
-                        .HasColumnType("int");
+                b.Property<int>("FullResolutionImageHeight")
+                    .HasColumnType("int");
 
-                    b.Property<int>("FullResolutionImageWidth")
-                        .HasColumnType("int");
+                b.Property<int>("FullResolutionImageWidth")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("LastModified")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("LastModified")
+                    .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("OCRTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("OCRTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<bool>("OCRed")
-                        .HasColumnType("bit");
+                b.Property<bool>("OCRed")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("PDFBookId")
-                        .HasColumnType("int");
+                b.Property<int>("PDFBookId")
+                    .HasColumnType("int");
 
-                    b.Property<int>("PageNumber")
-                        .HasColumnType("int");
+                b.Property<int>("PageNumber")
+                    .HasColumnType("int");
 
-                    b.Property<string>("PageText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PageText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("ThumbnailImageId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ThumbnailImageId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("PDFBookId");
+                b.HasIndex("PDFBookId");
 
-                    b.HasIndex("ThumbnailImageId");
+                b.HasIndex("ThumbnailImageId");
 
-                    b.ToTable("PDFPages");
-                });
+                b.ToTable("PDFPages");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.PDFSource", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Url")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Url")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("PDFSources");
-                });
+                b.ToTable("PDFSources");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.QueuedPDFBook", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AuthorsLine")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("AuthorsLine")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DownloadOrder")
-                        .HasColumnType("int");
+                b.Property<int>("DownloadOrder")
+                    .HasColumnType("int");
 
-                    b.Property<bool>("IsTranslation")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsTranslation")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Language")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Language")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalFileUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalFileUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalSourceName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalSourceName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalSourceUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalSourceUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProcessResult")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ProcessResult")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Processed")
-                        .HasColumnType("bit");
+                b.Property<bool>("Processed")
+                    .HasColumnType("bit");
 
-                    b.Property<int>("ResultId")
-                        .HasColumnType("int");
+                b.Property<int>("ResultId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Title")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TranslatorsLine")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TranslatorsLine")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("QueuedPDFBooks");
-                });
+                b.ToTable("QueuedPDFBooks");
+            });
 
             modelBuilder.Entity("RMuseum.Models.UploadSession.UploadSession", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ProcessEndTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("ProcessEndTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("ProcessProgress")
-                        .HasColumnType("int");
+                b.Property<int>("ProcessProgress")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("ProcessStartTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("ProcessStartTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("SessionType")
-                        .HasColumnType("int");
+                b.Property<int>("SessionType")
+                    .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                b.Property<int>("Status")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("UploadEndTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("UploadEndTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("UploadStartTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("UploadStartTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UseId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("UseId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("UploadSessions");
-                });
+                b.ToTable("UploadSessions");
+            });
 
             modelBuilder.Entity("RMuseum.Models.UploadSession.UploadSessionFile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ContentDisposition")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ContentDisposition")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ContentType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ContentType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FileName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FilePath")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FilePath")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("Length")
-                        .HasColumnType("bigint");
+                b.Property<long>("Length")
+                    .HasColumnType("bigint");
 
-                    b.Property<string>("MP3FileCheckSum")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("MP3FileCheckSum")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("ProcessResult")
-                        .HasColumnType("bit");
+                b.Property<bool>("ProcessResult")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("ProcessResultMsg")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ProcessResultMsg")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UploadSessionId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("UploadSessionId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("UploadSessionId");
+                b.HasIndex("UploadSessionId");
 
-                    b.ToTable("UploadedFiles");
-                });
+                b.ToTable("UploadedFiles");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Audit.Db.REvent", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Duration")
-                        .HasColumnType("int");
+                b.Property<int>("Duration")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("EndDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("EventType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("EventType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("IpAddress")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("IpAddress")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("JsonData")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("JsonData")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RequestUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("RequestUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ResponseStatusCode")
-                        .HasColumnType("int");
+                b.Property<int>("ResponseStatusCode")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("StartDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UserName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("AuditLogs");
-                });
+                b.ToTable("AuditLogs");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Auth.Db.BannedEmail", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NormalizedEmail")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("NormalizedEmail")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("BannedEmails");
-                });
+                b.ToTable("BannedEmails");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Auth.Db.RAppRole", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ConcurrencyStamp")
+                    .IsConcurrencyToken()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("Name")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("NormalizedName")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                b.HasIndex("NormalizedName")
+                    .IsUnique()
+                    .HasDatabaseName("RoleNameIndex")
+                    .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", (string)null);
-                });
+                b.ToTable("AspNetRoles", (string)null);
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Auth.Db.RAppUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                b.Property<int>("AccessFailedCount")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Bio")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Bio")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ConcurrencyStamp")
+                    .IsConcurrencyToken()
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreateDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("Email")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
+                b.Property<bool>("EmailConfirmed")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FirstName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
+                b.Property<bool>("LockoutEnabled")
+                    .HasColumnType("bit");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
+                b.Property<DateTimeOffset?>("LockoutEnd")
+                    .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("LockoutMessage")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("LockoutMessage")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NickName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("NickName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("NormalizedEmail")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("NormalizedUserName")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PasswordHash")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PhoneNumber")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
+                b.Property<bool>("PhoneNumberConfirmed")
+                    .HasColumnType("bit");
 
-                    b.Property<Guid?>("RImageId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RImageId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ScreenName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ScreenName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SecurityStamp")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                b.Property<int>("Status")
+                    .HasColumnType("int");
 
-                    b.Property<string>("SurName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SurName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
+                b.Property<bool>("TwoFactorEnabled")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("UserName")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("Website")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Website")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
+                b.HasIndex("NormalizedEmail")
+                    .HasDatabaseName("EmailIndex");
 
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                b.HasIndex("NormalizedUserName")
+                    .IsUnique()
+                    .HasDatabaseName("UserNameIndex")
+                    .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.HasIndex("RImageId");
+                b.HasIndex("RImageId");
 
-                    b.ToTable("AspNetUsers", (string)null);
-                });
+                b.ToTable("AspNetUsers", (string)null);
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Auth.Db.RCaptchaImage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DateTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<Guid>("RImageId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("RImageId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Value")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RImageId");
+                b.HasIndex("RImageId");
 
-                    b.ToTable("CaptchaImages");
-                });
+                b.ToTable("CaptchaImages");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Auth.Db.RPermission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("OperationShortName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OperationShortName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("RAppRoleId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RAppRoleId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("SecurableItemShortName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SecurableItemShortName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RAppRoleId");
+                b.HasIndex("RAppRoleId");
 
-                    b.ToTable("Permissions");
-                });
+                b.ToTable("Permissions");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Auth.Db.RTemporaryUserSession", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ClientAppName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClientAppName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClientIPAddress")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClientIPAddress")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Language")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Language")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("LastRenewal")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("LastRenewal")
+                    .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("LoginTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("LoginTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<Guid>("RAppUserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("RAppUserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Token")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Token")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ValidUntil")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("ValidUntil")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RAppUserId");
+                b.HasIndex("RAppUserId");
 
-                    b.ToTable("Sessions");
-                });
+                b.ToTable("Sessions");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Auth.Db.RUserBehaviourLog", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DateTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("UserBehaviourLogs");
-                });
+                b.ToTable("UserBehaviourLogs");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Auth.Db.RVerifyQueueItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ClientAppName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClientAppName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClientIPAddress")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClientIPAddress")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DateTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Email")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Language")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Language")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("PhoneNumber")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("QueueType")
-                        .HasColumnType("int");
+                b.Property<int>("QueueType")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Secret")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("Secret")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("Secret")
-                        .IsUnique()
-                        .HasFilter("[Secret] IS NOT NULL");
+                b.HasIndex("Secret")
+                    .IsUnique()
+                    .HasFilter("[Secret] IS NOT NULL");
 
-                    b.ToTable("VerifyQueueItems");
-                });
+                b.ToTable("VerifyQueueItems");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Cloud.RWSPermission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("OperationShortName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OperationShortName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("RWSRoleId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RWSRoleId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("SecurableItemShortName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SecurableItemShortName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RWSRoleId");
+                b.HasIndex("RWSRoleId");
 
-                    b.ToTable("RWSPermissions");
-                });
+                b.ToTable("RWSPermissions");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Cloud.RWSRole", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ConcurrencyStamp")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NormalizedName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("NormalizedName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("WorkspaceId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("WorkspaceId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("WorkspaceId");
+                b.HasIndex("WorkspaceId");
 
-                    b.ToTable("RWSRoles");
-                });
+                b.ToTable("RWSRoles");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Cloud.RWSUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("InviteDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("InviteDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("MemberFrom")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime?>("MemberFrom")
+                    .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("RAppUserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RAppUserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("RWorkspaceId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RWorkspaceId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                b.Property<int>("Status")
+                    .HasColumnType("int");
 
-                    b.Property<int>("WorkspaceOrder")
-                        .HasColumnType("int");
+                b.Property<int>("WorkspaceOrder")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RAppUserId");
+                b.HasIndex("RAppUserId");
 
-                    b.HasIndex("RWorkspaceId");
+                b.HasIndex("RWorkspaceId");
 
-                    b.ToTable("RWSUsers");
-                });
+                b.ToTable("RWSUsers");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Cloud.RWSUserRole", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RoleId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("WorkspaceId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("WorkspaceId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
+                b.HasIndex("RoleId");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.HasIndex("WorkspaceId");
+                b.HasIndex("WorkspaceId");
 
-                    b.ToTable("RWSUserRoles");
-                });
+                b.ToTable("RWSUserRoles");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Cloud.RWorkspace", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
+                b.Property<bool>("Active")
+                    .HasColumnType("bit");
 
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreateDate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("RWorkspaces");
-                });
+                b.ToTable("RWorkspaces");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Cloud.WorkspaceUserInvitation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("WorkspaceId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("WorkspaceId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.HasIndex("WorkspaceId");
+                b.HasIndex("WorkspaceId");
 
-                    b.ToTable("WorkspaceUserInvitations");
-                });
+                b.ToTable("WorkspaceUserInvitations");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Generic.Db.RGenericOption", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid?>("RAppUserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RAppUserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Value")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("WorkspaceId")
-                        .HasColumnType("uniqueidentifier");
+                b.HasKey("Id");
 
-                    b.HasKey("Id");
+                b.HasIndex("RAppUserId", "Name")
+                    .IsUnique()
+                    .HasFilter("[RAppUserId] IS NOT NULL AND [Name] IS NOT NULL");
 
-                    b.HasIndex("WorkspaceId");
-
-                    b.HasIndex("RAppUserId", "Name")
-                        .IsUnique()
-                        .HasFilter("[RAppUserId] IS NOT NULL AND [Name] IS NOT NULL");
-
-                    b.ToTable("Options");
-                });
+                b.ToTable("Options");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("EndTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Exception")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Exception")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("LastUpdate")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("LastUpdate")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Progress")
-                        .HasColumnType("float");
+                b.Property<double>("Progress")
+                    .HasColumnType("float");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("StartTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Step")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Step")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Succeeded")
-                        .HasColumnType("bit");
+                b.Property<bool>("Succeeded")
+                    .HasColumnType("bit");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("LongRunningJobs");
-                });
+                b.ToTable("LongRunningJobs");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Image.RImage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ContentType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ContentType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DataTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DataTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
+                b.Property<string>("Discriminator")
+                    .IsRequired()
+                    .HasMaxLength(13)
+                    .HasColumnType("nvarchar(13)");
 
-                    b.Property<long>("FileSizeInBytes")
-                        .HasColumnType("bigint");
+                b.Property<long>("FileSizeInBytes")
+                    .HasColumnType("bigint");
 
-                    b.Property<string>("FolderName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("FolderName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ImageHeight")
-                        .HasColumnType("int");
+                b.Property<int>("ImageHeight")
+                    .HasColumnType("int");
 
-                    b.Property<int>("ImageWidth")
-                        .HasColumnType("int");
+                b.Property<int>("ImageWidth")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("LastModified")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("LastModified")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("OriginalFileName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("OriginalFileName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StoredFileName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("StoredFileName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("GeneralImages");
+                b.ToTable("GeneralImages");
 
-                    b.HasDiscriminator().HasValue("RImage");
+                b.HasDiscriminator().HasValue("RImage");
 
-                    b.UseTphMappingStrategy();
-                });
+                b.UseTphMappingStrategy();
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Notification.RUserNotification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("DateTime")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("HtmlText")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("HtmlText")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("NotificationType")
-                        .HasColumnType("int");
+                b.Property<int>("NotificationType")
+                    .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                b.Property<int>("Status")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Subject")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Subject")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("Notifications");
-                });
+                b.ToTable("Notifications");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Artifact.RPictureFile", b =>
-                {
-                    b.HasBaseType("RSecurityBackend.Models.Image.RImage");
+            {
+                b.HasBaseType("RSecurityBackend.Models.Image.RImage");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DescriptionInEnglish")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("DescriptionInEnglish")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ExternalNormalSizeImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ExternalNormalSizeImageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("LastModifiedMeta")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("LastModifiedMeta")
+                    .HasColumnType("datetime2");
 
-                    b.Property<int>("NormalSizeImageHeight")
-                        .HasColumnType("int");
+                b.Property<int>("NormalSizeImageHeight")
+                    .HasColumnType("int");
 
-                    b.Property<string>("NormalSizeImageStoredFileName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("NormalSizeImageStoredFileName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("NormalSizeImageWidth")
-                        .HasColumnType("int");
+                b.Property<int>("NormalSizeImageWidth")
+                    .HasColumnType("int");
 
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
+                b.Property<int>("Order")
+                    .HasColumnType("int");
 
-                    b.Property<Guid?>("RArtifactItemRecordId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("RArtifactItemRecordId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("SrcUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("SrcUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                b.Property<int>("Status")
+                    .HasColumnType("int");
 
-                    b.Property<int>("ThumbnailImageHeight")
-                        .HasColumnType("int");
+                b.Property<int>("ThumbnailImageHeight")
+                    .HasColumnType("int");
 
-                    b.Property<string>("ThumbnailImageStoredFileName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ThumbnailImageStoredFileName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ThumbnailImageWidth")
-                        .HasColumnType("int");
+                b.Property<int>("ThumbnailImageWidth")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Title")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TitleInEnglish")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("TitleInEnglish")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("RArtifactItemRecordId");
+                b.HasIndex("RArtifactItemRecordId");
 
-                    b.HasDiscriminator().HasValue("RPictureFile");
-                });
+                b.HasDiscriminator().HasValue("RPictureFile");
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppRole", null)
+                    .WithMany()
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppRole", null)
+                    .WithMany()
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("RMuseum.Models.Accounting.DonationExpenditure", b =>
-                {
-                    b.HasOne("RMuseum.Models.Accounting.GanjoorDonation", "GanjoorDonation")
-                        .WithMany()
-                        .HasForeignKey("GanjoorDonationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Accounting.GanjoorDonation", "GanjoorDonation")
+                    .WithMany()
+                    .HasForeignKey("GanjoorDonationId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RMuseum.Models.Accounting.GanjoorExpense", null)
-                        .WithMany("DonationExpenditures")
-                        .HasForeignKey("GanjoorExpenseId");
+                b.HasOne("RMuseum.Models.Accounting.GanjoorExpense", null)
+                    .WithMany("DonationExpenditures")
+                    .HasForeignKey("GanjoorExpenseId");
 
-                    b.Navigation("GanjoorDonation");
-                });
+                b.Navigation("GanjoorDonation");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Artifact.RArtifactItemRecord", b =>
-                {
-                    b.HasOne("RMuseum.Models.Artifact.RArtifactMasterRecord", null)
-                        .WithMany("Items")
-                        .HasForeignKey("RArtifactMasterRecordId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("RMuseum.Models.Artifact.RArtifactMasterRecord", null)
+                    .WithMany("Items")
+                    .HasForeignKey("RArtifactMasterRecordId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("RMuseum.Models.Artifact.RArtifactMasterRecord", b =>
-                {
-                    b.HasOne("RMuseum.Models.Artifact.RPictureFile", "CoverImage")
-                        .WithMany()
-                        .HasForeignKey("CoverImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Artifact.RPictureFile", "CoverImage")
+                    .WithMany()
+                    .HasForeignKey("CoverImageId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("CoverImage");
-                });
+                b.Navigation("CoverImage");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Artifact.RTagValue", b =>
-                {
-                    b.HasOne("RMuseum.Models.PDFLibrary.Book", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("BookId");
+            {
+                b.HasOne("RMuseum.Models.PDFLibrary.Book", null)
+                    .WithMany("Tags")
+                    .HasForeignKey("BookId");
 
-                    b.HasOne("RMuseum.Models.PDFLibrary.PDFBook", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("PDFBookId");
+                b.HasOne("RMuseum.Models.PDFLibrary.PDFBook", null)
+                    .WithMany("Tags")
+                    .HasForeignKey("PDFBookId");
 
-                    b.HasOne("RMuseum.Models.PDFLibrary.PDFPage", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("PDFPageId");
+                b.HasOne("RMuseum.Models.PDFLibrary.PDFPage", null)
+                    .WithMany("Tags")
+                    .HasForeignKey("PDFPageId");
 
-                    b.HasOne("RMuseum.Models.Artifact.RArtifactItemRecord", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("RArtifactItemRecordId");
+                b.HasOne("RMuseum.Models.Artifact.RArtifactItemRecord", null)
+                    .WithMany("Tags")
+                    .HasForeignKey("RArtifactItemRecordId");
 
-                    b.HasOne("RMuseum.Models.Artifact.RArtifactMasterRecord", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("RArtifactMasterRecordId");
+                b.HasOne("RMuseum.Models.Artifact.RArtifactMasterRecord", null)
+                    .WithMany("Tags")
+                    .HasForeignKey("RArtifactMasterRecordId");
 
-                    b.HasOne("RMuseum.Models.Artifact.RTag", "RTag")
-                        .WithMany()
-                        .HasForeignKey("RTagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RMuseum.Models.Artifact.RTag", "RTag")
+                    .WithMany()
+                    .HasForeignKey("RTagId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("RTag");
-                });
+                b.Navigation("RTag");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Bookmark.RUserBookmark", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "RAppUser")
-                        .WithMany()
-                        .HasForeignKey("RAppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "RAppUser")
+                    .WithMany()
+                    .HasForeignKey("RAppUserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RMuseum.Models.Artifact.RArtifactItemRecord", "RArtifactItemRecord")
-                        .WithMany()
-                        .HasForeignKey("RArtifactItemRecordId");
+                b.HasOne("RMuseum.Models.Artifact.RArtifactItemRecord", "RArtifactItemRecord")
+                    .WithMany()
+                    .HasForeignKey("RArtifactItemRecordId");
 
-                    b.HasOne("RMuseum.Models.Artifact.RArtifactMasterRecord", "RArtifactMasterRecord")
-                        .WithMany()
-                        .HasForeignKey("RArtifactMasterRecordId");
+                b.HasOne("RMuseum.Models.Artifact.RArtifactMasterRecord", "RArtifactMasterRecord")
+                    .WithMany()
+                    .HasForeignKey("RArtifactMasterRecordId");
 
-                    b.Navigation("RAppUser");
+                b.Navigation("RAppUser");
 
-                    b.Navigation("RArtifactItemRecord");
+                b.Navigation("RArtifactItemRecord");
 
-                    b.Navigation("RArtifactMasterRecord");
-                });
+                b.Navigation("RArtifactMasterRecord");
+            });
 
             modelBuilder.Entity("RMuseum.Models.FAQ.FAQItem", b =>
-                {
-                    b.HasOne("RMuseum.Models.FAQ.FAQCategory", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.FAQ.FAQCategory", "Category")
+                    .WithMany()
+                    .HasForeignKey("CategoryId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Category");
-                });
+                b.Navigation("Category");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCachedRelatedPoem", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
-                        .WithMany()
-                        .HasForeignKey("PoemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                    .WithMany()
+                    .HasForeignKey("PoemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Poem");
-                });
+                b.Navigation("Poem");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCachedRelatedSection", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
-                        .WithMany()
-                        .HasForeignKey("PoemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                    .WithMany()
+                    .HasForeignKey("PoemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Poem");
-                });
+                b.Navigation("Poem");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCat", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorCat", "Parent")
-                        .WithMany()
-                        .HasForeignKey("ParentId");
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorCat", "Parent")
+                    .WithMany()
+                    .HasForeignKey("ParentId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
-                        .WithMany()
-                        .HasForeignKey("PoetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
+                    .WithMany()
+                    .HasForeignKey("PoetId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Image.RImage", "RImage")
-                        .WithMany()
-                        .HasForeignKey("RImageId");
+                b.HasOne("RSecurityBackend.Models.Image.RImage", "RImage")
+                    .WithMany()
+                    .HasForeignKey("RImageId");
 
-                    b.Navigation("Parent");
+                b.Navigation("Parent");
 
-                    b.Navigation("Poet");
+                b.Navigation("Poet");
 
-                    b.Navigation("RImage");
-                });
+                b.Navigation("RImage");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCenturyPoet", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorCentury", null)
-                        .WithMany("Poets")
-                        .HasForeignKey("GanjoorCenturyId");
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorCentury", null)
+                    .WithMany("Poets")
+                    .HasForeignKey("GanjoorCenturyId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
-                        .WithMany()
-                        .HasForeignKey("PoetId");
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
+                    .WithMany()
+                    .HasForeignKey("PoetId");
 
-                    b.Navigation("Poet");
-                });
+                b.Navigation("Poet");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorComment", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorComment", "InReplyTo")
-                        .WithMany()
-                        .HasForeignKey("InReplyToId");
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorComment", "InReplyTo")
+                    .WithMany()
+                    .HasForeignKey("InReplyToId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
-                        .WithMany()
-                        .HasForeignKey("PoemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                    .WithMany()
+                    .HasForeignKey("PoemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorVerse", "Verse1")
-                        .WithMany()
-                        .HasForeignKey("Verse1Id");
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorVerse", "Verse1")
+                    .WithMany()
+                    .HasForeignKey("Verse1Id");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorVerse", "Verse2")
-                        .WithMany()
-                        .HasForeignKey("Verse2Id");
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorVerse", "Verse2")
+                    .WithMany()
+                    .HasForeignKey("Verse2Id");
 
-                    b.Navigation("InReplyTo");
+                b.Navigation("InReplyTo");
 
-                    b.Navigation("Poem");
+                b.Navigation("Poem");
 
-                    b.Navigation("User");
+                b.Navigation("User");
 
-                    b.Navigation("Verse1");
+                b.Navigation("Verse1");
 
-                    b.Navigation("Verse2");
-                });
+                b.Navigation("Verse2");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCommentAbuseReport", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorComment", "GanjoorComment")
-                        .WithMany()
-                        .HasForeignKey("GanjoorCommentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorComment", "GanjoorComment")
+                    .WithMany()
+                    .HasForeignKey("GanjoorCommentId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "ReportedBy")
-                        .WithMany()
-                        .HasForeignKey("ReportedById");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "ReportedBy")
+                    .WithMany()
+                    .HasForeignKey("ReportedById");
 
-                    b.Navigation("GanjoorComment");
+                b.Navigation("GanjoorComment");
 
-                    b.Navigation("ReportedBy");
-                });
+                b.Navigation("ReportedBy");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorDuplicate", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "DestPoem")
-                        .WithMany()
-                        .HasForeignKey("DestPoemId");
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "DestPoem")
+                    .WithMany()
+                    .HasForeignKey("DestPoemId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "SrcPoem")
-                        .WithMany()
-                        .HasForeignKey("SrcPoemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "SrcPoem")
+                    .WithMany()
+                    .HasForeignKey("SrcPoemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("DestPoem");
+                b.Navigation("DestPoem");
 
-                    b.Navigation("SrcPoem");
-                });
+                b.Navigation("SrcPoem");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorNumbering", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorCat", "EndCat")
-                        .WithMany()
-                        .HasForeignKey("EndCatId");
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorCat", "EndCat")
+                    .WithMany()
+                    .HasForeignKey("EndCatId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorCat", "StartCat")
-                        .WithMany()
-                        .HasForeignKey("StartCatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorCat", "StartCat")
+                    .WithMany()
+                    .HasForeignKey("StartCatId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("EndCat");
+                b.Navigation("EndCat");
 
-                    b.Navigation("StartCat");
-                });
+                b.Navigation("StartCat");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPage", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorCat", "Cat")
-                        .WithMany()
-                        .HasForeignKey("CatId");
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorCat", "Cat")
+                    .WithMany()
+                    .HasForeignKey("CatId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPage", "Parent")
-                        .WithMany()
-                        .HasForeignKey("ParentId");
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPage", "Parent")
+                    .WithMany()
+                    .HasForeignKey("ParentId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
-                        .WithMany()
-                        .HasForeignKey("PoemId");
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                    .WithMany()
+                    .HasForeignKey("PoemId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
-                        .WithMany()
-                        .HasForeignKey("PoetId");
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
+                    .WithMany()
+                    .HasForeignKey("PoetId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "SecondPoet")
-                        .WithMany()
-                        .HasForeignKey("SecondPoetId");
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "SecondPoet")
+                    .WithMany()
+                    .HasForeignKey("SecondPoetId");
 
-                    b.Navigation("Cat");
+                b.Navigation("Cat");
 
-                    b.Navigation("Parent");
+                b.Navigation("Parent");
 
-                    b.Navigation("Poem");
+                b.Navigation("Poem");
 
-                    b.Navigation("Poet");
+                b.Navigation("Poet");
 
-                    b.Navigation("SecondPoet");
-                });
+                b.Navigation("SecondPoet");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPageSnapshot", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPage", "GanjoorPage")
-                        .WithMany()
-                        .HasForeignKey("GanjoorPageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPage", "GanjoorPage")
+                    .WithMany()
+                    .HasForeignKey("GanjoorPageId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "MadeObsoleteByUser")
-                        .WithMany()
-                        .HasForeignKey("MadeObsoleteByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "MadeObsoleteByUser")
+                    .WithMany()
+                    .HasForeignKey("MadeObsoleteByUserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("GanjoorPage");
+                b.Navigation("GanjoorPage");
 
-                    b.Navigation("MadeObsoleteByUser");
-                });
+                b.Navigation("MadeObsoleteByUser");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoem", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorCat", "Cat")
-                        .WithMany()
-                        .HasForeignKey("CatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorCat", "Cat")
+                    .WithMany()
+                    .HasForeignKey("CatId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorMetre", "GanjoorMetre")
-                        .WithMany()
-                        .HasForeignKey("GanjoorMetreId");
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorMetre", "GanjoorMetre")
+                    .WithMany()
+                    .HasForeignKey("GanjoorMetreId");
 
-                    b.Navigation("Cat");
+                b.Navigation("Cat");
 
-                    b.Navigation("GanjoorMetre");
-                });
+                b.Navigation("GanjoorMetre");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemCorrection", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
-                        .WithMany()
-                        .HasForeignKey("PoemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                    .WithMany()
+                    .HasForeignKey("PoemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "ReviewerUser")
-                        .WithMany()
-                        .HasForeignKey("ReviewerUserId");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "ReviewerUser")
+                    .WithMany()
+                    .HasForeignKey("ReviewerUserId");
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Poem");
+                b.Navigation("Poem");
 
-                    b.Navigation("ReviewerUser");
+                b.Navigation("ReviewerUser");
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemProbableMetre", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
-                        .WithMany()
-                        .HasForeignKey("PoemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                    .WithMany()
+                    .HasForeignKey("PoemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Poem");
-                });
+                b.Navigation("Poem");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemSection", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorMetre", "GanjoorMetre")
-                        .WithMany()
-                        .HasForeignKey("GanjoorMetreId");
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorMetre", "GanjoorMetre")
+                    .WithMany()
+                    .HasForeignKey("GanjoorMetreId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
-                        .WithMany()
-                        .HasForeignKey("PoemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                    .WithMany()
+                    .HasForeignKey("PoemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
-                        .WithMany()
-                        .HasForeignKey("PoetId");
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
+                    .WithMany()
+                    .HasForeignKey("PoetId");
 
-                    b.Navigation("GanjoorMetre");
+                b.Navigation("GanjoorMetre");
 
-                    b.Navigation("Poem");
+                b.Navigation("Poem");
 
-                    b.Navigation("Poet");
-                });
+                b.Navigation("Poet");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemSectionCorrection", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "ReviewerUser")
-                        .WithMany()
-                        .HasForeignKey("ReviewerUserId");
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "ReviewerUser")
+                    .WithMany()
+                    .HasForeignKey("ReviewerUserId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoemSection", "Section")
-                        .WithMany()
-                        .HasForeignKey("SectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoemSection", "Section")
+                    .WithMany()
+                    .HasForeignKey("SectionId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("ReviewerUser");
+                b.Navigation("ReviewerUser");
 
-                    b.Navigation("Section");
+                b.Navigation("Section");
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemTranslation", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorLanguage", "Language")
-                        .WithMany()
-                        .HasForeignKey("LanguageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorLanguage", "Language")
+                    .WithMany()
+                    .HasForeignKey("LanguageId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
-                        .WithMany()
-                        .HasForeignKey("PoemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                    .WithMany()
+                    .HasForeignKey("PoemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Language");
+                b.Navigation("Language");
 
-                    b.Navigation("Poem");
+                b.Navigation("Poem");
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoet", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorGeoLocation", "BirthLocation")
-                        .WithMany()
-                        .HasForeignKey("BirthLocationId");
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorGeoLocation", "BirthLocation")
+                    .WithMany()
+                    .HasForeignKey("BirthLocationId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorGeoLocation", "DeathLocation")
-                        .WithMany()
-                        .HasForeignKey("DeathLocationId");
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorGeoLocation", "DeathLocation")
+                    .WithMany()
+                    .HasForeignKey("DeathLocationId");
 
-                    b.HasOne("RSecurityBackend.Models.Image.RImage", "RImage")
-                        .WithMany()
-                        .HasForeignKey("RImageId");
+                b.HasOne("RSecurityBackend.Models.Image.RImage", "RImage")
+                    .WithMany()
+                    .HasForeignKey("RImageId");
 
-                    b.Navigation("BirthLocation");
+                b.Navigation("BirthLocation");
 
-                    b.Navigation("DeathLocation");
+                b.Navigation("DeathLocation");
 
-                    b.Navigation("RImage");
-                });
+                b.Navigation("RImage");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoetSuggestedPicture", b =>
-                {
-                    b.HasOne("RMuseum.Models.Artifact.RPictureFile", "Picture")
-                        .WithMany()
-                        .HasForeignKey("PictureId");
+            {
+                b.HasOne("RMuseum.Models.Artifact.RPictureFile", "Picture")
+                    .WithMany()
+                    .HasForeignKey("PictureId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
-                        .WithMany()
-                        .HasForeignKey("PoetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
+                    .WithMany()
+                    .HasForeignKey("PoetId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "SuggestedBy")
-                        .WithMany()
-                        .HasForeignKey("SuggestedById");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "SuggestedBy")
+                    .WithMany()
+                    .HasForeignKey("SuggestedById");
 
-                    b.Navigation("Picture");
+                b.Navigation("Picture");
 
-                    b.Navigation("Poet");
+                b.Navigation("Poet");
 
-                    b.Navigation("SuggestedBy");
-                });
+                b.Navigation("SuggestedBy");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoetSuggestedSpecLine", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
-                        .WithMany()
-                        .HasForeignKey("PoetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoet", "Poet")
+                    .WithMany()
+                    .HasForeignKey("PoetId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "SuggestedBy")
-                        .WithMany()
-                        .HasForeignKey("SuggestedById");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "SuggestedBy")
+                    .WithMany()
+                    .HasForeignKey("SuggestedById");
 
-                    b.Navigation("Poet");
+                b.Navigation("Poet");
 
-                    b.Navigation("SuggestedBy");
-                });
+                b.Navigation("SuggestedBy");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorQuotedPoem", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
-                        .WithMany()
-                        .HasForeignKey("PoemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                    .WithMany()
+                    .HasForeignKey("PoemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "ReviewerUser")
-                        .WithMany()
-                        .HasForeignKey("ReviewerUserId");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "ReviewerUser")
+                    .WithMany()
+                    .HasForeignKey("ReviewerUserId");
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "SuggestedBy")
-                        .WithMany()
-                        .HasForeignKey("SuggestedById");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "SuggestedBy")
+                    .WithMany()
+                    .HasForeignKey("SuggestedById");
 
-                    b.Navigation("Poem");
+                b.Navigation("Poem");
 
-                    b.Navigation("ReviewerUser");
+                b.Navigation("ReviewerUser");
 
-                    b.Navigation("SuggestedBy");
-                });
+                b.Navigation("SuggestedBy");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorRelatedPerson", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorGeoLocation", "BirthLocation")
-                        .WithMany()
-                        .HasForeignKey("BirthLocationId");
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorGeoLocation", "BirthLocation")
+                    .WithMany()
+                    .HasForeignKey("BirthLocationId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorGeoLocation", "DeathLocation")
-                        .WithMany()
-                        .HasForeignKey("DeathLocationId");
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorGeoLocation", "DeathLocation")
+                    .WithMany()
+                    .HasForeignKey("DeathLocationId");
 
-                    b.Navigation("BirthLocation");
+                b.Navigation("BirthLocation");
 
-                    b.Navigation("DeathLocation");
-                });
+                b.Navigation("DeathLocation");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorSiteBanner", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Image.RImage", "RImage")
-                        .WithMany()
-                        .HasForeignKey("RImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RSecurityBackend.Models.Image.RImage", "RImage")
+                    .WithMany()
+                    .HasForeignKey("RImageId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("RImage");
-                });
+                b.Navigation("RImage");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorTajikCat", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorTajikPoet", "Poet")
-                        .WithMany()
-                        .HasForeignKey("PoetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorTajikPoet", "Poet")
+                    .WithMany()
+                    .HasForeignKey("PoetId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Poet");
-                });
+                b.Navigation("Poet");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorTajikPoem", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorTajikCat", "Cat")
-                        .WithMany()
-                        .HasForeignKey("CatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorTajikCat", "Cat")
+                    .WithMany()
+                    .HasForeignKey("CatId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Cat");
-                });
+                b.Navigation("Cat");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorUserBookmark", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
-                        .WithMany()
-                        .HasForeignKey("PoemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                    .WithMany()
+                    .HasForeignKey("PoemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Poem");
+                b.Navigation("Poem");
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorUserPoemVisit", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
-                        .WithMany()
-                        .HasForeignKey("PoemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                    .WithMany()
+                    .HasForeignKey("PoemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId");
 
-                    b.Navigation("Poem");
+                b.Navigation("Poem");
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorVerse", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorLanguage", "Language")
-                        .WithMany()
-                        .HasForeignKey("LanguageId");
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorLanguage", "Language")
+                    .WithMany()
+                    .HasForeignKey("LanguageId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
-                        .WithMany()
-                        .HasForeignKey("PoemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                    .WithMany()
+                    .HasForeignKey("PoemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Language");
+                b.Navigation("Language");
 
-                    b.Navigation("Poem");
-                });
+                b.Navigation("Poem");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorVerseNumber", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorNumbering", "Numbering")
-                        .WithMany()
-                        .HasForeignKey("NumberingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorNumbering", "Numbering")
+                    .WithMany()
+                    .HasForeignKey("NumberingId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Numbering");
-                });
+                b.Navigation("Numbering");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorVerseTranslation", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoemTranslation", null)
-                        .WithMany("Verses")
-                        .HasForeignKey("GanjoorPoemTranslationId");
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoemTranslation", null)
+                    .WithMany("Verses")
+                    .HasForeignKey("GanjoorPoemTranslationId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorVerse", "Verse")
-                        .WithMany()
-                        .HasForeignKey("VerseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorVerse", "Verse")
+                    .WithMany()
+                    .HasForeignKey("VerseId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Verse");
-                });
+                b.Navigation("Verse");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorVerseVOrderText", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoemCorrection", null)
-                        .WithMany("VerseOrderText")
-                        .HasForeignKey("GanjoorPoemCorrectionId");
-                });
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoemCorrection", null)
+                    .WithMany("VerseOrderText")
+                    .HasForeignKey("GanjoorPoemCorrectionId");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.PoemGeoDateTag", b =>
-                {
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorGeoLocation", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId");
+            {
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorGeoLocation", "Location")
+                    .WithMany()
+                    .HasForeignKey("LocationId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorRelatedPerson", "Person")
-                        .WithMany()
-                        .HasForeignKey("PersonId");
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorRelatedPerson", "Person")
+                    .WithMany()
+                    .HasForeignKey("PersonId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
-                        .WithMany()
-                        .HasForeignKey("PoemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                    .WithMany()
+                    .HasForeignKey("PoemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Location");
+                b.Navigation("Location");
 
-                    b.Navigation("Person");
+                b.Navigation("Person");
 
-                    b.Navigation("Poem");
-                });
+                b.Navigation("Poem");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.PoemMusicTrack", b =>
-                {
-                    b.HasOne("RMuseum.Models.MusicCatalogue.GanjoorTrack", "GanjoorTrack")
-                        .WithMany()
-                        .HasForeignKey("GanjoorTrackId");
+            {
+                b.HasOne("RMuseum.Models.MusicCatalogue.GanjoorTrack", "GanjoorTrack")
+                    .WithMany()
+                    .HasForeignKey("GanjoorTrackId");
 
-                    b.HasOne("RMuseum.Models.MusicCatalogue.GolhaTrack", "GolhaTrack")
-                        .WithMany()
-                        .HasForeignKey("GolhaTrackId");
+                b.HasOne("RMuseum.Models.MusicCatalogue.GolhaTrack", "GolhaTrack")
+                    .WithMany()
+                    .HasForeignKey("GolhaTrackId");
 
-                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
-                        .WithMany()
-                        .HasForeignKey("PoemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                    .WithMany()
+                    .HasForeignKey("PoemId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RMuseum.Models.MusicCatalogue.GanjoorSinger", "Singer")
-                        .WithMany()
-                        .HasForeignKey("SingerId");
+                b.HasOne("RMuseum.Models.MusicCatalogue.GanjoorSinger", "Singer")
+                    .WithMany()
+                    .HasForeignKey("SingerId");
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "SuggestedBy")
-                        .WithMany()
-                        .HasForeignKey("SuggestedById");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "SuggestedBy")
+                    .WithMany()
+                    .HasForeignKey("SuggestedById");
 
-                    b.Navigation("GanjoorTrack");
+                b.Navigation("GanjoorTrack");
 
-                    b.Navigation("GolhaTrack");
+                b.Navigation("GolhaTrack");
 
-                    b.Navigation("Poem");
+                b.Navigation("Poem");
 
-                    b.Navigation("Singer");
+                b.Navigation("Singer");
 
-                    b.Navigation("SuggestedBy");
-                });
+                b.Navigation("SuggestedBy");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.Recitation", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Owner")
+                    .WithMany()
+                    .HasForeignKey("OwnerId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Reviewer")
-                        .WithMany()
-                        .HasForeignKey("ReviewerId");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Reviewer")
+                    .WithMany()
+                    .HasForeignKey("ReviewerId");
 
-                    b.Navigation("Owner");
+                b.Navigation("Owner");
 
-                    b.Navigation("Reviewer");
-                });
+                b.Navigation("Reviewer");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.RecitationApprovedMistake", b =>
-                {
-                    b.HasOne("RMuseum.Models.GanjoorAudio.Recitation", "Recitation")
-                        .WithMany()
-                        .HasForeignKey("RecitationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.GanjoorAudio.Recitation", "Recitation")
+                    .WithMany()
+                    .HasForeignKey("RecitationId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Recitation");
-                });
+                b.Navigation("Recitation");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.RecitationErrorReport", b =>
-                {
-                    b.HasOne("RMuseum.Models.GanjoorAudio.Recitation", "Recitation")
-                        .WithMany()
-                        .HasForeignKey("RecitationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.GanjoorAudio.Recitation", "Recitation")
+                    .WithMany()
+                    .HasForeignKey("RecitationId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Reporter")
-                        .WithMany()
-                        .HasForeignKey("ReporterId");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Reporter")
+                    .WithMany()
+                    .HasForeignKey("ReporterId");
 
-                    b.Navigation("Recitation");
+                b.Navigation("Recitation");
 
-                    b.Navigation("Reporter");
-                });
+                b.Navigation("Reporter");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.RecitationPublishingTracker", b =>
-                {
-                    b.HasOne("RMuseum.Models.GanjoorAudio.Recitation", "PoemNarration")
-                        .WithMany()
-                        .HasForeignKey("PoemNarrationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.GanjoorAudio.Recitation", "PoemNarration")
+                    .WithMany()
+                    .HasForeignKey("PoemNarrationId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("PoemNarration");
-                });
+                b.Navigation("PoemNarration");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.RecitationUserUpVote", b =>
-                {
-                    b.HasOne("RMuseum.Models.GanjoorAudio.Recitation", "Recitation")
-                        .WithMany()
-                        .HasForeignKey("RecitationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.GanjoorAudio.Recitation", "Recitation")
+                    .WithMany()
+                    .HasForeignKey("RecitationId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId");
 
-                    b.Navigation("Recitation");
+                b.Navigation("Recitation");
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorAudio.UserRecitationProfile", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorIntegration.GanjoorLink", b =>
-                {
-                    b.HasOne("RMuseum.Models.Artifact.RArtifactMasterRecord", "Artifact")
-                        .WithMany()
-                        .HasForeignKey("ArtifactId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Artifact.RArtifactMasterRecord", "Artifact")
+                    .WithMany()
+                    .HasForeignKey("ArtifactId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RMuseum.Models.Artifact.RArtifactItemRecord", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemId");
+                b.HasOne("RMuseum.Models.Artifact.RArtifactItemRecord", "Item")
+                    .WithMany()
+                    .HasForeignKey("ItemId");
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Reviewer")
-                        .WithMany()
-                        .HasForeignKey("ReviewerId");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Reviewer")
+                    .WithMany()
+                    .HasForeignKey("ReviewerId");
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "SuggestedBy")
-                        .WithMany()
-                        .HasForeignKey("SuggestedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "SuggestedBy")
+                    .WithMany()
+                    .HasForeignKey("SuggestedById")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Artifact");
+                b.Navigation("Artifact");
 
-                    b.Navigation("Item");
+                b.Navigation("Item");
 
-                    b.Navigation("Reviewer");
+                b.Navigation("Reviewer");
 
-                    b.Navigation("SuggestedBy");
-                });
+                b.Navigation("SuggestedBy");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorIntegration.PDFGanjoorLink", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Reviewer")
-                        .WithMany()
-                        .HasForeignKey("ReviewerId");
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Reviewer")
+                    .WithMany()
+                    .HasForeignKey("ReviewerId");
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "SuggestedBy")
-                        .WithMany()
-                        .HasForeignKey("SuggestedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "SuggestedBy")
+                    .WithMany()
+                    .HasForeignKey("SuggestedById")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Reviewer");
+                b.Navigation("Reviewer");
 
-                    b.Navigation("SuggestedBy");
-                });
+                b.Navigation("SuggestedBy");
+            });
 
             modelBuilder.Entity("RMuseum.Models.GanjoorIntegration.PinterestLink", b =>
-                {
-                    b.HasOne("RMuseum.Models.Artifact.RArtifactMasterRecord", "Artifact")
-                        .WithMany()
-                        .HasForeignKey("ArtifactId");
+            {
+                b.HasOne("RMuseum.Models.Artifact.RArtifactMasterRecord", "Artifact")
+                    .WithMany()
+                    .HasForeignKey("ArtifactId");
 
-                    b.HasOne("RMuseum.Models.Artifact.RArtifactItemRecord", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemId");
+                b.HasOne("RMuseum.Models.Artifact.RArtifactItemRecord", "Item")
+                    .WithMany()
+                    .HasForeignKey("ItemId");
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Reviewer")
-                        .WithMany()
-                        .HasForeignKey("ReviewerId");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Reviewer")
+                    .WithMany()
+                    .HasForeignKey("ReviewerId");
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "SuggestedBy")
-                        .WithMany()
-                        .HasForeignKey("SuggestedById");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "SuggestedBy")
+                    .WithMany()
+                    .HasForeignKey("SuggestedById");
 
-                    b.Navigation("Artifact");
+                b.Navigation("Artifact");
 
-                    b.Navigation("Item");
+                b.Navigation("Item");
 
-                    b.Navigation("Reviewer");
+                b.Navigation("Reviewer");
 
-                    b.Navigation("SuggestedBy");
-                });
+                b.Navigation("SuggestedBy");
+            });
 
             modelBuilder.Entity("RMuseum.Models.ImportJob.ImportJob", b =>
-                {
-                    b.HasOne("RMuseum.Models.Artifact.RArtifactMasterRecord", "Artifact")
-                        .WithMany()
-                        .HasForeignKey("ArtifactId");
+            {
+                b.HasOne("RMuseum.Models.Artifact.RArtifactMasterRecord", "Artifact")
+                    .WithMany()
+                    .HasForeignKey("ArtifactId");
 
-                    b.Navigation("Artifact");
-                });
+                b.Navigation("Artifact");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GanjoorAlbum", b =>
-                {
-                    b.HasOne("RMuseum.Models.MusicCatalogue.GanjoorSinger", "Singer")
-                        .WithMany("Albums")
-                        .HasForeignKey("SingerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.MusicCatalogue.GanjoorSinger", "Singer")
+                    .WithMany("Albums")
+                    .HasForeignKey("SingerId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Singer");
-                });
+                b.Navigation("Singer");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GanjoorSinger", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Image.RImage", "RImage")
-                        .WithMany()
-                        .HasForeignKey("RImageId");
+            {
+                b.HasOne("RSecurityBackend.Models.Image.RImage", "RImage")
+                    .WithMany()
+                    .HasForeignKey("RImageId");
 
-                    b.Navigation("RImage");
-                });
+                b.Navigation("RImage");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GanjoorTrack", b =>
-                {
-                    b.HasOne("RMuseum.Models.MusicCatalogue.GanjoorAlbum", "Album")
-                        .WithMany("Tracks")
-                        .HasForeignKey("AlbumId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.MusicCatalogue.GanjoorAlbum", "Album")
+                    .WithMany("Tracks")
+                    .HasForeignKey("AlbumId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Album");
-                });
+                b.Navigation("Album");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GolhaProgram", b =>
-                {
-                    b.HasOne("RMuseum.Models.MusicCatalogue.GolhaCollection", "GolhaCollection")
-                        .WithMany("Programs")
-                        .HasForeignKey("GolhaCollectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.MusicCatalogue.GolhaCollection", "GolhaCollection")
+                    .WithMany("Programs")
+                    .HasForeignKey("GolhaCollectionId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("GolhaCollection");
-                });
+                b.Navigation("GolhaCollection");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GolhaTrack", b =>
-                {
-                    b.HasOne("RMuseum.Models.MusicCatalogue.GolhaProgram", "GolhaProgram")
-                        .WithMany("Tracks")
-                        .HasForeignKey("GolhaProgramId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.MusicCatalogue.GolhaProgram", "GolhaProgram")
+                    .WithMany("Tracks")
+                    .HasForeignKey("GolhaProgramId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RMuseum.Models.MusicCatalogue.GanjoorSinger", "Singer")
-                        .WithMany()
-                        .HasForeignKey("SingerId");
+                b.HasOne("RMuseum.Models.MusicCatalogue.GanjoorSinger", "Singer")
+                    .WithMany()
+                    .HasForeignKey("SingerId");
 
-                    b.Navigation("GolhaProgram");
+                b.Navigation("GolhaProgram");
 
-                    b.Navigation("Singer");
-                });
+                b.Navigation("Singer");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Note.RUserNote", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "RAppUser")
-                        .WithMany()
-                        .HasForeignKey("RAppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "RAppUser")
+                    .WithMany()
+                    .HasForeignKey("RAppUserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RMuseum.Models.Artifact.RArtifactItemRecord", "RArtifactItemRecord")
-                        .WithMany()
-                        .HasForeignKey("RArtifactItemRecordId");
+                b.HasOne("RMuseum.Models.Artifact.RArtifactItemRecord", "RArtifactItemRecord")
+                    .WithMany()
+                    .HasForeignKey("RArtifactItemRecordId");
 
-                    b.HasOne("RMuseum.Models.Artifact.RArtifactMasterRecord", "RArtifactMasterRecord")
-                        .WithMany()
-                        .HasForeignKey("RArtifactMasterRecordId");
+                b.HasOne("RMuseum.Models.Artifact.RArtifactMasterRecord", "RArtifactMasterRecord")
+                    .WithMany()
+                    .HasForeignKey("RArtifactMasterRecordId");
 
-                    b.HasOne("RMuseum.Models.Note.RUserNote", "ReferenceNote")
-                        .WithMany()
-                        .HasForeignKey("ReferenceNoteId");
+                b.HasOne("RMuseum.Models.Note.RUserNote", "ReferenceNote")
+                    .WithMany()
+                    .HasForeignKey("ReferenceNoteId");
 
-                    b.Navigation("RAppUser");
+                b.Navigation("RAppUser");
 
-                    b.Navigation("RArtifactItemRecord");
+                b.Navigation("RArtifactItemRecord");
 
-                    b.Navigation("RArtifactMasterRecord");
+                b.Navigation("RArtifactMasterRecord");
 
-                    b.Navigation("ReferenceNote");
-                });
+                b.Navigation("ReferenceNote");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Note.RUserNoteAbuseReport", b =>
-                {
-                    b.HasOne("RMuseum.Models.Note.RUserNote", "Note")
-                        .WithMany()
-                        .HasForeignKey("NoteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.Note.RUserNote", "Note")
+                    .WithMany()
+                    .HasForeignKey("NoteId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Reporter")
-                        .WithMany()
-                        .HasForeignKey("ReporterId");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "Reporter")
+                    .WithMany()
+                    .HasForeignKey("ReporterId");
 
-                    b.Navigation("Note");
+                b.Navigation("Note");
 
-                    b.Navigation("Reporter");
-                });
+                b.Navigation("Reporter");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.Author", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Image.RImage", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId");
+            {
+                b.HasOne("RSecurityBackend.Models.Image.RImage", "Image")
+                    .WithMany()
+                    .HasForeignKey("ImageId");
 
-                    b.Navigation("Image");
-                });
+                b.Navigation("Image");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.AuthorRole", b =>
-                {
-                    b.HasOne("RMuseum.Models.PDFLibrary.Author", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId");
+            {
+                b.HasOne("RMuseum.Models.PDFLibrary.Author", "Author")
+                    .WithMany()
+                    .HasForeignKey("AuthorId");
 
-                    b.HasOne("RMuseum.Models.PDFLibrary.Book", null)
-                        .WithMany("Authors")
-                        .HasForeignKey("BookId");
+                b.HasOne("RMuseum.Models.PDFLibrary.Book", null)
+                    .WithMany("Authors")
+                    .HasForeignKey("BookId");
 
-                    b.HasOne("RMuseum.Models.PDFLibrary.PDFBook", null)
-                        .WithMany("Contributers")
-                        .HasForeignKey("PDFBookId");
+                b.HasOne("RMuseum.Models.PDFLibrary.PDFBook", null)
+                    .WithMany("Contributers")
+                    .HasForeignKey("PDFBookId");
 
-                    b.Navigation("Author");
-                });
+                b.Navigation("Author");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.Book", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Image.RImage", "CoverImage")
-                        .WithMany()
-                        .HasForeignKey("CoverImageId");
+            {
+                b.HasOne("RSecurityBackend.Models.Image.RImage", "CoverImage")
+                    .WithMany()
+                    .HasForeignKey("CoverImageId");
 
-                    b.Navigation("CoverImage");
-                });
+                b.Navigation("CoverImage");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.MultiVolumePDFCollection", b =>
-                {
-                    b.HasOne("RMuseum.Models.PDFLibrary.Book", "Book")
-                        .WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.PDFLibrary.Book", "Book")
+                    .WithMany()
+                    .HasForeignKey("BookId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Book");
-                });
+                b.Navigation("Book");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.PDFBook", b =>
-                {
-                    b.HasOne("RMuseum.Models.PDFLibrary.Book", "Book")
-                        .WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.PDFLibrary.Book", "Book")
+                    .WithMany()
+                    .HasForeignKey("BookId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Image.RImage", "CoverImage")
-                        .WithMany()
-                        .HasForeignKey("CoverImageId");
+                b.HasOne("RSecurityBackend.Models.Image.RImage", "CoverImage")
+                    .WithMany()
+                    .HasForeignKey("CoverImageId");
 
-                    b.HasOne("RMuseum.Models.PDFLibrary.MultiVolumePDFCollection", "MultiVolumePDFCollection")
-                        .WithMany()
-                        .HasForeignKey("MultiVolumePDFCollectionId");
+                b.HasOne("RMuseum.Models.PDFLibrary.MultiVolumePDFCollection", "MultiVolumePDFCollection")
+                    .WithMany()
+                    .HasForeignKey("MultiVolumePDFCollectionId");
 
-                    b.HasOne("RSecurityBackend.Models.Image.RImage", "PDFFile")
-                        .WithMany()
-                        .HasForeignKey("PDFFileId");
+                b.HasOne("RSecurityBackend.Models.Image.RImage", "PDFFile")
+                    .WithMany()
+                    .HasForeignKey("PDFFileId");
 
-                    b.HasOne("RMuseum.Models.PDFLibrary.PDFSource", "PDFSource")
-                        .WithMany()
-                        .HasForeignKey("PDFSourceId");
+                b.HasOne("RMuseum.Models.PDFLibrary.PDFSource", "PDFSource")
+                    .WithMany()
+                    .HasForeignKey("PDFSourceId");
 
-                    b.Navigation("Book");
+                b.Navigation("Book");
 
-                    b.Navigation("CoverImage");
+                b.Navigation("CoverImage");
 
-                    b.Navigation("MultiVolumePDFCollection");
+                b.Navigation("MultiVolumePDFCollection");
 
-                    b.Navigation("PDFFile");
+                b.Navigation("PDFFile");
 
-                    b.Navigation("PDFSource");
-                });
+                b.Navigation("PDFSource");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.PDFPage", b =>
-                {
-                    b.HasOne("RMuseum.Models.PDFLibrary.PDFBook", null)
-                        .WithMany("Pages")
-                        .HasForeignKey("PDFBookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RMuseum.Models.PDFLibrary.PDFBook", null)
+                    .WithMany("Pages")
+                    .HasForeignKey("PDFBookId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Image.RImage", "ThumbnailImage")
-                        .WithMany()
-                        .HasForeignKey("ThumbnailImageId");
+                b.HasOne("RSecurityBackend.Models.Image.RImage", "ThumbnailImage")
+                    .WithMany()
+                    .HasForeignKey("ThumbnailImageId");
 
-                    b.Navigation("ThumbnailImage");
-                });
+                b.Navigation("ThumbnailImage");
+            });
 
             modelBuilder.Entity("RMuseum.Models.UploadSession.UploadSession", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId");
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("RMuseum.Models.UploadSession.UploadSessionFile", b =>
-                {
-                    b.HasOne("RMuseum.Models.UploadSession.UploadSession", null)
-                        .WithMany("UploadedFiles")
-                        .HasForeignKey("UploadSessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+            {
+                b.HasOne("RMuseum.Models.UploadSession.UploadSession", null)
+                    .WithMany("UploadedFiles")
+                    .HasForeignKey("UploadSessionId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Auth.Db.RAppUser", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Image.RImage", "RImage")
-                        .WithMany()
-                        .HasForeignKey("RImageId");
+            {
+                b.HasOne("RSecurityBackend.Models.Image.RImage", "RImage")
+                    .WithMany()
+                    .HasForeignKey("RImageId");
 
-                    b.Navigation("RImage");
-                });
+                b.Navigation("RImage");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Auth.Db.RCaptchaImage", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Image.RImage", "RImage")
-                        .WithMany()
-                        .HasForeignKey("RImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RSecurityBackend.Models.Image.RImage", "RImage")
+                    .WithMany()
+                    .HasForeignKey("RImageId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("RImage");
-                });
+                b.Navigation("RImage");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Auth.Db.RPermission", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppRole", null)
-                        .WithMany("Permissions")
-                        .HasForeignKey("RAppRoleId");
-                });
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppRole", null)
+                    .WithMany("Permissions")
+                    .HasForeignKey("RAppRoleId");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Auth.Db.RTemporaryUserSession", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "RAppUser")
-                        .WithMany()
-                        .HasForeignKey("RAppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "RAppUser")
+                    .WithMany()
+                    .HasForeignKey("RAppUserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("RAppUser");
-                });
+                b.Navigation("RAppUser");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Auth.Db.RUserBehaviourLog", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Cloud.RWSPermission", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Cloud.RWSRole", null)
-                        .WithMany("Permissions")
-                        .HasForeignKey("RWSRoleId");
-                });
+            {
+                b.HasOne("RSecurityBackend.Models.Cloud.RWSRole", null)
+                    .WithMany("Permissions")
+                    .HasForeignKey("RWSRoleId");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Cloud.RWSRole", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Cloud.RWorkspace", "Workspace")
-                        .WithMany()
-                        .HasForeignKey("WorkspaceId");
+            {
+                b.HasOne("RSecurityBackend.Models.Cloud.RWorkspace", "Workspace")
+                    .WithMany()
+                    .HasForeignKey("WorkspaceId");
 
-                    b.Navigation("Workspace");
-                });
+                b.Navigation("Workspace");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Cloud.RWSUser", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "RAppUser")
-                        .WithMany()
-                        .HasForeignKey("RAppUserId");
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "RAppUser")
+                    .WithMany()
+                    .HasForeignKey("RAppUserId");
 
-                    b.HasOne("RSecurityBackend.Models.Cloud.RWorkspace", null)
-                        .WithMany("Members")
-                        .HasForeignKey("RWorkspaceId");
+                b.HasOne("RSecurityBackend.Models.Cloud.RWorkspace", null)
+                    .WithMany("Members")
+                    .HasForeignKey("RWorkspaceId");
 
-                    b.Navigation("RAppUser");
-                });
+                b.Navigation("RAppUser");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Cloud.RWSUserRole", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Cloud.RWSRole", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId");
+            {
+                b.HasOne("RSecurityBackend.Models.Cloud.RWSRole", "Role")
+                    .WithMany()
+                    .HasForeignKey("RoleId");
 
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId");
 
-                    b.HasOne("RSecurityBackend.Models.Cloud.RWorkspace", "Workspace")
-                        .WithMany()
-                        .HasForeignKey("WorkspaceId");
+                b.HasOne("RSecurityBackend.Models.Cloud.RWorkspace", "Workspace")
+                    .WithMany()
+                    .HasForeignKey("WorkspaceId");
 
-                    b.Navigation("Role");
+                b.Navigation("Role");
 
-                    b.Navigation("User");
+                b.Navigation("User");
 
-                    b.Navigation("Workspace");
-                });
+                b.Navigation("Workspace");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Cloud.WorkspaceUserInvitation", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RSecurityBackend.Models.Cloud.RWorkspace", "Workspace")
-                        .WithMany()
-                        .HasForeignKey("WorkspaceId");
+                b.HasOne("RSecurityBackend.Models.Cloud.RWorkspace", "Workspace")
+                    .WithMany()
+                    .HasForeignKey("WorkspaceId");
 
-                    b.Navigation("User");
+                b.Navigation("User");
 
-                    b.Navigation("Workspace");
-                });
+                b.Navigation("Workspace");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Generic.Db.RGenericOption", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "RAppUser")
-                        .WithMany()
-                        .HasForeignKey("RAppUserId");
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "RAppUser")
+                    .WithMany()
+                    .HasForeignKey("RAppUserId");
 
-                    b.HasOne("RSecurityBackend.Models.Cloud.RWorkspace", "Workspace")
-                        .WithMany()
-                        .HasForeignKey("WorkspaceId");
-
-                    b.Navigation("RAppUser");
-
-                    b.Navigation("Workspace");
-                });
+                b.Navigation("RAppUser");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Notification.RUserNotification", b =>
-                {
-                    b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            {
+                b.HasOne("RSecurityBackend.Models.Auth.Db.RAppUser", "User")
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Artifact.RPictureFile", b =>
-                {
-                    b.HasOne("RMuseum.Models.Artifact.RArtifactItemRecord", null)
-                        .WithMany("Images")
-                        .HasForeignKey("RArtifactItemRecordId");
-                });
+            {
+                b.HasOne("RMuseum.Models.Artifact.RArtifactItemRecord", null)
+                    .WithMany("Images")
+                    .HasForeignKey("RArtifactItemRecordId");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Accounting.GanjoorExpense", b =>
-                {
-                    b.Navigation("DonationExpenditures");
-                });
+            {
+                b.Navigation("DonationExpenditures");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Artifact.RArtifactItemRecord", b =>
-                {
-                    b.Navigation("Images");
+            {
+                b.Navigation("Images");
 
-                    b.Navigation("Tags");
-                });
+                b.Navigation("Tags");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Artifact.RArtifactMasterRecord", b =>
-                {
-                    b.Navigation("Items");
+            {
+                b.Navigation("Items");
 
-                    b.Navigation("Tags");
-                });
+                b.Navigation("Tags");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorCentury", b =>
-                {
-                    b.Navigation("Poets");
-                });
+            {
+                b.Navigation("Poets");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemCorrection", b =>
-                {
-                    b.Navigation("VerseOrderText");
-                });
+            {
+                b.Navigation("VerseOrderText");
+            });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemTranslation", b =>
-                {
-                    b.Navigation("Verses");
-                });
+            {
+                b.Navigation("Verses");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GanjoorAlbum", b =>
-                {
-                    b.Navigation("Tracks");
-                });
+            {
+                b.Navigation("Tracks");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GanjoorSinger", b =>
-                {
-                    b.Navigation("Albums");
-                });
+            {
+                b.Navigation("Albums");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GolhaCollection", b =>
-                {
-                    b.Navigation("Programs");
-                });
+            {
+                b.Navigation("Programs");
+            });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GolhaProgram", b =>
-                {
-                    b.Navigation("Tracks");
-                });
+            {
+                b.Navigation("Tracks");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.Book", b =>
-                {
-                    b.Navigation("Authors");
+            {
+                b.Navigation("Authors");
 
-                    b.Navigation("Tags");
-                });
+                b.Navigation("Tags");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.PDFBook", b =>
-                {
-                    b.Navigation("Contributers");
+            {
+                b.Navigation("Contributers");
 
-                    b.Navigation("Pages");
+                b.Navigation("Pages");
 
-                    b.Navigation("Tags");
-                });
+                b.Navigation("Tags");
+            });
 
             modelBuilder.Entity("RMuseum.Models.PDFLibrary.PDFPage", b =>
-                {
-                    b.Navigation("Tags");
-                });
+            {
+                b.Navigation("Tags");
+            });
 
             modelBuilder.Entity("RMuseum.Models.UploadSession.UploadSession", b =>
-                {
-                    b.Navigation("UploadedFiles");
-                });
+            {
+                b.Navigation("UploadedFiles");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Auth.Db.RAppRole", b =>
-                {
-                    b.Navigation("Permissions");
-                });
+            {
+                b.Navigation("Permissions");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Cloud.RWSRole", b =>
-                {
-                    b.Navigation("Permissions");
-                });
+            {
+                b.Navigation("Permissions");
+            });
 
             modelBuilder.Entity("RSecurityBackend.Models.Cloud.RWorkspace", b =>
-                {
-                    b.Navigation("Members");
-                });
+            {
+                b.Navigation("Members");
+            });
 #pragma warning restore 612, 618
         }
     }

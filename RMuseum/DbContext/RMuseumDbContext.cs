@@ -251,7 +251,7 @@ namespace RMuseum.DbContext
             .HasMaxLength(3000);
 
             
-            //Phase 2:
+            /*
 
             builder.Entity<RArtifactMasterRecord>()
                 .Property(e => e.FriendlyUrl)
@@ -292,7 +292,7 @@ namespace RMuseum.DbContext
             builder.Entity<RTag>()
                .Property(e => e.PluralNameInEnglish)
                .HasMaxLength(128);
-            
+            */
         }
 
 
