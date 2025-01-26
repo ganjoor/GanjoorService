@@ -172,6 +172,10 @@
                     }
                 }
 
+                @Html.Raw(Model.PagingToolsHtml)
+
+                <div class="spacer">&nbsp;</div>
+
                 @if (Model.Poems == null)
                 {
                     <div class="poem">
@@ -227,6 +231,8 @@
                 <div class="spacer">&nbsp;</div>
 
                 @Html.Raw(Model.PagingToolsHtml)
+
+                <div class="spacer">&nbsp;</div>
 
             </div>
 
