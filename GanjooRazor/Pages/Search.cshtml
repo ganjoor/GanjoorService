@@ -32,12 +32,12 @@
 
     <script>
         function deletePoetFromSearch(poetId, poetName){
-            if(!confirm('آیا می‌خواهید '+ poetName+ ' را از نتایج حذف کنید؟')) return;
-            const currentUrl = new URL(window.location.href);
-            const params = currentUrl.searchParams;
-            params.append('e', poetId.toString());
-            currentUrl.search = params.toString();
-            window.location.href = currentUrl.toString();
+        if(!confirm('آیا می‌خواهید '+ poetName+ ' را از نتایج حذف کنید؟')) return;
+        const currentUrl = new URL(window.location.href);
+        const params = currentUrl.searchParams;
+        params.append('e', poetId.toString());
+        currentUrl.search = params.toString();
+        window.location.href = currentUrl.toString();
         }
     </script>
 </head>
@@ -172,9 +172,11 @@
                     }
                 }
 
-                @Html.Raw(Model.PagingToolsHtml)
-
-                <div class="spacer">&nbsp;</div>
+                @if (!string.IsNullOrEmpty(Model.PagingToolsHtml))
+                {
+                    @Html.Raw(Model.PagingToolsHtml)
+                    <div class="spacer">&nbsp;</div>
+                }
 
                 @if (Model.Poems == null)
                 {
@@ -228,11 +230,13 @@
                         </div>
                     }
 
-                <div class="spacer">&nbsp;</div>
+                @if (!string.IsNullOrEmpty(Model.PagingToolsHtml))
+                {
+                    <div class="spacer">&nbsp;</div>
+                    @Html.Raw(Model.PagingToolsHtml)
+                    <div class="spacer">&nbsp;</div>
 
-                @Html.Raw(Model.PagingToolsHtml)
-
-                <div class="spacer">&nbsp;</div>
+                }
 
             </div>
 

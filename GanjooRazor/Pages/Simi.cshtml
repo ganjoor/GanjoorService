@@ -30,45 +30,45 @@
     {
         <script>
             function redirectToTransferMeter() {
-                var meter = document.getElementById("v").value;
-                window.location.href = "/Admin/TransferMeter?m=" + encodeURIComponent(meter);
+            var meter = document.getElementById("v").value;
+            window.location.href = "/Admin/TransferMeter?m=" + encodeURIComponent(meter);
             }
         </script>
     }
 
-    @if(Model.LoggedIn)
+    @if (Model.LoggedIn)
     {
         <script>
             function sendSectionMetreSuggection(poemId, sectionIndex) {
-                var ext = '-' + poemId.toString() + '-' + sectionIndex.toString();
-                var elName = '#rhythm-new' + '-' + poemId.toString() + '-' + sectionIndex.toString();
-                var rhythm_new = $(elName).val();
-                $('#savecorrections' + ext).hide();
-                var url = '?handler=SendSectionMetreSuggestion';
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: {
-                        poemId: poemId,
-                        sectionIndex: sectionIndex,
-                        rhythm: rhythm_new,
-                    },
-                    success: function () {
-                        var block = "#poem-" + poemId.toString() + "-section-" + sectionIndex.toString();
-                        $(block).remove();
-                    },
-                    error: function (e) {
-                        if (e.responseText == null)
-                            alert(e);
-                        else
-                            alert(e.responseText);
-                    }
-                });
+            var ext = '-' + poemId.toString() + '-' + sectionIndex.toString();
+            var elName = '#rhythm-new' + '-' + poemId.toString() + '-' + sectionIndex.toString();
+            var rhythm_new = $(elName).val();
+            $('#savecorrections' + ext).hide();
+            var url = '?handler=SendSectionMetreSuggestion';
+            $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+            poemId: poemId,
+            sectionIndex: sectionIndex,
+            rhythm: rhythm_new,
+            },
+            success: function () {
+            var block = "#poem-" + poemId.toString() + "-section-" + sectionIndex.toString();
+            $(block).remove();
+            },
+            error: function (e) {
+            if (e.responseText == null)
+            alert(e);
+            else
+            alert(e.responseText);
+            }
+            });
             }
         </script>
     }
 
-    
+
 </head>
 <body>
 
@@ -89,11 +89,11 @@
                         @{
                             if (Model.PoetId != 0)
                             {
-                                        <option value="0">در آثار همهٔ سخنوران</option>
+                                <option value="0">در آثار همهٔ سخنوران</option>
                             }
                             else
                             {
-                                        <option value="0" selected>در آثار همهٔ سخنوران</option>
+                                <option value="0" selected>در آثار همهٔ سخنوران</option>
                             }
 
                             if (Model.Poets != null)
@@ -102,11 +102,11 @@
                                 {
                                     if (poet.Id == Model.PoetId)
                                     {
-                                                <option value="@poet.Id" selected>@poet.Nickname</option>
+                                        <option value="@poet.Id" selected>@poet.Nickname</option>
                                     }
                                     else
                                     {
-                                                <option value="@poet.Id">@poet.Nickname</option>
+                                        <option value="@poet.Id">@poet.Nickname</option>
                                     }
 
                                 }
@@ -116,20 +116,20 @@
                     @{
                         if (Model.Poet != null)
                         {
-                                    <select name="cat" id="cat" style="width:150px">
-                                        <option value="0" selected>در همهٔ بخشها</option>
-                                        @{
+                            <select name="cat" id="cat" style="width:150px">
+                                <option value="0" selected>در همهٔ بخشها</option>
+                                @{
                                     foreach (var gran in Model.Poet.Cat.Ancestors)
                                     {
-                                                        <option value="@gran.Id">@gran.Title</option>
+                                        <option value="@gran.Id">@gran.Title</option>
                                     }
-                                                    <option value="@Model.Poet.Cat.Id">@Model.Poet.Cat.Title</option>
+                                    <option value="@Model.Poet.Cat.Id">@Model.Poet.Cat.Title</option>
                                     foreach (var child in Model.Poet.Cat.Children)
                                     {
-                                                        <option value="@child.Id">@child.Title</option>
+                                        <option value="@child.Id">@child.Title</option>
                                     }
-                                        }
-                                    </select>
+                                }
+                            </select>
                         }
                     }
 
@@ -152,12 +152,12 @@
                             <label for="a" class="width-100per">سخنور:</label>
                             <script>
                                 function syncInputs(){
-                                    document.getElementById('poets-search').value = document.getElementById('fake-poet-search').value;
-                                    doSearchInRhythmsCombo('poets-search', 'a');
+                                document.getElementById('poets-search').value = document.getElementById('fake-poet-search').value;
+                                doSearchInRhythmsCombo('poets-search', 'a');
                                 }
                             </script>
                             <input class="width-100per" type="text" id="fake-poet-search" placeholder="جستجوی سخنور" oninput="syncInputs()" autocomplete="off" size="50" />
-                            <input type="hidden" id="poets-search" placeholder="جستجوی سخنور"  list="inputPoets" autocomplete="off" size="50" />
+                            <input type="hidden" id="poets-search" placeholder="جستجوی سخنور" list="inputPoets" autocomplete="off" size="50" />
                             <datalist id="inputPoets">
                                 @if (Model.Poets != null)
                                     @foreach (var poet in Model.Poets)
@@ -169,11 +169,11 @@
                                 @{
                                     if (Model.PoetId != 0)
                                     {
-                                                <option value="0">در آثار همهٔ سخنوران</option>
+                                        <option value="0">در آثار همهٔ سخنوران</option>
                                     }
                                     else
                                     {
-                                                <option value="0" selected>در آثار همهٔ سخنوران</option>
+                                        <option value="0" selected>در آثار همهٔ سخنوران</option>
                                     }
 
                                     if (Model.Poets != null)
@@ -182,11 +182,11 @@
                                         {
                                             if (poet.Id == Model.PoetId)
                                             {
-                                                        <option value="@poet.Id" selected>@poet.Nickname</option>
+                                                <option value="@poet.Id" selected>@poet.Nickname</option>
                                             }
                                             else
                                             {
-                                                        <option value="@poet.Id">@poet.Nickname</option>
+                                                <option value="@poet.Id">@poet.Nickname</option>
                                             }
                                         }
                                     }
@@ -222,7 +222,7 @@
 
 
                             <label for="v" class="width-100per">زبان غالب:</label>
-                           
+
                             <select id="l" name="l" class="width-100per">
                                 @foreach (var language in Model.Languages)
                                 {
@@ -256,7 +256,7 @@
                                     }
                                     else
                                     {
-                                        if((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat == Model.Format)
+                                        if ((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat == Model.Format)
                                         {
                                             <option value="@((int)poemFormat)" selected>@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
                                         }
@@ -264,9 +264,9 @@
                                         {
                                             <option value="@((int)poemFormat)">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
                                         }
-                                        
+
                                     }
-                                    
+
                                 }
                             </select>
                             <label for="f" class="width-100per">کلیدواژه (جستجو در کل صفحهٔ شعر، برای جستجوی بهتر از <a href="/search?s=@Model.Query">صفحهٔ جستجو</a> استفاده کنید):</label>
@@ -276,7 +276,7 @@
                                 <input type="hidden" name="es" id="es" value="1" />
                             }
 
-                            @if(Model.CatId != 0)
+                            @if (Model.CatId != 0)
                             {
                                 <div class="width-100per">
                                     تنها در بخش <a href="@Model.CatFullUrl">@Model.CatFullTitle</a>
@@ -293,6 +293,18 @@
                         </form>
                     </div><!-- related-images-frame -->
                 </div> <!-- comments-like-div -->
+                @if (!string.IsNullOrEmpty(Model.PagingToolsHtml))
+                {
+                    <div class="spacer">&nbsp;</div>
+
+                    @Html.Raw(Model.PagingToolsHtml)
+
+                    <div class="spacer">&nbsp;</div>
+                }
+                
+
+
+
                 @if (Model.Poems == null)
                 {
                     <div class="sitem">
@@ -375,9 +387,15 @@
                         </div>
                     }
 
-                <div class="spacer">&nbsp;</div>
+                @if (!string.IsNullOrEmpty(Model.PagingToolsHtml))
+                {
+                    <div class="spacer">&nbsp;</div>
 
-                @Html.Raw(Model.PagingToolsHtml)
+                    @Html.Raw(Model.PagingToolsHtml)
+
+                    <div class="spacer">&nbsp;</div>
+                }
+
 
             </div>
 
