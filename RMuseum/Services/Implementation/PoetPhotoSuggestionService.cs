@@ -259,9 +259,9 @@ namespace RMuseum.Services.Implementation
                     foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
                     {
                         var localFilePath = _pictureFileService.GetImagePath(dbModel.Picture, imageSizeString).Result;
-                        if (imageSizeString == "orig")
+                        if (imageSizeString == "norm")
                         {
-                            dbModel.Picture.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/PoetsPhotoSuggestions/orig/{Path.GetFileName(localFilePath)}";
+                            dbModel.Picture.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/PoetsPhotoSuggestions/{imageSizeString}/{Path.GetFileName(localFilePath)}";
                         }
                         var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/PoetsPhotoSuggestions/{imageSizeString}/{Path.GetFileName(localFilePath)}";
                         await ftpClient.UploadFile(localFilePath, remoteFilePath);

@@ -1382,9 +1382,9 @@ namespace RMuseum.Services.Implementation
                     foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
                     {
                         var localFilePath = _pictureFileService.GetImagePath(book.CoverImage, imageSizeString).Result;
-                        if (imageSizeString == "orig")
+                        if (imageSizeString == "norm")
                         {
-                            book.CoverImage.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/{book.CoverImage.FolderName}/orig/{Path.GetFileName(localFilePath)}";
+                            book.CoverImage.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/{book.CoverImage.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
                             context.Update(book.CoverImage);
                         }
                         if (!skipUpload)
@@ -1405,9 +1405,9 @@ namespace RMuseum.Services.Implementation
                             foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
                             {
                                 var localFilePath = _pictureFileService.GetImagePath(image, imageSizeString).Result;
-                                if (imageSizeString == "orig")
+                                if (imageSizeString == "norm")
                                 {
-                                    image.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/{image.FolderName}/orig/{Path.GetFileName(localFilePath)}";
+                                    image.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/{image.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
                                     context.Update(image);
                                 }
                                 if (!skipUpload)
@@ -3421,9 +3421,9 @@ namespace RMuseum.Services.Implementation
                                         foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
                                         {
                                             var localFilePath = _pictureFileService.GetImagePath(picture.Result, imageSizeString).Result;
-                                            if (imageSizeString == "orig")
+                                            if (imageSizeString == "norm")
                                             {
-                                                picture.Result.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/Pinterest/orig/{Path.GetFileName(localFilePath)}";
+                                                picture.Result.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("ExternalFTPServer")["RootUrl"]}/Pinterest/{imageSizeString}/{Path.GetFileName(localFilePath)}";
                                             }
                                             var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/Pinterest/{imageSizeString}/{Path.GetFileName(localFilePath)}";
                                             await ftpClient.UploadFile(localFilePath, remoteFilePath);
