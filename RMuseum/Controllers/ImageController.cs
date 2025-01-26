@@ -22,14 +22,14 @@ namespace RMuseum.Controllers
         /// returns image stream with image/jpeg MIME type
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="size"></param>
+        /// <param name="size">norm/orig/thumb</param>
         /// <param name="mimeForResized"></param>
         /// <returns></returns>
         [HttpGet("{size}/{id}.jpg")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(FileStreamResult))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        
+
         public async Task<IActionResult> Get(Guid id, string size, string mimeForResized = "image/jpeg")
         {
             RServiceResult<RPictureFile> img =
@@ -40,6 +40,16 @@ namespace RMuseum.Controllers
 
             if (img.Result == null)
                 return NotFound();
+
+            if (!string.IsNullOrEmpty(img.Result.ExternalNormalSizeImageUrl))
+            {
+                if(size != "norm")
+                {
+                    img.Result.ExternalNormalSizeImageUrl = img.Result.ExternalNormalSizeImageUrl.Replace("/norm/", $"/{size}/");
+                }
+                return Redirect(img.Result.ExternalNormalSizeImageUrl);
+            }
+                
 
             Response.GetTypedHeaders().LastModified = img.Result.LastModified;
 
