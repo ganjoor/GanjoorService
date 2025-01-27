@@ -2300,6 +2300,7 @@ namespace RMuseum.Services.Implementationa
         {
             var source =
                  from report in _context.RecitationErrorReports.Include(r => r.Recitation).Include(r => r.Reporter)
+                 orderby report.DateTime
                  join poem in _context.GanjoorPoems
                  on report.Recitation.GanjoorPostId equals poem.Id
                  select
