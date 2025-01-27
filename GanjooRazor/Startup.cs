@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
@@ -43,6 +45,9 @@ namespace GanjooRazor
                                   });
             });
 
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(Configuration["DataProtectionPersistPath"]))
+                .SetApplicationName("GanjooRazor");
 
         }
 

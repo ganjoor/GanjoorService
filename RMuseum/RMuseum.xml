@@ -2595,7 +2595,7 @@
             returns image stream with image/jpeg MIME type
             </summary>
             <param name="id"></param>
-            <param name="size"></param>
+            <param name="size">norm/orig/thumb</param>
             <param name="mimeForResized"></param>
             <returns></returns>
         </member>
