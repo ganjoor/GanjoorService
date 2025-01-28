@@ -746,11 +746,13 @@ namespace RMuseum.Services.Implementation
                 v => v.PoemId == section.PoemId
                         &&
                         (
-                        v.SectionIndex1 == section.Index ||
-                        v.SectionIndex2 == section.Index ||
-                        v.SectionIndex3 == section.Index ||
-                        v.SectionIndex4 == section.Index
-                        )
+                            (section.VerseType == VersePoemSectionType.First && v.SectionIndex1 == section.Index)
+                            ||
+                            (section.VerseType == VersePoemSectionType.Second && v.SectionIndex2 == section.Index)
+                            ||
+                            (section.VerseType == VersePoemSectionType.Third && v.SectionIndex3 == section.Index)
+                            ||
+                            (section.VerseType == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index))
                         &&
                         (v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1)
                         ).CountAsync();
