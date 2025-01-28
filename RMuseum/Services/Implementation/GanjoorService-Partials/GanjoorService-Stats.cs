@@ -327,14 +327,19 @@ namespace RMuseum.Services.Implementation
 
 
             List<SectionCoupletCount> coupletCountsList = new List<SectionCoupletCount>();
+            int maxCouplets = 0;
             foreach (var coupletCount in groupedCoupletCounts)
             {
                 coupletCountsList.Add(new SectionCoupletCount() { CoupletCount = coupletCount.Key, Count = coupletCount.Value });
+                if(coupletCount.Key > maxCouplets)
+                {
+                    maxCouplets = coupletCount.Key;
+                }
             }
             coupletCountsList.Sort((a, b) => b.Count - a.Count);
             if(coupletCountsList.Count > 0 )
             {
-                htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار {poet.Nickname} به شرح زیر است (این آمار برای مثنوی‌ها که بخش‌بندی آنها ممکن است به سلیقهٔ گردآورنده صورت گرفته باشد بی‌معنی است):</p>{Environment.NewLine}";
+                htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار {poet.Nickname} به شرح زیر است (بلندترین شعر شامل <a href=\"/simi/?a={poet.Id}&amp;c1={maxCouplets}&amp;c2={maxCouplets}\">{maxCouplets.ToPersianNumbers()}</a> بیت شعر است):</p>{Environment.NewLine}";
 
                 htmlText += $"<table>{Environment.NewLine}" +
                     $"<tr class=\"h\">{Environment.NewLine}" +
@@ -653,14 +658,19 @@ namespace RMuseum.Services.Implementation
             htmlText += $"</table>{Environment.NewLine}";
 
             List<SectionCoupletCount> coupletCountsList = new List<SectionCoupletCount>();
+            int maxCouplets = 0;
             foreach (var coupletCount in groupedCoupletCounts)
             {
                 coupletCountsList.Add(new SectionCoupletCount() { CoupletCount = coupletCount.Key, Count = coupletCount.Value });
+                if (coupletCount.Key > maxCouplets)
+                {
+                    maxCouplets = coupletCount.Key;
+                }
             }
             coupletCountsList.Sort((a, b) => b.Count - a.Count);
             if (coupletCountsList.Count > 0)
             {
-                htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار این بخش به شرح زیر است (این آمار برای مثنوی‌ها که بخش‌بندی آنها ممکن است به سلیقهٔ گردآورنده صورت گرفته باشد بی‌معنی است):</p>{Environment.NewLine}";
+                htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار این بخش به شرح زیر است (بلندترین شعر شامل <a href=\"/simi/?a={poetId}&amp;c={catId}&amp;c1={maxCouplets}&amp;c2={maxCouplets}\">{maxCouplets.ToPersianNumbers()}</a> بیت شعر است):</p>{Environment.NewLine}";
 
                 htmlText += $"<table>{Environment.NewLine}" +
                     $"<tr class=\"h\">{Environment.NewLine}" +
@@ -1097,7 +1107,7 @@ namespace RMuseum.Services.Implementation
                                         coupletCountsList.Sort((a, b) => b.Count - a.Count);
                                         if (coupletCountsList.Count > 0)
                                         {
-                                            htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار به شرح زیر است (این آمار برای مثنوی‌ها که بخش‌بندی آنها ممکن است به سلیقهٔ گردآورنده صورت گرفته باشد بی‌معنی است):</p>{Environment.NewLine}";
+                                            htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار به شرح زیر است:</p>{Environment.NewLine}";
 
                                             htmlText += $"<table>{Environment.NewLine}" +
                                                 $"<tr class=\"h\">{Environment.NewLine}" +
