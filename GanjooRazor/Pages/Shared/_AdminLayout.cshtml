@@ -181,6 +181,27 @@
             });
         }
 
+        
+
+        function refillCoupletCounts() {
+            if (!confirm('آیا از بازشماری تعداد ابیات قطعات اطمینان دارید؟'))
+                return;
+
+            var url = '?handler=RefillSectionsCoupletCounts';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                error: function() {
+                    alert('خطا رخ داد.')
+                },
+                success: function() {
+                    alert('فرایند بازشماری تعداد ابیات قطعات شروع شد.')
+                },
+
+            });
+        }
+
         function rebuildRelatedPages() {
             if (!confirm('آیا از بازسازی محتوای صفحات استقبال‌ها اطمینان دارید؟'))
                 return;
