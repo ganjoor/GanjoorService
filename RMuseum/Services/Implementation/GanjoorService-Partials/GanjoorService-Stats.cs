@@ -1,5 +1,6 @@
 ﻿using DNTPersianUtils.Core;
 using Microsoft.EntityFrameworkCore;
+using NAudio.Gui;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RSecurityBackend.Models.Generic;
@@ -905,6 +906,7 @@ namespace RMuseum.Services.Implementation
 
                                         Dictionary<int, int> metreCounts = new Dictionary<int, int>();
                                         int secondMetreCoupletCount = 0;
+                                        Dictionary<int, int> groupedCoupletCounts = new Dictionary<int, int>();
                                         foreach (var section in wholePoemSections)
                                         {
                                             int coupletCount = await context.GanjoorVerses.AsNoTracking()
@@ -922,7 +924,16 @@ namespace RMuseum.Services.Implementation
                                                     ||
                                                     (section.Versetype == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index)
                                                     )
-                                                    ).CountAsync();
+                                                    ).CountAsync();//GanjoorPoemSection.CoupletsCount added later
+                                            if (groupedCoupletCounts.TryGetValue(coupletCount, out int groupedCoupletCount))
+                                            {
+                                                groupedCoupletCount++;
+                                            }
+                                            else
+                                            {
+                                                groupedCoupletCount = 1;
+                                            }
+                                            groupedCoupletCounts[coupletCount] = groupedCoupletCount;
                                             var metreId = section.GanjoorMetreId == null ? 0 : (int)section.GanjoorMetreId;
                                             if (metreCounts.TryGetValue(metreId, out int sectionCoupletCount))
                                             {
@@ -1076,6 +1087,43 @@ namespace RMuseum.Services.Implementation
                                             htmlText += $"</tr>{Environment.NewLine}";
                                         }
                                         htmlText += $"</table>{Environment.NewLine}";
+
+
+                                        List<SectionCoupletCount> coupletCountsList = new List<SectionCoupletCount>();
+                                        foreach (var coupletCount in groupedCoupletCounts)
+                                        {
+                                            coupletCountsList.Add(new SectionCoupletCount() { CoupletCount = coupletCount.Key, Count = coupletCount.Value });
+                                        }
+                                        coupletCountsList.Sort((a, b) => b.Count - a.Count);
+                                        if (coupletCountsList.Count > 0)
+                                        {
+                                            htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار به شرح زیر است (این آمار برای مثنوی‌ها که بخش‌بندی آنها ممکن است به سلیقهٔ گردآورنده صورت گرفته باشد):</p>{Environment.NewLine}";
+
+                                            htmlText += $"<table>{Environment.NewLine}" +
+                                                $"<tr class=\"h\">{Environment.NewLine}" +
+                                                $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
+                                                $"<td class=\"c2\">تعداد ابیات شعر</td>{Environment.NewLine}" +
+                                                $"<td class=\"c3\">فراوانی</td>{Environment.NewLine}" +
+                                                $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                                                $"</tr>{Environment.NewLine}";
+
+                                            for (int i = 0; i < coupletCountsList.Count; i++)
+                                            {
+                                                if (coupletCountsList[i].Count == 0) continue;
+                                                if (i % 2 == 0)
+                                                    htmlText += $"<tr class=\"e\">{Environment.NewLine}";
+                                                else
+                                                    htmlText += $"<tr>{Environment.NewLine}";
+
+                                                htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
+                                                htmlText += $"<td class=\"c2\"><a href=\"/simi/?c1={coupletCountsList[i].CoupletCount}&amp;c2={coupletCountsList[i].CoupletCount}\">{coupletCountsList[i].CoupletCount.ToPersianNumbers()}</a></td>{Environment.NewLine}";
+                                                htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(coupletCountsList[i].Count)}</td>{Environment.NewLine}";
+                                                htmlText += $"<td class=\"c4\">{(coupletCountsList[i].Count * 100.0 / sumPoetsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+
+                                                htmlText += $"</tr>{Environment.NewLine}";
+                                            }
+                                            htmlText += $"</table>{Environment.NewLine}";
+                                        }
 
                                         await context.SaveChangesAsync();//store rhythm[s].VerseCount
 
