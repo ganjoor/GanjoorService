@@ -294,6 +294,7 @@ namespace GanjooRazor.Pages
                 if(int.TryParse(Request.Query["c1"], out int i))
                 {
                     CoupletCountsFrom = i;
+                    anyParamsGiven = anyParamsGiven || CoupletCountsFrom != 0;
                 }
             }
 
@@ -303,6 +304,7 @@ namespace GanjooRazor.Pages
                 if (int.TryParse(Request.Query["c2"], out int i))
                 {
                     CoupletCountsTo = i;
+                    anyParamsGiven = anyParamsGiven || CoupletCountsTo != 0;
                 }
             }
 
@@ -438,7 +440,7 @@ namespace GanjooRazor.Pages
                 title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
                 if (PaginationMetadata.currentPage > 3)
                 {
-                    htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page=1{authorParam}&amp;l={Language}&amp;f={(int)Format}\"><div class=\"circled-number\">۱</div></a> …";
+                    htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page=1{authorParam}&amp;l={Language}&amp;f={(int)Format}&amp;c1={CoupletCountsFrom}&amp;c2={CoupletCountsTo}\"><div class=\"circled-number\">۱</div></a> …";
                 }
                 for (int i = PaginationMetadata.currentPage - 2; i <= (PaginationMetadata.currentPage + 2); i++)
                 {
@@ -450,13 +452,13 @@ namespace GanjooRazor.Pages
                         }
                         else
                         {
-                            htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={i}{authorParam}&amp;l={Language}&amp;f={(int)Format}\"><div class=\"circled-number\">{i.ToPersianNumbers()}</div></a>{Environment.NewLine}";
+                            htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={i}{authorParam}&amp;l={Language}&amp;f={(int)Format}&amp;c1={CoupletCountsFrom}&amp;c2={CoupletCountsTo}\"><div class=\"circled-number\">{i.ToPersianNumbers()}</div></a>{Environment.NewLine}";
                         }
                     }
                 }
                 if (PaginationMetadata.totalPages > (PaginationMetadata.currentPage + 2))
                 {
-                    htmlText += $"… <a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={PaginationMetadata.totalPages}{authorParam}&amp;l={Language}&amp;f={(int)Format}\"><div class=\"circled-number\">{PaginationMetadata.totalPages.ToPersianNumbers()}</div></a>{Environment.NewLine}";
+                    htmlText += $"… <a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={PaginationMetadata.totalPages}{authorParam}&amp;l={Language}&amp;f={(int)Format}&amp;c1={CoupletCountsFrom}&amp;c2={CoupletCountsTo}\"><div class=\"circled-number\">{PaginationMetadata.totalPages.ToPersianNumbers()}</div></a>{Environment.NewLine}";
                 }
                 htmlText += $"</div>{Environment.NewLine}";
             }
