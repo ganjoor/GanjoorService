@@ -403,7 +403,7 @@ namespace GanjooRazor.Pages
                 title += $" شامل کلیدواژهٔ «{Query}»";
             }
 
-            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={Metre}&rhyme={Rhyme}&poetId={PoetId}&catId={CatId}&language={Language}&format={(int)Format}&c1={CoupletCountsFrom}&c2={CoupletCountsTo}";
+            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={Metre}&rhyme={Rhyme}&poetId={PoetId}&catId={CatId}&language={Language}&format={(int)Format}&coupletCountsFrom={CoupletCountsFrom}&coupletCountsTo={CoupletCountsTo}";
             if(!string.IsNullOrEmpty(Query))
             {
                 url += $"&term={Query}";
