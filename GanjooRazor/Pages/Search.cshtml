@@ -235,6 +235,9 @@
                     <div class="spacer">&nbsp;</div>
                     @Html.Raw(Model.PagingToolsHtml)
                     <div class="spacer">&nbsp;</div>
+                    <div>
+                        تعداد کل نتایج: @Model.PaginationMetadata.totalCount.ToPersianNumbers()
+                    </div>
 
                 }
 

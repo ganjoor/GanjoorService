@@ -76,6 +76,8 @@ namespace GanjooRazor.Pages
         public GanjoorPoetCompleteViewModel Poet { get; set; }
         public List<GanjoorPoemCompleteViewModel> Poems { get; set; }
         public string PagingToolsHtml { get; set; }
+
+        public PaginationMetadata PaginationMetadata { get; set; }
         public string LastError { get; set; }
         public string Language { get; set; }
         public GanjoorPoemFormat Format { get; set; }
@@ -391,10 +393,10 @@ namespace GanjooRazor.Pages
             }
 
             string paginnationMetadata = response.Headers.GetValues("paging-headers").FirstOrDefault();
-            PaginationMetadata paginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata);
+            PaginationMetadata = JsonConvert.DeserializeObject<PaginationMetadata>(paginnationMetadata);
 
             string htmlText = "";
-            if (paginationMetadata.totalPages > 1)
+            if (PaginationMetadata.totalPages > 1)
             {
                 htmlText = $"<div>{Environment.NewLine}";
                 string authorParam = PoetId != 0 ? $"&amp;a={PoetId}" : "";
@@ -403,15 +405,15 @@ namespace GanjooRazor.Pages
                     authorParam += $"&amp;c={CatId}";
                 }
                 title += $" - صفحهٔ {pageNumber.ToPersianNumbers()}";
-                if (paginationMetadata.currentPage > 3)
+                if (PaginationMetadata.currentPage > 3)
                 {
                     htmlText += $"<a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page=1{authorParam}&amp;l={Language}&amp;f={(int)Format}\"><div class=\"circled-number\">۱</div></a> …";
                 }
-                for (int i = paginationMetadata.currentPage - 2; i <= (paginationMetadata.currentPage + 2); i++)
+                for (int i = PaginationMetadata.currentPage - 2; i <= (PaginationMetadata.currentPage + 2); i++)
                 {
-                    if (i >= 1 && i <= paginationMetadata.totalPages)
+                    if (i >= 1 && i <= PaginationMetadata.totalPages)
                     {
-                        if (i == paginationMetadata.currentPage)
+                        if (i == PaginationMetadata.currentPage)
                         {
                             htmlText += $"<div class=\"circled-number-diff\">{i.ToPersianNumbers()}</div>{Environment.NewLine}";
                         }
@@ -421,9 +423,9 @@ namespace GanjooRazor.Pages
                         }
                     }
                 }
-                if (paginationMetadata.totalPages > (paginationMetadata.currentPage + 2))
+                if (PaginationMetadata.totalPages > (PaginationMetadata.currentPage + 2))
                 {
-                    htmlText += $"… <a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={paginationMetadata.totalPages}{authorParam}&amp;l={Language}&amp;f={(int)Format}\"><div class=\"circled-number\">{paginationMetadata.totalPages.ToPersianNumbers()}</div></a>{Environment.NewLine}";
+                    htmlText += $"… <a href=\"/simi/?v={Uri.EscapeDataString(Metre)}&amp;g={Uri.EscapeDataString(Rhyme)}&amp;page={PaginationMetadata.totalPages}{authorParam}&amp;l={Language}&amp;f={(int)Format}\"><div class=\"circled-number\">{PaginationMetadata.totalPages.ToPersianNumbers()}</div></a>{Environment.NewLine}";
                 }
                 htmlText += $"</div>{Environment.NewLine}";
             }
