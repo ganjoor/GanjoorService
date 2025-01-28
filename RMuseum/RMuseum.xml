@@ -1746,6 +1746,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartFillingSectionCoupletCounts">
+            <summary>
+            fill section couplet counts
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.RegeneratePoemsFullTitles">
             <summary>
             regenerate poem full titles to fix an old bug
@@ -16298,6 +16304,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartFillingSectionCoupletCounts">
+            <summary>
+            fill section couplets count
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.RegeneratePoemsFullTitles">
             <summary>
             regenerate poem full titles to fix an old bug
@@ -19023,6 +19035,12 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFillingPoemsCoupletIndices">
             <summary>
             start filling poems couplet indices
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFillingSectionCoupletCounts">
+            <summary>
+            fill section couplets count
             </summary>
             <returns></returns>
         </member>

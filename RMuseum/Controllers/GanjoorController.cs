@@ -2617,6 +2617,25 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// fill section couplet counts
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpPost]
+        [Route("fillsectioncoupletcounts")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult StartFillingSectionCoupletCounts()
+        {
+            RServiceResult<bool> res =
+                 _ganjoorService.StartFillingSectionCoupletCounts();
+            if (res.Result)
+                return Ok();
+            return BadRequest(res.ExceptionString);
+        }
+
+        /// <summary>
         /// regenerate poem full titles to fix an old bug
         /// </summary>
         /// <returns></returns>

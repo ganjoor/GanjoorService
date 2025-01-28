@@ -693,6 +693,73 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// fill section couplets count
+        /// </summary>
+        /// <returns></returns>
+        public RServiceResult<bool> StartFillingSectionCoupletCounts()
+        {
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+            (
+            async token =>
+            {
+                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                {
+                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                    var job = (await jobProgressServiceEF.NewJob("FillingSectionCoupletCounts", "Query data")).Result;
+
+                    try
+                    {
+                        var sectionIds = await context.GanjoorPoemSections.AsNoTracking().Select(p => p.Id).ToListAsync();
+
+
+                        int percent = 0;
+                        for (int i = 0; i < sectionIds.Count; i++)
+                        {
+                            if (i * 100 / sectionIds.Count > percent)
+                            {
+                                percent++;
+                                await jobProgressServiceEF.UpdateJob(job.Id, percent);
+                            }
+
+                            await _FillSectionCoupletCountsAsync(context, sectionIds[i]);
+                        }
+
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                    }
+                    catch (Exception exp)
+                    {
+                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                    }
+
+                }
+            }
+            );
+
+            return new RServiceResult<bool>(true);
+        }
+
+        private async Task _FillSectionCoupletCountsAsync(RMuseumDbContext context, int sectionId)
+        {
+            var section = await context.GanjoorPoemSections.Where(s => s.Id == sectionId).SingleAsync();
+
+            section.CoupletsCount = await context.GanjoorVerses.Where(
+                v => v.PoemId == section.PoemId
+                        &&
+                        (
+                        v.SectionIndex1 == section.Index ||
+                        v.SectionIndex2 == section.Index ||
+                        v.SectionIndex3 == section.Index ||
+                        v.SectionIndex4 == section.Index
+                        )
+                        &&
+                        (v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1)
+                        ).CountAsync();
+
+            context.Update(section);
+        }
+
+
+        /// <summary>
         /// regenerate poem full titles to fix an old bug
         /// </summary>
         /// <returns></returns>

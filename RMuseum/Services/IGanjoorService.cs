@@ -629,6 +629,13 @@ namespace RMuseum.Services
         RServiceResult<bool> StartFillingPoemsCoupletIndices();
 
         /// <summary>
+        /// fill section couplets count
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartFillingSectionCoupletCounts();
+
+
+        /// <summary>
         /// regenerate poem full titles to fix an old bug
         /// </summary>
         /// <returns></returns>
