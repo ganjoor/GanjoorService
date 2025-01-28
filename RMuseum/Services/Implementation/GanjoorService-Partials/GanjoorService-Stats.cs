@@ -334,7 +334,7 @@ namespace RMuseum.Services.Implementation
             coupletCountsList.Sort((a, b) => b.Count - a.Count);
             if(coupletCountsList.Count > 0 )
             {
-                htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار {poet.Nickname} به شرح زیر است (این آمار برای مثنوی‌ها که بخش‌بندی آنها ممکن است به سلیقهٔ گردآورنده صورت گرفته باشد):</p>{Environment.NewLine}";
+                htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار {poet.Nickname} به شرح زیر است (این آمار برای مثنوی‌ها که بخش‌بندی آنها ممکن است به سلیقهٔ گردآورنده صورت گرفته باشد بی‌معنی است):</p>{Environment.NewLine}";
 
                 htmlText += $"<table>{Environment.NewLine}" +
                     $"<tr class=\"h\">{Environment.NewLine}" +
@@ -660,7 +660,7 @@ namespace RMuseum.Services.Implementation
             coupletCountsList.Sort((a, b) => b.Count - a.Count);
             if (coupletCountsList.Count > 0)
             {
-                htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار این بخش به شرح زیر است (این آمار برای مثنوی‌ها که بخش‌بندی آنها ممکن است به سلیقهٔ گردآورنده صورت گرفته باشد):</p>{Environment.NewLine}";
+                htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار این بخش به شرح زیر است (این آمار برای مثنوی‌ها که بخش‌بندی آنها ممکن است به سلیقهٔ گردآورنده صورت گرفته باشد بی‌معنی است):</p>{Environment.NewLine}";
 
                 htmlText += $"<table>{Environment.NewLine}" +
                     $"<tr class=\"h\">{Environment.NewLine}" +
@@ -1097,7 +1097,7 @@ namespace RMuseum.Services.Implementation
                                         coupletCountsList.Sort((a, b) => b.Count - a.Count);
                                         if (coupletCountsList.Count > 0)
                                         {
-                                            htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار به شرح زیر است (این آمار برای مثنوی‌ها که بخش‌بندی آنها ممکن است به سلیقهٔ گردآورنده صورت گرفته باشد):</p>{Environment.NewLine}";
+                                            htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار به شرح زیر است (این آمار برای مثنوی‌ها که بخش‌بندی آنها ممکن است به سلیقهٔ گردآورنده صورت گرفته باشد بی‌معنی است):</p>{Environment.NewLine}";
 
                                             htmlText += $"<table>{Environment.NewLine}" +
                                                 $"<tr class=\"h\">{Environment.NewLine}" +
