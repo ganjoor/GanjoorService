@@ -101,6 +101,11 @@ namespace RMuseum.Models.Ganjoor
         public string Language { get; set; }
 
         /// <summary>
+        /// couplets count
+        /// </summary>
+        public int CoupletsCount { get; set; }
+
+        /// <summary>
         /// top 6 related sections
         /// </summary>
         [NotMapped]

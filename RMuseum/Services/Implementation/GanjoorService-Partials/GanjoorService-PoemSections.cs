@@ -337,6 +337,7 @@ namespace RMuseum.Services.Implementation
                             RhymeLetters = poem.RhymeLetters,
                             HtmlText = PrepareHtmlText(singleVerses),
                             PlainText = PreparePlainText(singleVerses),
+                            CoupletsCount = singleVerses.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count(),
                             PoemFormat = GanjoorPoemFormat.New,
                         };
                         context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
@@ -408,6 +409,7 @@ namespace RMuseum.Services.Implementation
                         RhymeLetters = poem.RhymeLetters,
                         HtmlText = PrepareHtmlText(singleVerses),
                         PlainText = PreparePlainText(singleVerses),
+                        CoupletsCount = singleVerses.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count(),
                         PoemFormat = GanjoorPoemFormat.New,
                     };
                     context.Add(mainSection);//having a main section for مثنوی inside normal text helps keep track of related versess
@@ -454,6 +456,7 @@ namespace RMuseum.Services.Implementation
                 RhymeLetters = poem.RhymeLetters,
                 HtmlText = PrepareHtmlText(nonCommentVerses),
                 PlainText = PreparePlainText(nonCommentVerses),
+                CoupletsCount = nonCommentVerses.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count(),
                 PoemFormat = GanjoorPoemFormat.MultiBand,
             };
             if (poem.FullTitle.Contains("ترجیع"))
@@ -506,6 +509,7 @@ namespace RMuseum.Services.Implementation
                         }
                         currentBandSection.RhymeLetters = LanguageUtils.FindRhyme(currentBandVerses).Rhyme;
                         currentBandSection.HtmlText = PrepareHtmlText(currentBandVerses);
+                        currentBandSection.CoupletsCount = currentBandVerses.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count();
                         currentBandSection.PlainText = PreparePlainText(currentBandVerses);
                         context.Add(currentBandSection);
 
@@ -533,6 +537,7 @@ namespace RMuseum.Services.Implementation
                     currentBandVerse.SectionIndex2 = currentBandSection.Index;
                 }
                 currentBandSection.RhymeLetters = LanguageUtils.FindRhyme(currentBandVerses).Rhyme;
+                currentBandSection.CoupletsCount = currentBandVerses.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count();
                 currentBandSection.HtmlText = PrepareHtmlText(currentBandVerses);
                 currentBandSection.PlainText = PreparePlainText(currentBandVerses);
                 context.Add(currentBandSection);
@@ -598,6 +603,7 @@ namespace RMuseum.Services.Implementation
                     var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
                     verseSection.HtmlText = PrepareHtmlText(rl);
                     verseSection.PlainText = PreparePlainText(rl);
+                    verseSection.CoupletsCount = rl.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count();
 
                     context.Add(verseSection);
                 }
@@ -608,6 +614,7 @@ namespace RMuseum.Services.Implementation
             }
             bandSection.HtmlText = PrepareHtmlText(bandVerses);
             bandSection.PlainText = PreparePlainText(bandVerses);
+            bandSection.CoupletsCount = bandVerses.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count();
             context.Add(mainSection);
             context.Add(bandSection);
             context.UpdateRange(nonCommentVerses);
@@ -628,6 +635,7 @@ namespace RMuseum.Services.Implementation
                 RhymeLetters = poem.RhymeLetters,
                 HtmlText = PrepareHtmlText(nonCommentVerses),
                 PlainText = PreparePlainText(nonCommentVerses),
+                CoupletsCount = nonCommentVerses.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count(),
                 PoemFormat = GanjoorPoemFormat.Unknown,
             };
             //checking for مثنوی phase 1
@@ -689,6 +697,7 @@ namespace RMuseum.Services.Implementation
                         var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
                         verseSection.HtmlText = PrepareHtmlText(rl);
                         verseSection.PlainText = PreparePlainText(rl);
+                        verseSection.CoupletsCount = rl.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count();
 
                         context.Add(verseSection);
                     }
@@ -1069,6 +1078,7 @@ namespace RMuseum.Services.Implementation
                                                    var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
                                                    verseSection.HtmlText = PrepareHtmlText(rl);
                                                    verseSection.PlainText = PreparePlainText(rl);
+                                                   verseSection.CoupletsCount = rl.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count();
 
                                                    context.Add(verseSection);
 

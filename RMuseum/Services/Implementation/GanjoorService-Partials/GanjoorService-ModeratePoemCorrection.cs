@@ -532,6 +532,7 @@ namespace RMuseum.Services.Implementation
                                     PlainText = mainSection.PlainText,
                                     PoemFormat = mainSection.PoemFormat,
                                 };
+                                secondMetreSection.CoupletsCount = poemVerses.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count();
                                 _context.Add(secondMetreSection);
                                 sections.Add(secondMetreSection);
 
@@ -561,6 +562,7 @@ namespace RMuseum.Services.Implementation
                                         PoemFormat = secondLevelSections.PoemFormat,
                                         GanjoorMetreRefSectionIndex = secondMetreSection.Index,
                                     };
+                                    newSection.CoupletsCount = poemVerses.Where(v => v.SectionIndex2 == secondLevelSections.Index && (v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1)).Count();
                                     _context.Add(newSection);
                                     sections.Add(newSection);
 

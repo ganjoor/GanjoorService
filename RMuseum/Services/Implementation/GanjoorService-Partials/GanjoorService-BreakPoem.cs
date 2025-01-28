@@ -326,6 +326,7 @@ namespace RMuseum.Services.Implementation
                         PoemFormat = section.PoemFormat,
                     };
                     var sectionVerses = FilterSectionVerses(sectionCopy, targetPoemVerses);
+                    sectionCopy.CoupletsCount = sectionVerses.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count();
                     sectionCopy.HtmlText = PrepareHtmlText(sectionVerses);
                     sectionCopy.PlainText = PreparePlainText(sectionVerses);
                     try
@@ -524,6 +525,7 @@ namespace RMuseum.Services.Implementation
                         PoemFormat = section.PoemFormat,
                     };
                     var sectionVerses = FilterSectionVerses(sectionCopy, targetPoemVerses);
+                    sectionCopy.CoupletsCount = sectionVerses.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count();
                     sectionCopy.HtmlText = PrepareHtmlText(sectionVerses);
                     sectionCopy.PlainText = PreparePlainText(sectionVerses);
                     try

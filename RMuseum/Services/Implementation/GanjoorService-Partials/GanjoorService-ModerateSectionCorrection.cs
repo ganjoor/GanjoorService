@@ -461,6 +461,7 @@ namespace RMuseum.Services.Implementation
             bool sectionCopyBecameMasnavi = false;
 
             var sectionCopyVerses = FilterSectionVerses(sectionCopy, verses);
+            sectionCopy.CoupletsCount = sectionCopyVerses.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count();
             sectionCopy.HtmlText = PrepareHtmlText(sectionCopyVerses);
             sectionCopy.PlainText = PreparePlainText(sectionCopyVerses);
             sectionCopy.RhymeLetters = LanguageUtils.FindRhyme(sectionCopyVerses).Rhyme;
@@ -539,6 +540,7 @@ namespace RMuseum.Services.Implementation
                         }
 
                         var relatedSectionCopyVerses = FilterSectionVerses(relatedSectionCopy, verses);
+                        relatedSectionCopy.CoupletsCount = relatedSectionCopyVerses.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count();
                         relatedSectionCopy.HtmlText = PrepareHtmlText(relatedSectionCopyVerses);
                         relatedSectionCopy.PlainText = PreparePlainText(relatedSectionCopyVerses);
                         relatedSectionCopy.RhymeLetters = LanguageUtils.FindRhyme(relatedSectionCopyVerses).Rhyme;
@@ -591,6 +593,7 @@ namespace RMuseum.Services.Implementation
                     leftVerse.SectionIndex2 = verseSection.Index;
 
                     var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
+                    verseSection.CoupletsCount = rl.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count();
                     verseSection.HtmlText = PrepareHtmlText(rl);
                     verseSection.PlainText = PreparePlainText(rl);
                     verseSection.Modified = true;
@@ -629,6 +632,7 @@ namespace RMuseum.Services.Implementation
                     leftVerse.SectionIndex2 = verseSection.Index;
 
                     var rl = new List<GanjoorVerse>(); rl.Add(rightVerse); rl.Add(leftVerse);
+                    verseSection.CoupletsCount = rl.Where(v => v.VersePosition == VersePosition.Left || v.VersePosition == VersePosition.CenteredVerse1).Count();
                     verseSection.HtmlText = PrepareHtmlText(rl);
                     verseSection.PlainText = PreparePlainText(rl);
                     verseSection.Modified = true;
