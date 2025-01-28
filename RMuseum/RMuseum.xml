@@ -1671,7 +1671,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetSimilarPoems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Int32,System.Int32,System.String,RMuseum.Models.Ganjoor.GanjoorPoemFormat,System.String)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetSimilarPoemsAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Int32,System.Int32,System.String,RMuseum.Models.Ganjoor.GanjoorPoemFormat,System.String,System.Int32,System.Int32)">
             <summary>
             Get Similar Poems accroding to prosody and rhyme informations
             </summary>
@@ -1683,6 +1683,8 @@
             <param name="language"></param>
             <param name="format"></param>
             <param name="term"></param>
+            <param name="coupletCountsFrom"></param>
+            <param name="coupletCountsTo"></param>
             <returns>return value is not complete or valid for some parts, you should use only the valid parts!</returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetLanguageTaggedPoemSections(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Int32)">
@@ -16151,7 +16153,7 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetSimilarPoems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,RMuseum.Models.Ganjoor.GanjoorPoemFormat,System.String)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetSimilarPoemsAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,RMuseum.Models.Ganjoor.GanjoorPoemFormat,System.String,System.Int32,System.Int32)">
             <summary>
             Get Similar Poems accroding to prosody and rhyme informations
             </summary>
@@ -16163,6 +16165,8 @@
             <param name="language"></param>
             <param name="format"></param>
             <param name="term"></param>
+            <param name="coupletCountsFrom"></param>
+            <param name="coupletCountsTo"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetLanguageTaggedPoemSections(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Nullable{System.Int32})">
@@ -20159,7 +20163,7 @@
             <param name="recitation"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetSimilarPoems(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,RMuseum.Models.Ganjoor.GanjoorPoemFormat,System.String)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetSimilarPoemsAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,RMuseum.Models.Ganjoor.GanjoorPoemFormat,System.String,System.Int32,System.Int32)">
             <summary>
             Get Similar Poems accroding to prosody and rhyme informations
             </summary>
@@ -20171,6 +20175,8 @@
             <param name="format"></param>
             <param name="catId"></param>
             <param name="term"></param>
+            <param name="coupletCountsFrom"></param>
+            <param name="coupletCountsTo"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLanguageTaggedPoemSections(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Nullable{System.Int32})">

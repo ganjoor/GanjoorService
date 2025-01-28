@@ -2547,8 +2547,10 @@ namespace RMuseum.Services.Implementation
         /// <param name="format"></param>
         /// <param name="catId"></param>
         /// <param name="term"></param>
+        /// <param name="coupletCountsFrom"></param>
+        /// <param name="coupletCountsTo"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoems(PagingParameterModel paging, string metre, string rhyme, int? poetId, int? catId, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown, string term = null)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoemsAsync(PagingParameterModel paging, string metre, string rhyme, int? poetId, int? catId, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown, string term = null, int coupletCountsFrom = 0, int coupletCountsTo = 0)
         {
             if (poetId == null)
             {
@@ -2596,6 +2598,10 @@ namespace RMuseum.Services.Implementation
                         (format == GanjoorPoemFormat.Unknown || s.PoemFormat == format)
                         &&
                         (catId == null || catIdList.Contains(s.Poem.CatId))
+                        &&
+                        (s.CoupletsCount >= coupletCountsFrom)
+                        &&
+                        (coupletCountsTo == 0 || s.CoupletsCount <= coupletCountsTo)
                         &&
                         (searchConditions == "" || (searchConditions != "" && EF.Functions.Contains(s.Poem.PlainText, searchConditions)))
                         )
