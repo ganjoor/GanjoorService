@@ -270,7 +270,12 @@
 
                                 }
                             </select>
-                            <label for="f" class="width-100per">کلیدواژه (جستجو در کل صفحهٔ شعر، برای جستجوی بهتر از <a href="/search?s=@Model.Query">صفحهٔ جستجو</a> استفاده کنید):</label>
+                            <label for="c1" class="width-100per">حداقل تعداد ابیات:</label>
+                            <input type="number" name="c1" id="c1" class="width-100per" value="@Model.CoupletCountsFrom" placeholder="حداقل تعداد ابیات" />
+                            <label for="c2" class="width-100per">حداکثر تعداد ابیات:</label>
+                            <input type="number" name="c2" id="c2" class="width-100per" value="@Model.CoupletCountsTo" placeholder="حداکثر تعداد ابیات" />
+
+                            <label class="width-100per">کلیدواژه (جستجو در کل صفحهٔ شعر، برای جستجوی بهتر از <a href="/search?s=@Model.Query">صفحهٔ جستجو</a> استفاده کنید):</label>
                             <input type="text" name="s" id="s" class="width-100per" value="@Model.Query" placeholder="کلیدواژه" />
                             @if (Model.ExactSearch)
                             {

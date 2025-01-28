@@ -72,6 +72,8 @@ namespace GanjooRazor.Pages
         public string CatFullUrl { get; set; }
         public string Metre { get; set; }
         public string Rhyme { get; set; }
+        public int CoupletCountsFrom { get; set; }
+        public int CoupletCountsTo { get; set; }
         public GanjoorLanguage[] Languages { get; set; }
         public GanjoorPoetCompleteViewModel Poet { get; set; }
         public List<GanjoorPoemCompleteViewModel> Poems { get; set; }
@@ -286,6 +288,24 @@ namespace GanjooRazor.Pages
                 Rhyme = Rhyme.Replace(" ", "");
             }
 
+            CoupletCountsFrom = 0;
+            if (!string.IsNullOrEmpty(Request.Query["c1"]))
+            {
+                if(int.TryParse(Request.Query["c1"], out int i))
+                {
+                    CoupletCountsFrom = i;
+                }
+            }
+
+            CoupletCountsTo = 0;
+            if (!string.IsNullOrEmpty(Request.Query["c2"]))
+            {
+                if (int.TryParse(Request.Query["c2"], out int i))
+                {
+                    CoupletCountsTo = i;
+                }
+            }
+
 
             if (!anyParamsGiven)
             {
@@ -324,6 +344,7 @@ namespace GanjooRazor.Pages
                 title += $" حروف قافیهٔ «{Rhyme}»";
             }
 
+
             if(Language != "fa-IR")
             {
                 var langModel = Languages.Where(l => l.Code == Language).FirstOrDefault();
@@ -338,7 +359,17 @@ namespace GanjooRazor.Pages
                 title += $" در قالب شعری «{GanjoorPoemFormatConvertor.GetString(Format)}»";
             }
 
-            if(CatId != 0)
+            if (CoupletCountsFrom != 0)
+            {
+                title += $" حداقل تعداد ابیات «{CoupletCountsFrom.ToPersianNumbers()}»";
+            }
+
+            if (CoupletCountsTo != 0)
+            {
+                title += $" حداکثر تعداد ابیات «{CoupletCountsTo.ToPersianNumbers()}»";
+            }
+
+            if (CatId != 0)
             {
                 var catResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{CatId}?poems=false&mainSections=false");
                 if (!catResponse.IsSuccessStatusCode)
@@ -372,7 +403,7 @@ namespace GanjooRazor.Pages
                 title += $" شامل کلیدواژهٔ «{Query}»";
             }
 
-            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={Metre}&rhyme={Rhyme}&poetId={PoetId}&catId={CatId}&language={Language}&format={(int)Format}";
+            string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={Metre}&rhyme={Rhyme}&poetId={PoetId}&catId={CatId}&language={Language}&format={(int)Format}&c1={CoupletCountsFrom}&c2={CoupletCountsTo}";
             if(!string.IsNullOrEmpty(Query))
             {
                 url += $"&term={Query}";
