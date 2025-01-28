@@ -83,7 +83,7 @@ namespace RMuseum.Services.Implementation
 
             Dictionary<int?, int> metreCounts = new Dictionary<int?, int>();
             int secondMetreCoupletCount = 0;
-            Dictionary<int, int> coupletCounts = new Dictionary<int, int>();
+            Dictionary<int, int> groupedCoupletCounts = new Dictionary<int, int>();
             foreach (var section in wholePoemSections)
             {
                 int coupletCount = await context.GanjoorVerses.AsNoTracking()
@@ -103,7 +103,7 @@ namespace RMuseum.Services.Implementation
                          )
                         ).CountAsync();//GanjoorPoemSection.CoupletsCount added later
 
-                if (coupletCounts.TryGetValue(coupletCount, out int groupedCoupletCount))
+                if (groupedCoupletCounts.TryGetValue(coupletCount, out int groupedCoupletCount))
                 {
                     groupedCoupletCount++;
                 }
@@ -111,7 +111,7 @@ namespace RMuseum.Services.Implementation
                 {
                     groupedCoupletCount = 1;
                 }
-                coupletCounts[coupletCount] = groupedCoupletCount;
+                groupedCoupletCounts[coupletCount] = groupedCoupletCount;
 
                 var metreId = section.GanjoorMetreId == null ? 0 : (int)section.GanjoorMetreId;
                 if (metreCounts.TryGetValue(metreId, out int sectionCoupletCount))
@@ -326,7 +326,7 @@ namespace RMuseum.Services.Implementation
 
 
             List<SectionCoupletCount> coupletCountsList = new List<SectionCoupletCount>();
-            foreach (var coupletCount in coupletCounts)
+            foreach (var coupletCount in groupedCoupletCounts)
             {
                 coupletCountsList.Add(new SectionCoupletCount() { CoupletCount = coupletCount.Key, Count = coupletCount.Value });
             }
@@ -395,11 +395,12 @@ namespace RMuseum.Services.Implementation
 
             var wholePoemSections = await context.GanjoorPoemSections.Include(v => v.Poem).ThenInclude(p => p.Cat).ThenInclude(c => c.Poet).AsNoTracking()
                                                 .Where(s => catIdList.Contains(s.Poem.CatId) && (string.IsNullOrEmpty(s.Language) || s.Language == "fa-IR") && s.Poem.Cat.Poet.Published && s.SectionType == PoemSectionType.WholePoem)
-                                                .Select(s => new { s.PoemId, s.Index, s.GanjoorMetreId, Versetype = s.VerseType })
+                                                .Select(s => new { s.PoemId, s.Index, s.GanjoorMetreId, s.VerseType })
                                                 .ToListAsync();
 
             Dictionary<int?, int> metreCounts = new Dictionary<int?, int>();
             int secondMetreCoupletCount = 0;
+            Dictionary<int, int> groupedCoupletCounts = new Dictionary<int, int>();
             foreach (var section in wholePoemSections)
             {
                 int coupletCount = await context.GanjoorVerses.AsNoTracking()
@@ -409,15 +410,25 @@ namespace RMuseum.Services.Implementation
                         (v.VersePosition == VersePosition.Right || v.VersePosition == VersePosition.CenteredVerse1)
                         &&
                          (
-                            (section.Versetype == VersePoemSectionType.First && v.SectionIndex1 == section.Index)
+                            (section.VerseType == VersePoemSectionType.First && v.SectionIndex1 == section.Index)
                             ||
-                            (section.Versetype == VersePoemSectionType.Second && v.SectionIndex2 == section.Index)
+                            (section.VerseType == VersePoemSectionType.Second && v.SectionIndex2 == section.Index)
                             ||
-                            (section.Versetype == VersePoemSectionType.Third && v.SectionIndex3 == section.Index)
+                            (section.VerseType == VersePoemSectionType.Third && v.SectionIndex3 == section.Index)
                             ||
-                            (section.Versetype == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index)
+                            (section.VerseType == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index)
                          )
-                        ).CountAsync();
+                        ).CountAsync();//GanjoorPoemSection.CoupletsCount added later
+                if (groupedCoupletCounts.TryGetValue(coupletCount, out int groupedCoupletCount))
+                {
+                    groupedCoupletCount++;
+                }
+                else
+                {
+                    groupedCoupletCount = 1;
+                }
+                groupedCoupletCounts[coupletCount] = groupedCoupletCount;
+
                 var metreId = section.GanjoorMetreId == null ? 0 : (int)section.GanjoorMetreId;
                 if (metreCounts.TryGetValue(metreId, out int sectionCoupletCount))
                 {
@@ -428,7 +439,7 @@ namespace RMuseum.Services.Implementation
                     sectionCoupletCount = coupletCount;
                 }
                 metreCounts[metreId] = sectionCoupletCount;
-                if (metreId != 0 && section.Versetype != VersePoemSectionType.First)
+                if (metreId != 0 && section.VerseType != VersePoemSectionType.First)
                 {
                     secondMetreCoupletCount += coupletCount;
                 }
@@ -640,10 +651,46 @@ namespace RMuseum.Services.Implementation
             }
             htmlText += $"</table>{Environment.NewLine}";
 
+            List<SectionCoupletCount> coupletCountsList = new List<SectionCoupletCount>();
+            foreach (var coupletCount in groupedCoupletCounts)
+            {
+                coupletCountsList.Add(new SectionCoupletCount() { CoupletCount = coupletCount.Key, Count = coupletCount.Value });
+            }
+            coupletCountsList.Sort((a, b) => b.Count - a.Count);
+            if (coupletCountsList.Count > 0)
+            {
+                htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار این بخش به شرح زیر است (این آمار برای مثنوی‌ها که بخش‌بندی آنها ممکن است به سلیقهٔ گردآورنده صورت گرفته باشد):</p>{Environment.NewLine}";
+
+                htmlText += $"<table>{Environment.NewLine}" +
+                    $"<tr class=\"h\">{Environment.NewLine}" +
+                    $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
+                    $"<td class=\"c2\">تعداد ابیات شعر</td>{Environment.NewLine}" +
+                    $"<td class=\"c3\">فراوانی</td>{Environment.NewLine}" +
+                    $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                    $"</tr>{Environment.NewLine}";
+
+                for (int i = 0; i < coupletCountsList.Count; i++)
+                {
+                    if (coupletCountsList[i].Count == 0) continue;
+                    if (i % 2 == 0)
+                        htmlText += $"<tr class=\"e\">{Environment.NewLine}";
+                    else
+                        htmlText += $"<tr>{Environment.NewLine}";
+
+                    htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"c2\"><a href=\"/simi/?a={poetId}&amp;c={catId}&amp;c1={coupletCountsList[i].CoupletCount}&amp;c2={coupletCountsList[i].CoupletCount}\">{coupletCountsList[i].CoupletCount.ToPersianNumbers()}</a></td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(coupletCountsList[i].Count)}</td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"c4\">{(coupletCountsList[i].Count * 100.0 / wholeCoupletsCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+
+                    htmlText += $"</tr>{Environment.NewLine}";
+                }
+                htmlText += $"</table>{Environment.NewLine}";
+            }
+
 
 
             //آمار شعرهای زیربخشها
-            
+
             var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).ToListAsync();
             
             subCats.Add(await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync());
