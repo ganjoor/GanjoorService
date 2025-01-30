@@ -512,61 +512,65 @@
 
                                 @if (Model.GanjoorPage.Poem.Verses.Any(v => !string.IsNullOrEmpty(v.CoupletSummary)))
                                 {
-                                    <div class="century" id="summaries" data-nosnippet>برگردان به زبان ساده</div>
-                                    @for (int verseIndex = 0; verseIndex < Model.GanjoorPage.Poem.Verses.Length; verseIndex++)
-                                    {
-                                        @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary))
+                                    <div id="summaries" data-nosnippet>
+                                        <div class="century">برگردان به زبان ساده</div>
+                                        @for (int verseIndex = 0; verseIndex < Model.GanjoorPage.Poem.Verses.Length; verseIndex++)
                                         {
-                                            <blockquote id="summary-@Model.GanjoorPage.Poem.Verses[verseIndex].VOrder">
-                                                @if (Model.GanjoorPage.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph)
-                                                {
-                                                    <p><a href="#bn@(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletIndex + 1)">#</a> @Model.GanjoorPage.Poem.Verses[verseIndex].Text</p>
-                                                }
-                                                else
-                                                {
-
-                                                    @for (int nIndex = verseIndex; nIndex < Model.GanjoorPage.Poem.Verses.Length &&
-
-                                                   (nIndex == verseIndex
-                                                   ||
-                                                   (
-                                                   Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Right
-                                                   && Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1
-                                                   && Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Paragraph
-                                                   ))
-                                                   ; nIndex++)
-                                                    {
-                                                        if (nIndex == verseIndex)
+                                            @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary))
+                                            {
+                                                <div id="summary-@Model.GanjoorPage.Poem.Verses[verseIndex].VOrder">
+                                                    <blockquote>
+                                                        @if (Model.GanjoorPage.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph)
                                                         {
-                                                            <p>
-                                                                <a href="#bn@(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletIndex + 1)">#</a> @Model.GanjoorPage.Poem.Verses[nIndex].Text
-                                                            </p>
+                                                            <p><a href="#bn@(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletIndex + 1)">#</a> @Model.GanjoorPage.Poem.Verses[verseIndex].Text</p>
                                                         }
                                                         else
                                                         {
-                                                            <p>
-                                                                @Model.GanjoorPage.Poem.Verses[nIndex].Text
-                                                            </p>
+
+                                                            @for (int nIndex = verseIndex; nIndex < Model.GanjoorPage.Poem.Verses.Length &&
+
+                                                           (nIndex == verseIndex
+                                                           ||
+                                                           (
+                                                           Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Right
+                                                           && Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1
+                                                           && Model.GanjoorPage.Poem.Verses[nIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Paragraph
+                                                           ))
+                                                           ; nIndex++)
+                                                            {
+                                                                if (nIndex == verseIndex)
+                                                                {
+                                                                    <p>
+                                                                        <a href="#bn@(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletIndex + 1)">#</a> @Model.GanjoorPage.Poem.Verses[nIndex].Text
+                                                                    </p>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <p>
+                                                                        @Model.GanjoorPage.Poem.Verses[nIndex].Text
+                                                                    </p>
+                                                                }
+
+                                                            }
+
+
                                                         }
-
-                                                    }
-
-
-                                                }
-                                            </blockquote>
-                                            <div class="notice">
-                                                <p>@Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary</p>
-                                                @if (Model.LoggedIn)
-                                                {
-                                                    <a href="@($"/User/Editor?id={Model.GanjoorPage.Id}#summary-{Model.GanjoorPage.Poem.Verses[verseIndex].VOrder}")" role="button" class="cursor-pointer" title="ویرایش">
-                                                        <div class="circled-number">
-                                                            <i class="notranslate noindent-info-button edit-poem-button"></i>
-                                                        </div>
-                                                    </a>
-                                                }
-                                            </div>
+                                                    </blockquote>
+                                                    <div class="notice">
+                                                        <p>@Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary</p>
+                                                        @if (Model.LoggedIn)
+                                                        {
+                                                            <a href="@($"/User/Editor?id={Model.GanjoorPage.Id}#summary-{Model.GanjoorPage.Poem.Verses[verseIndex].VOrder}")" role="button" class="cursor-pointer" title="ویرایش">
+                                                                <div class="circled-number">
+                                                                    <i class="notranslate noindent-info-button edit-poem-button"></i>
+                                                                </div>
+                                                            </a>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
                                         }
-                                    }
+                                    </div>
                                 }
 
                                 <a onclick="copyPoemText()" role="button" class="pagebutton comments-link" title="رونوشت متن">
