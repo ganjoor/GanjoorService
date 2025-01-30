@@ -331,6 +331,7 @@ namespace RMuseum.Services.Implementation
             int minCouplets = 100000;
             foreach (var coupletCount in groupedCoupletCounts)
             {
+                if (coupletCount.Key == 0) continue;
                 coupletCountsList.Add(new SectionCoupletCount() { CoupletCount = coupletCount.Key, Count = coupletCount.Value });
                 if(coupletCount.Key > maxCouplets)
                 {
@@ -667,6 +668,7 @@ namespace RMuseum.Services.Implementation
             int minCouplets = 100000;
             foreach (var coupletCount in groupedCoupletCounts)
             {
+                if (coupletCount.Key == 0) continue;
                 coupletCountsList.Add(new SectionCoupletCount() { CoupletCount = coupletCount.Key, Count = coupletCount.Value });
                 if (coupletCount.Key > maxCouplets)
                 {
@@ -1113,6 +1115,7 @@ namespace RMuseum.Services.Implementation
                                         List<SectionCoupletCount> coupletCountsList = new List<SectionCoupletCount>();
                                         foreach (var coupletCount in groupedCoupletCounts)
                                         {
+                                            if (coupletCount.Key == 0) continue;
                                             coupletCountsList.Add(new SectionCoupletCount() { CoupletCount = coupletCount.Key, Count = coupletCount.Value });
                                         }
                                         coupletCountsList.Sort((a, b) => b.Count - a.Count);
