@@ -336,6 +336,10 @@
                             <div class="sit">
                                 @Html.Raw(poem.HtmlText)
                             </div>
+                            <div>
+                                @($"{(poem.CoupletsCount ?? 0).ToPersianNumbers()} بیت")
+                            </div>
+
 
                             <img src="@($"{GanjooRazor.APIRoot.InternetUrl}{poem.Category.Poet.ImageUrl}")" alt="@($"{poem.Category.Poet.Nickname}")" />
 

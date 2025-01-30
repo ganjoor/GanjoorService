@@ -146,5 +146,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// poem is claimed by multiple poets
         /// </summary>
         public bool ClaimedByMultiplePoets { get; set; }
+
+        /// <summary>
+        /// couplets count
+        /// </summary>
+        public int? CoupletsCount { get; set; }
     }
 }

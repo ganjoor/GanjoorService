@@ -337,7 +337,8 @@ namespace RMuseum.Services.Implementation
                 }
             }
             coupletCountsList.Sort((a, b) => b.Count - a.Count);
-            if(coupletCountsList.Count > 0 )
+            int cc = coupletCountsList.Sum(c => c.Count);
+            if (coupletCountsList.Count > 0 && cc > 0)
             {
                 htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار {poet.Nickname} به شرح زیر است (بلندترین شعر شامل <a href=\"/simi/?a={poet.Id}&amp;c1={maxCouplets}&amp;c2={maxCouplets}\">{maxCouplets.ToPersianNumbers()}</a> بیت شعر است):</p>{Environment.NewLine}";
 
@@ -346,9 +347,8 @@ namespace RMuseum.Services.Implementation
                     $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                     $"<td class=\"c2\">تعداد ابیات شعر</td>{Environment.NewLine}" +
                     $"<td class=\"c3\">فراوانی</td>{Environment.NewLine}" +
-                    $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                    $"<td class=\"c4\">درصد از {LanguageUtils.FormatMoney(cc)} شعر</td>{Environment.NewLine}" +
                     $"</tr>{Environment.NewLine}";
-
                 for (int i = 0; i < coupletCountsList.Count; i++)
                 {
                     if (coupletCountsList[i].Count == 0) continue;
@@ -360,7 +360,7 @@ namespace RMuseum.Services.Implementation
                     htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
                     htmlText += $"<td class=\"c2\"><a href=\"/simi/?a={poet.Id}&amp;c1={coupletCountsList[i].CoupletCount}&amp;c2={coupletCountsList[i].CoupletCount}\">{coupletCountsList[i].CoupletCount.ToPersianNumbers()}</a></td>{Environment.NewLine}";
                     htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(coupletCountsList[i].Count)}</td>{Environment.NewLine}";
-                    htmlText += $"<td class=\"c4\">{(coupletCountsList[i].Count * 100.0 / wholeCoupletsCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"c4\">{(coupletCountsList[i].Count * 100.0 / cc).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
 
                     htmlText += $"</tr>{Environment.NewLine}";
                 }
@@ -668,7 +668,8 @@ namespace RMuseum.Services.Implementation
                 }
             }
             coupletCountsList.Sort((a, b) => b.Count - a.Count);
-            if (coupletCountsList.Count > 0)
+            int cc = coupletCountsList.Sum(c => c.Count);
+            if (coupletCountsList.Count > 0 && cc > 0)
             {
                 htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار این بخش به شرح زیر است (بلندترین شعر شامل <a href=\"/simi/?a={poetId}&amp;c={catId}&amp;c1={maxCouplets}&amp;c2={maxCouplets}\">{maxCouplets.ToPersianNumbers()}</a> بیت شعر است):</p>{Environment.NewLine}";
 
@@ -677,7 +678,7 @@ namespace RMuseum.Services.Implementation
                     $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                     $"<td class=\"c2\">تعداد ابیات شعر</td>{Environment.NewLine}" +
                     $"<td class=\"c3\">فراوانی</td>{Environment.NewLine}" +
-                    $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                    $"<td class=\"c4\">درصد از {LanguageUtils.FormatMoney(cc)} شعر</td>{Environment.NewLine}" +
                     $"</tr>{Environment.NewLine}";
 
                 for (int i = 0; i < coupletCountsList.Count; i++)
@@ -691,7 +692,7 @@ namespace RMuseum.Services.Implementation
                     htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
                     htmlText += $"<td class=\"c2\"><a href=\"/simi/?a={poetId}&amp;c={catId}&amp;c1={coupletCountsList[i].CoupletCount}&amp;c2={coupletCountsList[i].CoupletCount}\">{coupletCountsList[i].CoupletCount.ToPersianNumbers()}</a></td>{Environment.NewLine}";
                     htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(coupletCountsList[i].Count)}</td>{Environment.NewLine}";
-                    htmlText += $"<td class=\"c4\">{(coupletCountsList[i].Count * 100.0 / wholeCoupletsCount).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+                    htmlText += $"<td class=\"c4\">{(coupletCountsList[i].Count * 100.0 / cc).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
 
                     htmlText += $"</tr>{Environment.NewLine}";
                 }
@@ -1105,7 +1106,8 @@ namespace RMuseum.Services.Implementation
                                             coupletCountsList.Add(new SectionCoupletCount() { CoupletCount = coupletCount.Key, Count = coupletCount.Value });
                                         }
                                         coupletCountsList.Sort((a, b) => b.Count - a.Count);
-                                        if (coupletCountsList.Count > 0)
+                                        int cc = coupletCountsList.Sum(c => c.Count);
+                                        if (coupletCountsList.Count > 0 &&  cc> 0)
                                         {
                                             htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار به شرح زیر است:</p>{Environment.NewLine}";
 
@@ -1114,7 +1116,7 @@ namespace RMuseum.Services.Implementation
                                                 $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                                                 $"<td class=\"c2\">تعداد ابیات شعر</td>{Environment.NewLine}" +
                                                 $"<td class=\"c3\">فراوانی</td>{Environment.NewLine}" +
-                                                $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
+                                                $"<td class=\"c4\">درصد از {LanguageUtils.FormatMoney(cc)} شعر</td>{Environment.NewLine}" +
                                                 $"</tr>{Environment.NewLine}";
 
                                             for (int i = 0; i < coupletCountsList.Count; i++)
@@ -1128,7 +1130,7 @@ namespace RMuseum.Services.Implementation
                                                 htmlText += $"<td class=\"c1\">{(i + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
                                                 htmlText += $"<td class=\"c2\"><a href=\"/simi/?c1={coupletCountsList[i].CoupletCount}&amp;c2={coupletCountsList[i].CoupletCount}\">{coupletCountsList[i].CoupletCount.ToPersianNumbers()}</a></td>{Environment.NewLine}";
                                                 htmlText += $"<td class=\"c3\">{LanguageUtils.FormatMoney(coupletCountsList[i].Count)}</td>{Environment.NewLine}";
-                                                htmlText += $"<td class=\"c4\">{(coupletCountsList[i].Count * 100.0 / sumPoetsCouplets).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
+                                                htmlText += $"<td class=\"c4\">{(coupletCountsList[i].Count * 100.0 / cc).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers()}</td>{Environment.NewLine}";
 
                                                 htmlText += $"</tr>{Environment.NewLine}";
                                             }

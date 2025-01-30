@@ -2631,6 +2631,7 @@ namespace RMuseum.Services.Implementation
                         },
                         SectionIndex = section.Index,
                         ClaimedByMultiplePoets = section.Poem.ClaimedByMultiplePoets,
+                        CoupletsCount = section.CoupletsCount,
 
                     }
                 ).AsNoTracking();
