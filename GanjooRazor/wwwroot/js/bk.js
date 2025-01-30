@@ -589,6 +589,44 @@ function getPoemText() {
     return text;
 }
 
+function getSummeriesText() {
+    var all = $('#summaries').children();
+    var text = '';
+    for (var i = 0; i < all.length; i++) {
+        var element = all[i];
+        if (element.className == 'coupletsummary') {
+            var elementSubs = $('#' + element.id).children();
+            for (var j = 0; j < elementSubs.length; j++) {
+                var elementSub = elementSubs[j];
+                if (elementSub.nodeName == 'BLOCKQUOTE') {
+                    var quoteSubs = $('#' + elementSub.id).children();
+                    for (var k = 0; k < quoteSubs.length; k++) {
+                        if (quoteSubs[k].nodeName == 'P') {
+                            if (text != '')
+                                text += '\n';
+                            text += quoteSubs[k].innerText.replace('#', '').trim();
+                        }
+                    }
+                }
+                else
+                    if (elementSub.className == 'notice') {
+                        var noticeSubs = $('#' + elementSub.id).children();
+                        for (var k = 0; k < noticeSubs.length; k++) {
+                            if (noticeSubs[k].nodeName == 'P') {
+                                if (text != '') {
+                                    text += '\n\n';
+                                }
+                                text += noticeSubs[k].innerText;
+                                text += '\n\n\n';
+                            }
+                        }
+                }
+            }
+        }
+    }
+    return text;
+}
+
 async function webSharePoem() {
     var text = getPoemText();
     var title = document.title;
@@ -656,6 +694,11 @@ function copyCoupletText(coupletIndex) {
     alert('متن در حافظه رونوشت شد.');
 }
 
+function copySummeriesText() {
+    var text = getSummeriesText();
+    navigator.clipboard.writeText(text);
+    alert('متن در حافظه رونوشت شد.');
+}
 
 
 function wpopen(macagna) {
