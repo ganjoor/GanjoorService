@@ -1741,7 +1741,7 @@ function switchTab(evt, tabId) {
 } 
 
 function persianToEnglishNumber(str) {
-    str = str.replace('٬', '');
+    str = str.replace(/٬/g, '');
     const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
     return str.replace(/[۰-۹]/g, d => persianDigits.indexOf(d));
 }
