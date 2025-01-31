@@ -1646,6 +1646,7 @@ function loadWordCounts(catId, poetId, remStopWords) {
                 document.getElementById("percent-button").style.display = 'inline-block';
             }
             $(data).appendTo(divParent);
+            plotChart('words-stats');
         },
     });
 }
@@ -1696,6 +1697,7 @@ function countPoemWords(poemId) {
             document.getElementById("remove-this-wordcounts").remove();
             divParent.innerHTML = '<div id="wordcounts-placeholder"><div>'
             $(data).appendTo(divParent);
+            plotChart('words-stats');
         },
     });
 }
@@ -1724,6 +1726,103 @@ function switchTab(evt, tabId) {
     document.getElementById(tabId).style.display = "block";
     evt.currentTarget.className += " active";
 } 
+
+function persianToEnglishNumber(str) {
+    str = str.replace('٬', '');
+    const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+    return str.replace(/[۰-۹]/g, d => persianDigits.indexOf(d));
+}
+
+function plotChart(tableId) {
+    let table = document.getElementById(tableId);
+    if (!table) return;
+
+    let labels = [];
+    let values = [];
+
+    let headerCols = table.querySelector("thead tr").children;
+    let xTitle = headerCols[1].innerText.trim();
+    let yTitle = headerCols[2].innerText.trim();
+    table.querySelectorAll("tbody tr").forEach(row => {
+        let cols = row.querySelectorAll("td");
+        if (cols.length >= 3) {
+            if (values.length > 9) return;
+            let rowNumber = persianToEnglishNumber(cols[0].innerText.trim());
+            if (rowNumber === "0") return; // Ignore rows with row number ۰
+
+            let xValue = persianToEnglishNumber(cols[1].innerText.trim());
+            let yValue = persianToEnglishNumber(cols[2].innerText.trim());
+
+            labels.push(xValue);
+            values.push(parseInt(yValue));
+            
+
+        }
+    });
+
+    let existingCanvas = document.getElementById(`chart-${tableId}`);
+    if (existingCanvas) {
+        existingCanvas.remove();
+    }
+
+    let canvas = document.createElement("canvas");
+    canvas.id = `chart-${tableId}`;
+    table.parentNode.insertBefore(canvas, table.nextSibling);
+
+    new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: yTitle,
+                data: values,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: xTitle,
+                        font: { family: 'Vazir', size: 14 }
+                    },
+                    ticks: {
+                        font: { family: 'Vazir', size: 12 }
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: yTitle,
+                        font: { family: 'Vazir', size: 14 }
+                    },
+                    ticks: {
+                        font: { family: 'Vazir', size: 12 }
+                    },
+                    beginAtZero: true,
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        font: { family: 'Vazir', size: 12 }
+                    }
+                },
+                tooltip: {
+                    bodyFont: { family: 'Vazir', size: 12 },
+                    titleFont: { family: 'Vazir', size: 14 }
+                }
+            },
+            layout: {
+                padding: 10
+            }
+        }
+    });
+}
 
 
 
