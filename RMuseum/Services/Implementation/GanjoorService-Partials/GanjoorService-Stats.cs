@@ -497,7 +497,7 @@ namespace RMuseum.Services.Implementation
 
             htmlText += $"</div>{Environment.NewLine}";
 
-            htmlText += $"<table>{Environment.NewLine}" +
+            htmlText += $"<table  class=\"stats\" id=\"rhymes-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
                                             $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                                             $"<td class=\"c2\">وزن</td>{Environment.NewLine}" +
