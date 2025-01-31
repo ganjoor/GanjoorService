@@ -171,9 +171,9 @@
                     if (recitation.InSyncWithText)
                     {
                         <text>
-                                    narrators.push('@Html.Raw(recitation.AudioArtist)');
-                                    audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
-                                    recitaionIds.push(@recitation.Id);
+                                            narrators.push('@Html.Raw(recitation.AudioArtist)');
+                                            audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
+                                            recitaionIds.push(@recitation.Id);
                         </text>
                     }
                 }
@@ -323,7 +323,14 @@
 
     }
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll("table.stats").forEach(table => {
+                plotChart(table.getAttribute("id"));
+            });
+        });
 
+    </script>
 
 </body>
 </html>

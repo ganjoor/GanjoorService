@@ -1638,15 +1638,19 @@ function loadWordCounts(catId, poetId, remStopWords) {
         type: "GET",
         url: '?Handler=CategoryWordCounts&catId=' + String(catId) + '&poetId=' + String(poetId) + '&remStopWords=' + remStopWords.toString(),
         error: function () {
-            document.getElementById("remove-this-wordcounts").remove();
+            if (document.getElementById("remove-this-wordcounts") != null) {
+                document.getElementById("remove-this-wordcounts").remove();
+            }
         },
         success: function (data) {
-            document.getElementById("remove-this-wordcounts").remove();
-            if (document.getElementById("load-word-counts") != null) {
-                document.getElementById("percent-button").style.display = 'inline-block';
+            if (document.getElementById("remove-this-wordcounts") != null) {
+                document.getElementById("remove-this-wordcounts").remove();
+                if (document.getElementById("load-word-counts") != null) {
+                    document.getElementById("percent-button").style.display = 'inline-block';
+                }
+                $(data).appendTo(divParent);
+                plotChart('words-stats');
             }
-            $(data).appendTo(divParent);
-            plotChart('words-stats');
         },
     });
 }
@@ -1667,11 +1671,16 @@ function onSearchWordCounts(catId, poetId, totalWordCount) {
             type: "GET",
             url: '?Handler=SearchCategoryWordCounts&catId=' + String(catId) + '&poetId=' + String(poetId) + '&totalWordCount=' + String(totalWordCount) + '&term=' + value,
             error: function () {
-                document.getElementById("remove-this-wordcounts").remove();
+                if (document.getElementById("remove-this-wordcounts") != null) {
+                    document.getElementById("remove-this-wordcounts").remove();
+                }
             },
             success: function (data) {
-                document.getElementById("remove-this-wordcounts").remove();
-                $(data).appendTo(divParent);
+                if (document.getElementById("remove-this-wordcounts") != null) {
+                    document.getElementById("remove-this-wordcounts").remove();
+                    $(data).appendTo(divParent);
+                    plotChart('words-stats');
+                }
             },
         });
 
@@ -1691,13 +1700,17 @@ function countPoemWords(poemId) {
         type: "GET",
         url: '?Handler=PoemWordCounts&poemId=' + String(poemId),
         error: function () {
-            document.getElementById("remove-this-wordcounts").remove();
+            if (document.getElementById("remove-this-wordcounts") != null) {
+                document.getElementById("remove-this-wordcounts").remove();
+            }
         },
         success: function (data) {
-            document.getElementById("remove-this-wordcounts").remove();
-            divParent.innerHTML = '<div id="wordcounts-placeholder"><div>'
-            $(data).appendTo(divParent);
-            plotChart('words-stats');
+            if (document.getElementById("remove-this-wordcounts") != null) {
+                document.getElementById("remove-this-wordcounts").remove();
+                divParent.innerHTML = '<div id="wordcounts-placeholder"><div>'
+                $(data).appendTo(divParent);
+                plotChart('words-stats');
+            }
         },
     });
 }
@@ -1808,14 +1821,8 @@ function plotChart(tableId) {
             },
             plugins: {
                 legend: {
-                    labels: {
-                        font: { family: 'Vazir', size: 12 }
-                    }
+                    display: false,
                 },
-                tooltip: {
-                    bodyFont: { family: 'Vazir', size: 12 },
-                    titleFont: { family: 'Vazir', size: 14 }
-                }
             },
             layout: {
                 padding: 10
