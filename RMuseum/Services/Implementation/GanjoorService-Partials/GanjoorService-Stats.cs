@@ -159,13 +159,13 @@ namespace RMuseum.Services.Implementation
             {
                 htmlText += $"<p>در {LanguageUtils.FormatMoney(secondMetreCoupletCount)} مورد ابیات به لحاظ چند وزنی بودن در جدول اوزان بیش از یک بار محاسبه شده‌اند و جمع آمار ناخالص ابیات با احتساب چندبارهٔ ابیات چندوزنی در جمع فهرست اوزان برابر {LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت است که در محاسبهٔ نسبت درصد از کل استفاده شده است):</p>";
             }
-            htmlText += $"<table>{Environment.NewLine}" +
+            htmlText += $"<table class=\"stats\" id=\"rhythms-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
                                             $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                                             $"<td class=\"c2\">وزن</td>{Environment.NewLine}" +
                                             $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
                                             $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
-                                            $"</tr>{Environment.NewLine}";
+                                            $"</tr>{Environment.NewLine}</thead>{Environment.NewLine}<tbody>{Environment.NewLine}";
 
             for (int i = 0; i < rhythmsCoupletCounts.Count; i++)
             {
@@ -185,7 +185,7 @@ namespace RMuseum.Services.Implementation
 
                 htmlText += $"</tr>{Environment.NewLine}";
             }
-            htmlText += $"</table>{Environment.NewLine}";
+            htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
 
             if (sumRhythmsCouplets != wholeCoupletsCount)
             {
@@ -230,13 +230,13 @@ namespace RMuseum.Services.Implementation
                 {
                     htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ {poet.Nickname} با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
 
-                    htmlText += $"<table>{Environment.NewLine}" +
+                    htmlText += $"<table  class=\"stats\" id=\"langs-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                         $"<tr class=\"h\">{Environment.NewLine}" +
                         $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                         $"<td class=\"c2\">زبان</td>{Environment.NewLine}" +
                         $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
                         $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
-                        $"</tr>{Environment.NewLine}";
+                        $"</tr>{Environment.NewLine}</thead>{Environment.NewLine}<tbody>{Environment.NewLine}";
 
                     for (int i = 0; i < languagesCoupletsCountsUnprocessed.Count; i++)
                     {
@@ -254,7 +254,7 @@ namespace RMuseum.Services.Implementation
 
                         htmlText += $"</tr>{Environment.NewLine}";
                     }
-                    htmlText += $"</table>{Environment.NewLine}";
+                    htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
                 }
             }
 
@@ -300,13 +300,13 @@ namespace RMuseum.Services.Implementation
 
             htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ {poet.Nickname} با قالب شعری در گنجور به شرح زیر است:</p>{Environment.NewLine}";
 
-            htmlText += $"<table>{Environment.NewLine}" +
+            htmlText += $"<table  class=\"stats\" id=\"formats-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                 $"<tr class=\"h\">{Environment.NewLine}" +
                 $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                 $"<td class=\"c2\">قالب شعری</td>{Environment.NewLine}" +
                 $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
                 $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
-                $"</tr>{Environment.NewLine}";
+                $"</tr>{Environment.NewLine}</thead>{Environment.NewLine}<tbody>{Environment.NewLine}";
 
             for (int i = 0; i < formatCoupletsCountsUnprocessed.Count; i++)
             {
@@ -323,7 +323,7 @@ namespace RMuseum.Services.Implementation
 
                 htmlText += $"</tr>{Environment.NewLine}";
             }
-            htmlText += $"</table>{Environment.NewLine}";
+            htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
 
 
             List<SectionCoupletCount> coupletCountsList = new List<SectionCoupletCount>();
@@ -348,13 +348,13 @@ namespace RMuseum.Services.Implementation
             {
                 htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار {poet.Nickname} به شرح زیر است (بلندترین شعر شامل <a href=\"/simi/?a={poet.Id}&amp;c1={maxCouplets}&amp;c2={maxCouplets}\">{maxCouplets.ToPersianNumbers()}</a> بیت و کوتاه‌ترین شامل <a href=\"/simi/?a={poet.Id}&amp;c1={minCouplets}&amp;c2={minCouplets}\">{minCouplets.ToPersianNumbers()}</a> بیت شعر است):</p>{Environment.NewLine}";
 
-                htmlText += $"<table>{Environment.NewLine}" +
+                htmlText += $"<table  class=\"stats\" id=\"couplets-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                     $"<tr class=\"h\">{Environment.NewLine}" +
                     $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                     $"<td class=\"c2\">تعداد ابیات شعر</td>{Environment.NewLine}" +
                     $"<td class=\"c3\">فراوانی</td>{Environment.NewLine}" +
                     $"<td class=\"c4\">درصد از {LanguageUtils.FormatMoney(cc)} شعر</td>{Environment.NewLine}" +
-                    $"</tr>{Environment.NewLine}";
+                    $"</tr>{Environment.NewLine}</thead>{Environment.NewLine}<tbody>{Environment.NewLine}";
                 for (int i = 0; i < coupletCountsList.Count; i++)
                 {
                     if (coupletCountsList[i].Count == 0) continue;
@@ -370,7 +370,7 @@ namespace RMuseum.Services.Implementation
 
                     htmlText += $"</tr>{Environment.NewLine}";
                 }
-                htmlText += $"</table>{Environment.NewLine}";
+                htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
             }
 
 
@@ -497,13 +497,13 @@ namespace RMuseum.Services.Implementation
 
             htmlText += $"</div>{Environment.NewLine}";
 
-            htmlText += $"<table  class=\"stats\" id=\"rhymes-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
+            htmlText += $"<table  class=\"stats\" id=\"rhythms-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
                                             $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                                             $"<td class=\"c2\">وزن</td>{Environment.NewLine}" +
                                             $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
                                             $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
-                                            $"</tr>{Environment.NewLine}";
+                                            $"</tr>{Environment.NewLine}</thead>{Environment.NewLine}<tbody>{Environment.NewLine}";
 
             for (int i = 0; i < rhythmsCoupletCounts.Count; i++)
             {
@@ -523,7 +523,7 @@ namespace RMuseum.Services.Implementation
 
                 htmlText += $"</tr>{Environment.NewLine}";
             }
-            htmlText += $"</table>{Environment.NewLine}";
+            htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
 
             if (sumRhythmsCouplets != wholeCoupletsCount)
             {
@@ -568,13 +568,13 @@ namespace RMuseum.Services.Implementation
                 {
                     htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ این بخش با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
 
-                    htmlText += $"<table>{Environment.NewLine}" +
+                    htmlText += $"<table  class=\"stats\" id=\"langs-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                         $"<tr class=\"h\">{Environment.NewLine}" +
                         $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                         $"<td class=\"c2\">زبان</td>{Environment.NewLine}" +
                         $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
                         $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
-                        $"</tr>{Environment.NewLine}";
+                        $"</tr>{Environment.NewLine}</thead>{Environment.NewLine}<tbody>{Environment.NewLine}";
 
                     for (int i = 0; i < languagesCoupletsCountsUnprocessed.Count; i++)
                     {
@@ -592,7 +592,7 @@ namespace RMuseum.Services.Implementation
 
                         htmlText += $"</tr>{Environment.NewLine}";
                     }
-                    htmlText += $"</table>{Environment.NewLine}";
+                    htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
                 }
             }
 
@@ -638,13 +638,13 @@ namespace RMuseum.Services.Implementation
 
             htmlText += $"<p>آمار ابیات برچسب‌گذاری شدهٔ این بخش با قالب شعری در گنجور به شرح زیر است:</p>{Environment.NewLine}";
 
-            htmlText += $"<table>{Environment.NewLine}" +
+            htmlText += $"<table  class=\"stats\" id=\"formats-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                 $"<tr class=\"h\">{Environment.NewLine}" +
                 $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                 $"<td class=\"c2\">قالب شعری</td>{Environment.NewLine}" +
                 $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
                 $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
-                $"</tr>{Environment.NewLine}";
+                $"</tr>{Environment.NewLine}</thead>{Environment.NewLine}<tbody>{Environment.NewLine}";
 
             for (int i = 0; i < formatCoupletsCountsUnprocessed.Count; i++)
             {
@@ -661,7 +661,7 @@ namespace RMuseum.Services.Implementation
 
                 htmlText += $"</tr>{Environment.NewLine}";
             }
-            htmlText += $"</table>{Environment.NewLine}";
+            htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
 
             List<SectionCoupletCount> coupletCountsList = new List<SectionCoupletCount>();
             int maxCouplets = 0;
@@ -685,13 +685,13 @@ namespace RMuseum.Services.Implementation
             {
                 htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار این بخش به شرح زیر است (بلندترین شعر شامل <a href=\"/simi/?a={poetId}&amp;c={catId}&amp;c1={maxCouplets}&amp;c2={maxCouplets}\">{maxCouplets.ToPersianNumbers()}</a> بیت و کوتاه‌ترین شامل <a href=\"/simi/?a={poetId}&amp;c={catId}&amp;c1={minCouplets}&amp;c2={minCouplets}\">{minCouplets.ToPersianNumbers()}</a> بیت شعر است):</p>{Environment.NewLine}";
 
-                htmlText += $"<table>{Environment.NewLine}" +
+                htmlText += $"<table  class=\"stats\" id=\"couplets-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                     $"<tr class=\"h\">{Environment.NewLine}" +
                     $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                     $"<td class=\"c2\">تعداد ابیات شعر</td>{Environment.NewLine}" +
                     $"<td class=\"c3\">فراوانی</td>{Environment.NewLine}" +
                     $"<td class=\"c4\">درصد از {LanguageUtils.FormatMoney(cc)} شعر</td>{Environment.NewLine}" +
-                    $"</tr>{Environment.NewLine}";
+                    $"</tr>{Environment.NewLine}</thead>{Environment.NewLine}<tbody>{Environment.NewLine}";
 
                 for (int i = 0; i < coupletCountsList.Count; i++)
                 {
@@ -708,7 +708,7 @@ namespace RMuseum.Services.Implementation
 
                     htmlText += $"</tr>{Environment.NewLine}";
                 }
-                htmlText += $"</table>{Environment.NewLine}";
+                htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
             }
 
 
@@ -789,15 +789,15 @@ namespace RMuseum.Services.Implementation
                     htmlText += " (بخش‌هایی که در این جدول نیامده‌اند فاقد شعر بوده‌اند)";
                 }
                 htmlText += $":</p>{Environment.NewLine}";
-                htmlText += $"<table>{Environment.NewLine}" +
+                htmlText += $"<table  class=\"stats\" id=\"cats-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                        $"<tr class=\"h\">{Environment.NewLine}" +
                        $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                        $"<td class=\"c2\">بخش</td>{Environment.NewLine}" +
                        $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
                        $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
-                       $"</tr>{Environment.NewLine}";
+                       $"</tr>{Environment.NewLine}</thead>{Environment.NewLine}<tbody>{Environment.NewLine}";
                 htmlText += subCatsHtmlText;
-                htmlText += $"</table>{Environment.NewLine}";
+                htmlText += $"</thead>{Environment.NewLine}</table>{Environment.NewLine}";
             }
 
 
@@ -992,13 +992,13 @@ namespace RMuseum.Services.Implementation
                                         string htmlText = $"<p>تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} مجموعاً {LanguageUtils.FormatMoney(sumPoetsCouplets)} بیت شعر از طریق سایت گنجور در دسترس قرار گرفته است. در جدول زیر که سخنوران در آنها بر اساس تعداد ابیات اشعارشان به صورت نزولی مرتب شده‌اند با کلیک بر روی نام هر سخنور می‌توانید آمار اوزان اشعار او را مشاهده کنید.</p>{Environment.NewLine}";
                                         htmlText += $"<p>توجه فرمایید که این آمار به دلایلی از قبیل وجود چند نسخه از آثار شعرا در گنجور (مثل آثار خیام)، یک بیت محسوب شدن مصرع‌های بند قالبهای ترکیبی مثل مخمس‌ها و همینطور این که اشعار نقل شده از سخنوران دیگر در تذکره‌ها و کتابهایی مانند آن به نام مؤلف نقل‌کنندهٔ شعر ثبت شده تقریبی و حدودی است و افزونگی دارد.</p>{Environment.NewLine}";
 
-                                        htmlText += $"<table>{Environment.NewLine}" +
+                                        htmlText += $"<table  class=\"stats\" id=\"poets-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
                                             $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                                             $"<td class=\"c2\">سخنور</td>{Environment.NewLine}" +
                                             $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
                                             $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
-                                            $"</tr>{Environment.NewLine}";
+                                            $"</tr>{Environment.NewLine}</thead>{Environment.NewLine}<tbody>{Environment.NewLine}";
 
                                         for (int i = 0; i < poetsCoupletCounts.Count; i++)
                                         {
@@ -1014,17 +1014,17 @@ namespace RMuseum.Services.Implementation
 
                                             htmlText += $"</tr>{Environment.NewLine}";
                                         }
-                                        htmlText += $"</table>{Environment.NewLine}";
+                                        htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
 
                                         htmlText += $"<p>آمار ابیات برچسب‌گذاری شده با زبان غالب شعر در گنجور به شرح زیر است:</p>{Environment.NewLine}";
 
-                                        htmlText += $"<table>{Environment.NewLine}" +
+                                        htmlText += $"<table  class=\"stats\" id=\"langs-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
                                             $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                                             $"<td class=\"c2\">زبان</td>{Environment.NewLine}" +
                                             $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
                                             $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
-                                            $"</tr>{Environment.NewLine}";
+                                            $"</tr>{Environment.NewLine}</thead>{Environment.NewLine}<tbody>{Environment.NewLine}";
 
                                         for (int i = 0; i < languagesCoupletsCountsUnprocessed.Count; i++)
                                         {
@@ -1042,17 +1042,17 @@ namespace RMuseum.Services.Implementation
 
                                             htmlText += $"</tr>{Environment.NewLine}";
                                         }
-                                        htmlText += $"</table>{Environment.NewLine}";
+                                        htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
 
                                         htmlText += $"<p>آمار ابیات برچسب‌گذاری شده با قالب شعری در گنجور به شرح زیر است:</p>{Environment.NewLine}";
 
-                                        htmlText += $"<table>{Environment.NewLine}" +
+                                        htmlText += $"<table  class=\"stats\" id=\"formats-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
                                             $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                                             $"<td class=\"c2\">قالب شعری</td>{Environment.NewLine}" +
                                             $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
                                             $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
-                                            $"</tr>{Environment.NewLine}";
+                                            $"</tr>{Environment.NewLine}</thead>{Environment.NewLine}<tbody>{Environment.NewLine}";
 
                                         for (int i = 0; i < formatCoupletsCountsUnprocessed.Count; i++)
                                         {
@@ -1069,7 +1069,7 @@ namespace RMuseum.Services.Implementation
 
                                             htmlText += $"</tr>{Environment.NewLine}";
                                         }
-                                        htmlText += $"</table>{Environment.NewLine}";
+                                        htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
 
 
 
@@ -1077,13 +1077,13 @@ namespace RMuseum.Services.Implementation
 
                                         htmlText += $"<p>فهرست زیر نیز آمار {LanguageUtils.FormatMoney(sumRhythmsCouplets)} بیت شعر فارسی گنجور را از لحاظ اوزان عروضی نشان می‌دهد (از این تعداد {LanguageUtils.FormatMoney(secondMetreCoupletCount)} بیت به لحاظ چند وزنی بودن بیش از یک بار محاسبه شده‌اند و آمار خالص ابیات در فهرست اوزان برابر {LanguageUtils.FormatMoney(sumRhythmsCouplets - secondMetreCoupletCount)} بیت است):</p>{Environment.NewLine}";
 
-                                        htmlText += $"<table>{Environment.NewLine}" +
+                                        htmlText += $"<table  class=\"stats\" id=\"rhyhtms-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                                             $"<tr class=\"h\">{Environment.NewLine}" +
                                             $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                                             $"<td class=\"c2\">وزن</td>{Environment.NewLine}" +
                                             $"<td class=\"c3\">تعداد ابیات</td>{Environment.NewLine}" +
                                             $"<td class=\"c4\">درصد از کل</td>{Environment.NewLine}" +
-                                            $"</tr>{Environment.NewLine}";
+                                            $"</tr>{Environment.NewLine}</thead>{Environment.NewLine}<tbody>{Environment.NewLine}";
 
                                         for (int i = 0; i < rhythmsCoupletCounts.Count; i++)
                                         {
@@ -1109,7 +1109,7 @@ namespace RMuseum.Services.Implementation
 
                                             htmlText += $"</tr>{Environment.NewLine}";
                                         }
-                                        htmlText += $"</table>{Environment.NewLine}";
+                                        htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
 
 
                                         List<SectionCoupletCount> coupletCountsList = new List<SectionCoupletCount>();
@@ -1124,13 +1124,13 @@ namespace RMuseum.Services.Implementation
                                         {
                                             htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار به شرح زیر است:</p>{Environment.NewLine}";
 
-                                            htmlText += $"<table>{Environment.NewLine}" +
+                                            htmlText += $"<table  class=\"stats\" id=\"couplets-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                                                 $"<tr class=\"h\">{Environment.NewLine}" +
                                                 $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                                                 $"<td class=\"c2\">تعداد ابیات شعر</td>{Environment.NewLine}" +
                                                 $"<td class=\"c3\">فراوانی</td>{Environment.NewLine}" +
                                                 $"<td class=\"c4\">درصد از {LanguageUtils.FormatMoney(cc)} شعر</td>{Environment.NewLine}" +
-                                                $"</tr>{Environment.NewLine}";
+                                                $"</tr>{Environment.NewLine}</thead>{Environment.NewLine}<tbody>{Environment.NewLine}";
 
                                             for (int i = 0; i < coupletCountsList.Count; i++)
                                             {
@@ -1147,7 +1147,7 @@ namespace RMuseum.Services.Implementation
 
                                                 htmlText += $"</tr>{Environment.NewLine}";
                                             }
-                                            htmlText += $"</table>{Environment.NewLine}";
+                                            htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
                                         }
 
                                         await context.SaveChangesAsync();//store rhythm[s].VerseCount
