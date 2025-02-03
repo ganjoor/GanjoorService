@@ -1284,7 +1284,7 @@ namespace GanjooRazor.Pages
             }
         }
 
-        public async Task<ActionResult> OnDeleteRelatedImageLinkAsync(PoemRelatedImageType relatedImageType, Guid linkId)
+        public async Task<ActionResult> OnDeleteRelatedImageLinkAsync(PoemRelatedImageType relatedImageType, Guid linkId, bool removeItemLink)
         {
             using (HttpClient secureClient = new HttpClient())
             {
@@ -1292,7 +1292,7 @@ namespace GanjooRazor.Pages
                 {
                     HttpResponseMessage response = await secureClient.DeleteAsync(
                         relatedImageType == PoemRelatedImageType.MuseumLink ?
-                        $"{APIRoot.Url}/api/artifacts/ganjoor?linkId={linkId}"
+                        $"{APIRoot.Url}/api/artifacts/ganjoor?linkId={linkId}&removeItemLink={removeItemLink}"
                         :
                         $"{APIRoot.Url}/api/artifacts/pinterest?linkId={linkId}"
                         );

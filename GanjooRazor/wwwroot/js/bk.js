@@ -1587,6 +1587,13 @@ function markAsTextOriginal(bookId, categoryId, bookName, catName) {
 function deleteRelatedImage(relatedImageType, linkId, altText) {
     if (!confirm('آیا از قطع ارتباط ' + altText + ' با این بخش اطمینان دارید؟'))
         return;
+    var removeItemLink = false;
+    if (relatedImageType == 0) {
+        if (!confirm('لینک از طرف گنجینه هم قطع شود؟')) {
+            removeItemLink = true;
+        }
+            
+    }
     var url = '?handler=RelatedImageLink';
 
     $.ajax({
@@ -1594,7 +1601,8 @@ function deleteRelatedImage(relatedImageType, linkId, altText) {
         url: url,
         data: {
             relatedImageType: relatedImageType,
-            linkId: linkId
+            linkId: linkId,
+            removeItemLink: removeItemLink
         },
         error: function (err) {
             alert('RelatedImageLink: ' + err.toString());
