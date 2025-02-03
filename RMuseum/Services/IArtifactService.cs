@@ -496,8 +496,9 @@ namespace RMuseum.Services
         /// remove ganjoor link
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="removeItemLink"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> RemoveGanjoorLinkAsync(Guid id);
+        Task<RServiceResult<bool>> RemoveGanjoorLinkAsync(Guid id, bool removeItemLink);
 
         /// <summary>
         /// Temporary api

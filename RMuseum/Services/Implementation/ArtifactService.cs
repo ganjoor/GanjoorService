@@ -3083,8 +3083,9 @@ namespace RMuseum.Services.Implementation
         /// remove ganjoor link
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="removeItemLink"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<bool>> RemoveGanjoorLinkAsync(Guid id)
+        public async Task<RServiceResult<bool>> RemoveGanjoorLinkAsync(Guid id, bool removeItemLink)
         {
             try
             {
@@ -3092,34 +3093,37 @@ namespace RMuseum.Services.Implementation
                     await _context.GanjoorLinks
                     .Where(l => l.Id == id)
                     .SingleAsync();
-                GanjoorPoem poem = await _context.GanjoorPoems.AsNoTracking().Where(p => p.Id == link.GanjoorPostId).SingleOrDefaultAsync();
-                if (poem != null)
+                if(removeItemLink)
                 {
-                    var item = await _context.Items.Include(i => i.Tags).Where(i => i.Id == link.ItemId).SingleAsync();
-                    bool itemNeedsUpdate = false;
-                    RTag ganjoorlinkTagType = await _context.Tags.AsNoTracking().Where(a => a.NameInEnglish == "Ganjoor Link").SingleAsync();
-                    if (item.Tags.Any(t => t.RTagId == ganjoorlinkTagType.Id && t.ValueSupplement == $"https://ganjoor.net{poem.FullUrl}"))
+                    GanjoorPoem poem = await _context.GanjoorPoems.AsNoTracking().Where(p => p.Id == link.GanjoorPostId).SingleOrDefaultAsync();
+                    if (poem != null)
                     {
-                        var tags = item.Tags.Where(t => t.RTagId == ganjoorlinkTagType.Id && t.ValueSupplement == $"https://ganjoor.net{poem.FullUrl}").ToList();
-                        foreach (var tag in tags)
+                        var item = await _context.Items.Include(i => i.Tags).Where(i => i.Id == link.ItemId).SingleAsync();
+                        bool itemNeedsUpdate = false;
+                        RTag ganjoorlinkTagType = await _context.Tags.AsNoTracking().Where(a => a.NameInEnglish == "Ganjoor Link").SingleAsync();
+                        if (item.Tags.Any(t => t.RTagId == ganjoorlinkTagType.Id && t.ValueSupplement == $"https://ganjoor.net{poem.FullUrl}"))
                         {
-                            item.Tags.Remove(tag);
+                            var tags = item.Tags.Where(t => t.RTagId == ganjoorlinkTagType.Id && t.ValueSupplement == $"https://ganjoor.net{poem.FullUrl}").ToList();
+                            foreach (var tag in tags)
+                            {
+                                item.Tags.Remove(tag);
+                            }
+                            itemNeedsUpdate = true;
                         }
-                        itemNeedsUpdate = true;
-                    }
-                    RTag ganjoorTOCTagType = await _context.Tags.AsNoTracking().Where(a => a.NameInEnglish == "Title in TOC").SingleAsync();
-                    if (item.Tags.Any(t => t.RTagId == ganjoorTOCTagType.Id && t.Value == poem.FullTitle))
-                    {
-                        var tags = item.Tags.Where(t => t.RTagId == ganjoorTOCTagType.Id && t.Value == poem.FullTitle).ToList();
-                        foreach (var tag in tags)
+                        RTag ganjoorTOCTagType = await _context.Tags.AsNoTracking().Where(a => a.NameInEnglish == "Title in TOC").SingleAsync();
+                        if (item.Tags.Any(t => t.RTagId == ganjoorTOCTagType.Id && t.Value == poem.FullTitle))
                         {
-                            item.Tags.Remove(tag);
+                            var tags = item.Tags.Where(t => t.RTagId == ganjoorTOCTagType.Id && t.Value == poem.FullTitle).ToList();
+                            foreach (var tag in tags)
+                            {
+                                item.Tags.Remove(tag);
+                            }
+                            itemNeedsUpdate = true;
                         }
-                        itemNeedsUpdate = true;
-                    }
-                    if (itemNeedsUpdate)
-                    {
-                        _context.Update(item);
+                        if (itemNeedsUpdate)
+                        {
+                            _context.Update(item);
+                        }
                     }
                 }
                 _context.Remove(link);
@@ -3531,39 +3535,6 @@ namespace RMuseum.Services.Implementation
                     await _context.PinterestLinks
                     .Where(l => l.Id == id)
                     .SingleAsync();
-
-                GanjoorPoem poem = await _context.GanjoorPoems.AsNoTracking().Where(p => p.Id == link.GanjoorPostId).SingleOrDefaultAsync();
-                if(poem != null)
-                {
-                    var item = await _context.Items.Include(i => i.Tags).Where(i => i.Id == link.ItemId).SingleAsync();
-                    bool itemNeedsUpdate = false;
-                    RTag ganjoorlinkTagType = await _context.Tags.AsNoTracking().Where(a => a.NameInEnglish == "Ganjoor Link").SingleAsync();
-                    if(item.Tags.Any(t => t.RTagId == ganjoorlinkTagType.Id && t.ValueSupplement == $"https://ganjoor.net{poem.FullUrl}"))
-                    {
-                        var tags = item.Tags.Where(t => t.RTagId == ganjoorlinkTagType.Id && t.ValueSupplement == $"https://ganjoor.net{poem.FullUrl}").ToList();
-                        foreach (var tag in tags)
-                        {
-                            item.Tags.Remove(tag);
-                        }
-                        itemNeedsUpdate = true;
-                    }
-                    RTag ganjoorTOCTagType = await _context.Tags.AsNoTracking().Where(a => a.NameInEnglish == "Title in TOC").SingleAsync();
-                    if (item.Tags.Any(t => t.RTagId == ganjoorTOCTagType.Id && t.Value == poem.FullTitle))
-                    {
-                        var tags = item.Tags.Where(t => t.RTagId == ganjoorTOCTagType.Id && t.Value == poem.FullTitle).ToList();
-                        foreach (var tag in tags)
-                        {
-                            item.Tags.Remove(tag);
-                        }
-                        itemNeedsUpdate = true;
-                    }
-                    if(itemNeedsUpdate)
-                    {
-                        _context.Update(item);
-                    }
-                }
-
-                
 
                 _context.Remove(link);
                 await _context.SaveChangesAsync();

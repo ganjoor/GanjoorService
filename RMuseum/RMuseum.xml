@@ -585,11 +585,12 @@
             <param name="displayOnPage">display ogn page</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ArtifactController.RemoveGanjoorLinkAsync(System.Guid)">
+        <member name="M:RMuseum.Controllers.ArtifactController.RemoveGanjoorLinkAsync(System.Guid,System.Boolean)">
             <summary>
             remove ganjoor link
             </summary>
             <param name="linkId"></param>
+            <param name="removeItemLink"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.ArtifactController.AddTOCForSuggestedLinks">
@@ -15285,11 +15286,12 @@
             <param name="result"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IArtifactService.RemoveGanjoorLinkAsync(System.Guid)">
+        <member name="M:RMuseum.Services.IArtifactService.RemoveGanjoorLinkAsync(System.Guid,System.Boolean)">
             <summary>
             remove ganjoor link
             </summary>
             <param name="id"></param>
+            <param name="removeItemLink"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IArtifactService.AddTOCForSuggestedLinks">
@@ -18096,11 +18098,12 @@
             <param name="result"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ArtifactService.RemoveGanjoorLinkAsync(System.Guid)">
+        <member name="M:RMuseum.Services.Implementation.ArtifactService.RemoveGanjoorLinkAsync(System.Guid,System.Boolean)">
             <summary>
             remove ganjoor link
             </summary>
             <param name="id"></param>
+            <param name="removeItemLink"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ArtifactService.AddTOCForSuggestedLinks">

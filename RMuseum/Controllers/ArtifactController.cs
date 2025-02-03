@@ -2008,15 +2008,16 @@ namespace RMuseum.Controllers
         /// remove ganjoor link
         /// </summary>
         /// <param name="linkId"></param>
+        /// <param name="removeItemLink"></param>
         /// <returns></returns>
         [HttpDelete]
         [Route("ganjoor")]
         [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> RemoveGanjoorLinkAsync(Guid linkId)
+        public async Task<IActionResult> RemoveGanjoorLinkAsync(Guid linkId, bool removeItemLink)
         {
-            RServiceResult<bool> suggestion = await _artifactService.RemoveGanjoorLinkAsync(linkId);
+            RServiceResult<bool> suggestion = await _artifactService.RemoveGanjoorLinkAsync(linkId, removeItemLink);
             if (!string.IsNullOrEmpty(suggestion.ExceptionString))
                 return BadRequest(suggestion.ExceptionString);
             return Ok();
