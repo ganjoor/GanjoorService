@@ -365,7 +365,7 @@ namespace GanjooRazor.Areas.User.Pages
                             else
                             {
                                 int? langaugeId = null;
-                                if (!(int.Parse(pcs.verseLanguages[vOrder]) == 1 && pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).LanguageId == null))
+                                if (pcs.verseLanguages[vOrder] != null && !(int.Parse(pcs.verseLanguages[vOrder]) == 1 && pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).LanguageId == null))
                                 {
                                     langaugeId = int.Parse(pcs.verseLanguages[vOrder]);
                                 }
