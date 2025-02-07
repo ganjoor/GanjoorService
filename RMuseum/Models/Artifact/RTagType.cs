@@ -37,5 +37,9 @@
         /// IIIF
         /// </summary>
         IIIF = 7,
+        /// <summary>
+        /// لینک در نسخه - برای نمایش انجامه‌ها
+        /// </summary>
+        LinkInMaster = 8,
     }
 }

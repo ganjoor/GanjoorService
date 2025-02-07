@@ -135,6 +135,25 @@ namespace RMuseum.Models.Artifact
                             {
                                 switch (value.RTag.TagType)
                                 {
+                                    case RTagType.LinkInMaster:
+                                        {
+                                            if (src.Tags == null)
+                                            {
+                                                src.Tags = new List<RTagValue>();
+                                            }
+                                            src.Tags.Add(new RTagValue()
+                                            {
+                                                RTag = value.RTag,
+                                                RTagId = value.RTagId,
+                                                FriendlyUrl = $"{src.FriendlyUrl}/{item.FriendlyUrl}",
+                                                Order = value.Order,
+                                                Status = value.Status,
+                                                Value = value.Value,
+                                                ValueInEnglish = value.ValueInEnglish,
+                                                ValueSupplement = value.ValueSupplement,
+                                            });
+                                        }
+                                        break;
                                     case RTagType.Binary:
                                         {
                                             RTagSum sum = sums.Where(s => s.TagFriendlyUrl == value.RTag.FriendlyUrl).SingleOrDefault();

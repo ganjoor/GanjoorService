@@ -4889,6 +4889,11 @@
             IIIF
             </summary>
         </member>
+        <member name="F:RMuseum.Models.Artifact.RTagType.LinkInMaster">
+            <summary>
+            لینک در نسخه - برای نمایش انجامه‌ها
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Artifact.RTagValue">
             <summary>
             Attribute Value

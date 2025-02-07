@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace RMuseum.Models.Artifact.ViewModels
+﻿namespace RMuseum.Models.Artifact.ViewModels
 {
     /// <summary>
     /// Title of an Item in Artifact Contents
