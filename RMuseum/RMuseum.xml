@@ -20627,6 +20627,13 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatCorrectionByIdAsync(System.Int32)">
+            <summary>
+            get cat correction by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Services.Implementation.GanjoorService.AggressiveCacheEnabled">
             <summary>
             aggressive cache

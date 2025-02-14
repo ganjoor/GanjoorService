@@ -4077,6 +4077,43 @@ namespace RMuseum.Services.Implementation
                 ((dbPaginatedResult.PagingMeta, list.ToArray()));
         }
 
+        /// <summary>
+        /// get cat correction by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorCatCorrectionViewModel>> GetCatCorrectionByIdAsync(int id)
+        {
+            var dbCorrection = await _context.GanjoorCatCorrections.AsNoTracking().Include(c => c.User)
+                .Where(c => c.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (dbCorrection == null)
+                return new RServiceResult<GanjoorCatCorrectionViewModel>(null);
+
+            return new RServiceResult<GanjoorCatCorrectionViewModel>
+                (
+                new GanjoorCatCorrectionViewModel()
+                {
+                    Id = dbCorrection.Id,
+                    CatId = dbCorrection.CatId,
+                    UserId = dbCorrection.UserId,
+                    Description = dbCorrection.Description,
+                    DescriptionHtml = dbCorrection.DescriptionHtml,
+                    OriginalDescription = dbCorrection.OriginalDescription,
+                    OriginalDescriptionHtml = dbCorrection.OriginalDescriptionHtml,
+                    Note = dbCorrection.Note,
+                    Date = dbCorrection.Date,
+                    Reviewed = dbCorrection.Reviewed,
+                    Result = dbCorrection.Result,
+                    ReviewNote = dbCorrection.ReviewNote,
+                    ReviewDate = dbCorrection.ReviewDate,
+                    UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
+                    HideMyName = dbCorrection.HideMyName,
+                }
+                );
+        }
+
 
         /// <summary>
         /// aggressive cache
