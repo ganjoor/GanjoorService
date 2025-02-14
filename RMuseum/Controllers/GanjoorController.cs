@@ -4506,6 +4506,251 @@ namespace RMuseum.Controllers
         }
 
 
+        /// <summary>
+        /// send cat corrections
+        /// </summary>
+        /// <param name="correction"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("cat/correction")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCatCorrectionViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> SuggestCatCorrectionAsync([FromBody] GanjoorCatCorrectionViewModel correction)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+
+            correction.UserId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<GanjoorCatCorrectionViewModel> res =
+                await _ganjoorService.SuggestCatCorrectionAsync(correction);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// delete unreviewed user cat corrections for a poem
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("cat/correction/{id}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> DeleteCatCorrectionsAsync(int id)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+
+            var userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            var res =
+                await _ganjoorService.DeleteCatCorrectionsAsync(userId, id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok();
+        }
+
+        /// <summary>
+        /// returns last unreviewed correction from the user for a cat
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("cat/correction/last/{id}")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCatCorrectionViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetLastUnreviewedUserCorrectionForCatAsync(int id)
+        {
+            Guid userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<GanjoorCatCorrectionViewModel> res =
+                await _ganjoorService.GetLastUnreviewedUserCorrectionForCatAsync(userId, id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);//might be null
+        }
+
+        /// <summary>
+        /// get list of user suggested cat corrections
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("cat/corrections/mine")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorCatCorrectionViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetUserCatCorrectionsAsync([FromQuery] PagingParameterModel paging)
+        {
+            Guid userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            var res =
+                await _ganjoorService.GetUserCatCorrectionsAsync(userId, paging);
+
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result.Items);
+        }
+
+        /// <summary>
+        /// get list of all suggested cat corrections
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId">userId</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("cat/corrections/all")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorCatCorrectionViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetAllCatCorrectionsAsync([FromQuery] PagingParameterModel paging, Guid? userId = null)
+        {
+
+            var res =
+                await _ganjoorService.GetUserCatCorrectionsAsync(userId ?? Guid.Empty, paging);
+
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result.Items);
+        }
+
+        /// <summary>
+        /// effective corrections for a cat
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+
+        [HttpGet]
+        [Route("cat/{id}/corrections/effective")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorCatCorrectionViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetCatEffectiveCorrectionsAsync(int id, [FromQuery] PagingParameterModel paging)
+        {
+            var res =
+                await _ganjoorService.GetCatEffectiveCorrectionsAsync(id, paging);
+
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(res.Result.PagingMeta));
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result.Items);
+        }
+
+        /// <summary>
+        /// get cat correction by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("cat/correction/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCatCorrectionViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetCatCorrectionByIdAsync(int id)
+        {
+            Guid userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<GanjoorCatCorrectionViewModel> res =
+                await _ganjoorService.GetCatCorrectionByIdAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);//might be null
+        }
+
+        /// <summary>
+        /// get next unreviewed cat correction
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <param name="onlyUserCorrections"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("cat/correction/next")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCatCorrectionViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetNextUnreviewedCatCorrectionAsync(int skip = 0, bool onlyUserCorrections = false)
+        {
+            RServiceResult<GanjoorCatCorrectionViewModel> res =
+                await _ganjoorService.GetNextUnreviewedCatCorrectionAsync(skip, onlyUserCorrections);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            var resCount = await _ganjoorService.GetUnreviewedCatCorrectionCountAsync(onlyUserCorrections);
+            if (!string.IsNullOrEmpty(resCount.ExceptionString))
+                return BadRequest(resCount.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers",
+                JsonConvert.SerializeObject(
+                    new PaginationMetadata()
+                    {
+                        totalCount = resCount.Result,
+                        pageSize = -1,
+                        currentPage = -1,
+                        hasNextPage = false,
+                        hasPreviousPage = false,
+                        totalPages = -1
+                    })
+                );
+
+            return Ok(res.Result);//might be null
+        }
+
+        /// <summary>
+        /// moderate cat correction
+        /// </summary>
+        /// <param name="correction"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("cat/correction/moderate")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCatCorrectionViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> ModerateCatCorrectionAsync([FromBody] GanjoorCatCorrectionViewModel correction)
+        {
+            if (ReadOnlyMode)
+                return BadRequest("سایت به دلایل فنی مثل انتقال سرور موقتاً در حالت فقط خواندنی قرار دارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.");
+
+            Guid userId =
+               new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+
+            RServiceResult<GanjoorCatCorrectionViewModel> res =
+                await _ganjoorService.ModerateCatCorrectionAsync(userId, correction);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            if (res.Result == null)
+                return NotFound();
+            return Ok(res.Result);
+        }
+
 
 
         /// <summary>

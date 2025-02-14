@@ -2378,6 +2378,72 @@
             <param name="count"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.SuggestCatCorrectionAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel)">
+            <summary>
+            send cat corrections
+            </summary>
+            <param name="correction"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.DeleteCatCorrectionsAsync(System.Int32)">
+            <summary>
+            delete unreviewed user cat corrections for a poem
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetLastUnreviewedUserCorrectionForCatAsync(System.Int32)">
+            <summary>
+            returns last unreviewed correction from the user for a cat
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetUserCatCorrectionsAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get list of user suggested cat corrections
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetAllCatCorrectionsAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            get list of all suggested cat corrections
+            </summary>
+            <param name="paging"></param>
+            <param name="userId">userId</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCatEffectiveCorrectionsAsync(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            effective corrections for a cat
+            </summary>
+            <param name="id"></param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCatCorrectionByIdAsync(System.Int32)">
+            <summary>
+            get cat correction by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetNextUnreviewedCatCorrectionAsync(System.Int32,System.Boolean)">
+            <summary>
+            get next unreviewed cat correction
+            </summary>
+            <param name="skip"></param>
+            <param name="onlyUserCorrections"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.ModerateCatCorrectionAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel)">
+            <summary>
+            moderate cat correction
+            </summary>
+            <param name="correction"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -17470,6 +17536,14 @@
             unreviewed cat corrections count
             </summary>
             <param name="onlyUserCorrections"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ModerateCatCorrectionAsync(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel)">
+            <summary>
+            moderate cat correction
+            </summary>
+            <param name="userId"></param>
+            <param name="moderation"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">

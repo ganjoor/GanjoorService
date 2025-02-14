@@ -1617,5 +1617,16 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<int>> GetUnreviewedCatCorrectionCountAsync(bool onlyUserCorrections);
 
+
+        /// <summary>
+        /// moderate cat correction
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="moderation"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorCatCorrectionViewModel>> ModerateCatCorrectionAsync(Guid userId,
+            GanjoorCatCorrectionViewModel moderation);
+
+
     }
 }
