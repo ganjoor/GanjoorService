@@ -4423,6 +4423,18 @@
         <member name="M:RMuseum.Migrations.SectionCoupletCount.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.CatSugs">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.CatSugs.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.CatSugs.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.CatSugs.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
