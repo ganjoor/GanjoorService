@@ -20593,6 +20593,13 @@
             <param name="page"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestCatCorrectionAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel)">
+            <summary>
+            send cat correction
+            </summary>
+            <param name="correction"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Services.Implementation.GanjoorService.AggressiveCacheEnabled">
             <summary>
             aggressive cache

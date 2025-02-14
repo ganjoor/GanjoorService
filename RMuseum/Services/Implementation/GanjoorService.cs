@@ -3873,6 +3873,48 @@ namespace RMuseum.Services.Implementation
         }
 
 
+        /// <summary>
+        /// send cat correction
+        /// </summary>
+        /// <param name="correction"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorCatCorrectionViewModel>> SuggestCatCorrectionAsync(GanjoorCatCorrectionViewModel correction)
+        {
+
+            var preCorrections = await _context.GanjoorCatCorrections
+                .Where(c => c.UserId == correction.UserId && c.CatId == correction.CatId && c.Reviewed == false)
+                .ToListAsync();
+
+            var cat = await _context.GanjoorCategories.AsNoTracking().Where(c => c.Id == correction.CatId).SingleAsync();
+
+            GanjoorCatCorrection dbCorrection = new GanjoorCatCorrection()
+            {
+                CatId = correction.CatId,
+                UserId = correction.UserId,
+                DescriptionHtml = correction.DescriptionHtml,
+                Description = correction.Description,
+                OriginalDescription = cat.Description,
+                OriginalDescriptionHtml = cat.DescriptionHtml,
+                Note = correction.Note,
+                Date = DateTime.Now,
+                Result = CorrectionReviewResult.NotReviewed,
+                Reviewed = false,
+                AffectedTheCat = false,
+                HideMyName = correction.HideMyName,
+
+            };
+            _context.GanjoorCatCorrections.Add(dbCorrection);
+            await _context.SaveChangesAsync();
+            correction.Id = dbCorrection.Id;
+
+            if (preCorrections.Count > 0)
+            {
+                _context.GanjoorCatCorrections.RemoveRange(preCorrections);
+                await _context.SaveChangesAsync();
+            }
+
+            return new RServiceResult<GanjoorCatCorrectionViewModel>(correction);
+        }
 
 
         /// <summary>
