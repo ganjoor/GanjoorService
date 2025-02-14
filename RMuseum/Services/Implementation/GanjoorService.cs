@@ -4024,6 +4024,61 @@ namespace RMuseum.Services.Implementation
 
 
         /// <summary>
+        /// cat effectinve corrections
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCatCorrectionViewModel[] Items)>> GetCatEffectiveCorrectionsAsync(int catId, PagingParameterModel paging)
+        {
+            var source = from dbCorrection in
+                             _context.GanjoorCatCorrections.AsNoTracking()
+                         where
+                         dbCorrection.CatId == catId
+                         &&
+                         dbCorrection.Reviewed == true
+                         &&
+                         dbCorrection.Result == CorrectionReviewResult.Approved
+                         orderby dbCorrection.Id descending
+                         select
+                         dbCorrection;
+
+            (PaginationMetadata PagingMeta, GanjoorCatCorrection[] Items) dbPaginatedResult =
+                await QueryablePaginator<GanjoorCatCorrection>.Paginate(source, paging);
+
+            List<GanjoorCatCorrectionViewModel> list = new List<GanjoorCatCorrectionViewModel>();
+            foreach (var dbCorrection in dbPaginatedResult.Items)
+            {
+                list.Add
+                    (
+                new GanjoorCatCorrectionViewModel()
+                {
+                    Id = dbCorrection.Id,
+                    CatId = dbCorrection.CatId,
+                    UserId = dbCorrection.UserId,
+                    Description = dbCorrection.Description,
+                    DescriptionHtml = dbCorrection.DescriptionHtml,
+                    OriginalDescription = dbCorrection.OriginalDescription,
+                    OriginalDescriptionHtml = dbCorrection.OriginalDescriptionHtml,
+                    Note = dbCorrection.Note,
+                    Date = dbCorrection.Date,
+                    Reviewed = dbCorrection.Reviewed,
+                    Result = dbCorrection.Result,
+                    ReviewNote = dbCorrection.ReviewNote,
+                    ReviewDate = dbCorrection.ReviewDate,
+                    UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
+                    HideMyName = dbCorrection.HideMyName,
+
+                }
+                );
+            }
+
+            return new RServiceResult<(PaginationMetadata, GanjoorCatCorrectionViewModel[])>
+                ((dbPaginatedResult.PagingMeta, list.ToArray()));
+        }
+
+
+        /// <summary>
         /// aggressive cache
         /// </summary>
         public bool AggressiveCacheEnabled

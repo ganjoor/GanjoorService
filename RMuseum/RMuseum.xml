@@ -20619,6 +20619,14 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatEffectiveCorrectionsAsync(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            cat effectinve corrections
+            </summary>
+            <param name="catId"></param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Services.Implementation.GanjoorService.AggressiveCacheEnabled">
             <summary>
             aggressive cache
