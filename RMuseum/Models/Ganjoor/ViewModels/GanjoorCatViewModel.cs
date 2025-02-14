@@ -41,12 +41,12 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public GanjoorCatType CatType { get; set; }
 
         /// <summary>
-        /// additional descripion or note
+        /// additional description or note
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// html mode of additional descripion or note
+        /// html mode of additional description or note
         /// </summary>
         public string DescriptionHtml { get; set; }
 

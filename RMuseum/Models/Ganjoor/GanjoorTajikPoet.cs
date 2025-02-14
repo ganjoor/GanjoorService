@@ -17,7 +17,7 @@ namespace RMuseum.Models.Ganjoor
         public string TajikNickname { get; set; }
 
         /// <summary>
-        /// additional descripion or note in Tajik
+        /// additional description or note in Tajik
         /// </summary>
         public string TajikDescription { get; set; }
 
