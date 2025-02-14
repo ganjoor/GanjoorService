@@ -10973,11 +10973,6 @@
             category id
             </summary>
         </member>
-        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.Cat">
-            <summary>
-            category
-            </summary>
-        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.Description">
             <summary>
             additional description or note
@@ -20606,6 +20601,14 @@
             </summary>
             <param name="userId"></param>
             <param name="catId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLastUnreviewedUserCorrectionForCatAsync(System.Guid,System.Int32)">
+            <summary>
+            last unreviewed user correction for a cat
+            </summary>
+            <param name="userId"></param>
+            <param name="catID"></param>
             <returns></returns>
         </member>
         <member name="P:RMuseum.Services.Implementation.GanjoorService.AggressiveCacheEnabled">

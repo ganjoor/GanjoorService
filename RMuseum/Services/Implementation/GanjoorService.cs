@@ -2138,7 +2138,7 @@ namespace RMuseum.Services.Implementation
                     PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
                     HideMyName = dbCorrection.HideMyName,
                 }
-                ); ;
+                );
         }
 
         /// <summary>
@@ -3933,6 +3933,45 @@ namespace RMuseum.Services.Implementation
                 await _context.SaveChangesAsync();
             }
             return new RServiceResult<bool>(true);
+        }
+
+        /// <summary>
+        /// last unreviewed user correction for a cat
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="catID"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorCatCorrectionViewModel>> GetLastUnreviewedUserCorrectionForCatAsync(Guid userId, int catID)
+        {
+            var dbCorrection = await _context.GanjoorCatCorrections.AsNoTracking().Include(c => c.User)
+                .Where(c => c.UserId == userId && c.CatId == catID && c.Reviewed == false)
+                .OrderByDescending(c => c.Id)
+                .FirstOrDefaultAsync();
+
+            if (dbCorrection == null)
+                return new RServiceResult<GanjoorCatCorrectionViewModel>(null);
+
+            return new RServiceResult<GanjoorCatCorrectionViewModel>
+                (
+                new GanjoorCatCorrectionViewModel()
+                {
+                    Id = dbCorrection.Id,
+                    CatId = dbCorrection.CatId,
+                    UserId = dbCorrection.UserId,
+                    Description = dbCorrection.Description,
+                    DescriptionHtml = dbCorrection.DescriptionHtml,
+                    OriginalDescription = dbCorrection.OriginalDescription,
+                    OriginalDescriptionHtml = dbCorrection.OriginalDescriptionHtml,
+                    Note = dbCorrection.Note,
+                    Date = dbCorrection.Date,
+                    Reviewed = dbCorrection.Reviewed,
+                    Result = dbCorrection.Result,
+                    ReviewNote = dbCorrection.ReviewNote,
+                    ReviewDate = dbCorrection.ReviewDate,
+                    UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
+                    HideMyName = dbCorrection.HideMyName,
+                }
+                );
         }
 
 

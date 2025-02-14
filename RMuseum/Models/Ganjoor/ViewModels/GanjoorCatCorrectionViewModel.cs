@@ -15,11 +15,6 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public int CatId { get; set; }
 
         /// <summary>
-        /// category
-        /// </summary>
-        public GanjoorCat Cat { get; set; }
-
-        /// <summary>
         /// additional description or note
         /// </summary>
         public string Description { get; set; }
