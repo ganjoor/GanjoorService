@@ -1,6 +1,5 @@
 ﻿using DNTPersianUtils.Core;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Asn1.X509;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;

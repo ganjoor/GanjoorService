@@ -19032,6 +19032,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -19328,6 +19331,14 @@
             </summary>
             <param name="srcMeterId"></param>
             <param name="destMeterId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ModerateCatCorrectionAsync(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel)">
+            <summary>
+            moderate cat correction
+            </summary>
+            <param name="userId"></param>
+            <param name="moderation"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ModeratePoemCorrection(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel)">
