@@ -20611,6 +20611,14 @@
             <param name="catID"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserCatCorrectionsAsync(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get user or all corrections for categories
+            </summary>
+            <param name="userId">if sent empty returns all corrections</param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Services.Implementation.GanjoorService.AggressiveCacheEnabled">
             <summary>
             aggressive cache
