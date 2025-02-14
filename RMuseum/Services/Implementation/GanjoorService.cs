@@ -25,12 +25,6 @@ using System.IO;
 using RSecurityBackend.Models.Image;
 using FluentFTP;
 using System.Drawing;
-using RSecurityBackend.Models.Auth.ViewModels;
-using Newtonsoft.Json;
-using System.Net;
-using System.Text;
-using RMuseum.Models.Auth.ViewModel;
-using System.Net.Http.Headers;
 using RMuseum.Models.GanjoorIntegration;
 using RSecurityBackend.Models.Notification;
 
@@ -3877,6 +3871,9 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<GanjoorPage>(null, exp.ToString());
             }
         }
+
+
+
 
         /// <summary>
         /// aggressive cache

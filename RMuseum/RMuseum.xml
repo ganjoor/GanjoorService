@@ -3764,6 +3764,11 @@
             tajik pages
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorCatCorrections">
+            <summary>
+            ganjoor cat corrections
+            </summary>
+        </member>
         <member name="T:RMuseum.Migrations.PictureFileExtUrl">
             <inheritdoc />
         </member>
@@ -10956,6 +10961,86 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorBatchNamingModel.Simulate">
             <summary>
             simulate naming
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.Id">
+            <summary>
+            correct id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.CatId">
+            <summary>
+            category id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.Cat">
+            <summary>
+            category
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.Description">
+            <summary>
+            additional description or note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.DescriptionHtml">
+            <summary>
+            html mode of additional description or note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.OriginalDescription">
+            <summary>
+            additional description or note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.OriginalDescriptionHtml">
+            <summary>
+            html mode of additional description or note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.Note">
+            <summary>
+            note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.Date">
+            <summary>
+            date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.UserId">
+            <summary>
+            user Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.UserNickname">
+            <summary>
+            nickname
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.Reviewed">
+            <summary>
+            reviewed
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.ReviewDate">
+            <summary>
+            reviewdate
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.ReviewNote">
+            <summary>
+            review note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.Result">
+            <summary>
+            review result for description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.HideMyName">
+            <summary>
+            hide the editors name
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel">
