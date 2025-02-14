@@ -5,6 +5,7 @@ using RSecurityBackend.Models.Generic;
 using System;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 
@@ -49,19 +50,6 @@ namespace RMuseum.Services.Implementation
                 {
                     dbPage = await _context.GanjoorPages.Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == dbCat.PoetId).SingleAsync();
                 }
-                
-                GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()
-                {
-                    GanjoorPageId = dbPage.Id,
-                    MadeObsoleteByUserId = userId,
-                    RecordDate = DateTime.Now,
-                    Note = $"بررسی پیشنهاد ویرایش بخش با شناسهٔ {dbCorrection.Id}",
-                    Title = dbPage.Title,
-                    UrlSlug = dbPage.UrlSlug,
-                    HtmlText = dbPage.HtmlText,
-                };
-                _context.GanjoorPageSnapshots.Add(snapshot);
-                await _context.SaveChangesAsync();
 
                 bool updateCat = false;
                 if (dbCorrection.DescriptionHtml != null)
@@ -72,8 +60,32 @@ namespace RMuseum.Services.Implementation
 
                     if (dbCorrection.Result == CorrectionReviewResult.Approved)
                     {
+
+                        GanjoorPageSnapshot snapshot = new GanjoorPageSnapshot()
+                        {
+                            GanjoorPageId = dbPage.Id,
+                            MadeObsoleteByUserId = userId,
+                            RecordDate = DateTime.Now,
+                            Note = $"بررسی پیشنهاد ویرایش بخش با شناسهٔ {dbCorrection.Id}",
+                            Title = dbPage.Title,
+                            UrlSlug = dbPage.UrlSlug,
+                            HtmlText = dbPage.HtmlText,
+                        };
+                        _context.GanjoorPageSnapshots.Add(snapshot);
+                        await _context.SaveChangesAsync();
+
                         dbCorrection.AffectedTheCat = true;
                         dbCat.DescriptionHtml = moderation.DescriptionHtml.Replace("ۀ", "هٔ").Replace("ك", "ک");
+                        dbCat.Description = Regex.Replace(dbCat.DescriptionHtml, "<.*?>", String.Empty);
+
+                        if(dbCat.ParentId == null)
+                        {
+                            var dbPoet = await _context.GanjoorPoets.Where(p => p.Id == dbCat.PoetId).SingleAsync();
+                            dbPoet.Description = dbCat.Description;
+                            _context.Update(dbPoet);
+                        }
+
+
                         updateCat = true;
                     }
                 }
@@ -82,12 +94,20 @@ namespace RMuseum.Services.Implementation
                 if (updateCat)
                 {
                     _context.Update(dbCat);
+                    await _context.SaveChangesAsync();
+                    var tocRes = await GenerateTableOfContents(userId, dbCorrection.CatId, dbCat.TableOfContentsStyle);
+                    if (!string.IsNullOrEmpty(tocRes.ExceptionString))
+                    {
+                        return new RServiceResult<GanjoorCatCorrectionViewModel>(null, tocRes.ExceptionString);
+                    }
+                    dbPage.HtmlText = tocRes.Result;
                     _context.Update(dbPage);
                 }
 
                 dbCorrection.Reviewed = true;
                 _context.GanjoorCatCorrections.Update(dbCorrection);
                 await _context.SaveChangesAsync();
+
 
                 await _notificationService.PushNotification(dbCorrection.UserId,
                                    "بررسی ویرایش پیشنهادی شما برای بخش",
