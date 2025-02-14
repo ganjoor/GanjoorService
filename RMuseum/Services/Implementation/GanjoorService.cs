@@ -3916,6 +3916,25 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<GanjoorCatCorrectionViewModel>(correction);
         }
 
+        /// <summary>
+        /// delete unreviewed user corrections for a cat
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> DeleteCatCorrectionsAsync(Guid userId, int catId)
+        {
+            var preCorrections = await _context.GanjoorCatCorrections
+                .Where(c => c.UserId == userId && c.CatId == catId && c.Reviewed == false)
+                .ToListAsync();
+            if (preCorrections.Count > 0)
+            {
+                _context.GanjoorCatCorrections.RemoveRange(preCorrections);
+                await _context.SaveChangesAsync();
+            }
+            return new RServiceResult<bool>(true);
+        }
+
 
         /// <summary>
         /// aggressive cache
