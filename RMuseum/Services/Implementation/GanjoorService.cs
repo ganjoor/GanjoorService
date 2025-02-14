@@ -4116,6 +4116,51 @@ namespace RMuseum.Services.Implementation
 
 
         /// <summary>
+        /// get next unreviewed cat correction
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <param name="onlyUserCorrections"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorCatCorrectionViewModel>> GetNextUnreviewedCatCorrectionAsync(int skip, bool onlyUserCorrections)
+        {
+            string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
+            var systemUser = await _appUserService.FindUserByEmail(systemEmail);
+            var systemUserId = systemUser.Result == null ? Guid.Empty : (Guid)systemUser.Result.Id;
+
+            var dbCorrection = await _context.GanjoorCatCorrections.AsNoTracking().Include(c => c.User)
+                .Where(c => c.Reviewed == false && (onlyUserCorrections == false || c.UserId != systemUserId))
+                .OrderBy(c => c.Id)
+                .Skip(skip)
+                .FirstOrDefaultAsync();
+
+            if (dbCorrection == null)
+                return new RServiceResult<GanjoorCatCorrectionViewModel>(null);
+
+            return new RServiceResult<GanjoorCatCorrectionViewModel>
+                (
+                new GanjoorCatCorrectionViewModel()
+                {
+                    Id = dbCorrection.Id,
+                    CatId = dbCorrection.CatId,
+                    UserId = dbCorrection.UserId,
+                    Description = dbCorrection.Description,
+                    DescriptionHtml = dbCorrection.DescriptionHtml,
+                    OriginalDescription = dbCorrection.OriginalDescription,
+                    OriginalDescriptionHtml = dbCorrection.OriginalDescriptionHtml,
+                    Note = dbCorrection.Note,
+                    Date = dbCorrection.Date,
+                    Reviewed = dbCorrection.Reviewed,
+                    Result = dbCorrection.Result,
+                    ReviewNote = dbCorrection.ReviewNote,
+                    ReviewDate = dbCorrection.ReviewDate,
+                    UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
+                    HideMyName = dbCorrection.HideMyName,
+                }
+                );
+        }
+
+
+        /// <summary>
         /// aggressive cache
         /// </summary>
         public bool AggressiveCacheEnabled

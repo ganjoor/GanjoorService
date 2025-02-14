@@ -20634,6 +20634,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetNextUnreviewedCatCorrectionAsync(System.Int32,System.Boolean)">
+            <summary>
+            get next unreviewed cat correction
+            </summary>
+            <param name="skip"></param>
+            <param name="onlyUserCorrections"></param>
+            <returns></returns>
+        </member>
         <member name="P:RMuseum.Services.Implementation.GanjoorService.AggressiveCacheEnabled">
             <summary>
             aggressive cache
