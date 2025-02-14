@@ -3939,12 +3939,12 @@ namespace RMuseum.Services.Implementation
         /// last unreviewed user correction for a cat
         /// </summary>
         /// <param name="userId"></param>
-        /// <param name="catID"></param>
+        /// <param name="catId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorCatCorrectionViewModel>> GetLastUnreviewedUserCorrectionForCatAsync(Guid userId, int catID)
+        public async Task<RServiceResult<GanjoorCatCorrectionViewModel>> GetLastUnreviewedUserCorrectionForCatAsync(Guid userId, int catId)
         {
             var dbCorrection = await _context.GanjoorCatCorrections.AsNoTracking().Include(c => c.User)
-                .Where(c => c.UserId == userId && c.CatId == catID && c.Reviewed == false)
+                .Where(c => c.UserId == userId && c.CatId == catId && c.Reviewed == false)
                 .OrderByDescending(c => c.Id)
                 .FirstOrDefaultAsync();
 

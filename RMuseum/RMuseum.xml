@@ -17411,6 +17411,67 @@
             <param name="startFrom"></param>
             <param name="count"></param>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SuggestCatCorrectionAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel)">
+            <summary>
+            send cat correction
+            </summary>
+            <param name="correction"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeleteCatCorrectionsAsync(System.Guid,System.Int32)">
+            <summary>
+            delete unreviewed user corrections for a cat
+            </summary>
+            <param name="userId"></param>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetLastUnreviewedUserCorrectionForCatAsync(System.Guid,System.Int32)">
+            <summary>
+            last unreviewed user correction for a cat
+            </summary>
+            <param name="userId"></param>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetUserCatCorrectionsAsync(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get user or all corrections for categories
+            </summary>
+            <param name="userId">if sent empty returns all corrections</param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetCatEffectiveCorrectionsAsync(System.Int32,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            cat effectinve corrections
+            </summary>
+            <param name="catId"></param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetCatCorrectionByIdAsync(System.Int32)">
+            <summary>
+            get cat correction by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetNextUnreviewedCatCorrectionAsync(System.Int32,System.Boolean)">
+            <summary>
+            get next unreviewed cat correction
+            </summary>
+            <param name="skip"></param>
+            <param name="onlyUserCorrections"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetUnreviewedCatCorrectionCountAsync(System.Boolean)">
+            <summary>
+            unreviewed cat corrections count
+            </summary>
+            <param name="onlyUserCorrections"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -20608,7 +20669,7 @@
             last unreviewed user correction for a cat
             </summary>
             <param name="userId"></param>
-            <param name="catID"></param>
+            <param name="catId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserCatCorrectionsAsync(System.Guid,RSecurityBackend.Models.Generic.PagingParameterModel)">

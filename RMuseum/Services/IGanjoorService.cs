@@ -1550,5 +1550,72 @@ namespace RMuseum.Services
         /// <param name="count"></param>
         void OpenAIStartFillingGeoLocations(int startFrom, int count);
 
+        /// <summary>
+        /// send cat correction
+        /// </summary>
+        /// <param name="correction"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorCatCorrectionViewModel>> SuggestCatCorrectionAsync(GanjoorCatCorrectionViewModel correction);
+
+
+        /// <summary>
+        /// delete unreviewed user corrections for a cat
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteCatCorrectionsAsync(Guid userId, int catId);
+
+        /// <summary>
+        /// last unreviewed user correction for a cat
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorCatCorrectionViewModel>> GetLastUnreviewedUserCorrectionForCatAsync(Guid userId, int catId);
+
+
+
+        /// <summary>
+        /// get user or all corrections for categories
+        /// </summary>
+        /// <param name="userId">if sent empty returns all corrections</param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCatCorrectionViewModel[] Items)>> GetUserCatCorrectionsAsync(Guid userId, PagingParameterModel paging);
+
+
+        /// <summary>
+        /// cat effectinve corrections
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorCatCorrectionViewModel[] Items)>> GetCatEffectiveCorrectionsAsync(int catId, PagingParameterModel paging);
+
+
+        /// <summary>
+        /// get cat correction by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorCatCorrectionViewModel>> GetCatCorrectionByIdAsync(int id);
+
+        /// <summary>
+        /// get next unreviewed cat correction
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <param name="onlyUserCorrections"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorCatCorrectionViewModel>> GetNextUnreviewedCatCorrectionAsync(int skip, bool onlyUserCorrections);
+
+
+        /// <summary>
+        /// unreviewed cat corrections count
+        /// </summary>
+        /// <param name="onlyUserCorrections"></param>
+        /// <returns></returns>
+        Task<RServiceResult<int>> GetUnreviewedCatCorrectionCountAsync(bool onlyUserCorrections);
+
     }
 }
