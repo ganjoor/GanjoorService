@@ -20367,7 +20367,7 @@
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnreviewedCorrectionCount(System.Boolean)">
             <summary>
-            unreview correction count
+            unreviewed corrections count
             </summary>
             <param name="onlyUserCorrections"></param>
             <returns></returns>
@@ -20639,6 +20639,13 @@
             get next unreviewed cat correction
             </summary>
             <param name="skip"></param>
+            <param name="onlyUserCorrections"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUnreviewedCatCorrectionCountAsync(System.Boolean)">
+            <summary>
+            unreviewed cat corrections count
+            </summary>
             <param name="onlyUserCorrections"></param>
             <returns></returns>
         </member>

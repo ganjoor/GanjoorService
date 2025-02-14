@@ -2399,7 +2399,7 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// unreview correction count
+        /// unreviewed corrections count
         /// </summary>
         /// <param name="onlyUserCorrections"></param>
         /// <returns></returns>
@@ -4159,6 +4159,20 @@ namespace RMuseum.Services.Implementation
                 );
         }
 
+        /// <summary>
+        /// unreviewed cat corrections count
+        /// </summary>
+        /// <param name="onlyUserCorrections"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<int>> GetUnreviewedCatCorrectionCountAsync(bool onlyUserCorrections)
+        {
+            string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
+            var systemUser = await _appUserService.FindUserByEmail(systemEmail);
+            var systemUserId = systemUser.Result == null ? Guid.Empty : (Guid)systemUser.Result.Id;
+            return new RServiceResult<int>(await _context.GanjoorCatCorrections.AsNoTracking()
+                .Where(c => c.Reviewed == false && (onlyUserCorrections == false || c.UserId != systemUserId))
+                .CountAsync());
+        }
 
         /// <summary>
         /// aggressive cache
