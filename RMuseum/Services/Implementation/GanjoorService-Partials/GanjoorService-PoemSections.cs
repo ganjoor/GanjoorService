@@ -282,14 +282,13 @@ namespace RMuseum.Services.Implementation
         }
 
 
-        private async Task<bool> _SectionizePoem(RMuseumDbContext context, GanjoorPoem poem, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
+        private async Task<bool> _SectionizePoem(RMuseumDbContext context, GanjoorPoem poem, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, GanjoorCat cat)
         {
             if (true == await context.GanjoorPoemSections.AsNoTracking().Where(s => s.PoemId == poem.Id).AnyAsync())
-                return true;
-            if(poem.Cat == null)
             {
-                poem.Cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == poem.CatId).SingleAsync();
+                return true;
             }
+           
 
             var nonCommentVerses = await context.GanjoorVerses.Where(v => v.PoemId == poem.Id && v.VersePosition != VersePosition.Comment).OrderBy(v => v.VOrder).ToListAsync();
             if (!nonCommentVerses.Where(v => v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single).Any())
@@ -301,12 +300,12 @@ namespace RMuseum.Services.Implementation
                   ).Any())
                 {
                     //multi-band poem
-                    _SectionizeMultibandVerses(context, nonCommentVerses, poem, 0);
+                    _SectionizeMultibandVerses(context, nonCommentVerses, poem, 0, cat);
                 }
                 else
                 if (!nonCommentVerses.Where(v => v.VersePosition != VersePosition.Right && v.VersePosition != VersePosition.Left).Any())
                 {
-                    _SectionizeNormalVerses(context, nonCommentVerses, poem, 0);
+                    _SectionizeNormalVerses(context, nonCommentVerses, poem, 0, cat);
                 }
             }
             else
@@ -328,7 +327,7 @@ namespace RMuseum.Services.Implementation
                         GanjoorPoemSection mainSection = new GanjoorPoemSection()
                         {
                             PoemId = poem.Id,
-                            PoetId = poem.Cat.PoetId,
+                            PoetId = cat.PoetId,
                             SectionType = PoemSectionType.WholePoem,
                             VerseType = VersePoemSectionType.First,
                             Index = sectionIndex,
@@ -374,11 +373,11 @@ namespace RMuseum.Services.Implementation
                           ).Any())
                         {
                             //multi-band poem
-                            _SectionizeMultibandVerses(context, normalVerses, poem, sectionIndex);
+                            _SectionizeMultibandVerses(context, normalVerses, poem, sectionIndex, cat);
                         }
                         else
                         {
-                            _SectionizeNormalVerses(context, normalVerses, poem, sectionIndex);
+                            _SectionizeNormalVerses(context, normalVerses, poem, sectionIndex, cat);
                         }
                         sectionIndex++;
                         normalVerses = new List<GanjoorVerse>();
@@ -400,7 +399,7 @@ namespace RMuseum.Services.Implementation
                     GanjoorPoemSection mainSection = new GanjoorPoemSection()
                     {
                         PoemId = poem.Id,
-                        PoetId = poem.Cat.PoetId,
+                        PoetId = cat.PoetId,
                         SectionType = PoemSectionType.WholePoem,
                         VerseType = VersePoemSectionType.First,
                         Index = sectionIndex,
@@ -432,22 +431,22 @@ namespace RMuseum.Services.Implementation
                       ).Any())
                     {
                         //multi-band poem
-                        _SectionizeMultibandVerses(context, normalVerses, poem, sectionIndex);
+                        _SectionizeMultibandVerses(context, normalVerses, poem, sectionIndex, cat);
                     }
                     else
                     {
-                        _SectionizeNormalVerses(context, normalVerses, poem, sectionIndex);
+                        _SectionizeNormalVerses(context, normalVerses, poem, sectionIndex, cat);
                     }
                 }
             }
             return true;
         }
-        private void _SectionizeMultibandVerses(RMuseumDbContext context, List<GanjoorVerse> nonCommentVerses, GanjoorPoem poem, int index)
+        private void _SectionizeMultibandVerses(RMuseumDbContext context, List<GanjoorVerse> nonCommentVerses, GanjoorPoem poem, int index, GanjoorCat cat)
         {
             GanjoorPoemSection mainSection = new GanjoorPoemSection()
             {
                 PoemId = poem.Id,
-                PoetId = poem.Cat.PoetId,
+                PoetId = cat.PoetId,
                 SectionType = PoemSectionType.WholePoem,
                 VerseType = VersePoemSectionType.First,
                 Index = index,
@@ -478,7 +477,7 @@ namespace RMuseum.Services.Implementation
             GanjoorPoemSection currentBandSection = new GanjoorPoemSection()
             {
                 PoemId = poem.Id,
-                PoetId = poem.Cat.PoetId,
+                PoetId = cat.PoetId,
                 SectionType = PoemSectionType.Band,
                 VerseType = VersePoemSectionType.Second,
                 Index = index,
@@ -518,7 +517,7 @@ namespace RMuseum.Services.Implementation
                         currentBandSection = new GanjoorPoemSection()
                         {
                             PoemId = poem.Id,
-                            PoetId = poem.Cat.PoetId,
+                            PoetId = cat.PoetId,
                             SectionType = PoemSectionType.Band,
                             VerseType = VersePoemSectionType.Second,
                             Index = index,
@@ -546,7 +545,7 @@ namespace RMuseum.Services.Implementation
             GanjoorPoemSection bandSection = new GanjoorPoemSection()
             {
                 PoemId = poem.Id,
-                PoetId = poem.Cat.PoetId,
+                PoetId = cat.PoetId,
                 SectionType = PoemSectionType.BandCouplets,
                 VerseType = VersePoemSectionType.Second,
                 Index = index,
@@ -584,7 +583,7 @@ namespace RMuseum.Services.Implementation
                     GanjoorPoemSection verseSection = new GanjoorPoemSection()
                     {
                         PoemId = poem.Id,
-                        PoetId = poem.Cat.PoetId,
+                        PoetId = cat.PoetId,
                         SectionType = PoemSectionType.Couplet,
                         VerseType = VersePoemSectionType.Third,
                         Index = index,
@@ -620,13 +619,13 @@ namespace RMuseum.Services.Implementation
             context.UpdateRange(nonCommentVerses);
         }
 
-        private void _SectionizeNormalVerses(RMuseumDbContext context, List<GanjoorVerse> nonCommentVerses, GanjoorPoem poem, int index)
+        private void _SectionizeNormalVerses(RMuseumDbContext context, List<GanjoorVerse> nonCommentVerses, GanjoorPoem poem, int index, GanjoorCat cat)
         {
             //normal poem
             GanjoorPoemSection mainSection = new GanjoorPoemSection()
             {
                 PoemId = poem.Id,
-                PoetId = poem.Cat.PoetId,
+                PoetId = cat.PoetId,
                 SectionType = PoemSectionType.WholePoem,
                 VerseType = VersePoemSectionType.First,
                 Index = index,
@@ -681,7 +680,7 @@ namespace RMuseum.Services.Implementation
                         GanjoorPoemSection verseSection = new GanjoorPoemSection()
                         {
                             PoemId = poem.Id,
-                            PoetId = poem.Cat.PoetId,
+                            PoetId = cat.PoetId,
                             SectionType = PoemSectionType.Couplet,
                             VerseType = VersePoemSectionType.Second,
                             Index = index,
@@ -810,7 +809,7 @@ namespace RMuseum.Services.Implementation
                 await _context.SaveChangesAsync();
                 var poem = await _context.GanjoorPoems.Include(p => p.Cat).AsNoTracking().SingleAsync(p => p.Id == id);
 
-                await _SectionizePoem(_context, poem, jobProgressServiceEF, job);
+                await _SectionizePoem(_context, poem, jobProgressServiceEF, job, poem.Cat);
 
                 if (meterId != null)
                 {

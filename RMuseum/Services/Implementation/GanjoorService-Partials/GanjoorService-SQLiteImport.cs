@@ -191,7 +191,7 @@ namespace RMuseum.Services.Implementation
 
             return new RServiceResult<bool>(true);
         }
-        private async Task<string> _ImportSQLiteCatChildren(RMuseumDbContext context, IDbConnection sqlite, int poetId, int sqliteParentCatId, GanjoorCat parentCat, string parentFullTitle, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, int parentPagId)
+        private async Task<string> _ImportSQLiteCatChildren(RMuseumDbContext context, IDbConnection sqlite, int poetId, int sqliteParentCatId, GanjoorCat parentCat, string parentFullTitle, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job, int parentPageId)
         {
             try
             {
@@ -342,7 +342,7 @@ namespace RMuseum.Services.Implementation
                         PoetId = poetId,
                         CatId = poetCatId,
                         PostDate = DateTime.Now,
-                        ParentId = parentPagId
+                        ParentId = parentPageId
                     };
 
                     context.GanjoorPages.Add(dbPageCat);
@@ -368,7 +368,6 @@ namespace RMuseum.Services.Implementation
                 foreach (var poem in await sqlite.QueryAsync($"SELECT * FROM poem WHERE cat_id = {sqliteParentCatId} ORDER BY id"))
                 {
                     poemNumber++;
-                    await jobProgressServiceEF.UpdateJob(job.Id, poemNumber, "", false);
 
                     string title = poem.title;
                     string urlSlug = $"sh{poemNumber}";
@@ -450,9 +449,11 @@ namespace RMuseum.Services.Implementation
                         await context.SaveChangesAsync();//id set should be in order
                     }
 
+
                     await _FillPoemCoupletIndices(context, poemId);
 
-                    
+
+
                     GanjoorPage dbPoemPage = new GanjoorPage()
                     {
                         Id = poemId,
@@ -468,13 +469,15 @@ namespace RMuseum.Services.Implementation
                         CatId = parentCat.Id,
                         PoemId = poemId,
                         PostDate = DateTime.Now,
-                        ParentId = parentPagId
+                        ParentId = parentPageId
                     };
 
                     context.GanjoorPages.Add(dbPoemPage);
                     await context.SaveChangesAsync();
 
-                    await _SectionizePoem(context, dbPoem, jobProgressServiceEF, job);
+
+                    await _SectionizePoem(context, dbPoem, jobProgressServiceEF, job, parentCat);
+
 
                     catHtmlText += $"<p><a href=\"{dbPoemPage.FullUrl}\">{dbPoemPage.Title}</a></p>{Environment.NewLine}";
 
