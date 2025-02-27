@@ -229,6 +229,20 @@ namespace GanjooRazor.Areas.User.Pages
             {
 
                 await Prepare(GanjoorQuotedPoem.PoemId, GanjoorQuotedPoem.Id == Guid.Empty ? null : GanjoorQuotedPoem.Id.ToString());
+                int cIndex = -1;
+                foreach (var verse in Poem.Verses)
+                {
+                    if (verse.VersePosition != VersePosition.Left && verse.VersePosition != VersePosition.CenteredVerse2 && verse.VersePosition != VersePosition.Comment)
+                        cIndex++;
+                    if (verse.VersePosition != VersePosition.Comment)
+                    {
+                        verse.CoupletIndex = cIndex;
+                    }
+                    else
+                    {
+                        verse.CoupletIndex = null;
+                    }
+                }
                 GanjoorQuotedPoem.CoupletVerse1 = Poem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.CoupletIndex).Count() < 1 ? "" : Poem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.CoupletIndex).ToArray()[0].Text;
                 GanjoorQuotedPoem.CoupletVerse2 = Poem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.CoupletIndex).Count() < 2 ? "" : Poem.Verses.Where(v => v.CoupletIndex == GanjoorQuotedPoem.CoupletIndex).ToArray()[1].Text;
                 if (GanjoorQuotedPoem.RelatedPoemId != null && RelatedPoem == null)
@@ -244,7 +258,7 @@ namespace GanjooRazor.Areas.User.Pages
                     RelatedCouplets = GetCouplets(RelatedPoem.Verses);
                 }
 
-                int cIndex = -1;
+                cIndex = -1;
                 foreach (var verse in RelatedPoem.Verses)
                 {
                     if (verse.VersePosition != VersePosition.Left && verse.VersePosition != VersePosition.CenteredVerse2 && verse.VersePosition != VersePosition.Comment)
