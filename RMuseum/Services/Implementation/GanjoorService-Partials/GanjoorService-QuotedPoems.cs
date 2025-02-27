@@ -1,10 +1,12 @@
 ﻿using DNTPersianUtils.Core;
 using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
+using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Models.Generic.Db;
+using RSecurityBackend.Models.Notification;
 using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
@@ -142,7 +144,7 @@ namespace RMuseum.Services.Implementation
                 await _notificationService.PushNotification((Guid)dbQuoted.SuggestedById,
                                   "بررسی مشق شعر پیشنهادی شما",
                                   $"با سپاس از زحمت و همت شما مشق شعر پیشنهادیتان برای <a href=\"https://ganjoor.net{dbQuoted.CachedRelatedPoemFullUrl}\" target=\"_blank\">{dbQuoted.CachedRelatedPoemFullTitle}</a> بررسی شد.{Environment.NewLine}" +
-                                  $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «<a href=\"https://ganjoor.net/User/MySuggestedQuotes\">مشق شعر‌های پیشنهادی من</a>» را مشاهده بفرمایید.{Environment.NewLine}"
+                                  $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «<a href=\"https://ganjoor.net/User/MySuggestedQuotes\">مشق‌شعر‌های پیشنهادی من</a>» را مشاهده بفرمایید.{Environment.NewLine}"
                                   );
 
                 return new RServiceResult<bool>(true);
@@ -233,6 +235,22 @@ namespace RMuseum.Services.Implementation
 
                 _context.Add(dbQuoted);
                 await _context.SaveChangesAsync();
+
+                var moderators = await _appUserService.GetUsersHavingPermission(RMuseumSecurableItem.GanjoorEntityShortName, RMuseumSecurableItem.ModerateOperationShortName);
+                if (string.IsNullOrEmpty(moderators.ExceptionString)) //if not, do nothing!
+                {
+                    foreach (var moderator in moderators.Result)
+                    {
+                        await _notificationService.PushNotification
+                                        (
+                                            (Guid)moderator.Id,
+                                            "پیشنهاد مشق شعر",
+                                            $"کاربری مشق شعری جدیدی را برای یک شعر پیشنهاد داده است. لطفاً بخش <a href=\"https://ganjoor.net/Admin/ReviewQuoteds\">مشق‌ها</a> را بررسی فرمایید.{Environment.NewLine}" +
+                                            $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی مشق‌شعرهای پیشنهادی است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید.",
+                                            NotificationType.ActionRequired
+                                        );
+                    }
+                }
 
                 return new RServiceResult<GanjoorQuotedPoemViewModel>(new GanjoorQuotedPoemViewModel(dbQuoted));
 
