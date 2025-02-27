@@ -60,11 +60,6 @@ namespace GanjooRazor.Areas.User.Pages
                 {
                     case VersePosition.Comment:
                         incompleteCouplet = false;
-                        if (!string.IsNullOrEmpty(coupletText))
-                        {
-                            couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
-                            coupletText = "";
-                        }
                         break;
                     case VersePosition.Paragraph:
                     case VersePosition.Single:
@@ -247,6 +242,21 @@ namespace GanjooRazor.Areas.User.Pages
                     RelatedPoem = JObject.Parse(await relPoemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
 
                     RelatedCouplets = GetCouplets(RelatedPoem.Verses);
+                }
+
+                int cIndex = -1;
+                foreach (var verse in RelatedPoem.Verses)
+                {
+                    if (verse.VersePosition != VersePosition.Left && verse.VersePosition != VersePosition.CenteredVerse2 && verse.VersePosition != VersePosition.Comment)
+                        cIndex++;
+                    if (verse.VersePosition != VersePosition.Comment)
+                    {
+                        verse.CoupletIndex = cIndex;
+                    }
+                    else
+                    {
+                        verse.CoupletIndex = null;
+                    }
                 }
 
                 if (GanjoorQuotedPoem.RelatedCoupletIndex != null)

@@ -67,11 +67,6 @@ namespace GanjooRazor.Areas.Admin.Pages
                 {
                     case VersePosition.Comment:
                         incompleteCouplet = false;
-                        if (!string.IsNullOrEmpty(coupletText))
-                        {
-                            couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
-                            coupletText = "";
-                        }
                         break;
                     case VersePosition.Paragraph:
                     case VersePosition.Single:

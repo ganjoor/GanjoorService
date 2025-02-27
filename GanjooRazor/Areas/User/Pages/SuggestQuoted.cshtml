@@ -23,13 +23,67 @@
             document.getElementById('finalize-select2').style.display = 'block';
         }
 
+        function getCouplets(verses) {
+            let coupetIndex = -1;
+            let coupletText = "";
+            let coupletIndices = [];
+            let coupletTexts = [];
+            let verseIndex = 0;
+            let incompleteCouplet = false;
+
+            while (verseIndex < verses.length) {
+                switch (verses[verseIndex].versePosition) {
+                    case 5: // Comment
+                        incompleteCouplet = false;
+                        break;
+                    case -1: // Paragraph
+                    case 4: // Single
+                        incompleteCouplet = false;
+                        if (coupletText) {
+                            coupletIndices.push(coupetIndex);
+                            coupletTexts.push(coupletText);
+                            coupletText = "";
+                        }
+                        coupetIndex++;
+                        coupletIndices.push(coupetIndex);
+                        coupletTexts.push(verses[verseIndex].text);
+                        break;
+                    case 0: // Right
+                    case 2: // CenteredVerse1
+                        incompleteCouplet = false;
+                        if (coupletText) {
+                            coupletIndices.push(coupetIndex);
+                            coupletTexts.push(coupletText);
+                        }
+                        coupetIndex++;
+                        coupletText = verses[verseIndex].text;
+                        break;
+                    case 1: // Left
+                    case 3: // CenteredVerse2
+                        incompleteCouplet = true;
+                        coupletText += ` - ${verses[verseIndex].text}`;
+                        break;
+                }
+                verseIndex++;
+            }
+
+            if (incompleteCouplet && coupletText) {
+                coupletIndices.push(coupetIndex);
+                coupletTexts.push(coupletText);
+            }
+
+            return { coupletIndices, coupletTexts };
+        }
+
+
+
         function finalizeSelectPage() {
             document.getElementById('loading-selection').style.display = 'block';
             document.getElementById('finalize-select2').style.display = 'none';
             document.getElementById('display-frame').style.display = 'block';
             document.getElementById('select-poem').style.display = 'none';
             document.getElementById('finalize-select').style.display = 'none';
-            
+
 
             const currentUrl = document.getElementById('select-poem').contentWindow.location.href;
 
@@ -55,20 +109,9 @@
                     document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemFullTitle').value = json.poem.fullTitle;
                     document.getElementById('GanjoorQuotedPoem_CachedRelatedPoemFullUrl').value = json.poem.fullUrl;
 
-                    var coupletIndices = [];
-                    var coupletTexts = [];
-
-                    for (var i = 0; i < json.poem.verses.length; i++) {
-                        var verse = json.poem.verses[i];
-                        if (coupletIndices.indexOf(verse.coupletIndex) != -1) {
-                            coupletTexts[coupletIndices.indexOf(verse.coupletIndex)] += ' - ';
-                            coupletTexts[coupletIndices.indexOf(verse.coupletIndex)] += verse.text;
-                        }
-                        else {
-                            coupletIndices.push(verse.coupletIndex);
-                            coupletTexts.push(verse.text);
-                        }
-                    }
+                    const result = getCouplets(json.poem.verses);
+                    var coupletIndices = result.coupletIndices;
+                    var coupletTexts = result.coupletTexts;
 
                     var x = document.getElementById("GanjoorQuotedPoem_RelatedCoupletIndex");
                     x.length = 0;
@@ -84,7 +127,7 @@
 
                 }).catch((error) => {
                     document.getElementById('loading-selection').style.display = 'none';
-                    alert('صفحه‌ای که انتخاب کرده‌اید حاوی یک شعر نیست. جزئیات بیشتر: ' + error);
+                    alert('در انتخاب صفحه خطایی رخ داد. جزئیات بیشتر: ' + error);
                     selectGanjoorPage();
                 });
 
@@ -105,7 +148,7 @@
                             از فهرست زیر بیتی را که نقل قول در آن رخ داده مشخص کنید.
                         </p>
                     </div>
-                  
+
                 </td>
             </tr>
             <tr>
@@ -114,7 +157,7 @@
                     <input type="hidden" asp-for="GanjoorQuotedPoem.Id" />
                     <input type="hidden" asp-for="GanjoorQuotedPoem.PoemId" />
                     <input type="hidden" asp-for="GanjoorQuotedPoem.PoetId" />
-                    
+
                 </td>
             </tr>
             <tr>
@@ -179,7 +222,7 @@
                 </td>
             </tr>
 
-           
+
             @if (Model.GanjoorQuotedPoem.RelatedPoemId != null)
             {
                 <tr>
@@ -219,11 +262,11 @@
             </tr>
             <tr>
                 <td>
-                   <div class="notice">
-                       <p>
-                           اگر شعر را از طریق دکمهٔ «گزینش شعر مرتبط» انتخاب کرده‌اید کادر زیر را خالی بگذارید.
-                       </p>
-                   </div>
+                    <div class="notice">
+                        <p>
+                            اگر شعر را از طریق دکمهٔ «گزینش شعر مرتبط» انتخاب کرده‌اید کادر زیر را خالی بگذارید.
+                        </p>
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -299,7 +342,7 @@
                     شاعر:
                 </td>
             </tr>
-          
+
             <tr>
                 <td>
                     <input asp-for="GanjoorQuotedPoem.RelatedPoetId" hidden />
@@ -329,7 +372,6 @@
             </tr>
             <tr>
                 <td>
-                    
                 </td>
             </tr>
             <tr>
@@ -382,7 +424,7 @@
             </tr>
 
             <tr><td><hr /></td></tr>
-           
+
         </table>
     </form>
 

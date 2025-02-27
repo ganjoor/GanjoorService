@@ -44,7 +44,7 @@ else
             </tr>
             <tr>
                 <td>
-                    
+
                     <input asp-for="ModerationModel.Approved" />
                 </td>
             </tr>
@@ -67,7 +67,7 @@ else
 
     </form>
     <table>
-        
+
         <tr>
             <td>
                 بیت مرجع از <a href="/?p=@Model.GanjoorQuotedPoem.PoemId">شعر</a>:
@@ -130,7 +130,14 @@ else
             <td>
                 @if (Model.GanjoorQuotedPoem.RelatedCoupletIndex != null && Model.GanjoorQuotedPoem.RelatedCoupletIndex != -1)
                 {
-                    <p>@($"{(Model.RelatedCouplets[(int)Model.GanjoorQuotedPoem.RelatedCoupletIndex].Item1 + 1).ToPersianNumbers()} - {Model.RelatedCouplets[(int)Model.GanjoorQuotedPoem.RelatedCoupletIndex].Item2}")</p>
+                    if (Model.GanjoorQuotedPoem.RelatedCoupletIndex < Model.RelatedCouplets.Length)
+                    {
+                        <p>@($"{(Model.RelatedCouplets[(int)Model.GanjoorQuotedPoem.RelatedCoupletIndex].Item1 + 1).ToPersianNumbers()} - {Model.RelatedCouplets[(int)Model.GanjoorQuotedPoem.RelatedCoupletIndex].Item2}")</p>    
+                    }
+                    else{
+                        <p class="red-color">خطا</p>
+                    }
+                    
                 }
 
             </td>
