@@ -2543,8 +2543,9 @@ namespace RMuseum.Services.Implementation
         /// <param name="term"></param>
         /// <param name="coupletCountsFrom"></param>
         /// <param name="coupletCountsTo"></param>
+        /// <param name="exceptPoetId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoemsAsync(PagingParameterModel paging, string metre, string rhyme, int? poetId, int? catId, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown, string term = null, int coupletCountsFrom = 0, int coupletCountsTo = 0)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoemsAsync(PagingParameterModel paging, string metre, string rhyme, int? poetId, int? catId, string language, GanjoorPoemFormat format , string term , int coupletCountsFrom, int coupletCountsTo, int[] exceptPoetId)
         {
             if (poetId == null)
             {
@@ -2582,6 +2583,8 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorPoemSections.Include(s => s.Poem).Include(s => s.Poet).Include(s => s.GanjoorMetre)
                 .Where(s =>
                         (poetId == null || s.PoetId == poetId)
+                        &&
+                        (exceptPoetId.Length == 0 || !exceptPoetId.Contains(s.PoetId ?? 0))
                         &&
                         ((language == "fa-IR" && string.IsNullOrEmpty(s.Language)) || s.Language == language)
                         &&

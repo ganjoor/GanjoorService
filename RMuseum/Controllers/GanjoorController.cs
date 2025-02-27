@@ -2423,6 +2423,7 @@ namespace RMuseum.Controllers
         /// <param name="term"></param>
         /// <param name="coupletCountsFrom"></param>
         /// <param name="coupletCountsTo"></param>
+        /// <param name="e"></param>
         /// <returns>return value is not complete or valid for some parts, you should use only the valid parts!</returns>
 
         [HttpGet]
@@ -2431,9 +2432,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GanjoorPoemCompleteViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
-        public async Task<IActionResult> GetSimilarPoemsAsync([FromQuery] PagingParameterModel paging, string metre, string rhyme, int poetId = 0, int catId = 0, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown, string term = null, int coupletCountsFrom = 0, int coupletCountsTo = 0)
+        public async Task<IActionResult> GetSimilarPoemsAsync([FromQuery] PagingParameterModel paging, string metre, string rhyme, int poetId = 0, int catId = 0, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown, string term = null, int coupletCountsFrom = 0, int coupletCountsTo = 0, int[] e = null)
         {
-            var pagedResult = await _ganjoorService.GetSimilarPoemsAsync(paging, metre, rhyme, poetId == 0 ? null : poetId, catId == 0 ? null : catId, language, format, term, coupletCountsFrom, coupletCountsTo);
+            var pagedResult = await _ganjoorService.GetSimilarPoemsAsync(paging, metre, rhyme, poetId == 0 ? null : poetId, catId == 0 ? null : catId, language, format, term, coupletCountsFrom, coupletCountsTo, e == null ? [] : e);
             if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
                 return BadRequest(pagedResult.ExceptionString);
 

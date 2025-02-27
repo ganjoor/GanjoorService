@@ -495,8 +495,9 @@ namespace RMuseum.Services
         /// <param name="term"></param>
         /// <param name="coupletCountsFrom"></param>
         /// <param name="coupletCountsTo"></param>
+        /// <param name="exceptPoetId"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoemsAsync(PagingParameterModel paging, string metre, string rhyme, int? poetId, int? catId, string language = "fa-IR", GanjoorPoemFormat format = GanjoorPoemFormat.Unknown, string term = null, int coupletCountsFrom = 0, int coupletCountsTo = 0);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> GetSimilarPoemsAsync(PagingParameterModel paging, string metre, string rhyme, int? poetId, int? catId, string language, GanjoorPoemFormat format , string term , int coupletCountsFrom , int coupletCountsTo , int[] exceptPoetId );
 
         /// <summary>
         /// language tagged poem sections
