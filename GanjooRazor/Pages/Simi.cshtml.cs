@@ -87,6 +87,8 @@ namespace GanjooRazor.Pages
         public bool Quoted { get; set; }
         public bool ExactSearch { get; set; }
 
+        public int[] ExceptPoetId { get; set; }
+
 
         /// <summary>
         /// can edit
@@ -405,11 +407,26 @@ namespace GanjooRazor.Pages
                 title += $" شامل کلیدواژهٔ «{Query}»";
             }
 
+            List<int> exceptPoetId = new List<int>();
+            foreach (var e in Request.Query["e"])
+            {
+                exceptPoetId.Add(int.Parse(e));
+            }
+            ExceptPoetId = exceptPoetId.ToArray();
+
+
             string url = $"{APIRoot.Url}/api/ganjoor/poems/similar?PageNumber={pageNumber}&PageSize=20&metre={Metre}&rhyme={Rhyme}&poetId={PoetId}&catId={CatId}&language={Language}&format={(int)Format}&coupletCountsFrom={CoupletCountsFrom}&coupletCountsTo={CoupletCountsTo}";
             if(!string.IsNullOrEmpty(Query))
             {
                 url += $"&term={Query}";
             }
+            string exceptUrl = "";
+            foreach (var e in exceptPoetId)
+            {
+                exceptUrl += $"&e={e}";
+            }
+            url += exceptUrl;
+
             var response = await _httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)

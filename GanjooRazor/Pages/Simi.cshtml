@@ -27,6 +27,17 @@
         var stickyEnabled = cookieValue != "false";
     </script>
 
+    <script>
+        function deletePoetFromSearch(poetId, poetName){
+        if(!confirm('آیا می‌خواهید '+ poetName+ ' را از نتایج حذف کنید؟')) return;
+        const currentUrl = new URL(window.location.href);
+        const params = currentUrl.searchParams;
+        params.append('e', poetId.toString());
+        currentUrl.search = params.toString();
+        window.location.href = currentUrl.toString();
+        }
+    </script>
+
     @if (Model.CanEdit)
     {
         <script>
@@ -340,8 +351,10 @@
                                 @($"{(poem.CoupletsCount ?? 0).ToPersianNumbers()} بیت")
                             </div>
 
-
-                            <img src="@($"{GanjooRazor.APIRoot.InternetUrl}{poem.Category.Poet.ImageUrl}")" alt="@($"{poem.Category.Poet.Nickname}")" />
+                            <div class="poet">
+                                <img src="@($"{GanjooRazor.APIRoot.InternetUrl}{poem.Category.Poet.ImageUrl}")" alt="@($"{poem.Category.Poet.Nickname}")" />
+                                <a role="button" onclick="deletePoetFromSearch(@poem.Category.Poet.Id, '@(poem.Category.Poet.Nickname)')" class="actionlink" title="حذف @($"{poem.Category.Poet.Nickname}") از نتایج"><i class="notranslate noindent-info-button close-button"></i></a>
+                            </div>
 
                             <div class="spacer">&nbsp;</div>
 
