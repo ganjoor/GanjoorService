@@ -120,6 +120,7 @@ namespace RMuseum.Services.Implementation
                 if (moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count)
                     return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "moderation.VerseOrderText.Length != dbCorrection.VerseOrderText.Count");
 
+                bool versePosistionsChanged = false;
                 var modifiedVerses = new List<GanjoorVerse>();
 
                 foreach (var moderatedVerse in moderation.VerseOrderText)
@@ -135,6 +136,7 @@ namespace RMuseum.Services.Implementation
                     {
                         if (moderatedVerse.VersePositionResult == CorrectionReviewResult.NotReviewed)
                             return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, $"تغییرات نوع مصرع {moderatedVerse.VORder} بررسی نشده است.");
+                        versePosistionsChanged = true;
                         dbVerse.VersePositionResult = moderatedVerse.VersePositionResult;
                     }
                     if(dbVerse.CoupletSummary != null)
@@ -284,7 +286,7 @@ namespace RMuseum.Services.Implementation
                     await _context.SaveChangesAsync();//temporary ids should be saved
                 }
 
-                if (versesDeleted || verseAdded)
+                if (versesDeleted || verseAdded || versePosistionsChanged)
                 {
                     var undeletedPoemVerss = poemVerses.OrderBy(v => v.VOrder).Where(v => !moderation.VerseOrderText.Any(mv => mv.VORder == v.VOrder && mv.MarkForDelete == true)).ToList();
                     for (int vOrder = 1; vOrder <= undeletedPoemVerss.Count; vOrder++)

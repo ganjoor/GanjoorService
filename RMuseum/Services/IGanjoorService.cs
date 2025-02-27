@@ -629,6 +629,13 @@ namespace RMuseum.Services
         RServiceResult<bool> StartFillingPoemsCoupletIndices();
 
         /// <summary>
+        /// refill couplet indices
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> RefillCoupletIndicesAsync(int poemId);
+
+        /// <summary>
         /// fill section couplets count
         /// </summary>
         /// <returns></returns>

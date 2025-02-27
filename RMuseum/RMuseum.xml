@@ -1747,6 +1747,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.RefillCoupletIndicesAsync(System.Int32)">
+            <summary>
+            refill couplet indices for poem
+            </summary>
+            <param name="poemId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.StartFillingSectionCoupletCounts">
             <summary>
             fill section couplet counts
@@ -16586,6 +16593,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.RefillCoupletIndicesAsync(System.Int32)">
+            <summary>
+            refill couplet indices
+            </summary>
+            <param name="poemId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.StartFillingSectionCoupletCounts">
             <summary>
             fill section couplets count
@@ -19391,6 +19405,13 @@
             <summary>
             start filling poems couplet indices
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.RefillCoupletIndicesAsync(System.Int32)">
+            <summary>
+            refill couplet indices
+            </summary>
+            <param name="poemId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFillingSectionCoupletCounts">

@@ -693,6 +693,25 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// refill couplet indices
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> RefillCoupletIndicesAsync(int poemId)
+        {
+            try
+            {
+                await _FillPoemCoupletIndices(_context, poemId);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<bool>(false);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString() );
+            }
+        }
+
+        /// <summary>
         /// fill section couplets count
         /// </summary>
         /// <returns></returns>

@@ -548,6 +548,29 @@ namespace GanjooRazor.Areas.User.Pages
             }
         }
 
+        public async Task<IActionResult> OnPostRefillCoupletIndicesAsync(int id)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PostAsync(
+                        $"{APIRoot.Url}/api/ganjoor/refillcoupletindices/{id}",
+                        null
+                        );
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    return new OkResult();
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+                }
+            }
+        }
+
         public async Task<IActionResult> OnPostRegeneratePoemSectionsAsync(int id)
         {
             using (HttpClient secureClient = new HttpClient())

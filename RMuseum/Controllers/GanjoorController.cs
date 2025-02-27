@@ -2617,6 +2617,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// refill couplet indices for poem
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("refillcoupletindices/{poemId}")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> RefillCoupletIndicesAsync(int poemId)
+        {
+            RServiceResult<bool> res =
+                 await _ganjoorService.RefillCoupletIndicesAsync(poemId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+            {
+                return BadRequest(res.ExceptionString);
+            }
+            return Ok();
+        }
+
+        /// <summary>
         /// fill section couplet counts
         /// </summary>
         /// <returns></returns>

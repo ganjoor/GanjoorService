@@ -324,6 +324,32 @@
         document.getElementById('secondr-btn').style.display = 'none';
     }
 
+    function updateCoupletIndices(id){
+        if (!confirm('آیا از بازسازی اندیس‌های ابیات اطمینان دارید؟'))
+            return;
+
+
+        var url = '?handler=RefillCoupletIndices';
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                id: id,
+            },
+            error: function (e) {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+            },
+            success: function () {
+                alert('انجام شد.');
+            },
+
+        });
+    }
+
     function regenerateSections(id) {
         if (!confirm('آیا از قطعه‌بندی مجدد اطمینان دارید؟'))
             return;
@@ -1643,6 +1669,13 @@ else
         {
             <tr>
                 <td><a role="button" onclick="updateRelatedSections(@Model.GanjoorMetre2.Id, '@Model.RhymeLetters')" class="pagebutton">بازسازی فهرست اشعار هم‌آهنگ با وزن دوم</a></td>
+            </tr>
+        }
+
+        @if (Model.ShowAdminOps)
+        {
+            <tr>
+                <td><a role="button" onclick="updateCoupletIndices(@Model.PageInformation.Poem.Id)" class="pagebutton">تصحیح اندیس‌های ابیات</a></td>
             </tr>
         }
 
