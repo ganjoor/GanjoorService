@@ -2765,6 +2765,27 @@ namespace RMuseum.Services.Implementation
                 externalNormalSizeImageUrl = item.Images.First().ExternalNormalSizeImageUrl;
             }
 
+            var moderators = await _userService.GetUsersHavingPermission(RMuseumSecurableItem.ArtifactEntityShortName, RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName);
+            if (string.IsNullOrEmpty(moderators.ExceptionString)) //if not, do nothing!
+            {
+                foreach (var moderator in moderators.Result)
+                {
+                    if(moderator.Id != userId)
+                    {
+                        await _notificationService.PushNotification
+                                   (
+                                       (Guid)moderator.Id,
+                                       "پیشنهاد تصویر گنجینهٔ گنجور مرتبط با شعر",
+                                       $"تصویری از گنجینهٔ گنجور برای ارتباط با اشعار ثبت شده است. لطفاً بخش <a href=\"https://museum.ganjoor.net/glinkrev\">بازبینی ارتباطات</a> را بررسی فرمایید.{Environment.NewLine}" +
+                                       $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی تصاویر است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید.",
+                                       NotificationType.ActionRequired
+                                   );
+                    }
+                }
+            }
+
+
+
             var user = (await _userService.GetUserInformation(userId)).Result;
 
             GanjoorLinkViewModel viewModel
