@@ -29,6 +29,7 @@ using DNTPersianUtils.Core;
 using FluentFTP;
 using RSecurityBackend.Models.Notification;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Auth.Memory;
 
 namespace RMuseum.Services.Implementation
 {
@@ -3298,6 +3299,21 @@ namespace RMuseum.Services.Implementation
             };
             _context.PinterestLinks.Add(link);
             await _context.SaveChangesAsync();
+            var moderators = await _userService.GetUsersHavingPermission(RMuseumSecurableItem.ArtifactEntityShortName, RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName);
+            if (string.IsNullOrEmpty(moderators.ExceptionString)) //if not, do nothing!
+            {
+                foreach (var moderator in moderators.Result)
+                {
+                    await _notificationService.PushNotification
+                                    (
+                                        (Guid)moderator.Id,
+                                        "پیشنهاد تصویر خارجی مرتبط با شعر",
+                                        $"تصویری خارج از گنجور برای ارتباط با اشعار ثبت شده است. لطفاً بخش <a href=\"https://museum.ganjoor.net/plinkrev\">بازبینی تصاویر</a> را بررسی فرمایید.{Environment.NewLine}" +
+                                        $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی تصاویر است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید.",
+                                        NotificationType.ActionRequired
+                                    );
+                }
+            }
             return new RServiceResult<PinterestLinkViewModel>
                 (
                 new PinterestLinkViewModel()
