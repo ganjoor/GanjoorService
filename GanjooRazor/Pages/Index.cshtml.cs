@@ -1458,6 +1458,13 @@ namespace GanjooRazor.Pages
                     "کان",
                     "رو",
                     "نباشد",
+                    "بر",
+                    "من",
+                    "آن",
+                    "تو",
+                    "او",
+                    "ما",
+                    "شما",
                     ];
                 wordCounts = wordCounts.Where(w => !stopWords.Contains(w.Word)).Take(100).ToArray();
             }
