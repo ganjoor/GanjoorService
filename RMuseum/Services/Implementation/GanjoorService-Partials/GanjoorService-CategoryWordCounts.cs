@@ -9,6 +9,7 @@ using RSecurityBackend.Services.Implementation;
 using System.Threading.Tasks;
 using RSecurityBackend.Models.Generic.Db;
 using RSecurityBackend.Models.Generic;
+using RMuseum.Models.Ganjoor.ViewModels;
 
 namespace RMuseum.Services.Implementation
 {
@@ -63,6 +64,43 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<CategoryWordCountSummary>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// comparison of word counts for poets
+        /// </summary>
+        /// <param name="term"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PoetOrCatWordStat[] Items)>> GetCategoryWordCountsByPoetsAsync(string term, PagingParameterModel paging)
+        {
+            try
+            {
+                var source =
+                     from cwd in _context.CategoryWordCounts
+                     join catsum in _context.CategoryWordCountSummaries on cwd.Id equals catsum.Id
+                     join cat in _context.GanjoorCategories on cwd.CatId equals cat.Id
+                     where cat.ParentId == 0 && cwd.Word == term
+                     orderby cwd.Count
+                     select
+                     new PoetOrCatWordStat()
+                     {
+                         Id = cat.PoetId,
+                         Name =  cat.Title,
+                         Count = cwd.Count,
+                         RowNmbrInCat = cwd.RowNmbrInCat,
+                         TotalWordCount = catsum.TotalWordCount,
+                     };
+
+                (PaginationMetadata PagingMeta, PoetOrCatWordStat[] Items) paginatedResult =
+                    await QueryablePaginator<PoetOrCatWordStat>.Paginate(source, paging);
+
+                return new RServiceResult<(PaginationMetadata PagingMeta, PoetOrCatWordStat[] Items)>(paginatedResult);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, PoetOrCatWordStat[] Items)>((null, null), exp.ToString());
             }
         }
 

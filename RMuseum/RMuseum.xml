@@ -19233,6 +19233,14 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryWordCountsByPoetsAsync(System.String,RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            comparison of word counts for poets
+            </summary>
+            <param name="term"></param>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.BuildCategoryWordCountsAsync(System.Boolean,System.Int32)">
             <summary>
             build word counts
