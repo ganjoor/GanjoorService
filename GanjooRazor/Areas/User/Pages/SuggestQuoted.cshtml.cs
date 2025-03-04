@@ -257,21 +257,24 @@ namespace GanjooRazor.Areas.User.Pages
 
                     RelatedCouplets = GetCouplets(RelatedPoem.Verses);
                 }
-
-                cIndex = -1;
-                foreach (var verse in RelatedPoem.Verses)
+                if(RelatedPoem != null)
                 {
-                    if (verse.VersePosition != VersePosition.Left && verse.VersePosition != VersePosition.CenteredVerse2 && verse.VersePosition != VersePosition.Comment)
-                        cIndex++;
-                    if (verse.VersePosition != VersePosition.Comment)
+                    cIndex = -1;
+                    foreach (var verse in RelatedPoem.Verses)
                     {
-                        verse.CoupletIndex = cIndex;
-                    }
-                    else
-                    {
-                        verse.CoupletIndex = null;
+                        if (verse.VersePosition != VersePosition.Left && verse.VersePosition != VersePosition.CenteredVerse2 && verse.VersePosition != VersePosition.Comment)
+                            cIndex++;
+                        if (verse.VersePosition != VersePosition.Comment)
+                        {
+                            verse.CoupletIndex = cIndex;
+                        }
+                        else
+                        {
+                            verse.CoupletIndex = null;
+                        }
                     }
                 }
+                
 
                 if (GanjoorQuotedPoem.RelatedCoupletIndex != null)
                 {
