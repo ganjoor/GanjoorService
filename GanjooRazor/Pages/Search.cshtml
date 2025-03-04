@@ -236,7 +236,10 @@
                     @Html.Raw(Model.PagingToolsHtml)
                     <div class="spacer">&nbsp;</div>
                     <div>
-                        تعداد کل نتایج: @Model.PaginationMetadata.totalCount.ToPersianNumbers()
+                        تعداد کل نتایج: @Model.PaginationMetadata.totalCount.ToPersianNumbers() قطعه
+                        <div>
+                            <small>در هر قطعه ممکن است عبارت چند بار تکرار شده باشد. برای دستیابی به آمار با احتساب تکرارها <a href="https://blog.ganjoor.net/1403/04/06/words-frequency/">بسامد واژگان</a> را ببینید.</small>
+                        </div>
                     </div>
 
                 }
