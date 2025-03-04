@@ -429,6 +429,13 @@
                                                         </td>
                                                         <td>
                                                             <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(s.GanjoorMetre.Rhythm)}&amp;a={Model.GanjoorPage.PoetOrCat.Poet.Id}")">@s.GanjoorMetre.Rhythm</a>
+                                                            @if (!string.IsNullOrEmpty(s.RhymeLetters))
+                                                            {
+                                                                <a href="@Html.Raw($"/simi/?v={Uri.EscapeDataString(s.GanjoorMetre.Rhythm)}&amp;g={Uri.EscapeDataString(s.RhymeLetters)}")" role="button" class="cursor-pointer" title="مشابه‌یابی بر اساس وزن و قافیه">
+                                                                    <i class="notranslate noindent-info-button rhyming-poems"></i>
+                                                                </a>
+                                                            }
+
                                                             @if (Model.LoggedIn)
                                                             {
                                                                 <a href="/User/Section?poemId=@Model.GanjoorPage.Id&index=@s.Index#metre" role="button" class="cursor-pointer" title="ویرایش وزن">

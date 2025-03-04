@@ -1465,6 +1465,15 @@ namespace GanjooRazor.Pages
                     "او",
                     "ما",
                     "شما",
+                    "مرا",
+                    "ار",
+                    "داری",
+                    "بیا",
+                    "همه",
+                    "گو",
+                    "مکن",
+                    "زد",
+                    "گفتم",
                     ];
                 wordCounts = wordCounts.Where(w => !stopWords.Contains(w.Word)).Take(100).ToArray();
             }
