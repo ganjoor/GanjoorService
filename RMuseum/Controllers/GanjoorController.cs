@@ -4348,6 +4348,11 @@ namespace RMuseum.Controllers
             return Ok(pagedResult.Result.Items);
         }
 
+        /// <summary>
+        /// category words summary
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("wordsums/{catId}")]
         [AllowAnonymous]
@@ -4363,8 +4368,32 @@ namespace RMuseum.Controllers
            return Ok(res.Result);
         }
 
+        /// <summary>
+        /// comparison of word counts for poets
+        /// </summary>
+        /// <param name="term"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("wordcounts/bypoet")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PoetOrCatWordStat>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
-        
+        public async Task<IActionResult> GetCategoryWordCountsByPoetsAsync(string term, [FromQuery] PagingParameterModel paging)
+        {
+            var pagedResult = await _ganjoorService.GetCategoryWordCountsByPoetsAsync(term, paging);
+            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
+                return BadRequest(pagedResult.ExceptionString);
+
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+
+            return Ok(pagedResult.Result.Items);
+        }
+
+
+
 
         /*
         /// <summary>

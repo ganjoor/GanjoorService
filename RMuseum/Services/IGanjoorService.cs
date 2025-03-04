@@ -1502,6 +1502,14 @@ namespace RMuseum.Services
         Task<RServiceResult<CategoryWordCountSummary>> GetCategoryWordCountSummaryAsync(int catId);
 
         /// <summary>
+        /// comparison of word counts for poets
+        /// </summary>
+        /// <param name="term"></param>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, PoetOrCatWordStat[] Items)>> GetCategoryWordCountsByPoetsAsync(string term, PagingParameterModel paging);
+
+        /// <summary>
         /// tajik import from sqlite
         /// </summary>
         /// <param name="poetId"></param>
