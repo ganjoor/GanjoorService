@@ -79,7 +79,7 @@ namespace RMuseum.Services.Implementation
             {
                 var source =
                      from cwd in _context.CategoryWordCounts
-                     join catsum in _context.CategoryWordCountSummaries on cwd.Id equals catsum.Id
+                     join catsum in _context.CategoryWordCountSummaries on cwd.CatId equals catsum.CatId
                      join cat in _context.GanjoorCategories on cwd.CatId equals cat.Id
                      where cat.ParentId == 0 && cwd.Word == term
                      orderby cwd.Count
