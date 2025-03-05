@@ -1,0 +1,60 @@
+﻿@model GanjooRazor.Pages._WordCountsByPoetModel
+@using System.Globalization
+@using DNTPersianUtils.Core
+
+@if (Model.WordStats.Length > 0)
+{
+    <h2>
+        این واژه در مجموع @Model.WordStats.Sum(w => w.Count) بار در گنجور ظاهر شده است که سهم هر سنخور در جدول زیر مشخص شده است. ستون چهارم درصد شمار این واژه به نسبت کل واژگان خود آن سخنور را نشان می‌دهد و نه کل گنجور و از این جهت جمع این ستون عددی بی‌معنی است.
+    </h2>
+    <table class="stats" id="words-stats">
+        <thead>
+            <tr class="h">
+                <td class="c1">ردیف</td>
+                <td class="c2">سخنور</td>
+                <td class="c3">شمار</td>
+                <td class="c4">درصد از کل واژگان سخنور</td>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.WordStats.Length; i++)
+            {
+                @if (i % 2 == 0)
+                {
+                    <tr class="e">
+                        <td class="c1">@(i + 1).ToPersianNumbers()</td>
+                        <td class="c2"><a href="/search?s=@Model.Term&author=@Model.WordStats[i].Id">@Model.WordStats[i].Name</a></td>
+                        <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordStats[i].Count)</td>
+                        @if (Model.WordStats[i].TotalWordCount == 0)
+                        {
+                            <td class="c4"></td>
+                        }
+                        else
+                        {
+                            <td class="c4">@((Model.WordStats[i].Count * 100.0 / Model.WordStats[i].TotalWordCount).ToString("N4", new CultureInfo("fa-IR")).ToPersianNumbers())</td>
+                        }
+                    </tr>
+
+                }
+                else
+                {
+                    <tr>
+                        <td class="c1">@(i + 1).ToPersianNumbers()</td>
+                        <td class="c2"><a href="/search?s=@Model.Term&author=@Model.WordStats[i].Id">@Model.WordStats[i].Name</a></td>
+                        <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordStats[i].Count)</td>
+                        @if (Model.WordStats[i].TotalWordCount == 0)
+                        {
+                            <td class="c4"></td>
+                        }
+                        else
+                        {
+                            <td class="c4">@((Model.WordStats[i].Count * 100.0 / Model.WordStats[i].TotalWordCount).ToString("N4", new CultureInfo("fa-IR")).ToPersianNumbers())</td>
+                        }
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+}
+
