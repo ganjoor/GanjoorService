@@ -7,10 +7,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DNTPersianUtils.Core;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services.Implementation;
 using RSecurityBackend.Models.Generic;
@@ -436,6 +439,35 @@ namespace GanjooRazor.Pages
 
             htmlText += $"</div>{Environment.NewLine}";
             return htmlText;
+        }
+
+        public async Task<ActionResult> OnGetWordCountsByPoetAsync(string term)
+        {
+            term = term.Replace("\"", "");
+            if (!string.IsNullOrEmpty(term))
+            {
+                term = term.Trim();
+            }
+            var wordCountsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/wordcounts/bypoet?term={term}&PageNumber=1&PageSize=1000");
+
+            if (!wordCountsResponse.IsSuccessStatusCode)
+            {
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await wordCountsResponse.Content.ReadAsStringAsync()));
+            }
+            var wordCounts = JsonConvert.DeserializeObject<PoetOrCatWordStat[]>(await wordCountsResponse.Content.ReadAsStringAsync());
+
+            return new PartialViewResult()
+            {
+                ViewName = "_WordCountsByPoetPartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _WordCountsByPoetPartialModel()
+                    {
+                        Term = term,
+                        WordStats = wordCounts
+                    }
+                }
+            };
         }
 
     }

@@ -1,11 +1,11 @@
-﻿@model GanjooRazor.Pages._WordCountsByPoetModel
+﻿@model GanjooRazor.Pages._WordCountsByPoetPartialModel
 @using System.Globalization
 @using DNTPersianUtils.Core
 
 @if (Model.WordStats.Length > 0)
 {
     <h2>
-        این واژه در مجموع @Model.WordStats.Sum(w => w.Count) بار در گنجور ظاهر شده است که سهم هر سنخور در جدول زیر مشخص شده است. ستون چهارم درصد شمار این واژه به نسبت کل واژگان خود آن سخنور را نشان می‌دهد و نه کل گنجور و از این جهت جمع این ستون عددی بی‌معنی است.
+        این واژه در مجموع @Model.WordStats.Sum(w => w.Count) بار در گنجور ظاهر شده است که سهم هر سخنور در جدول زیر مشخص شده است. ستون چهارم درصد شمار این واژه به نسبت کل واژگان خود آن سخنور را نشان می‌دهد و نه کل گنجور و از این جهت جمع این ستون عددی بی‌معنی است.
     </h2>
     <table class="stats" id="words-stats">
         <thead>
@@ -22,7 +22,7 @@
                 @if (i % 2 == 0)
                 {
                     <tr class="e">
-                        <td class="c1">@(i + 1).ToPersianNumbers()</td>
+                        <td class="c1">@((i + 1).ToPersianNumbers())</td>
                         <td class="c2"><a href="/search?s=@Model.Term&author=@Model.WordStats[i].Id">@Model.WordStats[i].Name</a></td>
                         <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordStats[i].Count)</td>
                         @if (Model.WordStats[i].TotalWordCount == 0)
@@ -39,7 +39,7 @@
                 else
                 {
                     <tr>
-                        <td class="c1">@(i + 1).ToPersianNumbers()</td>
+                        <td class="c1">@((i + 1).ToPersianNumbers())</td>
                         <td class="c2"><a href="/search?s=@Model.Term&author=@Model.WordStats[i].Id">@Model.WordStats[i].Name</a></td>
                         <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordStats[i].Count)</td>
                         @if (Model.WordStats[i].TotalWordCount == 0)

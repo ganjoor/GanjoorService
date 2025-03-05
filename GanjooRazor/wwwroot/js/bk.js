@@ -1695,6 +1695,31 @@ function onSearchWordCounts(catId, poetId, totalWordCount) {
     }, 500);
 }
 
+function loadWordCountsByPoet(term) {
+    var divParent = document.getElementById('wordcounts-placeholder');
+    var imgElementId = 'loadingwordcountsimg';
+    divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="remove-this-wordcounts"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
+    $.ajax({
+        type: "GET",
+        url: '?Handler=WordCountsByPoet&term='+term,
+        error: function () {
+            if (document.getElementById("remove-this-wordcounts") != null) {
+                document.getElementById("remove-this-wordcounts").remove();
+            }
+        },
+        success: function (data) {
+            if (document.getElementById("remove-this-wordcounts") != null) {
+                document.getElementById("remove-this-wordcounts").remove();
+                if (document.getElementById("load-word-counts") != null) {
+                    document.getElementById("load-word-counts").style.display = 'none';
+                }
+                $(data).appendTo(divParent);
+                plotChart('words-stats');
+            }
+        },
+    });
+}
+
 
 function countPoemWords(poemId) {
     var loadButton = document.getElementById("load-word-counts");
