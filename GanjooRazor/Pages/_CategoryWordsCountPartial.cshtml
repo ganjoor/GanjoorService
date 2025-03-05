@@ -14,11 +14,11 @@
         </p>
         @if (Model.RemStopWords)
         {
-            <p id="remStopWords">جهت مشاهدهٔ آمار با واژگان کم‌بهادار <a href="javascript:reloadWordCounts(@Model.CatId, @Model.PoetId, false)">اینجا</a> کلیک کنید.</p>
+            <p id="remStopWords">جهت مشاهدهٔ آمار با حروف ربط و دیگر واژگان کم‌تأثیر پربسامد <a href="javascript:reloadWordCounts(@Model.CatId, @Model.PoetId, false)">اینجا</a> کلیک کنید.</p>
         }
         else
         {
-            <p id="remStopWords">جهت مشاهدهٔ آمار بدون واژگان کم‌بهادار <a href="javascript:reloadWordCounts(@Model.CatId, @Model.PoetId, true)">اینجا</a> کلیک کنید.</p>
+            <p id="remStopWords">جهت مشاهدهٔ آمار بدون حروف ربط و دیگر واژگان کم‌تأثیر پربسامد <a href="javascript:reloadWordCounts(@Model.CatId, @Model.PoetId, true)">اینجا</a> کلیک کنید.</p>
         }
         <div class="clear-both">
             <input type="text" id="wordcountterm" placeholder="جستجوی واژه" value="" onkeyup="onSearchWordCounts(@Model.CatId, @Model.PoetId, @Model.TotalWordCount)">
