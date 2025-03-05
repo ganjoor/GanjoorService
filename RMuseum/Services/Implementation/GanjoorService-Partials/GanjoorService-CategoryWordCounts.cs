@@ -81,8 +81,8 @@ namespace RMuseum.Services.Implementation
                      from cwd in _context.CategoryWordCounts
                      join catsum in _context.CategoryWordCountSummaries on cwd.CatId equals catsum.CatId
                      join cat in _context.GanjoorCategories on cwd.CatId equals cat.Id
-                     where cat.ParentId == 0 && cwd.Word == term
-                     orderby cwd.Count
+                     where cat.ParentId == null && cwd.Word == term
+                     orderby cwd.Count descending
                      select
                      new PoetOrCatWordStat()
                      {
