@@ -5,7 +5,7 @@
 @if (Model.WordStats.Length > 0)
 {
     <p>
-        این واژه در مجموع @RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordStats.Sum(w => w.Count)) بار در گنجور ظاهر شده است که سهم هر سخنور در جدول زیر مشخص شده است.
+        «@Model.Term» در مجموع @RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordStats.Sum(w => w.Count)) بار در گنجور ظاهر شده است که سهم هر سخنور در جدول زیر مشخص شده است.
     </p>
     <table class="stats" id="words-stats">
         <thead>

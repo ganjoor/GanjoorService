@@ -13,7 +13,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services.Implementation;
 using RSecurityBackend.Models.Generic;
@@ -69,6 +68,14 @@ namespace GanjooRazor.Pages
         public List<GanjoorPoetViewModel> Poets { get; set; }
 
         public string Query { get; set; }
+
+        public bool QueryIsSingleWord
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(Query) && Query.IndexOfAny([' ', '‌']) == -1;
+            }
+        }
         public int PoetId { get; set; }
         public int CatId { get; set; }
         public string CatFullTitle { get; set; }
@@ -152,6 +159,14 @@ namespace GanjooRazor.Pages
         public bool Quoted { get; set; }
 
         public bool ExactSearch { get; set; }
+
+        public string QueryDin
+        {
+            get
+            {
+                return Request.Query["s"].ApplyCorrectYeKe().Trim();
+            }
+        }
 
         public async Task<IActionResult> OnGetAsync()
         {
