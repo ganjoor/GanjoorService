@@ -4373,16 +4373,17 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="term"></param>
         /// <param name="paging"></param>
+        /// <param name="parentCatId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("wordcounts/bypoet")]
+        [Route("wordcounts/bycat")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PoetOrCatWordStat>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
-        public async Task<IActionResult> GetCategoryWordCountsByPoetsAsync(string term, [FromQuery] PagingParameterModel paging)
+        public async Task<IActionResult> GetCategoryWordCountsByPoetsAsync(string term, [FromQuery] PagingParameterModel paging, int? parentCatId)
         {
-            var pagedResult = await _ganjoorService.GetCategoryWordCountsByPoetsAsync(term, paging);
+            var pagedResult = await _ganjoorService.GetCategoryWordCountsBySubCatsAsync(term, paging, parentCatId);
             if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
                 return BadRequest(pagedResult.ExceptionString);
 

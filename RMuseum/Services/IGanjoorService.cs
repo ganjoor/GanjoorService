@@ -1506,8 +1506,9 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="term"></param>
         /// <param name="paging"></param>
+        /// <param name="parentCatId"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, PoetOrCatWordStat[] Items)>> GetCategoryWordCountsByPoetsAsync(string term, PagingParameterModel paging);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, PoetOrCatWordStat[] Items)>> GetCategoryWordCountsBySubCatsAsync(string term, PagingParameterModel paging, int? parentCatId);
 
         /// <summary>
         /// tajik import from sqlite

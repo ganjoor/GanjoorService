@@ -2345,12 +2345,13 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetCategoryWordCountsByPoetsAsync(System.String,RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCategoryWordCountsByPoetsAsync(System.String,RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Int32})">
             <summary>
             comparison of word counts for poets
             </summary>
             <param name="term"></param>
             <param name="paging"></param>
+            <param name="parentCatId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetTajikPoetsAsync">
@@ -17467,12 +17468,13 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetCategoryWordCountsByPoetsAsync(System.String,RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetCategoryWordCountsBySubCatsAsync(System.String,RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Int32})">
             <summary>
             comparison of word counts for poets
             </summary>
             <param name="term"></param>
             <param name="paging"></param>
+            <param name="parentCatId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.TajikImportFromSqlite(System.Int32,System.String)">
@@ -19256,12 +19258,13 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryWordCountsByPoetsAsync(System.String,RSecurityBackend.Models.Generic.PagingParameterModel)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryWordCountsBySubCatsAsync(System.String,RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Int32})">
             <summary>
-            comparison of word counts for poets
+            comparison of word counts for poets ot subcats
             </summary>
             <param name="term"></param>
             <param name="paging"></param>
+            <param name="parentCatId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.BuildCategoryWordCountsAsync(System.Boolean,System.Int32)">

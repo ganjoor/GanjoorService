@@ -68,12 +68,13 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// comparison of word counts for poets
+        /// comparison of word counts for poets ot subcats
         /// </summary>
         /// <param name="term"></param>
         /// <param name="paging"></param>
+        /// <param name="parentCatId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PoetOrCatWordStat[] Items)>> GetCategoryWordCountsByPoetsAsync(string term, PagingParameterModel paging)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PoetOrCatWordStat[] Items)>> GetCategoryWordCountsBySubCatsAsync(string term, PagingParameterModel paging, int? parentCatId)
         {
             try
             {
@@ -81,12 +82,13 @@ namespace RMuseum.Services.Implementation
                      from cwd in _context.CategoryWordCounts
                      join catsum in _context.CategoryWordCountSummaries on cwd.CatId equals catsum.CatId
                      join cat in _context.GanjoorCategories on cwd.CatId equals cat.Id
-                     where cat.ParentId == null && cwd.Word == term
+                     where cat.ParentId == parentCatId && cwd.Word == term
                      orderby cwd.Count descending
                      select
                      new PoetOrCatWordStat()
                      {
-                         Id = cat.PoetId,
+                         CatId = cat.Id,
+                         PoetId = cat.PoetId,
                          Name =  cat.Title,
                          Count = cwd.Count,
                          RowNmbrInCat = cwd.RowNmbrInCat,
