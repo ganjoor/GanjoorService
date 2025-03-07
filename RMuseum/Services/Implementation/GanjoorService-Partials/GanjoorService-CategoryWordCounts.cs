@@ -240,16 +240,16 @@ namespace RMuseum.Services.Implementation
                 var subcatCounts = await _BuildCategoryWordStatsAsync(context, child, jobProgressServiceEF, job);
                 if (subcatCounts.Any())
                 {
-                    foreach (var count in subcatCounts)
+                    foreach (var subcatCount in subcatCounts.Where(c => c.CatId == child.Id))
                     {
-                        var wordCount = counts.Where(c => c.CatId == cat.Id && c.Word == count.Word).SingleOrDefault();
+                        var wordCount = counts.Where(c => c.CatId == cat.Id && c.Word == subcatCount.Word).SingleOrDefault();
                         if (wordCount != null)
                         {
-                            wordCount.Count += count.Count;
+                            wordCount.Count += subcatCount.Count;
                         }
                         else
                         {
-                            counts.Add(new CategoryWordCount { CatId = cat.Id, Word = count.Word, Count = count.Count });
+                            counts.Add(new CategoryWordCount { CatId = cat.Id, Word = subcatCount.Word, Count = subcatCount.Count });
                         }
                     }
                     counts.AddRange(subcatCounts);
