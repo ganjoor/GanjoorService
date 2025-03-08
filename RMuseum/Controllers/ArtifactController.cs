@@ -1420,7 +1420,7 @@ namespace RMuseum.Controllers
         [Authorize]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RUserBookmark[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GeIArtifactUserBookmarks(Guid artifactId)
+        public async Task<IActionResult> GetArtifactUserBookmarks(Guid artifactId)
         {
             Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
             RServiceResult<RUserBookmark[]> res = await _artifactService.GetArtifactUserBookmarks(artifactId, loggedOnUserId);
