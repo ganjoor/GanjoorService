@@ -494,7 +494,8 @@ namespace GanjooRazor.Pages
                     Model = new _WordCountsByPoetPartialModel()
                     {
                         Term = term,
-                        WordStats = wordCounts
+                        WordStats = wordCounts,
+                        Whole = catId == 0 && poetId == 0,
                     }
                 }
             };
