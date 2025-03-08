@@ -4373,7 +4373,8 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="term"></param>
         /// <param name="paging"></param>
-        /// <param name="parentCatId"></param>
+        /// <param name="catId">can be null or can be extracted from poetId</param>
+        /// <param name="poetId">is not necessary unless you mean a specific poet and do not provide catId</param>
         /// <returns></returns>
         [HttpGet]
         [Route("wordcounts/bycat")]
@@ -4381,9 +4382,9 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PoetOrCatWordStat>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
-        public async Task<IActionResult> GetCategoryWordCountsByPoetsAsync(string term, [FromQuery] PagingParameterModel paging, int? parentCatId)
+        public async Task<IActionResult> GetCategoryWordCountsByPoetsAsync(string term, [FromQuery] PagingParameterModel paging, int? catId, int? poetId)
         {
-            var pagedResult = await _ganjoorService.GetCategoryWordCountsBySubCatsAsync(term, paging, parentCatId);
+            var pagedResult = await _ganjoorService.GetCategoryWordCountsBySubCatsAsync(term, paging, catId, poetId);
             if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
                 return BadRequest(pagedResult.ExceptionString);
 

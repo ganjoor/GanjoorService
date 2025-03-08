@@ -73,11 +73,17 @@ namespace RMuseum.Services.Implementation
         /// <param name="term"></param>
         /// <param name="paging"></param>
         /// <param name="parentCatId"></param>
+        /// <param name="poetId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PoetOrCatWordStat[] Items)>> GetCategoryWordCountsBySubCatsAsync(string term, PagingParameterModel paging, int? parentCatId)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, PoetOrCatWordStat[] Items)>> GetCategoryWordCountsBySubCatsAsync(string term, PagingParameterModel paging, int? parentCatId, int? poetId)
         {
             try
             {
+                if(poetId != null && parentCatId == null)
+                {
+                    var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poetId).SingleAsync();
+                    parentCatId = poetId;
+                }
                 var source =
                      from cwd in _context.CategoryWordCounts
                      join catsum in _context.CategoryWordCountSummaries on cwd.CatId equals catsum.CatId
