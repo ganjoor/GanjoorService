@@ -81,8 +81,8 @@ namespace RMuseum.Services.Implementation
             {
                 if(poetId != null && parentCatId == null)
                 {
-                    var poet = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Id == poetId).SingleAsync();
-                    parentCatId = poetId;
+                    var cat = await _context.GanjoorCategories.AsNoTracking().Where(p => p.PoetId == poetId && p.ParentId == null).SingleAsync();
+                    parentCatId = cat.Id;
                 }
                 var source =
                      from cwd in _context.CategoryWordCounts
