@@ -247,33 +247,33 @@ select {
     border-top: 1px dashed;
 }
 
-#tab-items{
-    border:none !important;
+#tab-items {
+    border: none !important;
 }
 
 .poemtablinks {
     display: inline-table;
 }
 
-    .poet .caption{
-        display: block;
-        width: 100%;
-        font-family: Vazir;
-        font-weight: 300;
-        font-size: 0.8em;
-        text-align: center;
-        margin-bottom: 30px;
-    }
+.poet .caption {
+    display: block;
+    width: 100%;
+    font-family: Vazir;
+    font-weight: 300;
+    font-size: 0.8em;
+    text-align: center;
+    margin-bottom: 30px;
+}
 
-        .poet .caption a, .poemtablinks a {
-            border-radius: 5px;
-            display: block;
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-            padding: 5px;
-            background-color: darkred;
-            border-radius: 5px;
-            margin-top: 5px;
-        }
+    .poet .caption a, .poemtablinks a {
+        border-radius: 5px;
+        display: block;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        padding: 5px;
+        background-color: darkred;
+        border-radius: 5px;
+        margin-top: 5px;
+    }
 
 
 .caption, .poemtablinks {
@@ -293,10 +293,10 @@ select {
         background-color: #300;
     }
 
-    #fa .active a{
-        font-weight: bold;
-        background-color: #300;
-    }
+#fa .active a {
+    font-weight: bold;
+    background-color: #300;
+}
 
 .width-100per {
     width: 100% !important;
@@ -2180,6 +2180,7 @@ mark {
 .footer-icon {
     fill: #300;
 }
+
 .tabcontent {
     display: none;
 }
@@ -2206,6 +2207,29 @@ mark {
     .tab button.active {
         background-color: rgb(51, 0, 0);
     }
+
+.expandable-container-wrapper {
+    position: relative;
+}
+
+.expandable-content {
+    width: 100%;
+    overflow: hidden;
+    transition: height 0.3s ease-out;
+    position: relative;
+}
+
+/* Blurred bottom overlay effect */
+.expandable-blur-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px; /* Height of the blur effect */
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.9));
+    pointer-events: none; /* Prevents interaction */
+    transition: opacity 0.3s ease-out;
+}
 
 @media(prefers-color-scheme: dark) {
     body {

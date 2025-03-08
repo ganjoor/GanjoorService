@@ -164,7 +164,7 @@ namespace GanjooRazor.Pages
         {
             get
             {
-                return Request.Query["s"].ApplyCorrectYeKe().Trim();
+                return Query.ApplyCorrectYeKe().Trim().Replace("\"", "");
             }
         }
 
@@ -456,14 +456,29 @@ namespace GanjooRazor.Pages
             return htmlText;
         }
 
-        public async Task<ActionResult> OnGetWordCountsByPoetAsync(string term)
+        public async Task<ActionResult> OnGetWordCountsByPoetAsync(string term, int poetId, int catId)
         {
+            if (term == null) return new BadRequestObjectResult("term is null");
             term = term.Replace("\"", "");
             if (!string.IsNullOrEmpty(term))
             {
                 term = term.Trim();
             }
-            var wordCountsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/wordcounts/bypoet?term={term}&PageNumber=1&PageSize=1000");
+            else
+            {
+                if (term == null) return new BadRequestObjectResult("term is empty");
+            }
+            string url = $"{APIRoot.Url}/api/ganjoor/wordcounts/bycat?term={term}";
+            if(poetId != 0)
+            {
+                url += $"&poetId={poetId}";
+            }
+            if (catId != 0)
+            {
+                url += $"&catId={catId}";
+            }
+
+            var wordCountsResponse = await _httpClient.GetAsync(url);
 
             if (!wordCountsResponse.IsSuccessStatusCode)
             {

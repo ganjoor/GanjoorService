@@ -14,7 +14,7 @@
         @ViewData["Title"]
     </title>
 
-    <link href="/css/p8.css?version=78" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=79" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="/lib/jquery/dist/jquery.min.js"></script>
@@ -27,16 +27,6 @@
         var stickyEnabled = cookieValue != "false";
     </script>
 
-    <script>
-        function deletePoetFromSearch(poetId, poetName){
-        if(!confirm('آیا می‌خواهید '+ poetName+ ' را از نتایج حذف کنید؟')) return;
-        const currentUrl = new URL(window.location.href);
-        const params = currentUrl.searchParams;
-        params.append('e', poetId.toString());
-        currentUrl.search = params.toString();
-        window.location.href = currentUrl.toString();
-        }
-    </script>
 
     @if (Model.CanEdit)
     {
