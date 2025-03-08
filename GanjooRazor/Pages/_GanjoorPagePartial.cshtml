@@ -223,6 +223,18 @@
                         }
                     }
                     <partial name="_InlinePageUtilsPartial" model="Model" />
+                    @if (Model.GanjoorPage.Id == 39401)
+                    {
+                        <div class="poempretab" id="pretab"></div>
+                        <div class="poemtab" id="tab-items">
+                            <div class="poemtablinks active"><a href="#poets-stats">سخنوران</a></div>
+                            <div class="poemtablinks"><a href="#langs-stats">زبان‌ها</a></div>
+                            <div class="poemtablinks"><a href="#formats-stats">قالب‌ها</a></div>
+                            <div class="poemtablinks"><a href="#rhyhtms-stats">وزن‌ها</a></div>
+                            <div class="poemtablinks"><a href="#couplets-stats">تعداد ابیات</a></div>
+                            <div class="poemtablinks"><a href="#wordcounts-placeholder">بسامد واژگان</a></div>
+                        </div>
+                    }
                     @{
                         @Html.Raw(Model.GanjoorPage.HtmlText)
                     }

@@ -12,7 +12,7 @@
                 </div>
             </a>
 
-            @if (Model.GanjoorPage != null && Model.GanjoorPage.PoetOrCat != null && Model.GanjoorPage.SecondPoet == null)
+            @if (Model.GanjoorPage != null && ((Model.GanjoorPage.PoetOrCat != null && Model.GanjoorPage.SecondPoet == null) || (Model.GanjoorPage.Id == 39401)))
             {
                 <a href="#pretab" role="button" class="cursor-pointer" title="اطلاعات">
                     <div class="noborder-btn color-white">
