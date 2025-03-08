@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
@@ -186,6 +187,30 @@ namespace RMuseum.Services.Implementation
                      .SingleOrDefaultAsync();
 
             string origPath = GetImagePath(rPictureFile).Result;
+            bool filesBackedUp = false;
+            if (File.Exists(origPath))
+            {
+                File.Move(GetImagePath(rPictureFile, "thumb").Result, GetImagePath(rPictureFile, "thumb").Result + ".bak");
+                File.Move(GetImagePath(rPictureFile, "norm").Result, GetImagePath(rPictureFile, "norm").Result + ".bak");
+                File.Move(origPath, origPath + ".bak");
+                filesBackedUp = true;
+            }
+            else
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    var imageResult = await client.GetAsync(rPictureFile.ExternalNormalSizeImageUrl.Replace("/norm/", "/orig/"));
+                    using (Stream imageStream = await imageResult.Content.ReadAsStreamAsync())
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(origPath));
+                        using (FileStream fsMain = new FileStream(origPath, FileMode.Create))
+                        {
+                            imageStream.Position = 0;
+                            await imageStream.CopyToAsync(fsMain);
+                        }
+                    }
+                }
+            }
             using (MemoryStream msRotated = new MemoryStream())
             {
                 using (Image img = Image.FromFile(origPath))
@@ -204,9 +229,7 @@ namespace RMuseum.Services.Implementation
                     img.Save(msRotated, jpgEncoder, jpegParameters);
                 }
 
-                File.Move(GetImagePath(rPictureFile, "thumb").Result, GetImagePath(rPictureFile, "thumb").Result + ".bak");
-                File.Move(GetImagePath(rPictureFile, "norm").Result, GetImagePath(rPictureFile, "norm").Result + ".bak");
-                File.Move(origPath, origPath + ".bak");
+                
 
                 RServiceResult<RPictureFile>
                    result =
@@ -223,9 +246,12 @@ namespace RMuseum.Services.Implementation
                 _context.PictureFiles.Update(result.Result);
                 await _context.SaveChangesAsync();
 
-                File.Delete(GetImagePath(rPictureFile, "thumb").Result + ".bak");
-                File.Delete(GetImagePath(rPictureFile, "norm").Result + ".bak");
-                File.Delete(origPath + ".bak");
+                if(filesBackedUp)
+                {
+                    File.Delete(GetImagePath(rPictureFile, "thumb").Result + ".bak");
+                    File.Delete(GetImagePath(rPictureFile, "norm").Result + ".bak");
+                    File.Delete(origPath + ".bak");
+                }
 
                 if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
                 {
@@ -256,6 +282,78 @@ namespace RMuseum.Services.Implementation
         private void FtpClient_ValidateCertificate(FluentFTP.Client.BaseClient.BaseFtpClient control, FtpSslValidationEventArgs e)
         {
             e.Accept = true;
+        }
+
+
+        /// <summary>
+        /// replace an image
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="uploadedImage"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<RPictureFile>> ReplaceImageAsync(Guid id, IFormFile uploadedImage)
+        {
+            RPictureFile rPictureFile =
+                await _context.PictureFiles
+                     .Where(p => p.Id == id)
+                     .SingleOrDefaultAsync();
+
+            string origPath = GetImagePath(rPictureFile).Result;
+
+            bool filesBackedUp = false;
+            if (File.Exists(origPath))
+            {
+                File.Move(GetImagePath(rPictureFile, "thumb").Result, GetImagePath(rPictureFile, "thumb").Result + ".bak");
+                File.Move(GetImagePath(rPictureFile, "norm").Result, GetImagePath(rPictureFile, "norm").Result + ".bak");
+                File.Move(origPath, origPath + ".bak");
+                filesBackedUp = true;
+            }
+
+            RServiceResult<RPictureFile>
+               result =
+               await ProcessImage
+               (
+                   uploadedImage,
+                   rPictureFile,
+                   null,
+                   rPictureFile.OriginalFileName
+                   );
+            if (!string.IsNullOrEmpty(result.ExceptionString))
+                return new RServiceResult<RPictureFile>(null, result.ExceptionString);
+            result.Result.LastModified = DateTime.Now;
+            _context.PictureFiles.Update(result.Result);
+            await _context.SaveChangesAsync();
+
+            if(filesBackedUp)
+            {
+                File.Delete(GetImagePath(rPictureFile, "thumb").Result + ".bak");
+                File.Delete(GetImagePath(rPictureFile, "norm").Result + ".bak");
+                File.Delete(origPath + ".bak");
+            }
+
+            if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
+            {
+                var ftpClient = new AsyncFtpClient
+                (
+                    Configuration.GetSection("ExternalFTPServer")["Host"],
+                    Configuration.GetSection("ExternalFTPServer")["Username"],
+                    Configuration.GetSection("ExternalFTPServer")["Password"]
+                );
+                ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                await ftpClient.AutoConnect();
+                ftpClient.Config.RetryAttempts = 3;
+
+                foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
+                {
+                    var localFilePath = GetImagePath(rPictureFile, imageSizeString).Result;
+                    var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{rPictureFile.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                    await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+                }
+
+                await ftpClient.Disconnect();
+            }
+
+            return result;
         }
 
 

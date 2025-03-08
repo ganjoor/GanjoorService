@@ -75,6 +75,14 @@ namespace RMuseum.Services
         Task<RServiceResult<RPictureFile>> RotateImage(Guid id, int degIn90mul);
 
         /// <summary>
+        /// replace an image
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="uploadedImage"></param>
+        /// <returns></returns>
+        Task<RServiceResult<RPictureFile>> ReplaceImageAsync(Guid id, IFormFile uploadedImage);
+
+        /// <summary>
         /// Get Encoder
         /// </summary>
         /// <param name="format"></param>

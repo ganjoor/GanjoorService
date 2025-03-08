@@ -122,6 +122,24 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// replace an image
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        [HttpPut("replace/{id}")]
+        [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RPictureFile))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> ReplaceImageAsync(Guid id, IFormFile file)
+        {
+            RServiceResult<RPictureFile> res = await _pictureFileService.ReplaceImageAsync(id, file);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
 
         /// <summary>
         /// Generate Cropped Image Based On ThumbnailCoordinates For Notes

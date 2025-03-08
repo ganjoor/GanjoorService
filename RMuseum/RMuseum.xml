@@ -411,7 +411,7 @@
             <param name="itemId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ArtifactController.GeIArtifactUserBookmarks(System.Guid)">
+        <member name="M:RMuseum.Controllers.ArtifactController.GetArtifactUserBookmarks(System.Guid)">
             <summary>
             artifact bookmarks info
             </summary>
@@ -2713,6 +2713,14 @@
             </summary>
             <param name="id"></param>
             <param name="degIn90mul"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ImageController.ReplaceImageAsync(System.Guid,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            replace an image
+            </summary>
+            <param name="id"></param>
+            <param name="file"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.ImageController.GenerateCroppedImageBasedOnThumbnailCoordinates(System.Guid,System.Decimal,System.Decimal,System.Decimal,System.Decimal)">
@@ -21231,6 +21239,14 @@
             <param name="degIn90mul"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.PictureFileService.ReplaceImageAsync(System.Guid,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            replace an image
+            </summary>
+            <param name="id"></param>
+            <param name="uploadedImage"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.PictureFileService.GetEncoder(System.Drawing.Imaging.ImageFormat)">
             <summary>
             find image encodder
@@ -22081,6 +22097,14 @@
             </summary>
             <param name="id"></param>
             <param name="degIn90mul"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IPictureFileService.ReplaceImageAsync(System.Guid,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            replace an image
+            </summary>
+            <param name="id"></param>
+            <param name="uploadedImage"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IPictureFileService.GetEncoder(System.Drawing.Imaging.ImageFormat)">
