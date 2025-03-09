@@ -13,6 +13,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Asn1.Cmp;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services.Implementation;
 using RSecurityBackend.Models.Generic;
@@ -485,6 +486,7 @@ namespace GanjooRazor.Pages
                 return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await wordCountsResponse.Content.ReadAsStringAsync()));
             }
             var wordCounts = JsonConvert.DeserializeObject<PoetOrCatWordStat[]>(await wordCountsResponse.Content.ReadAsStringAsync());
+            string countStr = wordCountsResponse.Headers.GetValues("items-count").FirstOrDefault();
 
             return new PartialViewResult()
             {
@@ -496,6 +498,7 @@ namespace GanjooRazor.Pages
                         Term = term,
                         WordStats = wordCounts,
                         Whole = catId == 0 && poetId == 0,
+                        TotalCount = string.IsNullOrEmpty(countStr) ? 0 : int.Parse(countStr)
                     }
                 }
             };

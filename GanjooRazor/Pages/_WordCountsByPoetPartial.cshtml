@@ -2,11 +2,13 @@
 @using System.Globalization
 @using DNTPersianUtils.Core
 
+<p>
+    «@Model.Term» در مجموع @RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.TotalCount) بار در @Model.SectionName ظاهر شده است.
+</p>
+
+
 @if (Model.WordStats.Length > 0)
 {
-    <p>
-        «@Model.Term» در مجموع @RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordStats.Sum(w => w.Count)) بار طبق جدول زیر در @Model.SectionName ظاهر شده است:
-    </p>
     <table class="stats" id="words-stats">
         <thead>
             <tr class="h">
