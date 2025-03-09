@@ -490,10 +490,10 @@ namespace GanjooRazor.Pages
 
             return new PartialViewResult()
             {
-                ViewName = "_WordCountsByPoetPartial",
+                ViewName = "_CategoryWordsCountByCatPartial",
                 ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
                 {
-                    Model = new _CategoryWordsCountByCatTablePartialModel()
+                    Model = new _CategoryWordsCountByCatPartialModel()
                     {
                         Term = term,
                         WordStats = wordCounts,
