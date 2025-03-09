@@ -446,6 +446,13 @@ div.n, div.l {
     border: 2px solid #300;
 }
 
+.loadingcontainer {
+    margin: 20px;
+    display: block;
+    padding: 3px;
+    clear: both;
+}
+
 #comments {
     border-radius: 20px;
 }

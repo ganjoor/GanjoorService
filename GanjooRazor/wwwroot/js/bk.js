@@ -1698,7 +1698,7 @@ function onSearchWordCounts(catId, poetId, totalWordCount) {
 function loadWordCountsByCat(term, poetId, catId, blur) {
     var divParent = document.getElementById('wordcounts-placeholder');
     var imgElementId = 'loadingwordcountsimg';
-    divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="remove-this-wordcounts"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
+    divParent.innerHTML = divParent.innerHTML + '<div class="loadingcontainer" id="remove-this-wordcounts"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
     $.ajax({
         type: "GET",
         url: '?Handler=WordCountsByPoet&term=' + term + '&poetId=' + poetId.toString() + '&catId=' + catId.toString() + '&blur=' + blur.toString(),
