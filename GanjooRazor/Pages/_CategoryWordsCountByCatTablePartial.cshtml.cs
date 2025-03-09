@@ -3,7 +3,7 @@ using RMuseum.Models.Ganjoor.ViewModels;
 
 namespace GanjooRazor.Pages
 {
-    public class _WordCountsByPoetPartialModel : PageModel
+    public class _CategoryWordsCountByCatTablePartialModel : PageModel
     {
         public string Term { get; set; }
         public PoetOrCatWordStat[]  WordStats { get; set; }
