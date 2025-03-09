@@ -13,7 +13,6 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Asn1.Cmp;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services.Implementation;
 using RSecurityBackend.Models.Generic;
@@ -169,6 +168,8 @@ namespace GanjooRazor.Pages
             }
         }
 
+        public bool StatsAtTop { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (bool.Parse(Configuration["MaintenanceMode"]))
@@ -240,6 +241,8 @@ namespace GanjooRazor.Pages
                 CatFullUrl = "";
                 CatFullTitle = "";
             }
+
+            StatsAtTop = !string.IsNullOrEmpty(Request.Query["stats"]);
 
             ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
 
@@ -457,7 +460,7 @@ namespace GanjooRazor.Pages
             return htmlText;
         }
 
-        public async Task<ActionResult> OnGetWordCountsByPoetAsync(string term, int poetId, int catId)
+        public async Task<ActionResult> OnGetWordCountsByPoetAsync(string term, int poetId, int catId, bool blur)
         {
             if (term == null) return new BadRequestObjectResult("term is null");
             term = term.Replace("\"", "");
@@ -498,7 +501,8 @@ namespace GanjooRazor.Pages
                         Term = term,
                         WordStats = wordCounts,
                         Whole = catId == 0 && poetId == 0,
-                        TotalCount = string.IsNullOrEmpty(countStr) ? 0 : int.Parse(countStr)
+                        TotalCount = string.IsNullOrEmpty(countStr) ? 0 : int.Parse(countStr),
+                        Blur = blur,
                     }
                 }
             };

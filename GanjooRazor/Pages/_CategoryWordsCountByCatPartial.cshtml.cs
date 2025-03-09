@@ -9,6 +9,7 @@ namespace GanjooRazor.Pages
         public PoetOrCatWordStat[] WordStats { get; set; }
         public bool Whole { get; set; }
         public int TotalCount { get; set; }
+        public bool Blur { get; set; }
 
         public _CategoryWordsCountByCatTablePartialModel Model
         {
@@ -19,7 +20,8 @@ namespace GanjooRazor.Pages
                     Term = Term,
                     WordStats = WordStats,
                     Whole = Whole,
-                    TotalCount = TotalCount
+                    TotalCount = TotalCount,
+                    Blur = Blur
                 };
             }
         }

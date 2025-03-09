@@ -1,6 +1,6 @@
 ﻿@model GanjooRazor.Pages._CategoryWordsCountByCatPartialModel
 
-@if (Model.WordStats.Length == 0)
+@if (!Model.Blur || Model.WordStats.Length == 0)
 {
     <text>
         <partial name="_CategoryWordsCountByCatTablePartial" model="Model.Model">
