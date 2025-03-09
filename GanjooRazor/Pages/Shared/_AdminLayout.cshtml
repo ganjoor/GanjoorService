@@ -262,6 +262,9 @@
         }
 
         function rebuildRebuildWordCounts(poetId) {
+            if(!confirm('فقط شاعر جاری؟')){
+                poetId = 0;
+            }
             if (!confirm('آیا از شمارش واژگان برای شاعر جاری با کد '+poetId.toString() + ' اطمینان دارید؟'))
                 return;
 
