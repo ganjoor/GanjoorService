@@ -4388,13 +4388,38 @@ namespace RMuseum.Controllers
             if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
                 return BadRequest(pagedResult.ExceptionString);
 
+            var wordCountResult = await _ganjoorService.GetCategoryWordCountByTermAsync(term, catId, poetId);
+            if(!string.IsNullOrEmpty(wordCountResult.ExceptionString))
+                return BadRequest(wordCountResult.ExceptionString);
+
             // Paging Header
             HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("items-count", JsonConvert.SerializeObject(wordCountResult.Result.Count));
 
             return Ok(pagedResult.Result.Items);
         }
 
+        /// <summary>
+        /// CategoryWordCount for a specific term in a category
+        /// </summary>
+        /// <param name="term"></param>
+        /// <param name="catId"></param>
+        /// <param name="poetId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("wordcounts/bycat/count")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(CategoryWordCount))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
 
+        public async Task<IActionResult> GetCategoryWordCountByTermAsync(string term, int? catId, int? poetId)
+        {
+            var countResult = await _ganjoorService.GetCategoryWordCountByTermAsync(term, catId, poetId);
+            if (!string.IsNullOrEmpty(countResult.ExceptionString))
+                return BadRequest(countResult.ExceptionString);
+
+            return Ok(countResult.Result);
+        }
 
 
         /*

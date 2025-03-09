@@ -2355,6 +2355,15 @@
             <param name="poetId">is not necessary unless you mean a specific poet and do not provide catId</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCategoryWordCountByTermAsync(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            CategoryWordCount for a specific term in a category
+            </summary>
+            <param name="term"></param>
+            <param name="catId"></param>
+            <param name="poetId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetTajikPoetsAsync">
             <summary>
             tajik poets
@@ -19289,7 +19298,7 @@
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryWordCountByTermAsync(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
             <summary>
-            get CategoryWordCount for a specific term in a category
+            CategoryWordCount for a specific term in a category
             </summary>
             <param name="term"></param>
             <param name="catId"></param>

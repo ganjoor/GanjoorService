@@ -113,7 +113,7 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// get CategoryWordCount for a specific term in a category
+        /// CategoryWordCount for a specific term in a category
         /// </summary>
         /// <param name="term"></param>
         /// <param name="catId"></param>
