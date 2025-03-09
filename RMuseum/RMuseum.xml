@@ -17487,6 +17487,15 @@
             <param name="poetId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetCategoryWordCountByTermAsync(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            get CategoryWordCount for a specific term in a category
+            </summary>
+            <param name="term"></param>
+            <param name="catId"></param>
+            <param name="poetId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.TajikImportFromSqlite(System.Int32,System.String)">
             <summary>
             tajik import from sqlite
@@ -19275,6 +19284,15 @@
             <param name="term"></param>
             <param name="paging"></param>
             <param name="parentCatId"></param>
+            <param name="poetId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryWordCountByTermAsync(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            get CategoryWordCount for a specific term in a category
+            </summary>
+            <param name="term"></param>
+            <param name="catId"></param>
             <param name="poetId"></param>
             <returns></returns>
         </member>

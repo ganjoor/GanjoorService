@@ -112,6 +112,35 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// get CategoryWordCount for a specific term in a category
+        /// </summary>
+        /// <param name="term"></param>
+        /// <param name="catId"></param>
+        /// <param name="poetId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<CategoryWordCount>> GetCategoryWordCountByTermAsync(string term, int? catId, int? poetId)
+        {
+            try
+            {
+                if (poetId != null && catId == null)
+                {
+                    var cat = await _context.GanjoorCategories.AsNoTracking().Where(p => p.PoetId == poetId && p.ParentId == null).SingleAsync();
+                    catId = cat.Id;
+                }
+                if (catId == null)
+                {
+                    catId = 0;
+                }
+
+                return new RServiceResult<CategoryWordCount>(await _context.CategoryWordCounts.AsNoTracking().Where(s => s.CatId == catId && s.Word == term).OrderBy(s => s.RowNmbrInCat).FirstOrDefaultAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<CategoryWordCount>(null, exp.ToString());
+            }
+        }
+
 
         /// <summary>
         /// build word counts
