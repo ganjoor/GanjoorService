@@ -25,7 +25,7 @@
                 {
                     <tr class="e">
                         <td class="c1">@((i + 1).ToPersianNumbers())</td>
-                        <td class="c2"><a href="/search?s=@Model.Term&author=@Model.WordStats[i].PoetId&cat=@Model.WordStats[i].CatId">@Model.WordStats[i].Name</a></td>
+                        <td class="c2"><a href="/search?s=@Model.Term&stats=true&author=@Model.WordStats[i].PoetId&cat=@Model.WordStats[i].CatId">@Model.WordStats[i].Name</a></td>
                         <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordStats[i].Count)</td>
                         @if (Model.WordStats[i].TotalWordCount == 0)
                         {
@@ -42,7 +42,7 @@
                 {
                     <tr>
                         <td class="c1">@((i + 1).ToPersianNumbers())</td>
-                        <td class="c2"><a href="/search?s=@Model.Term&author=@Model.WordStats[i].PoetId&cat=@Model.WordStats[i].CatId">@Model.WordStats[i].Name</a></td>
+                        <td class="c2"><a href="/search?s=@Model.Term&stats=true&author=@Model.WordStats[i].PoetId&cat=@Model.WordStats[i].CatId">@Model.WordStats[i].Name</a></td>
                         <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.WordStats[i].Count)</td>
                         @if (Model.WordStats[i].TotalWordCount == 0)
                         {
