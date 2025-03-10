@@ -489,7 +489,7 @@ namespace RMuseum.Services.Implementation
                             List<GanjoorPage> otherPoetsSimilars = new List<GanjoorPage>();
                             foreach (var ganjoorPoet in poets)
                             {
-                                if (otherPoetsSimilarsUnSorted.Any(p => p.PoetId == ganjoorPoet.Id))
+                                if (otherPoetsSimilarsUnSorted.Any(p => p.PoetId == ganjoorPoet.Id && p.SecondPoetId != ganjoorPoet.Id))
                                 {
                                     otherPoetsSimilars.Add(otherPoetsSimilarsUnSorted.Single(p => p.PoetId == ganjoorPoet.Id));
                                 }
