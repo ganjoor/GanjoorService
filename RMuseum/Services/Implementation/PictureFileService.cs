@@ -5,9 +5,11 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
 using RMuseum.Models.Artifact;
+using RMuseum.Models.PDFLibrary;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Models.Image;
 using RSecurityBackend.Services;
+using RSecurityBackend.Services.Implementation;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -315,7 +317,7 @@ namespace RMuseum.Services.Implementation
                    uploadedImage,
                    rPictureFile,
                    null,
-                   Path.GetFileName(rPictureFile.OriginalFileName),
+                   Path.GetFileName(origPath),
                    true
                    );
             if (!string.IsNullOrEmpty(result.ExceptionString))
@@ -331,7 +333,9 @@ namespace RMuseum.Services.Implementation
                 File.Delete(origPath + ".bak");
             }
 
-            if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
+            LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(_context);
+            var job = (await jobProgressServiceEF.NewJob("_UploadArtifactToExternalServer", $"Uploading {GetImagePath(rPictureFile).Result}")).Result;
+            //if (bool.Parse(Configuration.GetSection("ExternalFTPServer")["UploadEnabled"]))
             {
                 var ftpClient = new AsyncFtpClient
                 (
@@ -351,6 +355,8 @@ namespace RMuseum.Services.Implementation
                 }
 
                 await ftpClient.Disconnect();
+                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+
             }
 
             return result;
