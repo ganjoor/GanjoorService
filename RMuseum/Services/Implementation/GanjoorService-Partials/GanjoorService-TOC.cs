@@ -375,7 +375,7 @@ namespace RMuseum.Services.Implementation
 
                             foreach (var quotedPoetId in quotedFromPoetIds)
                             {
-                                if (quotedPoetId == poet.Id) continue;
+                                //if (quotedPoetId == poet.Id) continue;
                                 if (false == await context.GanjoorPages.AsNoTracking()
                                     .AnyAsync(p => p.GanjoorPageType == GanjoorPageType.ProsodySimilars && p.PoetId == poet.Id && p.SecondPoetId == quotedPoetId))
                                 {
@@ -395,8 +395,8 @@ namespace RMuseum.Services.Implementation
                                         GanjoorPageType = GanjoorPageType.ProsodySimilars,
                                         Published = true,
                                         PageOrder = -1,
-                                        Title = $"استقبالهای {poet.Nickname} از {secondPoet.Nickname}",
-                                        FullTitle = $"{poet.Nickname} » استقبالهای {poet.Nickname} از {secondPoet.Nickname}",
+                                        Title = quotedPoetId == poet.Id ? $"خودبازگویه‌های {poet.Nickname}" : $"استقبالهای {poet.Nickname} از {secondPoet.Nickname}",
+                                        FullTitle = quotedPoetId == poet.Id ? $"خودبازگویه‌های {poet.Nickname}" : $"{poet.Nickname} » استقبالهای {poet.Nickname} از {secondPoet.Nickname}",
                                         UrlSlug = secondPoetCat.UrlSlug,
                                         FullUrl = $"/{cat.UrlSlug}/{secondPoetCat.UrlSlug}",
                                         HtmlText = "<p>متن در حال آماده‌سازی است.</p>",

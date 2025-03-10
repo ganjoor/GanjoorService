@@ -699,136 +699,139 @@ namespace RMuseum.Services.Implementation
 
                 string html = "";
 
-                var claimedByBothList = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poetId && p.RelatedPoetId == relatedPoetId && p.ClaimedByBothPoets && p.Published).OrderBy(p => p.PoemId).ThenBy(p => p.RelatedPoemId).ToListAsync();
-                var claimedByBothListNotInGanjoor = await context.GanjoorQuotedPoems.AsNoTracking().Where(
-                    p =>
-                    (
-                    (p.PoetId == poetId && p.CachedRelatedPoemFullUrl == $"https://ganjoor.net{relatedPoetCat.FullUrl}")
-                    ||
-                    (p.PoetId == relatedPoetId && p.CachedRelatedPoemFullUrl == $"https://ganjoor.net{poetCat.FullUrl}")
-                    )
-                    && p.RelatedPoetId == null && p.ClaimedByBothPoets && p.Published
-
-
-                    ).OrderBy(p => p.PoemId).ToListAsync();
-                if (claimedByBothList.Any() || claimedByBothListNotInGanjoor.Any())
+                if(poetId != relatedPoetId)
                 {
-                    html += $"<p>فهرست زیر شامل اشعاری است که در نسخه‌های دیوان‌های هر دو سخنور آمده است و به هر دو منتسب است:</p>{Environment.NewLine}";
-                    html += $"<br style=\"clear:both;\">{Environment.NewLine}";
-                    html += $"<ol>{Environment.NewLine}";
-                    foreach (var quotedPoem in claimedByBothList)
+                    var claimedByBothList = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poetId && p.RelatedPoetId == relatedPoetId && p.ClaimedByBothPoets && p.Published).OrderBy(p => p.PoemId).ThenBy(p => p.RelatedPoemId).ToListAsync();
+                    var claimedByBothListNotInGanjoor = await context.GanjoorQuotedPoems.AsNoTracking().Where(
+                        p =>
+                        (
+                        (p.PoetId == poetId && p.CachedRelatedPoemFullUrl == $"https://ganjoor.net{relatedPoetCat.FullUrl}")
+                        ||
+                        (p.PoetId == relatedPoetId && p.CachedRelatedPoemFullUrl == $"https://ganjoor.net{poetCat.FullUrl}")
+                        )
+                        && p.RelatedPoetId == null && p.ClaimedByBothPoets && p.Published
+
+
+                        ).OrderBy(p => p.PoemId).ToListAsync();
+                    if (claimedByBothList.Any() || claimedByBothListNotInGanjoor.Any())
                     {
-                        var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == quotedPoem.PoemId).SingleAsync();
-                        html += $"<li>{Environment.NewLine}";
-                        html += $"<h3>{Environment.NewLine}";
-                        html += $"<a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> :: <a href=\"{quotedPoem.CachedRelatedPoemFullUrl}\">{quotedPoem.CachedRelatedPoemFullTitle}</a>{Environment.NewLine}";
-                        html += $"</h3>{Environment.NewLine}";
+                        html += $"<p>فهرست زیر شامل اشعاری است که در نسخه‌های دیوان‌های هر دو سخنور آمده است و به هر دو منتسب است:</p>{Environment.NewLine}";
+                        html += $"<br style=\"clear:both;\">{Environment.NewLine}";
+                        html += $"<ol>{Environment.NewLine}";
+                        foreach (var quotedPoem in claimedByBothList)
+                        {
+                            var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == quotedPoem.PoemId).SingleAsync();
+                            html += $"<li>{Environment.NewLine}";
+                            html += $"<h3>{Environment.NewLine}";
+                            html += $"<a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> :: <a href=\"{quotedPoem.CachedRelatedPoemFullUrl}\">{quotedPoem.CachedRelatedPoemFullTitle}</a>{Environment.NewLine}";
+                            html += $"</h3>{Environment.NewLine}";
 
-                        html += $"<p>{poet.Nickname} (بیت {(quotedPoem.CoupletIndex + 1).ToPersianNumbers()}): ";
-                        if (quotedPoem.CoupletVerse1ShouldBeEmphasized)
-                        {
-                            html += $"<strong>{quotedPoem.CoupletVerse1}</strong>";
-                        }
-                        else
-                        {
-                            html += quotedPoem.CoupletVerse1;
-                        }
-                        html += " - ";
-                        if (quotedPoem.CoupletVerse2ShouldBeEmphasized)
-                        {
-                            html += $"<strong>{quotedPoem.CoupletVerse2}</strong>";
-                        }
-                        else
-                        {
-                            html += quotedPoem.CoupletVerse2;
-                        }
-                        html += $"</p>{Environment.NewLine}";
+                            html += $"<p>{poet.Nickname} (بیت {(quotedPoem.CoupletIndex + 1).ToPersianNumbers()}): ";
+                            if (quotedPoem.CoupletVerse1ShouldBeEmphasized)
+                            {
+                                html += $"<strong>{quotedPoem.CoupletVerse1}</strong>";
+                            }
+                            else
+                            {
+                                html += quotedPoem.CoupletVerse1;
+                            }
+                            html += " - ";
+                            if (quotedPoem.CoupletVerse2ShouldBeEmphasized)
+                            {
+                                html += $"<strong>{quotedPoem.CoupletVerse2}</strong>";
+                            }
+                            else
+                            {
+                                html += quotedPoem.CoupletVerse2;
+                            }
+                            html += $"</p>{Environment.NewLine}";
 
-                        html += $"<p>{quotedPoem.CachedRelatedPoemPoetName} (بیت {(quotedPoem.RelatedCoupletIndex + 1).ToPersianNumbers()}): ";
-                        if (quotedPoem.RelatedCoupletVerse1ShouldBeEmphasized)
-                        {
-                            html += $"<strong>{quotedPoem.RelatedCoupletVerse1}</strong>";
-                        }
-                        else
-                        {
-                            html += quotedPoem.RelatedCoupletVerse1;
-                        }
-                        html += " - ";
-                        if (quotedPoem.RelatedCoupletVerse2ShouldBeEmphasized)
-                        {
-                            html += $"<strong>{quotedPoem.RelatedCoupletVerse2}</strong>";
-                        }
-                        else
-                        {
-                            html += quotedPoem.RelatedCoupletVerse2;
-                        }
-                        html += $"</p>{Environment.NewLine}";
+                            html += $"<p>{quotedPoem.CachedRelatedPoemPoetName} (بیت {(quotedPoem.RelatedCoupletIndex + 1).ToPersianNumbers()}): ";
+                            if (quotedPoem.RelatedCoupletVerse1ShouldBeEmphasized)
+                            {
+                                html += $"<strong>{quotedPoem.RelatedCoupletVerse1}</strong>";
+                            }
+                            else
+                            {
+                                html += quotedPoem.RelatedCoupletVerse1;
+                            }
+                            html += " - ";
+                            if (quotedPoem.RelatedCoupletVerse2ShouldBeEmphasized)
+                            {
+                                html += $"<strong>{quotedPoem.RelatedCoupletVerse2}</strong>";
+                            }
+                            else
+                            {
+                                html += quotedPoem.RelatedCoupletVerse2;
+                            }
+                            html += $"</p>{Environment.NewLine}";
 
-                        if (!string.IsNullOrEmpty(quotedPoem.Note))
-                        {
-                            html += $"<div class=\"notice\">{quotedPoem.Note}</div>{Environment.NewLine}";
+                            if (!string.IsNullOrEmpty(quotedPoem.Note))
+                            {
+                                html += $"<div class=\"notice\">{quotedPoem.Note}</div>{Environment.NewLine}";
+                            }
+
+                            html += $"</li>{Environment.NewLine}";
                         }
 
-                        html += $"</li>{Environment.NewLine}";
+                        foreach (var quotedPoem in claimedByBothListNotInGanjoor)
+                        {
+                            var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == quotedPoem.PoemId).SingleAsync();
+                            html += $"<li>{Environment.NewLine}";
+                            html += $"<h3>{Environment.NewLine}";
+                            html += $"<a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> :: {quotedPoem.CachedRelatedPoemFullTitle}{Environment.NewLine}";
+                            html += $"</h3>{Environment.NewLine}";
+
+                            html += $"<p>{poet.Nickname} (بیت {(quotedPoem.CoupletIndex + 1).ToPersianNumbers()}): ";
+                            if (quotedPoem.CoupletVerse1ShouldBeEmphasized)
+                            {
+                                html += $"<strong>{quotedPoem.CoupletVerse1}</strong>";
+                            }
+                            else
+                            {
+                                html += quotedPoem.CoupletVerse1;
+                            }
+                            html += " - ";
+                            if (quotedPoem.CoupletVerse2ShouldBeEmphasized)
+                            {
+                                html += $"<strong>{quotedPoem.CoupletVerse2}</strong>";
+                            }
+                            else
+                            {
+                                html += quotedPoem.CoupletVerse2;
+                            }
+                            html += $"</p>{Environment.NewLine}";
+
+                            html += $"<p>";
+                            if (quotedPoem.RelatedCoupletVerse1ShouldBeEmphasized)
+                            {
+                                html += $"<strong>{quotedPoem.RelatedCoupletVerse1}</strong>";
+                            }
+                            else
+                            {
+                                html += quotedPoem.RelatedCoupletVerse1;
+                            }
+                            html += " - ";
+                            if (quotedPoem.RelatedCoupletVerse2ShouldBeEmphasized)
+                            {
+                                html += $"<strong>{quotedPoem.RelatedCoupletVerse2}</strong>";
+                            }
+                            else
+                            {
+                                html += quotedPoem.RelatedCoupletVerse2;
+                            }
+                            html += $"</p>{Environment.NewLine}";
+
+                            if (!string.IsNullOrEmpty(quotedPoem.Note))
+                            {
+                                html += $"<div class=\"notice\">{quotedPoem.Note}</div>{Environment.NewLine}";
+                            }
+
+                            html += $"</li>{Environment.NewLine}";
+                        }
+                        html += $"</ol>{Environment.NewLine}";
+                        html += $"<br style=\"clear:both;\">{Environment.NewLine}";
                     }
-
-                    foreach (var quotedPoem in claimedByBothListNotInGanjoor)
-                    {
-                        var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == quotedPoem.PoemId).SingleAsync();
-                        html += $"<li>{Environment.NewLine}";
-                        html += $"<h3>{Environment.NewLine}";
-                        html += $"<a href=\"{poem.FullUrl}\">{poem.FullTitle}</a> :: {quotedPoem.CachedRelatedPoemFullTitle}{Environment.NewLine}";
-                        html += $"</h3>{Environment.NewLine}";
-
-                        html += $"<p>{poet.Nickname} (بیت {(quotedPoem.CoupletIndex + 1).ToPersianNumbers()}): ";
-                        if (quotedPoem.CoupletVerse1ShouldBeEmphasized)
-                        {
-                            html += $"<strong>{quotedPoem.CoupletVerse1}</strong>";
-                        }
-                        else
-                        {
-                            html += quotedPoem.CoupletVerse1;
-                        }
-                        html += " - ";
-                        if (quotedPoem.CoupletVerse2ShouldBeEmphasized)
-                        {
-                            html += $"<strong>{quotedPoem.CoupletVerse2}</strong>";
-                        }
-                        else
-                        {
-                            html += quotedPoem.CoupletVerse2;
-                        }
-                        html += $"</p>{Environment.NewLine}";
-
-                        html += $"<p>";
-                        if (quotedPoem.RelatedCoupletVerse1ShouldBeEmphasized)
-                        {
-                            html += $"<strong>{quotedPoem.RelatedCoupletVerse1}</strong>";
-                        }
-                        else
-                        {
-                            html += quotedPoem.RelatedCoupletVerse1;
-                        }
-                        html += " - ";
-                        if (quotedPoem.RelatedCoupletVerse2ShouldBeEmphasized)
-                        {
-                            html += $"<strong>{quotedPoem.RelatedCoupletVerse2}</strong>";
-                        }
-                        else
-                        {
-                            html += quotedPoem.RelatedCoupletVerse2;
-                        }
-                        html += $"</p>{Environment.NewLine}";
-
-                        if (!string.IsNullOrEmpty(quotedPoem.Note))
-                        {
-                            html += $"<div class=\"notice\">{quotedPoem.Note}</div>{Environment.NewLine}";
-                        }
-
-                        html += $"</li>{Environment.NewLine}";
-                    }
-                    html += $"</ol>{Environment.NewLine}";
-                    html += $"<br style=\"clear:both;\">{Environment.NewLine}";
                 }
 
 
@@ -846,7 +849,7 @@ namespace RMuseum.Services.Implementation
                     ).OrderBy(p => p.PoemId).ToListAsync();
                 if (normalRelatedPoems.Any() || normalRelatedPoemsNotInGanjoor.Any())
                 {
-                    html += $"<p>در این بخش شعرهایی را فهرست کرده‌ایم که در آنها {poet.Nickname} مصرع یا بیتی از {relatedPoet.Nickname} را عیناً نقل قول کرده است:</p>{Environment.NewLine}";
+                    html += $"<p>در این بخش شعرهایی را فهرست کرده‌ایم که در آنها {poet.Nickname} مصرع یا بیتی از {(poetId != relatedPoetId ? relatedPoet.Nickname : "خود")} را عیناً نقل قول کرده است:</p>{Environment.NewLine}";
                     html += $"<br style=\"clear:both;\">{Environment.NewLine}";
                     html += $"<ol>{Environment.NewLine}";
                     foreach (var quotedPoem in normalRelatedPoems)
@@ -961,94 +964,95 @@ namespace RMuseum.Services.Implementation
                     }
                     html += $"</ol>{Environment.NewLine}";
                     html += $"<br style=\"clear:both;\">{Environment.NewLine}";
-
-
                 }
 
-                var poemSections = await context.GanjoorPoemSections.AsNoTracking()
-                .Include(s => s.Poem).ThenInclude(p => p.Cat)
-                .Include(s => s.GanjoorMetre)
-                .Where(s => s.SectionType == PoemSectionType.WholePoem && s.Poem.Cat.PoetId == poetId && s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters))
-                .OrderBy(s => s.PoemId)
-                .ToListAsync();
-                if (poemSections.Any())
+                if(poetId != relatedPoetId)
                 {
-                    var relatedPoemSections = await context.GanjoorPoemSections.AsNoTracking()
-                             .Include(s => s.Poem).ThenInclude(p => p.Cat)
-                             .Include(s => s.GanjoorMetre)
-                             .Where(s => s.SectionType == PoemSectionType.WholePoem && s.Poem.Cat.PoetId == relatedPoetId && s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters))
-                             .OrderBy(s => s.PoemId)
-                             .ToListAsync();
-
-                    if (relatedPoemSections.Any())
+                    var poemSections = await context.GanjoorPoemSections.AsNoTracking()
+                    .Include(s => s.Poem).ThenInclude(p => p.Cat)
+                    .Include(s => s.GanjoorMetre)
+                    .Where(s => s.SectionType == PoemSectionType.WholePoem && s.Poem.Cat.PoetId == poetId && s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters))
+                    .OrderBy(s => s.PoemId)
+                    .ToListAsync();
+                    if (poemSections.Any())
                     {
-                        Dictionary<(int, string), (List<GanjoorPoemSection>, List<GanjoorPoemSection>)> list = [];
+                        var relatedPoemSections = await context.GanjoorPoemSections.AsNoTracking()
+                                 .Include(s => s.Poem).ThenInclude(p => p.Cat)
+                                 .Include(s => s.GanjoorMetre)
+                                 .Where(s => s.SectionType == PoemSectionType.WholePoem && s.Poem.Cat.PoetId == relatedPoetId && s.GanjoorMetreId != null && !string.IsNullOrEmpty(s.RhymeLetters))
+                                 .OrderBy(s => s.PoemId)
+                                 .ToListAsync();
 
-                        foreach (var poemSection in poemSections)
+                        if (relatedPoemSections.Any())
                         {
-                            var relatedPoemList = relatedPoemSections.Where(s => s.GanjoorMetreId == poemSection.GanjoorMetreId && s.RhymeLetters == poemSection.RhymeLetters).ToList();
-                            if (!relatedPoemList.Any())
-                            {
-                                continue;
-                            }
-                            if (!list.TryGetValue(((int)poemSection.GanjoorMetreId, poemSection.RhymeLetters), out (List<GanjoorPoemSection>, List<GanjoorPoemSection>) poemsList))
-                            {
-                                poemsList = (new List<GanjoorPoemSection>(), relatedPoemList);
-                                list.Add
-                                    (
-                                    ((int)poemSection.GanjoorMetreId, poemSection.RhymeLetters), poemsList
-                                    );
-                            }
-                            poemsList.Item1.Add(poemSection);
-                        }
+                            Dictionary<(int, string), (List<GanjoorPoemSection>, List<GanjoorPoemSection>)> list = [];
 
-                        if (list.Any())
-                        {
-                            html += $"<hr />{Environment.NewLine}";
-                            html += $"<p>در این بخش مجموعه شعرهایی از دو شاعر را که توأماً هموزن و همقافیه هستند در گروه‌های مجزا فهرست کرده‌ایم: </p>{Environment.NewLine}";
-                            html += $"<br style=\"clear:both;\">{Environment.NewLine}";
-
-                            html += $"<ol>{Environment.NewLine}";
-                            foreach (var pair in list.Values)
+                            foreach (var poemSection in poemSections)
                             {
-                                html += $"<li>{Environment.NewLine}";
-                                foreach (var section in pair.Item1)
+                                var relatedPoemList = relatedPoemSections.Where(s => s.GanjoorMetreId == poemSection.GanjoorMetreId && s.RhymeLetters == poemSection.RhymeLetters).ToList();
+                                if (!relatedPoemList.Any())
                                 {
-                                    var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId && v.SectionIndex1 == section.Index).OrderBy(v => v.VOrder).Take(2).ToListAsync();
-                                    if(verses.Any())
-                                    {
-                                        if(verses.Count > 1)
-                                        {
-                                            html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text} - {verses[1].Text}</p>{Environment.NewLine}";
-                                        }
-                                        else
-                                        {
-                                            html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text}</p>{Environment.NewLine}";
-                                        }
-                                    }
+                                    continue;
                                 }
-                                html += $"<br style=\"clear:both;\">{Environment.NewLine}";
-                                foreach (var section in pair.Item2)
+                                if (!list.TryGetValue(((int)poemSection.GanjoorMetreId, poemSection.RhymeLetters), out (List<GanjoorPoemSection>, List<GanjoorPoemSection>) poemsList))
                                 {
-                                    var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId && v.SectionIndex1 == section.Index).OrderBy(v => v.VOrder).Take(2).ToListAsync();
-                                    if(verses.Any())
-                                    {
-                                        if(verses.Count > 1)
-                                        {
-                                            html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text} - {verses[1].Text}</p>{Environment.NewLine}";
-                                        }
-                                        else
-                                        {
-                                            html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text}</p>{Environment.NewLine}";
-                                        }
-                                    }
-                                    
+                                    poemsList = (new List<GanjoorPoemSection>(), relatedPoemList);
+                                    list.Add
+                                        (
+                                        ((int)poemSection.GanjoorMetreId, poemSection.RhymeLetters), poemsList
+                                        );
                                 }
+                                poemsList.Item1.Add(poemSection);
+                            }
+
+                            if (list.Any())
+                            {
                                 html += $"<hr />{Environment.NewLine}";
-                                html += $"</li>{Environment.NewLine}";
+                                html += $"<p>در این بخش مجموعه شعرهایی از دو شاعر را که توأماً هموزن و همقافیه هستند در گروه‌های مجزا فهرست کرده‌ایم: </p>{Environment.NewLine}";
+                                html += $"<br style=\"clear:both;\">{Environment.NewLine}";
+
+                                html += $"<ol>{Environment.NewLine}";
+                                foreach (var pair in list.Values)
+                                {
+                                    html += $"<li>{Environment.NewLine}";
+                                    foreach (var section in pair.Item1)
+                                    {
+                                        var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId && v.SectionIndex1 == section.Index).OrderBy(v => v.VOrder).Take(2).ToListAsync();
+                                        if (verses.Any())
+                                        {
+                                            if (verses.Count > 1)
+                                            {
+                                                html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text} - {verses[1].Text}</p>{Environment.NewLine}";
+                                            }
+                                            else
+                                            {
+                                                html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text}</p>{Environment.NewLine}";
+                                            }
+                                        }
+                                    }
+                                    html += $"<br style=\"clear:both;\">{Environment.NewLine}";
+                                    foreach (var section in pair.Item2)
+                                    {
+                                        var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == section.PoemId && v.SectionIndex1 == section.Index).OrderBy(v => v.VOrder).Take(2).ToListAsync();
+                                        if (verses.Any())
+                                        {
+                                            if (verses.Count > 1)
+                                            {
+                                                html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text} - {verses[1].Text}</p>{Environment.NewLine}";
+                                            }
+                                            else
+                                            {
+                                                html += $"<p><a href=\"{section.Poem.FullUrl}\">{section.Poem.FullTitle}</a>:{verses[0].Text}</p>{Environment.NewLine}";
+                                            }
+                                        }
+
+                                    }
+                                    html += $"<hr />{Environment.NewLine}";
+                                    html += $"</li>{Environment.NewLine}";
+                                }
+                                html += $"</ol>{Environment.NewLine}";
+                                html += $"<br style=\"clear:both;\">{Environment.NewLine}";
                             }
-                            html += $"</ol>{Environment.NewLine}";
-                            html += $"<br style=\"clear:both;\">{Environment.NewLine}";
                         }
                     }
                 }
