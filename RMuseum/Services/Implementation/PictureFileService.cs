@@ -308,7 +308,6 @@ namespace RMuseum.Services.Implementation
                 File.Move(origPath, origPath + ".bak");
                 filesBackedUp = true;
             }
-
             RServiceResult<RPictureFile>
                result =
                await ProcessImage
@@ -316,7 +315,8 @@ namespace RMuseum.Services.Implementation
                    uploadedImage,
                    rPictureFile,
                    null,
-                   rPictureFile.OriginalFileName
+                   Path.GetFileName(rPictureFile.OriginalFileName),
+                   true
                    );
             if (!string.IsNullOrEmpty(result.ExceptionString))
                 return new RServiceResult<RPictureFile>(null, result.ExceptionString);
@@ -429,7 +429,7 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         public string ImageStoragePath { get { return $"{Configuration.GetSection("PictureFileService")["StoragePath"]}"; } }
 
-        private async Task<RServiceResult<RPictureFile>> ProcessImage(IFormFile uploadedImage, RPictureFile pictureFile, Stream stream, string originalFileNameForStreams)
+        private async Task<RServiceResult<RPictureFile>> ProcessImage(IFormFile uploadedImage, RPictureFile pictureFile, Stream stream, string originalFileNameForStreams, bool userFileNameForIFormFile = false)
         {
             if (uploadedImage == null && stream == null)
             {
@@ -438,7 +438,7 @@ namespace RMuseum.Services.Implementation
 
             pictureFile.ContentType = uploadedImage == null ? "image/jpeg" : uploadedImage.ContentType;
             pictureFile.FileSizeInBytes = uploadedImage == null ? stream.Length : uploadedImage.Length;
-            pictureFile.OriginalFileName = uploadedImage == null ? originalFileNameForStreams : uploadedImage.FileName;
+            pictureFile.OriginalFileName = uploadedImage == null || userFileNameForIFormFile ? originalFileNameForStreams : uploadedImage.FileName;
 
 
 
