@@ -477,7 +477,7 @@ namespace RMuseum.Services.Implementation
                 stats = $"{LanguageUtils.FormatMoney(sumRhythmsCouplets - secondMetreCoupletCount)} بیت شعر موجود";
             }
 
-            string htmlText = "<div class=\"tabcontent\" id=\"stats\" style=\"display:block\">";
+            string htmlText = "<div id=\"stats\" style=\"display:block\">";
 
             htmlText += $"<div id=\"stats-section\">{Environment.NewLine}";
 

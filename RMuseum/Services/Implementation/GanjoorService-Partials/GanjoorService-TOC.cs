@@ -331,34 +331,22 @@ namespace RMuseum.Services.Implementation
                     }
 
 
-                    html = _AddTabs(html, cat);
+                    html = _AddTabs(html, cat, true, "stats");
+
+                    html += await _GetCategoryStatsPage(poet.Id, catId, rhythms, context);
 
                     if (cat.ParentId == null)
                     {
                         //poet page
                         var poetPage = await context.GanjoorPages.AsNoTracking().Where(p => p.ParentId == null && p.PoetId == cat.PoetId && p.GanjoorPageType == GanjoorPageType.PoetPage).SingleAsync();
 
-
-
-
-                        /*
-                        html += $"<p>دیگر صفحات مرتبط با {poet.Nickname} در این پایگاه:</p>{Environment.NewLine}";
-                        // do not include stats pages
-                        var statsPage = await context.GanjoorPages.AsNoTracking()
-                                .Where(p => p.FullUrl == $"{poetPage.FullUrl}/vazn").SingleOrDefaultAsync();
-                        if (statsPage != null)
-                        {
-                            html += $"<div class=\"part-title-block-alt\" id=\"page-{statsPage.Id}\">{Environment.NewLine}";
-                            html += $"<a href=\"{statsPage.FullUrl}\">اوزان اشعار {poet.Nickname}</a>{Environment.NewLine}";
-                            html += $"</div>{Environment.NewLine}";
-                        }
-                        */
-
                         bool hasQuotes = await context.GanjoorQuotedPoems.AsNoTracking().Where(p => p.PoetId == poet.Id && p.Published == true).AnyAsync();
 
                         if (hasQuotes)
                         {
-                            html += "<div class=\"tabcontent\" id=\"quoteds\">";
+                            html = _AddTabs(html, cat, false, "quoteds");
+
+                            html += "<div id=\"quoteds\">";
                             html += $"<div id=\"related-poets-section\">{Environment.NewLine}";
 
 
@@ -428,7 +416,7 @@ namespace RMuseum.Services.Implementation
                             foreach (var childPage in thisPoetsSimilars)
                             {
                                 var childPoet = poets.Where(p => p.Id == childPage.SecondPoetId).SingleOrDefault();
-                                if(childPoet != null)
+                                if (childPoet != null)
                                 {
                                     var childPoetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == childPoet.Id && c.ParentId == null).SingleAsync();
                                     var poetImageUrl = $"https://api.ganjoor.net/api/ganjoor/poet/image{childPoetCat.FullUrl}.gif";
@@ -514,12 +502,8 @@ namespace RMuseum.Services.Implementation
                             html += $"</div>{Environment.NewLine}";//related-poets-section
                             html += $"</div>{Environment.NewLine}";//related-images-frame
                         }
-                     
+
                     }
-
-
-
-                    html += await _GetCategoryStatsPage(poet.Id, catId, rhythms, context);
 
                     return new RServiceResult<string>(html);
                 }
@@ -698,7 +682,7 @@ namespace RMuseum.Services.Implementation
                 }
 
 
-                html =  _AddTabs(html, cat);
+                html =  _AddTabs(html, cat, true, "stats");
                 html += await _GetCategoryStatsPage(poet.Id, catId, rhythms, context);
 
                 return new RServiceResult<string>(html);
@@ -709,18 +693,18 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private string _AddTabs(string html, GanjoorCat cat)
+        private string _AddTabs(string html, GanjoorCat cat, bool first, string active)
         {
-            html += $"<div id=\"pretab\"></div>{Environment.NewLine}";
-            html += $"<div class=\"tab\" id=\"tab-items\">{Environment.NewLine}";
-            html += $"<button class=\"tablinks active\" onclick=\"switchTab(event, 'stats')\">آمار</button> {Environment.NewLine}";
-            html += $"<button class=\"tablinks\" onclick=\"switchTabWords(event, 'words', {cat.Id}, {cat.PoetId})\">واژگان</button> {Environment.NewLine}";
-            html += $"<button class=\"tablinks\" onclick=\"switchToCatTab(event, 'recitations', {cat.Id})\">خوانش‌ها</button>{Environment.NewLine}";
+            html += $"<div id=\"poempretab\"></div>{Environment.NewLine}";
+            html += $"<div class=\"poemtab\">{Environment.NewLine}";
+            html += $"<div class=\"poemtablinks{(active == "stats" ? " active" : "")}\"><a href=\"#stats\">آمار</a></div>{Environment.NewLine}";
+            html += $"<div class=\"poemtablinks{(active == "words" ? " active" : "")}\"><a href=\"#words\" onclick=\"javascript:loadWordCounts({cat.Id}, {cat.PoetId}, false)\">واژگان</a></div>{Environment.NewLine}";
+            html += $"<div class=\"poemtablinks{(active == "recitations" ? " active" : "")}\"><a href=\"#recitations\" onclick=\"javascript:loadCatRecitations({cat.Id})\">خوانش‌ها</a></div>{Environment.NewLine}";
             if (cat.ParentId == null)
             {
-                html += $"<button class=\"tablinks\" onclick=\"switchTab(event, 'quoteds')\">مشق شعر</button> {Environment.NewLine}";
-                html += $"<button class=\"tablinks\" onclick=\"switchTab(event, 'photos')\">تصاویر چهره</button> {Environment.NewLine}";
-                html += $"<button class=\"tablinks\" onclick=\"switchTab(event, 'papersources')\">منابع کاغذی</button> {Environment.NewLine}";
+                html += $"<div class=\"poemtablinks{(active == "quoteds" ? " active" : "")}\"><a href=\"#quoteds\">مشق شعر</a></div>{Environment.NewLine}";
+                html += $"<div class=\"poemtablinks{(active == "photos" ? " active" : "")}\"><a href=\"#photos\">تصاویر چهره</a></div> {Environment.NewLine}";
+                html += $"<div class=\"poemtablinks{(active == "papersources" ? " active" : "")}\"><a href=\"#papersources\">منابع کاغذی</a></div> {Environment.NewLine}";
             }
 
             html += $"</div> {Environment.NewLine}";
