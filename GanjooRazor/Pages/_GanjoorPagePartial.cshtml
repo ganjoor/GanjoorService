@@ -255,7 +255,22 @@
 
                 @if (Model.IsCatPage || Model.IsPoetPage)
                 {
-                    <div class="tabcontent related-images-frame" id="words">
+                    <div class="poemtab">
+                        <div class="poemtablinks"><a href="#stats">آمار</a></div>
+                        @if (Model.IsPoetPage)
+                        {
+                            <div class="poemtablinks"><a href="#quoteds">مشق شعر</a></div>
+                        }
+                        <div class="poemtablinks active"><a href="#words" onclick="javascript:loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">واژگان</a></div>
+                        <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
+                        @if (Model.IsPoetPage)
+                        {
+                            <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
+                            <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+                        }
+
+                    </div>
+                    <div class="related-images-frame poemtabcontent" id="words">
                         <div class="century cursor-pointer" id="load-word-counts" onclick="loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">
                             محاسبهٔ بسامد واژٰگان.
                         </div>
@@ -271,7 +286,22 @@
                     </div>
 
 
-                    <div class="tabcontent related-images-frame" id="recitations">
+                    <div class="poemtab">
+                        <div class="poemtablinks"><a href="#stats">آمار</a></div>
+                        @if (Model.IsPoetPage)
+                        {
+                            <div class="poemtablinks"><a href="#quoteds">مشق شعر</a></div>
+                        }
+                        <div class="poemtablinks"><a href="#words" onclick="javascript:loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">واژگان</a></div>
+                        <div class="poemtablinks active"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
+                        @if (Model.IsPoetPage)
+                        {
+                            <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
+                            <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+                        }
+                    </div>
+
+                    <div class="related-images-frame poemtabcontent" id="recitations">
                         @if (Model.CategoryHasRecitations)
                         {
                             <div class="century cursor-pointer" id="load-cat-recitations" onclick="loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">
@@ -288,7 +318,21 @@
 
                     @if (Model.IsPoetPage)
                     {
-                        <div class="tabcontent" id="photos">
+                        <div class="poemtab">
+                            <div class="poemtablinks"><a href="#stats">آمار</a></div>
+                            @if (Model.IsPoetPage)
+                            {
+                                <div class="poemtablinks"><a href="#quoteds">مشق شعر</a></div>
+                            }
+                            <div class="poemtablinks"><a href="#words" onclick="javascript:loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">واژگان</a></div>
+                            <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
+                            @if (Model.IsPoetPage)
+                            {
+                                <div class="poemtablinks active"><a href="#photos">تصاویر چهره</a></div>
+                                <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+                            }
+                        </div>
+                        <div id="photos" class="poemtabcontent">
                             <div class="related-images-frame">
                                 @if (Model.Photo != null)
                                 {
@@ -315,7 +359,22 @@
                         </div>
                         if (Model.GanjoorPage.SecondPoet == null)
                         {
-                            <div class="tabcontent related-images-frame" id="papersources">
+                            <div class="poemtab">
+                                <div class="poemtablinks"><a href="#stats">آمار</a></div>
+                                @if (Model.IsPoetPage)
+                                {
+                                    <div class="poemtablinks"><a href="#quoteds">مشق شعر</a></div>
+                                }
+                                <div class="poemtablinks"><a href="#words" onclick="javascript:loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">واژگان</a></div>
+                                <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
+                                @if (Model.IsPoetPage)
+                                {
+                                    <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
+                                    <div class="poemtablinks active"><a href="#papersources">منابع کاغذی</a></div>
+                                }
+                            </div>
+
+                            <div class="poemtabcontent related-images-frame" id="papersources">
                                 <div class="related-images">
                                     @if (Model.GanjoorPage.PoetOrCat.Cat.PaperSources != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources.Any())
                                     {

@@ -698,11 +698,14 @@ namespace RMuseum.Services.Implementation
             html += $"<div id=\"poempretab\"></div>{Environment.NewLine}";
             html += $"<div class=\"poemtab\">{Environment.NewLine}";
             html += $"<div class=\"poemtablinks{(active == "stats" ? " active" : "")}\"><a href=\"#stats\">آمار</a></div>{Environment.NewLine}";
+            if (cat.ParentId == null)
+            {
+                html += $"<div class=\"poemtablinks{(active == "quoteds" ? " active" : "")}\"><a href=\"#quoteds\">مشق شعر</a></div>{Environment.NewLine}";
+            }
             html += $"<div class=\"poemtablinks{(active == "words" ? " active" : "")}\"><a href=\"#words\" onclick=\"javascript:loadWordCounts({cat.Id}, {cat.PoetId}, false)\">واژگان</a></div>{Environment.NewLine}";
             html += $"<div class=\"poemtablinks{(active == "recitations" ? " active" : "")}\"><a href=\"#recitations\" onclick=\"javascript:loadCatRecitations({cat.Id})\">خوانش‌ها</a></div>{Environment.NewLine}";
             if (cat.ParentId == null)
             {
-                html += $"<div class=\"poemtablinks{(active == "quoteds" ? " active" : "")}\"><a href=\"#quoteds\">مشق شعر</a></div>{Environment.NewLine}";
                 html += $"<div class=\"poemtablinks{(active == "photos" ? " active" : "")}\"><a href=\"#photos\">تصاویر چهره</a></div> {Environment.NewLine}";
                 html += $"<div class=\"poemtablinks{(active == "papersources" ? " active" : "")}\"><a href=\"#papersources\">منابع کاغذی</a></div> {Environment.NewLine}";
             }
