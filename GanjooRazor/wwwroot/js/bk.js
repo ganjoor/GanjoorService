@@ -1653,9 +1653,9 @@ function loadWordCounts(catId, poetId, remStopWords) {
         success: function (data) {
             if (document.getElementById("remove-this-wordcounts") != null) {
                 document.getElementById("remove-this-wordcounts").remove();
-                /*if (document.getElementById("load-word-counts") != null) {
-                    document.getElementById("percent-button").style.display = 'inline-block';
-                }*/
+                if (document.getElementById("load-word-counts") != null) {
+                    document.getElementById("load-word-counts").remove();
+                }
                 $(data).appendTo(divParent);
                 plotChart('words-stats');
             }
