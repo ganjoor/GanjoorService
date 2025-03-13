@@ -12,7 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+
 
 namespace RMuseum.Services.Implementation
 {
@@ -858,7 +858,7 @@ namespace RMuseum.Services.Implementation
                             poetId == relatedPoetId
                             &&
                             normalRelatedPoems.Where(r => r.Id == Guid.Empty && r.PoemId == quotedPoem.RelatedPoemId && r.RelatedPoemId == quotedPoem.PoemId && (r.CoupletIndex == quotedPoem.RelatedCoupletIndex || r.RelatedCoupletIndex == quotedPoem.CoupletIndex )).Any())
-                        {
+                        {//not working ???
                             continue;
                         }
                         quotedPoem.Id = Guid.Empty;

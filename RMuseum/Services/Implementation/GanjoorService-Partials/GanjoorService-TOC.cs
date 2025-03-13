@@ -710,11 +710,11 @@ namespace RMuseum.Services.Implementation
 
         private string _AddTabs(string html, GanjoorCat cat, string active)
         {
-            html += $"<div class=\"poempretab\" id=\"{active}\">";
             if (active == "stats")
             {
                 html += "<div id=\"pretab\"></div>";
             }
+            html += $"<div class=\"poempretab\" id=\"{active}\">";
             html += $"</div>{Environment.NewLine}";
             html += $"<div class=\"poemtab\">{Environment.NewLine}";
             html += $"<div class=\"poemtablinks{(active == "stats" ? " active" : "")}\"><a href=\"#stats\">آمار</a></div>{Environment.NewLine}";
