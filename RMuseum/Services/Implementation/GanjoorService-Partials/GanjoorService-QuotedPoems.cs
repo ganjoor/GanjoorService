@@ -857,7 +857,7 @@ namespace RMuseum.Services.Implementation
                         if(
                             poetId == relatedPoetId
                             &&
-                            normalRelatedPoems.Where(r => r.Id == Guid.Empty && r.PoemId == quotedPoem.RelatedPoemId && r.RelatedPoemId == quotedPoem.PoemId && r.CoupletIndex == quotedPoem.RelatedCoupletIndex).Any())
+                            normalRelatedPoems.Where(r => r.Id == Guid.Empty && r.PoemId == quotedPoem.RelatedPoemId && r.RelatedPoemId == quotedPoem.PoemId && (r.CoupletIndex == quotedPoem.RelatedCoupletIndex || r.RelatedCoupletIndex == quotedPoem.CoupletIndex )).Any())
                         {
                             continue;
                         }
