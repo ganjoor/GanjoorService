@@ -331,7 +331,7 @@ namespace RMuseum.Services.Implementation
                     }
 
 
-                    html = _AddTabs(html, cat, true, "stats");
+                    html = _AddTabs(html, cat, "stats");
 
                     html += await _GetCategoryStatsPage(poet.Id, catId, rhythms, context);
 
@@ -344,7 +344,7 @@ namespace RMuseum.Services.Implementation
 
                         if (hasQuotes)
                         {
-                            html = _AddTabs(html, cat, false, "quoteds");
+                            html = _AddTabs(html, cat, "quoteds");
 
                             html += "<div id=\"quoteds\">";
                             html += $"<div id=\"related-poets-section\">{Environment.NewLine}";
@@ -682,7 +682,7 @@ namespace RMuseum.Services.Implementation
                 }
 
 
-                html =  _AddTabs(html, cat, true, "stats");
+                html =  _AddTabs(html, cat, "stats");
                 html += await _GetCategoryStatsPage(poet.Id, catId, rhythms, context);
 
                 return new RServiceResult<string>(html);
@@ -693,12 +693,9 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private string _AddTabs(string html, GanjoorCat cat, bool first, string active)
+        private string _AddTabs(string html, GanjoorCat cat, string active)
         {
-            if(first)
-            {
-                html += $"<div class=\"poempretab\" id=\"pretab\"></div>{Environment.NewLine}";
-            }
+            html += $"<div class=\"poempretab\" id=\"{active}\"></div>{Environment.NewLine}";
             html += $"<div class=\"poemtab\">{Environment.NewLine}";
             html += $"<div class=\"poemtablinks{(active == "stats" ? " active" : "")}\"><a href=\"#stats\">آمار</a></div>{Environment.NewLine}";
             if (cat.ParentId == null)
