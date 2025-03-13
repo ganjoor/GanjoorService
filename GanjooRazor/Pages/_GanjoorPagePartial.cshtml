@@ -255,7 +255,8 @@
 
                 @if (Model.IsCatPage || Model.IsPoetPage)
                 {
-                    <div class="poemtab" id="words">
+                    <div class="poempretab" id="words"></div>
+                    <div class="poemtab">
                         <div class="poemtablinks"><a href="#stats">آمار</a></div>
                         @if (Model.IsPoetPage)
                         {
@@ -285,8 +286,8 @@
                         </div>
                     </div>
 
-
-                    <div class="poemtab" id="recitations">
+                    <div class="poempretab" id="recitations"></div>
+                    <div class="poemtab">
                         <div class="poemtablinks"><a href="#stats">آمار</a></div>
                         @if (Model.IsPoetPage)
                         {
@@ -318,7 +319,8 @@
 
                     @if (Model.IsPoetPage)
                     {
-                        <div class="poemtab" id="photos" >
+                        <div class="poempretab" id="photos"></div>
+                        <div class="poemtab">
                             <div class="poemtablinks"><a href="#stats">آمار</a></div>
                             @if (Model.IsPoetPage)
                             {
@@ -359,7 +361,8 @@
                         </div>
                         if (Model.GanjoorPage.SecondPoet == null)
                         {
-                            <div class="poemtab" id="papersources">
+                            <div class="poempretab" id="papersources"></div>
+                            <div class="poemtab">
                                 <div class="poemtablinks"><a href="#stats">آمار</a></div>
                                 @if (Model.IsPoetPage)
                                 {
