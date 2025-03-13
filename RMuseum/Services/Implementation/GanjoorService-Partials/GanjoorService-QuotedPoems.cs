@@ -854,6 +854,14 @@ namespace RMuseum.Services.Implementation
                     html += $"<ol>{Environment.NewLine}";
                     foreach (var quotedPoem in normalRelatedPoems)
                     {
+                        if(
+                            poetId == relatedPoetId
+                            &&
+                            normalRelatedPoems.Where(r => r.Id == Guid.Empty && r.PoemId == quotedPoem.RelatedPoemId && r.RelatedPoemId == quotedPoem.PoemId && r.CoupletIndex == quotedPoem.RelatedCoupletIndex).Any())
+                        {
+                            continue;
+                        }
+                        quotedPoem.Id = Guid.Empty;
                         var poem = await context.GanjoorPoems.AsNoTracking().Where(p => p.Id == quotedPoem.PoemId).SingleAsync();
                         html += $"<li>{Environment.NewLine}";
                         html += $"<h3>{Environment.NewLine}";
