@@ -235,25 +235,27 @@ namespace RMuseum.Services.Implementation
                                               }
                                           }
                                           
-                                          RGenericOption option = await context.Options.Where(o => o.Name == "CategoryWordCountsLastPoetId" && o.RAppUserId == null).SingleOrDefaultAsync();
-                                          if (option != null)
+                                          if(poetId == 0)
                                           {
-                                              option.Value = poetCat.PoetId.ToString();
-                                              context.Options.Update(option);
-                                              await context.SaveChangesAsync();
-                                          }
-                                          else
-                                          {
-                                              RGenericOption newOption = new RGenericOption
+                                              RGenericOption option = await context.Options.Where(o => o.Name == "CategoryWordCountsLastPoetId" && o.RAppUserId == null).SingleOrDefaultAsync();
+                                              if (option != null)
                                               {
-                                                  Name = "CategoryWordCountsLastPoetId",
-                                                  Value = poetCat.PoetId.ToString(),
-                                                  RAppUserId = null
-                                              };
-                                              context.Options.Add(newOption);
-                                              await context.SaveChangesAsync();
+                                                  option.Value = poetCat.PoetId.ToString();
+                                                  context.Options.Update(option);
+                                                  await context.SaveChangesAsync();
+                                              }
+                                              else
+                                              {
+                                                  RGenericOption newOption = new RGenericOption
+                                                  {
+                                                      Name = "CategoryWordCountsLastPoetId",
+                                                      Value = poetCat.PoetId.ToString(),
+                                                      RAppUserId = null
+                                                  };
+                                                  context.Options.Add(newOption);
+                                                  await context.SaveChangesAsync();
+                                              }
                                           }
-
                                       }
 
 
