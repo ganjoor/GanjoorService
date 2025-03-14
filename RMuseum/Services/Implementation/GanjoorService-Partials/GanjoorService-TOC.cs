@@ -241,7 +241,6 @@ namespace RMuseum.Services.Implementation
                        .Replace("،", "")//virgool
                        .Replace("!", "")
                        .Replace("؟", "")
-                       .Replace(":", "")
                        .Replace("؛", "")
                        .Replace("«", "")
                        .Replace("»", "")
