@@ -212,7 +212,7 @@ namespace GanjooRazor.Pages
             }
 
             PoetId = string.IsNullOrEmpty(Request.Query["author"]) ? 0 : int.Parse(Request.Query["author"]);
-            CatId = string.IsNullOrEmpty(Request.Query["cat"]) ? 0 : int.Parse(Request.Query["cat"]);
+            CatId = PoetId == 0 ? 0 : string.IsNullOrEmpty(Request.Query["cat"]) ? 0 : int.Parse(Request.Query["cat"]);
 
 
             if (CatId != 0)
