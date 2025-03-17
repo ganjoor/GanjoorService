@@ -2800,6 +2800,14 @@ namespace RMuseum.Services.Implementation
             {
                 catId = null;
             }
+            if (poetId != null && catId != null)
+            {
+                var cat = await _context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
+                if(cat.PoetId != poetId)
+                {
+                    catId = null;
+                }
+            }
             if (poetId != null && catId == null)
             {
                 var poetRes = await GetPoetById((int)poetId);
