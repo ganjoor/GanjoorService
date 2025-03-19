@@ -6,9 +6,10 @@ using System.Linq;
 using RMuseum.DbContext;
 using System.Collections.Generic;
 using RSecurityBackend.Services.Implementation;
-using NAudio.Gui;
 using DNTPersianUtils.Core;
 using System.Globalization;
+using System.Threading.Tasks;
+using RSecurityBackend.Models.Generic;
 
 namespace RMuseum.Services.Implementation
 {
@@ -17,6 +18,22 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+        /// <summary>
+        /// get digital source from tag
+        /// </summary>
+        /// <param name="sourceUrlSlug"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<DigitalSource>> GetDigitalSourceFromTagAsync(string sourceUrlSlug)
+        {
+            try
+            {
+                return new RServiceResult<DigitalSource>(await _context.DigitalSources.AsNoTracking().Where(d => d.UrlSlug == sourceUrlSlug).SingleOrDefaultAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<DigitalSource>(null, exp.ToString());
+            }
+        }
         /// <summary>
         /// tag with sources
         /// </summary>

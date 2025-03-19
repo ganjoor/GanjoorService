@@ -4224,6 +4224,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// digital source from tag
+        /// </summary>
+        /// <param name="sourceUrlSlug"></param>
+        /// <returns></returns>
+
+        [HttpGet]
+        [Route("digitalsource")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(DigitalSource))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetDigitalSourceFromTagAsync(string sourceUrlSlug)
+        {
+            RServiceResult<DigitalSource> res =
+                await _ganjoorService.GetDigitalSourceFromTagAsync(sourceUrlSlug);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            return Ok(res.Result);//might be null
+        }
+
+        /// <summary>
         /// tag category with source
         /// </summary>
         /// <param name="catId"></param>

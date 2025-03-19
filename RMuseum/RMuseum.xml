@@ -2288,6 +2288,13 @@
             <param name="model"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetDigitalSourceFromTagAsync(System.String)">
+            <summary>
+            digital source from tag
+            </summary>
+            <param name="sourceUrlSlug"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.TagCategoryWithSource(System.Int32,System.String)">
             <summary>
             tag category with source
@@ -17433,6 +17440,13 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetDigitalSourceFromTagAsync(System.String)">
+            <summary>
+            digital source from tag
+            </summary>
+            <param name="sourceUrlSlug"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.TagCategoryWithSource(System.Int32,System.String)">
             <summary>
             tag with sources
@@ -19390,6 +19404,13 @@
             <summary>
             regenerate half centuries
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetDigitalSourceFromTagAsync(System.String)">
+            <summary>
+            get digital source from tag
+            </summary>
+            <param name="sourceUrlSlug"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.TagCategoryWithSource(System.Int32,System.String)">

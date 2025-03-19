@@ -1449,6 +1449,13 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> ModerateGanjoorQuotedPoemAsync(GanjoorQuotedPoemModerationViewModel model, Guid userId);
 
         /// <summary>
+        /// digital source from tag
+        /// </summary>
+        /// <param name="sourceUrlSlug"></param>
+        /// <returns></returns>
+        Task<RServiceResult<DigitalSource>> GetDigitalSourceFromTagAsync(string sourceUrlSlug);
+
+        /// <summary>
         /// tag with sources
         /// </summary>
         /// <param name="catId"></param>
