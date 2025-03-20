@@ -4230,7 +4230,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
 
         [HttpGet]
-        [Route("digitalsource")]
+        [Route("source")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(DigitalSource))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
