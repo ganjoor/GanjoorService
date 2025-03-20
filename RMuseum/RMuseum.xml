@@ -2295,12 +2295,12 @@
             <param name="sourceUrlSlug"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.TagCategoryWithSource(System.Int32,System.String)">
+        <member name="M:RMuseum.Controllers.GanjoorController.TagCategoryWithSource(System.Int32,RMuseum.Models.Ganjoor.DigitalSource)">
             <summary>
             tag category with source
             </summary>
             <param name="catId"></param>
-            <param name="sourceUrlSlug"></param>
+            <param name="source"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.UpdateDigitalSourcesStats">
@@ -17447,12 +17447,12 @@
             <param name="sourceUrlSlug"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.TagCategoryWithSource(System.Int32,System.String)">
+        <member name="M:RMuseum.Services.IGanjoorService.TagCategoryWithSource(System.Int32,RMuseum.Models.Ganjoor.DigitalSource)">
             <summary>
             tag with sources
             </summary>
             <param name="catId"></param>
-            <param name="sourceUrlSlug"></param>
+            <param name="source"></param>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.UpdateDigitalSourcesStats(System.Guid)">
             <summary>
@@ -19413,12 +19413,12 @@
             <param name="sourceUrlSlug"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.TagCategoryWithSource(System.Int32,System.String)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.TagCategoryWithSource(System.Int32,RMuseum.Models.Ganjoor.DigitalSource)">
             <summary>
             tag with sources
             </summary>
             <param name="catId"></param>
-            <param name="sourceUrlSlug"></param>
+            <param name="source"></param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdateDigitalSourcesStats(System.Guid)">
             <summary>

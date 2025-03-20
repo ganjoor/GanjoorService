@@ -10,6 +10,7 @@ using DNTPersianUtils.Core;
 using System.Globalization;
 using System.Threading.Tasks;
 using RSecurityBackend.Models.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 namespace RMuseum.Services.Implementation
 {
@@ -38,8 +39,8 @@ namespace RMuseum.Services.Implementation
         /// tag with sources
         /// </summary>
         /// <param name="catId"></param>
-        /// <param name="sourceUrlSlug"></param>
-        public void TagCategoryWithSource(int catId, string sourceUrlSlug)
+        /// <param name="source"></param>
+        public void TagCategoryWithSource(int catId, DigitalSource source)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
                            (
@@ -48,7 +49,7 @@ namespace RMuseum.Services.Implementation
                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                                {
                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                                   var job = (await jobProgressServiceEF.NewJob($"TagCategoryWithSource(catId: {catId} - source:{sourceUrlSlug})", "Query data")).Result;
+                                   var job = (await jobProgressServiceEF.NewJob($"TagCategoryWithSource(catId: {catId} - source:{source.UrlSlug})", "Query data")).Result;
                                    try
                                    {
                                        var pages = await context.GanjoorPages.AsNoTracking().Where(p => p.FullUrl.StartsWith("/sources/")).ToListAsync();
@@ -87,10 +88,45 @@ namespace RMuseum.Services.Implementation
                                            }
                                        }
 
-                                       var digitalSource = await context.DigitalSources.Where(p => p.UrlSlug == sourceUrlSlug).SingleOrDefaultAsync();
+                                       var digitalSource = await context.DigitalSources.Where(p => p.UrlSlug == source.UrlSlug).SingleOrDefaultAsync();
                                        if (digitalSource == null)
                                        {
-                                           await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, $"Digital source not found: {sourceUrlSlug}");
+                                           context.DigitalSources.Add
+                                               (
+                                                   new DigitalSource()
+                                                   {
+                                                       UrlSlug = source.UrlSlug,
+                                                       ShortName = source.ShortName,
+                                                       FullName = source.FullName,
+                                                       SourceType = source.SourceType,
+                                                       CoupletsCount = 0,
+                                                   }
+                                               );
+
+                                           var parentPage = await context.GanjoorPages.AsNoTracking().Where(p => p.UrlSlug == "sources").SingleAsync();
+                                           var newPageId = 1 + await context.GanjoorPages.MaxAsync(p => p.Id);
+                                           while (await context.GanjoorPoems.Where(p => p.Id == newPageId).AnyAsync())
+                                               newPageId++;
+                                           context.GanjoorPages.Add
+                                           (
+                                               new GanjoorPage()
+                                               {
+                                                   Id = newPageId,
+                                                   GanjoorPageType = GanjoorPageType.None,
+                                                   Published = true,
+                                                   PageOrder = -1,
+                                                   Title = source.FullName,
+                                                   FullTitle = $"{parentPage.FullTitle} » {source.FullName}",
+                                                   FullUrl = $"{parentPage.FullUrl}/{source.UrlSlug}",
+                                                   UrlSlug = source.UrlSlug,
+                                                   HtmlText = $"<p>{source.FullName}</p>",
+                                                   PostDate = DateTime.Now,
+                                                   ParentId = parentPage.Id,
+                                               }
+                                           );
+                                           
+                                           await context.SaveChangesAsync();
+                                           digitalSource = await context.DigitalSources.Where(p => p.UrlSlug == source.UrlSlug).SingleAsync();
                                        }
 
                                        List<int> catIdList = new List<int>
@@ -107,7 +143,7 @@ namespace RMuseum.Services.Implementation
                                            foreach (var poem in poems)
                                            {
                                                poem.SourceName = digitalSource.ShortName;
-                                               poem.SourceUrlSlug = sourceUrlSlug;
+                                               poem.SourceUrlSlug = source.UrlSlug;
                                                context.Update(poem);
 
                                                int coupletCount = await context.GanjoorVerses.AsNoTracking()
