@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System;
+using System.Text.RegularExpressions;
+using System.Web;
 
 namespace GanjooRazor.Areas.User.Pages
 {
@@ -116,10 +118,20 @@ namespace GanjooRazor.Areas.User.Pages
             return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
         }
 
-        public async Task<IActionResult> OnPostAsync([FromBody] GanjoorCatCorrectionViewModel Correction)
+        static string StripHtmlTags(string input)
+        {
+            // Remove HTML tags using Regex
+            string textWithoutTags = Regex.Replace(input, "<.*?>", string.Empty);
+
+            // Decode HTML entities (e.g., &amp; → &)
+            return HttpUtility.HtmlDecode(textWithoutTags);
+        }
+
+        public async Task<IActionResult> OnPostAsync()
         {
             try
             {
+                Correction.Description = StripHtmlTags(Correction.DescriptionHtml);
                 using (HttpClient secureClient = new HttpClient())
                 {
                     if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
@@ -131,20 +143,26 @@ namespace GanjooRazor.Areas.User.Pages
                             "application/json"));
                         if (!response.IsSuccessStatusCode)
                         {
-                            return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                            FatalError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                         }
-                        return new OkObjectResult(true);
+                        else
+                        {
+                            MyLastEdit = JsonConvert.DeserializeObject<GanjoorCatCorrectionViewModel>(await response.Content.ReadAsStringAsync());
+                        }
                     }
                     else
                     {
-                        return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+                        FatalError = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
                     }
+                    
                 }
             }
             catch (Exception exp)
             {
-                return new BadRequestObjectResult(exp.ToString());
+                FatalError = exp.ToString();
+
             }
+            return Page();
 
         }
 
