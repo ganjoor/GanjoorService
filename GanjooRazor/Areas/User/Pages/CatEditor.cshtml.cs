@@ -100,7 +100,7 @@ namespace GanjooRazor.Areas.User.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostDeleteCatCorrectionsAsync(int catid)
+        public async Task<IActionResult> OnPostDeleteCatCorrectionAsync(int catid)
         {
             using (HttpClient secureClient = new HttpClient())
             {

@@ -8,6 +8,89 @@
 }
 <h1>@ViewData["Title"]</h1>
 
+@if (Model.MyLastEdit != null)
+{
+    <script>
+            function deleteCatCorrection(id) {
+            if (!confirm('آیا از حذف تغییرات پیشنهادی اطمینان دارید؟'))
+                return;
+
+            $('#deletecorrections').hide();
+            $('#saving').text('در حال ذخیره ...');
+
+            var url = '?handler=DeleteCatCorrection';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    catid: id,
+                },
+                error: function () {
+                    alert('خطا رخ داد.')
+                },
+                success: function () {
+                    location.reload(true);
+                },
+
+            });
+        }
+    </script>
+    <table>
+        <tr>
+            <td colspan="2">ویرایشهای بررسی نشدهٔ من</td>
+        </tr>
+
+        <tr>
+            <td>متن اولیه</td>
+            <td>تغییرات من</td>
+        </tr>
+
+        @if (Model.MyLastEdit.Description != null)
+        {
+            <tr>
+                <td colspan="2">
+                    تغییرات متن
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p class="red-color" id="title-lastedit-original">@Model.MyLastEdit.OriginalDescription</p>
+                </td>
+                <td>
+                    <p class="green-color" id="title-lastedit-edited">@Model.MyLastEdit.Description</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <p id="title-lastedit-compare">@Model.MyLastEdit.OriginalDescription</p>
+                    <script>
+                        $(document).ready(function () {
+                            compareCorrectionBlocks('title-lastedit-original', 'title-lastedit-edited', 'title-lastedit-compare');
+                        });
+                    </script>
+                </td>
+            </tr>
+        }
+        @if (!string.IsNullOrEmpty(Model.MyLastEdit.Note))
+        {
+            <tr>
+                <td>یادداشت:</td>
+                <td>
+                    @Model.MyLastEdit.Note
+                </td>
+            </tr>
+        }
+
+        <tr>
+            <td colspan="2" class="td-button-container">
+                <a role="button" id="deletecorrections" class="editor-button background-red" onclick="deletePoemCorrections(@Model.PageInformation.PoetOrCat.Cat.Id)">انصراف و حذف این ویرایش</a>
+            </td>
+        </tr>
+
+    </table>
+}
+
 <form method="post">
     <table style="width:100%" class="noborder">
         <tr>
