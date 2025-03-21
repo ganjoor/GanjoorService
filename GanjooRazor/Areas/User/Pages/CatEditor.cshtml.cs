@@ -47,7 +47,7 @@ namespace GanjooRazor.Areas.User.Pages
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
                 return Redirect("/");
 
-            FatalError = "";
+            FatalError = Request.Query["FatalError"];
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
@@ -145,10 +145,6 @@ namespace GanjooRazor.Areas.User.Pages
                         {
                             FatalError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                         }
-                        else
-                        {
-                            MyLastEdit = JsonConvert.DeserializeObject<GanjoorCatCorrectionViewModel>(await response.Content.ReadAsStringAsync());
-                        }
                     }
                     else
                     {
@@ -162,7 +158,7 @@ namespace GanjooRazor.Areas.User.Pages
                 FatalError = exp.ToString();
 
             }
-            return Page();
+            return Redirect($"/User/CatEditor?id={Request.Query["id"]}&FatalError={FatalError}");
 
         }
 
