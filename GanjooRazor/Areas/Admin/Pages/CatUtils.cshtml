@@ -252,6 +252,7 @@
     function tagPoemsWithDigitalTag(catId) {
 
         var tag = document.getElementById('digital-source-url-slug').value;
+        var name = document.getElementById('digital-source-name').value;
 
         if (!confirm('آیا از برچسب‌گذاری اشعار این بخش با منبع دیجیتال با نشانی '+tag+' اطمینان دارید؟')) return;
        
@@ -261,7 +262,8 @@
             url: url,
             data: {
                 id: catId,
-                tag: tag
+                tag: tag,
+                name: name
             },
             error: function (e) {
                 if (e.responseText == null)
@@ -776,11 +778,18 @@
 <table>
     <tr>
         <td>
-            <span class="inputlabel">منبع دیجیتال بخش</span>
+            <span class="inputlabel">اسلاگ منبع دیجیتال بخش</span>
         </td>
         <td>
             <input id="digital-source-url-slug" value="" />
-               
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="inputlabel">نام منبع دیجیتال بخش (فقط برای منبع جدید)</span>
+        </td>
+        <td>
+            <input id="digital-source-name" value="" />
         </td>
     </tr>
     <tr>

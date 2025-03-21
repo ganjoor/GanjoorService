@@ -1,8 +1,4 @@
-﻿using System.IO;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using GanjooRazor.Utils;
+﻿using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,6 +7,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
+using System.IO;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
@@ -562,16 +562,40 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
         }
 
-        public async Task<IActionResult> OnPostSetCategoryDigitalSourceTagAsync(int id, string tag)
+        public async Task<IActionResult> OnPostSetCategoryDigitalSourceTagAsync(int id, string tag, string name)
         {
             using (HttpClient secureClient = new HttpClient())
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/source/{id}/{tag}", null);
-                    if (!response.IsSuccessStatusCode)
+                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/source?sourceUrlSlug={tag}");
+                    if(!response.IsSuccessStatusCode)
                     {
                         var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        return new BadRequestObjectResult(res);
+                    }
+                    DigitalSource source = JsonConvert.DeserializeObject<DigitalSource>(await response.Content.ReadAsStringAsync());
+                    if (source == null)
+                    {
+                        if(string.IsNullOrEmpty(name))
+                        {
+                            return new BadRequestObjectResult("منبع وجود ندارد. باید نام آن را وارد کنید.");
+                        }
+                        source = new DigitalSource()
+                        {
+                            UrlSlug = tag,
+                            ShortName = name,
+                            FullName = name,
+                            SourceType = "همراهان گنجور"
+                        };
+                    }
+
+                    HttpResponseMessage responsePost = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/source/{id}",
+                        new StringContent(JsonConvert.SerializeObject(source), Encoding.UTF8, "application/json")
+                        );
+                    if (!responsePost.IsSuccessStatusCode)
+                    {
+                        var res = JsonConvert.DeserializeObject<string>(await responsePost.Content.ReadAsStringAsync());
                         return new BadRequestObjectResult(res);
                     }
                     return new OkObjectResult(true);
