@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -299,7 +298,7 @@ namespace GanjooRazor.Areas.User.Pages
         }
 
 
-        public class PoemCorrectionStructue
+        public class PoemCorrectionStructure
         {
             public int poemid { get; set; }
             public string[] verseOrderText { get; set; }
@@ -317,7 +316,7 @@ namespace GanjooRazor.Areas.User.Pages
             public bool hideMyName { get; set; }
         }
 
-        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync([FromBody] PoemCorrectionStructue pcs)
+        public async Task<IActionResult> OnPostSendPoemCorrectionsAsync([FromBody] PoemCorrectionStructure pcs)
         {
             try
             {
