@@ -1,0 +1,118 @@
+﻿@page
+@using DNTPersianUtils.Core
+@model GanjooRazor.Areas.Admin.Pages.ReviewCatEditsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "ویرایش‌های بخش‌ها";
+}
+
+@if (!string.IsNullOrEmpty(Model.FatalError))
+{
+    <p>@Model.FatalError</p>
+    return;
+}
+
+<table>
+    <tr>
+        <td>
+            پیشنهاد دهنده:
+        </td>
+        <td>
+            <a href="/hashieha/?userid=@Model.Correction.UserId" target="_blank">@Model.Correction.UserNickname</a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a role="button" id="moderatecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="moderateSectionCorrections(@Model.Correction.Id)">بررسی</a>
+        </td>
+        <td>
+            <form method="post">
+                <button type="submit" name="next" id="next" style="width:100%;color:white;background-color:orange">بعدی</button>
+            </form>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            زمان:
+        </td>
+        <td>
+            @Model.Correction.Date.ToFriendlyPersianDateTextify()
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            تعداد کل:
+        </td>
+        <td>
+            @Model.TotalCount
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan=2>
+            <a role="button" onclick="notCorrect()" class="pagebutton">درست نیست</a>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2">
+            تغییرات متن
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p class="red-color" id="title-lastedit-original">@Model.Correction.OriginalDescription</p>
+        </td>
+        <td>
+            <p class="green-color" id="title-lastedit-edited">@Model.Correction.Description</p>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <p id="title-lastedit-compare">@Model.Correction.OriginalDescription</p>
+            <script>
+                $(document).ready(function () {
+                    compareCorrectionBlocks('title-lastedit-original', 'title-lastedit-edited', 'title-lastedit-compare');
+                });
+            </script>
+        </td>
+    </tr>
+
+
+    <tr>
+        <td colspan="2"><p id="saving">&nbsp;</p></td>
+    </tr>
+    
+
+    
+
+    
+
+    
+
+    
+
+    @if (!string.IsNullOrEmpty(Model.Correction.Note))
+    {
+        <tr>
+            <td>یادداشت:</td>
+            <td>
+                @Model.Correction.Note
+            </td>
+        </tr>
+    }
+
+    
+
+    <tr>
+        <td>یادداشت بررسی:</td>
+        <td><input type="text" id="review_note" name="review_note" value="" size="50" /></td>
+    </tr>
+
+
+    
+
+</table>
