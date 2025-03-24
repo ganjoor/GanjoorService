@@ -8,6 +8,11 @@ using RSecurityBackend.Models.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Linq;
+using RMuseum.Models.Ganjoor;
+using static GanjooRazor.Areas.Admin.Pages.ReviewEditsModel;
+using System.Text;
+using System;
+using Org.BouncyCastle.Asn1.Cmp;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
@@ -88,6 +93,68 @@ namespace GanjooRazor.Areas.Admin.Pages
                 }
             }
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostSendCorrectionsModerationAsync([FromBody] PoemMoerationStructure pms)
+        {
+            using (HttpClient secureClient = new HttpClient())
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var correctionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/correction/{pms.correctionId}");
+                    if (!correctionResponse.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await correctionResponse.Content.ReadAsStringAsync()));
+                    }
+
+                    Correction = JsonConvert.DeserializeObject<GanjoorCatCorrectionViewModel>(await correctionResponse.Content.ReadAsStringAsync());
+
+                    if (Correction.DescriptionHtml != null)
+                    {
+                        if (pms.titleReviewResult == null)
+                        {
+                            return new BadRequestObjectResult("لطفاً تغییرات متن را بازبینی کنید.");
+                        }
+                        else
+                        {
+                            Correction.Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.titleReviewResult);
+                            Correction.ReviewNote = pms.titleReviewNote;
+                        }
+                    }
+                    
+
+                    var moderationResponse = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/cat/correction/moderate",
+                        new StringContent(JsonConvert.SerializeObject(Correction), Encoding.UTF8, "application/json"
+                        ));
+
+                    if (!moderationResponse.IsSuccessStatusCode)
+                    {
+                        string err = await moderationResponse.Content.ReadAsStringAsync();
+                        if (string.IsNullOrEmpty(err))
+                        {
+                            if (!string.IsNullOrEmpty(moderationResponse.ReasonPhrase))
+                            {
+                                err = moderationResponse.ReasonPhrase;
+                            }
+                            else
+                            {
+                                err = $"Error Code: {moderationResponse.StatusCode}";
+                            }
+                        }
+                        else
+                        {
+                            err = JsonConvert.DeserializeObject<string>(err);
+                        }
+                        return new BadRequestObjectResult(err);
+                    }
+
+                    return new OkObjectResult(true);
+                }
+                else
+                {
+                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجدداً به آن وارد شوید.");
+                }
+            }
         }
     }
 }

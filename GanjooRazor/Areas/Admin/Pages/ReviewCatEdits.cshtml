@@ -13,6 +13,56 @@
     return;
 }
 
+@if (Model.Correction == null)
+{
+    <p>ویرایشی وجود ندارد.</p>
+    return;
+}
+
+<script>
+        function moderateCorrections(correctionId) {
+
+        $('#moderatecorrections').hide();
+        $('#saving').text('در حال بررسی ...');
+
+
+        var descriptionReviewResult = 'DontCare';
+        if ($('#description_review_result_Approved').length > 0) { //has title
+            descriptionReviewResult = $('input[name=description_review_result]:checked').val()
+        }
+
+
+        var url = '?handler=SendCorrectionsModeration';
+
+        var pms = {};
+
+        pms.correctionId= correctionId;
+        pms.titleReviewResult = descriptionReviewResult;
+        pms.titleReviewNote= $('#review_note') == null ? null : $('#review_note').val();
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: JSON.stringify(pms),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function() {
+                location.reload(true);
+            },
+            error: function(e) {
+                if (e.responseText == null)
+                    alert(e);
+                else
+                    alert(e.responseText);
+                $('#moderatecorrections').show();
+                $('#saving').text('');
+            }
+        });
+
+    }
+
+</script>
+
 <table>
     <tr>
         <td>
@@ -24,7 +74,7 @@
     </tr>
     <tr>
         <td>
-            <a role="button" id="moderatecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="moderateSectionCorrections(@Model.Correction.Id)">بررسی</a>
+            <a role="button" id="moderatecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="moderateCorrections(@Model.Correction.Id)">بررسی</a>
         </td>
         <td>
             <form method="post">
@@ -52,32 +102,57 @@
     </tr>
 
     <tr>
-        <td colspan=2>
-            <a role="button" onclick="notCorrect()" class="pagebutton">درست نیست</a>
-        </td>
-    </tr>
-
-    <tr>
         <td colspan="2">
             تغییرات متن
         </td>
     </tr>
     <tr>
         <td>
-            <p class="red-color" id="title-lastedit-original">@Model.Correction.OriginalDescription</p>
+            <p class="red-color" id="description-lastedit-original">@Model.Correction.OriginalDescription</p>
         </td>
         <td>
-            <p class="green-color" id="title-lastedit-edited">@Model.Correction.Description</p>
+            <p class="green-color" id="description-lastedit-edited">@Model.Correction.Description</p>
         </td>
     </tr>
     <tr>
         <td colspan="2">
-            <p id="title-lastedit-compare">@Model.Correction.OriginalDescription</p>
+            <p id="description-lastedit-compare">@Model.Correction.OriginalDescription</p>
             <script>
                 $(document).ready(function () {
-                    compareCorrectionBlocks('title-lastedit-original', 'title-lastedit-edited', 'title-lastedit-compare');
+                    compareCorrectionBlocks('description-lastedit-original', 'description-lastedit-edited', 'description-lastedit-compare');
                 });
             </script>
+        </td>
+    </tr>
+
+
+
+    <tr>
+        <td colspan="2">
+            @if (Model.Correction.Result == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
+            {
+                <input type="radio" id="description_review_result_Approved" name="description_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+                <label for="description_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
+
+                <br>
+                <input type="radio" id="description_review_result_NotChanged" name="description_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
+            }
+            else
+            {
+                <input type="radio" id="description_review_result_Approved" name="description_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
+                <label for="description_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
+
+                <br>
+                <input type="radio" id="description_review_result_NotChanged" name="description_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
+            }
+            <label for="description_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label><br>
+            <input type="radio" id="description_review_result_RejectedBecauseWrong" name="description_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
+            <label for="description_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label><br>
+            <input type="radio" id="description_review_result_RejectedBecauseVariant" name="description_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
+            <label for="description_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
+            <input type="radio" id="description_review_result_Rejected" name="description_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
+            <label for="description_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label><br>
+            <p>دلیل را در یادداشت بررسی بنویسید.</p>
         </td>
     </tr>
 
@@ -85,15 +160,15 @@
     <tr>
         <td colspan="2"><p id="saving">&nbsp;</p></td>
     </tr>
-    
 
-    
 
-    
 
-    
 
-    
+
+
+
+
+
 
     @if (!string.IsNullOrEmpty(Model.Correction.Note))
     {
@@ -105,7 +180,7 @@
         </tr>
     }
 
-    
+
 
     <tr>
         <td>یادداشت بررسی:</td>
@@ -113,6 +188,6 @@
     </tr>
 
 
-    
+
 
 </table>

@@ -112,7 +112,7 @@ namespace RMuseum.Services.Implementation
                 await _notificationService.PushNotification(dbCorrection.UserId,
                                    "بررسی ویرایش پیشنهادی شما برای بخش",
                                    $"با سپاس از زحمت و همت شما ویرایش پیشنهادیتان برای <a href=\"https://ganjoor.net{dbCat.FullUrl}\" target=\"_blank\">{dbPage.FullTitle}</a> بررسی شد.{Environment.NewLine}" +
-                                   $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «<a href=\"https://ganjoor.net/User/Cdits\">ویرایش‌های بخش‌های من</a>» را مشاهده بفرمایید.{Environment.NewLine}"
+                                   $"جهت مشاهدهٔ نتیجهٔ بررسی در میز کاربری خود بخش «<a href=\"https://ganjoor.net/User/CatEdits\">ویرایش‌های بخش‌های من</a>» را مشاهده بفرمایید.{Environment.NewLine}"
                                    );
 
          
