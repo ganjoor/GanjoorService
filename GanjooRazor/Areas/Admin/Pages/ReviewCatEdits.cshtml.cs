@@ -90,7 +90,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         }
                         PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
-                        Links = GanjoorPoemTools.ExtractLinksWithRegex(Correction.DescriptionHtml);
+                        Links = GanjoorHtmlTools.ExtractLinksWithRegex(Correction.DescriptionHtml);
 
                     }
 

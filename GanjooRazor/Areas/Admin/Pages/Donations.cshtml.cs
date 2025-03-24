@@ -2,9 +2,7 @@
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
 using DNTPersianUtils.Core;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -104,7 +102,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if(donation != null)
                 {
                     int rowNumber = Donations.Length - Array.IndexOf(Donations, donation);
-                    string donorName = GanjoorPoemTools.StripHtmlTags(donation.DonorName);
+                    string donorName = GanjoorHtmlTools.StripHtmlTags(donation.DonorName);
                     if(donorName.StartsWith("آقای"))
                     {
                         donorName = $"جناب {donorName}";

@@ -8,8 +8,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System;
-using System.Text.RegularExpressions;
-using System.Web;
 using RMuseum.Utils;
 
 namespace GanjooRazor.Areas.User.Pages
@@ -125,7 +123,7 @@ namespace GanjooRazor.Areas.User.Pages
         {
             try
             {
-                Correction.Description = GanjoorPoemTools.StripHtmlTags(Correction.DescriptionHtml);
+                Correction.Description = GanjoorHtmlTools.StripHtmlTags(Correction.DescriptionHtml);
                 using (HttpClient secureClient = new HttpClient())
                 {
                     if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
