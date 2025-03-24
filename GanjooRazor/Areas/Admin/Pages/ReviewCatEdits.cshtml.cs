@@ -9,11 +9,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Linq;
 using RMuseum.Models.Ganjoor;
-using static GanjooRazor.Areas.Admin.Pages.ReviewEditsModel;
 using System.Text;
 using System;
 using RMuseum.Utils;
 using System.Collections.Generic;
+using GanjooRazor.Models;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {

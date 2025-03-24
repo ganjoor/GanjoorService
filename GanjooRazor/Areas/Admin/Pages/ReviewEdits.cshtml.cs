@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using GanjooRazor.Models;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -221,24 +222,6 @@ namespace GanjooRazor.Areas.Admin.Pages
                 return Redirect($"/Admin/ReviewEdits/?skip={Skip + 1}&onlyUserCorrections={OnlyUserCorrections}");
             }
             return Page();
-        }
-
-        public class PoemMoerationStructure
-        {
-            public int correctionId{ get; set; }
-            public string titleReviewResult { get; set; }
-            public string summaryReviewResult { get; set; }
-            public string rhythmReviewResult { get; set; }
-            public string rhythm2ReviewResult { get; set; }
-            public string rhymeReviewResult { get; set; }
-            public string titleReviewNote { get; set; }
-            public string[] verseReviewResult { get; set; }
-            public string[] versePosReviewResult { get; set; }
-            public string[] verseSummaryResults { get; set; }
-            public string[] verseLanguageReviewResult { get; set; }
-            public string[] verseReviewNotes { get; set; }
-            public string poemformatReviewResult { get; set; }
-            public string poemformatReviewNote { get; set; }
         }
 
         
