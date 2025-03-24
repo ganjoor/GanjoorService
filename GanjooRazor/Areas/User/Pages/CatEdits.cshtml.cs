@@ -1,22 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using DNTPersianUtils.Core;
+﻿using DNTPersianUtils.Core;
 using GanjooRazor.Utils;
 using GSpotifyProxy.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
-
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace GanjooRazor.Areas.User.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
-    public class SectionEditsModel : PageModel
+    public class CatEditsModel : PageModel
     {
         /// <summary>
         /// Last Error
@@ -41,7 +40,7 @@ namespace GanjooRazor.Areas.User.Pages
         /// <summary>
         /// Corrections
         /// </summary>
-        public List<GanjoorPoemSectionCorrectionViewModel> Corrections { get; set; }
+        public List<GanjoorCatCorrectionViewModel> Corrections { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
@@ -58,14 +57,14 @@ namespace GanjooRazor.Areas.User.Pages
                         {
                             pageNumber = int.Parse(Request.Query["page"]);
                         }
-                        string url = $"{APIRoot.Url}/api/ganjoor/section/corrections/mine?PageNumber={pageNumber}&PageSize=20";
+                        string url = $"{APIRoot.Url}/api/ganjoor/cat/corrections/mine?PageNumber={pageNumber}&PageSize=20";
 
                         if (CanEdit)
                         {
                             AllUsersEdits = Request.Query["AllUsers"] == "1";
                             if (AllUsersEdits)
                             {
-                                url = $"{APIRoot.Url}/api/ganjoor/section/corrections/all?PageNumber={pageNumber}&PageSize=20";
+                                url = $"{APIRoot.Url}/api/ganjoor/cat/corrections/all?PageNumber={pageNumber}&PageSize=20";
                             }
                         }
                         var response = await secureClient.GetAsync(url);
@@ -75,7 +74,7 @@ namespace GanjooRazor.Areas.User.Pages
                             return Page();
                         }
 
-                        Corrections = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemSectionCorrectionViewModel>>();
+                        Corrections = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCatCorrectionViewModel>>();
 
                         string paginnationMetadata = response.Headers.GetValues("paging-headers").FirstOrDefault();
                         if (!string.IsNullOrEmpty(paginnationMetadata))
@@ -91,7 +90,7 @@ namespace GanjooRazor.Areas.User.Pages
                                         new NameIdUrlImage()
                                         {
                                             Name = "صفحهٔ اول",
-                                            Url = AllUsersEdits ? "/User/SectionEdits/?page=1&AllUsers=1" : "/User/SectionEdits/?page=1"
+                                            Url = AllUsersEdits ? "/User/CatEdits/?page=1&AllUsers=1" : "/User/CatEdits/?page=1"
                                         }
                                         );
                                 }
@@ -155,5 +154,6 @@ namespace GanjooRazor.Areas.User.Pages
                 }
             return Page();
         }
+
     }
 }

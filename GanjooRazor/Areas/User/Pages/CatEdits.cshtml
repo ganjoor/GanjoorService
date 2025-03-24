@@ -1,0 +1,157 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.CatEditsModel
+@using RMuseum.Models.Ganjoor
+@using RMuseum.Services.Implementation
+@{
+    Layout = "_UserPanelLayout";
+    ViewData["Title"] = "ویرایش‌های بخشهای من";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string color = "gray";
+}
+<h1>@ViewData["Title"]</h1>
+@if (Model.LastError != "")
+{
+    <h2>@Model.LastError</h2>
+}
+else
+{
+
+    if (@Model.CanEdit)
+    {
+        <div class="clear-both">
+            <p>
+                <a role="button" href="/User/CatEdits?AllUsers=1" class="pagebutton">ویرایش‌های بخش‌های همه</a>
+            </p>
+        </div>
+    }
+
+    @if (Model.Corrections.Count == 0)
+    {
+        <p>
+            شما هنوز هیچ ویرایشی در بخش‌های انجام نداده‌اید.
+        </p>
+    }
+
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+    @foreach (var correction in Model.Corrections)
+    {
+        if (color == "gray")
+            color = "lightsteelblue";
+        else
+            color = "gray";
+
+        <div style="background-color:@color" id="correction-@correction.Id">
+            <table>
+
+                @if (Model.AllUsersEdits)
+                {
+                    <tr>
+                        <td colspan="3"><a href="/hashieha/?userid=@correction.UserId" target="_blank">@correction.UserNickname</a></td>
+                    </tr>
+                }
+
+                <tr>
+                    <td>متن اولیه</td>
+                    <td>تغییرات من</td>
+                    <td>نتیجهٔ بررسی</td>
+                </tr>
+
+                @if (correction.Description != null)
+                {
+                    <tr>
+                        <td>
+                            <p style="color:red">متن اولیه: @correction.Description</p>
+                        </td>
+                        <td>
+                            <p style="color:green">@correction.Description</p>
+                        </td>
+                        <td>
+                            @if (correction.Result == CorrectionReviewResult.NotReviewed)
+                            {
+                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
+                            }
+                            else
+                            @if (correction.Result == CorrectionReviewResult.Approved)
+                            {
+                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
+                            }
+                            else
+                            {
+                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
+                            }
+                        </td>
+                    </tr>
+                    @if (!string.IsNullOrEmpty(correction.ReviewNote))
+                    {
+                        <tr>
+                            <td colspan="3">
+                                <p>@correction.ReviewNote</p>
+                            </td>
+                        </tr>
+                    }
+                }
+
+             
+
+                @if (!string.IsNullOrEmpty(correction.Note))
+                {
+                    <tr>
+                        <td>یادداشت:</td>
+                        <td colspan="2">
+                            @correction.Note
+                        </td>
+                    </tr>
+                }
+
+                @if (!string.IsNullOrEmpty(correction.ReviewNote))
+                {
+                    <tr>
+                        <td>یادداشت بررسی:</td>
+                        <td colspan="2">
+                            @correction.ReviewNote
+                        </td>
+                    </tr>
+                }
+
+
+            </table>
+
+        </div>
+
+
+        <hr />
+    }
+
+    <p style="text-align:center">
+        @foreach (var paginationLink in Model.PaginationLinks)
+        {
+            if (!string.IsNullOrEmpty(paginationLink.Url))
+            {
+                <a href="@paginationLink.Url">@paginationLink.Name</a>
+            }
+            else
+            {
+                @paginationLink.Name
+            }
+        }
+    </p>
+
+
+
+
+
+}
