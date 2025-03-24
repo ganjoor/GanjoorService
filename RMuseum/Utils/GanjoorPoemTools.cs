@@ -47,7 +47,14 @@ namespace RMuseum.Utils
             string textWithoutTags = Regex.Replace(input, "<.*?>", string.Empty);
 
             // Decode HTML entities (e.g., &amp; → &)
-            return HttpUtility.HtmlDecode(textWithoutTags);
+            textWithoutTags = HttpUtility.HtmlDecode(textWithoutTags);
+
+            //it seems some codes are not correctly converted:
+            textWithoutTags = textWithoutTags.Replace("&zwnj;", "‌");
+            textWithoutTags = textWithoutTags.Replace("&laquo;", "»");
+            textWithoutTags = textWithoutTags.Replace("&raquo;", "«");
+
+            return textWithoutTags;
         }
     }
 }

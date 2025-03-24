@@ -12,7 +12,6 @@ using RMuseum.Models.Ganjoor;
 using static GanjooRazor.Areas.Admin.Pages.ReviewEditsModel;
 using System.Text;
 using System;
-using Org.BouncyCastle.Asn1.Cmp;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
@@ -91,6 +90,16 @@ namespace GanjooRazor.Areas.Admin.Pages
                 {
                     FatalError = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
                 }
+            }
+            return Page();
+        }
+
+        public IActionResult OnPost()
+        {
+            Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
+            if (Request.Form["next"].Count == 1)
+            {
+                return Redirect($"/Admin/ReviewCatEdits/?skip={Skip + 1}");
             }
             return Page();
         }

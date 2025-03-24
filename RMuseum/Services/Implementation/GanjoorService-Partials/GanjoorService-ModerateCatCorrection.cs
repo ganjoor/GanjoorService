@@ -76,7 +76,7 @@ namespace RMuseum.Services.Implementation
 
                         dbCorrection.AffectedTheCat = true;
                         dbCat.DescriptionHtml = moderation.DescriptionHtml.Replace("ۀ", "هٔ").Replace("ك", "ک");
-                        dbCat.Description = Regex.Replace(dbCat.DescriptionHtml, "<.*?>", String.Empty);
+                        dbCat.Description = moderation.Description;
 
                         if(dbCat.ParentId == null)
                         {
