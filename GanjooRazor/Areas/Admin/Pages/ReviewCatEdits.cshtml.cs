@@ -12,6 +12,8 @@ using RMuseum.Models.Ganjoor;
 using static GanjooRazor.Areas.Admin.Pages.ReviewEditsModel;
 using System.Text;
 using System;
+using RMuseum.Utils;
+using System.Collections.Generic;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
@@ -36,6 +38,11 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// total count
         /// </summary>
         public int TotalCount { get; set; }
+
+        /// <summary>
+        /// links
+        /// </summary>
+        public List<string> Links { get; set; }
 
         /// <summary>
         /// page
@@ -82,6 +89,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                             return Page();
                         }
                         PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
+                        Links = GanjoorPoemTools.ExtractLinksWithRegex(Correction.DescriptionHtml);
 
                     }
 

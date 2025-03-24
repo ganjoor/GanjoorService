@@ -20,44 +20,44 @@
 }
 
 <script>
-        function moderateCorrections(correctionId) {
+    function moderateCorrections(correctionId) {
 
-        $('#moderatecorrections').hide();
-        $('#saving').text('در حال بررسی ...');
-
-
-        var descriptionReviewResult = 'DontCare';
-        if ($('#description_review_result_Approved').length > 0) { //has title
-            descriptionReviewResult = $('input[name=description_review_result]:checked').val()
-        }
+    $('#moderatecorrections').hide();
+    $('#saving').text('در حال بررسی ...');
 
 
-        var url = '?handler=SendCorrectionsModeration';
+    var descriptionReviewResult = 'DontCare';
+    if ($('#description_review_result_Approved').length > 0) { //has title
+    descriptionReviewResult = $('input[name=description_review_result]:checked').val()
+    }
 
-        var pms = {};
 
-        pms.correctionId= correctionId;
-        pms.titleReviewResult = descriptionReviewResult;
-        pms.titleReviewNote= $('#review_note') == null ? null : $('#review_note').val();
+    var url = '?handler=SendCorrectionsModeration';
 
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: JSON.stringify(pms),
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function() {
-                location.reload(true);
-            },
-            error: function(e) {
-                if (e.responseText == null)
-                    alert(e);
-                else
-                    alert(e.responseText);
-                $('#moderatecorrections').show();
-                $('#saving').text('');
-            }
-        });
+    var pms = {};
+
+    pms.correctionId= correctionId;
+    pms.titleReviewResult = descriptionReviewResult;
+    pms.titleReviewNote= $('#review_note') == null ? null : $('#review_note').val();
+
+    $.ajax({
+    type: "POST",
+    url: url,
+    data: JSON.stringify(pms),
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: function() {
+    location.reload(true);
+    },
+    error: function(e) {
+    if (e.responseText == null)
+    alert(e);
+    else
+    alert(e.responseText);
+    $('#moderatecorrections').show();
+    $('#saving').text('');
+    }
+    });
 
     }
 
@@ -119,12 +119,59 @@
             <p id="description-lastedit-compare">@Model.Correction.OriginalDescription</p>
             <script>
                 $(document).ready(function () {
-                    compareCorrectionBlocks('description-lastedit-original', 'description-lastedit-edited', 'description-lastedit-compare');
+                compareCorrectionBlocks('description-lastedit-original', 'description-lastedit-edited', 'description-lastedit-compare');
                 });
             </script>
         </td>
     </tr>
 
+    <tr>
+        <td colspan="2">
+            Html
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="2">
+            @Html.Raw(Model.Correction.DescriptionHtml)
+        </td>
+    </tr>
+
+    @if(Model.Links != null)
+        foreach (var link in Model.Links)
+        {
+            <tr>
+                <td colspan="2">
+                    <a href="@link">پیوند داخل متن:</a>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <p class="red-color lft">
+                        @if (link.Length > 20)
+                        {
+                            @Html.Raw(link.Substring(0, 19) + " ...")
+                        }
+                        else
+                        {
+                            @Html.Raw(link)
+                        }
+
+                    </p>
+                   
+                </td>
+            </tr>
+        }
+
+    <tr>
+        <td colspan="2">
+            <textarea rows="10" cols="50" style="direction:ltr;text-align:left">
+                @Html.Raw(Model.Correction.DescriptionHtml)
+            </textarea>
+            
+        </td>
+    </tr>
 
 
     <tr>
