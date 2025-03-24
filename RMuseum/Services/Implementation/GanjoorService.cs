@@ -3924,6 +3924,22 @@ namespace RMuseum.Services.Implementation
                 await _context.SaveChangesAsync();
             }
 
+            var moderators = await _appUserService.GetUsersHavingPermission(RMuseumSecurableItem.GanjoorEntityShortName, RMuseumSecurableItem.ModerateOperationShortName);
+            if (string.IsNullOrEmpty(moderators.ExceptionString)) //if not, do nothing!
+            {
+                foreach (var moderator in moderators.Result)
+                {
+                    await _notificationService.PushNotification
+                                    (
+                                        (Guid)moderator.Id,
+                                        "پیشنهاد متن بخش یا زندگینامه",
+                                        $"کاربری ویرایشی را برای یک بخش یا زندگینامهٔ یک شاعر پیشنهاد داده است. لطفاً بخش <a href=\"https://ganjoor.net/Admin/ReviewCatEdits\">ویرایش‌های بخش‌ها</a> را بررسی فرمایید.{Environment.NewLine}" +
+                                        $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی ویرایش‌های بخش‌های پیشنهادی است پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید.",
+                                        NotificationType.ActionRequired
+                                    );
+                }
+            }
+
             return new RServiceResult<GanjoorCatCorrectionViewModel>(correction);
         }
 
