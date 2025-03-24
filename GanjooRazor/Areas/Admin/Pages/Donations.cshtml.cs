@@ -2,13 +2,16 @@
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using DNTPersianUtils.Core;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using RMuseum.Models.Accounting.ViewModels;
+using RMuseum.Utils;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
@@ -78,6 +81,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
         }
 
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
@@ -100,7 +104,16 @@ namespace GanjooRazor.Areas.Admin.Pages
                 if(donation != null)
                 {
                     int rowNumber = Donations.Length - Array.IndexOf(Donations, donation);
-                    EmailContent = $"با درود به {donation.DonorName} عزیز و سپاس از بزرگواری شما{Environment.NewLine}" +
+                    string donorName = GanjoorPoemTools.StripHtmlTags(donation.DonorName);
+                    if(donorName.StartsWith("آقای"))
+                    {
+                        donorName = $"جناب {donorName}";
+                    }
+                    if (donorName.StartsWith("خانم"))
+                    {
+                        donorName = $"سرکار {donorName}";
+                    }
+                    EmailContent = $"با درود به {donorName} عزیز و سپاس از بزرگواری شما{Environment.NewLine}" +
                             $"کمک دریافتی به شماره ردیف {rowNumber.ToPersianNumbers()} در این نشانی ثبت شد:{Environment.NewLine}" +
                             $"https://ganjoor.net/donate{Environment.NewLine}" +
                             $"نحوهٔ هزینه شدن آن متعاقباً در همان ردیف مستند خواهد شد.{Environment.NewLine}" +

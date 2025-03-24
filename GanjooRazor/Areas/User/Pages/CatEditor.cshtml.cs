@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System;
 using System.Text.RegularExpressions;
 using System.Web;
+using RMuseum.Utils;
 
 namespace GanjooRazor.Areas.User.Pages
 {
@@ -118,20 +119,13 @@ namespace GanjooRazor.Areas.User.Pages
             return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
         }
 
-        static string StripHtmlTags(string input)
-        {
-            // Remove HTML tags using Regex
-            string textWithoutTags = Regex.Replace(input, "<.*?>", string.Empty);
-
-            // Decode HTML entities (e.g., &amp; → &)
-            return HttpUtility.HtmlDecode(textWithoutTags);
-        }
+        
 
         public async Task<IActionResult> OnPostAsync()
         {
             try
             {
-                Correction.Description = StripHtmlTags(Correction.DescriptionHtml);
+                Correction.Description = GanjoorPoemTools.StripHtmlTags(Correction.DescriptionHtml);
                 using (HttpClient secureClient = new HttpClient())
                 {
                     if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))

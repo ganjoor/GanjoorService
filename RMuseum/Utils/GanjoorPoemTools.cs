@@ -1,4 +1,7 @@
-﻿namespace RMuseum.Utils
+﻿using System.Text.RegularExpressions;
+using System.Web;
+
+namespace RMuseum.Utils
 {
     /// <summary>
     /// ganjoor poem tools
@@ -36,6 +39,15 @@
             }
 
             return poemHtml;
+        }
+
+        public static string StripHtmlTags(string input)
+        {
+            // Remove HTML tags using Regex
+            string textWithoutTags = Regex.Replace(input, "<.*?>", string.Empty);
+
+            // Decode HTML entities (e.g., &amp; → &)
+            return HttpUtility.HtmlDecode(textWithoutTags);
         }
     }
 }
