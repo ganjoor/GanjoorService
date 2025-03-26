@@ -4484,6 +4484,18 @@
         <member name="M:RMuseum.Migrations.CatSugs.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.CatCorrectionPlusPageId">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.CatCorrectionPlusPageId.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.CatCorrectionPlusPageId.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.CatCorrectionPlusPageId.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -13350,6 +13362,16 @@
             rejected
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Generic.ViewModels.GroupedByDateViewModel.Date">
+            <summary>
+            date (day date or month or ...)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Generic.ViewModels.GroupedByDateViewModel.Number">
+            <summary>
+            number of clicks
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.ImportJob.ImportJob">
             <summary>
             Import Job
@@ -15773,6 +15795,19 @@
             <param name="artifactFriendlyUrl">ai</param>
             <param name="file"></param>
             <param name="jpegStream"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RMuseum.Services.IContributionStatsService">
+            <summary>
+            contributions stats service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            get approved edits daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IDonationService">
@@ -18675,6 +18710,30 @@
             </summary>
             <param name="format"></param>
             <returns></returns>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.ContributionStatsService">
+            <summary>
+            contributions stats service implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            get approved edits daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.ContributionStatsService._context">
+            <summary>
+            Database Context
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.#ctor(RMuseum.DbContext.RMuseumDbContext)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.CorrectionReviewResultConvertor">
             <summary>

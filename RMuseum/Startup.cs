@@ -317,6 +317,9 @@ namespace RMuseum
             //Queued FTP Upload Service
             services.AddTransient<IQueuedFTPUploadService, QueuedFTPUploadService>();
 
+            //Contributions stats service
+            services.AddTransient<IContributionStatsService, ContributionStatsService>();
+
             //upload limit for IIS
             services.Configure<IISServerOptions>(options =>
             {
