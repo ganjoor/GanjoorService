@@ -92,6 +92,8 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                         Links = GanjoorHtmlTools.ExtractLinksWithRegex(Correction.DescriptionHtml);
 
+                        Correction.Result = cat.Cat.DescriptionHtml == Correction.DescriptionHtml ? CorrectionReviewResult.NotChanged : CorrectionReviewResult.Approved;
+
                     }
 
                 }
