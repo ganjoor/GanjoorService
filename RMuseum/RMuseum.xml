@@ -13362,6 +13362,31 @@
             rejected
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Generic.ViewModels.GroupedByDateUserViewModel">
+            <summary>
+            grouped by date / user
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Generic.ViewModels.GroupedByDateUserViewModel.Date">
+            <summary>
+            date (day date or month or ...)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Generic.ViewModels.GroupedByDateUserViewModel.Number">
+            <summary>
+            number of clicks
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Generic.ViewModels.GroupedByDateUserViewModel.UserId">
+            <summary>
+            user id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Generic.ViewModels.GroupedByDateUserViewModel.UserName">
+            <summary>
+            user name
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Generic.ViewModels.GroupedByDateViewModel.Date">
             <summary>
             date (day date or month or ...)
@@ -15804,10 +15829,17 @@
         </member>
         <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
             <summary>
-            get approved edits daily
+            approved edits daily
             </summary>
             <param name="paging"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedEditsGroupedByDateAndUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            approved edits grouped by user / daily
+            </summary>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IDonationService">
@@ -18722,6 +18754,13 @@
             </summary>
             <param name="paging"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedEditsGroupedByDateAndUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            get approved edits grouped by user / daily
+            </summary>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.ContributionStatsService._context">
