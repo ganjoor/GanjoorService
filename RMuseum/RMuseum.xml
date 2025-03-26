@@ -762,6 +762,34 @@
             <param name="auditLogService">
             </param>
         </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved edits daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedEditsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved edits grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Controllers.ContributionStatsController._service">
+            <summary>
+            service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.#ctor(RMuseum.Services.IContributionStatsService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="service"></param>
+        </member>
         <member name="M:RMuseum.Controllers.DonationAccountingController.GetDonations">
             <summary>
             returns all donations
