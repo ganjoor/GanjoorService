@@ -34,5 +34,11 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedEditsGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId);
 
+        /// <summary>
+        /// summed up stats of approved poem corrections
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<SummedUpViewModel>> GetApprrovedEditsSummedUpStatsAsync();
+
     }
 }

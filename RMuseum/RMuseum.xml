@@ -13417,6 +13417,26 @@
             user name
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Generic.ViewModels.SummedUpViewModel">
+            <summary>
+            summed up view model
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Generic.ViewModels.SummedUpViewModel.Days">
+            <summary>
+            Number of days
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Generic.ViewModels.SummedUpViewModel.TotalCount">
+            <summary>
+            Total number
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Generic.ViewModels.SummedUpViewModel.UserIds">
+            <summary>
+            Total Number of UserIds
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.ImportJob.ImportJob">
             <summary>
             Import Job
@@ -15869,6 +15889,12 @@
             <param name="paging"></param>
             <param name="day"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprrovedEditsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved poem corrections
+            </summary>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IDonationService">
@@ -18799,6 +18825,12 @@
             <param name="paging"></param>
             <param name="day"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprrovedEditsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved poem corrections
+            </summary>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.ContributionStatsService._context">

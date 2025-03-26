@@ -1,4 +1,5 @@
-﻿using RMuseum.DbContext;
+﻿using Microsoft.EntityFrameworkCore;
+using RMuseum.DbContext;
 using RMuseum.Models.Generic.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
@@ -131,6 +132,41 @@ namespace RMuseum.Services.Implementation
             catch (Exception e)
             {
                 return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// summed up stats of approved poem corrections
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<SummedUpViewModel>> GetApprrovedEditsSummedUpStatsAsync()
+        {
+            try
+            {
+                return new RServiceResult<SummedUpViewModel>
+                    (
+                    new SummedUpViewModel()
+                    {
+                        Days = await _context.GanjoorPoemCorrections
+                        .Where(f => f.AffectedThePoem
+                        )
+                        .GroupBy(f => f.Date.Date).CountAsync(),
+                        TotalCount = await _context.GanjoorPoemCorrections
+
+                        .Where(f => f.AffectedThePoem
+                        )
+                        .CountAsync(),
+                        UserIds = await _context.GanjoorPoemCorrections
+                        .Where(f => f.AffectedThePoem
+                        )
+                        .GroupBy(f => f.UserId).CountAsync(),
+                    }
+                    );
+
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<SummedUpViewModel>(null, e.ToString());
             }
         }
 
