@@ -3898,6 +3898,8 @@ namespace RMuseum.Services.Implementation
 
             var cat = await _context.GanjoorCategories.AsNoTracking().Where(c => c.Id == correction.CatId).SingleAsync();
 
+            var page = await _context.GanjoorPages.AsNoTracking().Where(p => p.FullUrl == cat.FullUrl).SingleAsync();
+
             GanjoorCatCorrection dbCorrection = new GanjoorCatCorrection()
             {
                 CatId = correction.CatId,
@@ -3912,7 +3914,7 @@ namespace RMuseum.Services.Implementation
                 Reviewed = false,
                 AffectedTheCat = false,
                 HideMyName = correction.HideMyName,
-
+                PageId = page.Id,
             };
             _context.GanjoorCatCorrections.Add(dbCorrection);
             await _context.SaveChangesAsync();
@@ -3997,6 +3999,7 @@ namespace RMuseum.Services.Implementation
                     ReviewDate = dbCorrection.ReviewDate,
                     UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
                     HideMyName = dbCorrection.HideMyName,
+                    PageId = dbCorrection.PageId,
                 }
                 );
         }
@@ -4041,6 +4044,7 @@ namespace RMuseum.Services.Implementation
                     ReviewDate = dbCorrection.ReviewDate,
                     UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
                     HideMyName = dbCorrection.HideMyName,
+                    PageId = dbCorrection.PageId,
                 }
                 );
             }
@@ -4095,7 +4099,7 @@ namespace RMuseum.Services.Implementation
                     ReviewDate = dbCorrection.ReviewDate,
                     UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
                     HideMyName = dbCorrection.HideMyName,
-
+                    PageId = dbCorrection.PageId,
                 }
                 );
             }
@@ -4137,6 +4141,7 @@ namespace RMuseum.Services.Implementation
                     ReviewDate = dbCorrection.ReviewDate,
                     UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
                     HideMyName = dbCorrection.HideMyName,
+                    PageId = dbCorrection.PageId,
                 }
                 );
         }
@@ -4182,6 +4187,7 @@ namespace RMuseum.Services.Implementation
                     ReviewDate = dbCorrection.ReviewDate,
                     UserNickname = dbCorrection.HideMyName && dbCorrection.Reviewed ? "" : string.IsNullOrEmpty(dbCorrection.User.NickName) ? dbCorrection.User.Id.ToString() : dbCorrection.User.NickName,
                     HideMyName = dbCorrection.HideMyName,
+                    PageId = dbCorrection.PageId,
                 }
                 );
         }

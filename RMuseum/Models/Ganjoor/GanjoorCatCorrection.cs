@@ -104,5 +104,10 @@ namespace RMuseum.Models.Ganjoor
         /// hide the editors name
         /// </summary>
         public bool HideMyName { get; set; }
+
+        /// <summary>
+        /// page id
+        /// </summary>
+        public int PageId { get; set; }
     }
 }

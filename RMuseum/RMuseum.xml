@@ -8114,6 +8114,11 @@
             hide the editors name
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCatCorrection.PageId">
+            <summary>
+            page id
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorCatType">
             <summary>
             Ganjoor Category Type
@@ -11163,6 +11168,11 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.HideMyName">
             <summary>
             hide the editors name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel.PageId">
+            <summary>
+            page id
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCatViewModel">
