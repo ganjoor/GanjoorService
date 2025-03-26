@@ -779,6 +779,12 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprrovedEditsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved poem corrections
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.ContributionStatsController._service">
             <summary>
             service

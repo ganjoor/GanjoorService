@@ -62,6 +62,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// summed up stats of approved poem corrections
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("poem/corrections")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(SummedUpViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetApprrovedEditsSummedUpStatsAsync()
+        {
+            var res = await _service.GetApprrovedEditsSummedUpStatsAsync();
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// service
         /// </summary>
         protected readonly IContributionStatsService _service;
