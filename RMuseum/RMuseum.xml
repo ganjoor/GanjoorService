@@ -778,10 +778,11 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedEditsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedEditsGroupedByUserAsync(System.String,RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
             <summary>
             approved edits grouped by user
             </summary>
+            <param name="dataType"></param>
             <param name="paging"></param>
             <param name="day"></param>
             <param name="userId"></param>
@@ -793,28 +794,10 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedSectionEditsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
-            <summary>
-            approved section edits grouped by user
-            </summary>
-            <param name="paging"></param>
-            <param name="day"></param>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprrovedSedtionEditsSummedUpStatsAsync">
             <summary>
             summed up stats of approved section corrections
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedCatEditsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
-            <summary>
-            approved cat edits grouped by user
-            </summary>
-            <param name="paging"></param>
-            <param name="day"></param>
-            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprrovedCatEditsSummedUpStatsAsync">
@@ -823,28 +806,10 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedRelatedSongsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
-            <summary>
-            approved related songs grouped by user
-            </summary>
-            <param name="paging"></param>
-            <param name="day"></param>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedRelatedSongsSummedUpStatsAsync">
             <summary>
             summed up stats of approved related songs
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedQuotedPoemsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
-            <summary>
-            approved quoted poems grouped by user
-            </summary>
-            <param name="paging"></param>
-            <param name="day"></param>
-            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedQuotedPoemsSummedUpStatsAsync">
