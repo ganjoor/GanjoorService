@@ -159,7 +159,7 @@ namespace RMuseum.Controllers
         {
             if (!_memoryCache.TryGetValue($"section/corrections/{DateTime.Now.Date}", out SummedUpViewModel result))
             {
-                var res = await _service.GetApprrovedSedtionEditsSummedUpStatsAsync();
+                var res = await _service.GetApprrovedSectionEditsSummedUpStatsAsync();
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 result = res.Result;

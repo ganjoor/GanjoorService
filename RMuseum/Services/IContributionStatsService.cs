@@ -51,11 +51,33 @@ namespace RMuseum.Services
         Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedSectionEditsGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId);
 
         /// <summary>
-        /// summed up stats of approved secton corrections
+        /// summed up stats of approved section corrections
         /// </summary>
         /// <returns></returns>
-        Task<RServiceResult<SummedUpViewModel>> GetApprrovedSedtionEditsSummedUpStatsAsync();
+        Task<RServiceResult<SummedUpViewModel>> GetApprrovedSectionEditsSummedUpStatsAsync();
 
+        /// <summary>
+        /// approved cat edits daily
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedCatEditsGroupedByDateAsync(PagingParameterModel paging, Guid? userId);
+
+        /// <summary>
+        /// approved cat edits grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedCatEditsGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId);
+
+        /// <summary>
+        /// summed up stats of approved cat corrections
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<SummedUpViewModel>> GetApprrovedCatEditsSummedUpStatsAsync();
 
     }
 }

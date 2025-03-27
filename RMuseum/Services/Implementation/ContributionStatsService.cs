@@ -206,10 +206,10 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// summed up stats of approved secton corrections
+        /// summed up stats of approved section corrections
         /// </summary>
         /// <returns></returns>
-        public async Task<RServiceResult<SummedUpViewModel>> GetApprrovedSedtionEditsSummedUpStatsAsync()
+        public async Task<RServiceResult<SummedUpViewModel>> GetApprrovedSectionEditsSummedUpStatsAsync()
         {
             try
             {
@@ -239,6 +239,121 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<SummedUpViewModel>(null, e.ToString());
             }
         }
+
+
+        /// <summary>
+        /// approved cat edits daily
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedCatEditsGroupedByDateAsync(PagingParameterModel paging, Guid? userId)
+        {
+            try
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>(
+                    await QueryablePaginator<GroupedByDateViewModel>.Paginate(
+                   _context.GanjoorCatCorrections
+                        .Where(c =>
+                        c.Result == Models.Ganjoor.CorrectionReviewResult.Approved
+                        &&
+                        (userId == null || c.UserId == userId)
+                        )
+                        .GroupBy(a => a.Date.Date)
+                        .Select(a => new GroupedByDateViewModel()
+                        {
+                            Date = a.Key.Date.ToString(),
+                            Number = a.Count(),
+                        }).OrderByDescending(s => s.Date)
+                   , paging));
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// approved cat edits grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedCatEditsGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId)
+        {
+            try
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>(
+                    await QueryablePaginator<GroupedByUserViewModel>.Paginate(
+                        _context.GanjoorCatCorrections
+                        .Join
+                        (
+                            _context.Users,
+                            correction => correction.UserId,
+                            user => user.Id,
+                            (correction, user) => new
+                            {
+                                correction.Date,
+                                UserId = user.Id,
+                                UserName = user.NickName,
+                                correction.Result,
+                            }
+                        )
+                        .Where(f =>
+                         f.Result == Models.Ganjoor.CorrectionReviewResult.Approved
+                        &&
+                        (day == null || f.Date.Date == day) && (userId == null || f.UserId == userId))
+                        .GroupBy(a => new { a.UserId, a.UserName }).Select(a => new GroupedByUserViewModel()
+                        {
+                            UserId = a.Key.UserId,
+                            UserName = a.Key.UserName,
+                            Number = a.Count(),
+                        }).OrderByDescending(s => s.Number)
+                        , paging));
+
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// summed up stats of approved cat corrections
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<SummedUpViewModel>> GetApprrovedCatEditsSummedUpStatsAsync()
+        {
+            try
+            {
+                return new RServiceResult<SummedUpViewModel>
+                    (
+                    new SummedUpViewModel()
+                    {
+                        Days = await _context.GanjoorCatCorrections
+                        .Where(f => f.Result == Models.Ganjoor.CorrectionReviewResult.Approved
+                        )
+                        .GroupBy(f => f.Date.Date).CountAsync(),
+                        TotalCount = await _context.GanjoorCatCorrections
+
+                        .Where(f => f.Result == Models.Ganjoor.CorrectionReviewResult.Approved
+                        )
+                        .CountAsync(),
+                        UserIds = await _context.GanjoorCatCorrections
+                        .Where(f => f.Result == Models.Ganjoor.CorrectionReviewResult.Approved
+                        )
+                        .GroupBy(f => f.UserId).CountAsync(),
+                    }
+                    );
+
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<SummedUpViewModel>(null, e.ToString());
+            }
+        }
+
 
 
         /// <summary>

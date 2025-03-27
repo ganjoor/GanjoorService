@@ -15970,9 +15970,32 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IContributionStatsService.GetApprrovedSedtionEditsSummedUpStatsAsync">
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprrovedSectionEditsSummedUpStatsAsync">
             <summary>
-            summed up stats of approved secton corrections
+            summed up stats of approved section corrections
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedCatEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved cat edits daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedCatEditsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved cat edits grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprrovedCatEditsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved cat corrections
             </summary>
             <returns></returns>
         </member>
@@ -18922,9 +18945,32 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprrovedSedtionEditsSummedUpStatsAsync">
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprrovedSectionEditsSummedUpStatsAsync">
             <summary>
-            summed up stats of approved secton corrections
+            summed up stats of approved section corrections
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedCatEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved cat edits daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedCatEditsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved cat edits grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprrovedCatEditsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved cat corrections
             </summary>
             <returns></returns>
         </member>
