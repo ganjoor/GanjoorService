@@ -316,6 +316,79 @@ namespace RMuseum.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// approved quoted poems daily
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet("quoteds/daily")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GroupedByDateViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetApprovedQuotedPoemsGroupedByDateAsync([FromQuery] PagingParameterModel paging, Guid? userId = null)
+        {
+            var cacheKey = $"quoteds/daily/{DateTime.Now.Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
+            if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks) pagedResult))
+            {
+                var res = await _service.GetApprovedQuotedPoemsGroupedByDateAsync(paging, userId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                pagedResult = res.Result;
+            }
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.PagingMeta));
+
+            return Ok(pagedResult.Tracks);
+        }
+
+        /// <summary>
+        /// approved quoted poems grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet("quoteds/by/user")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GroupedByUserViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetApprovedQuotedPoemsGroupedByUserAsync([FromQuery] PagingParameterModel paging, DateTime? day, Guid? userId)
+        {
+            var cacheKey = $"quoteds/by/user/{(day ?? DateTime.Now).Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
+            if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks) pagedResult))
+            {
+                var res = await _service.GetApprovedQuotedPoemsGroupedByUserAsync(paging, day, userId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                pagedResult = res.Result;
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.PagingMeta));
+
+            return Ok(pagedResult.Tracks);
+        }
+
+        /// <summary>
+        /// summed up stats of quoted poems
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("quoteds")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(SummedUpViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetApprovedQuotedPoemsSummedUpStatsAsync()
+        {
+            if (!_memoryCache.TryGetValue($"quoteds/{DateTime.Now.Date}", out SummedUpViewModel result))
+            {
+                var res = await _service.GetApprovedQuotedPoemsSummedUpStatsAsync();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                result = res.Result;
+            }
+            return Ok(result);
+        }
 
 
 

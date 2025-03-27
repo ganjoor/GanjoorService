@@ -854,6 +854,29 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedQuotedPoemsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved quoted poems daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedQuotedPoemsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved quoted poems grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedQuotedPoemsSummedUpStatsAsync">
+            <summary>
+            summed up stats of quoted poems
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.ContributionStatsController._service">
             <summary>
             service
