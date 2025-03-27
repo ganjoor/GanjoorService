@@ -19,24 +19,73 @@ namespace RMuseum.Controllers
     public class ContributionStatsController : Controller
     {
         /// <summary>
-        /// approved edits daily
+        /// daily stats
         /// </summary>
+        /// <param name="dataType">
+        /// poem/corrections
+        /// section/corrections
+        /// cat/corrections
+        /// cat/corrections
+        /// suggestedsongs
+        /// quoteds
+        /// </param>
         /// <param name="paging"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        [HttpGet("poem/corrections/daily")]
+        [HttpGet("{dataType}/daily")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GroupedByDateViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetApprovedEditsGroupedByDateAsync([FromQuery] PagingParameterModel paging, Guid? userId = null)
+        public async Task<IActionResult> GetApprovedEditsGroupedByDateAsync(string dataType, [FromQuery] PagingParameterModel paging, Guid? userId = null)
         {
-            var cacheKey = $"poem/corrections/daily/{DateTime.Now.Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
+            var cacheKey = $"{dataType}/daily/{DateTime.Now.Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
             if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)  pagedResult))
             {
-                var res = await _service.GetApprovedEditsGroupedByDateAsync(paging, userId);
-                if (!string.IsNullOrEmpty(res.ExceptionString))
-                    return BadRequest(res.ExceptionString);
-                pagedResult = res.Result;
+                switch (dataType)
+                {
+                    case "poem/corrections":
+                        {
+                            var res = await _service.GetApprovedEditsGroupedByDateAsync(paging, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
+                    case "section/corrections":
+                        {
+                            var res = await _service.GetApprovedSectionEditsGroupedByDateAsync(paging, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
+                    case "cat/corrections":
+                        {
+                            var res = await _service.GetApprovedCatEditsGroupedByDateAsync(paging, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
+                    case "suggestedsongs":
+                        {
+                            var res = await _service.GetApprovedRelatedSongsGroupedByDateAsync(paging, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
+                    case "quoteds":
+                        {
+                            var res = await _service.GetApprovedQuotedPoemsGroupedByDateAsync(paging, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
+                    default:
+                        return BadRequest("invalid datatype!");
+                }
             }
             // Paging Header
             HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.PagingMeta));
@@ -93,31 +142,6 @@ namespace RMuseum.Controllers
         }
 
 
-        /// <summary>
-        /// approved section edits daily
-        /// </summary>
-        /// <param name="paging"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        [HttpGet("section/corrections/daily")]
-        [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GroupedByDateViewModel>))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetApprovedSectionEditsGroupedByDateAsync([FromQuery] PagingParameterModel paging, Guid? userId = null)
-        {
-            var cacheKey = $"section/corrections/daily/{DateTime.Now.Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
-            if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks) pagedResult))
-            {
-                var res = await _service.GetApprovedSectionEditsGroupedByDateAsync(paging, userId);
-                if (!string.IsNullOrEmpty(res.ExceptionString))
-                    return BadRequest(res.ExceptionString);
-                pagedResult = res.Result;
-            }
-            // Paging Header
-            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.PagingMeta));
-
-            return Ok(pagedResult.Tracks);
-        }
 
         /// <summary>
         /// approved section edits grouped by user
@@ -168,31 +192,7 @@ namespace RMuseum.Controllers
         }
 
 
-        /// <summary>
-        /// approved cat edits daily
-        /// </summary>
-        /// <param name="paging"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        [HttpGet("cat/corrections/daily")]
-        [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GroupedByDateViewModel>))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetApprovedCatEditsGroupedByDateAsync([FromQuery] PagingParameterModel paging, Guid? userId = null)
-        {
-            var cacheKey = $"cat/corrections/daily/{DateTime.Now.Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
-            if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks) pagedResult))
-            {
-                var res = await _service.GetApprovedCatEditsGroupedByDateAsync(paging, userId);
-                if (!string.IsNullOrEmpty(res.ExceptionString))
-                    return BadRequest(res.ExceptionString);
-                pagedResult = res.Result;
-            }
-            // Paging Header
-            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.PagingMeta));
-
-            return Ok(pagedResult.Tracks);
-        }
+        
 
         /// <summary>
         /// approved cat edits grouped by user
@@ -242,31 +242,7 @@ namespace RMuseum.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// approved related songs daily
-        /// </summary>
-        /// <param name="paging"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        [HttpGet("suggestedsongs/daily")]
-        [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GroupedByDateViewModel>))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetApprovedRelatedSongsGroupedByDateAsync([FromQuery] PagingParameterModel paging, Guid? userId = null)
-        {
-            var cacheKey = $"suggestedsongs/daily/{DateTime.Now.Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
-            if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks) pagedResult))
-            {
-                var res = await _service.GetApprovedRelatedSongsGroupedByDateAsync(paging, userId);
-                if (!string.IsNullOrEmpty(res.ExceptionString))
-                    return BadRequest(res.ExceptionString);
-                pagedResult = res.Result;
-            }
-            // Paging Header
-            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.PagingMeta));
-
-            return Ok(pagedResult.Tracks);
-        }
+        
 
         /// <summary>
         /// approved related songs grouped by user
@@ -316,31 +292,7 @@ namespace RMuseum.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// approved quoted poems daily
-        /// </summary>
-        /// <param name="paging"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        [HttpGet("quoteds/daily")]
-        [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GroupedByDateViewModel>))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetApprovedQuotedPoemsGroupedByDateAsync([FromQuery] PagingParameterModel paging, Guid? userId = null)
-        {
-            var cacheKey = $"quoteds/daily/{DateTime.Now.Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
-            if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks) pagedResult))
-            {
-                var res = await _service.GetApprovedQuotedPoemsGroupedByDateAsync(paging, userId);
-                if (!string.IsNullOrEmpty(res.ExceptionString))
-                    return BadRequest(res.ExceptionString);
-                pagedResult = res.Result;
-            }
-            // Paging Header
-            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.PagingMeta));
-
-            return Ok(pagedResult.Tracks);
-        }
+       
 
         /// <summary>
         /// approved quoted poems grouped by user

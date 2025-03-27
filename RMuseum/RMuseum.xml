@@ -762,10 +762,18 @@
             <param name="auditLogService">
             </param>
         </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedEditsGroupedByDateAsync(System.String,RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
             <summary>
-            approved edits daily
+            daily stats
             </summary>
+            <param name="dataType">
+            poem/corrections
+            section/corrections
+            cat/corrections
+            cat/corrections
+            suggestedsongs
+            quoteds
+            </param>
             <param name="paging"></param>
             <param name="userId"></param>
             <returns></returns>
@@ -785,14 +793,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedSectionEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
-            <summary>
-            approved section edits daily
-            </summary>
-            <param name="paging"></param>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedSectionEditsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
             <summary>
             approved section edits grouped by user
@@ -806,14 +806,6 @@
             <summary>
             summed up stats of approved section corrections
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedCatEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
-            <summary>
-            approved cat edits daily
-            </summary>
-            <param name="paging"></param>
-            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedCatEditsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
@@ -831,14 +823,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedRelatedSongsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
-            <summary>
-            approved related songs daily
-            </summary>
-            <param name="paging"></param>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedRelatedSongsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
             <summary>
             approved related songs grouped by user
@@ -852,14 +836,6 @@
             <summary>
             summed up stats of approved related songs
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedQuotedPoemsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
-            <summary>
-            approved quoted poems daily
-            </summary>
-            <param name="paging"></param>
-            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedQuotedPoemsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
