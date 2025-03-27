@@ -16068,6 +16068,29 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedQuotedPoemsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved quoted poems daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedQuotedPoemsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved quoted poems grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedQuotedPoemsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved quoted poems
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IDonationService">
             <summary>
             donation service
@@ -19063,6 +19086,29 @@
         <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedRelatedSongsSummedUpStatsAsync">
             <summary>
             summed up stats of approved related songs
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedQuotedPoemsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved quoted poems daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedQuotedPoemsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved quoted poems grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedQuotedPoemsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved quoted poems
             </summary>
             <returns></returns>
         </member>
