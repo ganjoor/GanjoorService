@@ -36,7 +36,7 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GroupedByDateViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetApprovedEditsGroupedByDateAsync(string dataType, [FromQuery] PagingParameterModel paging, Guid? userId = null)
+        public async Task<IActionResult> GetDataGroupedByDateAsync(string dataType, [FromQuery] PagingParameterModel paging, Guid? userId = null)
         {
             var cacheKey = $"{dataType}/daily/{DateTime.Now.Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
             if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)  pagedResult))
@@ -94,9 +94,16 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// approved edits grouped by user
+        /// datatype grouped by user
         /// </summary>
-        /// <param name="dataType"></param>
+        /// <param name="dataType">
+        /// poem/corrections
+        /// section/corrections
+        /// cat/corrections
+        /// cat/corrections
+        /// suggestedsongs
+        /// quoteds
+        /// </param>
         /// <param name="paging"></param>
         /// <param name="day"></param>
         /// <param name="userId"></param>
@@ -105,7 +112,7 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GroupedByUserViewModel>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetApprovedEditsGroupedByUserAsync(string dataType, [FromQuery] PagingParameterModel paging, DateTime? day, Guid? userId)
+        public async Task<IActionResult> GetDataGroupedByUserAsync(string dataType, [FromQuery] PagingParameterModel paging, DateTime? day, Guid? userId)
         {
             var cacheKey = $"{dataType}/by/user/{(day ?? DateTime.Now).Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
             if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks) pagedResult))
@@ -164,119 +171,74 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// summed up stats of approved poem corrections
+        /// summed up stats of data
         /// </summary>
+        /// <param name="dataType">
+        /// poem/corrections
+        /// section/corrections
+        /// cat/corrections
+        /// cat/corrections
+        /// suggestedsongs
+        /// quoteds
+        /// </param>        
         /// <returns></returns>
-        [HttpGet("poem/corrections")]
+        [HttpGet("{dataType}")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(SummedUpViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetApprrovedEditsSummedUpStatsAsync()
+        public async Task<IActionResult> GetDataSummedUpStatsAsync(string dataType)
         {
-            if (!_memoryCache.TryGetValue($"poem/corrections/{DateTime.Now.Date}", out SummedUpViewModel result))
+            if (!_memoryCache.TryGetValue($"{dataType}/{DateTime.Now.Date}", out SummedUpViewModel result))
             {
-                var res = await _service.GetApprrovedEditsSummedUpStatsAsync();
-                if (!string.IsNullOrEmpty(res.ExceptionString))
-                    return BadRequest(res.ExceptionString);
-                result = res.Result;
+                switch(dataType)
+                {
+                    case "poem/corrections":
+                        {
+                            var res = await _service.GetApprrovedEditsSummedUpStatsAsync();
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            result = res.Result;
+                        }
+                        break;
+                    case "section/corrections":
+                        {
+                            var res = await _service.GetApprrovedSectionEditsSummedUpStatsAsync();
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            result = res.Result;
+                        }
+                        break;
+                    case "cat/corrections":
+                        {
+                            var res = await _service.GetApprrovedCatEditsSummedUpStatsAsync();
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            result = res.Result;
+                        }
+                        break;
+                    case "suggestedsongs":
+                        {
+                            var res = await _service.GetApprovedRelatedSongsSummedUpStatsAsync();
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            result = res.Result;
+                        }
+                        break;
+                    case "quoteds":
+                        {
+                            var res = await _service.GetApprovedQuotedPoemsSummedUpStatsAsync();
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            result = res.Result;
+                        }
+                        break;
+                    default:
+                        return BadRequest("invalid value for the paramater: dataType");
+                }
+               
             }
             return Ok(result);
         }
-
-
-
-
-        /// <summary>
-        /// summed up stats of approved section corrections
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("section/corrections")]
-        [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(SummedUpViewModel))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetApprrovedSedtionEditsSummedUpStatsAsync()
-        {
-            if (!_memoryCache.TryGetValue($"section/corrections/{DateTime.Now.Date}", out SummedUpViewModel result))
-            {
-                var res = await _service.GetApprrovedSectionEditsSummedUpStatsAsync();
-                if (!string.IsNullOrEmpty(res.ExceptionString))
-                    return BadRequest(res.ExceptionString);
-                result = res.Result;
-            }
-            return Ok(result);
-        }
-
-
-        
-
-        
-
-        /// <summary>
-        /// summed up stats of approved cat corrections
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("cat/corrections")]
-        [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(SummedUpViewModel))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetApprrovedCatEditsSummedUpStatsAsync()
-        {
-            if (!_memoryCache.TryGetValue($"cat/corrections/{DateTime.Now.Date}", out SummedUpViewModel result))
-            {
-                var res = await _service.GetApprrovedCatEditsSummedUpStatsAsync();
-                if (!string.IsNullOrEmpty(res.ExceptionString))
-                    return BadRequest(res.ExceptionString);
-                result = res.Result;
-            }
-            return Ok(result);
-        }
-
-
-        /// <summary>
-        /// summed up stats of approved related songs
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("suggestedsongs")]
-        [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(SummedUpViewModel))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetApprovedRelatedSongsSummedUpStatsAsync()
-        {
-            if (!_memoryCache.TryGetValue($"suggestedsongs/{DateTime.Now.Date}", out SummedUpViewModel result))
-            {
-                var res = await _service.GetApprovedRelatedSongsSummedUpStatsAsync();
-                if (!string.IsNullOrEmpty(res.ExceptionString))
-                    return BadRequest(res.ExceptionString);
-                result = res.Result;
-            }
-            return Ok(result);
-        }
-
-       
-
-        
-
-        /// <summary>
-        /// summed up stats of quoted poems
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("quoteds")]
-        [AllowAnonymous]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(SummedUpViewModel))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetApprovedQuotedPoemsSummedUpStatsAsync()
-        {
-            if (!_memoryCache.TryGetValue($"quoteds/{DateTime.Now.Date}", out SummedUpViewModel result))
-            {
-                var res = await _service.GetApprovedQuotedPoemsSummedUpStatsAsync();
-                if (!string.IsNullOrEmpty(res.ExceptionString))
-                    return BadRequest(res.ExceptionString);
-                result = res.Result;
-            }
-            return Ok(result);
-        }
-
-
 
         /// <summary>
         /// service

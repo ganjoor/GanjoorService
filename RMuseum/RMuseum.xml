@@ -762,7 +762,7 @@
             <param name="auditLogService">
             </param>
         </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedEditsGroupedByDateAsync(System.String,RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetDataGroupedByDateAsync(System.String,RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
             <summary>
             daily stats
             </summary>
@@ -778,44 +778,35 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedEditsGroupedByUserAsync(System.String,RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetDataGroupedByUserAsync(System.String,RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
             <summary>
-            approved edits grouped by user
+            datatype grouped by user
             </summary>
-            <param name="dataType"></param>
+            <param name="dataType">
+            poem/corrections
+            section/corrections
+            cat/corrections
+            cat/corrections
+            suggestedsongs
+            quoteds
+            </param>
             <param name="paging"></param>
             <param name="day"></param>
             <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprrovedEditsSummedUpStatsAsync">
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetDataSummedUpStatsAsync(System.String)">
             <summary>
-            summed up stats of approved poem corrections
+            summed up stats of data
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprrovedSedtionEditsSummedUpStatsAsync">
-            <summary>
-            summed up stats of approved section corrections
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprrovedCatEditsSummedUpStatsAsync">
-            <summary>
-            summed up stats of approved cat corrections
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedRelatedSongsSummedUpStatsAsync">
-            <summary>
-            summed up stats of approved related songs
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedQuotedPoemsSummedUpStatsAsync">
-            <summary>
-            summed up stats of quoted poems
-            </summary>
+            <param name="dataType">
+            poem/corrections
+            section/corrections
+            cat/corrections
+            cat/corrections
+            suggestedsongs
+            quoteds
+            </param>        
             <returns></returns>
         </member>
         <member name="F:RMuseum.Controllers.ContributionStatsController._service">
