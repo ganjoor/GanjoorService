@@ -808,6 +808,29 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedCatEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved cat edits daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedCatEditsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved cat edits grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprrovedCatEditsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved cat corrections
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.ContributionStatsController._service">
             <summary>
             service

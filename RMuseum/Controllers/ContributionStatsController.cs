@@ -169,6 +169,82 @@ namespace RMuseum.Controllers
 
 
         /// <summary>
+        /// approved cat edits daily
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet("cat/corrections/daily")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GroupedByDateViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetApprovedCatEditsGroupedByDateAsync([FromQuery] PagingParameterModel paging, Guid? userId = null)
+        {
+            var cacheKey = $"cat/corrections/daily/{DateTime.Now.Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
+            if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks) pagedResult))
+            {
+                var res = await _service.GetApprovedCatEditsGroupedByDateAsync(paging, userId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                pagedResult = res.Result;
+            }
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.PagingMeta));
+
+            return Ok(pagedResult.Tracks);
+        }
+
+        /// <summary>
+        /// approved cat edits grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet("cat/corrections/by/user")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GroupedByUserViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetApprovedCatEditsGroupedByUserAsync([FromQuery] PagingParameterModel paging, DateTime? day, Guid? userId)
+        {
+            var cacheKey = $"cat/corrections/by/user/{(day ?? DateTime.Now).Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
+            if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks) pagedResult))
+            {
+                var res = await _service.GetApprovedCatEditsGroupedByUserAsync(paging, day, userId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                pagedResult = res.Result;
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.PagingMeta));
+
+            return Ok(pagedResult.Tracks);
+        }
+
+        /// <summary>
+        /// summed up stats of approved cat corrections
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("cat/corrections")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(SummedUpViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetApprrovedCatEditsSummedUpStatsAsync()
+        {
+            if (!_memoryCache.TryGetValue($"cat/corrections/{DateTime.Now.Date}", out SummedUpViewModel result))
+            {
+                var res = await _service.GetApprrovedCatEditsSummedUpStatsAsync();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                result = res.Result;
+            }
+            return Ok(result);
+        }
+
+
+
+        /// <summary>
         /// service
         /// </summary>
         protected readonly IContributionStatsService _service;
