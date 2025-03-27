@@ -785,6 +785,29 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedSectionEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved section edits daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedSectionEditsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved section edits grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprrovedSedtionEditsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved section corrections
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.ContributionStatsController._service">
             <summary>
             service
