@@ -773,6 +773,7 @@
             cat/corrections
             suggestedsongs
             quoteds
+            comments
             </param>
             <param name="paging"></param>
             <param name="userId"></param>
@@ -789,6 +790,7 @@
             cat/corrections
             suggestedsongs
             quoteds
+            comments
             </param>
             <param name="paging"></param>
             <param name="day"></param>
@@ -806,6 +808,7 @@
             cat/corrections
             suggestedsongs
             quoteds
+            comments
             </param>        
             <returns></returns>
         </member>

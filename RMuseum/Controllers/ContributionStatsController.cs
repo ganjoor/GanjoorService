@@ -28,6 +28,7 @@ namespace RMuseum.Controllers
         /// cat/corrections
         /// suggestedsongs
         /// quoteds
+        /// comments
         /// </param>
         /// <param name="paging"></param>
         /// <param name="userId"></param>
@@ -83,8 +84,16 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
+                    case "comments":
+                        {
+                            var res = await _service.GetApprovedCommentsGroupedByDateAsync(paging, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
                     default:
-                        return BadRequest("invalid value for the paramater: dataType");
+                        return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
             }
             // Paging Header
@@ -103,6 +112,7 @@ namespace RMuseum.Controllers
         /// cat/corrections
         /// suggestedsongs
         /// quoteds
+        /// comments
         /// </param>
         /// <param name="paging"></param>
         /// <param name="day"></param>
@@ -159,8 +169,16 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
+                    case "comments":
+                        {
+                            var res = await _service.GetApprovedCommentsGroupedByUserAsync(paging, day, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
                     default:
-                        return BadRequest("invalid value for the paramater: dataType");
+                        return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
             }
 
@@ -180,6 +198,7 @@ namespace RMuseum.Controllers
         /// cat/corrections
         /// suggestedsongs
         /// quoteds
+        /// comments
         /// </param>        
         /// <returns></returns>
         [HttpGet("{dataType}")]
@@ -232,8 +251,16 @@ namespace RMuseum.Controllers
                             result = res.Result;
                         }
                         break;
+                    case "comments":
+                        {
+                            var res = await _service.GetApprovedCommentsSummedUpStatsAsync();
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            result = res.Result;
+                        }
+                        break;
                     default:
-                        return BadRequest("invalid value for the paramater: dataType");
+                        return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
                
             }
