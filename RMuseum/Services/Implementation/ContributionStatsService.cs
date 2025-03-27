@@ -581,6 +581,118 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// approved comments daily
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedCommentsGroupedByDateAsync(PagingParameterModel paging, Guid? userId)
+        {
+            try
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>(
+                    await QueryablePaginator<GroupedByDateViewModel>.Paginate(
+                   _context.GanjoorComments
+                        .Where(c =>
+                        c.Status == Models.Artifact.PublishStatus.Published
+                        &&
+                        (userId == null || c.UserId == userId)
+                        )
+                        .GroupBy(a => a.CommentDate.Date)
+                        .Select(a => new GroupedByDateViewModel()
+                        {
+                            Date = a.Key.Date.ToString(),
+                            Number = a.Count(),
+                        }).OrderByDescending(s => s.Date)
+                   , paging));
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// approved comments grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedCommentsGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId)
+        {
+            try
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>(
+                    await QueryablePaginator<GroupedByUserViewModel>.Paginate(
+                        _context.GanjoorComments
+                        .Join
+                        (
+                            _context.Users,
+                            correction => correction.UserId,
+                            user => user.Id,
+                            (correction, user) => new
+                            {
+                                correction.CommentDate,
+                                UserId = user.Id,
+                                UserName = user.NickName,
+                                correction.Status,
+                            }
+                        )
+                        .Where(f =>
+                         f.Status == Models.Artifact.PublishStatus.Published 
+                        &&
+                        (day == null || f.CommentDate.Date == day) && (userId == null || f.UserId == userId))
+                        .GroupBy(a => new { a.UserId, a.UserName }).Select(a => new GroupedByUserViewModel()
+                        {
+                            UserId = a.Key.UserId,
+                            UserName = a.Key.UserName,
+                            Number = a.Count(),
+                        }).OrderByDescending(s => s.Number)
+                        , paging));
+
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// summed up stats of approved comments
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<SummedUpViewModel>> GetApprovedCommentsSummedUpStatsAsync()
+        {
+            try
+            {
+                return new RServiceResult<SummedUpViewModel>
+                    (
+                    new SummedUpViewModel()
+                    {
+                        Days = await _context.GanjoorComments
+                        .Where(f => f.Status == Models.Artifact.PublishStatus.Published
+                        )
+                        .GroupBy(f => f.CommentDate.Date).CountAsync(),
+                        TotalCount = await _context.GanjoorComments
+
+                        .Where(f => f.Status == Models.Artifact.PublishStatus.Published
+                        )
+                        .CountAsync(),
+                        UserIds = await _context.GanjoorComments
+                        .Where(f => f.Status == Models.Artifact.PublishStatus.Published
+                        )
+                        .GroupBy(f => f.UserId).CountAsync(),
+                    }
+                    );
+
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<SummedUpViewModel>(null, e.ToString());
+            }
+        }
 
 
 
