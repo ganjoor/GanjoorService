@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using RMuseum.Models.Generic.ViewModels;
 using RMuseum.Services;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace RMuseum.Controllers
 {
@@ -28,14 +30,18 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetApprovedEditsGroupedByDateAsync([FromQuery] PagingParameterModel paging, Guid? userId = null)
         {
-            var pagedResult = await _service.GetApprovedEditsGroupedByDateAsync(paging, userId);
-            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
-                return BadRequest(pagedResult.ExceptionString);
-
+            var cacheKey = $"poem/corrections/daily/{DateTime.Now.Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
+            if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)  pagedResult))
+            {
+                var res = await _service.GetApprovedEditsGroupedByDateAsync(paging, userId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                pagedResult = res.Result;
+            }
             // Paging Header
-            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.PagingMeta));
 
-            return Ok(pagedResult.Result.Tracks);
+            return Ok(pagedResult.Tracks);
         }
 
         /// <summary>
@@ -51,14 +57,19 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetApprovedEditsGroupedByUserAsync([FromQuery] PagingParameterModel paging,DateTime? day, Guid? userId)
         {
-            var pagedResult = await _service.GetApprovedEditsGroupedByUserAsync(paging, day, userId);
-            if (!string.IsNullOrEmpty(pagedResult.ExceptionString))
-                return BadRequest(pagedResult.ExceptionString);
+            var cacheKey = $"poem/corrections/by/user/{(day ?? DateTime.Now).Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
+            if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks) pagedResult))
+            {
+                var res = await _service.GetApprovedEditsGroupedByUserAsync(paging, day, userId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                pagedResult = res.Result;
+            }
 
             // Paging Header
-            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.Result.PagingMeta));
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.PagingMeta));
 
-            return Ok(pagedResult.Result.Tracks);
+            return Ok(pagedResult.Tracks);
         }
 
         /// <summary>
@@ -71,12 +82,14 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetApprrovedEditsSummedUpStatsAsync()
         {
-            var res = await _service.GetApprrovedEditsSummedUpStatsAsync();
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-
-
-            return Ok(res.Result);
+            if (!_memoryCache.TryGetValue($"poem/corrections/{DateTime.Now.Date}", out SummedUpViewModel result))
+            {
+                var res = await _service.GetApprrovedEditsSummedUpStatsAsync();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                result = res.Result;
+            }
+            return Ok(result);
         }
 
         /// <summary>
@@ -85,12 +98,19 @@ namespace RMuseum.Controllers
         protected readonly IContributionStatsService _service;
 
         /// <summary>
+        /// IMemoryCache
+        /// </summary>
+        protected readonly IMemoryCache _memoryCache;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="service"></param>
-        public ContributionStatsController(IContributionStatsService service)
+        /// <param name="memoryCache"></param>
+        public ContributionStatsController(IContributionStatsService service, IMemoryCache memoryCache)
         {
             _service = service;
+            _memoryCache = memoryCache;
         }
     }
 }
