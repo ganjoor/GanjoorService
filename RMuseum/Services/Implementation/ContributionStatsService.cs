@@ -47,49 +47,6 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// approved edits grouped by user / daily
-        /// </summary>
-        /// <param name="paging"></param>
-        /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateUserViewModel[] Tracks)>> GetApprovedEditsGroupedByDateAndUserAsync(PagingParameterModel paging)
-        {
-            try
-            {
-                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateUserViewModel[] Tracks)>(
-                    await QueryablePaginator<GroupedByDateUserViewModel>.Paginate(
-                        _context.GanjoorPoemCorrections
-                        .Join
-                        (
-                            _context.Users,
-                            correction => correction.UserId,
-                            user => user.Id,
-                            (correction, user) => new
-                            {
-                                UserId = user.Id,
-                                UserName = user.NickName,
-                                DateTime = correction.Date,
-                                correction.AffectedThePoem,
-                            }
-                        )
-                        .Where(f => f.AffectedThePoem)
-                        .GroupBy(a => new { a.DateTime.Date, a.UserId, a.UserName })
-                        .Select(a => new GroupedByDateUserViewModel()
-                        {
-                            Date = a.Key.Date.ToString(),
-                            UserId = a.Key.UserId,
-                            UserName = a.Key.UserName,
-                            Number = a.Count(),
-                        }).OrderByDescending(s => s.Date).ThenBy(s => s.Number)
-                        , paging));
-
-            }
-            catch (Exception e)
-            {
-                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateUserViewModel[] Tracks)>((null, null), e.ToString());
-            }
-        }
-
-        /// <summary>
         /// approved edits grouped by user
         /// </summary>
         /// <param name="paging"></param>

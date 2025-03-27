@@ -19,13 +19,6 @@ namespace RMuseum.Services
         Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedEditsGroupedByDateAsync(PagingParameterModel paging, Guid? userId);
 
         /// <summary>
-        /// approved edits grouped by user / daily
-        /// </summary>
-        /// <param name="paging"></param>
-        /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateUserViewModel[] Tracks)>> GetApprovedEditsGroupedByDateAndUserAsync(PagingParameterModel paging);
-
-        /// <summary>
         /// approved edits grouped by user
         /// </summary>
         /// <param name="paging"></param>
