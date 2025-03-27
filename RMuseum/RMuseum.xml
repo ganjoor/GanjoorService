@@ -831,6 +831,29 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedRelatedSongsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved related songs daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedRelatedSongsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved related songs grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetApprovedRelatedSongsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved related songs
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.ContributionStatsController._service">
             <summary>
             service

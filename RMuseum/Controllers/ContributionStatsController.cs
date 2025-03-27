@@ -242,6 +242,81 @@ namespace RMuseum.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// approved related songs daily
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet("suggestedsongs/daily")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GroupedByDateViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetApprovedRelatedSongsGroupedByDateAsync([FromQuery] PagingParameterModel paging, Guid? userId = null)
+        {
+            var cacheKey = $"suggestedsongs/daily/{DateTime.Now.Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
+            if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks) pagedResult))
+            {
+                var res = await _service.GetApprovedRelatedSongsGroupedByDateAsync(paging, userId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                pagedResult = res.Result;
+            }
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.PagingMeta));
+
+            return Ok(pagedResult.Tracks);
+        }
+
+        /// <summary>
+        /// approved related songs grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet("suggestedsongs/by/user")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<GroupedByUserViewModel>))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetApprovedRelatedSongsGroupedByUserAsync([FromQuery] PagingParameterModel paging, DateTime? day, Guid? userId)
+        {
+            var cacheKey = $"suggestedsongs/by/user/{(day ?? DateTime.Now).Date}/{paging.PageSize}/{paging.PageNumber}/{userId ?? Guid.Empty}";
+            if (!_memoryCache.TryGetValue(cacheKey, out (PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks) pagedResult))
+            {
+                var res = await _service.GetApprovedRelatedSongsGroupedByUserAsync(paging, day, userId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                pagedResult = res.Result;
+            }
+
+            // Paging Header
+            HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.PagingMeta));
+
+            return Ok(pagedResult.Tracks);
+        }
+
+        /// <summary>
+        /// summed up stats of approved related songs
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("suggestedsongs")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(SummedUpViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetApprovedRelatedSongsSummedUpStatsAsync()
+        {
+            if (!_memoryCache.TryGetValue($"suggestedsongs/{DateTime.Now.Date}", out SummedUpViewModel result))
+            {
+                var res = await _service.GetApprovedRelatedSongsSummedUpStatsAsync();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                result = res.Result;
+            }
+            return Ok(result);
+        }
+
+
 
 
         /// <summary>
