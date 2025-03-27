@@ -16114,6 +16114,29 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedCommentsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved comments daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedCommentsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved comments grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedCommentsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved comments
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IDonationService">
             <summary>
             donation service

@@ -125,5 +125,29 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<SummedUpViewModel>> GetApprovedQuotedPoemsSummedUpStatsAsync();
 
+        /// <summary>
+        /// approved comments daily
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedCommentsGroupedByDateAsync(PagingParameterModel paging, Guid? userId);
+
+        /// <summary>
+        /// approved comments grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedCommentsGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId);
+
+
+        /// <summary>
+        /// summed up stats of approved comments
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<SummedUpViewModel>> GetApprovedCommentsSummedUpStatsAsync();
+
     }
 }
