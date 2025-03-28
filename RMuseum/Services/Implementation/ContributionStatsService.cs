@@ -1110,6 +1110,81 @@ namespace RMuseum.Services.Implementation
         }
 
 
+        /// <summary>
+        /// approved poet spec pictures grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedGanjoorPoetSuggestedPicturesGroupedByUserAsync(PagingParameterModel paging, Guid? userId)
+        {
+            try
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>(
+                    await QueryablePaginator<GroupedByUserViewModel>.Paginate(
+                        _context.GanjoorPoetSuggestedPictures
+                        .Join
+                        (
+                            _context.Users,
+                            correction => correction.SuggestedById,
+                            user => user.Id,
+                            (correction, user) => new
+                            {
+                                UserId = user.Id,
+                                UserName = user.NickName,
+                                correction.Published,
+                            }
+                        )
+                        .Where(f =>
+                         f.Published
+                        &&
+                        (userId == null || f.UserId == userId))
+                        .GroupBy(a => new { a.UserId, a.UserName }).Select(a => new GroupedByUserViewModel()
+                        {
+                            UserId = a.Key.UserId,
+                            UserName = a.Key.UserName,
+                            Number = a.Count(),
+                        }).OrderByDescending(s => s.Number)
+                        , paging));
+
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// summed up stats of approved poet pictures
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<SummedUpViewModel>> GetApprovedGanjoorPoetSuggestedPicturesSummedUpStatsAsync()
+        {
+            try
+            {
+                return new RServiceResult<SummedUpViewModel>
+                    (
+                    new SummedUpViewModel()
+                    {
+                        Days = 0,
+                        TotalCount = await _context.GanjoorPoetSuggestedPictures
+
+                        .Where(f => f.Published
+                        )
+                        .CountAsync(),
+                        UserIds = await _context.GanjoorPoetSuggestedPictures
+                        .Where(f => f.Published
+                        )
+                        .GroupBy(f => f.SuggestedById).CountAsync(),
+                    }
+                    );
+
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<SummedUpViewModel>(null, e.ToString());
+            }
+        }
 
 
         /// <summary>

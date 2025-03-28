@@ -231,5 +231,20 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         Task<RServiceResult<SummedUpViewModel>> GetApprovedPoetSpecLinesSummedUpStatsAsync();
+
+        /// <summary>
+        /// approved poet spec pictures grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedGanjoorPoetSuggestedPicturesGroupedByUserAsync(PagingParameterModel paging, Guid? userId);
+
+        /// <summary>
+        /// summed up stats of approved poet pictures
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<SummedUpViewModel>> GetApprovedGanjoorPoetSuggestedPicturesSummedUpStatsAsync();
+
     }
 }
