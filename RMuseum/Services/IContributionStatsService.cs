@@ -195,5 +195,27 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<SummedUpViewModel>> GetApprovedMuseumLinksSummedUpStatsAsync();
 
+        /// <summary>
+        /// approved pinterest links daily
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedPinterestLinksGroupedByDateAsync(PagingParameterModel paging, Guid? userId);
+
+        /// <summary>
+        /// approved pinterest links grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedPinterestLinksGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId);
+
+        /// <summary>
+        /// summed up stats of approved pinterest links
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<SummedUpViewModel>> GetApprovedPinterestLinksSummedUpStatsAsync();
     }
 }
