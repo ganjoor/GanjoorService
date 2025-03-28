@@ -798,6 +798,7 @@
             museumlinks
             pinterestlinks
             poetspeclines
+            poetpix
             </param>
             <param name="paging"></param>
             <param name="day"></param>
@@ -820,6 +821,7 @@
             museumlinks
             pinterestlinks
             poetspeclines
+            poetpix
             </param>        
             <returns></returns>
         </member>
@@ -16166,6 +16168,20 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedGanjoorPoetPicturesGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved poet spec pictures grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedGanjoorPoetPicturesSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved poet pictures
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IDonationService">
             <summary>
             donation service
@@ -19290,6 +19306,20 @@
         <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedPoetSpecLinesSummedUpStatsAsync">
             <summary>
             summed up stats of approved poet spec lines
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedGanjoorPoetPicturesGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved poet spec pictures grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedGanjoorPoetPicturesSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved poet pictures
             </summary>
             <returns></returns>
         </member>

@@ -238,13 +238,13 @@ namespace RMuseum.Services
         /// <param name="paging"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedGanjoorPoetSuggestedPicturesGroupedByUserAsync(PagingParameterModel paging, Guid? userId);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedGanjoorPoetPicturesGroupedByUserAsync(PagingParameterModel paging, Guid? userId);
 
         /// <summary>
         /// summed up stats of approved poet pictures
         /// </summary>
         /// <returns></returns>
-        Task<RServiceResult<SummedUpViewModel>> GetApprovedGanjoorPoetSuggestedPicturesSummedUpStatsAsync();
+        Task<RServiceResult<SummedUpViewModel>> GetApprovedGanjoorPoetPicturesSummedUpStatsAsync();
 
     }
 }

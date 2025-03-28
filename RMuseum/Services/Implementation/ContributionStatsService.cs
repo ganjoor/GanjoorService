@@ -1116,7 +1116,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="paging"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedGanjoorPoetSuggestedPicturesGroupedByUserAsync(PagingParameterModel paging, Guid? userId)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedGanjoorPoetPicturesGroupedByUserAsync(PagingParameterModel paging, Guid? userId)
         {
             try
             {
@@ -1158,7 +1158,7 @@ namespace RMuseum.Services.Implementation
         /// summed up stats of approved poet pictures
         /// </summary>
         /// <returns></returns>
-        public async Task<RServiceResult<SummedUpViewModel>> GetApprovedGanjoorPoetSuggestedPicturesSummedUpStatsAsync()
+        public async Task<RServiceResult<SummedUpViewModel>> GetApprovedGanjoorPoetPicturesSummedUpStatsAsync()
         {
             try
             {

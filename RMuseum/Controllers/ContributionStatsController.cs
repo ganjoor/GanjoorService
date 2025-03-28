@@ -120,6 +120,7 @@ namespace RMuseum.Controllers
                         }
                         break;
                     case "poetspeclines":
+                    case "poetpix":
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
@@ -145,6 +146,7 @@ namespace RMuseum.Controllers
         /// museumlinks
         /// pinterestlinks
         /// poetspeclines
+        /// poetpix
         /// </param>
         /// <param name="paging"></param>
         /// <param name="day"></param>
@@ -241,6 +243,14 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
+                    case "poetpix":
+                        {
+                            var res = await _service.GetApprovedGanjoorPoetPicturesGroupedByUserAsync(paging, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
@@ -267,6 +277,7 @@ namespace RMuseum.Controllers
         /// museumlinks
         /// pinterestlinks
         /// poetspeclines
+        /// poetpix
         /// </param>        
         /// <returns></returns>
         [HttpGet("{dataType}")]
@@ -354,6 +365,14 @@ namespace RMuseum.Controllers
                     case "poetspeclines":
                         {
                             var res = await _service.GetApprovedPoetSpecLinesSummedUpStatsAsync();
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            result = res.Result;
+                        }
+                        break;
+                    case "poetpix":
+                        {
+                            var res = await _service.GetApprovedGanjoorPoetPicturesSummedUpStatsAsync();
                             if (!string.IsNullOrEmpty(res.ExceptionString))
                                 return BadRequest(res.ExceptionString);
                             result = res.Result;
