@@ -38,7 +38,7 @@ namespace RMuseum.Services.Implementation
                         Comments = await _context.GanjoorComments.Where(c => c.Status == Models.Artifact.PublishStatus.Published && c.UserId == userId).CountAsync(),
                         Recitations = await _context.Recitations.Where(c => c.ReviewStatus == Models.GanjoorAudio.AudioReviewStatus.Approved && c.OwnerId == userId).CountAsync(),
                         MuseumLinks = await _context.GanjoorLinks.Where(c => c.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved && c.SuggestedById == userId).CountAsync(),
-                        PinterestLinks = await _context.PinterestLinks.Where(c => c.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved && c.SuggestedById == userId).CountAsync(),
+                        PinterestLinks = await _context.PinterestLinks.Where(c => c.HumanReviewed && c.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved && c.SuggestedById == userId).CountAsync(),
                         PoetSpecLines = await _context.GanjoorPoetSuggestedSpecLines.Where(c => c.Published && c.SuggestedById == userId).CountAsync(),
                         PoetPictures = await _context.GanjoorPoetSuggestedPictures.Where(c => c.Published && c.SuggestedById == userId).CountAsync(),
                     }
@@ -971,6 +971,8 @@ namespace RMuseum.Services.Implementation
                     await QueryablePaginator<GroupedByDateViewModel>.Paginate(
                    _context.PinterestLinks
                         .Where(c =>
+                        c.HumanReviewed
+                        &&
                         c.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
                         &&
                         (userId == null || c.SuggestedById == userId)
@@ -1014,9 +1016,12 @@ namespace RMuseum.Services.Implementation
                                 UserId = user.Id,
                                 UserName = user.NickName,
                                 correction.ReviewResult,
+                                correction.HumanReviewed
                             }
                         )
                         .Where(f =>
+                         f.HumanReviewed
+                         &&
                          f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
                         &&
                         (day == null || f.SuggestionDate.Date == day) && (userId == null || f.UserId == userId))
@@ -1048,16 +1053,16 @@ namespace RMuseum.Services.Implementation
                     new SummedUpViewModel()
                     {
                         Days = await _context.PinterestLinks
-                        .Where(f => f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
+                        .Where(f => f.HumanReviewed && f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
                         )
                         .GroupBy(f => f.SuggestionDate.Date).CountAsync(),
                         TotalCount = await _context.PinterestLinks
 
-                        .Where(f => f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
+                        .Where(f => f.HumanReviewed && f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
                         )
                         .CountAsync(),
                         UserIds = await _context.PinterestLinks
-                        .Where(f => f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
+                        .Where(f => f.HumanReviewed && f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
                         )
                         .GroupBy(f => f.SuggestedById).CountAsync(),
                     }
