@@ -59,5 +59,9 @@ namespace RMuseum.Models.Ganjoor
         /// </summary>
         public bool ChosenOne { get; set; }
 
+        /// <summary>
+        /// publication date
+        /// </summary>
+        public DateTime PublicationDate { get; set; }
     }
 }

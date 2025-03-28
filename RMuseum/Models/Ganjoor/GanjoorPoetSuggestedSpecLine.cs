@@ -48,5 +48,10 @@ namespace RMuseum.Models.Ganjoor
         /// </summary>
         public virtual RAppUser SuggestedBy { get; set; }
 
+        /// <summary>
+        /// publication date
+        /// </summary>
+        public DateTime PublicationDate { get; set; }
+
     }
 }

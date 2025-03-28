@@ -209,6 +209,10 @@ namespace RMuseum.Services.Implementation
 
                 var dbModel = await _context.GanjoorPoetSuggestedSpecLines.Where(s => s.Id == model.Id).SingleAsync();
                 bool publishIsChanged = model.Published != dbModel.Published;
+                if (publishIsChanged)
+                {
+                    dbModel.PublicationDate = DateTime.Now;
+                }
                 dbModel.LineOrder = model.LineOrder;
                 dbModel.Contents = model.Contents;
                 dbModel.Published = model.Published;

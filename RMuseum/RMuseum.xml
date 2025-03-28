@@ -9997,6 +9997,11 @@
             selected
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSuggestedPicture.PublicationDate">
+            <summary>
+            publication date
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoetSuggestedSpecLine">
             <summary>
             Ganjoor Poet Specification
@@ -10040,6 +10045,11 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSuggestedSpecLine.SuggestedBy">
             <summary>
             suggested by
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoetSuggestedSpecLine.PublicationDate">
+            <summary>
+            publication date
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorQuotedPoem">

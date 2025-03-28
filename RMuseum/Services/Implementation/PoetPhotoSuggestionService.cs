@@ -270,6 +270,10 @@ namespace RMuseum.Services.Implementation
                 }
                     
                 bool publishIsChanged = model.Published != dbModel.Published;
+                if(publishIsChanged)
+                {
+                    dbModel.PublicationDate = DateTime.Now;
+                }
                 bool newlyChosenOne = model.ChosenOne && !dbModel.ChosenOne;
                 if (newlyChosenOne)
                     dbModel.PicOrder = 1;
