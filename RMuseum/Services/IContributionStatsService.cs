@@ -2,6 +2,7 @@
 using RSecurityBackend.Models.Generic;
 using System.Threading.Tasks;
 using System;
+using RMuseum.Models.Ganjoor.ViewModels;
 
 namespace RMuseum.Services
 {
@@ -10,6 +11,13 @@ namespace RMuseum.Services
     /// </summary>
     public interface IContributionStatsService
     {
+        /// <summary>
+        /// user contributions
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<UserContributionsViewModel>> GetUserContributionsAsync(Guid userId);
+
         /// <summary>
         /// approved edits daily
         /// </summary>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.Generic.ViewModels;
 using RSecurityBackend.Models.Generic;
 using RSecurityBackend.Services.Implementation;
@@ -14,6 +15,42 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public class ContributionStatsService : IContributionStatsService
     {
+
+        /// <summary>
+        /// user contributions
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<UserContributionsViewModel>> GetUserContributionsAsync(Guid userId)
+        {
+            try
+            {
+                return new RServiceResult<UserContributionsViewModel>
+                    (
+                    new UserContributionsViewModel()
+                    {
+                        Id = userId,
+                        PoemCorrections = await _context.GanjoorPoemCorrections.Where(c => c.AffectedThePoem && c.UserId == userId).CountAsync(),
+                        SectionCorrections = await _context.GanjoorPoemSectionCorrections.Where(c => c.AffectedThePoem && c.UserId == userId).CountAsync(),
+                        CatCorrections = await _context.GanjoorCatCorrections.Where(c => c.Result == Models.Ganjoor.CorrectionReviewResult.Approved && c.UserId == userId).CountAsync(),
+                        SuggestedSongs = await _context.GanjoorPoemMusicTracks.Where(c => c.Approved && c.SuggestedById == userId).CountAsync(),
+                        QuotedPoems = await _context.GanjoorQuotedPoems.Where(c => c.Published && c.SuggestedById == userId).CountAsync(),
+                        Comments = await _context.GanjoorComments.Where(c => c.Status == Models.Artifact.PublishStatus.Published && c.UserId == userId).CountAsync(),
+                        Recitations = await _context.Recitations.Where(c => c.ReviewStatus == Models.GanjoorAudio.AudioReviewStatus.Approved && c.OwnerId == userId).CountAsync(),
+                        MuseumLinks = await _context.GanjoorLinks.Where(c => c.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved && c.SuggestedById == userId).CountAsync(),
+                        PinterestLinks = await _context.PinterestLinks.Where(c => c.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved && c.SuggestedById == userId).CountAsync(),
+                        PoetSpecLines = await _context.GanjoorPoetSuggestedSpecLines.Where(c => c.Published && c.SuggestedById == userId).CountAsync(),
+                        PoetPictures = await _context.GanjoorPoetSuggestedPictures.Where(c => c.Published && c.SuggestedById == userId).CountAsync(),
+                    }
+                    );
+                  
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<UserContributionsViewModel>(null, exp.ToString());
+            }
+        }
+
         /// <summary>
         /// approved edits daily
         /// </summary>
