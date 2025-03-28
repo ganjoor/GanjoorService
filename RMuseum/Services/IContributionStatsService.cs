@@ -172,6 +172,28 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<SummedUpViewModel>> GetApprovedRecitationsSummedUpStatsAsync();
 
+        /// <summary>
+        /// approved museum links daily
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedMuseumLinksGroupedByDateAsync(PagingParameterModel paging, Guid? userId);
+
+        /// <summary>
+        /// approved museum links grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedMuseumLinksGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId);
+
+        /// <summary>
+        /// summed up stats of approved museum links
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<SummedUpViewModel>> GetApprovedMuseumLinksSummedUpStatsAsync();
 
     }
 }
