@@ -236,8 +236,22 @@
                                     @if (Model.Contributions.PinterestLinks > 0)
                                     {
                                         <tr>
-                                                            <td><p>ارتباطات پیشنهادی <a href="https://blog.ganjoor.net/1399/01/29/pinterest/">تصاویر خارجی</a>:</p></td>
+                                            <td><p>ارتباطات پیشنهادی <a href="https://blog.ganjoor.net/1399/01/29/pinterest/">تصاویر خارجی</a>:</p></td>
                                             <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.PinterestLinks)</p></td>
+                                        </tr>
+                                    }
+                                    @if (Model.Contributions.PoetSpecLines > 0)
+                                    {
+                                        <tr>
+                                            <td><p>نکات پیشنهادی <a href="https://blog.ganjoor.net/1400/11/28/photos/"> دربارهٔ چهرهٔ سخنوان</a>:</p></td>
+                                            <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.PoetSpecLines)</p></td>
+                                        </tr>
+                                    }
+                                    @if (Model.Contributions.PoetPictures > 0)
+                                    {
+                                        <tr>
+                                            <td><p>تصاویر <a href="https://blog.ganjoor.net/1400/11/28/photos/">چهرهٔ پیشنهادی</a>:</p></td>
+                                            <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.PoetPictures)</p></td>
                                         </tr>
                                     }
                                 </table>
