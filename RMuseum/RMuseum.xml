@@ -13427,6 +13427,71 @@
             verse order
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel">
+            <summary>
+            user contributions
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.Id">
+            <summary>
+            user id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.PoemCorrections">
+            <summary>
+            poem corrections
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.SectionCorrections">
+            <summary>
+            section corrections
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.CatCorrections">
+            <summary>
+            cat edit corrections
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.SuggestedSongs">
+            <summary>
+            suggested songs
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.QuotedPoems">
+            <summary>
+            quoted poems
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.Comments">
+            <summary>
+            comments
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.Recitations">
+            <summary>
+            recitations
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.MuseumLinks">
+            <summary>
+            museum links
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.PinterestLinks">
+            <summary>
+            pinterest links
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.PoetSpecLines">
+            <summary>
+            poet spec links
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.PoetPictures">
+            <summary>
+            poet pictures
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.UserSongSuggestionsHistory">
             <summary>
             history of suggested songs by a user
