@@ -762,6 +762,13 @@
             <param name="auditLogService">
             </param>
         </member>
+        <member name="M:RMuseum.Controllers.ContributionStatsController.GetUserContributionsAsync(System.Guid)">
+            <summary>
+            user contribution
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.ContributionStatsController.GetDataGroupedByDateAsync(System.String,RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
             <summary>
             daily stats
@@ -16012,6 +16019,13 @@
             contributions stats service
             </summary>
         </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetUserContributionsAsync(System.Guid)">
+            <summary>
+            user contributions
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
             <summary>
             approved edits daily
@@ -19152,6 +19166,13 @@
             <summary>
             contributions stats service implementation
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetUserContributionsAsync(System.Guid)">
+            <summary>
+            user contributions
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
             <summary>

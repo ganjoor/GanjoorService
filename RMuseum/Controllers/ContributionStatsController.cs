@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.Generic.ViewModels;
 using RMuseum.Services;
 using RSecurityBackend.Models.Generic;
@@ -18,6 +19,23 @@ namespace RMuseum.Controllers
     [Route("api/contributions")]
     public class ContributionStatsController : Controller
     {
+        /// <summary>
+        /// user contribution
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpGet("{userId}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UserContributionsViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetUserContributionsAsync(Guid userId)
+        {
+            var res = await _service.GetUserContributionsAsync(userId);
+            if(!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
         /// <summary>
         /// daily stats
         /// </summary>
@@ -280,7 +298,7 @@ namespace RMuseum.Controllers
         /// poetpix
         /// </param>        
         /// <returns></returns>
-        [HttpGet("{dataType}")]
+        [HttpGet("{dataType}/summary")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(SummedUpViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
