@@ -184,6 +184,27 @@
                                             <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.PoemCorrections)</p></td>
                                         </tr>
                                     }
+                                    @if (Model.Contributions.SectionCorrections > 0)
+                                    {
+                                        <tr>
+                                            <td><p>ویرایش‌های قطعات تأیید شده:</p></td>
+                                            <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.SectionCorrections)</p></td>
+                                        </tr>
+                                    }
+                                    @if (Model.Contributions.CatCorrections > 0)
+                                    {
+                                        <tr>
+                                            <td><p>ویرایش‌های بخش‌های تأیید شده:</p></td>
+                                            <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.CatCorrections)</p></td>
+                                        </tr>
+                                    }
+                                    @if (Model.Contributions.SuggestedSongs > 0)
+                                    {
+                                        <tr>
+                                            <td><p>آهنگ‌های پیشنهادی تأیید شده:</p></td>
+                                            <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.SuggestedSongs)</p></td>
+                                        </tr>
+                                    }
                                 </table>
                             }
                         </div>
