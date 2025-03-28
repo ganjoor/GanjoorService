@@ -16150,6 +16150,20 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPoetSpecLinesGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved poet spec lines grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPoetSpecLinesSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved poet spec lines
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IDonationService">
             <summary>
             donation service
@@ -19260,6 +19274,20 @@
         <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedPinterestLinksSummedUpStatsAsync">
             <summary>
             summed up stats of approved pinterest links
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedPoetSpecLinesGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved poet spec lines grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedPoetSpecLinesSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved poet spec lines
             </summary>
             <returns></returns>
         </member>
