@@ -694,6 +694,119 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// approved recitations daily
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedRecitationsGroupedByDateAsync(PagingParameterModel paging, Guid? userId)
+        {
+            try
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>(
+                    await QueryablePaginator<GroupedByDateViewModel>.Paginate(
+                   _context.Recitations
+                        .Where(c =>
+                        c.ReviewStatus == Models.GanjoorAudio.AudioReviewStatus.Approved
+                        &&
+                        (userId == null || c.OwnerId == userId)
+                        )
+                        .GroupBy(a => a.UploadDate.Date)
+                        .Select(a => new GroupedByDateViewModel()
+                        {
+                            Date = a.Key.Date.ToString(),
+                            Number = a.Count(),
+                        }).OrderByDescending(s => s.Date)
+                   , paging));
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// approved recitations grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedRecitationsGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId)
+        {
+            try
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>(
+                    await QueryablePaginator<GroupedByUserViewModel>.Paginate(
+                        _context.Recitations
+                        .Join
+                        (
+                            _context.Users,
+                            correction => correction.OwnerId,
+                            user => user.Id,
+                            (correction, user) => new
+                            {
+                                correction.UploadDate,
+                                UserId = user.Id,
+                                UserName = user.NickName,
+                                correction.ReviewStatus,
+                            }
+                        )
+                        .Where(f =>
+                         f.ReviewStatus == Models.GanjoorAudio.AudioReviewStatus.Approved
+                        &&
+                        (day == null || f.UploadDate.Date == day) && (userId == null || f.UserId == userId))
+                        .GroupBy(a => new { a.UserId, a.UserName }).Select(a => new GroupedByUserViewModel()
+                        {
+                            UserId = a.Key.UserId,
+                            UserName = a.Key.UserName,
+                            Number = a.Count(),
+                        }).OrderByDescending(s => s.Number)
+                        , paging));
+
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// summed up stats of approved recitations
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<SummedUpViewModel>> GetApprovedRecitationsSummedUpStatsAsync()
+        {
+            try
+            {
+                return new RServiceResult<SummedUpViewModel>
+                    (
+                    new SummedUpViewModel()
+                    {
+                        Days = await _context.Recitations
+                        .Where(f => f.ReviewStatus == Models.GanjoorAudio.AudioReviewStatus.Approved
+                        )
+                        .GroupBy(f => f.UploadDate.Date).CountAsync(),
+                        TotalCount = await _context.Recitations
+
+                        .Where(f => f.ReviewStatus == Models.GanjoorAudio.AudioReviewStatus.Approved
+                        )
+                        .CountAsync(),
+                        UserIds = await _context.Recitations
+                        .Where(f => f.ReviewStatus == Models.GanjoorAudio.AudioReviewStatus.Approved
+                        )
+                        .GroupBy(f => f.OwnerId).CountAsync(),
+                    }
+                    );
+
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<SummedUpViewModel>(null, e.ToString());
+            }
+        }
+
 
 
         /// <summary>
