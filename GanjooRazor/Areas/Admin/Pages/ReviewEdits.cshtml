@@ -224,6 +224,19 @@ else
             </td>
         </tr>
         <tr>
+            <td colspan="2">
+                @if (Model.Correction.VerseOrderText.Any(v => v.OriginalText != v.Text))
+                {
+                    <span class="background-darkgreen color-white">ویرایش متن</span>
+                }
+                else
+                {
+                    <text>ویرایش متن ندارد</text>
+                }
+            </td>
+            
+        </tr>
+        <tr>
             <td>
                 زمان:
             </td>
