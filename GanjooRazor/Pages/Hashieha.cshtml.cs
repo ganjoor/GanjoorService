@@ -142,6 +142,8 @@ namespace GanjooRazor.Pages
 
         public GanjoorUserPublicProfile Profile { get; set; }
 
+        public UserContributionsViewModel Contributions { get; set; }
+
         public string Title { get; set; }
 
         public string HomeLink { get; set; }
@@ -198,6 +200,16 @@ namespace GanjooRazor.Pages
                 }
 
                 Profile = JsonConvert.DeserializeObject<GanjoorUserPublicProfile>(await responseUserProfile.Content.ReadAsStringAsync());
+
+
+                var responseContributions = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{filterUserId}");
+                if (!responseContributions.IsSuccessStatusCode)
+                {
+                    LastError = JsonConvert.DeserializeObject<string>(await responseContributions.Content.ReadAsStringAsync());
+                    return Page();
+                }
+
+                Contributions = JsonConvert.DeserializeObject<UserContributionsViewModel>(await responseContributions.Content.ReadAsStringAsync());
 
 
                 ViewData["Title"] = $"گنجور » حاشیه‌گذاری‌های {Profile.NickName}";

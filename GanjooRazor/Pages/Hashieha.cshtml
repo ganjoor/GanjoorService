@@ -145,6 +145,47 @@
                             {
                                 @Html.Raw(Model.Profile.Bio)
                             }
+
+                            @if (
+                           Model.Contributions.PoemCorrections > 0
+                           ||
+                           Model.Contributions.SectionCorrections > 0
+                           ||
+                           Model.Contributions.CatCorrections > 0
+                           ||
+                           Model.Contributions.SuggestedSongs > 0
+                           ||
+                           Model.Contributions.QuotedPoems > 0
+                           ||
+                           Model.Contributions.Comments > 0
+                           ||
+                           Model.Contributions.Recitations > 0
+                           ||
+                           Model.Contributions.MuseumLinks > 0
+                           ||
+                           Model.Contributions.PinterestLinks > 0
+                           ||
+                           Model.Contributions.PoetSpecLines > 0
+                           ||
+                           Model.Contributions.PoetPictures > 0
+                                )
+                            {
+                                
+                                <table>
+                                    <tr>
+                                        <th colspan="2">
+                                            <span class="align-center">آمار مشارکت‌ها:</span>
+                                        </th>
+                                    </tr>
+                                    @if(Model.Contributions.PoemCorrections > 0)
+                                    {
+                                        <tr>
+                                            <td><p>ویرایش‌های تأیید شده:</p></td>
+                                            <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.PoemCorrections)</p></td>
+                                        </tr>
+                                    }
+                                </table>
+                            }
                         </div>
                         <hr />
                     }
