@@ -30,6 +30,7 @@ namespace RMuseum.Controllers
         /// quoteds
         /// comments
         /// recitations
+        /// museumlinks
         /// </param>
         /// <param name="paging"></param>
         /// <param name="userId"></param>
@@ -101,6 +102,14 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
+                    case "museumlinks":
+                        {
+                            var res = await _service.GetApprovedMuseumLinksGroupedByDateAsync(paging, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
@@ -123,6 +132,7 @@ namespace RMuseum.Controllers
         /// quoteds
         /// comments
         /// recitations
+        /// museumlinks
         /// </param>
         /// <param name="paging"></param>
         /// <param name="day"></param>
@@ -194,7 +204,14 @@ namespace RMuseum.Controllers
                                 return BadRequest(res.ExceptionString);
                             pagedResult = res.Result;
                         }
-
+                        break;
+                    case "museumlinks":
+                        {
+                            var res = await _service.GetApprovedMuseumLinksGroupedByUserAsync(paging, day, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
                         break;
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
@@ -219,6 +236,7 @@ namespace RMuseum.Controllers
         /// quoteds
         /// comments
         /// recitations
+        /// museumlinks
         /// </param>        
         /// <returns></returns>
         [HttpGet("{dataType}")]
@@ -286,7 +304,14 @@ namespace RMuseum.Controllers
                                 return BadRequest(res.ExceptionString);
                             result = res.Result;
                         }
-
+                        break;
+                    case "museumlinks":
+                        {
+                            var res = await _service.GetApprovedMuseumLinksSummedUpStatsAsync();
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            result = res.Result;
+                        }
                         break;
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");

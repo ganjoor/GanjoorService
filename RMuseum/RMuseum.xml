@@ -774,6 +774,8 @@
             suggestedsongs
             quoteds
             comments
+            recitations
+            museumlinks
             </param>
             <param name="paging"></param>
             <param name="userId"></param>
@@ -791,6 +793,8 @@
             suggestedsongs
             quoteds
             comments
+            recitations
+            museumlinks
             </param>
             <param name="paging"></param>
             <param name="day"></param>
@@ -809,6 +813,8 @@
             suggestedsongs
             quoteds
             comments
+            recitations
+            museumlinks
             </param>        
             <returns></returns>
         </member>
@@ -16072,6 +16078,52 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedRecitationsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved recitations daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedRecitationsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved recitations grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedRecitationsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved recitations
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedMuseumLinksGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved museum links daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedMuseumLinksGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved museum links grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedMuseumLinksSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved museum links
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IDonationService">
             <summary>
             donation service
@@ -19113,6 +19165,52 @@
         <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedCommentsSummedUpStatsAsync">
             <summary>
             summed up stats of approved comments
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedRecitationsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved recitations daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedRecitationsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved recitations grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedRecitationsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved recitations
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedMuseumLinksGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved museum links daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedMuseumLinksGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved museum links grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedMuseumLinksSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved museum links
             </summary>
             <returns></returns>
         </member>
