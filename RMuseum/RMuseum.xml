@@ -776,6 +776,7 @@
             comments
             recitations
             museumlinks
+            pinterestlinks
             </param>
             <param name="paging"></param>
             <param name="userId"></param>
@@ -795,6 +796,7 @@
             comments
             recitations
             museumlinks
+            pinterestlinks
             </param>
             <param name="paging"></param>
             <param name="day"></param>
@@ -815,6 +817,7 @@
             comments
             recitations
             museumlinks
+            pinterestlinks
             </param>        
             <returns></returns>
         </member>
@@ -16121,6 +16124,29 @@
         <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedMuseumLinksSummedUpStatsAsync">
             <summary>
             summed up stats of approved museum links
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPinterestLinksGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved pinterest links daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPinterestLinksGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved pinterest links grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPinterestLinksSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved pinterest links
             </summary>
             <returns></returns>
         </member>

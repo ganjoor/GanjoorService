@@ -31,6 +31,7 @@ namespace RMuseum.Controllers
         /// comments
         /// recitations
         /// museumlinks
+        /// pinterestlinks
         /// </param>
         /// <param name="paging"></param>
         /// <param name="userId"></param>
@@ -110,6 +111,14 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
+                    case "pinterestlinks":
+                        {
+                            var res = await _service.GetApprovedPinterestLinksGroupedByDateAsync(paging, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
@@ -133,6 +142,7 @@ namespace RMuseum.Controllers
         /// comments
         /// recitations
         /// museumlinks
+        /// pinterestlinks
         /// </param>
         /// <param name="paging"></param>
         /// <param name="day"></param>
@@ -213,6 +223,14 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
+                    case "pinterestlinks":
+                        {
+                            var res = await _service.GetApprovedPinterestLinksGroupedByUserAsync(paging, day, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
@@ -237,6 +255,7 @@ namespace RMuseum.Controllers
         /// comments
         /// recitations
         /// museumlinks
+        /// pinterestlinks
         /// </param>        
         /// <returns></returns>
         [HttpGet("{dataType}")]
@@ -308,6 +327,14 @@ namespace RMuseum.Controllers
                     case "museumlinks":
                         {
                             var res = await _service.GetApprovedMuseumLinksSummedUpStatsAsync();
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            result = res.Result;
+                        }
+                        break;
+                    case "pinterestlinks":
+                        {
+                            var res = await _service.GetApprovedPinterestLinksSummedUpStatsAsync();
                             if (!string.IsNullOrEmpty(res.ExceptionString))
                                 return BadRequest(res.ExceptionString);
                             result = res.Result;
