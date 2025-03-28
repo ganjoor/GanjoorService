@@ -29,6 +29,7 @@ namespace RMuseum.Controllers
         /// suggestedsongs
         /// quoteds
         /// comments
+        /// recitations
         /// </param>
         /// <param name="paging"></param>
         /// <param name="userId"></param>
@@ -92,6 +93,14 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
+                    case "recitations":
+                        {
+                            var res = await _service.GetApprovedRecitationsGroupedByDateAsync(paging, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
@@ -113,6 +122,7 @@ namespace RMuseum.Controllers
         /// suggestedsongs
         /// quoteds
         /// comments
+        /// recitations
         /// </param>
         /// <param name="paging"></param>
         /// <param name="day"></param>
@@ -177,6 +187,15 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
+                    case "recitations":
+                        {
+                            var res = await _service.GetApprovedRecitationsGroupedByUserAsync(paging, day, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+
+                        break;
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
@@ -199,6 +218,7 @@ namespace RMuseum.Controllers
         /// suggestedsongs
         /// quoteds
         /// comments
+        /// recitations
         /// </param>        
         /// <returns></returns>
         [HttpGet("{dataType}")]
@@ -258,6 +278,15 @@ namespace RMuseum.Controllers
                                 return BadRequest(res.ExceptionString);
                             result = res.Result;
                         }
+                        break;
+                    case "recitations":
+                        {
+                            var res = await _service.GetApprovedRecitationsSummedUpStatsAsync();
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            result = res.Result;
+                        }
+
                         break;
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
