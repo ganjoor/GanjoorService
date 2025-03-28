@@ -774,10 +774,9 @@
             daily stats
             </summary>
             <param name="dataType">
-            poem/corrections
-            section/corrections
-            cat/corrections
-            cat/corrections
+            poemcorrections
+            sectioncorrections
+            catcorrections
             suggestedsongs
             quoteds
             comments
@@ -794,10 +793,9 @@
             datatype grouped by user
             </summary>
             <param name="dataType">
-            poem/corrections
-            section/corrections
-            cat/corrections
-            cat/corrections
+            poemcorrections
+            sectioncorrections
+            catcorrections
             suggestedsongs
             quoteds
             comments
@@ -817,10 +815,9 @@
             summed up stats of data
             </summary>
             <param name="dataType">
-            poem/corrections
-            section/corrections
-            cat/corrections
-            cat/corrections
+            poemcorrections
+            sectioncorrections
+            catcorrections
             suggestedsongs
             quoteds
             comments

@@ -40,10 +40,9 @@ namespace RMuseum.Controllers
         /// daily stats
         /// </summary>
         /// <param name="dataType">
-        /// poem/corrections
-        /// section/corrections
-        /// cat/corrections
-        /// cat/corrections
+        /// poemcorrections
+        /// sectioncorrections
+        /// catcorrections
         /// suggestedsongs
         /// quoteds
         /// comments
@@ -65,7 +64,7 @@ namespace RMuseum.Controllers
             {
                 switch (dataType)
                 {
-                    case "poem/corrections":
+                    case "poemcorrections":
                         {
                             var res = await _service.GetApprovedEditsGroupedByDateAsync(paging, userId);
                             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -73,7 +72,7 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
-                    case "section/corrections":
+                    case "sectioncorrections":
                         {
                             var res = await _service.GetApprovedSectionEditsGroupedByDateAsync(paging, userId);
                             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -81,7 +80,7 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
-                    case "cat/corrections":
+                    case "catcorrections":
                         {
                             var res = await _service.GetApprovedCatEditsGroupedByDateAsync(paging, userId);
                             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -153,10 +152,9 @@ namespace RMuseum.Controllers
         /// datatype grouped by user
         /// </summary>
         /// <param name="dataType">
-        /// poem/corrections
-        /// section/corrections
-        /// cat/corrections
-        /// cat/corrections
+        /// poemcorrections
+        /// sectioncorrections
+        /// catcorrections
         /// suggestedsongs
         /// quoteds
         /// comments
@@ -181,7 +179,7 @@ namespace RMuseum.Controllers
             {
                 switch(dataType)
                 {
-                    case "poem/corrections":
+                    case "poemcorrections":
                         {
                             var res = await _service.GetApprovedEditsGroupedByUserAsync(paging, day, userId);
                             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -189,7 +187,7 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
-                    case "section/corrections":
+                    case "sectioncorrections":
                         {
                             var res = await _service.GetApprovedSectionEditsGroupedByUserAsync(paging, day, userId);
                             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -197,7 +195,7 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
-                    case "cat/corrections":
+                    case "catcorrections":
                         {
                             var res = await _service.GetApprovedCatEditsGroupedByUserAsync(paging, day, userId);
                             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -284,10 +282,9 @@ namespace RMuseum.Controllers
         /// summed up stats of data
         /// </summary>
         /// <param name="dataType">
-        /// poem/corrections
-        /// section/corrections
-        /// cat/corrections
-        /// cat/corrections
+        /// poemcorrections
+        /// sectioncorrections
+        /// catcorrections
         /// suggestedsongs
         /// quoteds
         /// comments
@@ -308,7 +305,7 @@ namespace RMuseum.Controllers
             {
                 switch(dataType)
                 {
-                    case "poem/corrections":
+                    case "poemcorrections":
                         {
                             var res = await _service.GetApprrovedEditsSummedUpStatsAsync();
                             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -316,7 +313,7 @@ namespace RMuseum.Controllers
                             result = res.Result;
                         }
                         break;
-                    case "section/corrections":
+                    case "sectioncorrections":
                         {
                             var res = await _service.GetApprrovedSectionEditsSummedUpStatsAsync();
                             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -324,7 +321,7 @@ namespace RMuseum.Controllers
                             result = res.Result;
                         }
                         break;
-                    case "cat/corrections":
+                    case "catcorrections":
                         {
                             var res = await _service.GetApprrovedCatEditsSummedUpStatsAsync();
                             if (!string.IsNullOrEmpty(res.ExceptionString))
