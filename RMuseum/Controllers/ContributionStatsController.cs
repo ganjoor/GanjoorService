@@ -49,6 +49,8 @@ namespace RMuseum.Controllers
         /// recitations
         /// museumlinks
         /// pinterestlinks
+        /// poetspeclines
+        /// poetpix
         /// </param>
         /// <param name="paging"></param>
         /// <param name="userId"></param>
@@ -137,7 +139,21 @@ namespace RMuseum.Controllers
                         }
                         break;
                     case "poetspeclines":
+                        {
+                            var res = await _service.GetApprovedPoetSpecLinesGroupedByDateAsync(paging, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
                     case "poetpix":
+                        {
+                            var res = await _service.GetApprovedPoetPicturesGroupedByDateAsync(paging, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
@@ -253,7 +269,7 @@ namespace RMuseum.Controllers
                         break;
                     case "poetspeclines":
                         {
-                            var res = await _service.GetApprovedPoetSpecLinesGroupedByUserAsync(paging, userId);
+                            var res = await _service.GetApprovedPoetSpecLinesGroupedByUserAsync(paging, day, userId);
                             if (!string.IsNullOrEmpty(res.ExceptionString))
                                 return BadRequest(res.ExceptionString);
                             pagedResult = res.Result;
@@ -261,7 +277,7 @@ namespace RMuseum.Controllers
                         break;
                     case "poetpix":
                         {
-                            var res = await _service.GetApprovedGanjoorPoetPicturesGroupedByUserAsync(paging, userId);
+                            var res = await _service.GetApprovedPoetPicturesGroupedByUserAsync(paging, day, userId);
                             if (!string.IsNullOrEmpty(res.ExceptionString))
                                 return BadRequest(res.ExceptionString);
                             pagedResult = res.Result;
@@ -387,7 +403,7 @@ namespace RMuseum.Controllers
                         break;
                     case "poetpix":
                         {
-                            var res = await _service.GetApprovedGanjoorPoetPicturesSummedUpStatsAsync();
+                            var res = await _service.GetApprovedPoetPicturesSummedUpStatsAsync();
                             if (!string.IsNullOrEmpty(res.ExceptionString))
                                 return BadRequest(res.ExceptionString);
                             result = res.Result;

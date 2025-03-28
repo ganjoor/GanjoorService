@@ -227,12 +227,21 @@ namespace RMuseum.Services
         Task<RServiceResult<SummedUpViewModel>> GetApprovedPinterestLinksSummedUpStatsAsync();
 
         /// <summary>
-        /// approved poet spec lines grouped by user
+        /// approved poet spec lines daily
         /// </summary>
         /// <param name="paging"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedPoetSpecLinesGroupedByUserAsync(PagingParameterModel paging, Guid? userId);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedPoetSpecLinesGroupedByDateAsync(PagingParameterModel paging, Guid? userId);
+
+        /// <summary>
+        /// approved poet spec lines grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedPoetSpecLinesGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId);
 
         /// <summary>
         /// summed up stats of approved poet spec lines
@@ -241,18 +250,27 @@ namespace RMuseum.Services
         Task<RServiceResult<SummedUpViewModel>> GetApprovedPoetSpecLinesSummedUpStatsAsync();
 
         /// <summary>
-        /// approved poet spec pictures grouped by user
+        /// approved poet photos daily
         /// </summary>
         /// <param name="paging"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedGanjoorPoetPicturesGroupedByUserAsync(PagingParameterModel paging, Guid? userId);
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedPoetPicturesGroupedByDateAsync(PagingParameterModel paging, Guid? userId);
 
         /// <summary>
-        /// summed up stats of approved poet pictures
+        /// approved poet photos grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedPoetPicturesGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId);
+
+        /// <summary>
+        /// summed up stats of approved poet photos
         /// </summary>
         /// <returns></returns>
-        Task<RServiceResult<SummedUpViewModel>> GetApprovedGanjoorPoetPicturesSummedUpStatsAsync();
+        Task<RServiceResult<SummedUpViewModel>> GetApprovedPoetPicturesSummedUpStatsAsync();
 
     }
 }

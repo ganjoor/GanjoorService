@@ -1076,12 +1076,45 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// approved poet spec lines grouped by user
+        /// approved poet spec lines daily
         /// </summary>
         /// <param name="paging"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedPoetSpecLinesGroupedByUserAsync(PagingParameterModel paging, Guid? userId)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedPoetSpecLinesGroupedByDateAsync(PagingParameterModel paging, Guid? userId)
+        {
+            try
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>(
+                    await QueryablePaginator<GroupedByDateViewModel>.Paginate(
+                   _context.GanjoorPoetSuggestedSpecLines
+                        .Where(c =>
+                        c.Published
+                        &&
+                        (userId == null || c.SuggestedById == userId)
+                        )
+                        .GroupBy(a => a.PublicationDate.Date)
+                        .Select(a => new GroupedByDateViewModel()
+                        {
+                            Date = a.Key.Date.ToString(),
+                            Number = a.Count(),
+                        }).OrderByDescending(s => s.Date)
+                   , paging));
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// approved poet spec lines grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedPoetSpecLinesGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId)
         {
             try
             {
@@ -1095,15 +1128,16 @@ namespace RMuseum.Services.Implementation
                             user => user.Id,
                             (correction, user) => new
                             {
+                                correction.PublicationDate,
                                 UserId = user.Id,
                                 UserName = user.NickName,
-                                correction.Published,
+                                correction.Published
                             }
                         )
                         .Where(f =>
                          f.Published
                         &&
-                        (userId == null || f.UserId == userId))
+                        (day == null || f.PublicationDate.Date == day) && (userId == null || f.UserId == userId))
                         .GroupBy(a => new { a.UserId, a.UserName }).Select(a => new GroupedByUserViewModel()
                         {
                             UserId = a.Key.UserId,
@@ -1131,7 +1165,10 @@ namespace RMuseum.Services.Implementation
                     (
                     new SummedUpViewModel()
                     {
-                        Days = 0,
+                        Days = await _context.GanjoorPoetSuggestedSpecLines
+                        .Where(f => f.Published
+                        )
+                        .GroupBy(f => f.PublicationDate.Date).CountAsync(),
                         TotalCount = await _context.GanjoorPoetSuggestedSpecLines
 
                         .Where(f => f.Published
@@ -1151,14 +1188,46 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-
         /// <summary>
-        /// approved poet spec pictures grouped by user
+        /// approved poet photos daily
         /// </summary>
         /// <param name="paging"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedGanjoorPoetPicturesGroupedByUserAsync(PagingParameterModel paging, Guid? userId)
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedPoetPicturesGroupedByDateAsync(PagingParameterModel paging, Guid? userId)
+        {
+            try
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>(
+                    await QueryablePaginator<GroupedByDateViewModel>.Paginate(
+                   _context.GanjoorPoetSuggestedPictures
+                        .Where(c =>
+                        c.Published
+                        &&
+                        (userId == null || c.SuggestedById == userId)
+                        )
+                        .GroupBy(a => a.PublicationDate.Date)
+                        .Select(a => new GroupedByDateViewModel()
+                        {
+                            Date = a.Key.Date.ToString(),
+                            Number = a.Count(),
+                        }).OrderByDescending(s => s.Date)
+                   , paging));
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// approved poet photos grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedPoetPicturesGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId)
         {
             try
             {
@@ -1172,15 +1241,16 @@ namespace RMuseum.Services.Implementation
                             user => user.Id,
                             (correction, user) => new
                             {
+                                correction.PublicationDate,
                                 UserId = user.Id,
                                 UserName = user.NickName,
-                                correction.Published,
+                                correction.Published
                             }
                         )
                         .Where(f =>
                          f.Published
                         &&
-                        (userId == null || f.UserId == userId))
+                        (day == null || f.PublicationDate.Date == day) && (userId == null || f.UserId == userId))
                         .GroupBy(a => new { a.UserId, a.UserName }).Select(a => new GroupedByUserViewModel()
                         {
                             UserId = a.Key.UserId,
@@ -1197,10 +1267,10 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// summed up stats of approved poet pictures
+        /// summed up stats of approved poet photos
         /// </summary>
         /// <returns></returns>
-        public async Task<RServiceResult<SummedUpViewModel>> GetApprovedGanjoorPoetPicturesSummedUpStatsAsync()
+        public async Task<RServiceResult<SummedUpViewModel>> GetApprovedPoetPicturesSummedUpStatsAsync()
         {
             try
             {
@@ -1208,7 +1278,10 @@ namespace RMuseum.Services.Implementation
                     (
                     new SummedUpViewModel()
                     {
-                        Days = 0,
+                        Days = await _context.GanjoorPoetSuggestedPictures
+                        .Where(f => f.Published
+                        )
+                        .GroupBy(f => f.PublicationDate.Date).CountAsync(),
                         TotalCount = await _context.GanjoorPoetSuggestedPictures
 
                         .Where(f => f.Published
@@ -1227,6 +1300,7 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<SummedUpViewModel>(null, e.ToString());
             }
         }
+
 
 
         /// <summary>

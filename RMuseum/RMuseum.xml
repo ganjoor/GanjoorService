@@ -783,6 +783,8 @@
             recitations
             museumlinks
             pinterestlinks
+            poetspeclines
+            poetpix
             </param>
             <param name="paging"></param>
             <param name="userId"></param>
@@ -4578,6 +4580,18 @@
             <inheritdoc />
         </member>
         <member name="M:RMuseum.Migrations.CatCorrectionPlusPageId.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.SpecPublicationDates">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.SpecPublicationDates.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.SpecPublicationDates.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.SpecPublicationDates.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -16240,11 +16254,20 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPoetSpecLinesGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPoetSpecLinesGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved poet spec lines daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPoetSpecLinesGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
             <summary>
             approved poet spec lines grouped by user
             </summary>
             <param name="paging"></param>
+            <param name="day"></param>
             <param name="userId"></param>
             <returns></returns>
         </member>
@@ -16254,17 +16277,26 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedGanjoorPoetPicturesGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPoetPicturesGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
             <summary>
-            approved poet spec pictures grouped by user
+            approved poet photos daily
             </summary>
             <param name="paging"></param>
             <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedGanjoorPoetPicturesSummedUpStatsAsync">
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPoetPicturesGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
             <summary>
-            summed up stats of approved poet pictures
+            approved poet photos grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPoetPicturesSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved poet photos
             </summary>
             <returns></returns>
         </member>
@@ -19388,11 +19420,20 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedPoetSpecLinesGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedPoetSpecLinesGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved poet spec lines daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedPoetSpecLinesGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
             <summary>
             approved poet spec lines grouped by user
             </summary>
             <param name="paging"></param>
+            <param name="day"></param>
             <param name="userId"></param>
             <returns></returns>
         </member>
@@ -19402,17 +19443,26 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedGanjoorPoetPicturesGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedPoetPicturesGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
             <summary>
-            approved poet spec pictures grouped by user
+            approved poet photos daily
             </summary>
             <param name="paging"></param>
             <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedGanjoorPoetPicturesSummedUpStatsAsync">
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedPoetPicturesGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
             <summary>
-            summed up stats of approved poet pictures
+            approved poet photos grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedPoetPicturesSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved poet photos
             </summary>
             <returns></returns>
         </member>
