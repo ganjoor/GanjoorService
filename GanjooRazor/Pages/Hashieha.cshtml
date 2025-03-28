@@ -177,32 +177,60 @@
                                             <span class="align-center">آمار مشارکت‌ها:</span>
                                         </th>
                                     </tr>
+                                    @if (Model.Contributions.Comments > 0)
+                                    {
+                                        <tr>
+                                            <td><p>حاشیه‌ها:</p></td>
+                                            <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.Comments)</p></td>
+                                        </tr>
+                                    }
                                     @if(Model.Contributions.PoemCorrections > 0)
                                     {
                                         <tr>
-                                            <td><p>ویرایش‌های تأیید شده:</p></td>
+                                            <td><p><a href="https://blog.ganjoor.net/1400/05/23/notes-for-suggesting-corrections/">ویرایش‌ها</a>ی تأیید شده:</p></td>
                                             <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.PoemCorrections)</p></td>
                                         </tr>
                                     }
                                     @if (Model.Contributions.SectionCorrections > 0)
                                     {
                                         <tr>
-                                            <td><p>ویرایش‌های قطعات تأیید شده:</p></td>
+                                            <td><p><a href="https://blog.ganjoor.net/1401/02/30/section-editor/">ویرایش‌های قطعات</a> تأیید شده:</p></td>
                                             <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.SectionCorrections)</p></td>
                                         </tr>
                                     }
                                     @if (Model.Contributions.CatCorrections > 0)
                                     {
                                         <tr>
-                                            <td><p>ویرایش‌های بخش‌های تأیید شده:</p></td>
+                                            <td><p><a href="https://blog.ganjoor.net/1404/01/05/cat-editor/">ویرایش‌های بخش</a>‌های تأیید شده:</p></td>
                                             <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.CatCorrections)</p></td>
                                         </tr>
                                     }
                                     @if (Model.Contributions.SuggestedSongs > 0)
                                     {
                                         <tr>
-                                            <td><p>آهنگ‌های پیشنهادی تأیید شده:</p></td>
+                                            <td><p><a href="https://blog.ganjoor.net/1395/06/28/bptags/">ترانه</a>‌های مرتبط تأیید شده:</p></td>
                                             <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.SuggestedSongs)</p></td>
+                                        </tr>
+                                    }
+                                    @if (Model.Contributions.QuotedPoems > 0)
+                                    {
+                                        <tr>
+                                            <td><p><a href="https://blog.ganjoor.net/1402/11/06/suggest-quotes/">مشق</a>‌های پیشنهادی تأیید شده:</p></td>
+                                            <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.QuotedPoems)</p></td>
+                                        </tr>
+                                    }
+                                    @if (Model.Contributions.Recitations > 0)
+                                    {
+                                        <tr>
+                                            <td><p><a href="https://ava.ganjoor.net/about">خوانش</a>‌های تأیید شده:</p></td>
+                                            <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.Recitations)</p></td>
+                                        </tr>
+                                    }
+                                    @if (Model.Contributions.MuseumLinks > 0)
+                                    {
+                                        <tr>
+                                            <td><p>ارتباطات پیشنهادی <a href="https://museum.ganjoor.net">گنجینه</a>:</p></td>
+                                            <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.MuseumLinks)</p></td>
                                         </tr>
                                     }
                                 </table>
