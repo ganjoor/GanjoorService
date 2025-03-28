@@ -233,6 +233,13 @@
                                             <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.MuseumLinks)</p></td>
                                         </tr>
                                     }
+                                    @if (Model.Contributions.PinterestLinks > 0)
+                                    {
+                                        <tr>
+                                                            <td><p>ارتباطات پیشنهادی <a href="https://blog.ganjoor.net/1399/01/29/pinterest/">تصاویر خارجی</a>:</p></td>
+                                            <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.PinterestLinks)</p></td>
+                                        </tr>
+                                    }
                                 </table>
                             }
                         </div>
