@@ -304,5 +304,16 @@ namespace RMuseum.Services.Implementation
         {
             return $"{dateTime.ToPersianYearMonthDay().Day.ToPersianNumbers()}م {PersianCulture.GetPersianMonthName(dateTime.ToPersianYearMonthDay().Month)} {dateTime.ToPersianYearMonthDay().Year.ToPersianNumbers()}";
         }
+
+        /// <summary>
+        /// short date
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        public static string FormatInShortDate(DateTime dateTime)
+        {
+            return $"{dateTime.ToPersianYearMonthDay().Year.ToPersianNumbers()}/{dateTime.ToPersianYearMonthDay().Month.ToString().PadLeft(2, '0').ToPersianNumbers()}/{dateTime.ToPersianYearMonthDay().Day.ToString().PadLeft(2, '0').ToPersianNumbers()}";
+        }
+
     }
 }

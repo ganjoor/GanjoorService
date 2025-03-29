@@ -1,0 +1,39 @@
+﻿@model GanjooRazor.Pages._GroupedByDateViewTablePartialModel
+@using DNTPersianUtils.Core
+@using System.Globalization
+@{
+}
+@if (Model.Array == null || Model.Array.Length == 0) return;
+
+<table class="stats" id="grouped-by-date">
+    <thead>
+        <tr class="h">
+            <td class="c1">ردیف</td>
+            <td class="c2">تاریخ</td>
+            <td class="c3">تعداد</td>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Array.Length; i++)
+        {
+            @if (i % 2 == 0)
+            {
+                <tr class="e">
+                    <td class="c1">@((i+1).ToPersianNumbers())</td>
+                    <td class="c2">@RMuseum.Services.Implementation.LanguageUtils.FormatInShortDate(DateTime.Parse(Model.Array[i].Date))</td>
+                    <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Array[i].Number)</td>
+                </tr>
+
+            }
+            else
+            {
+                <tr>
+                    <td class="c1">@((i + 1).ToPersianNumbers())</td>
+                    <td class="c2">@RMuseum.Services.Implementation.LanguageUtils.FormatInShortDate(DateTime.Parse(Model.Array[i].Date))</td>
+                    <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Array[i].Number)</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+

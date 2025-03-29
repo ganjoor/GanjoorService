@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
@@ -7,18 +7,10 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using DNTPersianUtils.Core;
-using RMuseum.Models.Auth.ViewModel;
-using RMuseum.Services.Implementation;
-using RSecurityBackend.Models.Auth.Memory;
-using RSecurityBackend.Models.Generic;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Net;
-using System.Xml.Linq;
-using System;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Generic.ViewModels;
 
 namespace GanjooRazor.Pages
 {
@@ -28,7 +20,6 @@ namespace GanjooRazor.Pages
         public List<GanjoorPoetViewModel> Poets { get; set; }
         public int PoetId { get; set; }
         public GanjoorPoetCompleteViewModel Poet { get; set; }
-        public string PagingToolsHtml { get; set; }
         public string LastError { get; set; }
 
         /// <summary>
@@ -143,6 +134,33 @@ namespace GanjooRazor.Pages
            
 
             return Page();
+        }
+
+        public async Task<ActionResult> OnGetGroupedByDateAsync(string dataType)
+        {
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/daily?PageNumber=1&PageSize=30");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+            }
+            var result = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GroupedByDateViewModel>>();
+            if (result == null)
+            {
+                return new BadRequestObjectResult("خطا در دسترسی به آمار ویرایش‌ها");
+            }
+
+            return new PartialViewResult()
+            {
+                ViewName = "_GroupedByDateViewPartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _GroupedByDateViewPartialModel()
+                    {
+                        Array = result.ToArray()
+                    }
+                }
+            };
         }
 
         /// <summary>

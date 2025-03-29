@@ -16,6 +16,7 @@
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/js/chart.js"></script>
     <script src="/js/bk.js?version=72"></script>
     <script>
         var cookieValue = getCookie("playerScrollLock");
@@ -104,13 +105,10 @@
                     <h2>
                          گنجور » مشارکت‌های کاربران
                     </h2>
-                   
-                    <p>محتوا</p>
+
+                    <div id="wordcounts-placeholder">
+                    </div>
                 </div>
-
-
-
-                @Html.Raw(Model.PagingToolsHtml)
 
             </div>
 
@@ -122,7 +120,7 @@
 
         <script src="/js/vaabd.js?version=10"></script>
 
-        @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
+        @if (ViewData["GoogleAnalyticsCode"] != null && !string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
         {
             <!-- Global site tag (gtag.js) - Google Analytics -->
             <script async src="https://www.googletagmanager.com/gtag/js?id=@(ViewData["GoogleAnalyticsCode"])"></script>
@@ -136,7 +134,34 @@
         }
     }
 
+    <script>
+        function loadGroupedByDate(dataType) {
+            var divParent = document.getElementById('wordcounts-placeholder');
+            var imgElementId = 'loadingwordcountsimg';
+            divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="remove-this-wordcounts"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
+            $.ajax({
+                type: "GET",
+                url: '?Handler=GroupedByDate&dataType=' + dataType,
+                error: function () {
+                    if (document.getElementById("remove-this-wordcounts") != null) {
+                        document.getElementById("remove-this-wordcounts").remove();
+                    }
+                },
+                success: function (data) {
+                    if (document.getElementById("remove-this-wordcounts") != null) {
+                        document.getElementById("remove-this-wordcounts").remove();
+                        if (document.getElementById("load-word-counts") != null) {
+                            document.getElementById("load-word-counts").remove();
+                        }
+                        $(data).appendTo(divParent);
+                        plotChart('grouped-by-date');
+                    }
+                },
+            });
+        }
 
+        loadGroupedByDate('poemcorrections');
+    </script>
 
 </body>
 </html>

@@ -22095,6 +22095,13 @@
             <param name="dateTime"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.LanguageUtils.FormatInShortDate(System.DateTime)">
+            <summary>
+            short date
+            </summary>
+            <param name="dateTime"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.Implementation.MusicCatalogueService">
             <summary>
             Music Catalgue Service Implementation
