@@ -53,6 +53,33 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// users grouped by signup date
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetUsersGroupedByDateAsync(PagingParameterModel paging)
+        {
+            try
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>(
+                    await QueryablePaginator<GroupedByDateViewModel>.Paginate(
+                   _context.Users
+                        .GroupBy(a => a.CreateDate.Date)
+                        .Select(a => new GroupedByDateViewModel()
+                        {
+                            Date = a.Key.Date.ToString(),
+                            Number = a.Count(),
+                        }).OrderByDescending(s => s.Date)
+                   , paging));
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+
+        /// <summary>
         /// approved edits daily
         /// </summary>
         /// <param name="paging"></param>

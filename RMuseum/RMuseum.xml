@@ -785,7 +785,8 @@
             pinterestlinks
             poetspeclines
             poetpix
-            usernotes
+            usernotes,
+            users
             </param>
             <param name="paging"></param>
             <param name="userId"></param>
@@ -16055,6 +16056,13 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetUsersGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            users grouped by signup date
+            </summary>
+            <param name="paging"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
             <summary>
             approved edits daily
@@ -19242,6 +19250,13 @@
             user contributions
             </summary>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetUsersGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
+            <summary>
+            users grouped by signup date
+            </summary>
+            <param name="paging"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">

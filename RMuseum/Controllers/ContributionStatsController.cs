@@ -57,7 +57,8 @@ namespace RMuseum.Controllers
         /// pinterestlinks
         /// poetspeclines
         /// poetpix
-        /// usernotes
+        /// usernotes,
+        /// users
         /// </param>
         /// <param name="paging"></param>
         /// <param name="userId"></param>
@@ -169,6 +170,19 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
+                    case "users":
+                        {
+                            if(userId != null)
+                            {
+                                return BadRequest($"useriId parameter is not supported for this dataType");
+                            }
+                            var res = await _service.GetUsersGroupedByDateAsync(paging);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
+
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }

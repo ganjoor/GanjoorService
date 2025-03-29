@@ -19,6 +19,14 @@ namespace RMuseum.Services
         Task<RServiceResult<UserContributionsViewModel>> GetUserContributionsAsync(Guid userId);
 
         /// <summary>
+        /// users grouped by signup date
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetUsersGroupedByDateAsync(PagingParameterModel paging);
+
+
+        /// <summary>
         /// approved edits daily
         /// </summary>
         /// <param name="paging"></param>
