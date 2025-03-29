@@ -8,12 +8,12 @@
         {
             <div class="stat-item">
                 <div class="stat-value" id="totalDays">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Summary.Days)</div>
-                <div class="stat-label">روز فعالیت</div>
+                <div class="stat-label">روز مشارکت</div>
             </div>
         }
         <div class="stat-item">
             <div class="stat-value" id="totalCorrections">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Summary.TotalCount)</div>
-            <div class="stat-label">تعداد کل ویرایش‌ها</div>
+            <div class="stat-label">تعداد کل مشارکت‌ها</div>
         </div>
         @if (Model.Summary.UserIds != -1)
         {
