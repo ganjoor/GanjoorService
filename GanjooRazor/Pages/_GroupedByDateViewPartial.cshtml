@@ -1,4 +1,28 @@
 ﻿@model GanjooRazor.Pages._GroupedByDateViewPartialModel
 @{
 }
+@if (Model.Summary != null)
+{
+    <div class="stats-section">
+        @if (Model.Summary.Days != -1)
+        {
+            <div class="stat-item">
+                <div class="stat-value" id="totalDays">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Summary.Days)</div>
+                <div class="stat-label">روز فعالیت</div>
+            </div>
+        }
+        <div class="stat-item">
+            <div class="stat-value" id="totalCorrections">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Summary.TotalCount)</div>
+            <div class="stat-label">تعداد کل ویرایش‌ها</div>
+        </div>
+        @if (Model.Summary.UserIds != -1)
+        {
+        <div class="stat-item">
+            <div class="stat-value" id="totalUsers">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Summary.UserIds)</div>
+            <div class="stat-label">کاربران مشارکت کننده</div>
+        </div>
+        }
+    </div>
+}
+
 <partial name="_GroupedByDateViewTablePartial" model="Model.TableModel">

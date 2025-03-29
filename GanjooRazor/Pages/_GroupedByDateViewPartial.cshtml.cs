@@ -9,6 +9,8 @@ namespace GanjooRazor.Pages
 
         public GroupedByUserViewModel[] Users { get; set; }
 
+        public SummedUpViewModel Summary { get; set; }
+
         public _GroupedByDateViewTablePartialModel TableModel
         {
             get
