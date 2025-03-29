@@ -140,6 +140,9 @@
                                     <a href="/Admin/ExamineUser?id=@Model.Profile.Id">#</a>
                                 }
                             </p>
+                            <p>
+                                <small>تاریخ پیوستن: <strong>@RMuseum.Services.Implementation.LanguageUtils.FormatDate(Model.Contributions.CreateDate)</strong></small>
+                            </p>
 
                             @if (!string.IsNullOrEmpty(Model.Profile.Bio))
                             {
