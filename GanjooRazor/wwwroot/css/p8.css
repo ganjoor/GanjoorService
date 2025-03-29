@@ -724,6 +724,16 @@ td.c2 {
     text-align: center;
 }
 
+.stats-section-no-grid {
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    display: grid;
+    gap: 15px;
+    text-align: center;
+}
+
+
 .stat-item {
     padding: 15px;
     border-radius: 8px;

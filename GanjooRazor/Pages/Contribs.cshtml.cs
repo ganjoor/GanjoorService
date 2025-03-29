@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Generic.ViewModels;
 
 namespace GanjooRazor.Pages
@@ -175,6 +174,7 @@ namespace GanjooRazor.Pages
                 {
                     Model = new _GroupedByDateViewPartialModel()
                     {
+                        DataType = dataType,
                         Days = days.ToArray(),
                         Users = users == null ? null :users.ToArray(),
                         Summary = summary
