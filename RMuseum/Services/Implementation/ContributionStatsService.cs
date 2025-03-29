@@ -1301,6 +1301,121 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// approved user notes
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedUserNotesGroupedByDateAsync(PagingParameterModel paging, Guid? userId)
+        {
+            try
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>(
+                    await QueryablePaginator<GroupedByDateViewModel>.Paginate(
+                   _context.UserNotes
+                        .Where(c =>
+                        c.Status == Models.Artifact.PublishStatus.Published && c.NoteType == Models.Note.RNoteType.Public
+                        &&
+                        (userId == null || c.RAppUserId == userId)
+                        )
+                        .GroupBy(a => a.DateTime.Date)
+                        .Select(a => new GroupedByDateViewModel()
+                        {
+                            Date = a.Key.Date.ToString(),
+                            Number = a.Count(),
+                        }).OrderByDescending(s => s.Date)
+                   , paging));
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// approved user notes grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedUserNotesGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId)
+        {
+            try
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>(
+                    await QueryablePaginator<GroupedByUserViewModel>.Paginate(
+                        _context.UserNotes
+                        .Join
+                        (
+                            _context.Users,
+                            correction => correction.RAppUserId,
+                            user => user.Id,
+                            (correction, user) => new
+                            {
+                                correction.DateTime,
+                                UserId = user.Id,
+                                UserName = user.NickName,
+                                correction.Status,
+                                correction.NoteType
+                            }
+                        )
+                        .Where(f =>
+                         f.Status == Models.Artifact.PublishStatus.Published && f.NoteType == Models.Note.RNoteType.Public
+                        &&
+                        (day == null || f.DateTime.Date == day) && (userId == null || f.UserId == userId))
+                        .GroupBy(a => new { a.UserId, a.UserName }).Select(a => new GroupedByUserViewModel()
+                        {
+                            UserId = a.Key.UserId,
+                            UserName = a.Key.UserName,
+                            Number = a.Count(),
+                        }).OrderByDescending(s => s.Number)
+                        , paging));
+
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// summed up stats of approved user notes
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<SummedUpViewModel>> GetApprovedUserNotesSummedUpStatsAsync()
+        {
+            try
+            {
+                return new RServiceResult<SummedUpViewModel>
+                    (
+                    new SummedUpViewModel()
+                    {
+                        Days = await _context.UserNotes
+                        .Where(f => f.Status == Models.Artifact.PublishStatus.Published && f.NoteType == Models.Note.RNoteType.Public
+                        )
+                        .GroupBy(f => f.DateTime.Date).CountAsync(),
+                        TotalCount = await _context.UserNotes
+
+                        .Where(f => f.Status == Models.Artifact.PublishStatus.Published && f.NoteType == Models.Note.RNoteType.Public
+                        )
+                        .CountAsync(),
+                        UserIds = await _context.UserNotes
+                        .Where(f => f.Status == Models.Artifact.PublishStatus.Published && f.NoteType == Models.Note.RNoteType.Public
+                        )
+                        .GroupBy(f => f.RAppUserId).CountAsync(),
+                    }
+                    );
+
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<SummedUpViewModel>(null, e.ToString());
+            }
+        }
+
+
 
 
         /// <summary>

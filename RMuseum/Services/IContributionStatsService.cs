@@ -272,5 +272,29 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<SummedUpViewModel>> GetApprovedPoetPicturesSummedUpStatsAsync();
 
+        /// <summary>
+        /// approved user notes
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedUserNotesGroupedByDateAsync(PagingParameterModel paging, Guid? userId);
+
+        /// <summary>
+        /// approved user notes grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedUserNotesGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId);
+
+        /// <summary>
+        /// summed up stats of approved user notes
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<SummedUpViewModel>> GetApprovedUserNotesSummedUpStatsAsync();
+
+
     }
 }
