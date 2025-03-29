@@ -17,7 +17,7 @@
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="/lib/jquery/dist/jquery.min.js"></script>
     <script src="/js/chart.js"></script>
-    <script src="/js/bk.js?version=72"></script>
+    <script src="/js/bk.js?version=73"></script>
     <script>
         var cookieValue = getCookie("playerScrollLock");
         var playerScrollLock = cookieValue === "true";
@@ -146,8 +146,8 @@
                                     if (document.getElementById("remove-days-placeholder") != null) {
                                         document.getElementById("remove-days-placeholder").remove();
                                         $(data).appendTo(divParent);
-                                        plotChart('grouped-by-date');
-                                        plotChart('grouped-by-user');
+                                        plotChart('grouped-by-date', 100);
+                                        plotChart('grouped-by-user', 100);
 
                                         var elements = document.querySelectorAll('.poemtablinks.active');
                                         for (var i = 0; i < elements.length; i++) {

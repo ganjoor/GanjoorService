@@ -1779,7 +1779,7 @@ function persianToEnglishNumber(str) {
     return str.replace(/[۰-۹]/g, d => persianDigits.indexOf(d));
 }
 
-function plotChart(tableId) {
+function plotChart(tableId, maxCols = 9) {
     let table = document.getElementById(tableId);
     if (!table) return;
 
@@ -1792,7 +1792,7 @@ function plotChart(tableId) {
     table.querySelectorAll("tbody tr").forEach(row => {
         let cols = row.querySelectorAll("td");
         if (cols.length >= 3) {
-            if (values.length > 9) return;
+            if (values.length > maxCols) return;
             let rowNumber = persianToEnglishNumber(cols[0].innerText.trim());
             if (rowNumber === "0") return; // Ignore rows with row number ۰
 
