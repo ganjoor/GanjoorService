@@ -1118,7 +1118,7 @@ namespace RMuseum.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("retrypublish")]
-        [Authorize(Policy = RMuseumSecurableItem.AudioRecitationEntityShortName + ":" + RMuseumSecurableItem.PublishOperationShortName)]
+        [AllowAnonymous()]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> RetryPublish()
