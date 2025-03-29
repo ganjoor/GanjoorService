@@ -66,5 +66,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// poet pictures
         /// </summary>
         public int PoetPictures { get; set; }
+
+        /// <summary>
+        /// public user notes
+        /// </summary>
+        public int PublicUserNotes { get; set; }
     }
 }

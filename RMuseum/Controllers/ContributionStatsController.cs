@@ -57,6 +57,7 @@ namespace RMuseum.Controllers
         /// pinterestlinks
         /// poetspeclines
         /// poetpix
+        /// usernotes
         /// </param>
         /// <param name="paging"></param>
         /// <param name="userId"></param>
@@ -160,6 +161,14 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
+                    case "usernotes":
+                        {
+                            var res = await _service.GetApprovedUserNotesGroupedByDateAsync(paging, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
@@ -185,6 +194,7 @@ namespace RMuseum.Controllers
         /// pinterestlinks
         /// poetspeclines
         /// poetpix
+        /// usernotes
         /// </param>
         /// <param name="paging"></param>
         /// <param name="day"></param>
@@ -289,6 +299,14 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
+                    case "usernotes":
+                        {
+                            var res = await _service.GetApprovedUserNotesGroupedByUserAsync(paging, day, userId);
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            pagedResult = res.Result;
+                        }
+                        break;
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
@@ -315,6 +333,7 @@ namespace RMuseum.Controllers
         /// pinterestlinks
         /// poetspeclines
         /// poetpix
+        /// usernotes
         /// </param>        
         /// <returns></returns>
         [HttpGet("{dataType}/summary")]
@@ -410,6 +429,14 @@ namespace RMuseum.Controllers
                     case "poetpix":
                         {
                             var res = await _service.GetApprovedPoetPicturesSummedUpStatsAsync();
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            result = res.Result;
+                        }
+                        break;
+                    case "usernotes":
+                        {
+                            var res = await _service.GetApprovedUserNotesSummedUpStatsAsync();
                             if (!string.IsNullOrEmpty(res.ExceptionString))
                                 return BadRequest(res.ExceptionString);
                             result = res.Result;

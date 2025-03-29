@@ -41,6 +41,7 @@ namespace RMuseum.Services.Implementation
                         PinterestLinks = await _context.PinterestLinks.Where(c => c.HumanReviewed && c.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved && c.SuggestedById == userId).CountAsync(),
                         PoetSpecLines = await _context.GanjoorPoetSuggestedSpecLines.Where(c => c.Published && c.SuggestedById == userId).CountAsync(),
                         PoetPictures = await _context.GanjoorPoetSuggestedPictures.Where(c => c.Published && c.SuggestedById == userId).CountAsync(),
+                        PublicUserNotes = await _context.UserNotes.Where(c => c.Status == Models.Artifact.PublishStatus.Published && c.NoteType == Models.Note.RNoteType.Public && c.RAppUserId == userId).CountAsync()
                     }
                     );
                   

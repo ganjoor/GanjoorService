@@ -785,6 +785,7 @@
             pinterestlinks
             poetspeclines
             poetpix
+            usernotes
             </param>
             <param name="paging"></param>
             <param name="userId"></param>
@@ -806,6 +807,7 @@
             pinterestlinks
             poetspeclines
             poetpix
+            usernotes
             </param>
             <param name="paging"></param>
             <param name="day"></param>
@@ -828,6 +830,7 @@
             pinterestlinks
             poetspeclines
             poetpix
+            usernotes
             </param>        
             <returns></returns>
         </member>
@@ -13520,6 +13523,11 @@
             poet pictures
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.PublicUserNotes">
+            <summary>
+            public user notes
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.UserSongSuggestionsHistory">
             <summary>
             history of suggested songs by a user
@@ -16297,6 +16305,29 @@
         <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPoetPicturesSummedUpStatsAsync">
             <summary>
             summed up stats of approved poet photos
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedUserNotesGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved user notes
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedUserNotesGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved user notes grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedUserNotesSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved user notes
             </summary>
             <returns></returns>
         </member>
@@ -19463,6 +19494,29 @@
         <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedPoetPicturesSummedUpStatsAsync">
             <summary>
             summed up stats of approved poet photos
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedUserNotesGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved user notes
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedUserNotesGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved user notes grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedUserNotesSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved user notes
             </summary>
             <returns></returns>
         </member>
