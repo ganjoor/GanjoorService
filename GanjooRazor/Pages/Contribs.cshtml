@@ -1,0 +1,144 @@
+﻿@page
+@model GanjooRazor.Pages.ContribsModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+        گنجور » مشارکت‌های کاربران
+    </title>
+
+    <link href="/css/p8.css?version=79" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
+    <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/js/bk.js?version=72"></script>
+    <script>
+        var cookieValue = getCookie("playerScrollLock");
+        var playerScrollLock = cookieValue === "true";
+
+        cookieValue = getCookie("stickyEnabled");
+        var stickyEnabled = cookieValue != "false";
+    </script>
+</head>
+<body>
+
+    @if (!string.IsNullOrEmpty(Model.LastError))
+    {
+        @Html.Raw(Model.LastError)
+    }
+    else
+    {
+        <div id="hdr2" class="clearfix">
+            <h1><a href="/" title="گنجور"><img src="/image/gdapk.png" alt="گنجور" /></a></h1>
+            <div class="actionbox">
+                <form action="/search" method="get" id="searchform">
+                    <input type="text" name="s" id="s" class="inputText" value="" placeholder="جستجو" />
+                    <input type="hidden" name="es" id="es" value="1" />
+                    <select name="author" id="author" onchange="onSelectedPoetChanged()">
+
+                        @{
+                            if (Model.PoetId != 0)
+                            {
+                                <option value="0">در آثار همهٔ سخنوران</option>
+                            }
+                            else
+                            {
+                                <option value="0" selected>در آثار همهٔ سخنوران</option>
+                            }
+
+                            if (Model.Poets != null)
+                            {
+                                foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
+                                {
+                                    if (poet.Id == Model.PoetId)
+                                    {
+                                        <option value="@poet.Id" selected>@poet.Nickname</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@poet.Id">@poet.Nickname</option>
+                                    }
+
+                                }
+                            }
+                        }
+                    </select>
+                    @{
+                        if (Model.Poet != null)
+                        {
+                            <select name="cat" id="cat" style="width:150px">
+                                <option value="0" selected>در همهٔ بخشها</option>
+                                @{
+                                    foreach (var gran in Model.Poet.Cat.Ancestors)
+                                    {
+                                        <option value="@gran.Id">@gran.Title</option>
+                                    }
+                                    <option value="@Model.Poet.Cat.Id">@Model.Poet.Cat.Title</option>
+                                    foreach (var child in Model.Poet.Cat.Children)
+                                    {
+                                        <option value="@child.Id">@child.Title</option>
+                                    }
+                                }
+                            </select>
+                        }
+                    }
+
+                    <input type="submit" value="بیاب" />
+                </form>
+            </div><!-- .actionbox -->
+        </div>
+
+        <!-- #hdr2 -->
+
+        <div id="fa">
+
+            <partial name="_InlineLoginPartial" model="Model" />
+
+            <div id="maincnt">
+                <div class="poem">
+                    <h2>
+                         گنجور » مشارکت‌های کاربران
+                    </h2>
+                   
+                    <p>محتوا</p>
+                </div>
+
+
+
+                @Html.Raw(Model.PagingToolsHtml)
+
+            </div>
+
+
+            <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true}) />
+
+        </div>
+
+
+        <script src="/js/vaabd.js?version=10"></script>
+
+        @if (!string.IsNullOrEmpty(ViewData["GoogleAnalyticsCode"].ToString()))
+        {
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=@(ViewData["GoogleAnalyticsCode"])"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag() { dataLayer.push(arguments); }
+                gtag('js', new Date());
+
+                gtag('config', '@ViewData["GoogleAnalyticsCode"]');
+            </script>
+        }
+    }
+
+
+
+</body>
+</html>
+
+
