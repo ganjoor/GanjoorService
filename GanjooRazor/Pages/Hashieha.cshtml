@@ -171,6 +171,8 @@
                            Model.Contributions.PoetSpecLines > 0
                            ||
                            Model.Contributions.PoetPictures > 0
+                           ||
+                           Model.Contributions.PublicUserNotes > 0
                                 )
                             {
                                 
@@ -255,6 +257,13 @@
                                         <tr>
                                             <td><p>تصاویر <a href="https://blog.ganjoor.net/1400/11/28/photos/">چهرهٔ پیشنهادی</a>:</p></td>
                                             <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.PoetPictures)</p></td>
+                                        </tr>
+                                    }
+                                    @if (Model.Contributions.PublicUserNotes > 0)
+                                    {
+                                        <tr>
+                                            <td><p><a href="https://museum.ganjoor.net/notes">یادداشت‌های عمومی گنجینه</a>:</p></td>
+                                            <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.PublicUserNotes)</p></td>
                                         </tr>
                                     }
                                 </table>
