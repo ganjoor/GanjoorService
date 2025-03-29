@@ -12,7 +12,7 @@
         گنجور » مشارکت‌های کاربران
     </title>
 
-    <link href="/css/p8.css?version=79" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=80" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="/lib/jquery/dist/jquery.min.js"></script>
@@ -25,26 +25,6 @@
         cookieValue = getCookie("stickyEnabled");
         var stickyEnabled = cookieValue != "false";
     </script>
-    <style>
-
-        .stats-section {
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 30px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            text-align: center;
-        }
-
-        .stat-item {
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-
-    </style>
 </head>
 <body>
 
@@ -126,59 +106,21 @@
                          گنجور » مشارکت‌های کاربران
                     </h2>
 
-                    <script>
-                        function loadGroupedByDate(dataType) {
-                            var divParent = document.getElementById('days-placeholder');
-                            divParent.innerHTML = '<div class="bnumdiv" id="remove-days-placeholder"><img src="/image/loading.gif" alt="بارگذاری"/></div>';
-                            $.ajax({
-                                type: "GET",
-                                url: '?Handler=GroupedByDate&dataType=' + dataType,
-                                error: function (e) {
-                                    if (document.getElementById("remove-days-placeholder") != null) {
-                                        document.getElementById("remove-days-placeholder").remove();
-                                    }
-                                    if (e.responseText == null)
-                                        alert(e);
-                                    else
-                                        alert(e.responseText);
-                                },
-                                success: function (data) {
-                                    if (document.getElementById("remove-days-placeholder") != null) {
-                                        document.getElementById("remove-days-placeholder").remove();
-                                        $(data).appendTo(divParent);
-                                        plotChart('grouped-by-date', 100);
-                                        plotChart('grouped-by-user', 100);
-
-                                        var elements = document.querySelectorAll('.poemtablinks.active');
-                                        for (var i = 0; i < elements.length; i++) {
-                                            elements[i].classList.remove('active');
-                                        }
-                                        var dataTypeButton = document.getElementById(dataType);
-                                        if (dataTypeButton) {
-                                            dataTypeButton.classList.add('active');
-                                        }
-                                    }
-                                },
-                            });
-                        }
-
-                    </script>
-
                     <div class="poempretab" id="pretab"></div>
                     <div class="poemtab" id="tab-items">
-                        <div class="poemtablinks" id="poemcorrections"><a role="button" class="actionlink" onclick="loadGroupedByDate('poemcorrections')">ویرایش‌های متن</a></div>
-                        <div class="poemtablinks" id="sectioncorrections"><a role="button" class="actionlink" onclick="loadGroupedByDate('sectioncorrections')">ویرایش‌های قطعات</a></div>
-                        <div class="poemtablinks" id="catcorrections"><a role="button" class="actionlink" onclick="loadGroupedByDate('catcorrections')">ویرایش‌های بخش‌ها</a></div>
-                        <div class="poemtablinks" id="suggestedsongs"><a role="button" class="actionlink" onclick="loadGroupedByDate('suggestedsongs')">ترانه‌های مرتبط</a></div>
-                        <div class="poemtablinks" id="quoteds"><a role="button" class="actionlink" onclick="loadGroupedByDate('quoteds')">مشق شعر</a></div>
-                        <div class="poemtablinks" id="discussions"><a role="button" class="actionlink" onclick="loadGroupedByDate('discussions')">حاشیه‌ها</a></div>
-                        <div class="poemtablinks" id="recitations"><a role="button" class="actionlink" onclick="loadGroupedByDate('recitations')">خوانش‌ها</a></div>
-                        <div class="poemtablinks" id="museumlinks"><a role="button" class="actionlink" onclick="loadGroupedByDate('museumlinks')">ارتباطات گنجینه</a></div>
-                        <div class="poemtablinks" id="pinterestlinks"><a role="button" class="actionlink" onclick="loadGroupedByDate('pinterestlinks')">تصاویر خارجی</a></div>
-                        <div class="poemtablinks" id="poetspeclines"><a role="button" class="actionlink" onclick="loadGroupedByDate('poetspeclines')">نکات چهره‌ها</a></div>
-                        <div class="poemtablinks" id="poetpix"><a role="button" class="actionlink" onclick="loadGroupedByDate('poetpix')">چهره‌ها</a></div>
-                        <div class="poemtablinks" id="usernotes"><a role="button" class="actionlink" onclick="loadGroupedByDate('usernotes')">یادداشت‌های گنجینه</a></div>
-                        <div class="poemtablinks" id="users"><a role="button" class="actionlink" onclick="loadGroupedByDate('users')">کاربران</a></div>
+                        <div class="poemtablinks" id="poemcorrections"><a role="button" class="actionlink" onclick="loadContributions('poemcorrections')">ویرایش‌های متن</a></div>
+                        <div class="poemtablinks" id="sectioncorrections"><a role="button" class="actionlink" onclick="loadContributions('sectioncorrections')">ویرایش‌های قطعات</a></div>
+                        <div class="poemtablinks" id="catcorrections"><a role="button" class="actionlink" onclick="loadContributions('catcorrections')">ویرایش‌های بخش‌ها</a></div>
+                        <div class="poemtablinks" id="suggestedsongs"><a role="button" class="actionlink" onclick="loadContributions('suggestedsongs')">ترانه‌های مرتبط</a></div>
+                        <div class="poemtablinks" id="quoteds"><a role="button" class="actionlink" onclick="loadContributions('quoteds')">مشق شعر</a></div>
+                        <div class="poemtablinks" id="discussions"><a role="button" class="actionlink" onclick="loadContributions('discussions')">حاشیه‌ها</a></div>
+                        <div class="poemtablinks" id="recitations"><a role="button" class="actionlink" onclick="loadContributions('recitations')">خوانش‌ها</a></div>
+                        <div class="poemtablinks" id="museumlinks"><a role="button" class="actionlink" onclick="loadContributions('museumlinks')">ارتباطات گنجینه</a></div>
+                        <div class="poemtablinks" id="pinterestlinks"><a role="button" class="actionlink" onclick="loadContributions('pinterestlinks')">تصاویر خارجی</a></div>
+                        <div class="poemtablinks" id="poetspeclines"><a role="button" class="actionlink" onclick="loadContributions('poetspeclines')">نکات چهره‌ها</a></div>
+                        <div class="poemtablinks" id="poetpix"><a role="button" class="actionlink" onclick="loadContributions('poetpix')">چهره‌ها</a></div>
+                        <div class="poemtablinks" id="usernotes"><a role="button" class="actionlink" onclick="loadContributions('usernotes')">یادداشت‌های گنجینه</a></div>
+                        <div class="poemtablinks" id="users"><a role="button" class="actionlink" onclick="loadContributions('users')">کاربران</a></div>
                     </div>
                     <div id="days-placeholder">
                     </div>
@@ -209,7 +151,7 @@
     }
 
     <script>
-        loadGroupedByDate('poemcorrections');
+        loadContributions('poemcorrections');
     </script>
 
 </body>

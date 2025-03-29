@@ -1873,3 +1873,37 @@ function deletePoetFromSearch(poetId, poetName) {
     window.location.href = currentUrl.toString();
 }
 
+function loadContributions(dataType) {
+    var divParent = document.getElementById('days-placeholder');
+    divParent.innerHTML = '<div class="bnumdiv" id="remove-days-placeholder"><img src="/image/loading.gif" alt="بارگذاری"/></div>';
+    $.ajax({
+        type: "GET",
+        url: '?Handler=GroupedByDate&dataType=' + dataType,
+        error: function (e) {
+            if (document.getElementById("remove-days-placeholder") != null) {
+                document.getElementById("remove-days-placeholder").remove();
+            }
+            if (e.responseText == null)
+                alert(e);
+            else
+                alert(e.responseText);
+        },
+        success: function (data) {
+            if (document.getElementById("remove-days-placeholder") != null) {
+                document.getElementById("remove-days-placeholder").remove();
+                $(data).appendTo(divParent);
+                plotChart('grouped-by-date', 100);
+                plotChart('grouped-by-user', 100);
+
+                var elements = document.querySelectorAll('.poemtablinks.active');
+                for (var i = 0; i < elements.length; i++) {
+                    elements[i].classList.remove('active');
+                }
+                var dataTypeButton = document.getElementById(dataType);
+                if (dataTypeButton) {
+                    dataTypeButton.classList.add('active');
+                }
+            }
+        },
+    });
+}
