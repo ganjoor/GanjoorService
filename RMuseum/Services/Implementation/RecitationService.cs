@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualBasic.Devices;
 using RMuseum.DbContext;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
@@ -1044,7 +1043,7 @@ namespace RMuseum.Services.Implementationa
                                             bool replace = false;
                                             if (session.SessionType == UploadSessionType.ReplaceAudio)
                                             {
-                                                Recitation existing = await context.Recitations.Where(r => r.OwnerId == session.UseId && r.GanjoorPostId == audio.PoemId && r.AudioArtist == defProfile.ArtistName && r.RecitationType == recitationType).FirstOrDefaultAsync();
+                                                Recitation existing = await context.Recitations.Where(r => r.OwnerId == session.UseId && r.GanjoorPostId == audio.PoemId && r.AudioArtist == defProfile.ArtistName && r.RecitationType == recitationType && r.ReviewStatus == AudioReviewStatus.Approved).FirstOrDefaultAsync();
                                                 if (existing != null)
                                                 {
                                                     replace = true;
