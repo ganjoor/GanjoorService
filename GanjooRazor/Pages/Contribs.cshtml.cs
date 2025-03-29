@@ -176,7 +176,7 @@ namespace GanjooRazor.Pages
                     Model = new _GroupedByDateViewPartialModel()
                     {
                         Days = days.ToArray(),
-                        Users = users.ToArray(),
+                        Users = users == null ? null :users.ToArray(),
                         Summary = summary
                     }
                 }
