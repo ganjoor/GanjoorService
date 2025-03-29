@@ -146,13 +146,19 @@ namespace GanjooRazor.Pages
             }
             var days = JArray.Parse(await responseDays.Content.ReadAsStringAsync()).ToObject<List<GroupedByDateViewModel>>();
 
-            var responseUsers = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/by/user?PageNumber=1&PageSize=30");
+            List<GroupedByUserViewModel> users = null;
 
-            if (!responseUsers.IsSuccessStatusCode)
+            if(dataType != "users")
             {
-                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseUsers.Content.ReadAsStringAsync()));
+                var responseUsers = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/by/user?PageNumber=1&PageSize=30");
+
+                if (!responseUsers.IsSuccessStatusCode)
+                {
+                    return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseUsers.Content.ReadAsStringAsync()));
+                }
+                users = JArray.Parse(await responseUsers.Content.ReadAsStringAsync()).ToObject<List<GroupedByUserViewModel>>();
+
             }
-            List<GroupedByUserViewModel> users = dataType == "users" ? null : JArray.Parse(await responseUsers.Content.ReadAsStringAsync()).ToObject<List<GroupedByUserViewModel>>();
 
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/summary");
 

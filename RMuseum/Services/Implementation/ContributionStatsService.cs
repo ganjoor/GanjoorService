@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.Generic.ViewModels;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Services;
 using RSecurityBackend.Services.Implementation;
 using System;
 using System.Linq;
@@ -228,11 +230,14 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
+                var systemUserId = (Guid)(await _appUserService.FindUserByEmail(systemEmail)).Result.Id;
+
                 return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>(
                     await QueryablePaginator<GroupedByDateViewModel>.Paginate(
                    _context.GanjoorPoemSectionCorrections
                         .Where(c =>
-                        c.AffectedThePoem == true
+                        c.AffectedThePoem == true && c.UserId != systemUserId
                         &&
                         (userId == null || c.UserId == userId)
                         )
@@ -261,6 +266,9 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
+                var systemUserId = (Guid)(await _appUserService.FindUserByEmail(systemEmail)).Result.Id;
+
                 return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>(
                     await QueryablePaginator<GroupedByUserViewModel>.Paginate(
                         _context.GanjoorPoemSectionCorrections
@@ -278,7 +286,7 @@ namespace RMuseum.Services.Implementation
                             }
                         )
                         .Where(f =>
-                         f.AffectedThePoem
+                         f.AffectedThePoem && f.UserId != systemUserId
                         &&
                         (day == null || f.Date.Date == day) && (userId == null || f.UserId == userId))
                         .GroupBy(a => new { a.UserId, a.UserName }).Select(a => new GroupedByUserViewModel()
@@ -304,21 +312,24 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
+                var systemUserId = (Guid)(await _appUserService.FindUserByEmail(systemEmail)).Result.Id;
+
                 return new RServiceResult<SummedUpViewModel>
                     (
                     new SummedUpViewModel()
                     {
                         Days = await _context.GanjoorPoemSectionCorrections
-                        .Where(f => f.AffectedThePoem
+                        .Where(f => f.AffectedThePoem && f.UserId != systemUserId
                         )
                         .GroupBy(f => f.Date.Date).CountAsync(),
                         TotalCount = await _context.GanjoorPoemSectionCorrections
 
-                        .Where(f => f.AffectedThePoem
+                        .Where(f => f.AffectedThePoem && f.UserId != systemUserId
                         )
                         .CountAsync(),
                         UserIds = await _context.GanjoorPoemSectionCorrections
-                        .Where(f => f.AffectedThePoem
+                        .Where(f => f.AffectedThePoem && f.UserId != systemUserId
                         )
                         .GroupBy(f => f.UserId).CountAsync(),
                     }
@@ -908,11 +919,14 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
+                var systemUserId = (Guid)(await _appUserService.FindUserByEmail(systemEmail)).Result.Id;
+
                 return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>(
                     await QueryablePaginator<GroupedByDateViewModel>.Paginate(
                    _context.GanjoorLinks
                         .Where(c =>
-                        c.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
+                        c.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved && c.SuggestedById != systemUserId
                         &&
                         (userId == null || c.SuggestedById == userId)
                         )
@@ -941,6 +955,9 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
+                var systemUserId = (Guid)(await _appUserService.FindUserByEmail(systemEmail)).Result.Id;
+
                 return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>(
                     await QueryablePaginator<GroupedByUserViewModel>.Paginate(
                         _context.GanjoorLinks
@@ -958,7 +975,7 @@ namespace RMuseum.Services.Implementation
                             }
                         )
                         .Where(f =>
-                         f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
+                         f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved && f.UserId != systemUserId
                         &&
                         (day == null || f.SuggestionDate.Date == day) && (userId == null || f.UserId == userId))
                         .GroupBy(a => new { a.UserId, a.UserName }).Select(a => new GroupedByUserViewModel()
@@ -984,21 +1001,23 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                string systemEmail = $"{Configuration.GetSection("Ganjoor")["SystemEmail"]}";
+                var systemUserId = (Guid)(await _appUserService.FindUserByEmail(systemEmail)).Result.Id;
                 return new RServiceResult<SummedUpViewModel>
                     (
                     new SummedUpViewModel()
                     {
                         Days = await _context.GanjoorLinks
-                        .Where(f => f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
+                        .Where(f => f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved && f.SuggestedById != systemUserId
                         )
                         .GroupBy(f => f.SuggestionDate.Date).CountAsync(),
                         TotalCount = await _context.GanjoorLinks
 
-                        .Where(f => f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
+                        .Where(f => f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved && f.SuggestedById != systemUserId
                         )
                         .CountAsync(),
                         UserIds = await _context.GanjoorLinks
-                        .Where(f => f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved
+                        .Where(f => f.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved && f.SuggestedById != systemUserId
                         )
                         .GroupBy(f => f.SuggestedById).CountAsync(),
                     }
@@ -1477,14 +1496,30 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         protected readonly RMuseumDbContext _context;
 
+        /// <summary>
+        /// Configuration
+        /// </summary>
+        protected IConfiguration Configuration { get; }
+
+        /// <summary>
+        /// IAppUserService instance
+        /// </summary>
+        protected IAppUserService _appUserService;
+
+
+
 
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="context"></param>
-        public ContributionStatsService(RMuseumDbContext context)
+        /// <param name="configuration"></param>
+        /// <param name="appUserService"></param>
+        public ContributionStatsService(RMuseumDbContext context, IConfiguration configuration, IAppUserService appUserService)
         {
             _context = context;
+            Configuration = configuration;
+            _appUserService = appUserService;
         }
     }
 }

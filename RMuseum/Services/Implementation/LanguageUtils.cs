@@ -312,7 +312,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public static string FormatInShortDate(DateTime dateTime)
         {
-            return $"{dateTime.ToPersianYearMonthDay().Year.ToPersianNumbers()}/{dateTime.ToPersianYearMonthDay().Month.ToString().PadLeft(2, '0').ToPersianNumbers()}/{dateTime.ToPersianYearMonthDay().Day.ToString().PadLeft(2, '0').ToPersianNumbers()}";
+            return dateTime.Year < 623 ? "" : $"{dateTime.ToPersianYearMonthDay().Year.ToPersianNumbers()}/{dateTime.ToPersianYearMonthDay().Month.ToString().PadLeft(2, '0').ToPersianNumbers()}/{dateTime.ToPersianYearMonthDay().Day.ToString().PadLeft(2, '0').ToPersianNumbers()}";
         }
 
     }

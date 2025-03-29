@@ -19553,11 +19553,23 @@
             Database Context
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.#ctor(RMuseum.DbContext.RMuseumDbContext)">
+        <member name="P:RMuseum.Services.Implementation.ContributionStatsService.Configuration">
+            <summary>
+            Configuration
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.ContributionStatsService._appUserService">
+            <summary>
+            IAppUserService instance
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.#ctor(RMuseum.DbContext.RMuseumDbContext,Microsoft.Extensions.Configuration.IConfiguration,RSecurityBackend.Services.IAppUserService)">
             <summary>
             constructor
             </summary>
             <param name="context"></param>
+            <param name="configuration"></param>
+            <param name="appUserService"></param>
         </member>
         <member name="T:RMuseum.Services.Implementation.CorrectionReviewResultConvertor">
             <summary>
