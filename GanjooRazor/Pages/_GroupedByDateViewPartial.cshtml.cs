@@ -5,7 +5,7 @@ namespace GanjooRazor.Pages
 {
     public class _GroupedByDateViewPartialModel : PageModel
     {
-        public GroupedByDateViewModel[] Array { get; set; }
+        public GroupedByDateViewModel[] Days { get; set; }
 
         public _GroupedByDateViewTablePartialModel TableModel
         {
@@ -13,7 +13,7 @@ namespace GanjooRazor.Pages
             {
                 return new _GroupedByDateViewTablePartialModel()
                 {
-                    Array = Array
+                    Days = Days
                 };
             }
         }

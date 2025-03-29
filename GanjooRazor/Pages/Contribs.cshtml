@@ -106,7 +106,7 @@
                          گنجور » مشارکت‌های کاربران
                     </h2>
 
-                    <div id="wordcounts-placeholder">
+                    <div id="days-placeholder">
                     </div>
                 </div>
 
@@ -136,20 +136,20 @@
 
     <script>
         function loadGroupedByDate(dataType) {
-            var divParent = document.getElementById('wordcounts-placeholder');
+            var divParent = document.getElementById('days-placeholder');
             var imgElementId = 'loadingwordcountsimg';
-            divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="remove-this-wordcounts"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
+            divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="remove-days-placeholder"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
             $.ajax({
                 type: "GET",
                 url: '?Handler=GroupedByDate&dataType=' + dataType,
                 error: function () {
-                    if (document.getElementById("remove-this-wordcounts") != null) {
-                        document.getElementById("remove-this-wordcounts").remove();
+                    if (document.getElementById("remove-days-placeholder") != null) {
+                        document.getElementById("remove-days-placeholder").remove();
                     }
                 },
                 success: function (data) {
-                    if (document.getElementById("remove-this-wordcounts") != null) {
-                        document.getElementById("remove-this-wordcounts").remove();
+                    if (document.getElementById("remove-days-placeholder") != null) {
+                        document.getElementById("remove-days-placeholder").remove();
                         if (document.getElementById("load-word-counts") != null) {
                             document.getElementById("load-word-counts").remove();
                         }

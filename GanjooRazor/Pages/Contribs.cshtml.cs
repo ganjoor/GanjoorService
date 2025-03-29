@@ -157,7 +157,7 @@ namespace GanjooRazor.Pages
                 {
                     Model = new _GroupedByDateViewPartialModel()
                     {
-                        Array = result.ToArray()
+                        Days = result.ToArray()
                     }
                 }
             };
