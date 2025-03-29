@@ -832,6 +832,7 @@
             poetspeclines
             poetpix
             usernotes
+            users (Days and UserIds are invalid)
             </param>        
             <returns></returns>
         </member>
@@ -16056,6 +16057,12 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetUsersSummedUpStatsAsync">
+            <summary>
+            summed up stats of users (Days and UserIds are invalid)
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IContributionStatsService.GetUsersGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
             users grouped by signup date
@@ -19257,6 +19264,12 @@
             users grouped by signup date
             </summary>
             <param name="paging"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetUsersSummedUpStatsAsync">
+            <summary>
+            summed up stats of users (Days and UserIds are invalid)
+            </summary>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">

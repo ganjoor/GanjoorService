@@ -10,7 +10,6 @@ using RSecurityBackend.Models.Generic;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -348,6 +347,7 @@ namespace RMuseum.Controllers
         /// poetspeclines
         /// poetpix
         /// usernotes
+        /// users (Days and UserIds are invalid)
         /// </param>        
         /// <returns></returns>
         [HttpGet("{dataType}/summary")]
@@ -451,6 +451,14 @@ namespace RMuseum.Controllers
                     case "usernotes":
                         {
                             var res = await _service.GetApprovedUserNotesSummedUpStatsAsync();
+                            if (!string.IsNullOrEmpty(res.ExceptionString))
+                                return BadRequest(res.ExceptionString);
+                            result = res.Result;
+                        }
+                        break;
+                    case "users":
+                        {
+                            var res = await _service.GetUsersSummedUpStatsAsync();
                             if (!string.IsNullOrEmpty(res.ExceptionString))
                                 return BadRequest(res.ExceptionString);
                             result = res.Result;

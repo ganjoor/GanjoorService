@@ -78,6 +78,32 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// summed up stats of users (Days and UserIds are invalid)
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<SummedUpViewModel>> GetUsersSummedUpStatsAsync()
+        {
+            try
+            {
+                return new RServiceResult<SummedUpViewModel>
+                    (
+                    new SummedUpViewModel()
+                    {
+                        Days = -1,
+                        TotalCount = await _context.Users.CountAsync(),
+                        UserIds = -1,
+                    }
+                    );
+
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<SummedUpViewModel>(null, e.ToString());
+            }
+        }
+
+
 
         /// <summary>
         /// approved edits daily

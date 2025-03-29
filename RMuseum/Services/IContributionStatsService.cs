@@ -19,6 +19,12 @@ namespace RMuseum.Services
         Task<RServiceResult<UserContributionsViewModel>> GetUserContributionsAsync(Guid userId);
 
         /// <summary>
+        /// summed up stats of users (Days and UserIds are invalid)
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<SummedUpViewModel>> GetUsersSummedUpStatsAsync();
+
+        /// <summary>
         /// users grouped by signup date
         /// </summary>
         /// <param name="paging"></param>
