@@ -10,6 +10,7 @@ using RSecurityBackend.Models.Generic;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -30,10 +31,15 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> GetUserContributionsAsync(Guid userId)
         {
-            var res = await _service.GetUserContributionsAsync(userId);
-            if(!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
+            var cacheKey = $"user/contributions/{DateTime.Now.Date}/{userId}";
+            if (!_memoryCache.TryGetValue(cacheKey, out UserContributionsViewModel userContributions))
+            {
+                var res = await _service.GetUserContributionsAsync(userId);
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                userContributions = res.Result;
+            }
+            return Ok(userContributions);
         }
 
         /// <summary>
