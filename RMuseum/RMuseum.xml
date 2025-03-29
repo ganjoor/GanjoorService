@@ -13470,6 +13470,11 @@
             user id
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.CreateDate">
+            <summary>
+            create date
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.PoemCorrections">
             <summary>
             poem corrections

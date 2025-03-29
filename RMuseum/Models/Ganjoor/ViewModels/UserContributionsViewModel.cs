@@ -13,6 +13,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public Guid Id { get; set; }
 
         /// <summary>
+        /// create date
+        /// </summary>
+        public DateTime CreateDate { get; set; }
+
+        /// <summary>
         /// poem corrections
         /// </summary>
         public int PoemCorrections { get; set; }

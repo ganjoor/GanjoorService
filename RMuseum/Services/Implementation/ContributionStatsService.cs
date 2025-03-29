@@ -32,6 +32,7 @@ namespace RMuseum.Services.Implementation
                     new UserContributionsViewModel()
                     {
                         Id = userId,
+                        CreateDate = (await _context.Users.Where(u => u.Id == userId).SingleAsync()).CreateDate,
                         PoemCorrections = await _context.GanjoorPoemCorrections.Where(c => c.AffectedThePoem && c.UserId == userId).CountAsync(),
                         SectionCorrections = await _context.GanjoorPoemSectionCorrections.Where(c => c.AffectedThePoem && c.UserId == userId).CountAsync(),
                         CatCorrections = await _context.GanjoorCatCorrections.Where(c => c.Result == Models.Ganjoor.CorrectionReviewResult.Approved && c.UserId == userId).CountAsync(),
