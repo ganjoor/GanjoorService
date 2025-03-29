@@ -50,7 +50,7 @@ namespace RMuseum.Controllers
         /// catcorrections
         /// suggestedsongs
         /// quoteds
-        /// comments
+        /// discussions
         /// recitations
         /// museumlinks
         /// pinterestlinks
@@ -113,7 +113,7 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
-                    case "comments":
+                    case "discussions":
                         {
                             var res = await _service.GetApprovedCommentsGroupedByDateAsync(paging, userId);
                             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -201,7 +201,7 @@ namespace RMuseum.Controllers
         /// catcorrections
         /// suggestedsongs
         /// quoteds
-        /// comments
+        /// discussions
         /// recitations
         /// museumlinks
         /// pinterestlinks
@@ -264,7 +264,7 @@ namespace RMuseum.Controllers
                             pagedResult = res.Result;
                         }
                         break;
-                    case "comments":
+                    case "discussions":
                         {
                             var res = await _service.GetApprovedCommentsGroupedByUserAsync(paging, day, userId);
                             if (!string.IsNullOrEmpty(res.ExceptionString))
@@ -340,7 +340,7 @@ namespace RMuseum.Controllers
         /// catcorrections
         /// suggestedsongs
         /// quoteds
-        /// comments
+        /// discussions
         /// recitations
         /// museumlinks
         /// pinterestlinks
@@ -400,7 +400,7 @@ namespace RMuseum.Controllers
                             result = res.Result;
                         }
                         break;
-                    case "comments":
+                    case "discussions":
                         {
                             var res = await _service.GetApprovedCommentsSummedUpStatsAsync();
                             if (!string.IsNullOrEmpty(res.ExceptionString))
