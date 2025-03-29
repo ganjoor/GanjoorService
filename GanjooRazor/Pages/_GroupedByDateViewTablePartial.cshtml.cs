@@ -6,5 +6,7 @@ namespace GanjooRazor.Pages
     public class _GroupedByDateViewTablePartialModel : PageModel
     {
         public GroupedByDateViewModel[] Days { get; set; }
+
+        public GroupedByUserViewModel[] Users { get; set; }
     }
 }

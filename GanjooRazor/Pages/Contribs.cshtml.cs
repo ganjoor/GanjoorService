@@ -138,16 +138,28 @@ namespace GanjooRazor.Pages
 
         public async Task<ActionResult> OnGetGroupedByDateAsync(string dataType)
         {
-            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/daily?PageNumber=1&PageSize=30");
+            var responseDays = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/daily?PageNumber=1&PageSize=30");
+
+            if (!responseDays.IsSuccessStatusCode)
+            {
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseDays.Content.ReadAsStringAsync()));
+            }
+            var days = JArray.Parse(await responseDays.Content.ReadAsStringAsync()).ToObject<List<GroupedByDateViewModel>>();
+            if (days == null)
+            {
+                return new BadRequestObjectResult("خطا در دسترسی به آمار روزانه");
+            }
+
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/by/user?PageNumber=1&PageSize=30");
 
             if (!response.IsSuccessStatusCode)
             {
                 return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
             }
-            var result = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GroupedByDateViewModel>>();
-            if (result == null)
+            var users = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GroupedByUserViewModel>>();
+            if (users == null)
             {
-                return new BadRequestObjectResult("خطا در دسترسی به آمار ویرایش‌ها");
+                return new BadRequestObjectResult("خطا در دسترسی به آمار کاربران");
             }
 
             return new PartialViewResult()
@@ -157,7 +169,8 @@ namespace GanjooRazor.Pages
                 {
                     Model = new _GroupedByDateViewPartialModel()
                     {
-                        Days = result.ToArray()
+                        Days = days.ToArray(),
+                        Users = users.ToArray(),
                     }
                 }
             };

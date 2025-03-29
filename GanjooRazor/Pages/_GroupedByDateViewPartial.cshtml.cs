@@ -7,13 +7,16 @@ namespace GanjooRazor.Pages
     {
         public GroupedByDateViewModel[] Days { get; set; }
 
+        public GroupedByUserViewModel[] Users { get; set; }
+
         public _GroupedByDateViewTablePartialModel TableModel
         {
             get
             {
                 return new _GroupedByDateViewTablePartialModel()
                 {
-                    Days = Days
+                    Days = Days,
+                    Users = Users,
                 };
             }
         }

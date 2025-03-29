@@ -37,3 +37,37 @@
     </tbody>
 </table>
 
+@if (Model.Users == null || Model.Users.Length == 0) return;
+
+<table class="stats" id="grouped-by-user">
+    <thead>
+        <tr class="h">
+            <td class="c1">ردیف</td>
+            <td class="c2">کاربر</td>
+            <td class="c3">تعداد</td>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Users.Length; i++)
+        {
+            @if (i % 2 == 0)
+            {
+                <tr class="e">
+                    <td class="c1">@((i + 1).ToPersianNumbers())</td>
+                    <td class="c2"><a href="/hashieha/?userid=@Model.Users[i].UserId">@Model.Users[i].UserName</a></td>
+                    <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Users[i].Number)</td>
+                </tr>
+
+            }
+            else
+            {
+                <tr>
+                    <td class="c1">@((i + 1).ToPersianNumbers())</td>
+                    <td class="c2"><a href="/hashieha/?userid=@Model.Users[i].UserId">@Model.Users[i].UserName</a></td>
+                    <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Users[i].Number)</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
