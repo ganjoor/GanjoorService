@@ -5,24 +5,26 @@
 }
 @if (Model.Days == null || Model.Days.Length == 0) return;
 
-<div class="pagination-controls">
-    @if(Model.DaysPagination.hasPreviousPage)
-    {
-        <button id="dailyPrevPage" class="btn btn-primary" onclick="loadDailyPage('prev')">صفحهٔ قبل</button>
-    }
-    else
-    {
-        <button id="dailyPrevPage" class="btn btn-primary" onclick="loadDailyPage('prev')" disabled>صفحهٔ قبل</button>
-    }
-    <span id="dailyCurrentPage">صفحهٔ @Model.DaysPagination.currentPage.ToPersianNumbers() از @Model.DaysPagination.totalPages.ToPersianNumbers()</span>
-    @if (Model.DaysPagination.hasNextPage)
-    {
-        <button id="dailyNextPage" class="btn btn-primary" onclick="loadDailyPage('next')">صفحهٔ بعد</button>
-    }
-    else
-    {
-        <button id="dailyNextPage" class="btn btn-primary" onclick="loadDailyPage('next')" disabled>صفحهٔ بعد</button>
-    }
+<div id="days">
+    <div class="pagination-controls">
+        @if (Model.DaysPagination.hasPreviousPage)
+        {
+            <button id="dailyPrevPage" class="btn btn-primary" onclick="loadDailyPage('prev')">صفحهٔ قبل</button>
+        }
+        else
+        {
+            <button id="dailyPrevPage" class="btn btn-primary" disabled>صفحهٔ قبل</button>
+        }
+        <span id="dailyCurrentPage">صفحهٔ @Model.DaysPagination.currentPage.ToPersianNumbers() از @Model.DaysPagination.totalPages.ToPersianNumbers()</span>
+        @if (Model.DaysPagination.hasNextPage)
+        {
+            <button id="dailyNextPage" class="btn btn-primary" onclick="loadDailyPage('next')">صفحهٔ بعد</button>
+        }
+        else
+        {
+            <button id="dailyNextPage" class="btn btn-primary" disabled>صفحهٔ بعد</button>
+        }
+    </div>
 </div>
 <table class="stats" id="grouped-by-date">
     <thead>
@@ -38,7 +40,7 @@
             @if (i % 2 == 0)
             {
                 <tr class="e">
-                    <td class="c1">@((i+1).ToPersianNumbers())</td>
+                    <td class="c1">@((i + 1).ToPersianNumbers())</td>
                     <td class="c2">@RMuseum.Services.Implementation.LanguageUtils.FormatInShortDate(DateTime.Parse(Model.Days[i].Date))</td>
                     <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Days[i].Number)</td>
                 </tr>
