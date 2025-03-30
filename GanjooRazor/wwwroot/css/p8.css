@@ -744,6 +744,14 @@ td.c2 {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+pagination-controls {
+    margin: 20px 0;
+    gap: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 
 @media(max-width: 768px) {
     .b {

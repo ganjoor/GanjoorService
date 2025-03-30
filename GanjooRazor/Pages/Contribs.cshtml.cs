@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using RMuseum.Models.Generic.ViewModels;
+using RSecurityBackend.Models.Generic;
+using System.Linq;
 
 namespace GanjooRazor.Pages
 {
@@ -146,8 +148,8 @@ namespace GanjooRazor.Pages
             var days = JArray.Parse(await responseDays.Content.ReadAsStringAsync()).ToObject<List<GroupedByDateViewModel>>();
 
             List<GroupedByUserViewModel> users = null;
-
-            if(dataType != "users")
+            PaginationMetadata usersPagination = null;
+            if (dataType != "users")
             {
                 var responseUsers = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/by/user?PageNumber=1&PageSize=30");
 
@@ -156,7 +158,7 @@ namespace GanjooRazor.Pages
                     return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseUsers.Content.ReadAsStringAsync()));
                 }
                 users = JArray.Parse(await responseUsers.Content.ReadAsStringAsync()).ToObject<List<GroupedByUserViewModel>>();
-
+                usersPagination = JsonConvert.DeserializeObject<PaginationMetadata>(responseDays.Headers.GetValues("paging-headers").Single());
             }
 
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/summary");
@@ -176,7 +178,9 @@ namespace GanjooRazor.Pages
                     {
                         DataType = dataType,
                         Days = days.ToArray(),
+                        DaysPagination = JsonConvert.DeserializeObject<PaginationMetadata>(responseDays.Headers.GetValues("paging-headers").Single()),
                         Users = users == null ? null :users.ToArray(),
+                        UsersPagination = usersPagination,
                         Summary = summary
                     }
                 }

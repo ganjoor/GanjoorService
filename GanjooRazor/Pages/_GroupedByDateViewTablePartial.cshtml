@@ -5,6 +5,11 @@
 }
 @if (Model.Days == null || Model.Days.Length == 0) return;
 
+<div class="pagination-controls">
+    <button id="dailyPrevPage" class="btn btn-primary" onclick="loadDailyPage('prev')" disabled>صفحهٔ قبل</button>
+    <span id="dailyCurrentPage">در حال بارگذاری...</span>
+    <button id="dailyNextPage" class="btn btn-primary" onclick="loadDailyPage('next')">صفحهٔ بعد</button>
+</div>
 <table class="stats" id="grouped-by-date">
     <thead>
         <tr class="h">
