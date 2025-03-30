@@ -9,7 +9,7 @@
     <div class="pagination-controls">
         @if (Model.DaysPagination.hasPreviousPage)
         {
-            <button id="dailyPrevPage" class="btn btn-primary" onclick="loadDailyPage('prev')">صفحهٔ قبل</button>
+            <button id="dailyPrevPage" class="btn btn-primary" onclick="loadContributionsDays('@Model.DataType', @(Model.DaysPagination.currentPage - 1))">صفحهٔ قبل</button>
         }
         else
         {
@@ -18,7 +18,7 @@
         <span id="dailyCurrentPage">صفحهٔ @Model.DaysPagination.currentPage.ToPersianNumbers() از @Model.DaysPagination.totalPages.ToPersianNumbers()</span>
         @if (Model.DaysPagination.hasNextPage)
         {
-            <button id="dailyNextPage" class="btn btn-primary" onclick="loadDailyPage('next')">صفحهٔ بعد</button>
+            <button id="dailyNextPage" class="btn btn-primary" onclick="loadContributionsDays('@Model.DataType', @(Model.DaysPagination.currentPage + 1))">صفحهٔ بعد</button>
         }
         else
         {

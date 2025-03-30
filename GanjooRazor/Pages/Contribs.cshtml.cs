@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using RMuseum.Models.Generic.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System.Linq;
+using static Betalgo.Ranul.OpenAI.ObjectModels.RealtimeModels.RealtimeEventTypes;
 
 namespace GanjooRazor.Pages
 {
@@ -182,6 +183,32 @@ namespace GanjooRazor.Pages
                         Users = users == null ? null :users.ToArray(),
                         UsersPagination = usersPagination,
                         Summary = summary
+                    }
+                }
+            };
+        }
+
+
+        public async Task<ActionResult> OnGetGroupedByDayAsync(string dataType, int pageNumber)
+        {
+            var responseDays = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/daily?PageNumber={pageNumber}&PageSize=30");
+
+            if (!responseDays.IsSuccessStatusCode)
+            {
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseDays.Content.ReadAsStringAsync()));
+            }
+            var days = JArray.Parse(await responseDays.Content.ReadAsStringAsync()).ToObject<List<GroupedByDateViewModel>>();
+
+            return new PartialViewResult()
+            {
+                ViewName = "_GroupedByDateViewTablePartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _GroupedByDateViewTablePartialModel()
+                    {
+                        DataType = dataType,
+                        Days = days.ToArray(),
+                        DaysPagination = JsonConvert.DeserializeObject<PaginationMetadata>(responseDays.Headers.GetValues("paging-headers").Single()),
                     }
                 }
             };

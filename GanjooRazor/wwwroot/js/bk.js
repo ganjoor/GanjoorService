@@ -1907,3 +1907,27 @@ function loadContributions(dataType) {
         },
     });
 }
+function loadContributionsDays(dataType, pageNumber) {
+    var divParent = document.getElementById('days');
+    divParent.innerHTML = '<div class="bnumdiv" id="remove-days-placeholder"><img src="/image/loading.gif" alt="بارگذاری"/></div>';
+    $.ajax({
+        type: "GET",
+        url: '?Handler=GroupedByDay&dataType=' + dataType + '&pageNumber=' + pageNumber.toString(),
+        error: function (e) {
+            if (document.getElementById("remove-days-placeholder") != null) {
+                document.getElementById("remove-days-placeholder").remove();
+            }
+            if (e.responseText == null)
+                alert(e);
+            else
+                alert(e.responseText);
+        },
+        success: function (data) {
+            if (document.getElementById("remove-days-placeholder") != null) {
+                document.getElementById("remove-days-placeholder").remove();
+                $(data).appendTo(divParent);
+                plotChart('grouped-by-date', 100);
+            }
+        },
+    });
+}

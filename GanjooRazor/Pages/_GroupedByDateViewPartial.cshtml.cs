@@ -19,6 +19,7 @@ namespace GanjooRazor.Pages
             {
                 return new _GroupedByDateViewTablePartialModel()
                 {
+                    DataType = DataType,
                     Days = Days,
                     DaysPagination = DaysPagination,
                     Users = Users,
