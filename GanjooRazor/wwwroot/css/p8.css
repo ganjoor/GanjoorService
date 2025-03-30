@@ -714,6 +714,10 @@ td.c2 {
     margin-bottom: 60px;
 }
 
+#days-placeholder{
+    margin-top: 1em;
+}
+
 .stats-section {
     border-radius: 8px;
     padding: 20px;
