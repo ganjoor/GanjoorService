@@ -7,6 +7,7 @@ using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
+using RMuseum.Models.Note;
 using RSecurityBackend.Models.Auth.Db;
 using RSecurityBackend.Models.Auth.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -451,6 +452,12 @@ namespace RMuseum.Services.Implementation
                 await _DeleteComment(context, comment.Id);
             }
 
+            var userNotes = await context.UserNotes.Where(c => c.RAppUserId == userId).ToListAsync();
+            foreach (var note in userNotes)
+            {
+                await _DeleteUserNotesAsync(context, note.Id);
+            }
+
             var recitationsVotes = await context.RecitationUserUpVotes.Where(c => c.UserId == userId).ToListAsync();
             foreach (var vote in recitationsVotes)
             {
@@ -488,6 +495,32 @@ namespace RMuseum.Services.Implementation
         {
             return await context.GanjoorComments.Where(c => c.InReplyToId == comment.Id).AsNoTracking().ToListAsync();
         }
+
+        private async Task<RServiceResult<bool>> _DeleteUserNotesAsync(RMuseumDbContext context, Guid commentId)
+        {
+            RUserNote comment = await context.UserNotes.Where(c => c.Id == commentId).SingleOrDefaultAsync();
+            if (comment == null)
+            {
+                return new RServiceResult<bool>(false); //not found
+            }
+
+            foreach (var reply in await _FindNoteRepliesAsync(context, comment))
+            {
+                await _DeleteUserNotesAsync(context, reply.Id);
+            }
+
+
+            context.Remove(comment);
+            await _context.SaveChangesAsync();
+
+            return new RServiceResult<bool>(true);
+        }
+
+        private async Task<List<RUserNote>> _FindNoteRepliesAsync(RMuseumDbContext context, RUserNote comment)
+        {
+            return await context.UserNotes.Where(c => c.ReferenceNoteId == comment.Id).AsNoTracking().ToListAsync();
+        }
+
 
         private async Task _ReOrderPoemRecitationsAsync(RMuseumDbContext context, int poemId, bool update = true)
         {
