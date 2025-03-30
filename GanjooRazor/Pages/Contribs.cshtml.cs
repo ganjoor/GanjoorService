@@ -190,7 +190,7 @@ namespace GanjooRazor.Pages
         }
 
 
-        public async Task<ActionResult> OnGetGroupedByDayAsync(string dataType, int pageNumber)
+        public async Task<ActionResult> OnGetGroupedByUsersAsync(string dataType, int pageNumber)
         {
             var responseUsers = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/by/user?PageNumber=1&PageSize=30");
 
@@ -216,7 +216,7 @@ namespace GanjooRazor.Pages
             };
         }
 
-        public async Task<ActionResult> OnGetGroupedByUsersAsync(string dataType, int pageNumber)
+        public async Task<ActionResult> OnGetGroupedByDayAsync(string dataType, int pageNumber)
         {
             var responseDays = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/daily?PageNumber={pageNumber}&PageSize=30");
 
