@@ -6,9 +6,23 @@
 @if (Model.Days == null || Model.Days.Length == 0) return;
 
 <div class="pagination-controls">
-    <button id="dailyPrevPage" class="btn btn-primary" onclick="loadDailyPage('prev')" disabled>صفحهٔ قبل</button>
-    <span id="dailyCurrentPage">در حال بارگذاری...</span>
-    <button id="dailyNextPage" class="btn btn-primary" onclick="loadDailyPage('next')">صفحهٔ بعد</button>
+    @if(Model.DaysPagination.hasPreviousPage)
+    {
+        <button id="dailyPrevPage" class="btn btn-primary" onclick="loadDailyPage('prev')">صفحهٔ قبل</button>
+    }
+    else
+    {
+        <button id="dailyPrevPage" class="btn btn-primary" onclick="loadDailyPage('prev')" disabled>صفحهٔ قبل</button>
+    }
+    <span id="dailyCurrentPage">صفحهٔ @Model.DaysPagination.currentPage.ToPersianNumbers() از @Model.DaysPagination.totalPages.ToPersianNumbers()</span>
+    @if (Model.DaysPagination.hasNextPage)
+    {
+        <button id="dailyNextPage" class="btn btn-primary" onclick="loadDailyPage('next')">صفحهٔ بعد</button>
+    }
+    else
+    {
+        <button id="dailyNextPage" class="btn btn-primary" onclick="loadDailyPage('next')" disabled>صفحهٔ بعد</button>
+    }
 </div>
 <table class="stats" id="grouped-by-date">
     <thead>
