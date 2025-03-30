@@ -3,92 +3,97 @@
 @using System.Globalization
 @{
 }
-@if (Model.Days == null || Model.Days.Length == 0) return;
-
-<div id="days">
-    <div class="pagination-controls">
-        @if (Model.DaysPagination.hasPreviousPage)
-        {
-            <button id="dailyPrevPage" class="btn btn-primary" onclick="loadContributionsDays('@Model.DataType', @(Model.DaysPagination.currentPage - 1))">صفحهٔ قبل</button>
-        }
-        else
-        {
-            <button id="dailyPrevPage" class="btn btn-primary" disabled>صفحهٔ قبل</button>
-        }
-        <span id="dailyCurrentPage">صفحهٔ @Model.DaysPagination.currentPage.ToPersianNumbers() از @Model.DaysPagination.totalPages.ToPersianNumbers()</span>
-        @if (Model.DaysPagination.hasNextPage)
-        {
-            <button id="dailyNextPage" class="btn btn-primary" onclick="loadContributionsDays('@Model.DataType', @(Model.DaysPagination.currentPage + 1))">صفحهٔ بعد</button>
-        }
-        else
-        {
-            <button id="dailyNextPage" class="btn btn-primary" disabled>صفحهٔ بعد</button>
-        }
+@if (Model.Days != null && Model.Days.Length > 0)
+{
+    <div id="days">
+        <div class="pagination-controls">
+            @if (Model.DaysPagination.hasPreviousPage)
+            {
+                <button id="dailyPrevPage" class="btn btn-primary" onclick="loadContributionsDays('@Model.DataType', @(Model.DaysPagination.currentPage - 1))">صفحهٔ قبل</button>
+            }
+            else
+            {
+                <button id="dailyPrevPage" class="btn btn-primary" disabled>صفحهٔ قبل</button>
+            }
+            <span id="dailyCurrentPage">صفحهٔ @Model.DaysPagination.currentPage.ToPersianNumbers() از @Model.DaysPagination.totalPages.ToPersianNumbers()</span>
+            @if (Model.DaysPagination.hasNextPage)
+            {
+                <button id="dailyNextPage" class="btn btn-primary" onclick="loadContributionsDays('@Model.DataType', @(Model.DaysPagination.currentPage + 1))">صفحهٔ بعد</button>
+            }
+            else
+            {
+                <button id="dailyNextPage" class="btn btn-primary" disabled>صفحهٔ بعد</button>
+            }
+        </div>
     </div>
-</div>
-<table class="stats" id="grouped-by-date">
-    <thead>
-        <tr class="h">
-            <td class="c1">ردیف</td>
-            <td class="c2">تاریخ</td>
-            <td class="c3">تعداد</td>
-        </tr>
-    </thead>
-    <tbody>
-        @for (int i = 0; i < Model.Days.Length; i++)
-        {
-            @if (i % 2 == 0)
+    <table class="stats" id="grouped-by-date">
+        <thead>
+            <tr class="h">
+                <td class="c1">ردیف</td>
+                <td class="c2">تاریخ</td>
+                <td class="c3">تعداد</td>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Days.Length; i++)
             {
-                <tr class="e">
-                    <td class="c1">@((i + 1).ToPersianNumbers())</td>
-                    <td class="c2">@RMuseum.Services.Implementation.LanguageUtils.FormatInShortDate(DateTime.Parse(Model.Days[i].Date))</td>
-                    <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Days[i].Number)</td>
-                </tr>
+                @if (i % 2 == 0)
+                {
+                    <tr class="e">
+                        <td class="c1">@((i + 1).ToPersianNumbers())</td>
+                        <td class="c2">@RMuseum.Services.Implementation.LanguageUtils.FormatInShortDate(DateTime.Parse(Model.Days[i].Date))</td>
+                        <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Days[i].Number)</td>
+                    </tr>
 
+                }
+                else
+                {
+                    <tr>
+                        <td class="c1">@((i + 1).ToPersianNumbers())</td>
+                        <td class="c2">@RMuseum.Services.Implementation.LanguageUtils.FormatInShortDate(DateTime.Parse(Model.Days[i].Date))</td>
+                        <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Days[i].Number)</td>
+                    </tr>
+                }
             }
-            else
+        </tbody>
+    </table>
+}
+
+
+@if (Model.Users != null && Model.Users.Length > 0)
+{
+    <table class="stats" id="grouped-by-user">
+        <thead>
+            <tr class="h">
+                <td class="c1">ردیف</td>
+                <td class="c2">کاربر</td>
+                <td class="c3">تعداد</td>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Users.Length; i++)
             {
-                <tr>
-                    <td class="c1">@((i + 1).ToPersianNumbers())</td>
-                    <td class="c2">@RMuseum.Services.Implementation.LanguageUtils.FormatInShortDate(DateTime.Parse(Model.Days[i].Date))</td>
-                    <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Days[i].Number)</td>
-                </tr>
-            }
-        }
-    </tbody>
-</table>
+                @if (i % 2 == 0)
+                {
+                    <tr class="e">
+                        <td class="c1">@((i + 1).ToPersianNumbers())</td>
+                        <td class="c2"><a href="/hashieha/?userid=@Model.Users[i].UserId">@Model.Users[i].UserName</a></td>
+                        <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Users[i].Number)</td>
+                    </tr>
 
-@if (Model.Users == null || Model.Users.Length == 0) return;
-
-<table class="stats" id="grouped-by-user">
-    <thead>
-        <tr class="h">
-            <td class="c1">ردیف</td>
-            <td class="c2">کاربر</td>
-            <td class="c3">تعداد</td>
-        </tr>
-    </thead>
-    <tbody>
-        @for (int i = 0; i < Model.Users.Length; i++)
-        {
-            @if (i % 2 == 0)
-            {
-                <tr class="e">
-                    <td class="c1">@((i + 1).ToPersianNumbers())</td>
-                    <td class="c2"><a href="/hashieha/?userid=@Model.Users[i].UserId">@Model.Users[i].UserName</a></td>
-                    <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Users[i].Number)</td>
-                </tr>
-
+                }
+                else
+                {
+                    <tr>
+                        <td class="c1">@((i + 1).ToPersianNumbers())</td>
+                        <td class="c2"><a href="/hashieha/?userid=@Model.Users[i].UserId">@Model.Users[i].UserName</a></td>
+                        <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Users[i].Number)</td>
+                    </tr>
+                }
             }
-            else
-            {
-                <tr>
-                    <td class="c1">@((i + 1).ToPersianNumbers())</td>
-                    <td class="c2"><a href="/hashieha/?userid=@Model.Users[i].UserId">@Model.Users[i].UserName</a></td>
-                    <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Users[i].Number)</td>
-                </tr>
-            }
-        }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+}
+
+
 
