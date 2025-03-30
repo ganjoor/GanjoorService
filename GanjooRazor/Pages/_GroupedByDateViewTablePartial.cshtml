@@ -9,20 +9,20 @@
         <div class="pagination-controls">
             @if (Model.DaysPagination.hasPreviousPage)
             {
-                <button id="dailyPrevPage" class="btn btn-primary" onclick="loadContributionsDays('@Model.DataType', @(Model.DaysPagination.currentPage - 1))">صفحهٔ قبل</button>
+                <button class="btn btn-primary" onclick="loadContributionsDays('@Model.DataType', @(Model.DaysPagination.currentPage - 1))">صفحهٔ قبل</button>
             }
             else
             {
-                <button id="dailyPrevPage" class="btn btn-primary" disabled>صفحهٔ قبل</button>
+                <button class="btn btn-primary" disabled>صفحهٔ قبل</button>
             }
             <span id="dailyCurrentPage">صفحهٔ @Model.DaysPagination.currentPage.ToPersianNumbers() از @Model.DaysPagination.totalPages.ToPersianNumbers()</span>
             @if (Model.DaysPagination.hasNextPage)
             {
-                <button id="dailyNextPage" class="btn btn-primary" onclick="loadContributionsDays('@Model.DataType', @(Model.DaysPagination.currentPage + 1))">صفحهٔ بعد</button>
+                <button class="btn btn-primary" onclick="loadContributionsDays('@Model.DataType', @(Model.DaysPagination.currentPage + 1))">صفحهٔ بعد</button>
             }
             else
             {
-                <button id="dailyNextPage" class="btn btn-primary" disabled>صفحهٔ بعد</button>
+                <button class="btn btn-primary" disabled>صفحهٔ بعد</button>
             }
         </div>
     </div>
@@ -62,37 +62,58 @@
 
 @if (Model.Users != null && Model.Users.Length > 0)
 {
-    <table class="stats" id="grouped-by-user">
-        <thead>
-            <tr class="h">
-                <td class="c1">ردیف</td>
-                <td class="c2">کاربر</td>
-                <td class="c3">تعداد</td>
-            </tr>
-        </thead>
-        <tbody>
-            @for (int i = 0; i < Model.Users.Length; i++)
+    <div id="usrs">
+        <div class="pagination-controls">
+            @if (Model.UsersPagination.hasPreviousPage)
             {
-                @if (i % 2 == 0)
-                {
-                    <tr class="e">
-                        <td class="c1">@((i + 1).ToPersianNumbers())</td>
-                        <td class="c2"><a href="/hashieha/?userid=@Model.Users[i].UserId">@Model.Users[i].UserName</a></td>
-                        <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Users[i].Number)</td>
-                    </tr>
-
-                }
-                else
-                {
-                    <tr>
-                        <td class="c1">@((i + 1).ToPersianNumbers())</td>
-                        <td class="c2"><a href="/hashieha/?userid=@Model.Users[i].UserId">@Model.Users[i].UserName</a></td>
-                        <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Users[i].Number)</td>
-                    </tr>
-                }
+                <button class="btn btn-primary" onclick="loadContributionsUsers('@Model.DataType', @(Model.UsersPagination.currentPage - 1))">صفحهٔ قبل</button>
             }
-        </tbody>
-    </table>
+            else
+            {
+                <button class="btn btn-primary" disabled>صفحهٔ قبل</button>
+            }
+            <span id="dailyCurrentPage">صفحهٔ @Model.UsersPagination.currentPage.ToPersianNumbers() از @Model.UsersPagination.totalPages.ToPersianNumbers()</span>
+            @if (Model.UsersPagination.hasNextPage)
+            {
+                <button class="btn btn-primary" onclick="loadContributionsUsers('@Model.DataType', @(Model.UsersPagination.currentPage + 1))">صفحهٔ بعد</button>
+            }
+            else
+            {
+                <button class="btn btn-primary" disabled>صفحهٔ بعد</button>
+            }
+        </div>
+        <table class="stats" id="grouped-by-user">
+            <thead>
+                <tr class="h">
+                    <td class="c1">ردیف</td>
+                    <td class="c2">کاربر</td>
+                    <td class="c3">تعداد</td>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Users.Length; i++)
+                {
+                    @if (i % 2 == 0)
+                    {
+                        <tr class="e">
+                            <td class="c1">@((i + 1).ToPersianNumbers())</td>
+                            <td class="c2"><a href="/hashieha/?userid=@Model.Users[i].UserId">@Model.Users[i].UserName</a></td>
+                            <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Users[i].Number)</td>
+                        </tr>
+
+                    }
+                    else
+                    {
+                        <tr>
+                            <td class="c1">@((i + 1).ToPersianNumbers())</td>
+                            <td class="c2"><a href="/hashieha/?userid=@Model.Users[i].UserId">@Model.Users[i].UserName</a></td>
+                            <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Users[i].Number)</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 }
 
 

@@ -13,6 +13,7 @@ using RMuseum.Models.Generic.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System.Linq;
 using static Betalgo.Ranul.OpenAI.ObjectModels.RealtimeModels.RealtimeEventTypes;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace GanjooRazor.Pages
 {
@@ -159,7 +160,7 @@ namespace GanjooRazor.Pages
                     return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseUsers.Content.ReadAsStringAsync()));
                 }
                 users = JArray.Parse(await responseUsers.Content.ReadAsStringAsync()).ToObject<List<GroupedByUserViewModel>>();
-                usersPagination = JsonConvert.DeserializeObject<PaginationMetadata>(responseDays.Headers.GetValues("paging-headers").Single());
+                usersPagination = JsonConvert.DeserializeObject<PaginationMetadata>(responseUsers.Headers.GetValues("paging-headers").Single());
             }
 
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/summary");
@@ -191,6 +192,32 @@ namespace GanjooRazor.Pages
 
         public async Task<ActionResult> OnGetGroupedByDayAsync(string dataType, int pageNumber)
         {
+            var responseUsers = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/by/user?PageNumber=1&PageSize=30");
+
+            if (!responseUsers.IsSuccessStatusCode)
+            {
+                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseUsers.Content.ReadAsStringAsync()));
+            }
+            var users = JArray.Parse(await responseUsers.Content.ReadAsStringAsync()).ToObject<List<GroupedByUserViewModel>>();
+            var usersPagination = JsonConvert.DeserializeObject<PaginationMetadata>(responseUsers.Headers.GetValues("paging-headers").Single());
+
+            return new PartialViewResult()
+            {
+                ViewName = "_GroupedByDateViewTablePartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _GroupedByDateViewTablePartialModel()
+                    {
+                        DataType = dataType,
+                        Users = users.ToArray(),
+                        UsersPagination = usersPagination,
+                    }
+                }
+            };
+        }
+
+        public async Task<ActionResult> OnGetGroupedByUsersAsync(string dataType, int pageNumber)
+        {
             var responseDays = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/daily?PageNumber={pageNumber}&PageSize=30");
 
             if (!responseDays.IsSuccessStatusCode)
@@ -213,6 +240,8 @@ namespace GanjooRazor.Pages
                 }
             };
         }
+
+
 
         /// <summary>
         /// memory cache
