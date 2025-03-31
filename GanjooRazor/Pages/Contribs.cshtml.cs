@@ -192,7 +192,7 @@ namespace GanjooRazor.Pages
 
         public async Task<ActionResult> OnGetGroupedByUsersAsync(string dataType, int pageNumber)
         {
-            var responseUsers = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/by/user?PageNumber=1&PageSize=30");
+            var responseUsers = await _httpClient.GetAsync($"{APIRoot.Url}/api/contributions/{dataType}/by/user?PageNumber={pageNumber}&PageSize=30");
 
             if (!responseUsers.IsSuccessStatusCode)
             {
