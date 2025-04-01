@@ -1780,6 +1780,8 @@ function persianToEnglishNumber(str) {
 }
 
 function plotChart(tableId, maxCols = 9) {
+
+
     let table = document.getElementById(tableId);
     if (!table) return;
 
@@ -1815,6 +1817,10 @@ function plotChart(tableId, maxCols = 9) {
     canvas.id = `chart-${tableId}`;
     table.parentNode.insertBefore(canvas, table.nextSibling);
 
+    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const textColor = isDark ? '#ffffff' : '#333333';
+
+
     new Chart(canvas, {
         type: 'bar',
         data: {
@@ -1834,20 +1840,24 @@ function plotChart(tableId, maxCols = 9) {
                     title: {
                         display: true,
                         text: xTitle,
-                        font: { family: 'Vazir', size: 14 }
+                        font: { family: 'Vazir', size: 14 },
+                        color: textColor
                     },
                     ticks: {
-                        font: { family: 'Vazir', size: 12 }
+                        font: { family: 'Vazir', size: 12 },
+                        color: textColor
                     }
                 },
                 y: {
                     title: {
                         display: true,
                         text: yTitle,
-                        font: { family: 'Vazir', size: 14 }
+                        font: { family: 'Vazir', size: 14 },
+                        color: textColor
                     },
                     ticks: {
-                        font: { family: 'Vazir', size: 12 }
+                        font: { family: 'Vazir', size: 12 },
+                        color: textColor
                     },
                     beginAtZero: true,
                 }
