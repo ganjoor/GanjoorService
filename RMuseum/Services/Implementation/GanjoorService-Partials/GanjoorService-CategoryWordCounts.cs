@@ -258,6 +258,24 @@ namespace RMuseum.Services.Implementation
                                           }
                                       }
 
+                                      await jobProgressServiceEF.UpdateJob(job.Id, 99, "Raw SQL statements");
+
+                                      await context.Database.ExecuteSqlRawAsync("DELETE FROM CategoryWordCounts WHERE CatId = 0");
+                                      await context.Database.ExecuteSqlRawAsync("DELETE FROM CategoryWordCountSummaries WHERE CatId = 0");
+
+                                      await context.Database.ExecuteSqlRawAsync(@"
+        INSERT INTO CategoryWordCounts (Id, CatId, Word, Count, RowNmbrInCat)
+        SELECT NEWID(), 0, Word, SUM(Count) c, ROW_NUMBER() OVER(ORDER BY SUM(COUNT) DESC) 
+        FROM CategoryWordCounts
+        WHERE CatId IN (SELECT Id FROM GanjoorCategories WHERE ParentId IS NULL)
+        GROUP BY Word
+        ORDER BY c DESC");
+
+                                      await context.Database.ExecuteSqlRawAsync(@"
+        INSERT INTO CategoryWordCountSummaries (Id, CatId, UniqueWordCount, TotalWordCount)
+        SELECT NEWID(), 0, 
+               (SELECT COUNT(*) FROM CategoryWordCounts WHERE CatId = 0), 
+               (SELECT SUM(Count) FROM CategoryWordCounts WHERE CatId = 0)");
 
                                       await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                   }
