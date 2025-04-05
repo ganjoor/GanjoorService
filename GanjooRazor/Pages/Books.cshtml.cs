@@ -21,7 +21,7 @@ namespace GanjooRazor.Pages
                 return StatusCode(503);
             }
             ViewData["Title"] = "فهرست کتاب‌ها";
-            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"];
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
             if (false == await preparePoets())

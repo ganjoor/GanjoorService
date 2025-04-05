@@ -57,7 +57,7 @@ namespace GanjooRazor.Pages
                 return BadRequest();
             }
 
-            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"];
 
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/published/{Request.Query["a"]}");
             if (!response.IsSuccessStatusCode)

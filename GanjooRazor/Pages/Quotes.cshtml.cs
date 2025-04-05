@@ -43,7 +43,7 @@ namespace GanjooRazor.Pages
             }
 
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
-            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"];
 
             //todo: use html master layout or make it partial
             if (false == (await preparePoets()))

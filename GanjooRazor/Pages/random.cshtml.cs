@@ -21,7 +21,7 @@ namespace GanjooRazor.Pages
 
         public void OnGet()
         {
-            ViewData["GoogleAnalyticsCode"] = _configuration["GoogleAnalyticsCode"];
+            ViewData["TrackingScript"] = _configuration["TrackingScript"];
         }
     }
 }

@@ -244,7 +244,7 @@ namespace GanjooRazor.Pages
 
             StatsAtTop = !string.IsNullOrEmpty(Request.Query["stats"]);
 
-            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"];
 
             //todo: use html master layout or make it partial
             // 1. poets 

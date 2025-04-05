@@ -81,7 +81,7 @@ namespace GanjooRazor.Pages
 
             PoemId = int.Parse(Request.Query["p"]);
 
-            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"];
 
             HttpResponseMessage responseLanguages = await _httpClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
             if (!responseLanguages.IsSuccessStatusCode)

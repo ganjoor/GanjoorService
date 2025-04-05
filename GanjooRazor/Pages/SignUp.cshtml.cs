@@ -57,7 +57,7 @@ namespace GanjooRazor.Pages
 
         private void _FillViewData()
         {
-            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"];
             if (SignupPhase1)
             {
                 ViewData["Title"] = "گنجور » نام‌نویسی » ورود ایمیل";

@@ -163,7 +163,7 @@ namespace GanjooRazor.Pages
 
             PoetId = string.IsNullOrEmpty(Request.Query["a"]) ? 0 : int.Parse(Request.Query["a"]);
 
-            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"];
 
             //todo: use html master layout or make it partial
             // 1. poets 

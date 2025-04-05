@@ -91,7 +91,7 @@ namespace GanjooRazor.Pages
                 return StatusCode(503);
             }
 
-            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"];
             await _PreparePoetGroups();
             return Page();
         }
