@@ -242,7 +242,7 @@ namespace TajikGanjoor.Pages
                 ViewData["Title"] = title;
             }
             ViewData["BreadCrumpUrls"] = BreadCrumpUrls;
-            ViewData["GoogleAnalyticsCode"] = Configuration["GoogleAnalyticsCode"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"] != null && string.IsNullOrEmpty(Request.Cookies["Token"]) ? Configuration["TrackingScript"].Replace("loggedon", "") : Configuration["TrackingScript"];
             ViewData["GoogleTranslateLink"] = $"https://translate.google.com/translate?hl=fa&sl=fa&tl=tg&u={Uri.EscapeDataString(stringToEscape: $"https://ganjoor.net{Request.Path}")}";
             ViewData["NextUrl"] = NextUrl;
             ViewData["PreviousUrl"] = PreviousUrl;
