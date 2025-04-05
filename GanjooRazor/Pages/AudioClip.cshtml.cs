@@ -57,7 +57,7 @@ namespace GanjooRazor.Pages
                 return BadRequest();
             }
 
-            ViewData["TrackingScript"] = Configuration["TrackingScript"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"] != null && string.IsNullOrEmpty(Request.Cookies["Token"]) ? Configuration["TrackingScript"].Replace("loggedon", "") : Configuration["TrackingScript"];
 
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/published/{Request.Query["a"]}");
             if (!response.IsSuccessStatusCode)

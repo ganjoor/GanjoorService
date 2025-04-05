@@ -47,7 +47,7 @@ namespace GanjooRazor.Pages
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
 
-            ViewData["TrackingScript"] = Configuration["TrackingScript"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"] != null && string.IsNullOrEmpty(Request.Cookies["Token"]) ? Configuration["TrackingScript"].Replace("loggedon", "") : Configuration["TrackingScript"];
 
             //todo: use html master layout or make it partial
             if (false == (await preparePoets()))

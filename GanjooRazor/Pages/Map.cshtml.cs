@@ -91,7 +91,7 @@ namespace GanjooRazor.Pages
                 return StatusCode(503);
             }
 
-            ViewData["TrackingScript"] = Configuration["TrackingScript"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"] != null && string.IsNullOrEmpty(Request.Cookies["Token"]) ? Configuration["TrackingScript"].Replace("loggedon", "") : Configuration["TrackingScript"];
             await _PreparePoetGroups();
             return Page();
         }

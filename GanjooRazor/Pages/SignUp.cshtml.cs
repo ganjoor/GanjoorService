@@ -57,7 +57,7 @@ namespace GanjooRazor.Pages
 
         private void _FillViewData()
         {
-            ViewData["TrackingScript"] = Configuration["TrackingScript"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"] != null && string.IsNullOrEmpty(Request.Cookies["Token"]) ? Configuration["TrackingScript"].Replace("loggedon", "") : Configuration["TrackingScript"];
             if (SignupPhase1)
             {
                 ViewData["Title"] = "گنجور » نام‌نویسی » ورود ایمیل";

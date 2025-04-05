@@ -81,7 +81,7 @@ namespace GanjooRazor.Pages
 
             PoemId = int.Parse(Request.Query["p"]);
 
-            ViewData["TrackingScript"] = Configuration["TrackingScript"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"] != null && string.IsNullOrEmpty(Request.Cookies["Token"]) ? Configuration["TrackingScript"].Replace("loggedon", "") : Configuration["TrackingScript"];
 
             HttpResponseMessage responseLanguages = await _httpClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
             if (!responseLanguages.IsSuccessStatusCode)

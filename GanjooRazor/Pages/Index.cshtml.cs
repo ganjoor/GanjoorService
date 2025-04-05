@@ -667,7 +667,7 @@ namespace GanjooRazor.Pages
             IsHomePage = Request.Path == "/";
             PinterestUrl = Request.Query["pinterest_url"];
             ShowAllRecitaions = Request.Query["allaudio"] == "1";
-            ViewData["TrackingScript"] = Configuration["TrackingScript"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"] != null && string.IsNullOrEmpty(Request.Cookies["Token"]) ? Configuration["TrackingScript"].Replace("loggedon", "") : Configuration["TrackingScript"];
             ActiveTab = Request.Query["tab"];
             if (ShowAllRecitaions && string.IsNullOrEmpty(ActiveTab))
             {

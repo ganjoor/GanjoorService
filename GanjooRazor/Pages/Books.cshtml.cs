@@ -21,7 +21,7 @@ namespace GanjooRazor.Pages
                 return StatusCode(503);
             }
             ViewData["Title"] = "فهرست کتاب‌ها";
-            ViewData["TrackingScript"] = Configuration["TrackingScript"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"] != null && string.IsNullOrEmpty(Request.Cookies["Token"]) ? Configuration["TrackingScript"].Replace("loggedon", "") : Configuration["TrackingScript"];
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
             if (false == await preparePoets())
