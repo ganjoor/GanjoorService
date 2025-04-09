@@ -37,6 +37,7 @@ namespace RMuseum.Controllers
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 userContributions = res.Result;
+                _memoryCache.Set(cacheKey, userContributions);
             }
             return Ok(userContributions);
         }
@@ -185,6 +186,7 @@ namespace RMuseum.Controllers
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
+                _memoryCache.Set(cacheKey, pagedResult);
             }
             // Paging Header
             HttpContext.Response.Headers.Append("paging-headers", JsonConvert.SerializeObject(pagedResult.PagingMeta));
@@ -323,6 +325,7 @@ namespace RMuseum.Controllers
                     default:
                         return BadRequest($"Invalid value for the paramater: dataType = {dataType}");
                 }
+                _memoryCache.Set(cacheKey, pagedResult);
             }
 
             // Paging Header
