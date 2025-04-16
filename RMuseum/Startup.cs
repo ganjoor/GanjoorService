@@ -320,13 +320,6 @@ namespace RMuseum
             //Contributions stats service
             services.AddTransient<IContributionStatsService, ContributionStatsService>();
 
-            //upload limit for IIS
-            services.Configure<IISServerOptions>(options =>
-            {
-                options.MaxRequestBodySize = int.Parse(Configuration.GetSection("IIS")["UploadLimit"]);
-            });
-
-
 
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
