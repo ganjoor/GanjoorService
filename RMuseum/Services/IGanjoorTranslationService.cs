@@ -47,47 +47,5 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         Task<RServiceResult<GanjoorLanguage[]>> GetLanguagesAsync();
-
-        /// <summary>
-        /// add or update poem translation
-        /// </summary>
-        /// <param name="translation"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemTranslationViewModel>> AddPoemTranslation(Guid userId, GanjoorPoemTranslationViewModel translation);
-
-        /// <summary>
-        /// get translation
-        /// </summary>
-        /// <param name="langId">-1 all languages</param>
-        /// <param name="poemId"></param>
-        /// <param name="onlyPublished"></param>
-        /// <param name="includeUserInfo"></param>
-        /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemTranslationViewModel[]>> GetPoemTranslationsAsync(int langId, int poemId, bool onlyPublished, bool includeUserInfo);
-
-        /// <summary>
-        /// get last language the user contributed to its translation
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        Task<RServiceResult<GanjoorLanguage>> GetLastUserContributedLanguage(Guid userId);
-
-        /// <summary>
-        /// get translation by id
-        /// </summary>
-        ///<param name="id"></param>
-        /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemTranslationViewModel>> GetPoemTranslationById(int id);
-
-        /// <summary>
-        /// get all poem translations (for export utility)
-        /// </summary>
-        /// <param name="paging"></param>
-        /// <param name="langId"></param>
-        /// <returns></returns>
-        Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemTranslationViewModel[] Translations)>> GetAllPoemsTranslations(PagingParameterModel paging, int langId);
-
-
     }
 }
