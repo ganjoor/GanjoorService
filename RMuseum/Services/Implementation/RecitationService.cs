@@ -967,7 +967,7 @@ namespace RMuseum.Services.Implementationa
                                     }
 
                                     Random rnd = new Random(DateTime.Now.Millisecond);
-                                    string fileNameWithoutExtension = $"{audio.PoemId}-{defProfile.FileSuffixWithoutDash}-{rnd.Next()}";
+                                    string fileNameWithoutExtension = $"{audio.PoemId}-{defProfile.FileSuffixWithoutDash}-{DateTime.Now.Millisecond}";
                                     int tmp = 1;
                                     while
                                     (
