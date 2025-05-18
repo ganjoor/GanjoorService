@@ -9,7 +9,7 @@ body {
     margin: 0;
     padding: 0;
     text-align: center;
-    background-color: #fff;
+    background-color: #f5f7fb;
 }
 
 #hdr, #hdr2 {
@@ -57,7 +57,6 @@ a {
 }
 
 .bk-background {
-    background: transparent url(/image/bk.png) top center repeat scroll;
 }
 
 #fa {
@@ -65,7 +64,6 @@ a {
     font-family: 'Vazirmatn';
     font-weight: 300;
     font-size: 1em;
-    background: transparent url(/image/bk.png) top center repeat scroll;
     padding-bottom: 50px;
 }
 
@@ -112,11 +110,9 @@ form:after, form div:after {
     max-width: 752px;
     margin: auto;
     display: block;
-    background-color: #fc9;
     border: 2px solid #300;
     border-radius: 20px;
     padding: 20px;
-    background: transparent url('/image/pbk-b.jpg') top center repeat scroll;
 }
 
 
@@ -2258,7 +2254,6 @@ mark {
 
 
     #main, .poem, .sitem, .related-images-frame, .comments-like-div {
-        background: rgba(27, 27, 27, 0.6) url('/image/pbk-b.jpg') top center repeat scroll;
         border-color: darkgray;
         background-blend-mode: multiply;
     }
