@@ -1,56 +1,8 @@
-@font-face {
-    font-family: Vazir;
-    src: url('Vazir-Regular.eot');
-    src: url('Vazir-Regular.eot?#iefix') format('embedded-opentype'), url('Vazir-Regular.woff2') format('woff2'), url('Vazir-Regular.woff') format('woff'), url('Vazir-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: Vazir;
-    src: url('Vazir-Bold.eot');
-    src: url('Vazir-Bold.eot?#iefix') format('embedded-opentype'), url('Vazir-Bold.woff2') format('woff2'), url('Vazir-Bold.woff') format('woff'), url('Vazir-Bold.ttf') format('truetype');
-    font-weight: bold;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: Vazir;
-    src: url('Vazir-Black.eot');
-    src: url('Vazir-Black.eot?#iefix') format('embedded-opentype'), url('Vazir-Black.woff2') format('woff2'), url('Vazir-Black.woff') format('woff'), url('Vazir-Black.ttf') format('truetype');
-    font-weight: 900;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: Vazir;
-    src: url('Vazir-Medium.eot');
-    src: url('Vazir-Medium.eot?#iefix') format('embedded-opentype'), url('Vazir-Medium.woff2') format('woff2'), url('Vazir-Medium.woff') format('woff'), url('Vazir-Medium.ttf') format('truetype');
-    font-weight: 500;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: Vazir;
-    src: url('Vazir-Light.eot');
-    src: url('Vazir-Light.eot?#iefix') format('embedded-opentype'), url('Vazir-Light.woff2') format('woff2'), url('Vazir-Light.woff') format('woff'), url('Vazir-Light.ttf') format('truetype');
-    font-weight: 300;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: Vazir;
-    src: url('Vazir-Thin.eot');
-    src: url('Vazir-Thin.eot?#iefix') format('embedded-opentype'), url('Vazir-Thin.woff2') format('woff2'), url('Vazir-Thin.woff') format('woff'), url('Vazir-Thin.ttf') format('truetype');
-    font-weight: 100;
-    font-style: normal;
-}
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Vazir;
+    font-family: 'Vazirmatn';
 }
 
 body {
@@ -110,7 +62,7 @@ a {
 
 #fa {
     direction: rtl;
-    font-family: Vazir;
+    font-family: 'Vazirmatn';
     font-weight: 300;
     font-size: 1em;
     background: transparent url(/image/bk.png) top center repeat scroll;
@@ -123,7 +75,7 @@ a {
 
 
 h2 {
-    font-family: Vazir;
+    font-family: 'Vazirmatn';
     font-weight: bold;
     font-size: 1.2em;
     margin: 3px auto;
@@ -150,7 +102,7 @@ form:after, form div:after {
 #hdr2 .actionbox {
     margin: 0;
     float: left;
-    font-family: Vazir;
+    font-family: 'Vazirmatn';
     font-weight: 300;
     font-size: 1em;
 }
@@ -196,7 +148,7 @@ label {
 }
 
 input, select, textarea {
-    font-family: Vazir;
+    font-family: 'Vazirmatn';
     font-weight: 300;
     font-size: 0.8em;
     padding: 2px;
@@ -231,7 +183,7 @@ select {
     #guides p {
         text-indent: 0;
         margin: 5px;
-        font-family: Vazir;
+        font-family: 'Vazirmatn';
         font-weight: 300;
         font-size: 1em;
         line-height: 24px
@@ -258,7 +210,7 @@ select {
 .poet .caption {
     display: block;
     width: 100%;
-    font-family: Vazir;
+    font-family: 'Vazirmatn';
     font-weight: 300;
     font-size: 0.8em;
     text-align: center;
@@ -383,7 +335,7 @@ div.n, div.l {
 }
 
     .m1 p, .m2 p {
-        font-family: Vazir;
+        font-family: 'Vazirmatn';
         font-weight: 300;
         font-size: 0.9em;
         font-style: normal;
@@ -472,7 +424,7 @@ div.n, div.l {
 }
 
 #commentsp h3, #comments h3 {
-    font-family: Vazir;
+    font-family: 'Vazirmatn';
     font-weight: 300;
     font-size: 0.9em;
     margin: 3px auto;
@@ -556,7 +508,7 @@ form div.submit {
 }
 
 table {
-    font-family: Vazir;
+    font-family: 'Vazirmatn';
     font-weight: 300;
     font-size: 0.8em;
     border-collapse: collapse;
@@ -783,7 +735,7 @@ pagination-controls {
 }
 
 .tooltip {
-    font-family: Vazir;
+    font-family: 'Vazirmatn';
 }
 
     .tooltip a {
@@ -1044,7 +996,7 @@ ol {
     border-radius: 5px;
     color: white;
     height: 30px;
-    font-family: Vazir;
+    font-family: 'Vazirmatn';
     cursor: pointer;
     box-shadow: 0 5px 0.3rem rgba(0, 0, 0, 0.3);
 }
@@ -1074,7 +1026,7 @@ ol {
 
 .century, .century-alt, .part-title-block, .part-title-block-alt {
     clear: both;
-    font-family: Vazir;
+    font-family: 'Vazirmatn';
     font-weight: 300;
     font-size: 1em;
     text-align: center;
@@ -1212,7 +1164,7 @@ ol {
     left: 5%;
     z-index: 1000;
     text-align: center;
-    font-family: Vazir;
+    font-family: 'Vazirmatn';
     font-size: 1em;
     background: transparent url('/image/pbk-b.jpg') top center repeat scroll;
     display: block;
@@ -1412,7 +1364,7 @@ audio {
 .pinterest_suggest {
     background-color: red;
     color: white;
-    font-family: Vazir;
+    font-family: 'Vazirmatn';
     font-size: 1.5em;
     width: 100%;
     cursor: pointer;

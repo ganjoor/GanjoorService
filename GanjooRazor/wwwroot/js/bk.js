@@ -62,7 +62,7 @@ function coupletNumImage(bnum, color) {
     canvas.width = 50;
     canvas.height = 28;
     let context = canvas.getContext('2d');
-    context.font = "1.5em Vazir";
+    context.font = "1.5em 'Vazirmatn'";
     context.fillStyle = color;
     context.textAlign = "center";
     context.textBaseline = "top";
@@ -1280,11 +1280,15 @@ function toggleColorScheme() {
 // Apply the chosen color scheme by traversing stylesheet rules, and applying a medium.
 function applyPreferredColorScheme(scheme) {
     for (var s = 0; s < document.styleSheets.length; s++) {
-
-        for (var i = 0; i < document.styleSheets[s].cssRules.length; i++) {
-            rule = document.styleSheets[s].cssRules[i];
-
-
+        var sheet = document.styleSheets[s];
+        var rules;
+        try {
+            rules = sheet.cssRules;
+        } catch {
+            continue;
+        }
+        for (var i = 0; i < rules.length; i++) {
+            var rule = rules[i];
             if (rule && rule.media && rule.media.mediaText.includes("prefers-color-scheme")) {
 
                 switch (scheme) {
@@ -1840,11 +1844,11 @@ function plotChart(tableId, maxCols = 9) {
                     title: {
                         display: true,
                         text: xTitle,
-                        font: { family: 'Vazir', size: 14 },
+                        font: { family: 'Vazirmatn', size: 14 },
                         color: textColor
                     },
                     ticks: {
-                        font: { family: 'Vazir', size: 12 },
+                        font: { family: 'Vazirmatn', size: 12 },
                         color: textColor
                     }
                 },
@@ -1852,11 +1856,11 @@ function plotChart(tableId, maxCols = 9) {
                     title: {
                         display: true,
                         text: yTitle,
-                        font: { family: 'Vazir', size: 14 },
+                        font: { family: 'Vazirmatn', size: 14 },
                         color: textColor
                     },
                     ticks: {
-                        font: { family: 'Vazir', size: 12 },
+                        font: { family: 'Vazirmatn', size: 12 },
                         color: textColor
                     },
                     beginAtZero: true,
