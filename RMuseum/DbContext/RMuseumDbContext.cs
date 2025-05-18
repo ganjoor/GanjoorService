@@ -443,11 +443,6 @@ namespace RMuseum.DbContext
         public DbSet<GanjoorLanguage> GanjoorLanguages { get; set; }
 
         /// <summary>
-        /// poem translations
-        /// </summary>
-        public DbSet<GanjoorPoemTranslation> GanjoorPoemTranslations { get; set; }
-
-        /// <summary>
         /// ganjoor bookmarks
         /// </summary>
         public DbSet<GanjoorUserBookmark> GanjoorUserBookmarks { get; set; }
