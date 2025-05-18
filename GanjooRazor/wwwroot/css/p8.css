@@ -388,10 +388,9 @@ div.n, div.l {
 #comments, #profile, .comments-like-div, .bnumdiv {
     margin: 20px auto 6px;
     display: block;
-    background: transparent url('/image/cbk.jpg') top center repeat scroll;
     padding: 3px;
     clear: both;
-    border: 2px solid #300;
+    border-top: 1px solid rgba(0,0,0,.125);
 }
 
 .loadingcontainer {
@@ -399,10 +398,6 @@ div.n, div.l {
     display: block;
     padding: 3px;
     clear: both;
-}
-
-#comments {
-    border-radius: 20px;
 }
 
 .notice, .c p {
