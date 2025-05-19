@@ -113,6 +113,7 @@ form:after, form div:after {
     border: 2px solid #300;
     border-radius: 20px;
     padding: 20px;
+    background: transparent url(/image/paper1.jpg) top center repeat scroll;
 }
 
 
@@ -2355,4 +2356,7 @@ mark {
         mark.currentInlineResult {
             background: brown;
         }
+    #main, .sitem, .poem {
+        background: none;
+    }
 }
