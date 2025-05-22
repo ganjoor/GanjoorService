@@ -1,0 +1,36 @@
+﻿@using DNTPersianUtils.Core
+@model GanjooRazor.Pages._TopVisitsPartialModel
+@if (Model.Visits.Length > 0)
+{
+    <table class="stats" id="topvisits">
+        <thead>
+            <tr class="h">
+                <td class="c1">ردیف</td>
+                <td class="c2">شعر/بخش</td>
+                <td class="c3">شمار</td>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Visits.Length; i++)
+            {
+                @if (i % 2 == 0)
+                {
+                    <tr class="e">
+                        <td class="c1">@((i + 1).ToPersianNumbers())</td>
+                        <td class="c2"><a href="@Model.Visits[i].Url">@Model.Visits[i].Title</a></td>
+                        <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Visits[i].Visits)</td>
+                    </tr>
+
+                }
+                else
+                {
+                    <tr>
+                        <td class="c1">@((i + 1).ToPersianNumbers())</td>
+                        <td class="c2"><a href="@Model.Visits[i].Url">@Model.Visits[i].Title</a></td>
+                        <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Visits[i].Visits)</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}

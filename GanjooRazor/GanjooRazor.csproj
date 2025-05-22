@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\Kontor\" />
     <Folder Include="wwwroot\json\" />
   </ItemGroup>
 

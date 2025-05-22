@@ -1970,3 +1970,28 @@ function loadContributionsUsers(dataType, pageNumber) {
         },
     });
 }
+
+function loadTopVisits(url) {
+    var divParent = document.getElementById('topvisits-placeholder');
+    var imgElementId = 'loadingtopvisitsimg';
+    divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="remove-this-topvisits"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
+    $.ajax({
+        type: "GET",
+        url: '?Handler=TopVisits&url=' + url,
+        error: function () {
+            if (document.getElementById("remove-this-topvisits") != null) {
+                document.getElementById("remove-this-topvisits").remove();
+            }
+        },
+        success: function (data) {
+            if (document.getElementById("remove-this-topvisits") != null) {
+                document.getElementById("remove-this-topvisits").remove();
+                if (document.getElementById("load-topvisits") != null) {
+                    document.getElementById("load-topvisits").remove();
+                }
+                $(data).appendTo(divParent);
+                plotChart('topvisits');
+            }
+        },
+    });
+}

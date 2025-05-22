@@ -1,4 +1,5 @@
 ﻿using GanjooRazor.Utils;
+using KontorService.Models.Reporting.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -1592,6 +1593,31 @@ namespace GanjooRazor.Pages
                         PoetId = -1,
                         TotalWordCount = counts.Where(c => c.RowNmbrInCat > 0).Sum(c => c.Count),
                         WordCounts = counts.ToArray()
+                    }
+                }
+            };
+        }
+
+        public async Task<ActionResult> OnGetTopVisitsAsync(string url)
+        {
+            url = $"https://ganjoor.net/{url}";
+            var apiUrl = $"https://track.kntr.ir/api/reporting/toppages/1/ganjoor.net?parentUrl={WebUtility.UrlEncode(url)}&count=20";
+            var topVisitsResponse = await _httpClient.GetAsync(apiUrl);
+
+            if (!topVisitsResponse.IsSuccessStatusCode)
+            {
+                return null;
+            }
+            var topVisits = JsonConvert.DeserializeObject<PageVisitsViewModel[]>(await topVisitsResponse.Content.ReadAsStringAsync());
+
+            return new PartialViewResult()
+            {
+                ViewName = "_TopVisitsPartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _TopVisitsPartialModel()
+                    {
+                        Visits = topVisits
                     }
                 }
             };
