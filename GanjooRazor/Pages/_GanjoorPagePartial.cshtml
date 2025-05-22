@@ -420,14 +420,14 @@
                         {
                             <div class="poemtablinks"><a href="#quoteds">مشق شعر</a></div>
                         }
-                        <div class="poemtablinks active"><a href="#words" onclick="javascript:loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">واژگان</a></div>
+                        <div class="poemtablinks"><a href="#words" onclick="javascript:loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">واژگان</a></div>
                         <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
                         @if (Model.IsPoetPage)
                         {
                             <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
                             <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
                         }
-                        <div class="poemtablinks"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
+                        <div class="poemtablinks active"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
 
                     </div>
                     <div class="related-images-frame poemtabcontent">

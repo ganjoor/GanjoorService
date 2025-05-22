@@ -1990,7 +1990,7 @@ function loadTopVisits(url) {
                     document.getElementById("load-topvisits").remove();
                 }
                 $(data).appendTo(divParent);
-                plotChart('topvisits');
+                plotChart('top-visits');
             }
         },
     });
