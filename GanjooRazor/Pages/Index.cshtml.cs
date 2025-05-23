@@ -1600,7 +1600,7 @@ namespace GanjooRazor.Pages
 
         public async Task<ActionResult> OnGetTopVisitsAsync(string url)
         {
-            url = $"https://ganjoor.net/{url}";
+            url = $"https://ganjoor.net/{url}/";
             var apiUrl = $"https://track.kntr.ir/api/reporting/toppages/1/ganjoor.net?parentUrl={WebUtility.UrlEncode(url)}&count=20";
             var topVisitsResponse = await _httpClient.GetAsync(apiUrl);
 

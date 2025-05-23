@@ -720,7 +720,7 @@ namespace RMuseum.Services.Implementation
                 html += $"<div class=\"poemtablinks{(active == "photos" ? " active" : "")}\"><a href=\"#photos\">تصاویر چهره</a></div> {Environment.NewLine}";
                 html += $"<div class=\"poemtablinks{(active == "papersources" ? " active" : "")}\"><a href=\"#papersources\">منابع کاغذی</a></div> {Environment.NewLine}";
             }
-            html += $"<div class=\"poemtablinks{(active == "topvisits" ? " active" : "")}\"><a href=\"#topvisits\" onclick=\"javascript:loadCatRecitations('{cat.FullUrl}')\">پربازدیدها</a></div>{Environment.NewLine}";
+            html += $"<div class=\"poemtablinks{(active == "topvisits" ? " active" : "")}\"><a href=\"#topvisits\" onclick=\"javascript:loadTopVisits('{cat.FullUrl}')\">پربازدیدها</a></div>{Environment.NewLine}";
 
             html += $"</div> {Environment.NewLine}";
             return html;

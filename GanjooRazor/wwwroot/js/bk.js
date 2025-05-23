@@ -1974,7 +1974,7 @@ function loadContributionsUsers(dataType, pageNumber) {
 function loadTopVisits(url) {
     var divParent = document.getElementById('topvisits-placeholder');
     var imgElementId = 'loadingtopvisitsimg';
-    divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="remove-this-topvisits"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
+    divParent.innerHTML = '<div class="bnumdiv" id="remove-this-topvisits"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
     $.ajax({
         type: "GET",
         url: '?Handler=TopVisits&url=' + url,
