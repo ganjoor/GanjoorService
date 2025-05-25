@@ -1636,7 +1636,7 @@ namespace GanjooRazor.Pages
         public async Task<ActionResult> OnGetSevenDaysVisitsAsync(string url)
         {
             url = $"https://ganjoor.net/{url}/";
-            var apiUrl = $"https://track.kntr.ir/api/reporting/dailypagevisits/1/ganjoor.net/for/{WebUtility.UrlEncode(url)}?start={DateTime.Now.Date.AddDays(-7).ToString("yyyy-MM-dd")}";
+            var apiUrl = $"https://track.kntr.ir/api/reporting/dailypagevisits/1/ganjoor.net/for/{WebUtility.UrlEncode(url)}?start={DateTime.Now.Date.AddDays(-6).ToString("yyyy-MM-dd")}";
             var s7ndaysVisitsResponse = await _httpClient.GetAsync(apiUrl);
 
             if (!s7ndaysVisitsResponse.IsSuccessStatusCode)
