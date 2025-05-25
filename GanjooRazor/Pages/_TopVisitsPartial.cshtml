@@ -1,5 +1,11 @@
 ﻿@using DNTPersianUtils.Core
 @model GanjooRazor.Pages._TopVisitsPartialModel
+@if (Model.Visits == null)
+{
+    <p>در دریافت آمار خطایی رخ داده، لطفاً مجدداً دکمهٔ پربازدیدها را بزنید.</p>
+    return;
+}
+
 @if (Model.Visits.Length > 0)
 {
     <table class="stats" id="top-visits">

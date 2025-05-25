@@ -1606,7 +1606,17 @@ namespace GanjooRazor.Pages
 
             if (!topVisitsResponse.IsSuccessStatusCode)
             {
-                return null;
+                return new PartialViewResult()
+                {
+                    ViewName = "_TopVisitsPartial",
+                    ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                    {
+                        Model = new _TopVisitsPartialModel()
+                        {
+                            Visits = null
+                        }
+                    }
+                };
             }
             var topVisits = JsonConvert.DeserializeObject<PageVisitsViewModel[]>(await topVisitsResponse.Content.ReadAsStringAsync());
 
@@ -1618,6 +1628,41 @@ namespace GanjooRazor.Pages
                     Model = new _TopVisitsPartialModel()
                     {
                         Visits = topVisits
+                    }
+                }
+            };
+        }
+
+        public async Task<ActionResult> OnGetSevenDaysVisitsAsync(string url)
+        {
+            url = $"https://ganjoor.net/{url}/";
+            var apiUrl = $"https://track.kntr.ir/api/reporting/dailypagevisits/1/ganjoor.net/for/{WebUtility.UrlEncode(url)}?start={DateTime.Now.Date.AddDays(-7).ToString("yyyy-MM-dd")}";
+            var s7ndaysVisitsResponse = await _httpClient.GetAsync(apiUrl);
+
+            if (!s7ndaysVisitsResponse.IsSuccessStatusCode)
+            {
+                return new PartialViewResult()
+                {
+                    ViewName = "_7DaysVisitsPartial",
+                    ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                    {
+                        Model = new _7DaysVisitsPartialModel()
+                        {
+                            SevenDaysVisits = null
+                        }
+                    }
+                };
+            }
+            var s7ndaysVisits = JsonConvert.DeserializeObject<DateRangeVisitsViewModel[]>(await s7ndaysVisitsResponse.Content.ReadAsStringAsync());
+
+            return new PartialViewResult()
+            {
+                ViewName = "_7DaysVisitsPartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = new _7DaysVisitsPartialModel()
+                    {
+                        SevenDaysVisits = s7ndaysVisits
                     }
                 }
             };

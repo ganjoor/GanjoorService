@@ -1,0 +1,42 @@
+﻿@using DNTPersianUtils.Core
+@model GanjooRazor.Pages._7DaysVisitsPartialModel
+@if (Model.SevenDaysVisits == null)
+{
+    <p>در دریافت آمار خطایی رخ داده، لطفاً مجدداً دکمهٔ روند بازدیدها را بزنید.</p>
+    return;
+}
+@if (Model.SevenDaysVisits.Length > 0)
+{
+    <table class="stats" id="7days-visits">
+        <thead>
+            <tr class="h">
+                <td class="c1">ردیف</td>
+                <td class="c2">تاریخ</td>
+                <td class="c3">شمار</td>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.SevenDaysVisits.Length; i++)
+            {
+                @if (i % 2 == 0)
+                {
+                    <tr class="e">
+                        <td class="c1">@((i + 1).ToPersianNumbers())</td>
+                        <td class="c2">@RMuseum.Services.Implementation.LanguageUtils.FormatInShortDate(Model.SevenDaysVisits[i].Date)</td>
+                        <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.SevenDaysVisits[i].Visits)</td>
+                    </tr>
+
+                }
+                else
+                {
+                    <tr>
+                        <td class="c1">@((i + 1).ToPersianNumbers())</td>
+                        <td class="c2">@RMuseum.Services.Implementation.LanguageUtils.FormatInShortDate(Model.SevenDaysVisits[i].Date)</td>
+                        <td class="c3">@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.SevenDaysVisits[i].Visits)</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+}

@@ -509,6 +509,7 @@
                                 <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
                             }
                             <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                            <div class="poemtablinks"><a href="#7daysvisits" onclick="javascript:load7DaysVisits('@Model.GanjoorPage.FullUrl')">روند بازدیدها</a></div>
                             <div class="poemtablinks">
                                 <a href="#discussions">حاشیه‌ها</a>
                             </div>
@@ -746,6 +747,7 @@
                                     <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
                                 }
                                 <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                                <div class="poemtablinks"><a href="#7daysvisits" onclick="javascript:load7DaysVisits('@Model.GanjoorPage.FullUrl')">روند بازدیدها</a></div>
                                 <div class="poemtablinks">
                                     <a href="#discussions">حاشیه‌ها</a>
                                 </div>
@@ -780,6 +782,7 @@
                                     <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
                                 }
                                 <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                                <div class="poemtablinks"><a href="#7daysvisits" onclick="javascript:load7DaysVisits('@Model.GanjoorPage.FullUrl')">روند بازدیدها</a></div>
                                 <div class="poemtablinks">
                                     <a href="#discussions">حاشیه‌ها</a>
                                 </div>
@@ -873,6 +876,7 @@
                                             <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
                                         }
                                         <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                                        <div class="poemtablinks"><a href="#7daysvisits" onclick="javascript:load7DaysVisits('@Model.GanjoorPage.FullUrl')">روند بازدیدها</a></div>
                                         <div class="poemtablinks">
                                             <a href="#discussions">حاشیه‌ها</a>
                                         </div>
@@ -914,6 +918,7 @@
                                             <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
                                         }
                                         <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                                        <div class="poemtablinks"><a href="#7daysvisits" onclick="javascript:load7DaysVisits('@Model.GanjoorPage.FullUrl')">روند بازدیدها</a></div>
                                         <div class="poemtablinks">
                                             <a href="#discussions">حاشیه‌ها</a>
                                         </div>
@@ -948,6 +953,7 @@
                                         <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
                                     }
                                     <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                                    <div class="poemtablinks"><a href="#7daysvisits" onclick="javascript:load7DaysVisits('@Model.GanjoorPage.FullUrl')">روند بازدیدها</a></div>
                                     <div class="poemtablinks">
                                         <a href="#discussions">حاشیه‌ها</a>
                                     </div>
@@ -1001,6 +1007,7 @@
                                         <div class="poemtablinks active"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
                                     }
                                     <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                                    <div class="poemtablinks"><a href="#7daysvisits" onclick="javascript:load7DaysVisits('@Model.GanjoorPage.FullUrl')">روند بازدیدها</a></div>
                                     <div class="poemtablinks">
                                         <a href="#discussions">حاشیه‌ها</a>
                                     </div>
@@ -1088,6 +1095,7 @@
                                     <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
                                 }
                                 <div class="poemtablinks active"><a href="#songs">ترانه‌ها</a></div>
+                                <div class="poemtablinks"><a href="#7daysvisits" onclick="javascript:load7DaysVisits('@Model.GanjoorPage.FullUrl')">روند بازدیدها</a></div>
                                 <div class="poemtablinks">
                                     <a href="#discussions">حاشیه‌ها</a>
                                 </div>
@@ -1128,6 +1136,41 @@
                             }
                         </div>
 
+                        <div class="poempretab" id="7daysvisits"></div>
+                        <div class="poemtab">
+                            <div class="poemtablinks"><a href="#pretab">اطّلاعات</a></div>
+                            <div class="poemtablinks"><a href="#words" onclick="javascript:countPoemWords(@Model.GanjoorPage.Id, @Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id)">واژگان</a></div>
+                            <div class="poemtablinks"><a href="#manuscripts">تصاویر</a></div>
+                            @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Normal).Any())
+                            {
+                                <div class="poemtablinks"><a href="#recitations">خوانش‌ها</a></div>
+                            }
+
+                            @if (Model.GanjoorPage.Poem.Recitations.Where(a => a.RecitationType == RMuseum.Models.GanjoorAudio.RecitationType.Commentary).Any())
+                            {
+                                <div class="poemtablinks"><a href="#commentaries">شرح‌های صوتی</a></div>
+                            }
+                            <div class="poemtablinks"><a href="#qpoems">مشق شعر</a></div>
+                            @if (Model.SectionsWithRelated.Count > 0)
+                            {
+                                <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
+                            }
+                            <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                            <div class="poemtablinks active"><a href="#7daysvisits" onclick="javascript:load7DaysVisits('@Model.GanjoorPage.FullUrl')">روند بازدیدها</a></div>
+                            <div class="poemtablinks">
+                                <a href="#discussions">حاشیه‌ها</a>
+                            </div>
+                        </div>
+                        <div class="related-images-frame poemtabcontent">
+                            <div class="century cursor-pointer" id="load-7daysvisits" onclick="load7DaysVisits('@Model.GanjoorPage.FullUrl')">
+                                بارگذاری روند بازدیدها
+                            </div>
+
+                            <div id="7daysvisits-placeholder">
+                            </div>
+                        </div>
+
+
                         <div class="poempretab" id="discussions"></div>
                         <div class="poemtab">
                             <div class="poemtablinks"><a href="#pretab">اطّلاعات</a></div>
@@ -1148,6 +1191,7 @@
                                 <div class="poemtablinks"><a href="#rpoems">هم‌آهنگ‌ها</a></div>
                             }
                             <div class="poemtablinks"><a href="#songs">ترانه‌ها</a></div>
+                            <div class="poemtablinks"><a href="#7daysvisits" onclick="javascript:load7DaysVisits('@Model.GanjoorPage.FullUrl')">روند بازدیدها</a></div>
                             <div class="poemtablinks active">
                                 <a href="#discussions">حاشیه‌ها</a>
                             </div>
