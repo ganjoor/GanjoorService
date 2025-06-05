@@ -49,6 +49,7 @@
                     {
                         <a role="button" title="@recitaion.AudioArtist" class="cursor-pointer recitation-button" href="@Html.Raw(recitaion.AudioArtistUrl)" target="_blank"><i class="notranslate recitation-icons recitation-website"></i></a>
                     }
+                    <a role="button" title="پیوند ثابت" class="cursor-pointer recitation-button" href="@($"{recitaion.PoemFullUrl}?allaudio=1#{recitaion.Id}")" onclick="navigator.clipboard.writeText('@($"https://ganjoor.net{recitaion.PoemFullUrl}?allaudio=1#{recitaion.Id}")'); alert('نشانی در حافظه رونوشت شد.');"><i class="notranslate recitation-icons copylink-icon"></i></a>
                 </div>
                 @if (recitaion.Mistakes.Length > 0)
                 {
