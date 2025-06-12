@@ -113,7 +113,7 @@ form:after, form div:after {
     border: 2px solid #300;
     border-radius: 20px;
     padding: 20px;
-    background: transparent url(/image/paper1.jpg) top center repeat scroll;
+    background: transparent url(/image/papere.jpg) top center repeat scroll;
 }
 
 
@@ -355,6 +355,7 @@ div.n, div.l {
 
 .m1 p, .m2 p, .b2 p, .n p {
     color: inherit;
+    text-shadow: 0.3px 0.3px grey;
 }
 
 .item {
@@ -2221,6 +2222,9 @@ mark {
 }
 
 @media(prefers-color-scheme: dark) {
+    .m1 p, .m2 p, .b2 p, .n p {
+        text-shadow: none;
+    }
     body {
         background: rgba(0, 0, 0, 0.9);
     }
