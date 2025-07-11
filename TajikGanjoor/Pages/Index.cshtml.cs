@@ -286,7 +286,7 @@ namespace TajikGanjoor.Pages
                     
                     if (AggressiveCacheEnabled)
                     {
-                        _memoryCache.Set(cacheKey, poets);
+                        _memoryCache.Set(cacheKey, poets, TimeSpan.FromHours(1));
                     }
                 }
                 catch (Exception e)

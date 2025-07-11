@@ -162,7 +162,7 @@ namespace RMuseum.Services.Implementation
                      .SingleOrDefaultAsync();
                 if (ImageInfoCacheEnabled)
                 {
-                    _memoryCache.Set(cachKey, pictureFile);
+                    _memoryCache.Set(cachKey, pictureFile, TimeSpan.FromHours(1));
                 }
             }
 

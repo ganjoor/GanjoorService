@@ -109,7 +109,7 @@ namespace GanjooRazor.Pages
                 poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
                 if (AggressiveCacheEnabled)
                 {
-                    _memoryCache.Set(cacheKey, poets);
+                    _memoryCache.Set(cacheKey, poets, TimeSpan.FromHours(1));
                 }
             }
 
@@ -133,7 +133,7 @@ namespace GanjooRazor.Pages
                 poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
                 if (AggressiveCacheEnabled)
                 {
-                    _memoryCache.Set(cacheKey, poet);
+                    _memoryCache.Set(cacheKey, poet, TimeSpan.FromHours(1));
                 }
             }
 
@@ -178,7 +178,7 @@ namespace GanjooRazor.Pages
                 poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
                 if (AggressiveCacheEnabled)
                 {
-                    _memoryCache.Set(cacheKey, poet);
+                    _memoryCache.Set(cacheKey, poet, TimeSpan.FromHours(1));
                 }
             }
             return new OkObjectResult(poet);

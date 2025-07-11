@@ -85,7 +85,7 @@ namespace RMuseum.Controllers
                     return BadRequest(itemsInfo.ExceptionString);
                 }
 
-                _memoryCache.Set(cacheKey, itemsInfo);
+                _memoryCache.Set(cacheKey, itemsInfo, TimeSpan.FromHours(1));
             }
 
             if (itemsInfo.Result.Items.Count() > 0)
@@ -251,7 +251,7 @@ namespace RMuseum.Controllers
                 if (itemInfo.Result == null)
                     return NotFound();
 
-                _memoryCache.Set(cacheKey, itemInfo);
+                _memoryCache.Set(cacheKey, itemInfo, TimeSpan.FromHours(1));
             }
 
 
@@ -291,7 +291,7 @@ namespace RMuseum.Controllers
                 if (itemInfo.Result == null)
                     return NotFound();
 
-                _memoryCache.Set(cacheKey, itemInfo);
+                _memoryCache.Set(cacheKey, itemInfo, TimeSpan.FromHours(1));
             }
 
 
@@ -393,7 +393,7 @@ namespace RMuseum.Controllers
                 if (itemInfo.Result == null)
                     return NotFound();
 
-                _memoryCache.Set(cacheKey, itemInfo);
+                _memoryCache.Set(cacheKey, itemInfo, TimeSpan.FromHours(1));
             }
 
             Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
@@ -442,7 +442,7 @@ namespace RMuseum.Controllers
                     if (itemInfo.Result == null)
                         return NotFound();
 
-                    _memoryCache.Set(cacheKey, itemInfo);
+                    _memoryCache.Set(cacheKey, itemInfo, TimeSpan.FromHours(1));
                 }
             }
             if (itemInfo == null)
@@ -505,7 +505,7 @@ namespace RMuseum.Controllers
                     if (itemInfo.Result == null)
                         return NotFound();
 
-                    _memoryCache.Set(cacheKey, itemInfo);
+                    _memoryCache.Set(cacheKey, itemInfo, TimeSpan.FromHours(1));
                 }
             }
             if (itemInfo == null)
@@ -701,7 +701,7 @@ namespace RMuseum.Controllers
                 if (tag.Result == null)
                     return NotFound();
 
-                _memoryCache.Set(cacheKey, tag);
+                _memoryCache.Set(cacheKey, tag, TimeSpan.FromHours(1));
             }
 
 

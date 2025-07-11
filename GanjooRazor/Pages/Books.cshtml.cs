@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using System;
 
 namespace GanjooRazor.Pages
 {
@@ -55,7 +56,7 @@ namespace GanjooRazor.Pages
                     poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
                     if (AggressiveCacheEnabled)
                     {
-                        _memoryCache.Set(cacheKey, poets);
+                        _memoryCache.Set(cacheKey, poets, TimeSpan.FromHours(1));
                     }
                 }
                 catch

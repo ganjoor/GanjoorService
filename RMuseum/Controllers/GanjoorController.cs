@@ -51,7 +51,7 @@ namespace RMuseum.Controllers
 
                 poets = res.Result;
                 if (AggressiveCacheEnabled)
-                    _memoryCache.Set(cacheKey, poets);
+                    _memoryCache.Set(cacheKey, poets, TimeSpan.FromHours(1));
 
             }
             return Ok(poets);
@@ -79,7 +79,7 @@ namespace RMuseum.Controllers
 
                 centuries = res.Result;
                 if (AggressiveCacheEnabled)
-                    _memoryCache.Set(cacheKey, centuries);
+                    _memoryCache.Set(cacheKey, centuries, TimeSpan.FromHours(1));
 
             }
             return Ok(centuries);
@@ -129,7 +129,7 @@ namespace RMuseum.Controllers
                     return NotFound();
                 poet = res.Result;
                 if (AggressiveCacheEnabled)
-                    _memoryCache.Set(cacheKey, poet);
+                    _memoryCache.Set(cacheKey, poet, TimeSpan.FromHours(1));
             }
             return Ok(poet);
         }
@@ -158,7 +158,7 @@ namespace RMuseum.Controllers
                     return NotFound();
                 poet = res.Result;
                 if (AggressiveCacheEnabled)
-                    _memoryCache.Set(cacheKey, poet);
+                    _memoryCache.Set(cacheKey, poet, TimeSpan.FromHours(1));
             }
             return Ok(poet);
         }
@@ -332,8 +332,8 @@ namespace RMuseum.Controllers
                 imagePath = imgPath.Result;
 
 
-                _memoryCache.Set(cacheKey, imagePath);
-                _memoryCache.Set(cacheKeyForLastModified, lastModified);
+                _memoryCache.Set(cacheKey, imagePath, TimeSpan.FromHours(1));
+                _memoryCache.Set(cacheKeyForLastModified, lastModified, TimeSpan.FromHours(1));
 
             }
 
@@ -427,7 +427,7 @@ namespace RMuseum.Controllers
                 cat = res.Result;
                 if (AggressiveCacheEnabled)
                 {
-                    _memoryCache.Set(cacheKey, cat);
+                    _memoryCache.Set(cacheKey, cat, TimeSpan.FromHours(1));
                 }
             }
             return Ok(cat);
@@ -459,7 +459,7 @@ namespace RMuseum.Controllers
                     return NotFound();
                 cat = res.Result;
                 if (AggressiveCacheEnabled)
-                    _memoryCache.Set(cacheKey, cat);
+                    _memoryCache.Set(cacheKey, cat, TimeSpan.FromHours(1));
             }
 
 
@@ -4500,7 +4500,7 @@ namespace RMuseum.Controllers
 
                 poets = res.Result;
                 if (AggressiveCacheEnabled)
-                    _memoryCache.Set(cacheKey, poets);
+                    _memoryCache.Set(cacheKey, poets, TimeSpan.FromHours(1));
 
             }
             return Ok(poets);

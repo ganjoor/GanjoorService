@@ -83,7 +83,7 @@ namespace RMuseum.Services.Implementation
                 res.Sort((a, b) => fa.Compare(a.Nickname, b.Nickname));
                 poets = res.ToArray();
                 if (AggressiveCacheEnabled)
-                    _memoryCache.Set(cacheKey, poets);
+                    _memoryCache.Set(cacheKey, poets, TimeSpan.FromHours(1));
             }
 
             return new RServiceResult<GanjoorPoetViewModel[]>
@@ -111,7 +111,7 @@ namespace RMuseum.Services.Implementation
                 poetCat = (await GetCatById(cat.Id, catPoems, false, true)).Result;
                 if (poetCat != null && AggressiveCacheEnabled)
                 {
-                    _memoryCache.Set(cacheKey, poetCat);
+                    _memoryCache.Set(cacheKey, poetCat, TimeSpan.FromHours(1));
                 }
             }
             return new RServiceResult<GanjoorPoetCompleteViewModel>(poetCat);
@@ -713,7 +713,7 @@ namespace RMuseum.Services.Implementation
                 }
                 if (AggressiveCacheEnabled)
                 {
-                    _memoryCache.Set(cachKey, page);
+                    _memoryCache.Set(cachKey, page, TimeSpan.FromHours(1));
                 }
             }
 
@@ -1963,7 +1963,7 @@ namespace RMuseum.Services.Implementation
 
                 if (AggressiveCacheEnabled)
                 {
-                    _memoryCache.Set(cachKey, poemViewModel);
+                    _memoryCache.Set(cachKey, poemViewModel, TimeSpan.FromHours(1));
                 }
             }
             return new RServiceResult<GanjoorPoemCompleteViewModel>

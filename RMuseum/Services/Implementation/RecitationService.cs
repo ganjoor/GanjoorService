@@ -434,7 +434,7 @@ namespace RMuseum.Services.Implementationa
                      select new RecitationViewModel(audio, audio.Owner, poem, "");
 
                 narration = await source.SingleOrDefaultAsync();
-                _memoryCache.Set(cachKey, narration);
+                _memoryCache.Set(cachKey, narration, TimeSpan.FromHours(1));
             }
 
             return new RServiceResult<RecitationViewModel>(narration);

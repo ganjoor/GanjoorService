@@ -161,7 +161,7 @@ namespace RMuseum.Services.Implementation
             if (!_memoryCache.TryGetValue(_cacheKeyForIdSet, out int[] idSet))
             {
                 idSet = await _context.GanjoorSiteBanners.Where(b => b.Active == true).Select(b => b.Id).ToArrayAsync();
-                _memoryCache.Set(_cacheKeyForIdSet, idSet);
+                _memoryCache.Set(_cacheKeyForIdSet, idSet, TimeSpan.FromHours(1));
             }
             if (idSet.Length == 0)
                 return new RServiceResult<GanjoorSiteBannerViewModel>(null);//no active banner
@@ -185,7 +185,7 @@ namespace RMuseum.Services.Implementation
                     })
                     .AsNoTracking()
                     .SingleAsync();
-                _memoryCache.Set(cachKey, banner);
+                _memoryCache.Set(cachKey, banner, TimeSpan.FromHours(1));
             }
 
             return new RServiceResult<GanjoorSiteBannerViewModel>(banner);
