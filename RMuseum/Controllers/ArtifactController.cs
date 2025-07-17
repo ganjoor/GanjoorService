@@ -983,7 +983,7 @@ namespace RMuseum.Controllers
         /// add new tag value to item
         /// </summary>
         /// <param name="itemId"></param>
-        /// <param name="tag">only name is processed</param>
+        /// <param name="tag">only tag.id is processed</param>
         /// <returns></returns>
         [HttpPost("itemtagvalue/{itemId}")]
         [Authorize(Policy = RMuseumSecurableItem.ArtifactEntityShortName + ":" + RMuseumSecurableItem.EditTagValueOperationShortName)]

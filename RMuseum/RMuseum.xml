@@ -269,7 +269,7 @@
             add new tag value to item
             </summary>
             <param name="itemId"></param>
-            <param name="tag">only name is processed</param>
+            <param name="tag">only tag.id is processed</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.ArtifactController.PutItemTagValue(System.Guid,System.Boolean,RMuseum.Models.Artifact.RTagValue)">
