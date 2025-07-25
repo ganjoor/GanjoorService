@@ -251,7 +251,7 @@ namespace RMuseum.Services.Implementation
                         var firstInsertedVerse = addedVerses.Where(v => v.NewVerseResult == CorrectionReviewResult.Approved).OrderBy(v => v.VORder).First();
                         int newVersesCount = addedVerses.Count(v => v.NewVerseResult == CorrectionReviewResult.Approved);
                         var beforeVerse = poemVerses.Where(v => v.VOrder == firstInsertedVerse.VORder).SingleOrDefault();
-                        int nextVerseOrder = beforeVerse == null ? poemVerses.OrderBy(v => v.VOrder).Last().VOrder + 1 : beforeVerse.VOrder; //VOrder starts from 1
+                        int nextVerseOrder = beforeVerse == null ? poemVerses.Any() ? poemVerses.OrderBy(v => v.VOrder).Last().VOrder + 1 : 1 : beforeVerse.VOrder; //VOrder starts from 1
                         int insertionIndex = beforeVerse == null ? poemVerses.Count : poemVerses.IndexOf(beforeVerse);
 
                         foreach(var nextVerse in poemVerses.Where(v => v.VOrder >= nextVerseOrder))
