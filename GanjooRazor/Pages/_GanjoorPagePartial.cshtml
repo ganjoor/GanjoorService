@@ -626,6 +626,12 @@
                                                 </div>
                                             </a>
                                         }
+                                        @if (Model.GanjoorPage.Poem.PoemSummary != null && Model.GanjoorPage.Poem.PoemSummary.Contains("هوش مصنوعی:"))
+                                        {
+                                            <small>
+                                                <strong>اخطار:</strong> خلاصه‌های تولید شده توسط هوش مصنوعی در بسیاری از موارد نادرستند. اگر این متن به نظرتان نادرست است می‌توانید آن را <a href="/User/Editor?id=@Model.GanjoorPage.Id#summaries">ویرایش</a> کنید.
+                                            </small>
+                                        }
                                     </div>
                                 }
 
@@ -683,6 +689,7 @@
                                                     </blockquote>
                                                     <div class="notice" id="sn-@Model.GanjoorPage.Poem.Verses[verseIndex].VOrder">
                                                         <p>@Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary</p>
+                                                        
                                                         @if (Model.LoggedIn)
                                                         {
                                                             <a href="@($"/User/Editor?id={Model.GanjoorPage.Id}#summary-{Model.GanjoorPage.Poem.Verses[verseIndex].VOrder}")" role="button" class="cursor-pointer" title="ویرایش">
@@ -698,6 +705,12 @@
                                                                     <i class="notranslate noindent-info-button edit-poem-button"></i>
                                                                 </div>
                                                             </a>
+                                                        }
+                                                        @if(Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary != null && Model.GanjoorPage.Poem.Verses[verseIndex].CoupletSummary.Contains("هوش مصنوعی:"))
+                                                        {
+                                                            <small>
+                                                                <strong>اخطار:</strong> برگردان‌های تولید شده توسط هوش مصنوعی در بسیاری از موارد نادرستند. اگر این متن به نظرتان نادرست است می‌توانید آن را <a href="@($"/User/Editor?id={Model.GanjoorPage.Id}#summary-{Model.GanjoorPage.Poem.Verses[verseIndex].VOrder}")">ویرایش</a> کنید.
+                                                            </small>
                                                         }
                                                     </div>
                                                 </div>

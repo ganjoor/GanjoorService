@@ -129,7 +129,7 @@ namespace GanjooRazor.Areas.User.Pages
         public async Task<IActionResult> OnGetAsync()
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
-                return Redirect("/");
+                return Redirect("/login");
 
             FatalError = "";
             CanEdit = Request.Cookies["CanEdit"] == "True";
