@@ -2963,7 +2963,11 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<int>> BreakPoemAsync(int poemId, int vOrder, Guid userId)
         {
             var poem = (await GetPoemById(poemId, true, false, true, false, false, false, false, true, true)).Result;
-            var parentPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == poem.Category.Cat.Id).SingleAsync();
+            var parentPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == poem.Category.Cat.Id).SingleOrDefaultAsync();
+            if(parentPage == null)
+            {
+                parentPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.CatId == poem.Category.Cat.Id).SingleAsync();
+            }
             var poemTitleStaticPart = "شمارهٔ";
             if (poem.Next == null)
             {
