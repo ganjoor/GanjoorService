@@ -68,6 +68,12 @@
     <tr>
         <td colspan="4"><a href="/Admin/Poet">سخنور جدید</a></td>
     </tr>
+    <tr>
+        <td colspan="4">
+            <a role="button" onclick="savePoetsMeta()" class="actionlink">ذخیرهٔ گروه‌بندی بر اساس قرن</a>
+        </td>
+    </tr>
+
     @foreach (var poet in Model.Poets)
     {
         <tr>
@@ -158,11 +164,6 @@
             </td>
         </tr>
     }
-    <tr>
-        <td colspan="4">
-            <a role="button" onclick="savePoetsMeta()" class="actionlink">ذخیرهٔ گروه‌بندی بر اساس قرن</a>
-        </td>
-    </tr>
 </table>
 
 
