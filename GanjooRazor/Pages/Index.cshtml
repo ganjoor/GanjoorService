@@ -70,7 +70,7 @@
 
     @if ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
     {
-        <link rel="stylesheet" href="/css/leaflet.css">
+        <link rel="stylesheet" href="/css/leaflet.css?version=2">
         <style>
             .leaflet-container {
                 background-color: #c5e8ff;
@@ -87,7 +87,7 @@
 
     @if (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
     {
-        <link rel="stylesheet" href="/css/leaflet.css">
+        <link rel="stylesheet" href="/css/leaflet.css?version=2">
         <style>
             .leaflet-container {
                 background-color: #c5e8ff;
