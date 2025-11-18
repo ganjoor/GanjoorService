@@ -476,3 +476,11 @@
 	background: #fff;
 	border: 1px solid #666;
 	}
+@media(prefers-color-scheme: dark) {
+	.leaflet-popup-content-wrapper,
+	.leaflet-popup-tip {
+		background: black;
+		box-shadow: 0 3px 14px rgba(1,1,1,0.4);
+	}
+
+}
