@@ -1079,6 +1079,25 @@ namespace RMuseum.Services.Implementation
 
             await CacheCleanForPageById(poemId);
 
+            if(comment.Status == PublishStatus.Awaiting)
+            {
+                var moderators = await _appUserService.GetUsersHavingPermission(RMuseumSecurableItem.GanjoorEntityShortName, RMuseumSecurableItem.ModerateOperationShortName);
+                if (string.IsNullOrEmpty(moderators.ExceptionString)) //if not, do nothing!
+                {
+                    foreach (var moderator in moderators.Result)
+                    {
+                        await _notificationService.PushNotification
+                                        (
+                                            (Guid)moderator.Id,
+                                            "حاشیه در انتظار تأیید",
+                                            $"حاشیه‌ای در انتظار تأیید است. لطفاً <a href=\"https://ganjoor.net/User/AwaitingComments\">حاشیه‌های در انتظار تأیید</a> را بررسی فرمایید.{Environment.NewLine}" +
+                                            $"توجه فرمایید که اگر کاربر دیگری که دارای مجوز بررسی حاشیه‌هاست پیش از شما به آن رسیدگی کرده باشد آن را در صف نخواهید دید.",
+                                            NotificationType.ActionRequired
+                                        );
+                    }
+                }
+            }
+
 
             return new RServiceResult<GanjoorCommentSummaryViewModel>
                 (
