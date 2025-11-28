@@ -2988,6 +2988,10 @@ namespace RMuseum.Services.Implementation
                 parentPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.CatId == poem.Category.Cat.Id).SingleAsync();
             }
             var poemTitleStaticPart = "شمارهٔ";
+            if(!poem.Title.Contains(poemTitleStaticPart))
+            {
+                poemTitleStaticPart = "بخش";
+            }
             if (poem.Next == null)
             {
                 return await _BreakLastPoemInItsCategoryAsync(_context, poemId, vOrder, userId, poem, parentPage, poemTitleStaticPart);
