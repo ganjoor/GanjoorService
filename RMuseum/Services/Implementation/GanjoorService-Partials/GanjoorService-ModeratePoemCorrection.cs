@@ -476,7 +476,7 @@ namespace RMuseum.Services.Implementation
 
                         dbCorrection.AffectedThePoem = true;
                         var secondMetreSection = sections.FirstOrDefault(s => s.SectionType == PoemSectionType.WholePoem && s.VerseType == VersePoemSectionType.Second);
-                        dbCorrection.OriginalRhythm2 = secondMetreSection.GanjoorMetre == null ? null : secondMetreSection.GanjoorMetre.Rhythm;
+                        dbCorrection.OriginalRhythm2 = secondMetreSection == null ? null : secondMetreSection.GanjoorMetre == null ? null : secondMetreSection.GanjoorMetre.Rhythm;
 
                         if (moderation.Rhythm2 == "")
                         {
