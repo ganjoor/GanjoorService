@@ -36,6 +36,33 @@
         alert('انجام شد.');
     }
 
+    function tarkib5VersePositions(verseCount) {
+        var index = 1;
+        for (var i = 1; i <= verseCount; i++) {
+            var newVersePosition = 'versepostion-' + i.toString();
+            document.getElementById(newVersePosition).value = index == 1 || index == 3 ? 'Right' : index == 2 || index == 4 ? 'Left' : 'CenteredVerse1';
+            index++;
+            if(index == 6){
+                index = 1;
+            }
+        }
+        alert('انجام شد.');
+    }
+
+    function tarkib6VersePositions(verseCount) {
+        var index = 1;
+        for (var i = 1; i <= verseCount; i++) {
+            var newVersePosition = 'versepostion-' + i.toString();
+            document.getElementById(newVersePosition).value = index == 1 || index == 3 ? 'Right' : index == 2 || index == 4 ? 'Left' : index == 5 ? 'CenteredVerse1' : 'CenteredVerse2';
+            index++;
+            if(index == 7){
+                index = 1;
+            }
+        }
+        alert('انجام شد.');
+    }
+
+
 
 
     function savePoemCorrections(id, verseCount) {
@@ -1621,6 +1648,15 @@ else
         <tr>
             <td><a role="button" onclick="tarkib4VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="pagebutton">چینش مربعی</a></td>
         </tr>
+
+        <tr>
+            <td><a role="button" onclick="tarkib5VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="pagebutton">چینش مخمسی</a></td>
+        </tr>
+
+        <tr>
+            <td><a role="button" onclick="tarkib6VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="pagebutton">چینش مسدسی</a></td>
+        </tr>
+
 
         <tr>
             <td><a role="button" href="/User/VerseAdd/?id=@Model.PageInformation.Id" class="pagebutton">اضافه کردن مصرع‌های جاافتاده</a></td>
