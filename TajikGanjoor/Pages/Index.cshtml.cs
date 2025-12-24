@@ -209,7 +209,7 @@ namespace TajikGanjoor.Pages
                 ViewData["Title"] = $"Ганҷур - ҷустуҷӯ - {Query}";
                 if(pageNumber > 1)
                 {
-                    ViewData["Title"] += "Сафҳа ӣ " + pageNumber.ToString();
+                    ViewData["Title"] += "Сафҳаи " + pageNumber.ToString();
                 }
             }
             else
