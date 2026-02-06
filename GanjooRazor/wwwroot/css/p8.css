@@ -1424,7 +1424,8 @@ audio {
     border: 3px solid black;
     color: white;
     text-align: center;
-    display: inline-table;
+    display: inline-grid;
+    place-content: center;
     margin: 2px;
 }
 
