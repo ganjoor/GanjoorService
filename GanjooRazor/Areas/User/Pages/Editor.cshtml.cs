@@ -364,17 +364,17 @@ namespace GanjooRazor.Areas.User.Pages
                             else
                             {
                                 int? langaugeId = null;
-                                if (pcs.verseLanguages[vOrder] != null && !(int.Parse(pcs.verseLanguages[vOrder]) == 1 && pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).LanguageId == null))
+                                if (pcs.verseLanguages[vOrder] != null && !(int.Parse(pcs.verseLanguages[vOrder]) == 1 && pageInformation.Poem.Verses.First(v => v.VOrder == vOrder).LanguageId == null))
                                 {
                                     langaugeId = int.Parse(pcs.verseLanguages[vOrder]);
                                 }
-                                var verse = pageInformation.Poem.Verses.Where(verse => verse.VOrder == vOrder).SingleOrDefault();
+                                var verse = pageInformation.Poem.Verses.Where(verse => verse.VOrder == vOrder).FirstOrDefault();
                                 if (verse == null)
                                 {
                                     continue;
                                 }
                                 string verseText = vParts.Length < 2 || verse.Text == vParts[1] ? null : vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک");
-                                VersePosition? versePos = pageInformation.Poem.Verses.Single(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : versePositions[vOrder - 1];
+                                VersePosition? versePos = pageInformation.Poem.Verses.First(v => v.VOrder == vOrder).VersePosition == versePositions[vOrder - 1] ? null : versePositions[vOrder - 1];
                                 bool markedForDelete = pcs.verseOrderMarkedForDelete.Any(v => v == vOrder);
 
                                 if (verseText != null || markedForDelete || versePos != null || langaugeId != null)
