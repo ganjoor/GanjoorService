@@ -12,7 +12,6 @@ using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio;
 using RMuseum.Models.GanjoorAudio.ViewModels;
-using RMuseum.Models.PDFLibrary;
 using RMuseum.Services.Implementation;
 using System;
 using System.Collections.Generic;
@@ -47,6 +46,21 @@ namespace GanjooRazor.Pages
                 try
                 {
                     return bool.Parse(Configuration["AggressiveCacheEnabled"]);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        public bool OfflineMode
+        {
+            get
+            {
+                try
+                {
+                    return bool.Parse(Configuration["OfflineMode"]);
                 }
                 catch
                 {

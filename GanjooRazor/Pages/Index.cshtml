@@ -81,7 +81,10 @@
         </style>
         <script src="~/js/leaflet.js"></script>
         <script src="~/js/leaflet-providers.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
+        @if(!Model.OfflineMode)
+        {
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
+        }
     }
 
     @if (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
@@ -98,8 +101,10 @@
         </style>
         <script src="~/js/leaflet.js"></script>
         <script src="~/js/leaflet-providers.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
-
+        @if (!Model.OfflineMode)
+        {
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
+        }
     }
 
 </head>
