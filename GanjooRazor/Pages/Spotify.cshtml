@@ -20,23 +20,33 @@
     <script src="/js/spotify.js?version=1"></script>
     <script>
         $(function () {
-            $('#spotify').on('click', function() {
-                window.location.href = "@Html.Raw($"/spotify/?p={Model.PoemId}")";
-            });
+        $('#spotify').on('click', function() {
+        window.location.href = "@Html.Raw($"/spotify/?p={Model.PoemId}")";
+        });
 
-            $('#golha').on('click', function () {
-                window.location.href = "@Html.Raw($"/golha/?p={Model.PoemId}")";
-            });
+        $('#golha').on('click', function () {
+        window.location.href = "@Html.Raw($"/golha/?p={Model.PoemId}")";
+        });
 
-            $('#beeptunes').on('click', function () {
-                window.location.href = "@Html.Raw($"/bp/?p={Model.PoemId}")";
-            });
+        $('#beeptunes').on('click', function () {
+        window.location.href = "@Html.Raw($"/bp/?p={Model.PoemId}")";
+        });
         });
     </script>
 </head>
 <body>
     <div id="fa">
         <div class="poem">
+            @if(!Model.SpotifyWorking)
+            {
+                <div class="width-100per">
+                    <div class="width-100per text-align-center">
+                        <p class="alert-text">
+                            متأسفانه امکان جستجوی قطعات از طریق اسپاتیفای وجود ندارد. توضیحات بیشتر را در <a href="https://blog.ganjoor.net/1405/03/12/spotify-and-audio-issues/" target="_blank">این نشانی</a> ملاحظه بفرمایید.
+                        </p>
+                    </div>
+                </div>
+            }
             @if (Model.PoemId == 0)
             {
                 <div class="width-100per">

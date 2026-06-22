@@ -88,6 +88,21 @@ namespace GanjooRazor.Pages
         [BindProperty]
         public PoemMusicTrackViewModel PoemMusicTrackViewModel { get; set; }
 
+        public bool SpotifyWorking
+        {
+            get
+            {
+                try
+                {
+                    return bool.Parse(Configuration["SpotifyWorking"]);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
         private async Task _GetSuggestedSongs()
         {
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{PoemId}/songs/?approved=false&trackType={(int)PoemMusicTrackType.Spotify}");
