@@ -395,7 +395,7 @@ namespace RMuseum.Services.Implementation
                                                            if (includesAllChildren)
                                                            {
                                                                thisCat = parent;
-                                                               lastParent = thisCat.Ancestors.Last();
+                                                               lastParent = thisCat.Ancestors.LastOrDefault();
                                                                if(lastParent == null)
                                                                {
                                                                    break;
