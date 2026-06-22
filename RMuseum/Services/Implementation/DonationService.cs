@@ -624,6 +624,9 @@ namespace RMuseum.Services.Implementation
                 htmlText += $"<p>{Environment.NewLine}";
                 htmlText += $"مبالغ واریزی جهت پرداخت هزینه‌های جاری (میزبانی وب و ...)، گسترش امکانات و همینطور پایگاه داده‌های سایت مورد استفاده قرار خواهد گرفت.{Environment.NewLine}";
                 htmlText += $"</p>{Environment.NewLine}";
+                htmlText += $"<p>{Environment.NewLine}";
+                htmlText += $"ضمناً دوستانی که از خارج از ایران تمایل به ارسال کمک مالی دارند توجه فرمایند که به لحاظ محدودیتها و مشکلاتی که ممکن است برای این عزیزان ایجاد شود نیاز نیست به زحمت بیفتند. عموماً هزینه‌های جاری گنجور با کمکهای بزرگواران داخل ایران تأمین می‌شود و از این جهت راهی برای ارسال کمک از خارج از ایران در نظر گرفته نشده.\r\n{Environment.NewLine}";
+                htmlText += $"</p>{Environment.NewLine}";
                 htmlText += $"</div>{Environment.NewLine}";
             }
             else
