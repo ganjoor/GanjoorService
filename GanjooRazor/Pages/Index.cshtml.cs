@@ -69,6 +69,21 @@ namespace GanjooRazor.Pages
             }
         }
 
+        public bool ReadOnlyMode
+        {
+            get
+            {
+                try
+                {
+                    return bool.Parse(Configuration["ReadOnlyMode"]);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
         /// <summary>
         /// constructor
         /// </summary>
