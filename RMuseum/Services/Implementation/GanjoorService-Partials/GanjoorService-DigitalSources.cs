@@ -413,7 +413,19 @@ namespace RMuseum.Services.Implementation
                                            var dbPageDigitalPage = await context.GanjoorPages.Where(p => p.FullUrl == $"/sources/{digitalSource.UrlSlug}").FirstOrDefaultAsync();
                                            if(dbPageDigitalPage != null)
                                            {
-                                               string commentTag = $"{Environment.NewLine}<!- STATIC -->{Environment.NewLine}";
+                                               string commentTag = $"{Environment.NewLine}<!-- STATIC -->{Environment.NewLine}";
+
+                                               dbPageDigitalPage.HtmlText =
+                                               dbPageDigitalPage.HtmlText.Replace(
+                                                   $"{Environment.NewLine}<!- STATIC -->{Environment.NewLine}",
+                                                    commentTag
+                                                   );
+
+
+                                               if (!dbPageDigitalPage.HtmlText.Contains(commentTag))
+                                               {
+
+                                               }
                                                if (dbPageDigitalPage.HtmlText.Contains(commentTag))
                                                {
                                                    htmlText = dbPageDigitalPage.HtmlText.Substring(0, dbPageDigitalPage.HtmlText.IndexOf(commentTag));
