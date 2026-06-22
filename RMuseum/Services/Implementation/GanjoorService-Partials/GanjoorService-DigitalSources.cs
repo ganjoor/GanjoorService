@@ -1,7 +1,6 @@
 ﻿using DNTPersianUtils.Core;
 using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
-using RMuseum.Migrations;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
@@ -9,10 +8,8 @@ using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services.Implementation
