@@ -81,12 +81,12 @@
                         <h3><strong>انتخاب منبع جستجو:</strong></h3>
                     </div>
                     <div style="width:100%;text-align:center">
-                        <input type="radio" id="spotify" name="spotify" value="اسپاتیفای" checked>
-                        <label for="spotify"><a href="@Html.Raw($"/spotify/?p={Model.PoemId}")"><img src="/image/spotify.png" alt="اسپاتیفای" height="32" /></a></label>
                         <input type="radio" id="golha" name="golha" value="گلها">
                         <label for="golha"><a href="@Html.Raw($"/golha/?p={Model.PoemId}")"><img src="/image/golha.png" alt="گلها" height="32" /></a></label>
                         <input type="radio" id="beeptunes" name="beeptunes" value="بیپ‌تونز">
                         <label for="beeptunes"><a href="@Html.Raw($"/bp/?p={Model.PoemId}")"><img src="/image/beeptunes.png" alt="بیپ‌تونز" height="32" /></a></label>
+                        <input type="radio" id="spotify" name="spotify" value="اسپاتیفای" checked>
+                        <label for="spotify"><a href="@Html.Raw($"/spotify/?p={Model.PoemId}")"><img src="/image/spotify.png" alt="اسپاتیفای" height="32" /></a></label>
                     </div>
                 </div>
                 <p>
