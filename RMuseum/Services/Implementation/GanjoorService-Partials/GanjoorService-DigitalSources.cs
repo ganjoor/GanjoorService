@@ -368,7 +368,10 @@ namespace RMuseum.Services.Implementation
                                            {
                                                if(!cat.Ancestors.Any())
                                                {
-                                                   finalCats.Add(cat);
+                                                   if (!finalCats.Where(c => c.Id == cat.Id).Any())
+                                                   {
+                                                       finalCats.Add(cat);
+                                                   }
                                                }
                                                else
                                                {
@@ -406,7 +409,10 @@ namespace RMuseum.Services.Implementation
                                                            }
                                                        }
                                                    }
-                                                   finalCats.Add(thisCat);
+                                                   if(!finalCats.Where(c => c.Id == thisCat.Id).Any())
+                                                   {
+                                                       finalCats.Add(thisCat);
+                                                   }                                                   
                                                }
                                            }
 
@@ -435,7 +441,7 @@ namespace RMuseum.Services.Implementation
                                                    htmlText = dbPageDigitalPage.HtmlText;
                                                }
                                                htmlText += commentTag;
-                                               htmlText += $"<p>{digitalSource.FullName} منبع دیجیتال {LanguageUtils.FormatMoney(digitalSource.CoupletsCount)} بیت شعر بخش‌های زیر است:</p>{Environment.NewLine}";
+                                               htmlText += $"<p>{digitalSource.FullName} منبع دیجیتال {LanguageUtils.FormatMoney(digitalSource.CoupletsCount)} بیت شعر از بخش‌های زیر است:</p>{Environment.NewLine}";
                                                htmlText += $"<table>{Environment.NewLine}" +
                                                     $"<tr class=\"h\">{Environment.NewLine}" +
                                                     $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
@@ -450,7 +456,12 @@ namespace RMuseum.Services.Implementation
                                                        htmlText += $"<tr>{Environment.NewLine}";
 
                                                    htmlText += $"<td class=\"c1\">{(rowIndex + 1).ToPersianNumbers()}</td>{Environment.NewLine}";
-                                                   htmlText += $"<td class=\"c2\"><a href=\"{cat.FullUrl}\">{cat.Title}</a></td>{Environment.NewLine}";
+                                                   string catTitle = cat.Title;
+                                                   for (int a = cat.Ancestors.Count - 1; a >= 0; a--)
+                                                   {
+                                                       catTitle = cat.Ancestors.ElementAt(a).Title + " &raquo; " + catTitle;
+                                                   }
+                                                   htmlText += $"<td class=\"c2\"><a href=\"{cat.FullUrl}\">{catTitle}</a></td>{Environment.NewLine}";
                                                    htmlText += $"</tr>{Environment.NewLine}";
                                                    rowIndex++;
                                                }
