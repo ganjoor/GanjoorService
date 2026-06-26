@@ -37,5 +37,10 @@ namespace RMuseum.Models.Ganjoor
         /// date/time
         /// </summary>
         public DateTime DateTime { get; set; }
+
+        /// <summary>
+        /// counter of visits (1 for first and ...)
+        /// </summary>
+        public int Counter { get; set; }
     }
 }

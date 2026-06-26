@@ -22,31 +22,37 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="poemId"></param>
-        /// <returns></returns>
-        public async Task<RServiceResult<bool>> AddAsync(Guid userId, int poemId)
+        /// <returns>previous visit date/time if any</returns>
+        public async Task<RServiceResult<DateTime?>> AddAsync(Guid userId, int poemId)
         {
             bool keepHistory = false;
             var kRes = await _optionsService.GetValueAsync("KeepHistory", userId, null);
             if (!string.IsNullOrEmpty(kRes.Result))
                 bool.TryParse(kRes.Result, out keepHistory);
             if (!keepHistory)
-                return new RServiceResult<bool>(false);
+                return new RServiceResult<DateTime?>(null);
 
+            
             var oldTracks = await _context.GanjoorUserPoemVisits.Where(v => v.PoemId == poemId && v.UserId == userId).ToArrayAsync();
+            int count = oldTracks.Any() ? oldTracks.Last().Counter : 0;
+            DateTime? preVisit = oldTracks.Any() ? oldTracks.Last().DateTime : null;
             _context.RemoveRange(oldTracks);
             await _context.SaveChangesAsync();
+
+            count++;
 
             GanjoorUserPoemVisit visit = new GanjoorUserPoemVisit()
             {
                 UserId = userId,
                 PoemId = poemId,
-                DateTime = DateTime.Now
+                DateTime = DateTime.Now,
+                Counter = count,
             };
 
             _context.Add(visit);
             await _context.SaveChangesAsync();
 
-            return new RServiceResult<bool>(true);
+            return new RServiceResult<DateTime?>(preVisit);
         }
 
         /// <summary>

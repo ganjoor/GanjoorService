@@ -16,7 +16,7 @@ namespace RMuseum.Services
         /// <param name="userId"></param>
         /// <param name="poemId"></param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> AddAsync(Guid userId, int poemId);
+        Task<RServiceResult<DateTime?>> AddAsync(Guid userId, int poemId);
 
         /// <summary>
         /// delete record
