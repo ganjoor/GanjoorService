@@ -3471,7 +3471,7 @@
             add a user history track
             </summary>
             <param name="poemId"></param>
-            <returns></returns>
+            <returns>GanjoorUserPrePoemVisitViewModel(LastVisit, TotalVisits)</returns>
         </member>
         <member name="M:RMuseum.Controllers.UserVisitsTrackingController.DeleteAsync(System.Guid)">
             <summary>
