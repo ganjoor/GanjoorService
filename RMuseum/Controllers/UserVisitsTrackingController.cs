@@ -44,10 +44,10 @@ namespace RMuseum.Controllers
         /// add a user history track
         /// </summary>
         /// <param name="poemId"></param>
-        /// <returns></returns>
+        /// <returns>GanjoorUserPrePoemVisitViewModel(LastVisit, TotalVisits)</returns>
         [HttpPost]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorUserPrePoemVisitViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> AddAsync([FromBody] int poemId)

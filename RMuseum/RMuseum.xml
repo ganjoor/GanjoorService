@@ -10534,6 +10534,11 @@
             date/time
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorUserPoemVisit.Counter">
+            <summary>
+            counter of visits (1 for first and ...)
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorVerse">
             <summary>
             Ganjoor Verse
@@ -22448,7 +22453,7 @@
             </summary>
             <param name="userId"></param>
             <param name="poemId"></param>
-            <returns></returns>
+            <returns>previous visit date/time if any</returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.UserVisitsTrackingService.DeleteAsync(System.Guid,System.Guid)">
             <summary>
