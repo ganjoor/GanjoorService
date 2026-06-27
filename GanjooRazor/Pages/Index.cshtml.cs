@@ -1127,8 +1127,8 @@ namespace GanjooRazor.Pages
                     {
                         return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
                     }
-                    var res = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
-                    if (res == false)
+                    var res = JsonConvert.DeserializeObject<GanjoorUserPrePoemVisitViewModel>(await response.Content.ReadAsStringAsync());
+                    if (res.KeepTrack == false)
                     {
                         if (Request.Cookies["KeepHistory"] != null)
                         {
