@@ -30,7 +30,12 @@ namespace RMuseum.Services.Implementation
             if (!string.IsNullOrEmpty(kRes.Result))
                 bool.TryParse(kRes.Result, out keepHistory);
             if (!keepHistory)
-                return new RServiceResult<GanjoorUserPrePoemVisitViewModel>(null);
+                return new RServiceResult<GanjoorUserPrePoemVisitViewModel>(new GanjoorUserPrePoemVisitViewModel()
+                {
+                    LastVisit = null,
+                    TotalVisits = 0,
+                    KeepTrack = keepHistory,
+                });
 
             
             var oldTracks = await _context.GanjoorUserPoemVisits.Where(v => v.PoemId == poemId && v.UserId == userId).ToArrayAsync();
@@ -58,6 +63,7 @@ namespace RMuseum.Services.Implementation
                 {
                     LastVisit = preVisit,
                     TotalVisits = count,
+                    KeepTrack= keepHistory,
                 }
                 );
         }

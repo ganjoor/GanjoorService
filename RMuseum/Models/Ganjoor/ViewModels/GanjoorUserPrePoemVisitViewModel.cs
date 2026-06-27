@@ -6,5 +6,6 @@ namespace RMuseum.Models.Ganjoor.ViewModels
     {
         public DateTime? LastVisit { get; set; }
         public int TotalVisits { get; set; }
+        public bool KeepTrack { get; set; }
     }
 }
