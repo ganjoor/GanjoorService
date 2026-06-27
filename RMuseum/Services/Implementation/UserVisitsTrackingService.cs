@@ -39,7 +39,7 @@ namespace RMuseum.Services.Implementation
 
             
             var oldTracks = await _context.GanjoorUserPoemVisits.Where(v => v.PoemId == poemId && v.UserId == userId).ToArrayAsync();
-            int count = oldTracks.Any() ? oldTracks.Last().Counter : 0;
+            int count = oldTracks.Any() ? Math.Max(oldTracks.Last().Counter, 1) : 0;
             DateTime? preVisit = oldTracks.Any() ? oldTracks.Last().DateTime : null;
             _context.RemoveRange(oldTracks);
             await _context.SaveChangesAsync();

@@ -1,4 +1,5 @@
-﻿using GanjooRazor.Utils;
+﻿using DNTPersianUtils.Core;
+using GanjooRazor.Utils;
 using KontorService.Models.Reporting.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -1140,7 +1141,7 @@ namespace GanjooRazor.Pages
                         };
                         Response.Cookies.Append("KeepHistory", $"{false}", cookieOption);
                     }
-                    return new OkObjectResult(res);
+                    return new OkObjectResult(res.KeepTrack && res.LastVisit != null ? $"از این صفحه بار قبل {res.LastVisit.ToFriendlyPersianDateTextify()} و در مجموع {res.TotalVisits.ToPersianNumbers()} بار بازدید کرده‌ام." : "");
                 }
                 else
                 {

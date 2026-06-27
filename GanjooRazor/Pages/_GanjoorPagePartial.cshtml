@@ -520,7 +520,6 @@
                                 <p>
                                     <small><i class="notranslate pageicons mouse-icon"></i> با انتخاب متن و لمس متن انتخابی می‌توانید آن را در لغتنامهٔ دهخدا جستجو کنید.</small>
                                 </p>
-
                                 @if (Model.GanjoorPage.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem).Any() || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.OldTag) || !string.IsNullOrEmpty(Model.GanjoorPage.Poem.SourceName))
                                 {
                                     <table>
@@ -600,6 +599,13 @@
 
 
                                     </table>
+                                }
+
+                                @if (Model.LoggedIn && Model.KeepHistory)
+                                {
+                                    <p id="track-record">
+
+                                    </p>
                                 }
 
 

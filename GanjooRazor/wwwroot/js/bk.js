@@ -1118,6 +1118,10 @@ function AddToMyHistory(poemId) {
         $.ajax({
             type: "POST",
             url: '?Handler=AddToMyHistory&poemId=' + String(poemId),
+            success: function (result) {
+                console.log(result);
+                $('#track-record').html('<small>' + result + ' <a href="/User/History">*</a></small>');
+                },
         });
     }, 1);
 }
