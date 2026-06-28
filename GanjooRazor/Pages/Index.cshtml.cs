@@ -1141,7 +1141,7 @@ namespace GanjooRazor.Pages
                         };
                         Response.Cookies.Append("KeepHistory", $"{false}", cookieOption);
                     }
-                    return new OkObjectResult(res.KeepTrack && res.LastVisit != null ? $"از این صفحه بار قبل {res.LastVisit.ToFriendlyPersianDateTextify()} و در مجموع {res.TotalVisits.ToPersianNumbers()} بار بازدید کرده‌ام." : "");
+                    return new OkObjectResult(res.KeepTrack && res.LastVisit != null ? $"از این صفحه آخرین بار {res.LastVisit.ToFriendlyPersianDateTextify()} و در مجموع {res.TotalVisits.ToPersianNumbers()} بار بازدید کرده‌ام." : "");
                 }
                 else
                 {
