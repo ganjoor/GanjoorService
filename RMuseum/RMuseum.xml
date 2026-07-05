@@ -2883,11 +2883,12 @@
             Notifications controller
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.NotificationController.#ctor(RSecurityBackend.Services.IRNotificationService)">
+        <member name="M:RMuseum.Controllers.NotificationController.#ctor(RSecurityBackend.Services.IRNotificationService,RSecurityBackend.Services.IAppUserService)">
             <summary>
             constructor
             </summary>
             <param name="notificationService"></param>
+            <param name="appUserService"></param>
         </member>
         <member name="M:RMuseum.Controllers.NumberingController.GetNumberingsAsync">
             <summary>

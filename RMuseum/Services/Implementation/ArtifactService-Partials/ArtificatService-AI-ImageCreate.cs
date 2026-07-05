@@ -15,6 +15,7 @@ using System.Drawing;
 using FluentFTP;
 using System.Threading.Tasks;
 using RMuseum.Models.GanjoorIntegration;
+using Betalgo.Ranul.OpenAI.Contracts.Requests.Image;
 
 
 namespace RMuseum.Services.Implementation
@@ -222,7 +223,7 @@ namespace RMuseum.Services.Implementation
                                       await jobProgressServiceEF.UpdateJob(job.Id, i, $"{i} از {poems.Count} - {poem.FullTitle} - 4");
 
                                       //4
-                                      var imageCreationResult = await openAiService.Image.CreateImage(new ImageCreateRequest
+                                      var imageCreationResult = await openAiService.Image.CreateImage(new CreateImageRequest
                                         (
                                         prompt
                                         )
@@ -232,7 +233,7 @@ namespace RMuseum.Services.Implementation
                                         );
                                       if (imageCreationResult.Successful)
                                       {
-                                          string imageUrl = imageCreationResult.Results.Select(u => u.Url).First();
+                                          string imageUrl = imageCreationResult.Results.First();
 
                                           if (!string.IsNullOrEmpty(imageUrl))
                                           {

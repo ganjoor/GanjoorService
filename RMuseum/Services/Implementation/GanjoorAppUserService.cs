@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -34,9 +35,10 @@ namespace RMuseum.Services.Implementation
             IImageFileService imageFileService,
             IUserRoleService userRoleService,
             IConfiguration configuration,
-            IMemoryCache memoryCache
+            IMemoryCache memoryCache,
+            IEmailSender emailSender
             )
-            : base(context, userManager, signInManager, roleManager, secretGenerator, imageFileService, userRoleService, configuration)
+            : base(context, userManager, signInManager, roleManager, secretGenerator, imageFileService, userRoleService, configuration, emailSender)
         {
             _memoryCache = memoryCache;
         }
