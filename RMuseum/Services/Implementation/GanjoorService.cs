@@ -3537,6 +3537,26 @@ namespace RMuseum.Services.Implementation
                     await ftpClient.UploadFile(localFilePath, remoteFilePath);
                     await ftpClient.Disconnect();
                 }
+                if (bool.Parse(Configuration.GetSection("BackupFTPServer")["UploadEnabled"]))
+                {
+                    var ftpClient = new AsyncFtpClient
+                                        (
+                                            Configuration.GetSection("BackupFTPServer")["Host"],
+                                            Configuration.GetSection("BackupFTPServer")["Username"],
+                                            Configuration.GetSection("BackupFTPServer")["Password"]
+                                        );
+                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                    await ftpClient.AutoConnect();
+                    ftpClient.Config.RetryAttempts = 3;
+                    RServiceResult<string> imgPath = _imageFileService.GetImagePath(img.Result);
+                    if (!string.IsNullOrEmpty(imgPath.ExceptionString))
+                        return new RServiceResult<bool>(false, imgPath.ExceptionString);
+
+                    var localFilePath = imgPath.Result;
+                    var remoteFilePath = $"{Configuration.GetSection("BackupFTPServer")["RootPath"]}/images/PoetImages/{Path.GetFileName(localFilePath)}";
+                    await ftpClient.UploadFile(localFilePath, remoteFilePath);
+                    await ftpClient.Disconnect();
+                }
                 var dbPoet = await _context.GanjoorPoets.Where(p => p.Id == poetId).SingleAsync();
                 dbPoet.RImageId = imageId;
                 _context.GanjoorPoets.Update(dbPoet);
