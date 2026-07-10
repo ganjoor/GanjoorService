@@ -277,6 +277,28 @@ namespace RMuseum.Services.Implementation
                     await ftpClient.Disconnect();
                 }
 
+                if (bool.Parse(Configuration.GetSection("BackupFTPServer")["UploadEnabled"]))
+                {
+                    var ftpClient = new AsyncFtpClient
+                    (
+                        Configuration.GetSection("BackupFTPServer")["Host"],
+                        Configuration.GetSection("BackupFTPServer")["Username"],
+                        Configuration.GetSection("BackupFTPServer")["Password"]
+                    );
+                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                    await ftpClient.AutoConnect();
+                    ftpClient.Config.RetryAttempts = 3;
+
+                    foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
+                    {
+                        var localFilePath = GetImagePath(rPictureFile, imageSizeString).Result;
+                        var remoteFilePath = $"{Configuration.GetSection("BackupFTPServer")["RootPath"]}/images/{rPictureFile.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                        await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+                    }
+
+                    await ftpClient.Disconnect();
+                }
+
                 return result;
             }
         }
@@ -351,6 +373,30 @@ namespace RMuseum.Services.Implementation
                 {
                     var localFilePath = GetImagePath(rPictureFile, imageSizeString).Result;
                     var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/{rPictureFile.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                    await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+                }
+
+                await ftpClient.Disconnect();
+                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+
+            }
+
+            if (bool.Parse(Configuration.GetSection("BackupFTPServer")["UploadEnabled"]))
+            {
+                var ftpClient = new AsyncFtpClient
+                (
+                    Configuration.GetSection("BackupFTPServer")["Host"],
+                    Configuration.GetSection("BackupFTPServer")["Username"],
+                    Configuration.GetSection("BackupFTPServer")["Password"]
+                );
+                ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                await ftpClient.AutoConnect();
+                ftpClient.Config.RetryAttempts = 3;
+
+                foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
+                {
+                    var localFilePath = GetImagePath(rPictureFile, imageSizeString).Result;
+                    var remoteFilePath = $"{Configuration.GetSection("BackupFTPServer")["RootPath"]}/images/{rPictureFile.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
                     await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
                 }
 
@@ -668,6 +714,25 @@ namespace RMuseum.Services.Implementation
 
                                 var localFilePath = _simpleImageStorage.GetImagePath(image).Result;
                                 var remoteFilePath = $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}/images/CroppedImages/{Path.GetFileName(localFilePath)}";
+                                await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+
+                                await ftpClient.Disconnect();
+                            }
+
+                            if (bool.Parse(Configuration.GetSection("BackupFTPServer")["UploadEnabled"]))
+                            {
+                                var ftpClient = new AsyncFtpClient
+                                (
+                                    Configuration.GetSection("BackupFTPServer")["Host"],
+                                    Configuration.GetSection("BackupFTPServer")["Username"],
+                                    Configuration.GetSection("BackupFTPServer")["Password"]
+                                );
+                                ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                                await ftpClient.AutoConnect();
+                                ftpClient.Config.RetryAttempts = 3;
+
+                                var localFilePath = _simpleImageStorage.GetImagePath(image).Result;
+                                var remoteFilePath = $"{Configuration.GetSection("BackupFTPServer")["RootPath"]}/images/CroppedImages/{Path.GetFileName(localFilePath)}";
                                 await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
 
                                 await ftpClient.Disconnect();
