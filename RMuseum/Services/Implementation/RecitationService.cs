@@ -1450,6 +1450,31 @@ namespace RMuseum.Services.Implementationa
                     await ftpClient.Disconnect();
                 }
 
+                if (bool.Parse(Configuration.GetSection("BackupFTPServer")["UploadEnabled"]))
+                {
+                    var ftpClient = new AsyncFtpClient
+                    (
+                        Configuration.GetSection("BackupFTPServer")["Host"],
+                        Configuration.GetSection("BackupFTPServer")["Username"],
+                        Configuration.GetSection("BackupFTPServer")["Password"]
+                    );
+                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                    await ftpClient.AutoConnect();
+                    ftpClient.Config.RetryAttempts = 3;
+
+                    if (true == await ftpClient.FileExists($"{Configuration.GetSection("BackupFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}"))
+                    {
+                        await ftpClient.DeleteFile($"{Configuration.GetSection("BackupFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
+                    }
+
+                    if (true == await ftpClient.FileExists($"{Configuration.GetSection("BackupFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}"))
+                    {
+                        await ftpClient.DeleteFile($"{Configuration.GetSection("BackupFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
+                    }
+
+                    await ftpClient.Disconnect();
+                }
+
                 string audioTitle = narration.AudioTitle;
                 int GanjoorPostId = narration.GanjoorPostId;
                 Guid userId = narration.OwnerId;
