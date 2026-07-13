@@ -1338,6 +1338,31 @@ namespace RMuseum.Services.Implementationa
                     await ftpClient.Disconnect();
                 }
 
+                if (bool.Parse(Configuration.GetSection("BackupFTPServer")["UploadEnabled"]))
+                {
+                    var ftpClient = new AsyncFtpClient
+                    (
+                        Configuration.GetSection("BackupFTPServer")["Host"],
+                        Configuration.GetSection("BackupFTPServer")["Username"],
+                        Configuration.GetSection("BackupFTPServer")["Password"]
+                    );
+                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                    await ftpClient.AutoConnect();
+                    ftpClient.Config.RetryAttempts = 3;
+
+                    await ftpClient.UploadFile(narration.LocalXmlFilePath, $"{Configuration.GetSection("BackupFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}", createRemoteDir: true);
+                    tracker.XmlFileCopied = true;
+                    context.RecitationPublishingTrackers.Update(tracker);
+                    await context.SaveChangesAsync();
+
+                    await ftpClient.UploadFile(narration.LocalMp3FilePath, $"{Configuration.GetSection("BackupFTPServer")["RootPath"]}{narration.RemoteMp3FilePath}", createRemoteDir: true);
+                    tracker.Mp3FileCopied = true;
+                    context.RecitationPublishingTrackers.Update(tracker);
+                    await context.SaveChangesAsync();
+
+                    await ftpClient.Disconnect();
+                }
+
                 narration.AudioSyncStatus = AudioSyncStatus.SynchronizedOrRejected;
                 context.Recitations.Update(narration);
                 await context.SaveChangesAsync();
@@ -1420,6 +1445,31 @@ namespace RMuseum.Services.Implementationa
                     if (true == await ftpClient.FileExists($"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}"))
                     {
                         await ftpClient.DeleteFile($"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
+                    }
+
+                    await ftpClient.Disconnect();
+                }
+
+                if (bool.Parse(Configuration.GetSection("BackupFTPServer")["UploadEnabled"]))
+                {
+                    var ftpClient = new AsyncFtpClient
+                    (
+                        Configuration.GetSection("BackupFTPServer")["Host"],
+                        Configuration.GetSection("BackupFTPServer")["Username"],
+                        Configuration.GetSection("BackupFTPServer")["Password"]
+                    );
+                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                    await ftpClient.AutoConnect();
+                    ftpClient.Config.RetryAttempts = 3;
+
+                    if (true == await ftpClient.FileExists($"{Configuration.GetSection("BackupFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}"))
+                    {
+                        await ftpClient.DeleteFile($"{Configuration.GetSection("BackupFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
+                    }
+
+                    if (true == await ftpClient.FileExists($"{Configuration.GetSection("BackupFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}"))
+                    {
+                        await ftpClient.DeleteFile($"{Configuration.GetSection("BackupFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}");
                     }
 
                     await ftpClient.Disconnect();

@@ -196,6 +196,42 @@ namespace RMuseum.Services.Implementation
                                             await ftpClient.Disconnect();
                                         }
 
+                                        if (bool.Parse(Configuration.GetSection("BackupFTPServer")["UploadEnabled"]))
+                                        {
+                                            var ftpClient = new AsyncFtpClient
+                                            (
+                                                Configuration.GetSection("BackupFTPServer")["Host"],
+                                                Configuration.GetSection("BackupFTPServer")["Username"],
+                                                Configuration.GetSection("BackupFTPServer")["Password"]
+                                            );
+                                            ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                                            await ftpClient.AutoConnect();
+                                            ftpClient.Config.RetryAttempts = 3;
+
+                                            string dir = Path.GetDirectoryName(xmlFile);
+
+                                            string rootDirName = Path.GetFileName(dir);
+                                            string gdbDirName = Path.GetFileName(Path.GetDirectoryName(outDir));
+
+                                            foreach (var localFilePath in Directory.GetFiles(Path.Combine(dir, gdbDirName), "*.zip"))
+                                            {
+                                                var remoteFilePath = $"{Configuration.GetSection("BackupFTPServer")["RootPath"]}/{rootDirName}/{gdbDirName}/{Path.GetFileName(localFilePath)}";
+                                                await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+                                            }
+
+                                            string imgDirName = Path.GetFileName(Path.GetDirectoryName(imgDir));
+                                            foreach (var localFilePath in Directory.GetFiles(Path.Combine(dir, imgDirName), "*.png"))
+                                            {
+
+                                                var remoteFilePath = $"{Configuration.GetSection("BackupFTPServer")["RootPath"]}/{rootDirName}/{imgDirName}/{Path.GetFileName(localFilePath)}";
+                                                await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+                                            }
+
+                                            await ftpClient.UploadFile(xmlFile, $"{Configuration.GetSection("BackupFTPServer")["RootPath"]}/{rootDirName}/{Path.GetFileName(xmlFile)}", createRemoteDir: true);
+
+                                            await ftpClient.Disconnect();
+                                        }
+
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                                     }
                                     catch (Exception exp)

@@ -268,7 +268,31 @@ namespace RMuseum.Services.Implementation
                     }
                     await ftpClient.Disconnect();
                 }
-                    
+
+                if (model.Published && bool.Parse(Configuration.GetSection("BackupFTPServer")["UploadEnabled"]))
+                {
+                    var ftpClient = new AsyncFtpClient
+                                        (
+                                            Configuration.GetSection("BackupFTPServer")["Host"],
+                                            Configuration.GetSection("BackupFTPServer")["Username"],
+                                            Configuration.GetSection("BackupFTPServer")["Password"]
+                                        );
+                    ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                    await ftpClient.AutoConnect();
+                    ftpClient.Config.RetryAttempts = 3;
+                    foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
+                    {
+                        var localFilePath = _pictureFileService.GetImagePath(dbModel.Picture, imageSizeString).Result;
+                        if (imageSizeString == "norm")
+                        {
+                            dbModel.Picture.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("BackupFTPServer")["RootUrl"]}/PoetsPhotoSuggestions/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                        }
+                        var remoteFilePath = $"{Configuration.GetSection("BackupFTPServer")["RootPath"]}/images/PoetsPhotoSuggestions/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                        await ftpClient.UploadFile(localFilePath, remoteFilePath);
+                    }
+                    await ftpClient.Disconnect();
+                }
+
                 bool publishIsChanged = model.Published != dbModel.Published;
                 if(publishIsChanged)
                 {

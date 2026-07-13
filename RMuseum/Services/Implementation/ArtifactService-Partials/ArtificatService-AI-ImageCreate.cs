@@ -472,6 +472,52 @@ namespace RMuseum.Services.Implementation
 
                 }
 
+                if (bool.Parse(Configuration.GetSection("BackupFTPServer")["UploadEnabled"]))
+                {
+                    var ftpClient = new AsyncFtpClient
+                    (
+                        Configuration.GetSection("BackupFTPServer")["Host"],
+                        Configuration.GetSection("BackupFTPServer")["Username"],
+                        Configuration.GetSection("BackupFTPServer")["Password"]
+                    );
+
+
+
+                    if (!skipUpload)
+                    {
+                        ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
+                        await ftpClient.AutoConnect();
+                        ftpClient.Config.RetryAttempts = 3;
+                    }
+
+
+                    foreach (var image in item.Images)
+                    {
+                        foreach (var imageSizeString in new string[] { "orig", "norm", "thumb" })
+                        {
+                            var localFilePath = _pictureFileService.GetImagePath(image, imageSizeString).Result;
+                            if (imageSizeString == "norm")
+                            {
+                                image.ExternalNormalSizeImageUrl = $"{Configuration.GetSection("BackupFTPServer")["RootUrl"]}/{image.FolderName}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                                context.Update(image);
+                            }
+                            if (!skipUpload)
+                            {
+                                await jobProgressServiceEF.UpdateJob(job.Id, 0, localFilePath);
+                                var remoteFilePath = $"{Configuration.GetSection("BackupFTPServer")["RootPath"]}/images/{bookFriendlyUrl}/{imageSizeString}/{Path.GetFileName(localFilePath)}";
+                                await ftpClient.UploadFile(localFilePath, remoteFilePath, createRemoteDir: true);
+                            }
+                        }
+                    }
+
+                    if (!skipUpload)
+                    {
+                        await ftpClient.Disconnect();
+                    }
+                    await jobProgressServiceEF.DeleteJob(job.Id);
+
+                }
+
                 return new RServiceResult<bool>(true);
             }
             catch (Exception exp)
