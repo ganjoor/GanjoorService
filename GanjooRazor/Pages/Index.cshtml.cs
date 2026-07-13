@@ -3,8 +3,6 @@ using GanjooRazor.Utils;
 using KontorService.Models.Reporting.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -28,6 +26,31 @@ namespace GanjooRazor.Pages
     public partial class IndexModel : LoginPartialEnabledPageModel
     {
         /// <summary>
+        /// Message shown whenever an action requiring a session couldn't prepare an authenticated
+        /// client (expired/missing cookies). Was previously duplicated as a literal string in ~10 places.
+        /// </summary>
+        private const string NotLoggedInMessage = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
+
+        /// <summary>
+        /// Persian stop words excluded from category word-count listings when remStopWords is
+        /// requested. Previously rebuilt as a local array literal on every call to
+        /// _GetCategoryWordCountsAsync; now a single static HashSet (O(1) Contains instead of O(n),
+        /// and allocated once instead of per-request).
+        /// </summary>
+        private static readonly HashSet<string> _persianStopWords = new HashSet<string>
+        {
+            "و", "از", "که", "به", "در", "را", "ز", "است", "می", "این", "چون", "بود", "ای", "تا", "چو",
+            "هر", "با", "چه", "شد", "بی", "خود", "گفت", "نیست", "نه", "گر", "کند", "اگر", "کرد", "باشد",
+            "هم", "روی", "شود", "یک", "دو", "وی", "اندر", "پیش", "آمد", "دارد", "کن", "یا", "همی", "آید",
+            "کرده", "نمی", "کز", "هست", "ام", "کی", "بهر", "فی", "چنین", "پای", "ها", "اند", "ی", "گردد",
+            "داد", "چنان", "کنم", "نبود", "گشت", "دیگر", "باید", "دگر", "چند", "همچو", "شده", "بد", "زان",
+            "پی", "مگر", "آنکه", "رفت", "کنی", "برد", "بدان", "ست", "ازین", "دید", "وز", "گوید", "کجا",
+            "دهد", "گه", "درین", "آخر", "دارم", "خواهد", "نیز", "های", "چرا", "راست", "کان", "رو", "نباشد",
+            "بر", "من", "آن", "تو", "او", "ما", "شما", "مرا", "ار", "داری", "بیا", "همه", "گو", "مکن", "زد",
+            "گفتم",
+        };
+
+        /// <summary>
         /// configration file reader (appsettings.json)
         /// </summary>
         private readonly IConfiguration Configuration;
@@ -37,53 +60,14 @@ namespace GanjooRazor.Pages
         /// </summary>
         private readonly IMemoryCache _memoryCache;
 
-        // <summary>
+        /// <summary>
         /// aggressive cache
         /// </summary>
-        public bool AggressiveCacheEnabled
-        {
-            get
-            {
-                try
-                {
-                    return bool.Parse(Configuration["AggressiveCacheEnabled"]);
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
+        public bool AggressiveCacheEnabled => GetConfigFlag("AggressiveCacheEnabled");
 
-        public bool OfflineMode
-        {
-            get
-            {
-                try
-                {
-                    return bool.Parse(Configuration["OfflineMode"]);
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
+        public bool OfflineMode => GetConfigFlag("OfflineMode");
 
-        public bool ReadOnlyMode
-        {
-            get
-            {
-                try
-                {
-                    return bool.Parse(Configuration["ReadOnlyMode"]);
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
+        public bool ReadOnlyMode => GetConfigFlag("ReadOnlyMode");
 
         /// <summary>
         /// constructor
@@ -100,8 +84,6 @@ namespace GanjooRazor.Pages
             _memoryCache = memoryCache;
         }
 
-
-
         /// <summary>
         /// last error
         /// </summary>
@@ -112,7 +94,67 @@ namespace GanjooRazor.Pages
         /// </summary>
         public GanjoorSiteBannerViewModel Banner { get; set; }
 
+        #region Shared helpers
+        // These helpers replace patterns that used to be copy-pasted throughout this file:
+        //  - GetConfigFlag: the try/bool.Parse-with-fallback block duplicated for every feature flag
+        //  - ReadErrorMessageAsync / CaptureErrorIfFailedAsync: "deserialize the API's error string"
+        //    duplicated ~35 times
+        //  - WithSecureClientAsync: the using/PrepareClient/else-BadRequest block duplicated ~10 times
+        // (PartialViewResult construction is handled by PageModel's own inherited Partial(viewName,
+        // model) method - the original code was hand-rolling a PartialViewResult/ViewDataDictionary
+        // block 14 times instead of using it.)
 
+        /// <summary>
+        /// Reads a boolean feature flag from configuration, defaulting to <paramref name="defaultValue"/>
+        /// if the key is missing or not a valid bool, instead of each flag having its own try/catch.
+        /// </summary>
+        private bool GetConfigFlag(string key, bool defaultValue = false)
+        {
+            return bool.TryParse(Configuration[key], out var value) ? value : defaultValue;
+        }
+
+        /// <summary>
+        /// Reads the API's JSON-encoded error string out of a failed response body.
+        /// </summary>
+        private static async Task<string> ReadErrorMessageAsync(HttpResponseMessage response)
+        {
+            return JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+        }
+
+        /// <summary>
+        /// If the response failed, stores the API's error message in <see cref="LastError"/> and
+        /// returns true so the caller can short-circuit (the established pattern here is
+        /// `if (await CaptureErrorIfFailedAsync(response)) return Page();`).
+        /// </summary>
+        private async Task<bool> CaptureErrorIfFailedAsync(HttpResponseMessage response)
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+            LastError = await ReadErrorMessageAsync(response);
+            return true;
+        }
+
+        /// <summary>
+        /// Runs <paramref name="operation"/> against an HttpClient authenticated from the current
+        /// session cookies. If the session can't be prepared (missing/expired cookies), returns
+        /// <paramref name="unauthorizedResult"/> (defaulting to a 400 with <see cref="NotLoggedInMessage"/>)
+        /// instead of every handler re-implementing the same using/if/else block.
+        /// </summary>
+        private async Task<IActionResult> WithSecureClientAsync(
+            Func<HttpClient, Task<IActionResult>> operation,
+            IActionResult unauthorizedResult = null)
+        {
+            using var secureClient = new HttpClient();
+            if (!await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+            {
+                return unauthorizedResult ?? new BadRequestObjectResult(NotLoggedInMessage);
+            }
+            return await operation(secureClient);
+        }
+
+        #endregion
 
         public _CommentPartialModel GetCommentModel(GanjoorCommentSummaryViewModel comment, int poemId)
         {
@@ -151,12 +193,10 @@ namespace GanjooRazor.Pages
             };
         }
 
-        public async Task<ActionResult> OnPostReply(string replyCommentText, int refPoemId, int refCommentId)
+        public Task<IActionResult> OnPostReply(string replyCommentText, int refPoemId, int refCommentId)
         {
-            return await OnPostComment(replyCommentText, refPoemId, refCommentId, -1);
+            return OnPostComment(replyCommentText, refPoemId, refCommentId, -1);
         }
-
-
 
         /// <summary>
         /// comment
@@ -166,83 +206,53 @@ namespace GanjooRazor.Pages
         /// <param name="inReplytoId"></param>
         /// <param name="coupletIndex"></param>
         /// <returns></returns>
-        public async Task<ActionResult> OnPostComment(string comment, int poemId, int inReplytoId, int coupletIndex)
+        public Task<IActionResult> OnPostComment(string comment, int poemId, int inReplytoId, int coupletIndex)
         {
-            using (HttpClient secureClient = new HttpClient())
+            var unauthorized = Partial("_CommentPartial", new _CommentPartialModel()
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
-                {
+                Comment = null,
+                Error = NotLoggedInMessage,
+                InReplyTo = null
+            });
 
-                    var stringContent = new StringContent(
-                        JsonConvert.SerializeObject
-                        (
-                            new GanjoorCommentPostViewModel()
-                            {
-                                HtmlComment = comment,
-                                InReplyToId = inReplytoId == 0 ? null : inReplytoId,
-                                PoemId = poemId,
-                                CoupletIndex = coupletIndex == -1 ? null : coupletIndex
-                            }
-                        ),
-                        Encoding.UTF8, "application/json");
-                    var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/comment", stringContent);
-                    if (response.StatusCode == HttpStatusCode.OK)
+            return WithSecureClientAsync(async secureClient =>
+            {
+                var stringContent = new StringContent(
+                    JsonConvert.SerializeObject(new GanjoorCommentPostViewModel()
                     {
-                        GanjoorCommentSummaryViewModel resComment = JsonConvert.DeserializeObject<GanjoorCommentSummaryViewModel>(await response.Content.ReadAsStringAsync());
-                        resComment.MyComment = true;
+                        HtmlComment = comment,
+                        InReplyToId = inReplytoId == 0 ? null : inReplytoId,
+                        PoemId = poemId,
+                        CoupletIndex = coupletIndex == -1 ? null : coupletIndex
+                    }),
+                    Encoding.UTF8, "application/json");
 
-                        return new PartialViewResult()
-                        {
-                            ViewName = "_CommentPartial",
-                            ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                            {
-                                Model = new _CommentPartialModel()
-                                {
-                                    Comment = resComment,
-                                    Error = "",
-                                    InReplyTo = inReplytoId == 0 ? null : new GanjoorCommentSummaryViewModel(),
-                                    LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
-                                    PoemId = poemId,
-                                }
-                            }
-                        };
-                    }
-                    else
-                    {
-                        return new PartialViewResult()
-                        {
-                            ViewName = "_CommentPartial",
-                            ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                            {
-                                Model = new _CommentPartialModel()
-                                {
-                                    Comment = null,
-                                    Error = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()),
-                                    InReplyTo = null,
-                                    LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
-                                    PoemId = poemId,
-                                }
-                            }
-                        };
-                    }
-                }
-                else
+                var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/comment", stringContent);
+
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    return new PartialViewResult()
+                    var resComment = JsonConvert.DeserializeObject<GanjoorCommentSummaryViewModel>(await response.Content.ReadAsStringAsync());
+                    resComment.MyComment = true;
+
+                    return Partial("_CommentPartial", new _CommentPartialModel()
                     {
-                        ViewName = "_CommentPartial",
-                        ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                        {
-                            Model = new _CommentPartialModel()
-                            {
-                                Comment = null,
-                                Error = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.",
-                                InReplyTo = null
-                            }
-                        }
-                    };
+                        Comment = resComment,
+                        Error = "",
+                        InReplyTo = inReplytoId == 0 ? null : new GanjoorCommentSummaryViewModel(),
+                        LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
+                        PoemId = poemId,
+                    });
                 }
-            }
+
+                return Partial("_CommentPartial", new _CommentPartialModel()
+                {
+                    Comment = null,
+                    Error = await ReadErrorMessageAsync(response),
+                    InReplyTo = null,
+                    LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
+                    PoemId = poemId,
+                });
+            }, unauthorized);
         }
 
         /// <summary>
@@ -250,25 +260,17 @@ namespace GanjooRazor.Pages
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IActionResult> OnDeleteMyComment(int id)
+        public Task<IActionResult> OnDeleteMyComment(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/comment?id={id}");
+                if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/comment?id={id}");
-
-                    if (response.StatusCode != HttpStatusCode.OK)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                    }
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-                else
-                {
-                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
-                }
-            }
-            return new JsonResult(true);
+                return new JsonResult(true);
+            });
         }
 
         /// <summary>
@@ -277,24 +279,17 @@ namespace GanjooRazor.Pages
         /// <param name="id"></param>
         /// <param name="comment"></param>
         /// <returns></returns>
-        public async Task<IActionResult> OnPutMyComment(int id, string comment)
+        public Task<IActionResult> OnPutMyComment(int id, string comment)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/comment/{id}", new StringContent(JsonConvert.SerializeObject(comment), Encoding.UTF8, "application/json"));
+                if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/comment/{id}", new StringContent(JsonConvert.SerializeObject(comment), Encoding.UTF8, "application/json"));
-                    if (response.StatusCode != HttpStatusCode.OK)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                    }
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-                else
-                {
-                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
-                }
-            }
-            return new JsonResult(true);
+                return new JsonResult(true);
+            });
         }
 
         /// <summary>
@@ -325,13 +320,7 @@ namespace GanjooRazor.Pages
         /// <summary>
         /// canonical url
         /// </summary>
-        public string CanonicalUrl
-        {
-            get
-            {
-                return $"{Configuration["SiteUrl"]}{GanjoorPage.FullUrl}";
-            }
-        }
+        public string CanonicalUrl => $"{Configuration["SiteUrl"]}{GanjoorPage.FullUrl}";
 
         /// <summary>
         /// can edit
@@ -342,8 +331,6 @@ namespace GanjooRazor.Pages
         /// keep history
         /// </summary>
         public bool KeepHistory { get; set; }
-
-
 
         /// <summary>
         /// pinterest url
@@ -494,15 +481,14 @@ namespace GanjooRazor.Pages
 
         private async Task<bool> preparePoets()
         {
-            var cacheKey = $"/api/ganjoor/poets";
+            const string cacheKey = "/api/ganjoor/poets";
             if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
             {
                 try
                 {
                     var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
-                    if (!response.IsSuccessStatusCode)
+                    if (await CaptureErrorIfFailedAsync(response))
                     {
-                        LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                         return false;
                     }
                     poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
@@ -533,7 +519,7 @@ namespace GanjooRazor.Pages
                 var poetResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{id}");
                 if (!poetResponse.IsSuccessStatusCode)
                 {
-                    return BadRequest(JsonConvert.DeserializeObject<string>(await poetResponse.Content.ReadAsStringAsync()));
+                    return BadRequest(await ReadErrorMessageAsync(poetResponse));
                 }
                 poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
                 if (AggressiveCacheEnabled)
@@ -549,9 +535,8 @@ namespace GanjooRazor.Pages
             try
             {
                 var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/centuries");
-                if (!response.IsSuccessStatusCode)
+                if (await CaptureErrorIfFailedAsync(response))
                 {
-                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
                     return false;
                 }
                 PoetGroups = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCenturyViewModel>>();
@@ -574,6 +559,7 @@ namespace GanjooRazor.Pages
         /// html language
         /// </summary>
         public string HtmlLanguage { get; set; } = "fa-IR";
+
         private void _prepareNextPre()
         {
             switch (GanjoorPage.GanjoorPageType)
@@ -673,20 +659,86 @@ namespace GanjooRazor.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnGetAsync()
         {
-            if (bool.Parse(Configuration["MaintenanceMode"]))
+            if (GetConfigFlag("MaintenanceMode"))
             {
                 return StatusCode(503);
             }
-            if (Request.Path.ToString().IndexOf("index.php") != -1)
+
+            var legacyRedirect = TryHandleLegacyUrlRedirect();
+            if (legacyRedirect != null)
             {
-                return Redirect($"{Request.Path.ToString().Replace("index.php", "search")}{Request.QueryString}");
+                return legacyRedirect;
             }
 
-            if (Request.Path.ToString().IndexOf("vazn") != -1 && Request.QueryString.ToString().IndexOf("v") != -1)
+            InitializeRequestState();
+
+            if (!string.IsNullOrEmpty(Request.Query["p"]))
             {
-                return Redirect($"{Request.Path.ToString().Replace("vazn", "simi")}{Request.QueryString}");
+                return await RedirectByPageIdAsync(Request.Query["p"]);
             }
 
+            await preparePoets();
+
+            var breadCrumbList = new GoogleBreadCrumbList();
+            Banner = null;
+
+            if (!IsHomePage)
+            {
+                var pageLoadResult = await LoadGanjoorPageAsync();
+                if (pageLoadResult != null)
+                {
+                    return pageLoadResult;
+                }
+
+                var pageDataResult = await LoadPageTypeSpecificDataAsync();
+                if (pageDataResult != null)
+                {
+                    return pageDataResult;
+                }
+            }
+
+            await BuildTitleAndBreadCrumbsAsync(breadCrumbList);
+            ViewData["BrearCrumpList"] = breadCrumbList.ToString();
+
+            if (IsCatPage || IsPoetPage)
+            {
+                var geoTagsResult = await LoadCategoryGeoTagsAsync();
+                if (geoTagsResult != null)
+                {
+                    return geoTagsResult;
+                }
+            }
+
+            return Page();
+        }
+
+        /// <summary>
+        /// A couple of legacy URL shapes get redirected to their modern equivalents.
+        /// Returns null if the current request doesn't match either pattern.
+        /// </summary>
+        private IActionResult TryHandleLegacyUrlRedirect()
+        {
+            var path = Request.Path.ToString();
+
+            if (path.IndexOf("index.php") != -1)
+            {
+                return Redirect($"{path.Replace("index.php", "search")}{Request.QueryString}");
+            }
+
+            if (path.IndexOf("vazn") != -1 && Request.QueryString.ToString().IndexOf("v") != -1)
+            {
+                return Redirect($"{path.Replace("vazn", "simi")}{Request.QueryString}");
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Resets/derives all the per-request flags and view-state that used to be set inline at the
+        /// top of OnGetAsync (login state, page-type flags, active tab, tracking script, etc).
+        /// </summary>
+        private void InitializeRequestState()
+        {
             LastError = "";
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
             CanEdit = Request.Cookies["CanEdit"] == "True";
@@ -698,254 +750,283 @@ namespace GanjooRazor.Pages
             IsHomePage = Request.Path == "/";
             PinterestUrl = Request.Query["pinterest_url"];
             ShowAllRecitaions = Request.Query["allaudio"] == "1";
-            ViewData["TrackingScript"] = Configuration["TrackingScript"] != null && string.IsNullOrEmpty(Request.Cookies["Token"]) ? Configuration["TrackingScript"].Replace("loggedon", "") : Configuration["TrackingScript"];
+            ViewData["TrackingScript"] = Configuration["TrackingScript"] != null && string.IsNullOrEmpty(Request.Cookies["Token"])
+                ? Configuration["TrackingScript"].Replace("loggedon", "")
+                : Configuration["TrackingScript"];
             ActiveTab = Request.Query["tab"];
+
             if (ShowAllRecitaions && string.IsNullOrEmpty(ActiveTab))
             {
                 ActiveTab = "recitations";
             }
-            else
-                if (ActiveTab == "recitations" || ActiveTab == "commentaries")
+            else if (ActiveTab == "recitations" || ActiveTab == "commentaries")
             {
                 ShowAllRecitaions = true;
             }
+        }
 
-            GoogleBreadCrumbList breadCrumbList = new GoogleBreadCrumbList();
-            Banner = null;
-
-            if (!string.IsNullOrEmpty(Request.Query["p"]))
+        /// <summary>
+        /// Handles the legacy "?p=&lt;id&gt;" query-string form by resolving it to the page's real
+        /// URL and redirecting there.
+        /// </summary>
+        private async Task<IActionResult> RedirectByPageIdAsync(string pageId)
+        {
+            var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={pageId}");
+            if (await CaptureErrorIfFailedAsync(pageUrlResponse))
             {
-                var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["p"]}");
-                if (!pageUrlResponse.IsSuccessStatusCode)
+                return Page();
+            }
+            var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+            return Redirect(pageUrl);
+        }
+
+        /// <summary>
+        /// Fetches the GanjoorPage for the current URL and applies the page-type-specific preparation
+        /// that depends only on the page payload itself (excerpts, related sections, next/previous
+        /// links). Returns null to let OnGetAsync continue, or a terminal IActionResult
+        /// (redirect/404/error page) to short-circuit.
+        /// </summary>
+        private async Task<IActionResult> LoadGanjoorPageAsync()
+        {
+            var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Path}");
+            if (!pageQuery.IsSuccessStatusCode)
+            {
+                if (pageQuery.StatusCode == HttpStatusCode.NotFound)
                 {
-                    LastError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
-                    return Page();
+                    var redirectQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/redirecturl?url={Request.Path}");
+                    if (redirectQuery.IsSuccessStatusCode)
+                    {
+                        var redirectUrl = JsonConvert.DeserializeObject<string>(await redirectQuery.Content.ReadAsStringAsync());
+                        return Redirect(redirectUrl);
+                    }
+                    return NotFound();
                 }
-                var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
-                return Redirect(pageUrl);
+
+                LastError = await ReadErrorMessageAsync(pageQuery);
+                return Page();
             }
 
-            await preparePoets();
-
-            if (!IsHomePage)
+            GanjoorPage = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+            if (!string.IsNullOrEmpty(GanjoorPage.HtmlText))
             {
-                var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Path}");
-                if (!pageQuery.IsSuccessStatusCode)
+                GanjoorPage.HtmlText = GanjoorPage.HtmlText.Replace("https://ganjoor.net/", "/").Replace("http://ganjoor.net/", "/");
+            }
+
+            switch (GanjoorPage.GanjoorPageType)
+            {
+                case GanjoorPageType.PoemPage:
+                    await _markMyCommentsAndBringUpMyRecitations();
+                    _preparePoemExcerpt(GanjoorPage.Poem.Next);
+                    _preparePoemExcerpt(GanjoorPage.Poem.Previous);
+                    GanjoorPage.PoetOrCat = GanjoorPage.Poem.Category;
+                    _prepareNextPre();
+                    _prepareRelatedSecions();
+                    IsPoemPage = true;
+                    break;
+                case GanjoorPageType.PoetPage:
+                    IsPoetPage = true;
+                    break;
+                case GanjoorPageType.CatPage:
+                    _prepareNextPre();
+                    IsCatPage = true;
+                    break;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// The extra API calls that only apply to specific page types: recitation availability for
+        /// poet/cat pages, poet photo for poet pages, and the random banner for poem pages.
+        /// </summary>
+        private async Task<IActionResult> LoadPageTypeSpecificDataAsync()
+        {
+            if (IsPoetPage || IsCatPage)
+            {
+                var catHasAnyRecitationQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/catany/{GanjoorPage.PoetOrCat.Cat.Id}");
+                if (await CaptureErrorIfFailedAsync(catHasAnyRecitationQuery))
                 {
-                    if (pageQuery.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        var redirectQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/redirecturl?url={Request.Path}");
-                        if (redirectQuery.IsSuccessStatusCode)
-                        {
-                            var redirectUrl = JsonConvert.DeserializeObject<string>(await redirectQuery.Content.ReadAsStringAsync());
-                            return Redirect(redirectUrl);
-                        }
-                        return NotFound();
-                    }
-                }
-                if (!pageQuery.IsSuccessStatusCode)
-                {
-                    LastError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
                     return Page();
                 }
-                GanjoorPage = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
-                if (!string.IsNullOrEmpty(GanjoorPage.HtmlText))
+                CategoryHasRecitations = JsonConvert.DeserializeObject<bool>(await catHasAnyRecitationQuery.Content.ReadAsStringAsync());
+            }
+
+            if (IsPoetPage)
+            {
+                var responsePhotos = await _httpClient.GetAsync($"{APIRoot.Url}/api/poetphotos/poet/{GanjoorPage.PoetOrCat.Poet.Id}");
+                if (await CaptureErrorIfFailedAsync(responsePhotos))
                 {
-                    GanjoorPage.HtmlText = GanjoorPage.HtmlText.Replace("https://ganjoor.net/", "/").Replace("http://ganjoor.net/", "/");
+                    return Page();
                 }
-                switch (GanjoorPage.GanjoorPageType)
+                var photos = JArray.Parse(await responsePhotos.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetSuggestedPictureViewModel>>();
+                if (photos.Any())
                 {
-                    case GanjoorPageType.PoemPage:
-                        await _markMyCommentsAndBringUpMyRecitations();
-                        _preparePoemExcerpt(GanjoorPage.Poem.Next);
-                        _preparePoemExcerpt(GanjoorPage.Poem.Previous);
-                        GanjoorPage.PoetOrCat = GanjoorPage.Poem.Category;
-                        _prepareNextPre();
-                        _prepareRelatedSecions();
-                        IsPoemPage = true;
-
-                        break;
-                    case GanjoorPageType.PoetPage:
-                        IsPoetPage = true;
-                        break;
-                    case GanjoorPageType.CatPage:
-                        _prepareNextPre();
-
-                        IsCatPage = true;
-                        break;
-                }
-
-                if (IsPoetPage || IsCatPage)
-                {
-                    var catHasAnyRecitationQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/catany/{GanjoorPage.PoetOrCat.Cat.Id}");
-
-                    if (!catHasAnyRecitationQuery.IsSuccessStatusCode)
-                    {
-                        LastError = JsonConvert.DeserializeObject<string>(await catHasAnyRecitationQuery.Content.ReadAsStringAsync());
-                        return Page();
-                    }
-                    CategoryHasRecitations = JsonConvert.DeserializeObject<bool>(await catHasAnyRecitationQuery.Content.ReadAsStringAsync());
-                }
-
-                if (IsPoetPage)
-                {
-                    var responsePhotos = await _httpClient.GetAsync($"{APIRoot.Url}/api/poetphotos/poet/{GanjoorPage.PoetOrCat.Poet.Id}");
-                    if (!responsePhotos.IsSuccessStatusCode)
-                    {
-                        LastError = JsonConvert.DeserializeObject<string>(await responsePhotos.Content.ReadAsStringAsync());
-                        return Page();
-                    }
-                    var photos = JArray.Parse(await responsePhotos.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetSuggestedPictureViewModel>>();
-                    if (photos.Any())
-                    {
-                        Photo = photos.First();
-                    }
-                }
-
-                if (IsPoemPage)
-                {
-                    HtmlLanguage = string.IsNullOrEmpty(GanjoorPage.Poem.Language) ? "fa-IR" : GanjoorPage.Poem.Language;
-                    if (bool.Parse(Configuration["BannersEnabled"]))
-                    {
-                        var bannerQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/banners/random");
-                        if (!bannerQuery.IsSuccessStatusCode)
-                        {
-                            LastError = JsonConvert.DeserializeObject<string>(await bannerQuery.Content.ReadAsStringAsync());
-                            return Page();
-                        }
-                        string bannerResponse = await bannerQuery.Content.ReadAsStringAsync();
-                        if (!string.IsNullOrEmpty(bannerResponse))
-                        {
-                            Banner = JObject.Parse(bannerResponse).ToObject<GanjoorSiteBannerViewModel>();
-                        }
-                    }
+                    Photo = photos.First();
                 }
             }
 
+            if (IsPoemPage)
+            {
+                HtmlLanguage = string.IsNullOrEmpty(GanjoorPage.Poem.Language) ? "fa-IR" : GanjoorPage.Poem.Language;
+                if (GetConfigFlag("BannersEnabled"))
+                {
+                    var bannerQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/banners/random");
+                    if (await CaptureErrorIfFailedAsync(bannerQuery))
+                    {
+                        return Page();
+                    }
+                    var bannerResponse = await bannerQuery.Content.ReadAsStringAsync();
+                    if (!string.IsNullOrEmpty(bannerResponse))
+                    {
+                        Banner = JObject.Parse(bannerResponse).ToObject<GanjoorSiteBannerViewModel>();
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Sets ViewData["Title"] and populates the breadcrumb list. This used to be one ~90-line
+        /// if/elseif chain inline in OnGetAsync; split into one method per page type below.
+        /// </summary>
+        private async Task BuildTitleAndBreadCrumbsAsync(GoogleBreadCrumbList breadCrumbList)
+        {
             if (IsHomePage)
             {
                 ViewData["Title"] = "گنجور";
                 await _PreparePoetGroups();
             }
-            else
-            if (IsPoetPage)
+            else if (IsPoetPage)
             {
-                ViewData["Title"] = $"گنجور » {GanjoorPage.PoetOrCat.Poet.Nickname}";
+                BuildPoetPageTitleAndBreadCrumbs(breadCrumbList);
+            }
+            else if (IsCatPage)
+            {
+                BuildCatPageTitleAndBreadCrumbs(breadCrumbList);
+            }
+            else if (IsPoemPage)
+            {
+                BuildPoemPageTitleAndBreadCrumbs(breadCrumbList);
+            }
+            else
+            {
+                BuildGenericPageTitleAndBreadCrumbs(breadCrumbList);
+            }
+        }
+
+        private void BuildPoetPageTitleAndBreadCrumbs(GoogleBreadCrumbList breadCrumbList)
+        {
+            ViewData["Title"] = $"گنجور » {GanjoorPage.PoetOrCat.Poet.Nickname}";
+            breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Poet.Nickname, GanjoorPage.PoetOrCat.Cat.FullUrl, $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}");
+        }
+
+        private void BuildCatPageTitleAndBreadCrumbs(GoogleBreadCrumbList breadCrumbList)
+        {
+            string title = $"گنجور » ";
+            bool poetCat = true;
+            foreach (var gran in GanjoorPage.PoetOrCat.Cat.Ancestors)
+            {
+                title += $"{gran.Title} » ";
+                breadCrumbList.AddItem(gran.Title, gran.FullUrl, poetCat ? $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}" : "https://i.ganjoor.net/cat.png");
+                poetCat = false;
+            }
+            breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Cat.Title, GanjoorPage.PoetOrCat.Cat.FullUrl, "https://i.ganjoor.net/cat.png");
+            title += GanjoorPage.PoetOrCat.Cat.Title;
+            ViewData["Title"] = title;
+        }
+
+        private void BuildPoemPageTitleAndBreadCrumbs(GoogleBreadCrumbList breadCrumbList)
+        {
+            ViewData["Title"] = $"گنجور » {GanjoorPage.Poem.FullTitle}";
+            bool poetCat = true;
+            foreach (var gran in GanjoorPage.Poem.Category.Cat.Ancestors)
+            {
+                breadCrumbList.AddItem(gran.Title, gran.FullUrl, poetCat ? $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}" : "https://i.ganjoor.net/cat.png");
+                poetCat = false;
+            }
+            breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Cat.Title, GanjoorPage.PoetOrCat.Cat.FullUrl, "https://i.ganjoor.net/cat.png");
+
+            var aiMuseumImage = GanjoorPage.Poem.Images.FirstOrDefault(i => i.TargetPageUrl.StartsWith("https://museum.ganjoor.net/items/ai"));
+            if (aiMuseumImage != null)
+            {
+                breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, aiMuseumImage.ThumbnailImageUrl.Replace("/thumb/", "/orig/"));
+            }
+            else if (GanjoorPage.Poem.Images.Any())
+            {
+                breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, GanjoorPage.Poem.Images.First().ThumbnailImageUrl.Replace("/thumb/", "/orig/"));
+            }
+            else
+            {
+                breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, "https://i.ganjoor.net/poem.png");
+            }
+        }
+
+        private void BuildGenericPageTitleAndBreadCrumbs(GoogleBreadCrumbList breadCrumbList)
+        {
+            if (GanjoorPage.PoetOrCat != null)
+            {
+                bool poetCat = true;
+                string fullTitle = "گنجور » ";
+                if (GanjoorPage.PoetOrCat.Cat.Ancestors.Count == 0)
+                {
+                    fullTitle += $"{GanjoorPage.PoetOrCat.Poet.Nickname} » ";
+                }
+                else
+                {
+                    foreach (var gran in GanjoorPage.PoetOrCat.Cat.Ancestors)
+                    {
+                        breadCrumbList.AddItem(gran.Title, gran.FullUrl, poetCat ? $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}" : "https://i.ganjoor.net/cat.png");
+                        poetCat = false;
+                        fullTitle += $"{gran.Title} » ";
+                    }
+                }
+                ViewData["Title"] = $"{fullTitle}{GanjoorPage.Title}";
                 breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Poet.Nickname, GanjoorPage.PoetOrCat.Cat.FullUrl, $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}");
             }
             else
-            if (IsCatPage)
             {
-                string title = $"گنجور » ";
-                bool poetCat = true;
-                foreach (var gran in GanjoorPage.PoetOrCat.Cat.Ancestors)
-                {
-                    title += $"{gran.Title} » ";
-                    breadCrumbList.AddItem(gran.Title, gran.FullUrl, poetCat ? $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}" : "https://i.ganjoor.net/cat.png");
-                    poetCat = false;
-                }
-                breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Cat.Title, GanjoorPage.PoetOrCat.Cat.FullUrl, "https://i.ganjoor.net/cat.png");
-                title += GanjoorPage.PoetOrCat.Cat.Title;
-                ViewData["Title"] = title;
+                ViewData["Title"] = $"گنجور » {GanjoorPage.FullTitle}";
             }
-            else
-            if (IsPoemPage)
-            {
-                ViewData["Title"] = $"گنجور » {GanjoorPage.Poem.FullTitle}";
-                bool poetCat = true;
-                foreach (var gran in GanjoorPage.Poem.Category.Cat.Ancestors)
-                {
-                    breadCrumbList.AddItem(gran.Title, gran.FullUrl, poetCat ? $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}" : "https://i.ganjoor.net/cat.png");
-                    poetCat = false;
-                }
-                breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Cat.Title, GanjoorPage.PoetOrCat.Cat.FullUrl, "https://i.ganjoor.net/cat.png");
-                if (GanjoorPage.Poem.Images.Where(i => i.TargetPageUrl.StartsWith("https://museum.ganjoor.net/items/ai")).Any())
-                {
-                    breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl,
-                        GanjoorPage.Poem.Images.Where(i => i.TargetPageUrl.StartsWith("https://museum.ganjoor.net/items/ai")).First().ThumbnailImageUrl.Replace("/thumb/", "/orig/"));
-                }
-                else
-                if (GanjoorPage.Poem.Images.Any())
-                {
-                    breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl,
-                        GanjoorPage.Poem.Images.First().ThumbnailImageUrl.Replace("/thumb/", "/orig/"));
-                }
-                else
-                {
-                    breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, "https://i.ganjoor.net/poem.png");
-                }
-
-            }
-            else
-            {
-                if (GanjoorPage.PoetOrCat != null)
-                {
-                    bool poetCat = true;
-                    string fullTitle = "گنجور » ";
-                    if (GanjoorPage.PoetOrCat.Cat.Ancestors.Count == 0)
-                    {
-                        fullTitle += $"{GanjoorPage.PoetOrCat.Poet.Nickname} » ";
-                    }
-                    else
-                        foreach (var gran in GanjoorPage.PoetOrCat.Cat.Ancestors)
-                        {
-                            breadCrumbList.AddItem(gran.Title, gran.FullUrl, poetCat ? $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}" : "https://i.ganjoor.net/cat.png");
-                            poetCat = false;
-                            fullTitle += $"{gran.Title} » ";
-                        }
-                    ViewData["Title"] = $"{fullTitle}{GanjoorPage.Title}";
-                    breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Poet.Nickname, GanjoorPage.PoetOrCat.Cat.FullUrl, $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}");
-                }
-                else
-                {
-                    ViewData["Title"] = $"گنجور » {GanjoorPage.FullTitle}";
-                }
-                breadCrumbList.AddItem(GanjoorPage.Title, GanjoorPage.FullUrl, "https://i.ganjoor.net/cat.png");
-            }
-
-
-            ViewData["BrearCrumpList"] = breadCrumbList.ToString();
-
-            if (IsCatPage || IsPoetPage)
-            {
-                var tagsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{GanjoorPage.PoetOrCat.Cat.Id}/geotag");
-                if (!tagsResponse.IsSuccessStatusCode)
-                {
-                    LastError = JsonConvert.DeserializeObject<string>(await tagsResponse.Content.ReadAsStringAsync());
-                    return Page();
-                }
-
-                CategoryPoemGeoDateTags = JsonConvert.DeserializeObject<PoemGeoDateTag[]>(await tagsResponse.Content.ReadAsStringAsync());
-            }
-
-
-            return Page();
+            breadCrumbList.AddItem(GanjoorPage.Title, GanjoorPage.FullUrl, "https://i.ganjoor.net/cat.png");
         }
-        public async Task<ActionResult> OnGetBNumPartialAsync(int poemId, int coupletIndex)
+
+        private async Task<IActionResult> LoadCategoryGeoTagsAsync()
+        {
+            var tagsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{GanjoorPage.PoetOrCat.Cat.Id}/geotag");
+            if (await CaptureErrorIfFailedAsync(tagsResponse))
+            {
+                return Page();
+            }
+            CategoryPoemGeoDateTags = JsonConvert.DeserializeObject<PoemGeoDateTag[]>(await tagsResponse.Content.ReadAsStringAsync());
+            return null;
+        }
+
+        public async Task<IActionResult> OnGetBNumPartialAsync(int poemId, int coupletIndex)
         {
             var responseCoupletComments = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/comments?coupletIndex={coupletIndex}");
             if (!responseCoupletComments.IsSuccessStatusCode)
             {
-                return BadRequest(JsonConvert.DeserializeObject<string>(await responseCoupletComments.Content.ReadAsStringAsync()));
+                return BadRequest(await ReadErrorMessageAsync(responseCoupletComments));
             }
             var comments = JArray.Parse(await responseCoupletComments.Content.ReadAsStringAsync()).ToObject<List<GanjoorCommentSummaryViewModel>>();
 
             var responseCoupletNumbers = await _httpClient.GetAsync($"{APIRoot.Url}/api/numberings/couplet/{poemId}/{coupletIndex}");
             if (!responseCoupletNumbers.IsSuccessStatusCode)
             {
-                return BadRequest(JsonConvert.DeserializeObject<string>(await responseCoupletNumbers.Content.ReadAsStringAsync()));
+                return BadRequest(await ReadErrorMessageAsync(responseCoupletNumbers));
             }
             var numbers = JArray.Parse(await responseCoupletNumbers.Content.ReadAsStringAsync()).ToObject<List<GanjoorCoupletNumberViewModel>>();
 
             var responseCoupletSections = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/couplet/{poemId}/{coupletIndex}/sections");
             if (!responseCoupletSections.IsSuccessStatusCode)
             {
-                return BadRequest(JsonConvert.DeserializeObject<string>(await responseCoupletSections.Content.ReadAsStringAsync()));
+                return BadRequest(await ReadErrorMessageAsync(responseCoupletSections));
             }
             var responseVerses = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/verses?coupletIndex={coupletIndex}");
             if (!responseVerses.IsSuccessStatusCode)
             {
-                return BadRequest(JsonConvert.DeserializeObject<string>(await responseVerses.Content.ReadAsStringAsync()));
+                return BadRequest(await ReadErrorMessageAsync(responseVerses));
             }
             var verses = JArray.Parse(await responseVerses.Content.ReadAsStringAsync()).ToObject<List<GanjoorVerseViewModel>>();
             var sections = JArray.Parse(await responseCoupletSections.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemSection>>();
@@ -975,7 +1056,7 @@ namespace GanjooRazor.Pages
                                 HttpResponseMessage responseIsBookmarked = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{poemId}");
                                 if (!responseIsBookmarked.IsSuccessStatusCode)
                                 {
-                                    return BadRequest(JsonConvert.DeserializeObject<string>(await responseIsBookmarked.Content.ReadAsStringAsync()));
+                                    return BadRequest(await ReadErrorMessageAsync(responseIsBookmarked));
                                 }
 
                                 var bookmarks = JsonConvert.DeserializeObject<GanjoorUserBookmarkViewModel[]>(await responseIsBookmarked.Content.ReadAsStringAsync());
@@ -992,83 +1073,66 @@ namespace GanjooRazor.Pages
                     }
             }
 
-            return new PartialViewResult()
+            return Partial("_BNumPartial", new _BNumPartialModel()
             {
-                ViewName = "_BNumPartial",
-                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                {
-                    Model = new _BNumPartialModel()
-                    {
-                        PoemId = poemId,
-                        CoupletIndex = coupletIndex,
-                        LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
-                        Comments = comments,
-                        IsBookmarked = isBookmarked,
-                        Numbers = numbers,
-                        Sections = sections,
-                        SectionsWithMetreAndRhymes = sectionsWithMetreAndRhymes,
-                        Verses = verses,
-                    }
-                }
-            };
+                PoemId = poemId,
+                CoupletIndex = coupletIndex,
+                LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
+                Comments = comments,
+                IsBookmarked = isBookmarked,
+                Numbers = numbers,
+                Sections = sections,
+                SectionsWithMetreAndRhymes = sectionsWithMetreAndRhymes,
+                Verses = verses,
+            });
         }
 
-        public async Task<IActionResult> OnPostSwitchBookmarkAsync(int poemId, int coupletIndex)
+        public Task<IActionResult> OnPostSwitchBookmarkAsync(int poemId, int coupletIndex)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/bookmark/switch/ret/{poemId}/{coupletIndex}", null);
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.PostAsync(
-                        $"{APIRoot.Url}/api/ganjoor/bookmark/switch/ret/{poemId}/{coupletIndex}", null);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                    }
-                    var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                    return new OkObjectResult(res);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-                else
-                {
-                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
-                }
-            }
+                var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return new OkObjectResult(res);
+            });
         }
 
-        public async Task<IActionResult> OnGetIsCoupletBookmarkedAsync(int poemId, int coupletIndex)
+        public Task<IActionResult> OnGetIsCoupletBookmarkedAsync(int poemId, int coupletIndex)
         {
-            using (HttpClient secureClient = new HttpClient())
+            // NOTE: preserved as-is - unlike most handlers here, this one silently returns "false"
+            // instead of a 400 when the session can't be prepared (no logged-in user just means
+            // "nothing is bookmarked", which is arguably correct, but it's inconsistent with e.g.
+            // OnGetUserUpvotedRecitationsAsync below). Worth a deliberate decision, not a silent fix.
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{poemId}/{coupletIndex}");
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{poemId}/{coupletIndex}");
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                    }
-                    var res = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
-                    return new OkObjectResult(res);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new OkObjectResult(false);
+                var res = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
+                return new OkObjectResult(res);
+            }, new OkObjectResult(false));
         }
 
-        public async Task<IActionResult> OnGetPoemBookmarksAsync(int poemId)
+        public Task<IActionResult> OnGetPoemBookmarksAsync(int poemId)
         {
-            using (HttpClient secureClient = new HttpClient())
+            // Same note as OnGetIsCoupletBookmarkedAsync above: falls back to OkObjectResult(false)
+            // rather than an error when not logged in (preserved from the original behavior).
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{poemId}");
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{poemId}");
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                    }
-                    var res = JsonConvert.DeserializeObject<GanjoorUserBookmarkViewModel[]>(await response.Content.ReadAsStringAsync());
-                    return new OkObjectResult(res);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new OkObjectResult(false);
+                var res = JsonConvert.DeserializeObject<GanjoorUserBookmarkViewModel[]>(await response.Content.ReadAsStringAsync());
+                return new OkObjectResult(res);
+            }, new OkObjectResult(false));
         }
 
         /// <summary>
@@ -1076,166 +1140,120 @@ namespace GanjooRazor.Pages
         /// </summary>
         /// <param name="poemId"></param>
         /// <returns></returns>
-        public async Task<IActionResult> OnGetUserUpvotedRecitationsAsync(int poemId)
+        public Task<IActionResult> OnGetUserUpvotedRecitationsAsync(int poemId)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/recitations/upvotes");
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/recitations/upvotes");
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                    }
-                    var res = JsonConvert.DeserializeObject<int[]>(await response.Content.ReadAsStringAsync());
-                    return new OkObjectResult(res);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+                var res = JsonConvert.DeserializeObject<int[]>(await response.Content.ReadAsStringAsync());
+                return new OkObjectResult(res);
+            });
         }
 
-        public async Task<ActionResult> OnPostSwitchRecitationUpVoteAsync(int id)
+        public Task<IActionResult> OnPostSwitchRecitationUpVoteAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/audio/vote/switch/{id}", null);
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.PutAsync(
-                        $"{APIRoot.Url}/api/audio/vote/switch/{id}", null);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                    }
-                    var res = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
-                    return new OkObjectResult(res);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-                else
-                {
-                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
-                }
-            }
+                var res = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
+                return new OkObjectResult(res);
+            });
         }
 
-        public async Task<ActionResult> OnPostAddToMyHistoryAsync(int poemId)
+        public Task<IActionResult> OnPostAddToMyHistoryAsync(int poemId)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.PostAsync($"{APIRoot.Url}/api/tracking", new StringContent(JsonConvert.SerializeObject(poemId), Encoding.UTF8, "application/json"));
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.PostAsync(
-                        $"{APIRoot.Url}/api/tracking", new StringContent(JsonConvert.SerializeObject(poemId), Encoding.UTF8, "application/json"));
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                    }
-                    var res = JsonConvert.DeserializeObject<GanjoorUserPrePoemVisitViewModel>(await response.Content.ReadAsStringAsync());
-                    if (res.KeepTrack == false)
-                    {
-                        if (Request.Cookies["KeepHistory"] != null)
-                        {
-                            Response.Cookies.Delete("KeepHistory");
-                        }
-                        var cookieOption = new CookieOptions()
-                        {
-                            Expires = DateTime.Now.AddDays(365),
-                        };
-                        Response.Cookies.Append("KeepHistory", $"{false}", cookieOption);
-                    }
-                    return new OkObjectResult(res.KeepTrack && res.LastVisit != null ? $"از این صفحه آخرین بار {res.LastVisit.ToFriendlyPersianDateTextify()} و در مجموع {res.TotalVisits.ToPersianNumbers()} بار بازدید کرده‌ام." : "");
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-                else
+                var res = JsonConvert.DeserializeObject<GanjoorUserPrePoemVisitViewModel>(await response.Content.ReadAsStringAsync());
+                if (res.KeepTrack == false)
                 {
-                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+                    if (Request.Cookies["KeepHistory"] != null)
+                    {
+                        Response.Cookies.Delete("KeepHistory");
+                    }
+                    var cookieOption = new CookieOptions()
+                    {
+                        Expires = DateTime.Now.AddDays(365),
+                    };
+                    Response.Cookies.Append("KeepHistory", $"{false}", cookieOption);
                 }
-            }
+                return new OkObjectResult(res.KeepTrack && res.LastVisit != null ? $"از این صفحه آخرین بار {res.LastVisit.ToFriendlyPersianDateTextify()} و در مجموع {res.TotalVisits.ToPersianNumbers()} بار بازدید کرده‌ام." : "");
+            });
         }
 
-        public async Task<IActionResult> OnPutBookmarkNote(Guid id, string note)
+        public Task<IActionResult> OnPutBookmarkNote(Guid id, string note)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{id}", new StringContent(JsonConvert.SerializeObject(note), Encoding.UTF8, "application/json"));
+                if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{id}", new StringContent(JsonConvert.SerializeObject(note), Encoding.UTF8, "application/json"));
-                    if (response.StatusCode != HttpStatusCode.OK)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                    }
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-                else
-                {
-                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
-                }
-            }
-            return new JsonResult(true);
+                return new JsonResult(true);
+            });
         }
 
-        public async Task<IActionResult> OnDeleteMistakeAsync(int id)
+        public Task<IActionResult> OnDeleteMistakeAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/audio/errors/approved/{id}");
+                if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/audio/errors/approved/{id}");
-
-                    if (response.StatusCode != HttpStatusCode.OK)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                    }
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-                else
-                {
-                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
-                }
-            }
-            return new JsonResult(true);
+                return new JsonResult(true);
+            });
         }
 
-        public async Task<IActionResult> OnPutMistakeAsync(int id, string reasonText)
+        public Task<IActionResult> OnPutMistakeAsync(int id, string reasonText)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
-                {
-                    var stringContent = new StringContent(
-                       JsonConvert.SerializeObject
-                       (
-                           new RecitationErrorReportViewModel()
-                           {
-                               Id = id,
-                               ReasonText = reasonText,
-                               NumberOfLinesAffected = 1,
-                               CoupletIndex = -1,
-                           }
-                       ),
-                       Encoding.UTF8, "application/json");
+                var stringContent = new StringContent(
+                   JsonConvert.SerializeObject(new RecitationErrorReportViewModel()
+                   {
+                       Id = id,
+                       ReasonText = reasonText,
+                       NumberOfLinesAffected = 1,
+                       CoupletIndex = -1,
+                   }),
+                   Encoding.UTF8, "application/json");
 
-                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/audio/errors/report/edit", stringContent);
-
-                    if (response.StatusCode != HttpStatusCode.OK)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                    }
-                }
-                else
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/audio/errors/report/edit", stringContent);
+                if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new JsonResult(true);
+                return new JsonResult(true);
+            });
         }
 
-        public async Task<ActionResult> OnGetMoreQuotedPoemsForRelatedPoemPartialAsync(int poemId, int relatedPoemId, string poetImageUrl, string poetNickName, bool canEdit)
+        public async Task<IActionResult> OnGetMoreQuotedPoemsForRelatedPoemPartialAsync(int poemId, int relatedPoemId, string poetImageUrl, string poetNickName, bool canEdit)
         {
             string url = $"{APIRoot.Url}/api/ganjoor/poem/{poemId}/quoteds/{relatedPoemId}?published=true";
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
-                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                return BadRequest(await ReadErrorMessageAsync(response));
 
             var quoteds = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorQuotedPoemViewModel>>();
             if (!quoteds.Any())
             {
-                return new BadRequestObjectResult("مورد دیگری یافت نشد.");
+                return BadRequest("مورد دیگری یافت نشد.");
             }
 
             if (quoteds.Any(q => q.ChosenForMainList))
@@ -1244,133 +1262,85 @@ namespace GanjooRazor.Pages
                 quoteds.Remove(mainList);
             }
 
-
-            return new PartialViewResult()
+            return Partial("_MultipleQuotedPoemsPartial", new _MultipleQuotedPoemsPartialModel()
             {
-                ViewName = "_MultipleQuotedPoemsPartial",
-                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                {
-                    Model = new _MultipleQuotedPoemsPartialModel()
-                    {
-                        GanjoorQuotedPoems = quoteds.ToArray(),
-                        PoetImageUrl = poetImageUrl,
-                        PoetNickName = poetNickName,
-                        CanEdit = canEdit
-                    }
-                }
-            };
+                GanjoorQuotedPoems = quoteds.ToArray(),
+                PoetImageUrl = poetImageUrl,
+                PoetNickName = poetNickName,
+                CanEdit = canEdit
+            });
         }
 
-        public async Task<ActionResult> OnGetMoreQuotedPoemsPartialAsync(int poemId, int skip, string poetImageUrl, string poetNickName, bool canEdit)
+        public async Task<IActionResult> OnGetMoreQuotedPoemsPartialAsync(int poemId, int skip, string poetImageUrl, string poetNickName, bool canEdit)
         {
             string url = $"{APIRoot.Url}/api/ganjoor/poem/{poemId}/quoteds?skip={skip}&itemsCount=1000";
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
-                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                return BadRequest(await ReadErrorMessageAsync(response));
 
             var quoteds = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorQuotedPoemViewModel>>();
 
-            return new PartialViewResult()
+            return Partial("_MultipleQuotedPoemsPartial", new _MultipleQuotedPoemsPartialModel()
             {
-                ViewName = "_MultipleQuotedPoemsPartial",
-                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                {
-                    Model = new _MultipleQuotedPoemsPartialModel()
-                    {
-                        GanjoorQuotedPoems = quoteds.ToArray(),
-                        PoetImageUrl = poetImageUrl,
-                        PoetNickName = poetNickName,
-                        CanEdit = canEdit
-                    }
-                }
-            };
+                GanjoorQuotedPoems = quoteds.ToArray(),
+                PoetImageUrl = poetImageUrl,
+                PoetNickName = poetNickName,
+                CanEdit = canEdit
+            });
         }
 
-        public string PoemBlockClass
+        public string PoemBlockClass => GanjoorPage != null && GanjoorPage.Poem != null && GanjoorPage.Poem.ClaimedByMultiplePoets ? "poem ribbon-parent" : "poem";
+
+        public Task<IActionResult> OnPostMarkAsTextOriginalAsync(int bookId, int categoryId)
         {
-            get
+            return WithSecureClientAsync(async secureClient =>
             {
-                return GanjoorPage != null && GanjoorPage.Poem != null && GanjoorPage.Poem.ClaimedByMultiplePoets ? "poem ribbon-parent" : "poem";
-            }
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/naskban/textoriginal/{bookId}/{categoryId}/true", null);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
+                }
+                return new OkObjectResult(true);
+            });
         }
 
-        public async Task<ActionResult> OnPostMarkAsTextOriginalAsync(int bookId, int categoryId)
+        public Task<IActionResult> OnDeleteRelatedImageLinkAsync(PoemRelatedImageType relatedImageType, Guid linkId, bool removeItemLink)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.DeleteAsync(
+                    relatedImageType == PoemRelatedImageType.MuseumLink
+                        ? $"{APIRoot.Url}/api/artifacts/ganjoor?linkId={linkId}&removeItemLink={removeItemLink}"
+                        : $"{APIRoot.Url}/api/artifacts/pinterest?linkId={linkId}");
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.PutAsync(
-                        $"{APIRoot.Url}/api/ganjoor/naskban/textoriginal/{bookId}/{categoryId}/true", null);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                    }
-                    return new OkObjectResult(true);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-                else
-                {
-                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
-                }
-            }
+                return new OkObjectResult(true);
+            });
         }
 
-        public async Task<ActionResult> OnDeleteRelatedImageLinkAsync(PoemRelatedImageType relatedImageType, Guid linkId, bool removeItemLink)
-        {
-            using (HttpClient secureClient = new HttpClient())
-            {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
-                {
-                    HttpResponseMessage response = await secureClient.DeleteAsync(
-                        relatedImageType == PoemRelatedImageType.MuseumLink ?
-                        $"{APIRoot.Url}/api/artifacts/ganjoor?linkId={linkId}&removeItemLink={removeItemLink}"
-                        :
-                        $"{APIRoot.Url}/api/artifacts/pinterest?linkId={linkId}"
-                        );
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                    }
-                    return new OkObjectResult(true);
-                }
-                else
-                {
-                    return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
-                }
-            }
-        }
-
-        public async Task<ActionResult> OnGetCategoryRecitationsAsync(int catId)
+        public async Task<IActionResult> OnGetCategoryRecitationsAsync(int catId)
         {
             var catTop1RecitationsQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/cattop1/{catId}?includePoemText=false");
-
             if (!catTop1RecitationsQuery.IsSuccessStatusCode)
             {
-                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await catTop1RecitationsQuery.Content.ReadAsStringAsync()));
+                return BadRequest(await ReadErrorMessageAsync(catTop1RecitationsQuery));
             }
             var categoryTop1Recitations = JsonConvert.DeserializeObject<PublicRecitationViewModel[]>(await catTop1RecitationsQuery.Content.ReadAsStringAsync());
 
-            return new PartialViewResult()
+            return Partial("_AudioPlayerPartial", new _AudioPlayerPartialModel()
             {
-                ViewName = "_AudioPlayerPartial",
-                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                {
-                    Model = new _AudioPlayerPartialModel()
-                    {
-                        LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
-                        Recitations = categoryTop1Recitations,
-                        ShowAllRecitaions = true,
-                        CategoryMode = true,
-                    }
-                }
-            };
+                LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
+                Recitations = categoryTop1Recitations,
+                ShowAllRecitaions = true,
+                CategoryMode = true,
+            });
         }
-
 
         private async Task<_CategoryWordsCountPartialModel> _GetCategoryWordCountsAsync(int catId, int poetId, bool remStopWords = false)
         {
             var wordSumsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/wordsums/{catId}");
-
             if (!wordSumsResponse.IsSuccessStatusCode)
             {
                 return null;
@@ -1391,122 +1361,7 @@ namespace GanjooRazor.Pages
 
             if (remStopWords)
             {
-                string[] stopWords =
-                    [
-                    "و",
-                    "از",
-                    "که",
-                    "به",
-                    "در",
-                    "را",
-                    "ز",
-                    "است",
-                    "می",
-                    "این",
-                    "چون",
-                    "بود",
-                    "ای",
-                    "تا",
-                    "چو",
-                    "هر",
-                    "با",
-                    "چه",
-                    "شد",
-                    "بی",
-                    "خود",
-                    "گفت",
-                    "نیست",
-                    "نه",
-                    "گر",
-                    "کند",
-                    "اگر",
-                    "کرد",
-                    "باشد",
-                    "هم",
-                    "روی",
-                    "شود",
-                    "یک",
-                    "دو",
-                    "وی",
-                    "اندر",
-                    "پیش",
-                    "آمد",
-                    "دارد",
-                    "کن",
-                    "یا",
-                    "همی",
-                    "آید",
-                    "کرده",
-                    "نمی",
-                    "کز",
-                    "هست",
-                    "ام",
-                    "کی",
-                    "بهر",
-                    "فی",
-                    "چنین",
-                    "پای",
-                    "ها",
-                    "اند",
-                    "ی",
-                    "گردد",
-                    "داد",
-                    "چنان",
-                    "کنم",
-                    "نبود",
-                    "گشت",
-                    "دیگر",
-                    "باید",
-                    "دگر",
-                    "چند",
-                    "همچو",
-                    "شده",
-                    "بد",
-                    "زان",
-                    "پی",
-                    "مگر",
-                    "آنکه",
-                    "رفت",
-                    "کنی",
-                    "برد",
-                    "بدان",
-                    "ست",
-                    "ازین",
-                    "دید",
-                    "وز",
-                    "گوید",
-                    "کجا",
-                    "دهد",
-                    "گه",
-                    "درین",
-                    "آخر",
-                    "دارم",
-                    "خواهد",
-                    "نیز",
-                    "های",
-                    "چرا",
-                    "راست",
-                    "کان",
-                    "رو",
-                    "نباشد",
-                    "بر",
-                    "من",
-                    "آن",
-                    "تو",
-                    "او",
-                    "ما",
-                    "شما",
-                    "مرا",
-                    "ار",
-                    "داری",
-                    "بیا",
-                    "همه",
-                    "گو",
-                    "مکن",
-                    "زد",
-                    "گفتم",
-                    ];
-                wordCounts = wordCounts.Where(w => !stopWords.Contains(w.Word)).Take(100).ToArray();
+                wordCounts = wordCounts.Where(w => !_persianStopWords.Contains(w.Word)).Take(100).ToArray();
             }
 
             return new _CategoryWordsCountPartialModel()
@@ -1520,61 +1375,45 @@ namespace GanjooRazor.Pages
             };
         }
 
-
-        public async Task<ActionResult> OnGetCategoryWordCountsAsync(int catId, int poetId, bool remStopWords = false)
+        public async Task<IActionResult> OnGetCategoryWordCountsAsync(int catId, int poetId, bool remStopWords = false)
         {
             var res = await _GetCategoryWordCountsAsync(catId, poetId, remStopWords);
             if (res == null)
             {
-                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>("خطا در دسترسی به شمارش واژگان"));
+                return BadRequest("خطا در دسترسی به شمارش واژگان");
             }
 
-            return new PartialViewResult()
-            {
-                ViewName = "_CategoryWordsCountPartial",
-                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                {
-                    Model = res
-                }
-            };
+            return Partial("_CategoryWordsCountPartial", res);
         }
 
-        public async Task<ActionResult> OnGetSearchCategoryWordCountsAsync(int catId, int poetId, string term, int totalWordCount)
+        public async Task<IActionResult> OnGetSearchCategoryWordCountsAsync(int catId, int poetId, string term, int totalWordCount)
         {
             if (!string.IsNullOrEmpty(term))
             {
                 term = term.Trim();
             }
             var wordCountsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/wordcounts/{catId}?PageNumber=1&PageSize=100&term={term}");
-
             if (!wordCountsResponse.IsSuccessStatusCode)
             {
-                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await wordCountsResponse.Content.ReadAsStringAsync()));
+                return BadRequest(await ReadErrorMessageAsync(wordCountsResponse));
             }
             var wordCounts = JsonConvert.DeserializeObject<CategoryWordCount[]>(await wordCountsResponse.Content.ReadAsStringAsync());
 
-            return new PartialViewResult()
+            return Partial("_CategoryWordsCountTablePartial", new _CategoryWordsCountTablePartialModel()
             {
-                ViewName = "_CategoryWordsCountTablePartial",
-                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                {
-                    Model = new _CategoryWordsCountTablePartialModel()
-                    {
-                        CatId = catId,
-                        PoetId = poetId,
-                        WordCounts = wordCounts,
-                        TotalWordCount = totalWordCount,
-                    }
-                }
-            };
+                CatId = catId,
+                PoetId = poetId,
+                WordCounts = wordCounts,
+                TotalWordCount = totalWordCount,
+            });
         }
 
-        public async Task<ActionResult> OnGetPoemWordCountsAsync(int poemId)
+        public async Task<IActionResult> OnGetPoemWordCountsAsync(int poemId)
         {
             var poemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}");
             if (!poemQuery.IsSuccessStatusCode)
             {
-                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await poemQuery.Content.ReadAsStringAsync()));
+                return BadRequest(await ReadErrorMessageAsync(poemQuery));
             }
             var poem = JObject.Parse(await poemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
 
@@ -1611,24 +1450,16 @@ namespace GanjooRazor.Pages
                 RowNmbrInCat = 0,
             });
 
-
-            return new PartialViewResult()
+            return Partial("_CategoryWordsCountTablePartial", new _CategoryWordsCountTablePartialModel()
             {
-                ViewName = "_CategoryWordsCountTablePartial",
-                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                {
-                    Model = new _CategoryWordsCountTablePartialModel()
-                    {
-                        CatId = -1,
-                        PoetId = -1,
-                        TotalWordCount = counts.Where(c => c.RowNmbrInCat > 0).Sum(c => c.Count),
-                        WordCounts = counts.ToArray()
-                    }
-                }
-            };
+                CatId = -1,
+                PoetId = -1,
+                TotalWordCount = counts.Where(c => c.RowNmbrInCat > 0).Sum(c => c.Count),
+                WordCounts = counts.ToArray()
+            });
         }
 
-        public async Task<ActionResult> OnGetTopVisitsAsync(string url)
+        public async Task<IActionResult> OnGetTopVisitsAsync(string url)
         {
             url = $"https://ganjoor.net/{url}/";
             var apiUrl = $"https://track.kntr.ir/api/reporting/toppages/1/ganjoor.net?parentUrl={WebUtility.UrlEncode(url)}&count=20";
@@ -1636,34 +1467,20 @@ namespace GanjooRazor.Pages
 
             if (!topVisitsResponse.IsSuccessStatusCode)
             {
-                return new PartialViewResult()
+                return Partial("_TopVisitsPartial", new _TopVisitsPartialModel()
                 {
-                    ViewName = "_TopVisitsPartial",
-                    ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                    {
-                        Model = new _TopVisitsPartialModel()
-                        {
-                            Visits = null
-                        }
-                    }
-                };
+                    Visits = null
+                });
             }
             var topVisits = JsonConvert.DeserializeObject<PageVisitsViewModel[]>(await topVisitsResponse.Content.ReadAsStringAsync());
 
-            return new PartialViewResult()
+            return Partial("_TopVisitsPartial", new _TopVisitsPartialModel()
             {
-                ViewName = "_TopVisitsPartial",
-                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                {
-                    Model = new _TopVisitsPartialModel()
-                    {
-                        Visits = topVisits
-                    }
-                }
-            };
+                Visits = topVisits
+            });
         }
 
-        public async Task<ActionResult> OnGetSevenDaysVisitsAsync(string url)
+        public async Task<IActionResult> OnGetSevenDaysVisitsAsync(string url)
         {
             url = $"https://ganjoor.net/{url}/";
             var apiUrl = $"https://track.kntr.ir/api/reporting/dailypagevisits/1/ganjoor.net/for/{WebUtility.UrlEncode(url)}?start={DateTime.Now.Date.AddDays(-6).ToString("yyyy-MM-dd")}";
@@ -1671,33 +1488,17 @@ namespace GanjooRazor.Pages
 
             if (!s7ndaysVisitsResponse.IsSuccessStatusCode)
             {
-                return new PartialViewResult()
+                return Partial("_7DaysVisitsPartial", new _7DaysVisitsPartialModel()
                 {
-                    ViewName = "_7DaysVisitsPartial",
-                    ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                    {
-                        Model = new _7DaysVisitsPartialModel()
-                        {
-                            SevenDaysVisits = null
-                        }
-                    }
-                };
+                    SevenDaysVisits = null
+                });
             }
             var s7ndaysVisits = JsonConvert.DeserializeObject<DateRangeVisitsViewModel[]>(await s7ndaysVisitsResponse.Content.ReadAsStringAsync());
 
-            return new PartialViewResult()
+            return Partial("_7DaysVisitsPartial", new _7DaysVisitsPartialModel()
             {
-                ViewName = "_7DaysVisitsPartial",
-                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                {
-                    Model = new _7DaysVisitsPartialModel()
-                    {
-                        SevenDaysVisits = s7ndaysVisits
-                    }
-                }
-            };
+                SevenDaysVisits = s7ndaysVisits
+            });
         }
-
-
     }
 }
