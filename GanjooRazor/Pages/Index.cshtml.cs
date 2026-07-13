@@ -26,12 +26,6 @@ namespace GanjooRazor.Pages
     public partial class IndexModel : LoginPartialEnabledPageModel
     {
         /// <summary>
-        /// Message shown whenever an action requiring a session couldn't prepare an authenticated
-        /// client (expired/missing cookies). Was previously duplicated as a literal string in ~10 places.
-        /// </summary>
-        private const string NotLoggedInMessage = "لطفاً از گنجور خارج و مجددا به آن وارد شوید.";
-
-        /// <summary>
         /// Persian stop words excluded from category word-count listings when remStopWords is
         /// requested. Previously rebuilt as a local array literal on every call to
         /// _GetCategoryWordCountsAsync; now a single static HashSet (O(1) Contains instead of O(n),
@@ -95,14 +89,11 @@ namespace GanjooRazor.Pages
         public GanjoorSiteBannerViewModel Banner { get; set; }
 
         #region Shared helpers
-        // These helpers replace patterns that used to be copy-pasted throughout this file:
-        //  - GetConfigFlag: the try/bool.Parse-with-fallback block duplicated for every feature flag
-        //  - ReadErrorMessageAsync / CaptureErrorIfFailedAsync: "deserialize the API's error string"
-        //    duplicated ~35 times
-        //  - WithSecureClientAsync: the using/PrepareClient/else-BadRequest block duplicated ~10 times
-        // (PartialViewResult construction is handled by PageModel's own inherited Partial(viewName,
-        // model) method - the original code was hand-rolling a PartialViewResult/ViewDataDictionary
-        // block 14 times instead of using it.)
+        // GetConfigFlag and CaptureErrorIfFailedAsync stay local to this class since they touch
+        // IndexModel-specific state (Configuration, LastError). NotLoggedInMessage,
+        // ReadErrorMessageAsync, and WithSecureClientAsync now live on GanjoorPageModelBase
+        // (inherited via LoginPartialEnabledPageModel) since they're used across every page model,
+        // not just this one.
 
         /// <summary>
         /// Reads a boolean feature flag from configuration, defaulting to <paramref name="defaultValue"/>
@@ -111,14 +102,6 @@ namespace GanjooRazor.Pages
         private bool GetConfigFlag(string key, bool defaultValue = false)
         {
             return bool.TryParse(Configuration[key], out var value) ? value : defaultValue;
-        }
-
-        /// <summary>
-        /// Reads the API's JSON-encoded error string out of a failed response body.
-        /// </summary>
-        private static async Task<string> ReadErrorMessageAsync(HttpResponseMessage response)
-        {
-            return JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
         }
 
         /// <summary>
@@ -134,24 +117,6 @@ namespace GanjooRazor.Pages
             }
             LastError = await ReadErrorMessageAsync(response);
             return true;
-        }
-
-        /// <summary>
-        /// Runs <paramref name="operation"/> against an HttpClient authenticated from the current
-        /// session cookies. If the session can't be prepared (missing/expired cookies), returns
-        /// <paramref name="unauthorizedResult"/> (defaulting to a 400 with <see cref="NotLoggedInMessage"/>)
-        /// instead of every handler re-implementing the same using/if/else block.
-        /// </summary>
-        private async Task<IActionResult> WithSecureClientAsync(
-            Func<HttpClient, Task<IActionResult>> operation,
-            IActionResult unauthorizedResult = null)
-        {
-            using var secureClient = new HttpClient();
-            if (!await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
-            {
-                return unauthorizedResult ?? new BadRequestObjectResult(NotLoggedInMessage);
-            }
-            return await operation(secureClient);
         }
 
         #endregion
@@ -265,7 +230,7 @@ namespace GanjooRazor.Pages
             return WithSecureClientAsync(async secureClient =>
             {
                 var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/comment?id={id}");
-                if (response.StatusCode != HttpStatusCode.OK)
+                if (!response.IsSuccessStatusCode)
                 {
                     return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
@@ -284,7 +249,7 @@ namespace GanjooRazor.Pages
             return WithSecureClientAsync(async secureClient =>
             {
                 var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/comment/{id}", new StringContent(JsonConvert.SerializeObject(comment), Encoding.UTF8, "application/json"));
-                if (response.StatusCode != HttpStatusCode.OK)
+                if (!response.IsSuccessStatusCode)
                 {
                     return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
@@ -1103,10 +1068,6 @@ namespace GanjooRazor.Pages
 
         public Task<IActionResult> OnGetIsCoupletBookmarkedAsync(int poemId, int coupletIndex)
         {
-            // NOTE: preserved as-is - unlike most handlers here, this one silently returns "false"
-            // instead of a 400 when the session can't be prepared (no logged-in user just means
-            // "nothing is bookmarked", which is arguably correct, but it's inconsistent with e.g.
-            // OnGetUserUpvotedRecitationsAsync below). Worth a deliberate decision, not a silent fix.
             return WithSecureClientAsync(async secureClient =>
             {
                 var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{poemId}/{coupletIndex}");
@@ -1116,13 +1077,11 @@ namespace GanjooRazor.Pages
                 }
                 var res = JsonConvert.DeserializeObject<bool>(await response.Content.ReadAsStringAsync());
                 return new OkObjectResult(res);
-            }, new OkObjectResult(false));
+            });
         }
 
         public Task<IActionResult> OnGetPoemBookmarksAsync(int poemId)
         {
-            // Same note as OnGetIsCoupletBookmarkedAsync above: falls back to OkObjectResult(false)
-            // rather than an error when not logged in (preserved from the original behavior).
             return WithSecureClientAsync(async secureClient =>
             {
                 var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{poemId}");
@@ -1132,7 +1091,7 @@ namespace GanjooRazor.Pages
                 }
                 var res = JsonConvert.DeserializeObject<GanjoorUserBookmarkViewModel[]>(await response.Content.ReadAsStringAsync());
                 return new OkObjectResult(res);
-            }, new OkObjectResult(false));
+            });
         }
 
         /// <summary>
@@ -1199,7 +1158,7 @@ namespace GanjooRazor.Pages
             return WithSecureClientAsync(async secureClient =>
             {
                 var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{id}", new StringContent(JsonConvert.SerializeObject(note), Encoding.UTF8, "application/json"));
-                if (response.StatusCode != HttpStatusCode.OK)
+                if (!response.IsSuccessStatusCode)
                 {
                     return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
@@ -1212,7 +1171,7 @@ namespace GanjooRazor.Pages
             return WithSecureClientAsync(async secureClient =>
             {
                 var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/audio/errors/approved/{id}");
-                if (response.StatusCode != HttpStatusCode.OK)
+                if (!response.IsSuccessStatusCode)
                 {
                     return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
@@ -1235,7 +1194,7 @@ namespace GanjooRazor.Pages
                    Encoding.UTF8, "application/json");
 
                 var response = await secureClient.PutAsync($"{APIRoot.Url}/api/audio/errors/report/edit", stringContent);
-                if (response.StatusCode != HttpStatusCode.OK)
+                if (!response.IsSuccessStatusCode)
                 {
                     return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }

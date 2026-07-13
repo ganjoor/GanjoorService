@@ -1,7 +1,6 @@
 ﻿using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,21 +14,15 @@ using System.Threading.Tasks;
 namespace GanjooRazor.Areas.Admin.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
-    public class CatUtilsModel : PageModel
+    public class CatUtilsModel : GanjoorPageModelBase
     {
-        // <summary>
-        /// HttpClient instance
-        /// </summary>
-        private readonly HttpClient _httpClient;
-
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="httpClient"></param>
         /// <param name="memoryCache"></param>
-        public CatUtilsModel(HttpClient httpClient, IMemoryCache memoryCache)
+        public CatUtilsModel(HttpClient httpClient, IMemoryCache memoryCache) : base(httpClient)
         {
-            _httpClient = httpClient;
         }
 
         /// <summary>
@@ -85,7 +78,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             HttpResponseMessage response = await _httpClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
             if (!response.IsSuccessStatusCode)
             {
-                LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastMessage = await ReadErrorMessageAsync(response);
                 return;
             }
 
@@ -98,9 +91,9 @@ namespace GanjooRazor.Areas.Admin.Pages
         private async Task<bool> GetInformationAsync()
         {
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat?url={Request.Query["url"]}&poems=true&mainSections=true");
-            if(!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastMessage = await ReadErrorMessageAsync(response);
                 return false;
             }
             Cat = JsonConvert.DeserializeObject<GanjoorPoetCompleteViewModel>(await response.Content.ReadAsStringAsync());
@@ -115,12 +108,12 @@ namespace GanjooRazor.Areas.Admin.Pages
                     MapName = Cat.Cat.MapName,
                 };
             }
-           
+
 
             var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={Request.Query["url"]}");
             if (!pageQuery.IsSuccessStatusCode)
             {
-                LastMessage = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                LastMessage = await ReadErrorMessageAsync(pageQuery);
                 return false;
             }
             PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
@@ -128,7 +121,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             var rhythmsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms");
             if (!rhythmsResponse.IsSuccessStatusCode)
             {
-                LastMessage = JsonConvert.DeserializeObject<string>(await rhythmsResponse.Content.ReadAsStringAsync());
+                LastMessage = await ReadErrorMessageAsync(rhythmsResponse);
                 return false;
             }
             Rhythms = JsonConvert.DeserializeObject<GanjoorMetre[]>(await rhythmsResponse.Content.ReadAsStringAsync());
@@ -136,7 +129,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             var numberings = await _httpClient.GetAsync($"{APIRoot.Url}/api/numberings/cat/{Cat.Cat.Id}");
             if (!numberings.IsSuccessStatusCode)
             {
-                LastMessage = JsonConvert.DeserializeObject<string>(await numberings.Content.ReadAsStringAsync());
+                LastMessage = await ReadErrorMessageAsync(numberings);
                 return false;
             }
             Numberings = JsonConvert.DeserializeObject<GanjoorNumbering[]>(await numberings.Content.ReadAsStringAsync());
@@ -146,7 +139,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 var images = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{Cat.Cat.Id}/images");
                 if (!images.IsSuccessStatusCode)
                 {
-                    LastMessage = JsonConvert.DeserializeObject<string>(await images.Content.ReadAsStringAsync());
+                    LastMessage = await ReadErrorMessageAsync(images);
                     return false;
                 }
                 PoemRelatedImages = JsonConvert.DeserializeObject<PoemRelatedImageEx[]>(await images.Content.ReadAsStringAsync());
@@ -209,6 +202,9 @@ namespace GanjooRazor.Areas.Admin.Pages
                 EndCatId = Cat.Cat.Id
             };
 
+            // Full-page form post: re-renders the page with LastMessage on failure rather than
+            // returning a bare error result, so this keeps its own client/session block instead of
+            // going through WithSecureClientAsync (which is for AJAX-style handlers).
             using (HttpClient secureClient = new HttpClient())
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
@@ -220,7 +216,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/recaptionpoems/{subCat.Id}", new StringContent(JsonConvert.SerializeObject(NamingModel), Encoding.UTF8, "application/json"));
                         if (!response.IsSuccessStatusCode)
                         {
-                            LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                            LastMessage = await ReadErrorMessageAsync(response);
                             return Page();
                         }
                         else
@@ -234,7 +230,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/recaptionpoems/{Cat.Cat.Id}", new StringContent(JsonConvert.SerializeObject(NamingModel), Encoding.UTF8, "application/json"));
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastMessage = await ReadErrorMessageAsync(response);
                         return Page();
                     }
                     else
@@ -243,7 +239,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     }
                     NamingModel.Simulate = false;
                 }
-                
+
             }
 
             return Page();
@@ -251,6 +247,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostNumberingAsync(GanjoorNumbering NumberingModel)
         {
+            // Same note as OnPostAsync above re: full-page form post.
             using (HttpClient secureClient = new HttpClient())
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
@@ -258,7 +255,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/numberings", new StringContent(JsonConvert.SerializeObject(NumberingModel), Encoding.UTF8, "application/json"));
                 if (!response.IsSuccessStatusCode)
                 {
-                    LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    LastMessage = await ReadErrorMessageAsync(response);
                 }
             }
 
@@ -275,173 +272,129 @@ namespace GanjooRazor.Areas.Admin.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnDeleteAsync(int id)
+        public Task<IActionResult> OnDeleteAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/numberings/{id}");
+                if (!response.IsSuccessStatusCode)
                 {
-                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/numberings/{id}");
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return new BadRequestObjectResult(res);
-                    }
-                    return new OkObjectResult(true);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new OkObjectResult(false);
+                return new OkObjectResult(true);
+            }, new OkObjectResult(false));
         }
 
-        public async Task<IActionResult> OnPostStartRhymeAnalysisAsync(int id)
+        public Task<IActionResult> OnPostStartRhymeAnalysisAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/startassigningrhymes/{id}/{false}", null);
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/startassigningrhymes/{id}/{false}", null);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return new BadRequestObjectResult(res);
-                    }
-                    return new OkObjectResult(true);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new OkObjectResult(false);
+                return new OkObjectResult(true);
+            }, new OkObjectResult(false));
         }
 
-        public async Task<IActionResult> OnPostStartGeneratingSubCatsTOCAsync(int id)
+        public Task<IActionResult> OnPostStartGeneratingSubCatsTOCAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/subcats/startgentoc/{id}", null);
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/subcats/startgentoc/{id}", null);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return new BadRequestObjectResult(res);
-                    }
-                    return new OkObjectResult(true);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new OkObjectResult(false);
+                return new OkObjectResult(true);
+            }, new OkObjectResult(false));
         }
 
-        public async Task<IActionResult> OnPostStartRhythmAnalysisAsync(int id, string rhythm)
+        public Task<IActionResult> OnPostStartRhythmAnalysisAsync(int id, string rhythm)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/startassigningrhythms/{id}/{false}?rhythm={rhythm}", null);
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/startassigningrhythms/{id}/{false}?rhythm={rhythm}", null);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return new BadRequestObjectResult(res);
-                    }
-                    return new OkObjectResult(true);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new OkObjectResult(false);
+                return new OkObjectResult(true);
+            }, new OkObjectResult(false));
         }
 
-        public async Task<IActionResult> OnPostStartRegeneratingRelatedSections(int id)
+        public Task<IActionResult> OnPostStartRegeneratingRelatedSections(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/{id}/regenrelatedsections", null);
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/{id}/regenrelatedsections", null);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return new BadRequestObjectResult(res);
-                    }
-                    return new OkObjectResult(true);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new OkObjectResult(false);
+                return new OkObjectResult(true);
+            }, new OkObjectResult(false));
         }
 
-        public async Task<IActionResult> OnPostSetCategoryLanguageTagAsync(int id, string language)
+        public Task<IActionResult> OnPostSetCategoryLanguageTagAsync(int id, string language)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/language/{id}/{language}", null);
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/language/{id}/{language}", null);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return new BadRequestObjectResult(res);
-                    }
-                    return new OkObjectResult(true);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new OkObjectResult(false);
+                return new OkObjectResult(true);
+            }, new OkObjectResult(false));
         }
 
-        public async Task<IActionResult> OnPostSetCategoryPoemFormatAsync(int id, GanjoorPoemFormat format)
+        public Task<IActionResult> OnPostSetCategoryPoemFormatAsync(int id, GanjoorPoemFormat format)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/poemformat/{id}/{format}", null);
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/poemformat/{id}/{format}", null);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return new BadRequestObjectResult(res);
-                    }
-                    return new OkObjectResult(true);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new OkObjectResult(false);
+                return new OkObjectResult(true);
+            }, new OkObjectResult(false));
         }
 
-        public async Task<IActionResult> OnPostRecountAsync(int id)
+        public Task<IActionResult> OnPostRecountAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/numberings/recount/start/{id}", null);
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/numberings/recount/start/{id}", null);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return new BadRequestObjectResult(res);
-                    }
-                    return new OkObjectResult(true);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new OkObjectResult(false);
+                return new OkObjectResult(true);
+            }, new OkObjectResult(false));
         }
 
-        public async Task<IActionResult> OnPostRegenerateNumberingsAsync()
+        public Task<IActionResult> OnPostRegenerateNumberingsAsync()
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.PostAsync($"{APIRoot.Url}/api/numberings/generatemissing", null);
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/numberings/generatemissing", null);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return new BadRequestObjectResult(res);
-                    }
-                    return new OkObjectResult(true);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new OkObjectResult(false);
+                return new OkObjectResult(true);
+            }, new OkObjectResult(false));
         }
 
         public async Task<IActionResult> OnPostUploadDbAsync(IFormFile SQLiteDb)
         {
             await GetInformationAsync();
 
-
+            // Full-page form post (file upload): re-renders the page with LastMessage, so this keeps
+            // its own client/session block rather than using WithSecureClientAsync.
             using (HttpClient secureClient = new HttpClient())
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
@@ -457,7 +410,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqlite/import/cat/{Cat.Cat.Id}", form);
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastMessage = await ReadErrorMessageAsync(response);
                         return Page();
                     }
 
@@ -469,47 +422,39 @@ namespace GanjooRazor.Areas.Admin.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnDeletePoemAsync(int id)
+        public Task<IActionResult> OnDeletePoemAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/poem/{id}");
+                if (!response.IsSuccessStatusCode)
                 {
-                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/poem/{id}");
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return new BadRequestObjectResult(res);
-                    }
-                    return new OkObjectResult(true);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new OkObjectResult(false);
+                return new OkObjectResult(true);
+            }, new OkObjectResult(false));
         }
 
-        public async Task<IActionResult> OnPostBatchReSlugCatPoemsAsync(int id)
+        public Task<IActionResult> OnPostBatchReSlugCatPoemsAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/reslugpoems/{id}", null);
+                if (!response.IsSuccessStatusCode)
                 {
-                    var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/reslugpoems/{id}", null);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return new BadRequestObjectResult(res);
-                    }
-                    return new OkObjectResult(true);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new OkObjectResult(false);
+                return new OkObjectResult(true);
+            }, new OkObjectResult(false));
         }
 
         public async Task<IActionResult> OnPostUpdateCatMeta(GanjoorCatViewModel CatMeta)
         {
             await GetInformationAsync();
 
-
+            // Full-page form post: re-renders the page with LastMessage on failure (or redirects on
+            // success), so this keeps its own client/session block rather than using
+            // WithSecureClientAsync.
             using (HttpClient secureClient = new HttpClient())
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
@@ -531,77 +476,70 @@ namespace GanjooRazor.Areas.Admin.Pages
                         await CatMeta.NewImage.CopyToAsync(stream);
                         var fileContent = stream.ToArray();
                         form.Add(new ByteArrayContent(fileContent, 0, fileContent.Length), CatMeta.BookName, CatMeta.NewImage.FileName);
-                    }  
+                    }
                 }
                 HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/extra/{Cat.Cat.Id}", form);
                 if (!response.IsSuccessStatusCode)
                 {
-                    LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    LastMessage = await ReadErrorMessageAsync(response);
                     return Page();
                 }
                 return Redirect($"/Admin/CatUtils?url={Cat.Cat.FullUrl}");
             }
         }
 
-        
-
-        public async Task<IActionResult> OnPostRemNaskbanImage(string url)
+        public Task<IActionResult> OnPostRemNaskbanImage(string url)
         {
-
-            using (HttpClient secureClient = new HttpClient())
+            // NOTE: originally this endpoint called PrepareClient without checking its result (unlike
+            // every sibling AJAX handler in this file), so an expired/missing session would silently
+            // proceed with an unauthenticated client instead of failing fast with NotLoggedInMessage.
+            // That looked like an oversight rather than an intentional difference, so it's now
+            // consistent with the rest of this file via WithSecureClientAsync.
+            return WithSecureClientAsync(async secureClient =>
             {
-                await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
                 HttpResponseMessage response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/naskban?naskbanUrl={url}");
-                
                 if (!response.IsSuccessStatusCode)
                 {
-                    var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                    return new BadRequestObjectResult(res);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
                 return new OkObjectResult(true);
-            }
+            }, new OkObjectResult(false));
         }
 
-        public async Task<IActionResult> OnPostSetCategoryDigitalSourceTagAsync(int id, string tag, string name)
+        public Task<IActionResult> OnPostSetCategoryDigitalSourceTagAsync(int id, string tag, string name)
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/source?sourceUrlSlug={tag}");
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/source?sourceUrlSlug={tag}");
-                    if(!response.IsSuccessStatusCode)
-                    {
-                        var res = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                        return new BadRequestObjectResult(res);
-                    }
-                    DigitalSource source = JsonConvert.DeserializeObject<DigitalSource>(await response.Content.ReadAsStringAsync());
-                    if (source == null)
-                    {
-                        if(string.IsNullOrEmpty(name))
-                        {
-                            return new BadRequestObjectResult("منبع وجود ندارد. باید نام آن را وارد کنید.");
-                        }
-                        source = new DigitalSource()
-                        {
-                            UrlSlug = tag,
-                            ShortName = name,
-                            FullName = name,
-                            SourceType = "همراهان گنجور"
-                        };
-                    }
-
-                    HttpResponseMessage responsePost = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/source/{id}",
-                        new StringContent(JsonConvert.SerializeObject(source), Encoding.UTF8, "application/json")
-                        );
-                    if (!responsePost.IsSuccessStatusCode)
-                    {
-                        var res = JsonConvert.DeserializeObject<string>(await responsePost.Content.ReadAsStringAsync());
-                        return new BadRequestObjectResult(res);
-                    }
-                    return new OkObjectResult(true);
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new OkObjectResult(false);
+                DigitalSource source = JsonConvert.DeserializeObject<DigitalSource>(await response.Content.ReadAsStringAsync());
+                if (source == null)
+                {
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        return new BadRequestObjectResult("منبع وجود ندارد. باید نام آن را وارد کنید.");
+                    }
+                    source = new DigitalSource()
+                    {
+                        UrlSlug = tag,
+                        ShortName = name,
+                        FullName = name,
+                        SourceType = "همراهان گنجور"
+                    };
+                }
+
+                HttpResponseMessage responsePost = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/source/{id}",
+                    new StringContent(JsonConvert.SerializeObject(source), Encoding.UTF8, "application/json")
+                    );
+                if (!responsePost.IsSuccessStatusCode)
+                {
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(responsePost));
+                }
+                return new OkObjectResult(true);
+            }, new OkObjectResult(false));
         }
     }
 }

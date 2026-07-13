@@ -2,7 +2,6 @@
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Auth.ViewModel;
@@ -14,14 +13,13 @@ using RSecurityBackend.Models.Auth.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace GanjooRazor.Pages
 {
-    public class LoginPartialEnabledPageModel : PageModel
+    public class LoginPartialEnabledPageModel : GanjoorPageModelBase
     {
         /// <summary>
         /// is logged on
@@ -115,7 +113,7 @@ namespace GanjooRazor.Pages
             var loginUrl = $"{APIRoot.Url}/api/users/login";
             var response = await _httpClient.PostAsync(loginUrl, stringContent);
 
-            if (response.StatusCode != HttpStatusCode.OK)
+            if (!response.IsSuccessStatusCode)
             {
                 return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
             }
@@ -163,36 +161,22 @@ namespace GanjooRazor.Pages
             return Redirect(Request.Path);
         }
 
-        public async Task<IActionResult> OnGetCheckIfHasNotificationsAsync()
+        public Task<IActionResult> OnGetCheckIfHasNotificationsAsync()
         {
-            using (HttpClient secureClient = new HttpClient())
+            return WithSecureClientAsync(async secureClient =>
             {
-                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                var response = await secureClient.GetAsync($"{APIRoot.Url}/api/notifications/unread/count");
+                if (!response.IsSuccessStatusCode)
                 {
-                    HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/notifications/unread/count");
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
-                    }
-                    var res = JsonConvert.DeserializeObject<int>(await response.Content.ReadAsStringAsync());
-                    if (res == 0)
-                        return new OkObjectResult("");
-                    return new OkObjectResult(res.ToString().ToPersianNumbers());
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
                 }
-            }
-            return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+                var res = JsonConvert.DeserializeObject<int>(await response.Content.ReadAsStringAsync());
+                return new OkObjectResult(res == 0 ? "" : res.ToString().ToPersianNumbers());
+            });
         }
 
-        /// <summary>
-        /// HttpClient instance
-        /// </summary>
-        protected readonly HttpClient _httpClient;
-
-        public LoginPartialEnabledPageModel(
-            HttpClient httpClient
-            )
+        public LoginPartialEnabledPageModel(HttpClient httpClient) : base(httpClient)
         {
-            _httpClient = httpClient;
         }
     }
 }
