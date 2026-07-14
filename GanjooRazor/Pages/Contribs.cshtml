@@ -1,38 +1,18 @@
 ﻿@page
 @model GanjooRazor.Pages.ContribsModel
 @{
-    Layout = null;
+    Layout = "_Layout";
+    ViewData["Title"] = "گنجور » مشارکت‌های کاربران";
 }
-<!DOCTYPE html>
-<html lang="fa-IR" dir="rtl">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>
-        گنجور » مشارکت‌های کاربران
-    </title>
-    <link href="/css/p8.css?version=86" rel="stylesheet" type="text/css" />
-    <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
-    <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
-    <script src="/lib/jquery/dist/jquery.min.js"></script>
+@section Head {
     <script src="/js/chart.js"></script>
-    <script src="/js/bk.js?version=80"></script>
-    <script>
-        var cookieValue = getCookie("playerScrollLock");
-        var playerScrollLock = cookieValue === "true";
-
-        cookieValue = getCookie("stickyEnabled");
-        var stickyEnabled = cookieValue != "false";
-    </script>
-</head>
-<body>
-
-    @if (!string.IsNullOrEmpty(Model.LastError))
-    {
-        @Html.Raw(Model.LastError)
-    }
-    else
-    {
+}
+@if (!string.IsNullOrEmpty(Model.LastError))
+{
+    @Html.Raw(Model.LastError)
+}
+else
+{
         <div id="hdr2" class="clearfix">
             <h1><a href="/" title="گنجور"><img src="/image/gdapk.png" alt="گنجور" /></a></h1>
             <div class="actionbox">
@@ -149,8 +129,5 @@
     <script>
         loadContributions('poemcorrections');
     </script>
-
-</body>
-</html>
 
 

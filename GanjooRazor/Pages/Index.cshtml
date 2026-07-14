@@ -1,34 +1,15 @@
 ﻿@page
 @model IndexModel
 @{
-    Layout = null;
+    Layout = "_Layout";
 }
 
-<!DOCTYPE html>
-<html lang="fa-IR" dir="rtl">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>
-        @Html.Raw(ViewData["Title"])
-    </title>
-    <link href="/css/p8.css?version=86" rel="stylesheet" type="text/css">
-    <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon">
-    <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml">
-    <script src="/lib/jquery/dist/jquery.min.js"></script>
+@section Head {
     <script src="/js/chart.js"></script>
-    <script src="/js/bk.js?version=80"></script>
     <script src="/js/jquery.mark.min.js"></script>
     <script>
-        var cookieValue = getCookie("playerScrollLock");
-        var playerScrollLock = cookieValue === "true";
-
-        cookieValue = getCookie("stickyEnabled");
-        var stickyEnabled = cookieValue != "false";
-
-        cookieValue = getCookie("lineNumbers");
+        var cookieValue = getCookie("lineNumbers");
         var lineNumbers = cookieValue != "false";
-
     </script>
 
     @if ((Model.GanjoorPage != null && Model.GanjoorPage.NoIndex) || !string.IsNullOrEmpty(Model.PinterestUrl))
@@ -81,7 +62,7 @@
         </style>
         <script src="~/js/leaflet.js"></script>
         <script src="~/js/leaflet-providers.js"></script>
-        @if(!Model.OfflineMode)
+        @if (!Model.OfflineMode)
         {
             <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
         }
@@ -106,264 +87,252 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
         }
     }
+}
 
-</head>
-<body>
-    @if(Model.OfflineMode)
+@if (Model.OfflineMode)
+{
+    <div class="notice">
+        <p>
+            از آنجا که شما با شبکهٔ داخلی اطلاعات ایران وصل شده‌اید در حال مشاهدهٔ یک نسخهٔ آفلاین از گنجور هستید.
+        </p>
+        <p>
+            این یک نسخهٔ آفلاین با اطلاعات قدیمی از سایت گنجور است که برای ایرانیان داخل کشور که اینترنتشان قطع است در دسترس قرار گرفته است.
+        </p>
+        <p>
+            بعضی امکاناتِ نیازمند اینترنت حذف شده و برخی قابلیتها نیز ممکن است به درستی کار نکند.
+        </p>
+        <p>
+            امکانات نام‌نویسی و درج حاشیه نیز در آن غیرفعال است. اگر می‌توانید جایی اطلاعاتی وارد کنید انتظار ذخیرهٔ آن را به طور دائم نداشته باشید.
+        </p>
+        <p>
+            نسخهٔ به‌روز گنجور روی اینترنت تا پایان قطعی اینترنت در ایران برای آی.پی‌های خارج از ایران در دسترس است.
+        </p>
+    </div>
+}
+else if (Model.ReadOnlyMode)
+{
+    <div class="notice">
+        <p>
+            گنجور در حال حاضر در وضعیت فقط‌خواندنی است.
+        </p>
+        <p>
+            امکانات نام‌نویسی و درج حاشیه نیز در آن غیرفعال است. اگر می‌توانید جایی اطلاعاتی وارد کنید انتظار ذخیرهٔ آن را به طور دائم نداشته باشید.
+        </p>
+    </div>
+}
+<script src="/js/vaabd.js?version=10"></script>
+
+@if (Model.IsPoemPage)
+{
+    if (Model.GanjoorPage != null && Model.GanjoorPage.Poem.Recitations.Length > 0)
     {
-        <div class="notice">
-            <p>
-                از آنجا که شما با شبکهٔ داخلی اطلاعات ایران وصل شده‌اید در حال مشاهدهٔ یک نسخهٔ آفلاین از گنجور هستید.
-            </p>
-            <p>
-                این یک نسخهٔ آفلاین با اطلاعات قدیمی از سایت گنجور است که برای ایرانیان داخل کشور که اینترنتشان قطع است در دسترس قرار گرفته است.
-            </p>
-            <p>
-                بعضی امکاناتِ نیازمند اینترنت حذف شده و برخی قابلیتها نیز ممکن است به درستی کار نکند.
-            </p>
-            <p>
-                امکانات نام‌نویسی و درج حاشیه نیز در آن غیرفعال است. اگر می‌توانید جایی اطلاعاتی وارد کنید انتظار ذخیرهٔ آن را به طور دائم نداشته باشید.
-            </p>
-            <p>
-                نسخهٔ به‌روز گنجور روی اینترنت تا پایان قطعی اینترنت در ایران برای آی.پی‌های خارج از ایران در دسترس است.
-            </p>
-        </div>
-    }
-    else if(Model.ReadOnlyMode)
-    {
-        <div class="notice">
-            <p>
-                گنجور در حال حاضر در وضعیت فقط‌خواندنی است.
-            </p>
-            <p>
-                امکانات نام‌نویسی و درج حاشیه نیز در آن غیرفعال است. اگر می‌توانید جایی اطلاعاتی وارد کنید انتظار ذخیرهٔ آن را به طور دائم نداشته باشید.
-            </p>
-        </div>
-    }
-    <script src="/js/vaabd.js?version=10"></script>
-
-    @if (Model.IsPoemPage)
-    {
-        if (Model.GanjoorPage != null && Model.GanjoorPage.Poem.Recitations.Length > 0)
-        {
-            <script>
-                var currentAudio = null;
-                var verseStart = [];
-                var verseEnd = [];
-                var verseIndex = [];
-                var nLastHighlight = -1;
-                var vCount = 0;
-
-                var _setXml = function (xmlUrl) {
-                    $.ajax({
-                        type: "GET",
-                        url: xmlUrl,
-                        dataType: "xml",
-                        success: function (xml) {
-                            var nOneSecondBugFix = 2000;
-                            $(xml).find('OneSecondBugFix').each(function () {
-                                nOneSecondBugFix = parseInt($(xml).find('OneSecondBugFix').text());
-                            });
-                            var v = 0;
-                            $(xml).find('SyncInfo').each(function () {
-                                verseStart[v] = parseInt($(this).find('AudioMiliseconds').text()) / nOneSecondBugFix;
-                                verseIndex[v] = parseInt($(this).find('VerseOrder').text());
-                                if (v > 0)
-                                    verseEnd[v - 1] = verseStart[v];
-                                v++;
-                            });
-                            v--;
-                            if (v > 1)
-                                verseEnd[v] = verseStart[v] + 2 * (verseEnd[v - 1] - verseStart[v - 1]);
-                            vCount = v;
-                        }
-                    });
-                }
-
-                var _trackTimeChanged = function (audio) {
-                    var currentTime = audio.currentTime;
-
-                    if (currentTime > 0) {
-                        for (var i = 0; i <= vCount; i++) {
-                            if (currentTime >= verseStart[i] && currentTime <= verseEnd[i]) {
-                                hilightverse(verseIndex[i], "red", true, playerScrollLock);
-
-                                if (nLastHighlight != verseIndex[i] && nLastHighlight != -1)
-                                    hilightverse(nLastHighlight, "", false, false);//reset color
-                                nLastHighlight = verseIndex[i];
-                                break;
-                            }
-                        }
-                    }
-                };
-            </script>
-
-            <script>
-                var narrators = [];
-                var audioxmlfiles = [];
-                var recitaionIds = [];
-                @foreach (var recitation in Model.GanjoorPage.Poem.Recitations)
-                {
-                    if (recitation.InSyncWithText)
-                    {
-                        <text>
-                                            narrators.push('@Html.Raw(recitation.AudioArtist)');
-                                            audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
-                                            recitaionIds.push(@recitation.Id);
-                        </text>
-                    }
-                }
-            </script>
-        }
-
         <script>
-            var inlineSearchResults = [];
-            var inlineSearchResultIndex = 0;
-            var currentClass = "currentInlineResult";
-            var offsetTop = 200;
-        </script>
-    }
+            var currentAudio = null;
+            var verseStart = [];
+            var verseEnd = [];
+            var verseIndex = [];
+            var nLastHighlight = -1;
+            var vCount = 0;
 
-    @if (Model.IsHomePage)
-    {
-        @if (!string.IsNullOrEmpty(Model.LastError))
-        {
-            <div class="poem">
-                @Model.LastError
-            </div>
-        }
-        else
-        {
-            <partial name="_HomePagePartial" model="Model" />
-        }
-    }
-    else
-    {
-        <partial name="_GanjoorPagePartial" model="Model" />
-    }
-
-
-
-
-
-    @{
-        if (!string.IsNullOrEmpty(Model.PinterestUrl))
-        {
-            <script>
-                $(function () {
-                    $("a").attr('href', function (i, h) {
-                        if (h != null) {
-                            return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
-                        }
-                        return h;
-                    });
-                });
-            </script>
-        }
-    }
-
-    @if (Model.IsPoemPage)
-    {
-        <script src="/lib/tinymce/tinymce.min.js"></script>
-        <script>
-            var userNotifiedOnEditInsteadOfComment = false;
-
-            function createInformationNotification() {
-                tinymce.activeEditor.notificationManager.open({
-                    text: 'تمنا می‌کنیم که به جای گوشزد کردن خطاهای املایی و تایپی در حاشیه‌ها از دکمهٔ «ویرایش» استفاده کنید و خطا را تصحیح کنید.',
-                    type: 'info'
+            var _setXml = function (xmlUrl) {
+                $.ajax({
+                    type: "GET",
+                    url: xmlUrl,
+                    dataType: "xml",
+                    success: function (xml) {
+                        var nOneSecondBugFix = 2000;
+                        $(xml).find('OneSecondBugFix').each(function () {
+                            nOneSecondBugFix = parseInt($(xml).find('OneSecondBugFix').text());
+                        });
+                        var v = 0;
+                        $(xml).find('SyncInfo').each(function () {
+                            verseStart[v] = parseInt($(this).find('AudioMiliseconds').text()) / nOneSecondBugFix;
+                            verseIndex[v] = parseInt($(this).find('VerseOrder').text());
+                            if (v > 0)
+                                verseEnd[v - 1] = verseStart[v];
+                            v++;
+                        });
+                        v--;
+                        if (v > 1)
+                            verseEnd[v] = verseStart[v] + 2 * (verseEnd[v - 1] - verseStart[v - 1]);
+                        vCount = v;
+                    }
                 });
             }
 
-            tinymce.init({
-                selector: 'textarea.editor',
-                language: 'fa_IR',
-                menubar: false,
-                plugins: 'link paste image',
-                toolbar: 'undo redo | alignleft aligncenter alignright alignjustify | link',
-                contextmenu: false,
-                paste_auto_cleanup_on_paste: true,
-                paste_remove_styles: true,
-                paste_remove_styles_if_webkit: true,
-                paste_strip_class_attributes: true,
-                a11y_advanced_options: true,
-                skin: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "oxide-dark" : localStorage.getItem("scheme") == "dark" ? "oxide-dark" : ""),
-                content_css: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "dark" : localStorage.getItem("scheme") == "dark" ? "dark" : ""),
-                setup: function (editor) {
-                    editor.on('tap', function (e, f) {
-                        var editor_id = e.view.frameElement.id.slice(0, -4);
-                        if (editor_id != 'editNoteText') {
-                            if (userNotifiedOnEditInsteadOfComment == false) {
-                                userNotifiedOnEditInsteadOfComment = true;
-                                createInformationNotification();
-                            }
+            var _trackTimeChanged = function (audio) {
+                var currentTime = audio.currentTime;
+
+                if (currentTime > 0) {
+                    for (var i = 0; i <= vCount; i++) {
+                        if (currentTime >= verseStart[i] && currentTime <= verseEnd[i]) {
+                            hilightverse(verseIndex[i], "red", true, playerScrollLock);
+
+                            if (nLastHighlight != verseIndex[i] && nLastHighlight != -1)
+                                hilightverse(nLastHighlight, "", false, false);//reset color
+                            nLastHighlight = verseIndex[i];
+                            break;
                         }
-                    },
-                    );
-                    editor.on('click', function (e, f) {
-                        var editor_id = e.view.frameElement.id.slice(0, -4);
-                        if (editor_id != 'editNoteText') {
-                            if (userNotifiedOnEditInsteadOfComment == false) {
-                                userNotifiedOnEditInsteadOfComment = true;
-                                createInformationNotification();
-                            }
-                        }
-                    },
-                    );
-                },
-            });
+                    }
+                }
+            };
         </script>
-    }
 
-    @if (ViewData["TrackingScript"] != null && !string.IsNullOrEmpty(ViewData["TrackingScript"].ToString()))
-    {
-        @Html.Raw(ViewData["TrackingScript"])
-    }
-
-    
-
-    @if (Model.LoggedIn)
-    {
-        if (Model.IsPoemPage)
-        {
-            if (Model.KeepHistory)
+        <script>
+            var narrators = [];
+            var audioxmlfiles = [];
+            var recitaionIds = [];
+            @foreach (var recitation in Model.GanjoorPage.Poem.Recitations)
             {
-                <script>
-                    AddToMyHistory(@Model.GanjoorPage.Id);
-                </script>
-            }
-        }
-
-
-        @if (Model.GanjoorPage != null && Model.GanjoorPage.Id == 39401)
-        {
-            <script>
-                function asyncStartupLoadWordCounts() {
-                    return new Promise((resolve, reject) => {
-                        // Simulate a long running task
-                        setTimeout(() => {
-                            loadWordCounts(0, 0, false)
-                        }, 100);
-                    });
+                if (recitation.InSyncWithText)
+                {
+                    <text>
+                                        narrators.push('@Html.Raw(recitation.AudioArtist)');
+                                        audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
+                                        recitaionIds.push(@recitation.Id);
+                    </text>
                 }
-
-                asyncStartupLoadWordCounts();
-
-            </script>
-        }
-
+            }
+        </script>
     }
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll("table.stats").forEach(table => {
-                plotChart(table.getAttribute("id"));
-            });
-        });
-
+        var inlineSearchResults = [];
+        var inlineSearchResultIndex = 0;
+        var currentClass = "currentInlineResult";
+        var offsetTop = 200;
     </script>
+}
 
-</body>
-</html>
+@if (Model.IsHomePage)
+{
+    @if (!string.IsNullOrEmpty(Model.LastError))
+    {
+        <div class="poem">
+            @Model.LastError
+        </div>
+    }
+    else
+    {
+        <partial name="_HomePagePartial" model="Model" />
+    }
+}
+else
+{
+    <partial name="_GanjoorPagePartial" model="Model" />
+}
+
+@{
+    if (!string.IsNullOrEmpty(Model.PinterestUrl))
+    {
+        <script>
+            $(function () {
+                $("a").attr('href', function (i, h) {
+                    if (h != null) {
+                        return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
+                    }
+                    return h;
+                });
+            });
+        </script>
+    }
+}
+
+@if (Model.IsPoemPage)
+{
+    <script src="/lib/tinymce/tinymce.min.js"></script>
+    <script>
+        var userNotifiedOnEditInsteadOfComment = false;
+
+        function createInformationNotification() {
+            tinymce.activeEditor.notificationManager.open({
+                text: 'تمنا می‌کنیم که به جای گوشزد کردن خطاهای املایی و تایپی در حاشیه‌ها از دکمهٔ «ویرایش» استفاده کنید و خطا را تصحیح کنید.',
+                type: 'info'
+            });
+        }
+
+        tinymce.init({
+            selector: 'textarea.editor',
+            language: 'fa_IR',
+            menubar: false,
+            plugins: 'link paste image',
+            toolbar: 'undo redo | alignleft aligncenter alignright alignjustify | link',
+            contextmenu: false,
+            paste_auto_cleanup_on_paste: true,
+            paste_remove_styles: true,
+            paste_remove_styles_if_webkit: true,
+            paste_strip_class_attributes: true,
+            a11y_advanced_options: true,
+            skin: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "oxide-dark" : localStorage.getItem("scheme") == "dark" ? "oxide-dark" : ""),
+            content_css: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "dark" : localStorage.getItem("scheme") == "dark" ? "dark" : ""),
+            setup: function (editor) {
+                editor.on('tap', function (e, f) {
+                    var editor_id = e.view.frameElement.id.slice(0, -4);
+                    if (editor_id != 'editNoteText') {
+                        if (userNotifiedOnEditInsteadOfComment == false) {
+                            userNotifiedOnEditInsteadOfComment = true;
+                            createInformationNotification();
+                        }
+                    }
+                },
+                );
+                editor.on('click', function (e, f) {
+                    var editor_id = e.view.frameElement.id.slice(0, -4);
+                    if (editor_id != 'editNoteText') {
+                        if (userNotifiedOnEditInsteadOfComment == false) {
+                            userNotifiedOnEditInsteadOfComment = true;
+                            createInformationNotification();
+                        }
+                    }
+                },
+                );
+            },
+        });
+    </script>
+}
+
+@if (ViewData["TrackingScript"] != null && !string.IsNullOrEmpty(ViewData["TrackingScript"].ToString()))
+{
+    @Html.Raw(ViewData["TrackingScript"])
+}
+
+@if (Model.LoggedIn)
+{
+    if (Model.IsPoemPage)
+    {
+        if (Model.KeepHistory)
+        {
+            <script>
+                AddToMyHistory(@Model.GanjoorPage.Id);
+            </script>
+        }
+    }
 
 
+    @if (Model.GanjoorPage != null && Model.GanjoorPage.Id == 39401)
+    {
+        <script>
+            function asyncStartupLoadWordCounts() {
+                return new Promise((resolve, reject) => {
+                    // Simulate a long running task
+                    setTimeout(() => {
+                        loadWordCounts(0, 0, false)
+                    }, 100);
+                });
+            }
+
+            asyncStartupLoadWordCounts();
+
+        </script>
+    }
+
+}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("table.stats").forEach(table => {
+            plotChart(table.getAttribute("id"));
+        });
+    });
+
+</script>

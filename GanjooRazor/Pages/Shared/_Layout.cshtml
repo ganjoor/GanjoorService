@@ -1,0 +1,46 @@
+﻿@{
+    // Shared layout for public-site pages (Pages/ folder). NOT used by Areas/Admin or Areas/User,
+    // which have their own separate _AdminLayout / _UserPanelLayout under their own Areas/*/Pages/Shared
+    // folders - see Areas/Admin/Pages/_ViewStart.cshtml and Areas/User/Pages/_ViewStart.cshtml.
+    //
+    // Individual pages opt in with `Layout = "_Layout";` (root Pages/_ViewStart.cshtml still defaults
+    // to Layout = null, so pages that don't opt in are completely unaffected).
+    //
+    // Extension points:
+    //   @section Head { ... }     extra <meta>/<link>/<script> tags specific to one page
+    //   @section Scripts { ... }  extra end-of-body <script> blocks specific to one page
+    //   ViewData["Title"]         page <title>
+    //
+    // NOTE: ViewData["TrackingScript"] output is intentionally NOT centralized here even though it
+    // looked identical across pages at first glance. Several pages (FAQ, Contribs, Quotes, Hashieha,
+    // Tagged, Simi) only render it inside their "no LastError" branch - i.e. analytics is
+    // deliberately (or at least currently) skipped on error pages. A layout can't see each page's
+    // own LastError state, so centralizing this would make tracking fire on error pages that
+    // previously suppressed it. Each page keeps rendering its own TrackingScript block as before.
+}
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@Html.Raw(ViewData["Title"])</title>
+    <link href="/css/p8.css?version=86" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
+    <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/js/bk.js?version=80"></script>
+    <script>
+        var cookieValue = getCookie("playerScrollLock");
+        var playerScrollLock = cookieValue === "true";
+
+        cookieValue = getCookie("stickyEnabled");
+        var stickyEnabled = cookieValue != "false";
+    </script>
+    @await RenderSectionAsync("Head", required: false)
+</head>
+<body>
+    @RenderBody()
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
