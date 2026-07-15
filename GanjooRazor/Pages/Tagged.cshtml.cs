@@ -1,7 +1,6 @@
 ﻿using DNTPersianUtils.Core;
+using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
@@ -20,24 +19,15 @@ namespace GanjooRazor.Pages
     [IgnoreAntiforgeryToken(Order = 1001)]
     public class TaggedModel : LoginPartialEnabledPageModel
     {
-        /// <summary>
-        /// memory cache
-        /// </summary>
-        private readonly IMemoryCache _memoryCache;
-
-    
+        private readonly PoetCacheService _poetCache;
 
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="httpClient"></param>
-        /// <param name="memoryCache"></param>
-        /// <param name="configuration"></param>
-        public TaggedModel(HttpClient httpClient, IMemoryCache memoryCache, IConfiguration configuration) : base(httpClient, configuration)
+        public TaggedModel(HttpClient httpClient, IConfiguration configuration, PoetCacheService poetCache) : base(httpClient, configuration)
         {
-            _memoryCache = memoryCache;
+            _poetCache = poetCache;
         }
-
 
         public List<GanjoorPoetViewModel> Poets { get; set; }
         public int PoetId { get; set; }
@@ -54,103 +44,59 @@ namespace GanjooRazor.Pages
             HttpResponseMessage response = await _httpClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await ReadErrorMessageAsync(response);
                 return;
             }
 
             Languages = JsonConvert.DeserializeObject<GanjoorLanguage[]>(await response.Content.ReadAsStringAsync());
         }
 
-        private async Task<bool> preparePoets()
-        {
-            var cacheKey = $"/api/ganjoor/poets";
-            if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
-            {
-                var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
-                if (!response.IsSuccessStatusCode)
-                {
-                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                    return false;
-                }
-                poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
-                if (AggressiveCacheEnabled)
-                {
-                    _memoryCache.Set(cacheKey, poets, TimeSpan.FromHours(1));
-                }
-            }
-
-            Poets = poets;
-
-            await ReadLanguagesAsync();
-            return true;
-        }
-
-        private async Task<bool> preparePoet()
-        {
-            var cacheKey = $"/api/ganjoor/poet/{PoetId}";
-            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
-            {
-                var poetResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{PoetId}");
-                if (!poetResponse.IsSuccessStatusCode)
-                {
-                    LastError = JsonConvert.DeserializeObject<string>(await poetResponse.Content.ReadAsStringAsync());
-                    return false;
-                }
-                poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
-                if (AggressiveCacheEnabled)
-                {
-                    _memoryCache.Set(cacheKey, poet, TimeSpan.FromHours(1));
-                }
-            }
-
-            Poet = poet;
-            return true;
-        }
-
         public async Task<IActionResult> OnGetPoetInformationAsync(int id)
         {
             if (id == 0)
-                return new OkObjectResult(null);
-            var cacheKey = $"/api/ganjoor/poet/{id}";
-            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
             {
-                var poetResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{id}");
-                if (!poetResponse.IsSuccessStatusCode)
-                {
-                    return BadRequest(JsonConvert.DeserializeObject<string>(await poetResponse.Content.ReadAsStringAsync()));
-                }
-                poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
-                if (AggressiveCacheEnabled)
-                {
-                    _memoryCache.Set(cacheKey, poet, TimeSpan.FromHours(1));
-                }
+                return new OkObjectResult(null);
+            }
+            var (success, poet, error) = await _poetCache.GetPoetAsync(id, AggressiveCacheEnabled);
+            if (!success)
+            {
+                return BadRequest(error);
             }
             return new OkObjectResult(poet);
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if (bool.Parse(Configuration["MaintenanceMode"]))
+            var maintenanceResult = TryGetMaintenanceModeResult();
+            if (maintenanceResult != null)
             {
-                return StatusCode(503);
+                return maintenanceResult;
             }
 
-            LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
-
+            InitializeCommonPageState();
 
             PoetId = string.IsNullOrEmpty(Request.Query["a"]) ? 0 : int.Parse(Request.Query["a"]);
 
-            ViewData["TrackingScript"] = Configuration["TrackingScript"] != null && string.IsNullOrEmpty(Request.Cookies["Token"]) ? Configuration["TrackingScript"].Replace("loggedon", "") : Configuration["TrackingScript"];
-
             //todo: use html master layout or make it partial
             // 1. poets 
-            if (false == (await preparePoets()))
+            var (poetsOk, poets, poetsError) = await _poetCache.GetPoetsAsync(AggressiveCacheEnabled);
+            if (!poetsOk)
+            {
+                LastError = poetsError;
                 return Page();
+            }
+            Poets = poets;
+            await ReadLanguagesAsync();
 
             if (PoetId != 0)
             {
-                if (false == (await preparePoet()))
+                var (poetOk, poet, poetError) = await _poetCache.GetPoetAsync(PoetId, AggressiveCacheEnabled);
+                if (!poetOk)
+                {
+                    LastError = poetError;
                     return Page();
+                }
+                Poet = poet;
             }
 
             // 2. search verses
@@ -160,7 +106,7 @@ namespace GanjooRazor.Pages
             var rhythmResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms?sortOnVerseCount=true");
             if (!rhythmResponse.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await rhythmResponse.Content.ReadAsStringAsync());
+                LastError = await ReadErrorMessageAsync(rhythmResponse);
                 return Page();
             }
 
@@ -188,11 +134,11 @@ namespace GanjooRazor.Pages
                 }
             }
             var langModel = Languages.Where(l => l.Code == Language).FirstOrDefault();
-            if(langModel != null)
+            if (langModel != null)
             {
                 title += $"با زبان غالب «{langModel.Name}»";
             }
-            
+
 
 
             string url = $"{APIRoot.Url}/api/ganjoor/sections/tagged/language?PageNumber={pageNumber}&PageSize=20&language={Language}&poetId={PoetId}";
@@ -200,7 +146,7 @@ namespace GanjooRazor.Pages
 
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await ReadErrorMessageAsync(response);
                 return Page();
             }
 
