@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using GanjooRazor.Utils;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.FAQ;
 using RMuseum.Models.Ganjoor.ViewModels;
-using RSecurityBackend.Models.Auth.ViewModels;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -15,6 +14,8 @@ namespace GanjooRazor.Pages
     [IgnoreAntiforgeryToken(Order = 1001)]
     public class FAQModel : LoginPartialEnabledPageModel
     {
+        private readonly PoetCacheService _poetCache;
+
         public string LastError { get; set; }
 
         public List<GanjoorPoetViewModel> Poets { get; set; }
@@ -23,43 +24,32 @@ namespace GanjooRazor.Pages
 
         public FAQItem Question { get; set; }
 
-        private async Task<bool> preparePoets()
-        {
-            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
-            if (!response.IsSuccessStatusCode)
-            {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                return false;
-            }
-            Poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
-            
-            return true;
-        }
-
         public async Task<IActionResult> OnGetAsync()
         {
-            if (bool.Parse(Configuration["MaintenanceMode"]))
+            var maintenanceResult = TryGetMaintenanceModeResult();
+            if (maintenanceResult != null)
             {
-                return StatusCode(503);
+                return maintenanceResult;
             }
 
             ViewData["Title"] = $"گنجور » پرسش‌های متداول";
-            LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
+            InitializeCommonPageState();
 
-
-            ViewData["TrackingScript"] = Configuration["TrackingScript"] != null && string.IsNullOrEmpty(Request.Cookies["Token"]) ? Configuration["TrackingScript"].Replace("loggedon", "") : Configuration["TrackingScript"];
-
-            //todo: use html master layout or make it partial
-            if (false == (await preparePoets()))
+            var (poetsOk, poets, poetsError) = await _poetCache.GetPoetsAsync(AggressiveCacheEnabled);
+            if (!poetsOk)
+            {
+                LastError = poetsError;
                 return Page();
+            }
+            Poets = poets;
 
-            if(!string.IsNullOrEmpty(Request.Query["id"]))
+            if (!string.IsNullOrEmpty(Request.Query["id"]))
             {
                 var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/faq/{Request.Query["id"]}");
                 if (!response.IsSuccessStatusCode)
                 {
-                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
-                    if(string.IsNullOrEmpty(LastError))
+                    LastError = await ReadErrorMessageAsync(response);
+                    if (string.IsNullOrEmpty(LastError))
                     {
                         LastError = $"خطا در دریافت اطلاعات پرسش مد نظر - کد خطا = {response.StatusCode}";
                     }
@@ -73,7 +63,7 @@ namespace GanjooRazor.Pages
                 var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/faq/pinned");
                 if (!response.IsSuccessStatusCode)
                 {
-                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    LastError = await ReadErrorMessageAsync(response);
                     return Page();
                 }
                 PinnedItemsCategories = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<FAQCategory>>();
@@ -83,20 +73,11 @@ namespace GanjooRazor.Pages
         }
 
         /// <summary>
-        /// configration file reader (appsettings.json)
-        /// </summary>
-        private readonly IConfiguration Configuration;
-
-
-        /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="httpClient"></param>
-        /// <param name="configuration"></param>
-        public FAQModel(HttpClient httpClient, IConfiguration configuration) : base(httpClient)
+        public FAQModel(HttpClient httpClient, IConfiguration configuration, PoetCacheService poetCache) : base(httpClient, configuration)
         {
-            Configuration
-                = configuration;
+            _poetCache = poetCache;
         }
     }
 }

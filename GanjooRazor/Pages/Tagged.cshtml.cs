@@ -25,11 +25,7 @@ namespace GanjooRazor.Pages
         /// </summary>
         private readonly IMemoryCache _memoryCache;
 
-        /// <summary>
-        /// configration file reader (appsettings.json)
-        /// </summary>
-        private readonly IConfiguration Configuration;
-
+    
 
         /// <summary>
         /// constructor
@@ -37,30 +33,11 @@ namespace GanjooRazor.Pages
         /// <param name="httpClient"></param>
         /// <param name="memoryCache"></param>
         /// <param name="configuration"></param>
-        public TaggedModel(HttpClient httpClient, IMemoryCache memoryCache, IConfiguration configuration) : base(httpClient)
+        public TaggedModel(HttpClient httpClient, IMemoryCache memoryCache, IConfiguration configuration) : base(httpClient, configuration)
         {
             _memoryCache = memoryCache;
-            Configuration
-                = configuration;
         }
 
-        /// <summary>
-        /// aggressive cache
-        /// </summary>
-        public bool AggressiveCacheEnabled
-        {
-            get
-            {
-                try
-                {
-                    return bool.Parse(Configuration["AggressiveCacheEnabled"]);
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
 
         public List<GanjoorPoetViewModel> Poets { get; set; }
         public int PoetId { get; set; }

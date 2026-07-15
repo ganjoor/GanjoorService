@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 
 namespace GanjooRazor.Pages
@@ -7,7 +8,7 @@ namespace GanjooRazor.Pages
     public class LoginModel : LoginPartialEnabledPageModel
     {
 
-        public LoginModel(HttpClient httpClient) : base(httpClient) { }
+        public LoginModel(HttpClient httpClient, IConfiguration configuration) : base(httpClient, configuration) { }
         public string UserFriendlyName { get; set; }
 
         public string LastError { get; set; }

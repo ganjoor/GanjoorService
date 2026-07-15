@@ -2,6 +2,7 @@
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Auth.ViewModel;
@@ -21,6 +22,57 @@ namespace GanjooRazor.Pages
 {
     public class LoginPartialEnabledPageModel : GanjoorPageModelBase
     {
+        /// <summary>
+        /// configuration file reader (appsettings.json). Was previously duplicated as a private field
+        /// on almost every page model that derives from this class (Index, Contribs, Quotes, FAQ,
+        /// Books, Hashieha, Search, Simi all had their own copy).
+        /// </summary>
+        protected readonly IConfiguration Configuration;
+
+        /// <summary>
+        /// Reads a boolean feature flag from configuration, defaulting to <paramref name="defaultValue"/>
+        /// if the key is missing or not a valid bool. Was previously a per-page try/catch block
+        /// (and in IndexModel's case, was the ONLY one of these that had the try/catch at all -
+        /// every other page's `bool.Parse(Configuration["MaintenanceMode"])` below would throw on a
+        /// missing/malformed config key instead of defaulting to false).
+        /// </summary>
+        protected bool GetConfigFlag(string key, bool defaultValue = false)
+        {
+            return bool.TryParse(Configuration[key], out var value) ? value : defaultValue;
+        }
+
+        /// <summary>
+        /// aggressive cache flag. Every page model that had this property defined it identically -
+        /// same try/catch-wrapped bool.Parse now handled once by GetConfigFlag.
+        /// </summary>
+        protected bool AggressiveCacheEnabled => GetConfigFlag("AggressiveCacheEnabled");
+
+        /// <summary>
+        /// Returns a 503 result if the site is in maintenance mode, or null otherwise. Was previously
+        /// `if (bool.Parse(Configuration["MaintenanceMode"])) { return StatusCode(503); }` duplicated
+        /// verbatim at the top of OnGetAsync in 8 different page models, all without try/catch (so a
+        /// missing "MaintenanceMode" config key would throw a FormatException/ArgumentNullException
+        /// instead of just... not being in maintenance mode).
+        /// </summary>
+        protected IActionResult TryGetMaintenanceModeResult()
+        {
+            return GetConfigFlag("MaintenanceMode") ? StatusCode(503) : null;
+        }
+
+        /// <summary>
+        /// Sets the two pieces of per-request state that were duplicated character-for-character
+        /// across every page model in this hierarchy: whether the current visitor is logged in, and
+        /// the tracking script to render (with "loggedon" stripped out for anonymous visitors).
+        /// Call once near the top of each page's OnGetAsync instead of repeating both lines.
+        /// </summary>
+        protected void InitializeCommonPageState()
+        {
+            LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
+            ViewData["TrackingScript"] = Configuration["TrackingScript"] != null && string.IsNullOrEmpty(Request.Cookies["Token"])
+                ? Configuration["TrackingScript"].Replace("loggedon", "")
+                : Configuration["TrackingScript"];
+        }
+
         /// <summary>
         /// is logged on
         /// </summary>
@@ -175,8 +227,9 @@ namespace GanjooRazor.Pages
             });
         }
 
-        public LoginPartialEnabledPageModel(HttpClient httpClient) : base(httpClient)
+        public LoginPartialEnabledPageModel(HttpClient httpClient, IConfiguration configuration) : base(httpClient)
         {
+            Configuration = configuration;
         }
     }
 }

@@ -304,14 +304,10 @@ namespace GanjooRazor.Pages
             return new OkResult();
         }
 
-        /// <summary>
-        /// configration file reader (appsettings.json)
-        /// </summary>
-        private readonly IConfiguration Configuration;
 
-        public PhotosModel(HttpClient httpClient, IConfiguration configuration) : base(httpClient)
+        public PhotosModel(HttpClient httpClient, IConfiguration configuration) : base(httpClient, configuration)
         {
-            Configuration = configuration;
+
         }
     }
 }

@@ -3,7 +3,6 @@ using GanjooRazor.Utils;
 using KontorService.Models.Reporting.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -45,19 +44,10 @@ namespace GanjooRazor.Pages
         };
 
         /// <summary>
-        /// configration file reader (appsettings.json)
+        /// poet list/detail cache (shared with Books, Contribs, FAQ, Quotes, and eventually
+        /// Hashieha/Search/Simi once they're migrated too)
         /// </summary>
-        private readonly IConfiguration Configuration;
-
-        /// <summary>
-        /// memory cache
-        /// </summary>
-        private readonly IMemoryCache _memoryCache;
-
-        /// <summary>
-        /// aggressive cache
-        /// </summary>
-        public bool AggressiveCacheEnabled => GetConfigFlag("AggressiveCacheEnabled");
+        private readonly PoetCacheService _poetCache;
 
         public bool OfflineMode => GetConfigFlag("OfflineMode");
 
@@ -68,14 +58,13 @@ namespace GanjooRazor.Pages
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="httpClient"></param>
-        /// <param name="memoryCache"></param>
+        /// <param name="poetCache"></param>
         public IndexModel(IConfiguration configuration,
             HttpClient httpClient,
-            IMemoryCache memoryCache
-            ) : base(httpClient)
+            PoetCacheService poetCache
+            ) : base(httpClient, configuration)
         {
-            Configuration = configuration;
-            _memoryCache = memoryCache;
+            _poetCache = poetCache;
         }
 
         /// <summary>
@@ -89,20 +78,11 @@ namespace GanjooRazor.Pages
         public GanjoorSiteBannerViewModel Banner { get; set; }
 
         #region Shared helpers
-        // GetConfigFlag and CaptureErrorIfFailedAsync stay local to this class since they touch
-        // IndexModel-specific state (Configuration, LastError). NotLoggedInMessage,
-        // ReadErrorMessageAsync, and WithSecureClientAsync now live on GanjoorPageModelBase
-        // (inherited via LoginPartialEnabledPageModel) since they're used across every page model,
-        // not just this one.
-
-        /// <summary>
-        /// Reads a boolean feature flag from configuration, defaulting to <paramref name="defaultValue"/>
-        /// if the key is missing or not a valid bool, instead of each flag having its own try/catch.
-        /// </summary>
-        private bool GetConfigFlag(string key, bool defaultValue = false)
-        {
-            return bool.TryParse(Configuration[key], out var value) ? value : defaultValue;
-        }
+        // CaptureErrorIfFailedAsync stays local to this class since it touches IndexModel-specific
+        // state (LastError). GetConfigFlag, AggressiveCacheEnabled, NotLoggedInMessage,
+        // ReadErrorMessageAsync, and WithSecureClientAsync now live on GanjoorPageModelBase /
+        // LoginPartialEnabledPageModel (inherited) since they're used across every page model, not
+        // just this one.
 
         /// <summary>
         /// If the response failed, stores the API's error message in <see cref="LastError"/> and
@@ -446,30 +426,12 @@ namespace GanjooRazor.Pages
 
         private async Task<bool> preparePoets()
         {
-            const string cacheKey = "/api/ganjoor/poets";
-            if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
+            var (success, poets, error) = await _poetCache.GetPoetsAsync(AggressiveCacheEnabled);
+            if (!success)
             {
-                try
-                {
-                    var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
-                    if (await CaptureErrorIfFailedAsync(response))
-                    {
-                        return false;
-                    }
-                    poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
-                    if (AggressiveCacheEnabled)
-                    {
-                        _memoryCache.Set(cacheKey, poets, TimeSpan.FromHours(1));
-                    }
-                }
-                catch
-                {
-                    LastError = "خطا در دسترسی به وب سرویس گنجور";
-                    return false;
-                }
-
+                LastError = error;
+                return false;
             }
-
             Poets = poets;
             return true;
         }
@@ -477,20 +439,13 @@ namespace GanjooRazor.Pages
         public async Task<IActionResult> OnGetPoetInformationAsync(int id)
         {
             if (id == 0)
-                return new OkObjectResult(null);
-            var cacheKey = $"/api/ganjoor/poet/{id}";
-            if (!_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
             {
-                var poetResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{id}");
-                if (!poetResponse.IsSuccessStatusCode)
-                {
-                    return BadRequest(await ReadErrorMessageAsync(poetResponse));
-                }
-                poet = JObject.Parse(await poetResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
-                if (AggressiveCacheEnabled)
-                {
-                    _memoryCache.Set(cacheKey, poet, TimeSpan.FromHours(1));
-                }
+                return new OkObjectResult(null);
+            }
+            var (success, poet, error) = await _poetCache.GetPoetAsync(id, AggressiveCacheEnabled);
+            if (!success)
+            {
+                return BadRequest(error);
             }
             return new OkObjectResult(poet);
         }
@@ -624,9 +579,10 @@ namespace GanjooRazor.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnGetAsync()
         {
-            if (GetConfigFlag("MaintenanceMode"))
+            var maintenanceResult = TryGetMaintenanceModeResult();
+            if (maintenanceResult != null)
             {
-                return StatusCode(503);
+                return maintenanceResult;
             }
 
             var legacyRedirect = TryHandleLegacyUrlRedirect();
@@ -705,7 +661,7 @@ namespace GanjooRazor.Pages
         private void InitializeRequestState()
         {
             LastError = "";
-            LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
+            InitializeCommonPageState();
             CanEdit = Request.Cookies["CanEdit"] == "True";
             KeepHistory = Request.Cookies["KeepHistory"] == "True";
             CanTranslate = Request.Cookies["CanTranslate"] == "True";
@@ -715,9 +671,6 @@ namespace GanjooRazor.Pages
             IsHomePage = Request.Path == "/";
             PinterestUrl = Request.Query["pinterest_url"];
             ShowAllRecitaions = Request.Query["allaudio"] == "1";
-            ViewData["TrackingScript"] = Configuration["TrackingScript"] != null && string.IsNullOrEmpty(Request.Cookies["Token"])
-                ? Configuration["TrackingScript"].Replace("loggedon", "")
-                : Configuration["TrackingScript"];
             ActiveTab = Request.Query["tab"];
 
             if (ShowAllRecitaions && string.IsNullOrEmpty(ActiveTab))

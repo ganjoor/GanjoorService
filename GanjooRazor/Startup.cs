@@ -24,6 +24,8 @@ namespace GanjooRazor
 
             services.AddMemoryCache();
 
+            services.AddScoped<GanjooRazor.Utils.PoetCacheService>();
+
             services.AddSingleton(
                    HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.BasicLatin,
                     UnicodeRanges.Arabic }));
