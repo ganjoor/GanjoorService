@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace GanjooRazor.Pages
 {
-    public class randomModel : PageModel
+    public class RandomModel : PageModel
     {
         /// <summary>
         /// configration file reader (appsettings.json)
@@ -14,7 +14,7 @@ namespace GanjooRazor.Pages
         /// constructor
         /// </summary>
         /// <param name="configuration"></param>
-        public randomModel(IConfiguration configuration)
+        public RandomModel(IConfiguration configuration)
         {
             _configuration = configuration;
         }
