@@ -1,5 +1,6 @@
 ﻿@page
 @model IndexModel
+@using DNTPersianUtils.Core
 @{
     Layout = "_Layout";
 }
@@ -49,7 +50,155 @@ else if (Model.ReadOnlyMode)
 }
 else
 {
-    <partial name="_HomePagePartial" model="Model" />
+    <div id="hdr">
+        <h1><a href="/" title="گنجور"><img src="/image/gdap.png" alt="گنجور" class="home-logo"></a></h1>
+    </div>
+
+    <div id="fa">
+
+        <div class="actionbox">
+            <form action="/search" method="get" id="searchhorm">
+                <input type="text" name="s" id="s" placeholder="جستجو" class="inputText" size="35" value="">
+                <input type="hidden" name="es" id="es" value="1">
+                <select name="author" id="author">
+                    <option value="0" selected>در آثار همهٔ سخنوران</option>
+                    @{
+                        foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
+                        {
+                            <option value="@poet.Id">@poet.Nickname</option>
+                        }
+                    }
+                </select>
+                <input type="submit" value="بیاب">
+            </form>
+        </div>
+
+        <partial name="_InlineLoginPartial" model="Model">
+
+            <div id="main">
+                <div id="guides">
+
+                    <div class="century">
+                        سخنوران پرمخاطب
+                    </div>
+
+                    @{
+                        var popularGroup = Model.PoetGroups.Where(g => g.Id == 0).Single();
+
+                        if (popularGroup.ShowInTimeLine)
+                        {
+                            <div class="century">
+                                @popularGroup.Name
+                            </div>
+                        }
+                        <div class="spacer">
+                            @foreach (var poet in popularGroup.Poets)
+                            {
+                                <div class="poet">
+                                    <a href="@poet.FullUrl" title="@poet.Name">
+                                        <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name">
+                                    </a>
+                                    <div class="caption">
+                                        <a href="@poet.FullUrl">@poet.Nickname</a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="clear-both">
+                            <input type="text" id="findpoet" placeholder="جستجوی سخنور" size="35" value="" oninput="onInlineSearch(this.value, 'found-poets', 'poet')">
+                            <div class="spacer" id="found-poets"></div>
+                        </div>
+                        <div class="century" id="cl">
+                            دسته‌بندی بر اساس قرن
+                        </div>
+
+                        <div id="real-centuries">
+                            <div class="circled-number-container">
+                                @foreach (var g in Model.PoetGroups)
+                                {
+                                    if (g.Id != 0)
+                                    {
+                                        <a href="#pg-@g.Id">
+                                            <div class="circled-number">
+                                                @((g.HalfCenturyOrder + 2).ToPersianNumbers())
+                                            </div>
+                                        </a>
+                                    }
+                                }
+                                <a href="#gmap">
+                                    <div class="circled-number">
+                                        <i class="notranslate noindent-info-button map-icon"></i>
+                                    </div>
+                                </a>
+                            </div>
+
+                            @foreach (var poetGroup in Model.PoetGroups)
+                            {
+                                if (poetGroup.Id == 0) continue;
+                                if (poetGroup.ShowInTimeLine)
+                                {
+                                    <div class="century" id="pg-@poetGroup.Id">
+                                        @poetGroup.Name
+                                    </div>
+                                }
+                                <div class="spacer">
+                                    @foreach (var poet in poetGroup.Poets)
+                                    {
+                                        <div class="poet" data-value="@poet.Nickname">
+                                            <a href="@poet.FullUrl" title="@poet.Name">
+                                                <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name">
+                                            </a>
+                                            <div class="caption">
+                                                <a href="@poet.FullUrl">@poet.Nickname</a>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                @if (poetGroup.Id == 0)
+                                {
+                                    <div class="century" id="cl">
+                                        دسته‌بندی بر اساس قرن
+                                    </div>
+                                    <div class="circled-number-container">
+                                        @foreach (var g in Model.PoetGroups)
+                                        {
+                                            if (g.Id != 0)
+                                            {
+                                                <a href="#pg-@g.Id">
+                                                    <div class="circled-number">
+                                                        @((g.HalfCenturyOrder + 2).ToPersianNumbers())
+                                                    </div>
+                                                </a>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+
+
+
+                    <div class="century" id="gmap">
+                        <a href="/map">
+                            نقشهٔ خاستگاه سخنوران
+                        </a>
+                    </div>
+                    <div class="spacer">
+                        <div class="poet">
+                            <a href="/map"><img src="/image/map.gif" alt="نقشهٔ گنجور"></a>
+                        </div>
+                    </div>
+
+                       
+
+                </div>
+
+            </div>
+
+            <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true})>
+
+            </div>
 }
 
 @if (ViewData["TrackingScript"] != null && !string.IsNullOrEmpty(ViewData["TrackingScript"].ToString()))
