@@ -32,7 +32,7 @@ namespace GanjooRazor
 
             services.AddRazorPages(options =>
             {
-                options.Conventions.AddPageRoute("/index", "{*url}");
+                options.Conventions.AddPageRoute("/GanjoorPage", "{*url}");
             });
 
             services.AddCors(options =>

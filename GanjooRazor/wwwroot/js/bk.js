@@ -454,7 +454,7 @@ function switchBookmarkInternal(poemId, coupletIndex, divSuffix) {
     if (coupletIndex == 0) {
         document.getElementById('bookmark-icon').innerHTML = 'star_half';
     }
-    var url = '/?handler=SwitchBookmark';
+    var url = '?handler=SwitchBookmark';
 
     $.ajax({
         type: "POST",
