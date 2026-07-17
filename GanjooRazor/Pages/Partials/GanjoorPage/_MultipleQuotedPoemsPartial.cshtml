@@ -6,5 +6,5 @@
 
 @foreach (var q in Model.GanjoorQuotedPoems)
 {
-    <partial name="_QuotedPoemPartial" model=@Model.GetQuotedPoemModel(q, Model.PoetImageUrl, Model.PoetNickName) />
+    <partial name="_QuotedPoemPartial.cshtml" model=@Model.GetQuotedPoemModel(q, Model.PoetImageUrl, Model.PoetNickName) />
 }

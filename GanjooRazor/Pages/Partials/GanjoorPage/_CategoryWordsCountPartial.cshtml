@@ -24,7 +24,7 @@
             <input type="text" id="wordcountterm" placeholder="جستجوی واژه" value="" onkeyup="onSearchWordCounts(@Model.CatId, @Model.PoetId, @Model.TotalWordCount)">
         </div>
         <div id="wordcounts-table">
-            <partial name="_CategoryWordsCountTablePartial" model="Model.TableModel">
+            <partial name="_CategoryWordsCountTablePartial.cshtml" model="Model.TableModel">
         </div>
     </div>
 }

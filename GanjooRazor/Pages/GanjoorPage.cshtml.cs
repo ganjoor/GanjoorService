@@ -138,7 +138,7 @@ namespace GanjooRazor.Pages
         /// </summary>
         public Task<IActionResult> OnPostComment(string comment, int poemId, int inReplytoId, int coupletIndex)
         {
-            var unauthorized = Partial("_CommentPartial", new _CommentPartialModel()
+            var unauthorized = Partial("~/Pages/Partials/GanjoorPage/_CommentPartial.cshtml", new _CommentPartialModel()
             {
                 Comment = null,
                 Error = NotLoggedInMessage,
@@ -164,7 +164,7 @@ namespace GanjooRazor.Pages
                     var resComment = JsonConvert.DeserializeObject<GanjoorCommentSummaryViewModel>(await response.Content.ReadAsStringAsync());
                     resComment.MyComment = true;
 
-                    return Partial("_CommentPartial", new _CommentPartialModel()
+                    return Partial("~/Pages/Partials/GanjoorPage/_CommentPartial.cshtml", new _CommentPartialModel()
                     {
                         Comment = resComment,
                         Error = "",
@@ -174,7 +174,7 @@ namespace GanjooRazor.Pages
                     });
                 }
 
-                return Partial("_CommentPartial", new _CommentPartialModel()
+                return Partial("~/Pages/Partials/GanjoorPage/_CommentPartial.cshtml", new _CommentPartialModel()
                 {
                     Comment = null,
                     Error = await ReadErrorMessageAsync(response),
@@ -891,7 +891,7 @@ namespace GanjooRazor.Pages
                     }
             }
 
-            return Partial("_BNumPartial", new _BNumPartialModel()
+            return Partial("~/Pages/Partials/GanjoorPage/_BNumPartial.cshtml", new _BNumPartialModel()
             {
                 PoemId = poemId,
                 CoupletIndex = coupletIndex,
@@ -1072,7 +1072,7 @@ namespace GanjooRazor.Pages
                 quoteds.Remove(mainList);
             }
 
-            return Partial("_MultipleQuotedPoemsPartial", new _MultipleQuotedPoemsPartialModel()
+            return Partial("~/Pages/Partials/GanjoorPage/_MultipleQuotedPoemsPartial.cshtml", new _MultipleQuotedPoemsPartialModel()
             {
                 GanjoorQuotedPoems = quoteds.ToArray(),
                 PoetImageUrl = poetImageUrl,
@@ -1090,7 +1090,7 @@ namespace GanjooRazor.Pages
 
             var quoteds = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorQuotedPoemViewModel>>();
 
-            return Partial("_MultipleQuotedPoemsPartial", new _MultipleQuotedPoemsPartialModel()
+            return Partial("~/Pages/Partials/GanjoorPage/_MultipleQuotedPoemsPartial.cshtml", new _MultipleQuotedPoemsPartialModel()
             {
                 GanjoorQuotedPoems = quoteds.ToArray(),
                 PoetImageUrl = poetImageUrl,
@@ -1139,7 +1139,7 @@ namespace GanjooRazor.Pages
             }
             var categoryTop1Recitations = JsonConvert.DeserializeObject<PublicRecitationViewModel[]>(await catTop1RecitationsQuery.Content.ReadAsStringAsync());
 
-            return Partial("_AudioPlayerPartial", new _AudioPlayerPartialModel()
+            return Partial("~/Pages/Partials/GanjoorPage/_AudioPlayerPartial.cshtml", new _AudioPlayerPartialModel()
             {
                 LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
                 Recitations = categoryTop1Recitations,
@@ -1193,7 +1193,7 @@ namespace GanjooRazor.Pages
                 return BadRequest("خطا در دسترسی به شمارش واژگان");
             }
 
-            return Partial("_CategoryWordsCountPartial", res);
+            return Partial("~/Pages/Partials/GanjoorPage/_CategoryWordsCountPartial.cshtml", res);
         }
 
         public async Task<IActionResult> OnGetSearchCategoryWordCountsAsync(int catId, int poetId, string term, int totalWordCount)
@@ -1209,7 +1209,7 @@ namespace GanjooRazor.Pages
             }
             var wordCounts = JsonConvert.DeserializeObject<CategoryWordCount[]>(await wordCountsResponse.Content.ReadAsStringAsync());
 
-            return Partial("_CategoryWordsCountTablePartial", new _CategoryWordsCountTablePartialModel()
+            return Partial("~/Pages/Partials/GanjoorPage/_CategoryWordsCountTablePartial.cshtml", new _CategoryWordsCountTablePartialModel()
             {
                 CatId = catId,
                 PoetId = poetId,
@@ -1260,7 +1260,7 @@ namespace GanjooRazor.Pages
                 RowNmbrInCat = 0,
             });
 
-            return Partial("_CategoryWordsCountTablePartial", new _CategoryWordsCountTablePartialModel()
+            return Partial("~/Pages/Partials/GanjoorPage/_CategoryWordsCountTablePartial.cshtml", new _CategoryWordsCountTablePartialModel()
             {
                 CatId = -1,
                 PoetId = -1,
@@ -1277,14 +1277,14 @@ namespace GanjooRazor.Pages
 
             if (!topVisitsResponse.IsSuccessStatusCode)
             {
-                return Partial("_TopVisitsPartial", new _TopVisitsPartialModel()
+                return Partial("~/Pages/Partials/GanjoorPage/_TopVisitsPartial.cshtml", new _TopVisitsPartialModel()
                 {
                     Visits = null
                 });
             }
             var topVisits = JsonConvert.DeserializeObject<PageVisitsViewModel[]>(await topVisitsResponse.Content.ReadAsStringAsync());
 
-            return Partial("_TopVisitsPartial", new _TopVisitsPartialModel()
+            return Partial("~/Pages/Partials/GanjoorPage/_TopVisitsPartial.cshtml", new _TopVisitsPartialModel()
             {
                 Visits = topVisits
             });
@@ -1298,14 +1298,14 @@ namespace GanjooRazor.Pages
 
             if (!s7ndaysVisitsResponse.IsSuccessStatusCode)
             {
-                return Partial("_7DaysVisitsPartial", new _7DaysVisitsPartialModel()
+                return Partial("~/Pages/Partials/GanjoorPage/_7DaysVisitsPartial.cshtml", new _7DaysVisitsPartialModel()
                 {
                     SevenDaysVisits = null
                 });
             }
             var s7ndaysVisits = JsonConvert.DeserializeObject<DateRangeVisitsViewModel[]>(await s7ndaysVisitsResponse.Content.ReadAsStringAsync());
 
-            return Partial("_7DaysVisitsPartial", new _7DaysVisitsPartialModel()
+            return Partial("~/Pages/Partials/GanjoorPage/_7DaysVisitsPartial.cshtml", new _7DaysVisitsPartialModel()
             {
                 SevenDaysVisits = s7ndaysVisits
             });
@@ -1321,7 +1321,7 @@ namespace GanjooRazor.Pages
                 return BadRequest(await ReadErrorMessageAsync(response));
             var relatedSections = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCachedRelatedSection>>();
 
-            return Partial("_SimiPartialView", new _SimiPartialViewModel()
+            return Partial("~/Pages/Partials/GanjoorPage/_SimiPartialView.cshtml", new _SimiPartialViewModel()
             {
                 RelatedSections = relatedSections.ToArray(),
                 Rhythm = prosodyMetre,
@@ -1351,7 +1351,7 @@ namespace GanjooRazor.Pages
                 poem.HtmlText = GanjoorPoemTools.GetPoemHtmlExcerpt(poem.HtmlText);
             }
 
-            return Partial("_SimiPartialFromPoetView", new _SimiPartialFromPoetViewModel()
+            return Partial("~/Pages/Partials/GanjoorPage/_SimiPartialFromPoetView.cshtml", new _SimiPartialFromPoetViewModel()
             {
                 Poems = poems,
             });

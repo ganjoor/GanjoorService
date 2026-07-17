@@ -54,7 +54,7 @@ else
         <div class='spacer'>&nbsp;</div>
         @foreach (var reply in Model.Comment.Replies)
         {
-            <partial name="_CommentPartial" model=Model.GetCommentModel(reply) />
+            <partial name="_CommentPartial.cshtml" model=Model.GetCommentModel(reply) />
         }
     </div>
 }

@@ -3,14 +3,14 @@
 @if (!Model.Blur || Model.WordStats.Length == 0)
 {
     <text>
-        <partial name="_CategoryWordsCountByCatTablePartial" model="Model.Model">
+        <partial name="_CategoryWordsCountByCatTablePartial.cshtml" model="Model.Model">
     </text>
 }
 else
 {
     <div class="expandable-container-wrapper">
         <div class="expandable-content" id="expandableContent">
-            <partial name="_CategoryWordsCountByCatTablePartial" model="Model.Model">
+            <partial name="_CategoryWordsCountByCatTablePartial.cshtml" model="Model.Model">
         </div>
         <div class="expandable-blur-overlay" id="expandableBlur"></div>
     </div>

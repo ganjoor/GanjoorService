@@ -145,7 +145,7 @@
 <div id="comments-block-@Model.CoupletIndex" class="clear-both">
     @foreach (var comment in Model.Comments)
     {
-        <partial name="_CommentPartial" model=Model.GetCommentModel(comment) />
+        <partial name="_CommentPartial.cshtml" model=Model.GetCommentModel(comment) />
     }
 </div>
 @if (Model.LoggedIn)

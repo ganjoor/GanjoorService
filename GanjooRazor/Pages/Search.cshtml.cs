@@ -414,7 +414,7 @@ namespace GanjooRazor.Pages
             var wordCounts = JsonConvert.DeserializeObject<PoetOrCatWordStat[]>(await wordCountsResponse.Content.ReadAsStringAsync());
             string countStr = wordCountsResponse.Headers.GetValues("items-count").FirstOrDefault();
 
-            return Partial("_CategoryWordsCountByCatPartial", new _CategoryWordsCountByCatPartialModel()
+            return Partial("~/Pages/Partials/Search/_CategoryWordsCountByCatPartial.cshtml", new _CategoryWordsCountByCatPartialModel()
             {
                 Term = term,
                 WordStats = wordCounts,

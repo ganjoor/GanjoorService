@@ -99,7 +99,7 @@ namespace GanjooRazor.Pages
             }
             SummedUpViewModel summary = JsonConvert.DeserializeObject<SummedUpViewModel>(await response.Content.ReadAsStringAsync());
 
-            return Partial("_GroupedByDateViewPartial", new _GroupedByDateViewPartialModel()
+            return Partial("~/Pages/Partials/Contribs/_GroupedByDateViewPartial.cshtml", new _GroupedByDateViewPartialModel()
             {
                 DataType = dataType,
                 Days = days.ToArray(),
@@ -120,7 +120,7 @@ namespace GanjooRazor.Pages
             var users = JArray.Parse(await responseUsers.Content.ReadAsStringAsync()).ToObject<List<GroupedByUserViewModel>>();
             var usersPagination = JsonConvert.DeserializeObject<PaginationMetadata>(responseUsers.Headers.GetValues("paging-headers").Single());
 
-            return Partial("_GroupedByDateViewTablePartial", new _GroupedByDateViewTablePartialModel()
+            return Partial("~/Pages/Partials/Contribs/_GroupedByDateViewTablePartial.cshtml", new _GroupedByDateViewTablePartialModel()
             {
                 DataType = dataType,
                 Users = users.ToArray(),
@@ -137,7 +137,7 @@ namespace GanjooRazor.Pages
             }
             var days = JArray.Parse(await responseDays.Content.ReadAsStringAsync()).ToObject<List<GroupedByDateViewModel>>();
 
-            return Partial("_GroupedByDateViewTablePartial", new _GroupedByDateViewTablePartialModel()
+            return Partial("~/Pages/Partials/Contribs/_GroupedByDateViewTablePartial.cshtml", new _GroupedByDateViewTablePartialModel()
             {
                 DataType = dataType,
                 Days = days.ToArray(),
