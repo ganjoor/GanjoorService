@@ -113,7 +113,6 @@ else if (Model.ReadOnlyMode)
         </p>
     </div>
 }
-<script src="/js/vaabd.js?version=10"></script>
 @if (Model.IsPoemPage)
 {
     if (Model.GanjoorPage != null && Model.GanjoorPage.Poem.Recitations.Length > 0)
@@ -201,66 +200,12 @@ else if (Model.ReadOnlyMode)
 {
     return;
 }
-<div id="hdr2" class="clearfix">
-    <h1><a href="/" title="گنجور"><img src="/image/gdapk.png" alt="گنجور"></a></h1>
-    <div class="actionbox">
-        <form action="/search" method="get" id="searchform">
-            <input type="text" name="s" id="s" class="inputText" value="" placeholder="جستجو">
-            <input type="hidden" name="es" id="es" value="1">
-            <select name="author" id="author" onchange="onSelectedPoetChanged()">
-
-                @{
-                    if (Model.GanjoorPage != null && Model.GanjoorPage.PoetOrCat != null)
-                    {
-                        <option value="0">در آثار همهٔ سخنوران</option>
-                    }
-                    else
-                    {
-                        <option value="0" selected>در آثار همهٔ سخنوران</option>
-                    }
-
-                    if (Model.Poets != null)
-                    {
-                        foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
-                        {
-                            if (Model.GanjoorPage.PoetOrCat != null && poet.Id == Model.GanjoorPage.PoetOrCat.Poet.Id)
-                            {
-                                <option value="@poet.Id" selected>@Html.Raw(poet.Nickname)</option>
-                            }
-                            else
-                            {
-                                <option value="@poet.Id">@Html.Raw(poet.Nickname)</option>
-                            }
-
-                        }
-                    }
-                }
-            </select>
-            @{
-                if (!Model.IsPoetPage && Model.GanjoorPage != null && Model.GanjoorPage.PoetOrCat != null)
-                {
-                    <select name="cat" id="cat">
-                        <option value="0">در همهٔ بخشها</option>
-                        @{
-                            foreach (var gran in Model.GanjoorPage.PoetOrCat.Cat.Ancestors)
-                            {
-                                <option value="@Html.Raw(gran.Id)">@Html.Raw(gran.Title)</option>
-                            }
-                            <option value="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Id)" selected>@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Title)</option>
-
-                            foreach (var child in Model.GanjoorPage.PoetOrCat.Cat.Children)
-                            {
-                                <option value="@Html.Raw(child.Id)">@Html.Raw(child.Title)</option>
-                            }
-                        }
-                    </select>
-                }
-            }
-
-            <input type="submit" value="بیاب">
-        </form>
-    </div><!-- .actionbox -->
-</div><!-- #hdr2 -->
+<partial name="_SearchHeaderPartial" model="@(new _SearchHeaderPartialModel(){
+    Poets = Model.Poets,
+    SelectedPoetId = Model.GanjoorPage?.PoetOrCat?.Poet?.Id ?? 0,
+    CurrentCategory = (!Model.IsPoetPage && Model.GanjoorPage?.PoetOrCat != null) ? Model.GanjoorPage.PoetOrCat.Cat : null,
+    WideCategorySelect = false
+})" /><!-- #hdr2 -->
 
 <div id="fa">
 

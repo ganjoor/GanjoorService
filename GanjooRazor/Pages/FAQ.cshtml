@@ -9,30 +9,7 @@
 }
 else
 {
-        <div id="hdr2" class="clearfix">
-            <h1><a href="/" title="گنجور"><img src="/image/gdapk.png" alt="گنجور" /></a></h1>
-            <div class="actionbox">
-                <form action="/search" method="get" id="searchform">
-                    <input type="text" name="s" id="s" class="inputText" value="" placeholder="جستجو" />
-                    <input type="hidden" name="es" id="es" value="1" />
-                    <select name="author" id="author" onchange="onSelectedPoetChanged()">
-
-                        @{
-                            <option value="0">در آثار همهٔ سخنوران</option>
-
-                            if (Model.Poets != null)
-                            {
-                                foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
-                                {
-                                    <option value="@poet.Id">@poet.Nickname</option>
-                                }
-                            }
-                        }
-                    </select>
-                    <input type="submit" value="بیاب" />
-                </form>
-            </div><!-- .actionbox -->
-        </div>
+<partial name="_SearchHeaderPartial" model="@(new _SearchHeaderPartialModel(){ Poets = Model.Poets })" />
 
         <!-- #hdr2 -->
 
@@ -91,7 +68,6 @@ else
 
         </div>
 
-        <script src="/js/vaabd.js?version=10"></script>
 
         @if (ViewData["TrackingScript"] != null && !string.IsNullOrEmpty(ViewData["TrackingScript"].ToString()))
         {

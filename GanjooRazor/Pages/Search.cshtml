@@ -14,100 +14,7 @@
 }
 else
 {
-        <div id="hdr2" class="clearfix">
-            <h1><a href="/" title="گنجور"><img src="/image/gdapk.png" alt="گنجور" /></a></h1>
-            <div class="actionbox">
-                <form action="/search" method="get" id="searchform">
-                    <input type="text" name="s" id="s" class="inputText" value="@Model.Query" placeholder="جستجو" />
-                    @if (Model.ExactSearch)
-                    {
-                        <input type="hidden" name="es" id="es" value="1" />
-                    }
-                    <select name="author" id="author" onchange="onSelectedPoetChanged()">
-
-                        @{
-                            if (Model.PoetId != 0)
-                            {
-                                <option value="0">در آثار همهٔ سخنوران</option>
-                            }
-                            else
-                            {
-                                <option value="0" selected>در آثار همهٔ سخنوران</option>
-                            }
-
-                            if (Model.Poets != null)
-                            {
-                                foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
-                                {
-                                    if (poet.Id == Model.PoetId)
-                                    {
-                                        <option value="@poet.Id" selected>@poet.Nickname</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@poet.Id">@poet.Nickname</option>
-                                    }
-
-                                }
-                            }
-                        }
-                    </select>
-                    @{
-                        if (Model.Poet != null)
-                        {
-                            <select name="cat" id="cat" style="width:150px">
-                                @if (Model.CatId == 0)
-                                {
-                                    <option value="0" selected>در همهٔ بخشها</option>
-                                }
-                                else
-                                {
-                                    <option value="0">در همهٔ بخشها</option>
-                                }
-
-                                @{
-                                    foreach (var gran in Model.Poet.Cat.Ancestors)
-                                    {
-                                        @if (Model.CatId == gran.Id)
-                                        {
-                                            <option value="@gran.Id" selected>@gran.Title</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@gran.Id">@gran.Title</option>
-                                        }
-
-                                    }
-                                    @if (Model.CatId == Model.Poet.Cat.Id)
-                                    {
-                                        <option value="@Model.Poet.Cat.Id" selected>@Model.Poet.Cat.Title</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@Model.Poet.Cat.Id">@Model.Poet.Cat.Title</option>
-                                    }
-
-
-                                    foreach (var child in Model.Poet.Cat.Children)
-                                    {
-                                        @if (Model.CatId == child.Id)
-                                        {
-                                            <option value="@child.Id" selected>@child.Title</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@child.Id">@child.Title</option>
-                                        }
-                                    }
-                                }
-                            </select>
-                        }
-                    }
-
-                    <input type="submit" value="بیاب" />
-                </form>
-            </div><!-- .actionbox -->
-        </div>
+<partial name="_SearchHeaderPartial" model="@(new _SearchHeaderPartialModel(){ Poets = Model.Poets, SelectedPoetId = Model.PoetId, SearchQuery = Model.Query, ShowExactSearchHiddenField = Model.ExactSearch, CurrentCategory = Model.Poet?.Cat, SelectedCategoryId = Model.CatId })" />
 
         <!-- #hdr2 -->
 
@@ -247,7 +154,6 @@ else
         </div>
 
 
-        <script src="/js/vaabd.js?version=10"></script>
 
         @if (ViewData["TrackingScript"] != null && !string.IsNullOrEmpty(ViewData["TrackingScript"].ToString()))
         {

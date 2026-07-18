@@ -1,0 +1,92 @@
+﻿@model GanjooRazor.Pages._SearchHeaderPartialModel
+<div id="hdr2" class="clearfix">
+    <h1><a href="/" title="گنجور"><img src="/image/gdapk.png" alt="گنجور" /></a></h1>
+    <div class="actionbox">
+        <form action="/search" method="get" id="searchform">
+            <input type="text" name="s" id="s" class="inputText" value="@Model.SearchQuery" placeholder="جستجو" />
+            @if (Model.ShowExactSearchHiddenField)
+            {
+                <input type="hidden" name="es" id="es" value="1" />
+            }
+            <select name="author" id="author" onchange="onSelectedPoetChanged()">
+                @{
+                    if (Model.SelectedPoetId != 0)
+                    {
+                        <option value="0">در آثار همهٔ سخنوران</option>
+                    }
+                    else
+                    {
+                        <option value="0" selected>در آثار همهٔ سخنوران</option>
+                    }
+
+                    if (Model.Poets != null)
+                    {
+                        foreach (var poet in Model.Poets)
+                        {
+                            if (poet.Id == Model.SelectedPoetId)
+                            {
+                                <option value="@poet.Id" selected>@Html.Raw(poet.Nickname)</option>
+                            }
+                            else
+                            {
+                                <option value="@poet.Id">@Html.Raw(poet.Nickname)</option>
+                            }
+                        }
+                    }
+                }
+            </select>
+            @if (Model.CurrentCategory != null)
+            {
+                <select name="cat" id="cat" style="@(Model.WideCategorySelect ? "width:150px" : "")">
+                    @{
+                        var effectiveSelectedCatId = Model.SelectedCategoryId ?? Model.CurrentCategory.Id;
+
+                        if (effectiveSelectedCatId == 0)
+                        {
+                            <option value="0" selected>در همهٔ بخشها</option>
+                        }
+                        else
+                        {
+                            <option value="0">در همهٔ بخشها</option>
+                        }
+
+                        foreach (var gran in Model.CurrentCategory.Ancestors)
+                        {
+                            if (effectiveSelectedCatId == gran.Id)
+                            {
+                                <option value="@gran.Id" selected>@Html.Raw(gran.Title)</option>
+                            }
+                            else
+                            {
+                                <option value="@gran.Id">@Html.Raw(gran.Title)</option>
+                            }
+                        }
+
+                        if (effectiveSelectedCatId == Model.CurrentCategory.Id)
+                        {
+                            <option value="@Model.CurrentCategory.Id" selected>@Html.Raw(Model.CurrentCategory.Title)</option>
+                        }
+                        else
+                        {
+                            <option value="@Model.CurrentCategory.Id">@Html.Raw(Model.CurrentCategory.Title)</option>
+                        }
+
+                        foreach (var child in Model.CurrentCategory.Children)
+                        {
+                            if (effectiveSelectedCatId == child.Id)
+                            {
+                                <option value="@child.Id" selected>@Html.Raw(child.Title)</option>
+                            }
+                            else
+                            {
+                                <option value="@child.Id">@Html.Raw(child.Title)</option>
+                            }
+                        }
+                    }
+                </select>
+            }
+
+            <input type="submit" value="بیاب" />
+        </form>
+    </div><!-- .actionbox -->
+</div><!-- #hdr2 -->

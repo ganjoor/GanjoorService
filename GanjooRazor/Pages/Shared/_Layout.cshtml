@@ -17,6 +17,12 @@
     // deliberately (or at least currently) skipped on error pages. A layout can't see each page's
     // own LastError state, so centralizing this would make tracking fire on error pages that
     // previously suppressed it. Each page keeps rendering its own TrackingScript block as before.
+    //
+    // vaabd.js WAS centralized below (confirmed byte-identical and unconditional across every main
+    // page). One minor, functionally-inert reordering: it used to render right before each page's
+    // own TrackingScript block; now it renders right after @RenderBody() finishes, which is after
+    // TrackingScript on any page that has one. The two scripts are unrelated (word-tooltip widget vs
+    // analytics), so this shouldn't matter, but flagging it since it's a real order change.
 }
 <!DOCTYPE html>
 <html lang="fa-IR" dir="rtl">
@@ -40,6 +46,8 @@
 </head>
 <body>
     @RenderBody()
+
+    <script src="/js/vaabd.js?version=10"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
