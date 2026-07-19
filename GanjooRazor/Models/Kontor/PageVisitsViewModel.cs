@@ -9,7 +9,7 @@
         /// <summary>
         /// title
         /// </summary>
-        public string? Title { get; set; }
+        public string Title { get; set; }
         /// <summary>
         /// visits
         /// </summary>
