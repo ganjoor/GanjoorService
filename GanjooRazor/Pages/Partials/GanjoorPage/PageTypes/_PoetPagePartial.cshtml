@@ -1,0 +1,323 @@
+﻿@model GanjoorPageModel
+
+<div class="@Model.PoemBlockClass" id="post-@Html.Raw(Model.GanjoorPage.Id.ToString())">
+    <article id="garticle">
+        @if (Model.GanjoorPage.PoetOrCat != null)
+        {
+            <div class="spacer">&nbsp;</div>
+            @if (Model.GanjoorPage.SecondPoet != null)
+            {
+                <div id="poets">
+                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)">
+                        <img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Nickname)" class="poets-poet">
+                    </a>
+                    <a href="@Html.Raw(Model.GanjoorPage.SecondPoet.FullUrl)">
+                        <img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.SecondPoet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.SecondPoet.Nickname)" class="poets-poet">
+                    </a>
+                </div>
+                <div id="page-hierarchy">
+                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Nickname)</a>
+                    <span> &raquo;</span>
+                    <h2><a href="@Html.Raw(Model.GanjoorPage.FullUrl)">@Html.Raw(Model.GanjoorPage.Title)</a></h2>
+                </div>
+            }
+            else
+            {
+                <div id="poet-image">
+                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)">
+                        <img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Nickname)">
+                    </a>
+                </div>
+                <div id="page-hierarchy" class="width-100per margin-auto">
+                    @{
+                        foreach (var gran in Model.GanjoorPage.PoetOrCat.Cat.Ancestors)
+                        {
+                            <a href="@Html.Raw(gran.FullUrl)">@Html.Raw(gran.Title)</a>
+                            <span> &raquo;</span>
+                        }
+                        <h2><a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Title)</a></h2>
+                    }
+                </div>
+            }
+        }
+
+        <partial name="~/Pages/Partials/GanjoorPage/_InlinePageUtilsPartial.cshtml" model="Model" />
+        @Html.Raw(Model.GanjoorPage.HtmlText)
+    </article>
+
+    @* Poet Tabs *@
+    <div class="poempretab" id="stats"></div>
+    <div class="poemtab">
+        <div class="poemtablinks active"><a href="#stats">آمار</a></div>
+        <div class="poemtablinks"><a href="#quoteds">مشق شعر</a></div>
+        <div class="poemtablinks"><a href="#words" onclick="javascript:loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">واژگان</a></div>
+        <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
+        <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
+        <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+        <div class="poemtablinks"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
+    </div>
+
+    @* Stats Section *@
+    <div class="related-images-frame poemtabcontent">
+        <p>آمار و اطلاعات مربوط به @Model.GanjoorPage.PoetOrCat.Poet.Nickname</p>
+    </div>
+
+    @* Quoted Poems Section *@
+    <div class="poempretab" id="quoteds"></div>
+    <div class="poemtab">
+        <div class="poemtablinks"><a href="#stats">آمار</a></div>
+        <div class="poemtablinks active"><a href="#quoteds">مشق شعر</a></div>
+        <div class="poemtablinks"><a href="#words" onclick="javascript:loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">واژگان</a></div>
+        <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
+        <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
+        <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+        <div class="poemtablinks"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
+    </div>
+    <div class="related-images-frame poemtabcontent">
+        <p>مشق‌های شعر از @Model.GanjoorPage.PoetOrCat.Poet.Nickname</p>
+    </div>
+
+    @* Word Counts Section *@
+    <div class="poempretab" id="words"></div>
+    <div class="poemtab">
+        <div class="poemtablinks"><a href="#stats">آمار</a></div>
+        <div class="poemtablinks"><a href="#quoteds">مشق شعر</a></div>
+        <div class="poemtablinks active"><a href="#words" onclick="javascript:loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">واژگان</a></div>
+        <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
+        <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
+        <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+        <div class="poemtablinks"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
+    </div>
+    <div class="related-images-frame poemtabcontent">
+        <div class="century cursor-pointer" id="load-word-counts" onclick="loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">
+            محاسبهٔ بسامد واژگان
+        </div>
+        <div id="wordcounts-placeholder">
+            @if (Model.CategoryWordsCounts != null)
+            {
+                <partial name="~/Pages/Partials/GanjoorPage/_CategoryWordsCountPartial.cshtml" model="Model.CategoryWordsCounts" />
+            }
+        </div>
+    </div>
+
+    @* Recitations Section *@
+    <div class="poempretab" id="recitations"></div>
+    <div class="poemtab">
+        <div class="poemtablinks"><a href="#stats">آمار</a></div>
+        <div class="poemtablinks"><a href="#quoteds">مشق شعر</a></div>
+        <div class="poemtablinks"><a href="#words" onclick="javascript:loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">واژگان</a></div>
+        <div class="poemtablinks active"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
+        <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
+        <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+        <div class="poemtablinks"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
+    </div>
+    <div class="related-images-frame poemtabcontent">
+        @if (Model.CategoryHasRecitations)
+        {
+            <div class="century cursor-pointer" id="load-cat-recitations" onclick="loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">
+                برای بارگذاری خوانش‌ها کلیک کنید.
+            </div>
+            <div id="recitations-section"></div>
+        }
+        else
+        {
+            <p>این بخش هنوز خوانشی ندارد.</p>
+        }
+    </div>
+
+    @* Photos Section *@
+    <div class="poempretab" id="photos"></div>
+    <div class="poemtab">
+        <div class="poemtablinks"><a href="#stats">آمار</a></div>
+        <div class="poemtablinks"><a href="#quoteds">مشق شعر</a></div>
+        <div class="poemtablinks"><a href="#words" onclick="javascript:loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">واژگان</a></div>
+        <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
+        <div class="poemtablinks active"><a href="#photos">تصاویر چهره</a></div>
+        <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+        <div class="poemtablinks"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
+    </div>
+    <div class="poemtabcontent">
+        <div class="related-images-frame">
+            @if (Model.Photo != null)
+            {
+                <div class="century">
+                    @Model.Photo.Title
+                    @if (Model.Photo.ChosenOne)
+                    {
+                        <i class="notranslate noindent-info-button done-icon"></i>
+                    }
+                </div>
+                <div class="clear-both">
+                    <img src="@Html.Raw(Model.Photo.ExternalNormalSizeImageUrl.Replace("/norm/", "/orig/"))" alt="@Model.Photo.Title" class="max-width-100per">
+                </div>
+                <div class="comments-like-div">
+                    @Html.Raw(Model.Photo.Description)
+                </div>
+            }
+            <a href="/photos?p=@Model.GanjoorPage.PoetOrCat.Cat.UrlSlug" role="button" class="pagebutton comments-link">مشاهده و پیشنهاد تصاویر چهره برای @Model.GanjoorPage.PoetOrCat.Poet.Nickname</a>
+        </div>
+    </div>
+
+    @* Paper Sources Section *@
+    @if (Model.GanjoorPage.SecondPoet == null)
+    {
+        <div class="poempretab" id="papersources"></div>
+        <div class="poemtab">
+            <div class="poemtablinks"><a href="#stats">آمار</a></div>
+            <div class="poemtablinks"><a href="#quoteds">مشق شعر</a></div>
+            <div class="poemtablinks"><a href="#words" onclick="javascript:loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">واژگان</a></div>
+            <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
+            <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
+            <div class="poemtablinks active"><a href="#papersources">منابع کاغذی</a></div>
+            <div class="poemtablinks"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
+        </div>
+        <div class="poemtabcontent related-images-frame">
+            <div class="related-images">
+                @if (Model.GanjoorPage.PoetOrCat.Cat.PaperSources != null && Model.GanjoorPage.PoetOrCat.Cat.PaperSources.Any())
+                {
+                    @foreach (var book in Model.GanjoorPage.PoetOrCat.Cat.PaperSources)
+                    {
+                        <div class="related-image-container">
+                            <a target="_blank" href="@Html.Raw(book.BookFullUrl)">
+                                <img src="@Html.Raw(book.CoverThumbnailImageUrl)" alt="@book.BookFullTitle" loading="lazy" class="related-image">
+                            </a>
+                            <div class="related-image-is-text-source">
+                                <a target="_blank" href="@Html.Raw(book.BookFullUrl)">@book.BookFullTitle</a>
+                            </div>
+                            @if (Model.CanEdit)
+                            {
+                                <div>
+                                    <a onclick="markAsTextOriginal(@book.NaskbanBookId, @Model.GanjoorPage.PoetOrCat.Cat.Id, '@book.BookFullTitle', '@Model.GanjoorPage.PoetOrCat.Cat.Title')" class="pagebutton" role="button">منبع کاغذی شود</a>
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>برای این بخش هنوز منبع کاغذی خاصی مشخص نشده است.</p>
+                }
+            </div>
+        </div>
+    }
+
+    @* Top Visits Section *@
+    <div class="poempretab" id="topvisits"></div>
+    <div class="poemtab">
+        <div class="poemtablinks"><a href="#stats">آمار</a></div>
+        <div class="poemtablinks"><a href="#quoteds">مشق شعر</a></div>
+        <div class="poemtablinks"><a href="#words" onclick="javascript:loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">واژگان</a></div>
+        <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
+        <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
+        <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+        <div class="poemtablinks active"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
+    </div>
+    <div class="related-images-frame poemtabcontent">
+        <div class="century cursor-pointer" id="load-topvisits" onclick="loadTopVisits('@Model.GanjoorPage.FullUrl')">
+            بارگذاری آمار پربازدیدها
+        </div>
+        <div id="topvisits-placeholder"></div>
+    </div>
+
+    @* Map *@
+    @if (!Model.OfflineMode && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+    {
+        <div id="catmap"></div>
+    }
+</div>
+
+@* Navigation *@
+@if (!string.IsNullOrEmpty(Model.NextUrl) || !string.IsNullOrEmpty(Model.PreviousUrl))
+{
+    <div class="spacer">&nbsp;</div>
+    <nav id="nav">
+        <div class="navigation">
+            <div class="navleft">
+                @if (!string.IsNullOrEmpty(Model.NextUrl))
+                {
+                    <a href="@Html.Raw(Model.NextUrl)">@Model.NextTitle</a>
+                    <span> &raquo;</span>
+                }
+            </div>
+            <div class="navright">
+                @if (!string.IsNullOrEmpty(Model.PreviousUrl))
+                {
+                    <span>&laquo; </span>
+                    <a href="@Html.Raw(Model.PreviousUrl)">@Model.PreviousTitle</a>
+                }
+            </div>
+        </div>
+    </nav>
+    <div class="spacer">&nbsp;</div>
+}
+
+@if (Model.CanEdit && !Model.IsPoemPage)
+{
+    <div class="spacer">&nbsp;</div>
+    <div class="related-images-frame">
+        <p>
+            <a role="button" href="/Admin/ModifyPage?id=@Model.GanjoorPage.Id" class="pagebutton">ویرایش مستقیم</a>
+        </p>
+    </div>
+}
+
+@if (!Model.OfflineMode && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+{
+    <script>
+        var poemGeoTags = [];
+        var map;
+        var oms;
+        var layerGroup;
+        var myGeoJSONPath = '/json/world.json';
+        var myCustomStyle = {
+            stroke: true,
+            weight: 1,
+            color: '#300',
+        }
+
+        $.getJSON(myGeoJSONPath, function(data) {
+            var map = L.map('catmap').setView([34, 53.6880], 4);
+            L.geoJson(data, {
+                clickable: false,
+                style: myCustomStyle
+            }).addTo(map);
+
+            L.tileLayer.provider('OpenStreetMap').addTo(map);
+
+            oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true });
+            layerGroup = L.layerGroup().addTo(map);
+            poemGeoTags = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategoryPoemGeoDateTags.Where(t => t.Location != null).ToArray(), Newtonsoft.Json.Formatting.Indented)));
+
+            var popup = new L.Popup();
+            oms.addListener('click', function(marker) {
+                var markOrder = '';
+                if (marker.poemGeoTag.LunarYear != null) {
+                    markOrder = marker.order + ' - ';
+                }
+                var poemDesc = markOrder + '<a class="actionlink" onclick="viewLocation(marker.poemGeoTag.Location.Latitude, marker.poemGeoTag.Location.Longitude)">' + marker.poemGeoTag.Location.Name + '</a> <br> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
+                if (marker.poemGeoTag.LunarYear != null) {
+                    poemDesc += '<br> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
+                }
+                popup.setContent(poemDesc);
+                popup.setLatLng(marker.getLatLng());
+                map.openPopup(popup);
+            });
+
+            var polygon = L.polyline([
+                        @foreach (var poemGeoTag in Model.CategoryPoemGeoDateTags.Where(t => t.Location != null && t.LunarYear != null).ToArray())
+                {
+                    @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
+                }
+                    ]).addTo(map);
+
+            for (var i = 0; i < poemGeoTags.length; i++) {
+                var poemGeoTag = poemGeoTags[i];
+                marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
+                marker.poemGeoTag = poemGeoTag
+                marker.order = persianizeNumerals((i + 1).toString());
+                marker.addTo(layerGroup);
+                oms.addMarker(marker);
+            }
+        });
+    </script>
+}

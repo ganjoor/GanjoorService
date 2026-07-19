@@ -1,0 +1,96 @@
+﻿@model GanjoorPageModel
+
+<div class="@Model.PoemBlockClass" id="post-@Html.Raw(Model.GanjoorPage.Id.ToString())">
+    <article id="garticle">
+        @if (Model.GanjoorPage.PoetOrCat == null)
+        {
+            <h2>
+                <a href="@Html.Raw(Model.Request.Path)" rel="bookmark">
+                    @Model.GanjoorPage.FullTitle
+                </a>
+            </h2>
+        }
+        else
+        {
+            <div class="spacer">&nbsp;</div>
+            @if (Model.GanjoorPage.SecondPoet != null)
+            {
+                <div id="poets">
+                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)">
+                        <img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Nickname)" class="poets-poet">
+                    </a>
+                    <a href="@Html.Raw(Model.GanjoorPage.SecondPoet.FullUrl)">
+                        <img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.SecondPoet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.SecondPoet.Nickname)" class="poets-poet">
+                    </a>
+                </div>
+                <div id="page-hierarchy">
+                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Nickname)</a>
+                    <span> &raquo;</span>
+                    <h2><a href="@Html.Raw(Model.GanjoorPage.FullUrl)">@Html.Raw(Model.GanjoorPage.Title)</a></h2>
+                </div>
+            }
+            else
+            {
+                <div id="poet-image">
+                    <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.FullUrl)">
+                        <img src="@(GanjooRazor.APIRoot.InternetUrl + Model.GanjoorPage.PoetOrCat.Poet.ImageUrl)" alt="@Html.Raw(Model.GanjoorPage.PoetOrCat.Poet.Nickname)">
+                    </a>
+                </div>
+                <div id="page-hierarchy" class="width-100per margin-auto">
+                    @{
+                        foreach (var gran in Model.GanjoorPage.PoetOrCat.Cat.Ancestors)
+                        {
+                            <a href="@Html.Raw(gran.FullUrl)">@Html.Raw(gran.Title)</a>
+                            <span> &raquo;</span>
+                        }
+                        <a href="@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.FullUrl)">@Html.Raw(Model.GanjoorPage.PoetOrCat.Cat.Title)</a>
+                        <text> &raquo; </text>
+                        <h2>
+                            <a href="@Html.Raw(Model.GanjoorPage.FullUrl)" rel="bookmark">
+                                @Html.Raw(Model.GanjoorPage.Title)
+                            </a>
+                        </h2>
+                    }
+                </div>
+            }
+        }
+
+        <partial name="~/Pages/Partials/GanjoorPage/_InlinePageUtilsPartial.cshtml" model="Model" />
+        @Html.Raw(Model.GanjoorPage.HtmlText)
+    </article>
+
+    @* Navigation *@
+    @if (!string.IsNullOrEmpty(Model.NextUrl) || !string.IsNullOrEmpty(Model.PreviousUrl))
+    {
+        <div class="spacer">&nbsp;</div>
+        <nav id="nav">
+            <div class="navigation">
+                <div class="navleft">
+                    @if (!string.IsNullOrEmpty(Model.NextUrl))
+                    {
+                        <a href="@Html.Raw(Model.NextUrl)">@Model.NextTitle</a>
+                        <span> &raquo;</span>
+                    }
+                </div>
+                <div class="navright">
+                    @if (!string.IsNullOrEmpty(Model.PreviousUrl))
+                    {
+                        <span>&laquo; </span>
+                        <a href="@Html.Raw(Model.PreviousUrl)">@Model.PreviousTitle</a>
+                    }
+                </div>
+            </div>
+        </nav>
+        <div class="spacer">&nbsp;</div>
+    }
+
+    @if (Model.CanEdit && !Model.IsPoemPage)
+    {
+        <div class="spacer">&nbsp;</div>
+        <div class="related-images-frame">
+            <p>
+                <a role="button" href="/Admin/ModifyPage?id=@Model.GanjoorPage.Id" class="pagebutton">ویرایش مستقیم</a>
+            </p>
+        </div>
+    }
+</div>
