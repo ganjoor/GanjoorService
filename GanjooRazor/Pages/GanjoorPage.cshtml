@@ -4,6 +4,11 @@
     Layout = "_Layout";
 }
 
+@if (Model.GanjoorPage == null)
+{
+    return;
+}
+
 @section Head {
     <script src="/js/chart.js"></script>
     <script src="/js/jquery.mark.min.js"></script>
@@ -194,10 +199,7 @@ else if (Model.ReadOnlyMode)
     </script>
 }
 
-@if (Model.GanjoorPage == null)
-{
-    return;
-}
+
 
 <partial name="_SearchHeaderPartial" model="@(new _SearchHeaderPartialModel()
          {
@@ -327,7 +329,7 @@ else if (Model.ReadOnlyMode)
         }
     }
 
-    @if (Model.GanjoorPage != null && Model.GanjoorPage.Id == 39401)
+    @if (Model.GanjoorPage.Id == 39401)
     {
         <script>
             function asyncStartupLoadWordCounts() {
