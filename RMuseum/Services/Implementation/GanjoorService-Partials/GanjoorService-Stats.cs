@@ -989,8 +989,8 @@ namespace RMuseum.Services.Implementation
                                         var poets = await context.GanjoorPoets.AsNoTracking().ToListAsync();
 
                                         string htmlText = $"<div class=\"poempretab\" id=\"pretab\"></div>{Environment.NewLine}";
-                                        htmlText += $"<div class=\"poemtab\" id=\"poets-stats-tab-items\">{Environment.NewLine}";
-                                        htmlText += $"  <div class=\"poemtablinks active\"><a href=\"#poets-stats-tab-items\">سخنوران</a></div>{Environment.NewLine}";
+                                        htmlText += $"<div class=\"poemtab\">{Environment.NewLine}";
+                                        htmlText += $"  <div class=\"poemtablinks active\"><a href=\"#pretab\">سخنوران</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#langs-stats-tab-items\">زبان‌ها</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#formats-stats-tab-items\">قالب‌ها</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#rhyhtms-stats-tab-items\">وزن‌ها</a></div>{Environment.NewLine}";
@@ -1025,7 +1025,8 @@ namespace RMuseum.Services.Implementation
                                         }
                                         htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
 
-                                        htmlText += $"<div class=\"poemtab\" id=\"langs-stats-tab-items\">{Environment.NewLine}";
+                                        htmlText += $"<div class=\"poempretab\" id=\"langs-stats-tab-items\"></div>{Environment.NewLine}";
+                                        htmlText += $"<div class=\"poemtab\">{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#poets-stats-tab-items\">سخنوران</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks active\"><a href=\"#langs-stats-tab-items\">زبان‌ها</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#formats-stats-tab-items\">قالب‌ها</a></div>{Environment.NewLine}";
@@ -1065,7 +1066,8 @@ namespace RMuseum.Services.Implementation
                                         }
                                         htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
 
-                                        htmlText += $"<div class=\"poemtab\" id=\"formats-stats-tab-items\">{Environment.NewLine}";
+                                        htmlText += $"<div class=\"poempretab\" id=\"formats-stats-tab-items\"></div>{Environment.NewLine}";
+                                        htmlText += $"<div class=\"poemtab\">{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#poets-stats-tab-items\">سخنوران</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#langs-stats-tab-items\">زبان‌ها</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks active\"><a href=\"#formats-stats-tab-items\">قالب‌ها</a></div>{Environment.NewLine}";
@@ -1102,7 +1104,8 @@ namespace RMuseum.Services.Implementation
                                         }
                                         htmlText += $"</tbody>{Environment.NewLine}</table>{Environment.NewLine}";
 
-                                        htmlText += $"<div class=\"poemtab\" id=\"rhyhtms-stats-tab-items\">{Environment.NewLine}";
+                                        htmlText += $"<div class=\"poempretab\" id=\"rhyhtms-stats-tab-items\"></div>{Environment.NewLine}";
+                                        htmlText += $"<div class=\"poemtab\">{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#poets-stats-tab-items\">سخنوران</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#langs-stats-tab-items\">زبان‌ها</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#formats-stats-tab-items\">قالب‌ها</a></div>{Environment.NewLine}";
@@ -1161,12 +1164,13 @@ namespace RMuseum.Services.Implementation
                                         int cc = coupletCountsList.Sum(c => c.Count);
                                         if (coupletCountsList.Count > 0 &&  cc> 0)
                                         {
-                                            htmlText += $"<div class=\"poemtab\" id=\"couplets-stats-tab-items\">{Environment.NewLine}";
+                                            htmlText += $"<div class=\"poempretab\" id=\"couplets-stats-tab-items\"></div>{Environment.NewLine}";
+                                            htmlText += $"<div class=\"poemtab\">{Environment.NewLine}";
                                             htmlText += $"  <div class=\"poemtablinks\"><a href=\"#poets-stats-tab-items\">سخنوران</a></div>{Environment.NewLine}";
                                             htmlText += $"  <div class=\"poemtablinks\"><a href=\"#langs-stats-tab-items\">زبان‌ها</a></div>{Environment.NewLine}";
                                             htmlText += $"  <div class=\"poemtablinks\"><a href=\"#formats-stats-tab-items\">قالب‌ها</a></div>{Environment.NewLine}";
-                                            htmlText += $"  <div class=\"poemtablinks active\"><a href=\"#rhyhtms-stats-tab-items\">وزن‌ها</a></div>{Environment.NewLine}";
-                                            htmlText += $"  <div class=\"poemtablinks\"><a href=\"#couplets-stats-tab-items\">تعداد ابیات</a></div>{Environment.NewLine}";
+                                            htmlText += $"  <div class=\"poemtablinks\"><a href=\"#rhyhtms-stats-tab-items\">وزن‌ها</a></div>{Environment.NewLine}";
+                                            htmlText += $"  <div class=\"poemtablinks active\"><a href=\"#couplets-stats-tab-items\">تعداد ابیات</a></div>{Environment.NewLine}";
                                             htmlText += $"  <div class=\"poemtablinks\"><a href=\"#wordcounts-placeholder-tab-items\">بسامد واژگان</a></div>{Environment.NewLine}";
                                             htmlText += $"</div>{Environment.NewLine}";
 
