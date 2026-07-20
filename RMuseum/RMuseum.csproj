@@ -21,6 +21,7 @@
     <PackageReference Include="Betalgo.Ranul.OpenAI" Version="9.2.6" />
     <PackageReference Include="DNTPersianUtils.Core" Version="7.0.0" />
     <PackageReference Include="FluentFTP" Version="54.2.0" />
+    <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
       <PrivateAssets>all</PrivateAssets>
