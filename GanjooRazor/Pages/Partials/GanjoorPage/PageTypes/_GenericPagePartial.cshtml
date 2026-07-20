@@ -56,22 +56,19 @@
         }
 
         <partial name="~/Pages/Partials/GanjoorPage/_InlinePageUtilsPartial.cshtml" model="Model" />
-        @if (Model.GanjoorPage.Id == GanjoorPageModel.GanjoorSlashVaznPageId)
-        {
-            <div class="poempretab" id="pretab"></div>
-            <div class="poemtab" id="tab-items">
-                <div class="poemtablinks active"><a href="#poets-stats">سخنوران</a></div>
-                <div class="poemtablinks"><a href="#langs-stats">زبان‌ها</a></div>
-                <div class="poemtablinks"><a href="#formats-stats">قالب‌ها</a></div>
-                <div class="poemtablinks"><a href="#rhyhtms-stats">وزن‌ها</a></div>
-                <div class="poemtablinks"><a href="#couplets-stats">تعداد ابیات</a></div>
-                <div class="poemtablinks"><a href="#wordcounts-placeholder">بسامد واژگان</a></div>
-            </div>
-        }
         @Html.Raw(Model.GanjoorPage.HtmlText)
 
         @if (Model.GanjoorPage.Id == GanjoorPageModel.GanjoorSlashVaznPageId)
         {
+            <div class="poemtab" id="wordcounts-placeholder-tab-items">
+                <div class="poemtablinks"><a href="#poets-stats-tab-items">سخنوران</a></div>
+                <div class="poemtablinks"><a href="#langs-stats-tab-items">زبان‌ها</a></div>
+                <div class="poemtablinks"><a href="#formats-stats-tab-items">قالب‌ها</a></div>
+                <div class="poemtablinks"><a href="#rhyhtms-stats-tab-items">وزن‌ها</a></div>
+                <div class="poemtablinks"><a href="#couplets-stats-tab-items">تعداد ابیات</a></div>
+                <div class="poemtablinks active"><a href="#wordcounts-placeholder-tab-items">بسامد واژگان</a></div>
+            </div>
+
             <div id="wordcounts-placeholder">
                 @if (Model.CategoryWordsCounts != null)
                 {
