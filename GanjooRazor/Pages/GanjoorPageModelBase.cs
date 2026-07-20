@@ -4,8 +4,9 @@ using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using GanjooRazor.Utils;
 
-namespace GanjooRazor.Utils
+namespace GanjooRazor.Pages
 {
     /// <summary>
     /// Base class for Razor page models that call the Ganjoor API.
