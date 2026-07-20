@@ -1053,3 +1053,13 @@
         });
     </script>
 }
+
+@if (Model.LoggedIn)
+{
+    if (Model.KeepHistory)
+    {
+        <script>
+            AddToMyHistory(@Model.GanjoorPage.Id);
+        </script>
+    }
+}

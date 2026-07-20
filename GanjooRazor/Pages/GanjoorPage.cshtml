@@ -233,34 +233,6 @@ else if (Model.ReadOnlyMode)
     @Html.Raw(ViewData["TrackingScript"])
 }
 
-@if (Model.LoggedIn)
-{
-    if (Model.IsPoemPage)
-    {
-        if (Model.KeepHistory)
-        {
-            <script>
-                AddToMyHistory(@Model.GanjoorPage.Id);
-            </script>
-        }
-    }
-
-    @if (Model.GanjoorPage.Id == GanjoorPageModel.GanjoorSlashVaznPageId)
-    {
-        <script>
-            function asyncStartupLoadWordCounts() {
-                return new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                        loadWordCounts(0, 0, false)
-                    }, 100);
-                });
-            }
-
-            asyncStartupLoadWordCounts();
-        </script>
-    }
-}
-
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         document.querySelectorAll("table.stats").forEach(table => {
