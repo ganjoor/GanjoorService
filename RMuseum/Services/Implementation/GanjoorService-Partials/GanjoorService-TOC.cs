@@ -708,7 +708,7 @@ namespace RMuseum.Services.Implementation
             html += $"<div class=\"poempretab\" id=\"{active}\">";
             html += $"</div>{Environment.NewLine}";
             html += $"<div class=\"poemtab\">{Environment.NewLine}";
-            html += $"<div class=\"poemtablinks{(active == "stats" ? " active" : "")}\"><a href=\"#stats\">آمار</a></div>{Environment.NewLine}";
+            html += $"<div class=\"poemtablinks{(active == "stats" ? " active" : "")}\"><a href=\"#pretab\">آمار</a></div>{Environment.NewLine}";
             if (cat.ParentId == null)
             {
                 html += $"<div class=\"poemtablinks{(active == "quoteds" ? " active" : "")}\"><a href=\"#quoteds\">مشق شعر</a></div>{Environment.NewLine}";
