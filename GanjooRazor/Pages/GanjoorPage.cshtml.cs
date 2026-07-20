@@ -55,6 +55,8 @@ namespace GanjooRazor.Pages
 
         public bool ReadOnlyMode => GetConfigFlag("ReadOnlyMode");
 
+        public const int GanjoorSlashVaznPageId = 39401;
+
         /// <summary>
         /// constructor
         /// </summary>
