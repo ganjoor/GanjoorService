@@ -105,5 +105,21 @@ namespace RMuseum.Models.Ganjoor
         /// couplet index
         /// </summary>
         public int? CoupletIndex { get; set; }
+
+        /// <summary>
+        /// Total likes
+        /// </summary>
+        public int LikeCount { get; set; }
+
+        /// <summary>
+        /// Total dislikes
+        /// </summary>
+        public int DislikeCount { get; set; }
+
+        /// <summary>
+        /// Internal ranking key for sorting.
+        /// Not shown to users.
+        /// </summary>
+        public int SortKey /*RankingScore*/ { get; set; }
     }
 }
