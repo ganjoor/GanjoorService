@@ -582,7 +582,8 @@ namespace RMuseum.Services.Implementation
 
                     try
                     {
-                        var comments = await context.GanjoorComments.Where(c => c.HtmlComment.Contains("href=")).ToArrayAsync();
+                        var comments = //await context.GanjoorComments.Where(c => c.HtmlComment.Contains("href=")).ToArrayAsync();
+                            await context.GanjoorComments.Where(c => c.HtmlComment.Contains("style")).ToArrayAsync();
 
                         await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Examining {comments.Length} Comments");
 
