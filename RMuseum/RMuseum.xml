@@ -8427,6 +8427,12 @@
             reported by user
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorCommentReaction.Value">
+            <summary>
+            +1 = Like
+            -1 = Dislike
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorDuplicate">
             <summary>
             Temporary Model contianing duplicated poems information
