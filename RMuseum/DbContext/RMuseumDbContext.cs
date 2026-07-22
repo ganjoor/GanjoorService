@@ -249,7 +249,11 @@ namespace RMuseum.DbContext
             builder.Entity<GanjoorPoem>()
             .Property(e => e.PoemSummary)
             .HasMaxLength(3000);
-          
+
+            builder.Entity<GanjoorCommentReaction>()
+               .HasIndex(i => new { i.GanjoorCommentId, i.UserId })
+               .IsUnique();
+
         }
 
 

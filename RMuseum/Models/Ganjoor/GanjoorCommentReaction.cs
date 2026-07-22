@@ -10,6 +10,7 @@ namespace RMuseum.Models.Ganjoor
         public int GanjoorCommentId { get; set; }
         public virtual GanjoorComment GanjoorComment { get; set; }
 
+        public int PoemId { get; set; }
         public Guid UserId { get; set; }
         public virtual RAppUser User { get; set; }
 

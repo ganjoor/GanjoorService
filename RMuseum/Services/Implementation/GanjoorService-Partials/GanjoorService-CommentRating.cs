@@ -28,6 +28,12 @@ namespace RMuseum.Services.Implementation
             }
             try
             {
+                var comment = await _context.GanjoorComments.Where(c => c.Id == commentId).SingleOrDefaultAsync();
+                if (comment == null)
+                {
+                    return new RServiceResult<bool>(false, "comment == null");
+                }
+
                 var oldRating = await _context.GanjoorCommentReactions.Where(c => c.GanjoorCommentId == commentId && c.UserId == userId).SingleOrDefaultAsync();
                 if(value == 0 && oldRating == null)
                 {
@@ -51,20 +57,21 @@ namespace RMuseum.Services.Implementation
                     }
                     await _context.SaveChangesAsync();
 
-                    return await ReCalculateCommentSortKeyAsync(commentId);
+                    return await ReCalculateCommentSortKeyAsync(comment);
                 }
                 else 
                 {
                     var rating = new GanjoorCommentReaction()
                     {
                         GanjoorCommentId = commentId,
+                        PoemId = comment.PoemId,
                         UserId = userId,
                         Value = value,
                         ReactionDate = DateTime.Now,
                     };
                     _context.Add(rating);
                     await _context.SaveChangesAsync();
-                    return await ReCalculateCommentSortKeyAsync(commentId);
+                    return await ReCalculateCommentSortKeyAsync(comment);
                 }
 
             }
@@ -74,17 +81,14 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task<RServiceResult<bool>> ReCalculateCommentSortKeyAsync(int commentId)
+        private async Task<RServiceResult<bool>> ReCalculateCommentSortKeyAsync(GanjoorComment comment)
         {
             try
             {
-                var likes = await _context.GanjoorCommentReactions.AsNoTracking().Where(r => r.GanjoorCommentId == commentId && r.Value == 1).SumAsync(r => r.Value);
-                var dislikes = await _context.GanjoorCommentReactions.AsNoTracking().Where(r => r.GanjoorCommentId == commentId && r.Value == -1).SumAsync(r => r.Value);
-                var comment = await _context.GanjoorComments.Where(c => c.Id == commentId).SingleOrDefaultAsync();
-                if(comment == null)
-                {
-                    return new RServiceResult<bool>(false, "comment == null");
-                }
+                var likes = await _context.GanjoorCommentReactions.AsNoTracking().Where(r => r.GanjoorCommentId == comment.Id && r.Value == 1).SumAsync(r => r.Value);
+                var dislikes = await _context.GanjoorCommentReactions.AsNoTracking().Where(r => r.GanjoorCommentId == comment.Id && r.Value == -1).SumAsync(r => r.Value);
+                comment.LikeCount = likes;
+                comment.DislikeCount = dislikes;
                 comment.SortKey = GanjoorCommentRankingScoreCalculator.ComputeRankingScore(likes, dislikes);
                 _context.Update(comment);
                 await _context.SaveChangesAsync();
