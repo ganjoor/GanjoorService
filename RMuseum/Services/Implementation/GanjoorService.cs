@@ -862,30 +862,44 @@ namespace RMuseum.Services.Implementation
         /// <param name="poemId"></param>
         /// <param name="userId"></param>
         /// <param name="coupletIndex"></param>
+        /// <param name="sortByRanking"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId, int? coupletIndex)
+        public async Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId, int? coupletIndex, bool sortByRanking)
         {
+            var query = _context.GanjoorComments
+     .Include(c => c.User)
+     .Where(comment =>
+         (comment.Status == PublishStatus.Published ||
+         (userId != Guid.Empty &&
+          comment.Status == PublishStatus.Awaiting &&
+          comment.UserId == userId))
+         &&
+         comment.PoemId == poemId
+         &&
+         (coupletIndex == null || comment.CoupletIndex == coupletIndex));
+
+            query = sortByRanking
+                ? query.OrderByDescending(c => c.SortKey)
+                       .ThenByDescending(c => c.CommentDate)
+                : query.OrderBy(c => c.CommentDate);
+
             var source =
-                  from comment in _context.GanjoorComments.Include(c => c.User)
-                  where
-                  (comment.Status == PublishStatus.Published || (userId != Guid.Empty && comment.Status == PublishStatus.Awaiting && comment.UserId == userId))
-                  &&
-                  comment.PoemId == poemId
-                  &&
-                  ((coupletIndex == null) || (coupletIndex != null && comment.CoupletIndex == coupletIndex))
-                  orderby comment.CommentDate
-                  select new GanjoorCommentSummaryViewModel()
-                  {
-                      Id = comment.Id,
-                      AuthorName = comment.User == null ? comment.AuthorName : $"{comment.User.NickName}",
-                      AuthorUrl = comment.AuthorUrl,
-                      CommentDate = comment.CommentDate,
-                      HtmlComment = comment.HtmlComment,
-                      PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
-                      InReplyToId = comment.InReplyToId,
-                      UserId = comment.UserId,
-                      CoupletIndex = comment.CoupletIndex == null ? -1 : (int)comment.CoupletIndex,
-                  };
+                from comment in query
+                select new GanjoorCommentSummaryViewModel
+                {
+                    Id = comment.Id,
+                    AuthorName = comment.User == null ? comment.AuthorName : comment.User.NickName,
+                    AuthorUrl = comment.AuthorUrl,
+                    CommentDate = comment.CommentDate,
+                    HtmlComment = comment.HtmlComment,
+                    PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
+                    InReplyToId = comment.InReplyToId,
+                    UserId = comment.UserId,
+                    CoupletIndex = comment.CoupletIndex ?? -1,
+                    LikeCount = comment.LikeCount,
+                    DislikeCount = comment.DislikeCount,
+                    CurrentUserRatingValue = 0
+                };
 
             GanjoorCommentSummaryViewModel[] allComments = await source.AsNoTracking().ToArrayAsync();
 
@@ -943,6 +957,9 @@ namespace RMuseum.Services.Implementation
                       InReplyToId = c.InReplyToId,
                       UserId = c.UserId,
                       CoupletIndex = c.CoupletIndex == null ? -1 : (int)c.CoupletIndex,
+                      LikeCount = c.LikeCount,
+                      DislikeCount = c.DislikeCount,
+                      CurrentUserRatingValue = 0,
                   };
 
             GanjoorCommentSummaryViewModel comment = await source.AsNoTracking().SingleOrDefaultAsync();
@@ -1111,10 +1128,13 @@ namespace RMuseum.Services.Implementation
                     PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
                     InReplyToId = comment.InReplyToId,
                     UserId = comment.UserId,
-                    Replies = new GanjoorCommentSummaryViewModel[] { },
+                    Replies = { },
                     CoupletIndex = coupletIndex == null ? -1 : (int)coupletIndex,
                     MyComment = true,
-                    CoupletSummary = _CutSummary(coupletSummary)
+                    CoupletSummary = _CutSummary(coupletSummary),
+                    LikeCount = comment.LikeCount,
+                    DislikeCount = comment.DislikeCount,
+                    CurrentUserRatingValue = 0,
                 }
                 );
         }
@@ -1489,6 +1509,9 @@ namespace RMuseum.Services.Implementation
                             PublishStatus = "",
                             UserId = comment.InReplyTo.UserId,
                             CoupletIndex = comment.InReplyTo.CoupletIndex == null ? -1 : (int)comment.InReplyTo.CoupletIndex,
+                            LikeCount = comment.InReplyTo.LikeCount,
+                            DislikeCount = comment.InReplyTo.DislikeCount,
+                            CurrentUserRatingValue = 0,
                         },
                      Poem = new GanjoorPoemSummaryViewModel()
                      {
@@ -1496,7 +1519,10 @@ namespace RMuseum.Services.Implementation
                          Title = comment.Poem.FullTitle,
                          UrlSlug = comment.Poem.FullUrl,
                          Excerpt = ""
-                     }
+                     },
+                     LikeCount = comment.LikeCount,
+                     DislikeCount = comment.DislikeCount,
+                     CurrentUserRatingValue = 0,
                  };
 
             (PaginationMetadata PagingMeta, GanjoorCommentFullViewModel[] Items) paginatedResult =
@@ -1619,7 +1645,10 @@ namespace RMuseum.Services.Implementation
                             CommentDate = comment.InReplyTo.CommentDate,
                             HtmlComment = comment.InReplyTo.HtmlComment,
                             PublishStatus = "",
-                            UserId = comment.InReplyTo.UserId
+                            UserId = comment.InReplyTo.UserId,
+                            LikeCount = comment.LikeCount,
+                            DislikeCount = comment.DislikeCount,
+                            CurrentUserRatingValue = 0,
                         },
                          Poem = new GanjoorPoemSummaryViewModel()
                          {
@@ -1783,10 +1812,11 @@ namespace RMuseum.Services.Implementation
         /// <param name="navigation"></param>
         /// <param name="relatedpoems"></param>
         /// <param name="sections">sections</param>
+        /// <param name="sortByRanking"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true, bool sections = true)
+        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true, bool sections = true, bool sortByRanking = true)
         {
-            var cachKey = $"GetPoemById({id}, {catInfo}, {catPoems}, {rhymes}, {recitations}, {images}, {songs}, {comments}, {verseDetails}, {navigation})";
+            var cachKey = $"GetPoemById({id}, {catInfo}, {catPoems}, {rhymes}, {recitations}, {images}, {songs}, {comments}, {verseDetails}, {navigation}, {relatedpoems}, {sections}, {sortByRanking})";
             if (!_memoryCache.TryGetValue(cachKey, out GanjoorPoemCompleteViewModel poemViewModel))
             {
                 var poem = await _context.GanjoorPoems.Where(p => p.Id == id).AsNoTracking().SingleOrDefaultAsync();
@@ -1922,7 +1952,7 @@ namespace RMuseum.Services.Implementation
 
                 if (comments)
                 {
-                    var commentsRes = await GetPoemComments(id, Guid.Empty, null);
+                    var commentsRes = await GetPoemComments(id, Guid.Empty, null, sortByRanking);
                     if (!string.IsNullOrEmpty(commentsRes.ExceptionString))
                         return new RServiceResult<GanjoorPoemCompleteViewModel>(null, commentsRes.ExceptionString);
                     poemComments = commentsRes.Result;

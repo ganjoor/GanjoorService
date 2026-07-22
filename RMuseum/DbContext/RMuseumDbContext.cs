@@ -669,5 +669,10 @@ namespace RMuseum.DbContext
         /// </summary>
         public DbSet<GanjoorCatCorrection> GanjoorCatCorrections { get; set; }
 
+        /// <summary>
+        /// comment reactions
+        /// </summary>
+        public DbSet<GanjoorCommentReaction> GanjoorCommentReactions { get; set; }
+
     }
 }

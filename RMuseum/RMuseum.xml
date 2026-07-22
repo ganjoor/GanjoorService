@@ -3920,6 +3920,11 @@
             ganjoor cat corrections
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorCommentReactions">
+            <summary>
+            comment reactions
+            </summary>
+        </member>
         <member name="T:RMuseum.Migrations.PictureFileExtUrl">
             <inheritdoc />
         </member>
@@ -11553,6 +11558,22 @@
             couplet summary
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentFullViewModel.LikeCount">
+            <summary>
+            Total likes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentFullViewModel.DislikeCount">
+            <summary>
+            Total dislikes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentFullViewModel.CurrentUserRatingValue">
+            <summary>
+            +1 = Like
+            -1 = Dislike
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentPostViewModel">
             <summary>
             new comment model
@@ -11646,6 +11667,22 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.IsBookmarked">
             <summary>
             for client
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.LikeCount">
+            <summary>
+            Total likes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.DislikeCount">
+            <summary>
+            Total dislikes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel.CurrentUserRatingValue">
+            <summary>
+            +1 = Like
+            -1 = Dislike
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel">

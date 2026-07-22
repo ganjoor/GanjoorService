@@ -76,5 +76,21 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// couplet summary
         /// </summary>
         public string CoupletSummary { get; set; }
+
+        /// <summary>
+        /// Total likes
+        /// </summary>
+        public int LikeCount { get; set; }
+
+        /// <summary>
+        /// Total dislikes
+        /// </summary>
+        public int DislikeCount { get; set; }
+
+        /// <summary>
+        /// +1 = Like
+        /// -1 = Dislike
+        /// </summary>
+        public short CurrentUserRatingValue { get; set; }
     }
 }
