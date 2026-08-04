@@ -1130,7 +1130,7 @@ namespace RMuseum.Services.Implementation
                     PublishStatus = comment.Status == PublishStatus.Awaiting ? "در انتظار تأیید" : "",
                     InReplyToId = comment.InReplyToId,
                     UserId = comment.UserId,
-                    Replies = { },
+                    Replies = Array.Empty<GanjoorCommentSummaryViewModel>(),
                     CoupletIndex = coupletIndex == null ? -1 : (int)coupletIndex,
                     MyComment = true,
                     CoupletSummary = _CutSummary(coupletSummary),

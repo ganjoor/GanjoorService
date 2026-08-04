@@ -52,7 +52,7 @@ else
             }
         </p>
         <div class='spacer'>&nbsp;</div>
-        @foreach (var reply in Model.Comment.Replies)
+        @foreach (var reply in Model.Comment.Replies ?? Array.Empty<RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentSummaryViewModel>())
         {
             <partial name="_CommentPartial.cshtml" model=Model.GetCommentModel(reply) />
         }
