@@ -328,6 +328,41 @@ namespace GanjooRazor.Pages
                     }
                 }
             }
+
+            if (GanjoorPage.Poem.Comments.Length > 0)
+            {
+                using (HttpClient secureClient = new HttpClient())
+                {
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                    {
+                        HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{GanjoorPage.Poem.Id}/comments/myratings");
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var ratings = JsonConvert.DeserializeObject<GanjoorCommentUserRatingViewModel[]>(await response.Content.ReadAsStringAsync());
+                            if (ratings.Length > 0)
+                            {
+                                var ratingsDic = ratings.ToDictionary(r => r.CommentId, r => r.Value);
+                                foreach (GanjoorCommentSummaryViewModel comment in GanjoorPage.Poem.Comments)
+                                {
+                                    _applyCommentRatings(comment, ratingsDic);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void _applyCommentRatings(GanjoorCommentSummaryViewModel comment, Dictionary<int, short> ratings)
+        {
+            if (ratings.TryGetValue(comment.Id, out short value))
+            {
+                comment.CurrentUserRatingValue = value;
+            }
+            foreach (var reply in comment.Replies)
+            {
+                _applyCommentRatings(reply, ratings);
+            }
         }
 
         private void _markMyReplies(GanjoorCommentSummaryViewModel parent, Guid userId, GanjoorUserBookmarkViewModel[] bookmarks)
@@ -904,6 +939,20 @@ namespace GanjooRazor.Pages
                                     comment.MyComment = comment.UserId == userId;
                                     comment.IsBookmarked = bookmarks.Where(b => b.CoupletIndex == -comment.Id).Any();
                                     _markMyReplies(comment, userId, bookmarks);
+                                }
+
+                                HttpResponseMessage responseRatings = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/comments/myratings");
+                                if (responseRatings.IsSuccessStatusCode)
+                                {
+                                    var ratings = JsonConvert.DeserializeObject<GanjoorCommentUserRatingViewModel[]>(await responseRatings.Content.ReadAsStringAsync());
+                                    if (ratings.Length > 0)
+                                    {
+                                        var ratingsDic = ratings.ToDictionary(r => r.CommentId, r => r.Value);
+                                        foreach (GanjoorCommentSummaryViewModel comment in comments)
+                                        {
+                                            _applyCommentRatings(comment, ratingsDic);
+                                        }
+                                    }
                                 }
                             }
                         }
