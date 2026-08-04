@@ -130,6 +130,67 @@ namespace GanjooRazor.Pages
             };
         }
 
+        /// <summary>
+        /// re-fetch a poem's comments sorted by rating or by date (AJAX, called from sortComments() in bk.js)
+        /// </summary>
+        public async Task<IActionResult> OnGetCommentsPartialAsync(int poemId, bool sortByRanking = true)
+        {
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/comments?sortByRanking={sortByRanking}");
+            if (!response.IsSuccessStatusCode)
+            {
+                return BadRequest(await ReadErrorMessageAsync(response));
+            }
+            var comments = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorCommentSummaryViewModel[]>();
+
+            LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
+
+            if (!string.IsNullOrEmpty(Request.Cookies["UserId"])
+                && Guid.TryParse(Request.Cookies["UserId"], out Guid userId)
+                && userId != Guid.Empty)
+            {
+                using (HttpClient secureClient = new HttpClient())
+                {
+                    if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                    {
+                        GanjoorUserBookmarkViewModel[] bookmarks = Array.Empty<GanjoorUserBookmarkViewModel>();
+                        HttpResponseMessage bookmarksResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{poemId}");
+                        if (bookmarksResponse.IsSuccessStatusCode)
+                        {
+                            bookmarks = JsonConvert.DeserializeObject<GanjoorUserBookmarkViewModel[]>(await bookmarksResponse.Content.ReadAsStringAsync());
+                        }
+
+                        foreach (GanjoorCommentSummaryViewModel comment in comments)
+                        {
+                            comment.MyComment = comment.UserId == userId;
+                            comment.IsBookmarked = bookmarks.Where(b => b.CoupletIndex == -comment.Id).Any();
+                            _markMyReplies(comment, userId, bookmarks);
+                        }
+
+                        HttpResponseMessage ratingsResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/comments/myratings");
+                        if (ratingsResponse.IsSuccessStatusCode)
+                        {
+                            var ratings = JsonConvert.DeserializeObject<GanjoorCommentUserRatingViewModel[]>(await ratingsResponse.Content.ReadAsStringAsync());
+                            if (ratings.Length > 0)
+                            {
+                                var ratingsDic = ratings.ToDictionary(r => r.CommentId, r => r.Value);
+                                foreach (GanjoorCommentSummaryViewModel comment in comments)
+                                {
+                                    _applyCommentRatings(comment, ratingsDic);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return Partial("~/Pages/Partials/GanjoorPage/_CommentsListPartial.cshtml", new _CommentsListPartialModel()
+            {
+                Comments = comments,
+                PoemId = poemId,
+                LoggedIn = LoggedIn,
+            });
+        }
+
         public Task<IActionResult> OnPostReply(string replyCommentText, int refPoemId, int refCommentId)
         {
             return OnPostComment(replyCommentText, refPoemId, refCommentId, -1);

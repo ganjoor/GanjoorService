@@ -504,6 +504,98 @@ function switchBookmarkInternal(poemId, coupletIndex, divSuffix) {
     });
 }
 
+function sortComments(poemId, sortByRanking) {
+    var wrapper = document.getElementById('comments-list-wrapper');
+    if (wrapper == null) return;
+
+    $.ajax({
+        type: "GET",
+        url: '?handler=CommentsPartial&poemId=' + String(poemId) + '&sortByRanking=' + String(sortByRanking),
+        error: function (err) {
+            alert('خطا در بارگذاری حاشیه‌ها: ' + err.responseText);
+        },
+        success: function (html) {
+            wrapper.innerHTML = html;
+            paginateComments();
+            revealCommentFromUrlHash();
+        },
+    });
+}
+
+var COMMENTS_PAGE_SIZE = 15;
+
+function paginateComments() {
+    var block = document.getElementById('comments-block');
+    if (block == null) return;
+
+    var existingButton = document.getElementById('comments-show-more');
+    if (existingButton != null) existingButton.remove();
+
+    // only direct children: root comments. Replies live nested inside each root's
+    // own div, so they're never touched by pagination - a full reply thread always
+    // stays together with its root.
+    var roots = Array.prototype.filter.call(block.children, function (el) {
+        return el.classList.contains('ganjoor-comment');
+    });
+
+    for (var i = 0; i < roots.length; i++) {
+        roots[i].style.display = '';
+    }
+
+    if (roots.length <= COMMENTS_PAGE_SIZE) return;
+
+    var shown = COMMENTS_PAGE_SIZE;
+    for (var i = shown; i < roots.length; i++) {
+        roots[i].style.display = 'none';
+    }
+
+    var button = document.createElement('a');
+    button.id = 'comments-show-more';
+    button.setAttribute('role', 'button');
+    button.className = 'cursor-pointer comments-link';
+    button.innerText = 'نمایش حاشیه‌های بیشتر (' + toPersianNumber(roots.length - shown) + ' مورد دیگر)';
+    button.onclick = function () {
+        var nextShown = shown + COMMENTS_PAGE_SIZE;
+        for (var i = shown; i < Math.min(nextShown, roots.length); i++) {
+            roots[i].style.display = '';
+        }
+        shown = nextShown;
+        if (shown >= roots.length) {
+            button.remove();
+        } else {
+            button.innerText = 'نمایش حاشیه‌های بیشتر (' + toPersianNumber(roots.length - shown) + ' مورد دیگر)';
+        }
+    };
+    block.parentNode.insertBefore(button, block.nextSibling);
+}
+
+// Hashieha.cshtml, MyComments.cshtml, and copyCommentUrl() all link straight to
+// #comment-<id>. Pagination can hide that target (or, if it's a reply, hide its whole
+// parent thread, since only root comments get display:none) - the browser's native
+// anchor-scroll runs before paginateComments() and silently fails against a hidden
+// element, so this reveals the right root and scrolls to it explicitly afterwards.
+function revealCommentFromUrlHash() {
+    if (!/^#comment-\d/.test(location.hash)) return;
+
+    var target = document.querySelector(location.hash);
+    if (target == null) return;
+
+    var block = document.getElementById('comments-block');
+    if (block != null) {
+        var el = target;
+        while (el != null && el.parentElement !== block) {
+            el = el.parentElement;
+        }
+        if (el != null) {
+            el.style.display = '';
+        }
+    }
+
+    setTimeout(function () {
+        target.scrollIntoView();
+    }, 0);
+}
+
 function rateComment(commentId, value, loggedIn, divSuffix) {
     if (!loggedIn) {
         alert('برای رأی دادن به حاشیه‌ها لازم است با نام کاربری خود وارد گنجور شوید.');

@@ -872,30 +872,16 @@
             </div>
             <div class="related-images-frame poemtabcontent">
                 <div id="comments-section">
-                    @switch (Model.GanjoorPage.Poem.Comments.Length)
+                    @if (Model.GanjoorPage.Poem.Comments.Length > 1)
                     {
-                        case 0:
-                            <p>
-                                تا به حال حاشیه‌ای برای این شعر نوشته نشده است. <a href="#commentform" class="comments-link" title="من حاشیه بگذارم ...">💬 من حاشیه بگذارم ...</a>
-                            </p>
-                            break;
-                        case 1:
-                            <p>
-                                تا به حال یک حاشیه برای این شعر نوشته شده است. <a href="#commentform" class="comments-link" title="من حاشیه بگذارم ...">💬 من حاشیه بگذارم ...</a>
-                            </p>
-                            break;
-                        default:
-                            <p>
-                                تا به حال @Html.Raw(Model.GanjoorPage.Poem.Comments.Length.ToPersianNumbers()) حاشیه برای این شعر نوشته شده است. <a href="#commentform" class="comments-link" title="من حاشیه بگذارم ...">💬 من حاشیه بگذارم ...</a>
-                            </p>
-                            break;
+                        <p class="comments-sort-toggle">
+                            مرتب‌سازی حاشیه‌ها:
+                            <a role="button" class="cursor-pointer" onclick="sortComments(@Model.GanjoorPage.Id, true)">محبوب‌ترین</a> |
+                            <a role="button" class="cursor-pointer" onclick="sortComments(@Model.GanjoorPage.Id, false)">تازه‌ترین</a>
+                        </p>
                     }
-
-                    <div id="comments-block">
-                        @foreach (var comment in Model.GanjoorPage.Poem.Comments)
-                        {
-                            <partial name="~/Pages/Partials/GanjoorPage/_CommentPartial.cshtml" model=@Model.GetCommentModel(comment, Model.GanjoorPage.Id) />
-                        }
+                    <div id="comments-list-wrapper">
+                        <partial name="~/Pages/Partials/GanjoorPage/_CommentsListPartial.cshtml" model=@(new GanjooRazor.Pages._CommentsListPartialModel() { Comments = Model.GanjoorPage.Poem.Comments, PoemId = Model.GanjoorPage.Id, LoggedIn = Model.LoggedIn }) />
                     </div>
 
                     @if (Model.LoggedIn)

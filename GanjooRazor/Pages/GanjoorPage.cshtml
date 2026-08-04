@@ -34,6 +34,8 @@
                         btshmr(@Model.GanjoorPage.Id);
                     }
                     checkIfBookmarked(@Model.GanjoorPage.Id);
+                    paginateComments();
+                    revealCommentFromUrlHash();
                 });
             </script>
         }

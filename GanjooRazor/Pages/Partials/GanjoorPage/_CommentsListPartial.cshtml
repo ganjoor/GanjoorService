@@ -1,0 +1,31 @@
+﻿@model GanjooRazor.Pages._CommentsListPartialModel
+@using DNTPersianUtils.Core
+@{
+    Layout = null;
+}
+
+@switch (Model.Comments.Length)
+{
+    case 0:
+        <p>
+            تا به حال حاشیه‌ای برای این شعر نوشته نشده است. <a href="#commentform" class="comments-link" title="من حاشیه بگذارم ...">💬 من حاشیه بگذارم ...</a>
+        </p>
+        break;
+    case 1:
+        <p>
+            تا به حال یک حاشیه برای این شعر نوشته شده است. <a href="#commentform" class="comments-link" title="من حاشیه بگذارم ...">💬 من حاشیه بگذارم ...</a>
+        </p>
+        break;
+    default:
+        <p>
+            تا به حال @Html.Raw(Model.Comments.Length.ToPersianNumbers()) حاشیه برای این شعر نوشته شده است. <a href="#commentform" class="comments-link" title="من حاشیه بگذارم ...">💬 من حاشیه بگذارم ...</a>
+        </p>
+        break;
+}
+
+<div id="comments-block">
+    @foreach (var comment in Model.Comments)
+    {
+        <partial name="~/Pages/Partials/GanjoorPage/_CommentPartial.cshtml" model=Model.GetCommentModel(comment) />
+    }
+</div>
