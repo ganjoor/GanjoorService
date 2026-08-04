@@ -553,18 +553,12 @@ function paginateComments() {
     button.id = 'comments-show-more';
     button.setAttribute('role', 'button');
     button.className = 'cursor-pointer comments-link';
-    button.innerText = 'نمایش حاشیه‌های بیشتر (' + toPersianNumber(roots.length - shown) + ' مورد دیگر)';
+    button.innerText = 'نمایش همهٔ حاشیه‌ها (' + toPersianNumber(roots.length - shown) + ' مورد دیگر)';
     button.onclick = function () {
-        var nextShown = shown + COMMENTS_PAGE_SIZE;
-        for (var i = shown; i < Math.min(nextShown, roots.length); i++) {
+        for (var i = shown; i < roots.length; i++) {
             roots[i].style.display = '';
         }
-        shown = nextShown;
-        if (shown >= roots.length) {
-            button.remove();
-        } else {
-            button.innerText = 'نمایش حاشیه‌های بیشتر (' + toPersianNumber(roots.length - shown) + ' مورد دیگر)';
-        }
+        button.remove();
     };
     block.parentNode.insertBefore(button, block.nextSibling);
 }
