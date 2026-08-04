@@ -214,6 +214,23 @@ namespace GanjooRazor.Pages
         }
 
         /// <summary>
+        /// like / dislike / clear rating for a comment (AJAX, called from rateComment() in bk.js)
+        /// </summary>
+        public Task<IActionResult> OnPostRateCommentAsync(int id, short value)
+        {
+            return WithSecureClientAsync(async secureClient =>
+            {
+                var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/poem/comment/{id}/rate?value={value}", null);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
+                }
+                var result = JsonConvert.DeserializeObject<GanjoorCommentRatingResultViewModel>(await response.Content.ReadAsStringAsync());
+                return new JsonResult(result);
+            });
+        }
+
+        /// <summary>
         /// Poets (for this page's own #hdr2 author dropdown - same pattern as Search/Simi/etc.)
         /// </summary>
         public List<GanjoorPoetViewModel> Poets { get; set; }

@@ -44,6 +44,16 @@ else
             }
 
             <a role="button" title="پاسخگویی به این حاشیه" onclick="replyComment(@Model.Comment.Id, @(Model.LoggedIn ? "true" : "false"), '@Model.DivSuffix')"><i class="notranslate pageicons">reply</i></a>
+            @if (!Model.Comment.MyComment)
+            {
+                <a role="button" title="پسندیدن" id="like-btn-@Model.Comment.Id@Model.DivSuffix" class="cursor-pointer@(Model.Comment.CurrentUserRatingValue == 1 ? " green-color" : "")" onclick="rateComment(@Model.Comment.Id, 1, @(Model.LoggedIn ? "true" : "false"), '@Model.DivSuffix')"><i class="notranslate pageicons">thumb_up</i></a>
+            }
+            <small id="like-count-@Model.Comment.Id@Model.DivSuffix">@Model.Comment.LikeCount.ToPersianNumbers()</small>
+            @if (!Model.Comment.MyComment)
+            {
+                <a role="button" title="نپسندیدن" id="dislike-btn-@Model.Comment.Id@Model.DivSuffix" class="cursor-pointer@(Model.Comment.CurrentUserRatingValue == -1 ? " red-color" : "")" onclick="rateComment(@Model.Comment.Id, -1, @(Model.LoggedIn ? "true" : "false"), '@Model.DivSuffix')"><i class="notranslate pageicons">thumb_down</i></a>
+            }
+            <small id="dislike-count-@Model.Comment.Id@Model.DivSuffix">@Model.Comment.DislikeCount.ToPersianNumbers()</small>
             <a href="/ReportComment/?CommentId=@Model.Comment.Id" title="گزارش حاشیهٔ نامناسب" onclick="wpopen(this.href); return false"><i class="notranslate pageicons">flag</i></a>
             <a role="button" onclick="copyCommentUrl(@Model.Comment.Id)"><i class="notranslate pageicons">link</i></a>
             @if (Model.LoggedIn)

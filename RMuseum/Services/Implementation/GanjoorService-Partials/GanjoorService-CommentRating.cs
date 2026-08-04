@@ -35,6 +35,11 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<GanjoorCommentRatingResultViewModel>(null, "comment == null");
                 }
 
+                if (comment.UserId != null && comment.UserId == userId)
+                {
+                    return new RServiceResult<GanjoorCommentRatingResultViewModel>(null, "امکان رأی دادن به حاشیهٔ خودتان وجود ندارد.");
+                }
+
                 var oldRating = await _context.GanjoorCommentReactions.Where(c => c.GanjoorCommentId == commentId && c.UserId == userId).SingleOrDefaultAsync();
                 if (value == 0 && oldRating == null)
                 {

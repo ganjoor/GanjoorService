@@ -504,6 +504,54 @@ function switchBookmarkInternal(poemId, coupletIndex, divSuffix) {
     });
 }
 
+function rateComment(commentId, value, loggedIn, divSuffix) {
+    if (!loggedIn) {
+        alert('برای رأی دادن به حاشیه‌ها لازم است با نام کاربری خود وارد گنجور شوید.');
+        return;
+    }
+
+    var likeBtn = document.getElementById('like-btn-' + commentId + divSuffix);
+    var dislikeBtn = document.getElementById('dislike-btn-' + commentId + divSuffix);
+
+    // clicking the already-active button clears the rating instead of re-sending the same value
+    var newValue = value;
+    if (value == 1 && likeBtn.classList.contains('green-color')) newValue = 0;
+    if (value == -1 && dislikeBtn.classList.contains('red-color')) newValue = 0;
+
+    $.ajax({
+        type: "POST",
+        url: '?handler=RateComment',
+        data: {
+            id: commentId,
+            value: newValue
+        },
+        error: function (err) {
+            alert('خطا در ثبت رأی: ' + err.responseText);
+        },
+        success: function (result) {
+            _applyCommentRatingResult(commentId, divSuffix, result);
+            if (divSuffix != '') {
+                _applyCommentRatingResult(commentId, '', result);
+            }
+        },
+    });
+}
+
+function _applyCommentRatingResult(commentId, divSuffix, result) {
+    var likeBtn = document.getElementById('like-btn-' + commentId + divSuffix);
+    var dislikeBtn = document.getElementById('dislike-btn-' + commentId + divSuffix);
+    var likeCount = document.getElementById('like-count-' + commentId + divSuffix);
+    var dislikeCount = document.getElementById('dislike-count-' + commentId + divSuffix);
+
+    if (likeCount != null) likeCount.innerText = toPersianNumber(result.likeCount);
+    if (dislikeCount != null) dislikeCount.innerText = toPersianNumber(result.dislikeCount);
+
+    if (likeBtn != null) likeBtn.classList.remove('green-color');
+    if (dislikeBtn != null) dislikeBtn.classList.remove('red-color');
+    if (result.currentUserRatingValue == 1 && likeBtn != null) likeBtn.classList.add('green-color');
+    if (result.currentUserRatingValue == -1 && dislikeBtn != null) dislikeBtn.classList.add('red-color');
+}
+
 function checkIfBookmarked(poemId) {
     if (document.getElementById('bookmark-icon') == null) return;
     setTimeout(function () {
@@ -1785,6 +1833,11 @@ function persianToEnglishNumber(str) {
     str = str.replace(/٬/g, '');
     const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
     return str.replace(/[۰-۹]/g, d => persianDigits.indexOf(d));
+}
+
+function toPersianNumber(n) {
+    const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+    return String(n).replace(/[0-9]/g, d => persianDigits[d]);
 }
 
 function plotChart(tableId, maxCols = 9) {
