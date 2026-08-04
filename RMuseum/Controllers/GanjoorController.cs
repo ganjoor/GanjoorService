@@ -835,6 +835,7 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="url"></param>
         /// <param name="catPoems"></param>
+        /// <param name="commentsSortByRanking">true: order comments by rating then date, false: order by date. Only applies to poem pages.</param>
         /// <returns></returns>
         [HttpGet]
         [Route("page")]
@@ -842,10 +843,10 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetPageByUrl(string url, bool catPoems = false)
+        public async Task<IActionResult> GetPageByUrl(string url, bool catPoems = false, bool commentsSortByRanking = true)
         {
             RServiceResult<GanjoorPageCompleteViewModel> res =
-                await _ganjoorService.GetPageByUrl(url, catPoems);
+                await _ganjoorService.GetPageByUrl(url, catPoems, commentsSortByRanking);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             if (res.Result == null)
@@ -1225,13 +1226,34 @@ namespace RMuseum.Controllers
         [HttpPost]
         [Route("poem/comment/{id}/rate")]
         [Authorize]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCommentRatingResultViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         public async Task<IActionResult> RateComment(int id, short value)
         {
             Guid userId = new Guid(User.Claims.First(c => c.Type == "UserId").Value);
-            RServiceResult<bool> res =
+            RServiceResult<GanjoorCommentRatingResultViewModel> res =
                 await _ganjoorService.RateCommentAsync(userId, id, value);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// get the logged on user's own rating values for a poem's comments
+        /// (meant to be merged client-side into an already fetched, anonymously cacheable comment list)
+        /// </summary>
+        /// <param name="id">poem id</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poem/{id}/comments/myratings")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCommentUserRatingViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetUserCommentRatings(int id)
+        {
+            var loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            RServiceResult<GanjoorCommentUserRatingViewModel[]> res =
+                await _ganjoorService.GetUserCommentRatings(id, loggedOnUserId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

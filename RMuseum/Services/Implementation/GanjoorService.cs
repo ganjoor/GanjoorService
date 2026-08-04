@@ -583,7 +583,7 @@ namespace RMuseum.Services.Implementation
         /// <param name="url"></param>
         /// <param name="catPoems"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = false)
+        public async Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = false, bool commentsSortByRanking = true)
         {
             if (url.IndexOf('?') != -1)
             {
@@ -599,7 +599,9 @@ namespace RMuseum.Services.Implementation
             url = url.Replace("//", "/"); //duplicated slashes would be merged
 
             var cachKey = $"GanjoorService::GetPageByUrl::{url}";
-            if (!_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
+            // only the default (rating) sort order is cached, so a caller asking for date-sorted
+            // comments never reads or overwrites the shared cache entry used by everyone else
+            if (!commentsSortByRanking || !_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
             {
                 var dbPage = await _context.GanjoorPages.Where(p => p.FullUrl == url).AsNoTracking().SingleOrDefaultAsync();
                 if (dbPage == null)
@@ -646,7 +648,7 @@ namespace RMuseum.Services.Implementation
                 {
                     case GanjoorPageType.PoemPage:
                         {
-                            var poemRes = await GetPoemById((int)dbPage.PoemId);
+                            var poemRes = await GetPoemById((int)dbPage.PoemId, sortByRanking: commentsSortByRanking);
                             if (!string.IsNullOrEmpty(poemRes.ExceptionString))
                             {
                                 return new RServiceResult<GanjoorPageCompleteViewModel>(null, poemRes.ExceptionString);
@@ -880,7 +882,7 @@ namespace RMuseum.Services.Implementation
 
             query = sortByRanking
                 ? query.OrderByDescending(c => c.SortKey)
-                       .ThenByDescending(c => c.CommentDate)
+                       .ThenBy(c => c.CommentDate)
                 : query.OrderBy(c => c.CommentDate);
 
             var source =

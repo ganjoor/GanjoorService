@@ -1292,12 +1292,13 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetPageByUrl(System.String,System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPageByUrl(System.String,System.Boolean,System.Boolean)">
             <summary>
             page by url
             </summary>
             <param name="url"></param>
             <param name="catPoems"></param>
+            <param name="commentsSortByRanking">true: order comments by rating then date, false: order by date. Only applies to poem pages.</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.ModifyPage(System.Int32,RMuseum.Models.Ganjoor.ViewModels.GanjoorModifyPageViewModel)">
@@ -1445,6 +1446,14 @@
             </summary>
             <param name="id">comment id</param>
             <param name="value">+1: like, -1: dislike, 0: remove previous rating</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetUserCommentRatings(System.Int32)">
+            <summary>
+            get the logged on user's own rating values for a poem's comments
+            (meant to be merged client-side into an already fetched, anonymously cacheable comment list)
+            </summary>
+            <param name="id">poem id</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetRelatedSections(System.Int32,System.Int32,System.Int32,System.Int32)">
@@ -4593,6 +4602,18 @@
             <inheritdoc />
         </member>
         <member name="M:RMuseum.Migrations.RChFix.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.CommentsRatings">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.CommentsRatings.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.CommentsRatings.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.CommentsRatings.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -11695,6 +11716,48 @@
             -1 = Dislike
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentUserRatingViewModel">
+            <summary>
+            a single user's rating value for a single comment
+            (used to merge "my rating" state into an already fetched, anonymously cacheable comment list)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentUserRatingViewModel.CommentId">
+            <summary>
+            GanjoorComment Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentUserRatingViewModel.Value">
+            <summary>
+            +1 = Like, -1 = Dislike
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentRatingResultViewModel">
+            <summary>
+            result of rating/unrating a comment, returned so the client can update counts in place
+            without re-fetching the whole comment list
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentRatingResultViewModel.CommentId">
+            <summary>
+            comment id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentRatingResultViewModel.LikeCount">
+            <summary>
+            updated total likes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentRatingResultViewModel.DislikeCount">
+            <summary>
+            updated total dislikes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorCommentRatingResultViewModel.CurrentUserRatingValue">
+            <summary>
+            the rating value the requesting user now has for this comment (0 if cleared)
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorCoupletNumberViewModel">
             <summary>
             Ganjoor Couplet Number View Model
@@ -16738,7 +16801,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetPageByUrl(System.String,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetPageByUrl(System.String,System.Boolean,System.Boolean)">
             <summary>
             get page by url
             </summary>
@@ -16880,6 +16943,16 @@
             <param name="userId"></param>
             <param name="commentId"></param>
             <param name="value">+1: like, -1: dislike, 0: remove previous rating</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetUserCommentRatings(System.Int32,System.Guid)">
+            <summary>
+            get the requesting user's own rating values for all comments of a poem
+            (mirrors GetUserPoemRecitationsUpVotes - meant to be merged client-side into an
+            already fetched, anonymously cacheable GetPoemComments/GetPoemById result)
+            </summary>
+            <param name="poemId"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetRelatedSections(System.Int32,System.Int32,System.Int32,System.Int32)">
@@ -20347,11 +20420,20 @@
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.RateCommentAsync(System.Guid,System.Int32,System.Int16)">
             <summary>
-            
+            like / dislike / clear rating for a comment
             </summary>
             <param name="userId"></param>
             <param name="commentId"></param>
             <param name="value">+1: like, -1: dislike, 0: remove previous rating</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetUserCommentRatings(System.Int32,System.Guid)">
+            <summary>
+            get the requesting user's own rating values for all comments of a poem
+            (meant to be merged client-side into an already fetched, anonymously cacheable comment list)
+            </summary>
+            <param name="poemId"></param>
+            <param name="userId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetDigitalSourceFromTagAsync(System.String)">
@@ -21345,7 +21427,7 @@
             <param name="url"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPageByUrl(System.String,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPageByUrl(System.String,System.Boolean,System.Boolean)">
             <summary>
             get page by url
             </summary>

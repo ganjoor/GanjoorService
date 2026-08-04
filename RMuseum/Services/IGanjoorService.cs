@@ -94,7 +94,7 @@ namespace RMuseum.Services
         /// <param name="url"></param>
         /// <param name="catPoems"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = false);
+        Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = false, bool commentsSortByRanking = true);
 
         /// <summary>
         /// get page url by id
@@ -230,7 +230,17 @@ namespace RMuseum.Services
         /// <param name="commentId"></param>
         /// <param name="value">+1: like, -1: dislike, 0: remove previous rating</param>
         /// <returns></returns>
-        Task<RServiceResult<bool>> RateCommentAsync(Guid userId, int commentId, short value);
+        Task<RServiceResult<GanjoorCommentRatingResultViewModel>> RateCommentAsync(Guid userId, int commentId, short value);
+
+        /// <summary>
+        /// get the requesting user's own rating values for all comments of a poem
+        /// (mirrors GetUserPoemRecitationsUpVotes - meant to be merged client-side into an
+        /// already fetched, anonymously cacheable GetPoemComments/GetPoemById result)
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorCommentUserRatingViewModel[]>> GetUserCommentRatings(int poemId, Guid userId);
 
         /// <summary>
         /// get a section related sections
