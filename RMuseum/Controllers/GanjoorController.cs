@@ -835,7 +835,7 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="url"></param>
         /// <param name="catPoems"></param>
-        /// <param name="commentsSortByRanking">true: order comments by rating then date, false: order by date. Only applies to poem pages.</param>
+        /// <param name="commentSortOrder">TopRated, Oldest, or Newest. Only applies to poem pages.</param>
         /// <returns></returns>
         [HttpGet]
         [Route("page")]
@@ -843,10 +843,10 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPageCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetPageByUrl(string url, bool catPoems = false, bool commentsSortByRanking = true)
+        public async Task<IActionResult> GetPageByUrl(string url, bool catPoems = false, GanjoorCommentSortOrder commentSortOrder = GanjoorCommentSortOrder.TopRated)
         {
             RServiceResult<GanjoorPageCompleteViewModel> res =
-                await _ganjoorService.GetPageByUrl(url, catPoems, commentsSortByRanking);
+                await _ganjoorService.GetPageByUrl(url, catPoems, commentSortOrder);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             if (res.Result == null)
@@ -1043,7 +1043,7 @@ namespace RMuseum.Controllers
         /// <param name="verseDetails"></param>
         /// <param name="navigation">next/previous</param>
         /// <param name="relatedpoems"></param>
-        /// <param name="sortByRanking"></param>
+        /// <param name="commentSortOrder"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("poem/{id}")]
@@ -1051,10 +1051,10 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPoemCompleteViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true, bool sortByRanking = true)
+        public async Task<IActionResult> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true, GanjoorCommentSortOrder commentSortOrder = GanjoorCommentSortOrder.TopRated)
         {
             RServiceResult<GanjoorPoemCompleteViewModel> res =
-                await _ganjoorService.GetPoemById(id, catInfo, catPoems, rhymes, recitations, images, songs, comments, verseDetails, navigation, relatedpoems, true, sortByRanking );
+                await _ganjoorService.GetPoemById(id, catInfo, catPoems, rhymes, recitations, images, songs, comments, verseDetails, navigation, relatedpoems, true, commentSortOrder );
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             if (res.Result == null)
@@ -1200,7 +1200,7 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="coupletIndex"></param>
-        /// <param name="sortByRanking">true: order by rating then date, false: order by date</param>
+        /// <param name="sortOrder">TopRated, Oldest, or Newest</param>
         /// <returns></returns>
 
         [HttpGet]
@@ -1208,10 +1208,10 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCommentSummaryViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetPoemComments(int id, int? coupletIndex, bool sortByRanking = true)
+        public async Task<IActionResult> GetPoemComments(int id, int? coupletIndex, GanjoorCommentSortOrder sortOrder = GanjoorCommentSortOrder.TopRated)
         {
             RServiceResult<GanjoorCommentSummaryViewModel[]> res =
-                await _ganjoorService.GetPoemComments(id, Guid.Empty, coupletIndex, sortByRanking);
+                await _ganjoorService.GetPoemComments(id, Guid.Empty, coupletIndex, sortOrder);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

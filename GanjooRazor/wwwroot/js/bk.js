@@ -504,13 +504,13 @@ function switchBookmarkInternal(poemId, coupletIndex, divSuffix) {
     });
 }
 
-function sortComments(poemId, sortByRanking) {
+function sortComments(poemId, sortOrder) {
     var wrapper = document.getElementById('comments-list-wrapper');
     if (wrapper == null) return;
 
     $.ajax({
         type: "GET",
-        url: '?handler=CommentsPartial&poemId=' + String(poemId) + '&sortByRanking=' + String(sortByRanking),
+        url: '?handler=CommentsPartial&poemId=' + String(poemId) + '&sortOrder=' + sortOrder,
         error: function (err) {
             alert('خطا در بارگذاری حاشیه‌ها: ' + err.responseText);
         },
@@ -1066,13 +1066,6 @@ function copyCommentUrl(commentId) {
     if (url.indexOf('#') != -1) {
         url = url.substring(0, url.indexOf('#'));
     }
-    if (url.indexOf('?') != -1) {
-        url += '&';
-    }
-    else {
-        url += '?'
-    }
-    url += 'tab=discussions';
     url += ('#comment-' + String(commentId));
     navigator.clipboard.writeText(url);
     alert('نشانی در حافظه رونوشت شد.');

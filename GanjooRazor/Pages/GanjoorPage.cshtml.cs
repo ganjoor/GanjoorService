@@ -131,11 +131,11 @@ namespace GanjooRazor.Pages
         }
 
         /// <summary>
-        /// re-fetch a poem's comments sorted by rating or by date (AJAX, called from sortComments() in bk.js)
+        /// re-fetch a poem's comments sorted by rating, oldest, or newest (AJAX, called from sortComments() in bk.js)
         /// </summary>
-        public async Task<IActionResult> OnGetCommentsPartialAsync(int poemId, bool sortByRanking = true)
+        public async Task<IActionResult> OnGetCommentsPartialAsync(int poemId, GanjoorCommentSortOrder sortOrder = GanjoorCommentSortOrder.TopRated)
         {
-            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/comments?sortByRanking={sortByRanking}");
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/comments?sortOrder={sortOrder}");
             if (!response.IsSuccessStatusCode)
             {
                 return BadRequest(await ReadErrorMessageAsync(response));

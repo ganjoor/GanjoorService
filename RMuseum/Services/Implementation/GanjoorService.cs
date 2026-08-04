@@ -582,8 +582,9 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="url"></param>
         /// <param name="catPoems"></param>
+        /// <param name="commentSortOrder"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = false, bool commentsSortByRanking = true)
+        public async Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = false, GanjoorCommentSortOrder commentSortOrder = GanjoorCommentSortOrder.TopRated)
         {
             if (url.IndexOf('?') != -1)
             {
@@ -599,9 +600,10 @@ namespace RMuseum.Services.Implementation
             url = url.Replace("//", "/"); //duplicated slashes would be merged
 
             var cachKey = $"GanjoorService::GetPageByUrl::{url}";
-            // only the default (rating) sort order is cached, so a caller asking for date-sorted
-            // comments never reads or overwrites the shared cache entry used by everyone else
-            if (!commentsSortByRanking || !_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
+            // only the default (TopRated) sort order is cached, so a caller asking for a
+            // different comment order never reads or overwrites the shared cache entry
+            // used by everyone else
+            if (commentSortOrder != GanjoorCommentSortOrder.TopRated || !_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
             {
                 var dbPage = await _context.GanjoorPages.Where(p => p.FullUrl == url).AsNoTracking().SingleOrDefaultAsync();
                 if (dbPage == null)
@@ -648,7 +650,7 @@ namespace RMuseum.Services.Implementation
                 {
                     case GanjoorPageType.PoemPage:
                         {
-                            var poemRes = await GetPoemById((int)dbPage.PoemId, sortByRanking: commentsSortByRanking);
+                            var poemRes = await GetPoemById((int)dbPage.PoemId, commentSortOrder: commentSortOrder);
                             if (!string.IsNullOrEmpty(poemRes.ExceptionString))
                             {
                                 return new RServiceResult<GanjoorPageCompleteViewModel>(null, poemRes.ExceptionString);
@@ -864,9 +866,9 @@ namespace RMuseum.Services.Implementation
         /// <param name="poemId"></param>
         /// <param name="userId"></param>
         /// <param name="coupletIndex"></param>
-        /// <param name="sortByRanking"></param>
+        /// <param name="sortOrder"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId, int? coupletIndex, bool sortByRanking)
+        public async Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId, int? coupletIndex, GanjoorCommentSortOrder sortOrder)
         {
             var query = _context.GanjoorComments
      .Include(c => c.User)
@@ -880,10 +882,12 @@ namespace RMuseum.Services.Implementation
          &&
          (coupletIndex == null || comment.CoupletIndex == coupletIndex));
 
-            query = sortByRanking
-                ? query.OrderByDescending(c => c.SortKey)
-                       .ThenBy(c => c.CommentDate)
-                : query.OrderBy(c => c.CommentDate);
+            query = sortOrder switch
+            {
+                GanjoorCommentSortOrder.TopRated => query.OrderByDescending(c => c.SortKey).ThenBy(c => c.CommentDate),
+                GanjoorCommentSortOrder.Newest => query.OrderByDescending(c => c.CommentDate),
+                _ => query.OrderBy(c => c.CommentDate), // Oldest
+            };
 
             var source =
                 from comment in query
@@ -1814,11 +1818,11 @@ namespace RMuseum.Services.Implementation
         /// <param name="navigation"></param>
         /// <param name="relatedpoems"></param>
         /// <param name="sections">sections</param>
-        /// <param name="sortByRanking"></param>
+        /// <param name="commentSortOrder"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true, bool sections = true, bool sortByRanking = true)
+        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true, bool sections = true, GanjoorCommentSortOrder commentSortOrder = GanjoorCommentSortOrder.TopRated)
         {
-            var cachKey = $"GetPoemById({id}, {catInfo}, {catPoems}, {rhymes}, {recitations}, {images}, {songs}, {comments}, {verseDetails}, {navigation}, {relatedpoems}, {sections}, {sortByRanking})";
+            var cachKey = $"GetPoemById({id}, {catInfo}, {catPoems}, {rhymes}, {recitations}, {images}, {songs}, {comments}, {verseDetails}, {navigation}, {relatedpoems}, {sections}, {commentSortOrder})";
             if (!_memoryCache.TryGetValue(cachKey, out GanjoorPoemCompleteViewModel poemViewModel))
             {
                 var poem = await _context.GanjoorPoems.Where(p => p.Id == id).AsNoTracking().SingleOrDefaultAsync();
@@ -1954,7 +1958,7 @@ namespace RMuseum.Services.Implementation
 
                 if (comments)
                 {
-                    var commentsRes = await GetPoemComments(id, Guid.Empty, null, sortByRanking);
+                    var commentsRes = await GetPoemComments(id, Guid.Empty, null, commentSortOrder);
                     if (!string.IsNullOrEmpty(commentsRes.ExceptionString))
                         return new RServiceResult<GanjoorPoemCompleteViewModel>(null, commentsRes.ExceptionString);
                     poemComments = commentsRes.Result;

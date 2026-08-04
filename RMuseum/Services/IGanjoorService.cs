@@ -93,8 +93,9 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="url"></param>
         /// <param name="catPoems"></param>
+        /// <param name="commentSortOrder"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = false, bool commentsSortByRanking = true);
+        Task<RServiceResult<GanjoorPageCompleteViewModel>> GetPageByUrl(string url, bool catPoems = false, GanjoorCommentSortOrder commentSortOrder = GanjoorCommentSortOrder.TopRated);
 
         /// <summary>
         /// get page url by id
@@ -139,9 +140,9 @@ namespace RMuseum.Services
         /// <param name="navigation"></param>
         /// <param name="relatedpoems"></param>
         /// <param name="sections"></param>
-        /// <param name="sortByRanking"></param>
+        /// <param name="commentSortOrder"></param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true, bool sections = true, bool sortByRanking = true);
+        Task<RServiceResult<GanjoorPoemCompleteViewModel>> GetPoemById(int id, bool catInfo = true, bool catPoems = false, bool rhymes = true, bool recitations = true, bool images = true, bool songs = true, bool comments = true, bool verseDetails = true, bool navigation = true, bool relatedpoems = true, bool sections = true, GanjoorCommentSortOrder commentSortOrder = GanjoorCommentSortOrder.TopRated);
 
         /// <summary>
         /// get poem verses
@@ -212,9 +213,9 @@ namespace RMuseum.Services
         /// <param name="poemId"></param>
         /// <param name="userId"></param>
         /// <param name="coupletIndex"></param>
-        /// <param name="sortByRanking">true: order by rating SortKey then CommentDate, false: order by CommentDate</param>
+        /// <param name="sortOrder">TopRated, Oldest, or Newest</param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId, int? coupletIndex, bool sortByRanking = false);
+        Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId, int? coupletIndex, GanjoorCommentSortOrder sortOrder = GanjoorCommentSortOrder.TopRated);
 
         /// <summary>
         /// get a single comment information (replies are not included)
