@@ -85,8 +85,8 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var likes = await _context.GanjoorCommentReactions.AsNoTracking().Where(r => r.GanjoorCommentId == comment.Id && r.Value == 1).SumAsync(r => r.Value);
-                var dislikes = await _context.GanjoorCommentReactions.AsNoTracking().Where(r => r.GanjoorCommentId == comment.Id && r.Value == -1).SumAsync(r => r.Value);
+                var likes = await _context.GanjoorCommentReactions.AsNoTracking().CountAsync(r => r.GanjoorCommentId == comment.Id && r.Value == 1);
+                var dislikes = await _context.GanjoorCommentReactions.AsNoTracking().CountAsync(r => r.GanjoorCommentId == comment.Id && r.Value == -1);
                 comment.LikeCount = likes;
                 comment.DislikeCount = dislikes;
                 comment.SortKey = GanjoorCommentRankingScoreCalculator.ComputeRankingScore(likes, dislikes);

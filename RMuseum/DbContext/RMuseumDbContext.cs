@@ -254,6 +254,15 @@ namespace RMuseum.DbContext
                .HasIndex(i => new { i.GanjoorCommentId, i.UserId })
                .IsUnique();
 
+            builder.Entity<GanjoorCommentReaction>()
+               .HasIndex(i => new { i.PoemId, i.UserId });
+
+            builder.Entity<GanjoorComment>()
+               .HasIndex(i => new { i.PoemId, i.SortKey });
+
+            builder.Entity<GanjoorComment>()
+               .HasIndex(i => new { i.PoemId, i.CommentDate });
+
         }
 
 

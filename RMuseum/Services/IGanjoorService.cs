@@ -212,8 +212,9 @@ namespace RMuseum.Services
         /// <param name="poemId"></param>
         /// <param name="userId"></param>
         /// <param name="coupletIndex"></param>
+        /// <param name="sortByRanking">true: order by rating SortKey then CommentDate, false: order by CommentDate</param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId, int? coupletIndex);
+        Task<RServiceResult<GanjoorCommentSummaryViewModel[]>> GetPoemComments(int poemId, Guid userId, int? coupletIndex, bool sortByRanking = false);
 
         /// <summary>
         /// get a single comment information (replies are not included)
@@ -221,6 +222,15 @@ namespace RMuseum.Services
         /// <param name="commentId"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorCommentSummaryViewModel>> GetCommentByIdAsync(int commentId);
+
+        /// <summary>
+        /// like / dislike / clear rating for a comment
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="commentId"></param>
+        /// <param name="value">+1: like, -1: dislike, 0: remove previous rating</param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> RateCommentAsync(Guid userId, int commentId, short value);
 
         /// <summary>
         /// get a section related sections

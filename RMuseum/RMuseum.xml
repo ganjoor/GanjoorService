@@ -1358,7 +1358,7 @@
             <param name="url"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             get poem by id
             </summary>
@@ -1373,6 +1373,7 @@
             <param name="verseDetails"></param>
             <param name="navigation">next/previous</param>
             <param name="relatedpoems"></param>
+            <param name="sortByRanking"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetPoemVerses(System.Int32,System.Int32)">
@@ -1429,12 +1430,21 @@
             <param name="trackType"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemComments(System.Int32,System.Nullable{System.Int32})">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetPoemComments(System.Int32,System.Nullable{System.Int32},System.Boolean)">
             <summary>
             Get Poem Comments
             </summary>
             <param name="id"></param>
             <param name="coupletIndex"></param>
+            <param name="sortByRanking">true: order by rating then date, false: order by date</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.RateComment(System.Int32,System.Int16)">
+            <summary>
+            Rate a comment (like / dislike / clear rating)
+            </summary>
+            <param name="id">comment id</param>
+            <param name="value">+1: like, -1: dislike, 0: remove previous rating</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetRelatedSections(System.Int32,System.Int32,System.Int32,System.Int32)">
@@ -16764,7 +16774,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Get Poem By Id
             </summary>
@@ -16780,6 +16790,7 @@
             <param name="navigation"></param>
             <param name="relatedpoems"></param>
             <param name="sections"></param>
+            <param name="sortByRanking"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemVersesAsync(System.Int32,System.Int32)">
@@ -16845,13 +16856,14 @@
             <param name="trackType"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetPoemComments(System.Int32,System.Guid,System.Nullable{System.Int32})">
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemComments(System.Int32,System.Guid,System.Nullable{System.Int32},System.Boolean)">
             <summary>
             get poem comments
             </summary>
             <param name="poemId"></param>
             <param name="userId"></param>
             <param name="coupletIndex"></param>
+            <param name="sortByRanking">true: order by rating SortKey then CommentDate, false: order by CommentDate</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetCommentByIdAsync(System.Int32)">
@@ -16859,6 +16871,15 @@
             get a single comment information (replies are not included)
             </summary>
             <param name="commentId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.RateCommentAsync(System.Guid,System.Int32,System.Int16)">
+            <summary>
+            like / dislike / clear rating for a comment
+            </summary>
+            <param name="userId"></param>
+            <param name="commentId"></param>
+            <param name="value">+1: like, -1: dislike, 0: remove previous rating</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetRelatedSections(System.Int32,System.Int32,System.Int32,System.Int32)">
@@ -20119,6 +20140,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -20319,6 +20343,15 @@
             <summary>
             regenerate half centuries
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.RateCommentAsync(System.Guid,System.Int32,System.Int16)">
+            <summary>
+            
+            </summary>
+            <param name="userId"></param>
+            <param name="commentId"></param>
+            <param name="value">+1: like, -1: dislike, 0: remove previous rating</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetDigitalSourceFromTagAsync(System.String)">
@@ -21342,13 +21375,14 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemComments(System.Int32,System.Guid,System.Nullable{System.Int32})">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemComments(System.Int32,System.Guid,System.Nullable{System.Int32},System.Boolean)">
             <summary>
             get poem comments
             </summary>
             <param name="poemId"></param>
             <param name="userId"></param>
             <param name="coupletIndex"></param>
+            <param name="sortByRanking"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCommentByIdAsync(System.Int32)">
@@ -21482,7 +21516,7 @@
             <param name="coupletIndex"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemById(System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Get Poem By Id
             </summary>
@@ -21498,6 +21532,7 @@
             <param name="navigation"></param>
             <param name="relatedpoems"></param>
             <param name="sections">sections</param>
+            <param name="sortByRanking"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemCorrections(System.Guid,System.Int32)">
@@ -23551,6 +23586,11 @@
             <param name="paging"></param>
             <param name="userId"></param>
             <returns></returns>
+        </member>
+        <member name="T:RMuseum.Utils.GanjoorCommentRankingScoreCalculator">
+            <summary>
+            comment ranking score calculator
+            </summary>
         </member>
         <member name="T:RMuseum.Utils.GanjoorPoemTools">
             <summary>

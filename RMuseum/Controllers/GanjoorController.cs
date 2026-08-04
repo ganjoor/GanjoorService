@@ -1199,6 +1199,7 @@ namespace RMuseum.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="coupletIndex"></param>
+        /// <param name="sortByRanking">true: order by rating then date, false: order by date</param>
         /// <returns></returns>
 
         [HttpGet]
@@ -1206,10 +1207,31 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorCommentSummaryViewModel[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetPoemComments(int id, int? coupletIndex)
+        public async Task<IActionResult> GetPoemComments(int id, int? coupletIndex, bool sortByRanking = true)
         {
             RServiceResult<GanjoorCommentSummaryViewModel[]> res =
-                await _ganjoorService.GetPoemComments(id, Guid.Empty, coupletIndex);
+                await _ganjoorService.GetPoemComments(id, Guid.Empty, coupletIndex, sortByRanking);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// Rate a comment (like / dislike / clear rating)
+        /// </summary>
+        /// <param name="id">comment id</param>
+        /// <param name="value">+1: like, -1: dislike, 0: remove previous rating</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("poem/comment/{id}/rate")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> RateComment(int id, short value)
+        {
+            Guid userId = new Guid(User.Claims.First(c => c.Type == "UserId").Value);
+            RServiceResult<bool> res =
+                await _ganjoorService.RateCommentAsync(userId, id, value);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
