@@ -1001,7 +1001,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorCommentSummaryViewModel>> NewComment(Guid userId, string ip, int poemId, string content, int? inReplyTo, int? coupletIndex)
         {
-            if (string.IsNullOrEmpty(content))
+            if (string.IsNullOrWhiteSpace(content))
             {
                 return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "متن حاشیه خالی است.");
             }
@@ -1043,17 +1043,18 @@ namespace RMuseum.Services.Implementation
 
             content = await _ProcessCommentHtml(content, _context);
 
+            string commentText = System.Net.WebUtility.HtmlDecode(Regex.Replace(content, "<.*?>", string.Empty));
+
+            if (string.IsNullOrWhiteSpace(commentText))
+            {
+                return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "متن حاشیه خالی است.");
+            }
+
             int maxWordLengthInComments = int.Parse(Configuration.GetSection("Ganjoor")["MaxWordLengthInComments"]);
 
-            string commentText = Regex.Replace(content, "<.*?>", string.Empty);
             if (commentText.Split(" ", StringSplitOptions.RemoveEmptyEntries).Max(s => s.Length) > maxWordLengthInComments)
             {
                 return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "متن حاشیه شامل کلمات به هم پیوستهٔ طولانی است.");
-            }
-
-            if (string.IsNullOrEmpty(commentText))
-            {
-                return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "متن حاشیه خالی است.");
             }
 
             PublishStatus status = PublishStatus.Published;
@@ -1178,11 +1179,18 @@ namespace RMuseum.Services.Implementation
                 return new RServiceResult<bool>(false); //not found
             }
 
-            await CacheCleanForComment(commentId);
-
             htmlComment = htmlComment.ApplyCorrectYeKe();
 
             htmlComment = await _ProcessCommentHtml(htmlComment, _context);
+
+            string commentText = System.Net.WebUtility.HtmlDecode(Regex.Replace(htmlComment, "<.*?>", string.Empty));
+
+            if (string.IsNullOrWhiteSpace(commentText))
+            {
+                return new RServiceResult<bool>(false, "متن حاشیه خالی است.");
+            }
+
+            await CacheCleanForComment(commentId);
 
             comment.HtmlComment = htmlComment;
 
