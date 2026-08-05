@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.CatEditorModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
@@ -6,134 +6,112 @@
     ViewData["Title"] = "ویرایشگر متن بخش";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
-<h1>@ViewData["Title"]</h1>
-
-<div class="notice width-100per">
-    <p>لطفاً از گنجاندن ادعاهای قومیتی، جغرافیایی یا مذهبی یا هر گونه ادعایی که روی آنها اجماع وجود ندارد یا موجب بحث و اعتراض می‌شود در زندگینامه‌های شاعران خودداری کنید.</p>
-    <p>در گنجاندن پیوند به منابع حتی‌الامکان از ویکیپدیا یا وبگاه‌های مشهور با عمر بالا بدون وجود تبلیغات در آنها استفاده کنید. ارجاع به وبگاه‌های دیگر به دلیل  آن که ممکن است تبلیغاتی فرض شود و همینطور احتمال آن وجود دارد که در طولانی‌مدت با از دسترس خارج شدن وبگاه تبدیل به پیوند مرده شود مورد قبول قرار نمی‌گیرد.</p>
-    <p>از آنجا که متن پس از حذف پیوندها به صورت صرفاً متنی در نرم‌افزارهای جانبی مورد استفاده قرار می‌گیرد متن پیوندهای احتمالی را به صورتی تنظیم کنید که با حذف پیوند ناقص نشود.</p>
-
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
 </div>
 
-
+<div class="up-alert up-alert--warning">
+    <p>لطفاً از گنجاندن ادعاهای قومیتی، جغرافیایی یا مذهبی یا هر گونه ادعایی که روی آنها اجماع وجود ندارد یا موجب بحث و اعتراض می‌شود در زندگینامه‌های شاعران خودداری کنید.</p>
+    <p>در گنجاندن پیوند به منابع حتی‌الامکان از ویکیپدیا یا وبگاه‌های مشهور با عمر بالا بدون وجود تبلیغات در آنها استفاده کنید. ارجاع به وبگاه‌های دیگر به دلیل  آن که ممکن است تبلیغاتی فرض شود و همینطور احتمال آن وجود دارد که در طولانی‌مدت با از دسترس خارج شدن وبگاه تبدیل به پیوند مرده شود مورد قبول قرار نمی‌گیرد.</p>
+    <p class="up-mt-0">از آنجا که متن پس از حذف پیوندها به صورت صرفاً متنی در نرم‌افزارهای جانبی مورد استفاده قرار می‌گیرد متن پیوندهای احتمالی را به صورتی تنظیم کنید که با حذف پیوند ناقص نشود.</p>
+</div>
 
 @if (Model.MyLastEdit != null)
 {
     <script>
-            function deleteCatCorrection(id) {
-            if (!confirm('آیا از حذف تغییرات پیشنهادی اطمینان دارید؟'))
-                return;
+        async function deleteCatCorrection(id) {
+            var ok = await upConfirm('آیا از حذف تغییرات پیشنهادی اطمینان دارید؟');
+            if (!ok) return;
 
             $('#deletecorrections').hide();
             $('#saving').text('در حال ذخیره ...');
 
-            var url = '?handler=DeleteCatCorrection';
-
             $.ajax({
                 type: "POST",
-                url: url,
-                data: {
-                    catid: id,
-                },
-                error: function () {
-                    alert('خطا رخ داد.')
+                url: '?handler=DeleteCatCorrection',
+                data: { catid: id },
+                error: function (e) {
+                    upToast(e.responseText || 'خطا رخ داد.', 'error');
                 },
                 success: function () {
                     location.reload(true);
                 },
-
             });
         }
     </script>
-   
-    <table>
-        <tr>
-            <td colspan="2">ویرایشهای بررسی نشدهٔ من</td>
-        </tr>
 
-        <tr>
-            <td>متن اولیه</td>
-            <td>تغییرات من</td>
-        </tr>
+    <div class="up-card">
+        <h2 class="up-card__title">ویرایش‌های بررسی‌نشدهٔ من</h2>
+        <table>
+            <tr>
+                <td>متن اولیه</td>
+                <td>تغییرات من</td>
+            </tr>
 
-        @if (Model.MyLastEdit.Description != null)
-        {
-            <tr>
-                <td colspan="2">
-                    تغییرات متن
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p class="red-color" id="title-lastedit-original">@Model.MyLastEdit.OriginalDescription</p>
-                </td>
-                <td>
-                    <p class="green-color" id="title-lastedit-edited">@Model.MyLastEdit.Description</p>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <p id="title-lastedit-compare">@Model.MyLastEdit.OriginalDescription</p>
-                    <script>
-                        $(document).ready(function () {
-                            compareCorrectionBlocks('title-lastedit-original', 'title-lastedit-edited', 'title-lastedit-compare');
-                        });
-                    </script>
-                </td>
-            </tr>
-        }
-        @if (!string.IsNullOrEmpty(Model.MyLastEdit.Note))
-        {
-            <tr>
-                <td>یادداشت:</td>
-                <td>
-                    @Model.MyLastEdit.Note
-                </td>
-            </tr>
-        }
-
-        <tr>
-            <td colspan="2" class="td-button-container">
-                <a role="button" id="deletecorrections" class="editor-button background-red" onclick="deleteCatCorrection(@Model.PageInformation.PoetOrCat.Cat.Id)">انصراف و حذف این ویرایش</a>
-            </td>
-        </tr>
-
-    </table>
+            @if (Model.MyLastEdit.Description != null)
+            {
+                <tr>
+                    <td colspan="2">
+                        تغییرات متن
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p class="red-color" id="title-lastedit-original">@Model.MyLastEdit.OriginalDescription</p>
+                    </td>
+                    <td>
+                        <p class="green-color" id="title-lastedit-edited">@Model.MyLastEdit.Description</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <p id="title-lastedit-compare">@Model.MyLastEdit.OriginalDescription</p>
+                        <script>
+                            $(document).ready(function () {
+                                compareCorrectionBlocks('title-lastedit-original', 'title-lastedit-edited', 'title-lastedit-compare');
+                            });
+                        </script>
+                    </td>
+                </tr>
+            }
+            @if (!string.IsNullOrEmpty(Model.MyLastEdit.Note))
+            {
+                <tr>
+                    <td>یادداشت:</td>
+                    <td>
+                        @Model.MyLastEdit.Note
+                    </td>
+                </tr>
+            }
+        </table>
+        <p id="saving" class="up-hint"></p>
+        <div class="up-form-actions">
+            <a role="button" id="deletecorrections" class="up-btn up-btn--danger" onclick="deleteCatCorrection(@Model.PageInformation.PoetOrCat.Cat.Id)">انصراف و حذف این ویرایش</a>
+        </div>
+    </div>
 }
 
-<form method="post">
-    <table style="max-width:100%; width:100%; margin:0" class="noborder">
+<div class="up-card">
+    <form method="post" class="up-form">
         @if (Model.PageInformation != null)
         {
-            <tr><td><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></td></tr>
+            <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="up-btn up-btn--ghost">@Model.PageInformation.FullTitle</a></p>
         }
 
-        <tr>
-            <td>
-                <span class="inputlabel">متن: </span>
-                <input asp-for="Correction.CatId" type="hidden" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <textarea asp-for="Correction.DescriptionHtml" class="inputTextarea editor" rows="20" style="width:100%"></textarea>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">توضیح این ویرایش: </span>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <input asp-for="Correction.Note" />
+        <input asp-for="Correction.CatId" type="hidden" />
 
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">ذخیره</button>
-            </td>
-        </tr>
-    </table>
-</form>
+        <div class="up-field">
+            <label asp-for="Correction.DescriptionHtml">متن</label>
+            <textarea asp-for="Correction.DescriptionHtml" class="inputTextarea editor" rows="20"></textarea>
+        </div>
+
+        <div class="up-field">
+            <label asp-for="Correction.Note">توضیح این ویرایش</label>
+            <input asp-for="Correction.Note" />
+        </div>
+
+        <div class="up-form-actions">
+            <button type="submit" name="approve" id="approve" class="up-btn up-btn--success">ذخیره</button>
+        </div>
+    </form>
+</div>
