@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.AddSongModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
@@ -6,95 +6,56 @@
     ViewData["Title"] = "آهنگ مرتبط از منابع دلخواه";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
-
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 
+<div class="up-card">
+    <form method="post" class="up-form">
+        <div class="up-field">
+            <label asp-for="PoemMusicTrackViewModel.PoemId">شناسهٔ شعر</label>
+            <input asp-for="PoemMusicTrackViewModel.PoemId" />
+        </div>
 
-<form method="post">
-    <table style="width:100%" class="noborder">
-        <tr>
-            <td>
-                <span class="inputlabel">شناسهٔ شعر: </span>
-            </td>
-            <td>
-                <input asp-for="PoemMusicTrackViewModel.PoemId" />
-            </td>
-        </tr>
+        <div class="up-field">
+            <label asp-for="PoemMusicTrackViewModel.ArtistName">خواننده</label>
+            <input asp-for="PoemMusicTrackViewModel.ArtistName" />
+        </div>
+        <div class="up-field up-field--ltr">
+            <label asp-for="PoemMusicTrackViewModel.ArtistUrl">نشانی خواننده</label>
+            <input asp-for="PoemMusicTrackViewModel.ArtistUrl" />
+        </div>
 
-        <tr>
-            <td>
-                <span class="inputlabel">خواننده: </span>
-            </td>
-            <td>
-                <input style="width:100%" asp-for="PoemMusicTrackViewModel.ArtistName" /><br />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">نشانی خواننده:</span>
-            </td>
-            <td>
-                <input style="width:100%;text-align:left;direction:ltr;" asp-for="PoemMusicTrackViewModel.ArtistUrl" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-            </td>
-            <td>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">آلبوم:</span>
-            </td>
-            <td>
-                <input style="width:100%" asp-for="PoemMusicTrackViewModel.AlbumName" /><br />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">نشانی آلبوم:</span>
-            </td>
-            <td>
-                <input style="width:100%;text-align:left;direction:ltr;" asp-for="PoemMusicTrackViewModel.AlbumUrl" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">آهنگ:</span>
-            </td>
-            <td>
-                <input style="width:100%" asp-for="PoemMusicTrackViewModel.TrackName" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">نشانی آهنگ:</span>
-            </td>
-            <td>
-                <input style="width:100%;text-align:left;direction:ltr;" asp-for="PoemMusicTrackViewModel.TrackUrl" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="inputlabel">توضیح: </span>
-            </td>
-            <td>
-                <input style="width:100%" asp-for="PoemMusicTrackViewModel.Description" /><br />
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">تأیید</button>
-            </td>
+        <div class="up-field">
+            <label asp-for="PoemMusicTrackViewModel.AlbumName">آلبوم</label>
+            <input asp-for="PoemMusicTrackViewModel.AlbumName" />
+        </div>
+        <div class="up-field up-field--ltr">
+            <label asp-for="PoemMusicTrackViewModel.AlbumUrl">نشانی آلبوم</label>
+            <input asp-for="PoemMusicTrackViewModel.AlbumUrl" />
+        </div>
 
-        </tr>
+        <div class="up-field">
+            <label asp-for="PoemMusicTrackViewModel.TrackName">آهنگ</label>
+            <input asp-for="PoemMusicTrackViewModel.TrackName" />
+        </div>
+        <div class="up-field up-field--ltr">
+            <label asp-for="PoemMusicTrackViewModel.TrackUrl">نشانی آهنگ</label>
+            <input asp-for="PoemMusicTrackViewModel.TrackUrl" />
+        </div>
 
-    </table>
+        <div class="up-field">
+            <label asp-for="PoemMusicTrackViewModel.Description">توضیح</label>
+            <input asp-for="PoemMusicTrackViewModel.Description" />
+        </div>
 
-</form>
+        <div class="up-form-actions">
+            <button type="submit" name="approve" id="approve" class="up-btn up-btn--success">تأیید</button>
+        </div>
+    </form>
+</div>
