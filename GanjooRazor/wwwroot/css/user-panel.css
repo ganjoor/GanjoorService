@@ -1,0 +1,451 @@
+/*
+    User area (پیشخان کاربر) design foundation.
+    Scoped, additive layer on top of p8.css/site.css — nothing here overrides
+    the public site's look. Tokens are pulled from p8.css's existing palette
+    (brand maroon #300, success/danger greens & reds, 5px radius, existing
+    box-shadow recipe) so the panel still feels like Ganjoor, just tidier.
+
+    Class prefix "up-" (user-panel) is used throughout to avoid collisions
+    with the large, unscoped p8.css class list.
+*/
+
+:root {
+    --up-primary: #300;
+    --up-primary-hover: #4d1010;
+    --up-on-primary: #fff;
+
+    --up-success: #0a0;
+    --up-success-dark: darkgreen;
+    --up-danger: #f00;
+    --up-danger-dark: darkred;
+    --up-gray: slategray;
+
+    --up-bg: #f5f7fb;
+    --up-surface: #fff;
+    --up-surface-alt: #f4f1ec;
+    --up-border: #e0e0e0;
+    --up-text: #222;
+    --up-text-muted: #666;
+
+    --up-radius-sm: 5px;
+    --up-radius: 10px;
+    --up-radius-lg: 16px;
+    --up-shadow: 0 5px 0.3rem rgba(0, 0, 0, 0.3);
+    --up-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.12);
+
+    --up-space-1: 4px;
+    --up-space-2: 8px;
+    --up-space-3: 16px;
+    --up-space-4: 24px;
+    --up-space-5: 32px;
+
+    --up-font: 'Vazirmatn', sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --up-bg: #121212;
+        --up-surface: #1c1c1c;
+        --up-surface-alt: #232323;
+        --up-border: #3a3a3a;
+        --up-text: bisque;
+        --up-text-muted: #c9b8a8;
+        --up-primary: #a54a4a;
+        --up-primary-hover: #c25e5e;
+        --up-on-primary: #fff;
+    }
+}
+
+/* ---------- layout shell ---------- */
+
+.up-shell {
+    font-family: var(--up-font);
+    color: var(--up-text);
+    text-align: right;
+}
+
+.up-page-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--up-space-2);
+    margin-bottom: var(--up-space-3);
+    flex-wrap: wrap;
+}
+
+.up-page-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.up-page-subtitle {
+    color: var(--up-text-muted);
+    font-size: 0.9rem;
+    margin-top: var(--up-space-1);
+}
+
+/* ---------- card ---------- */
+
+.up-card {
+    background: var(--up-surface);
+    border: 1px solid var(--up-border);
+    border-radius: var(--up-radius-lg);
+    box-shadow: var(--up-shadow-sm);
+    padding: var(--up-space-4);
+    margin-bottom: var(--up-space-3);
+}
+
+.up-card + .up-card {
+    margin-top: var(--up-space-3);
+}
+
+.up-card__title {
+    margin: 0 0 var(--up-space-3);
+    font-size: 1.1rem;
+    border-bottom: 1px solid var(--up-border);
+    padding-bottom: var(--up-space-2);
+}
+
+/* ---------- buttons ---------- */
+/* Compatible in spirit with the existing .pagebutton/.editor-button look
+   (radius, shadow) so mixed usage during the migration doesn't feel jarring. */
+
+.up-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--up-space-1);
+    cursor: pointer;
+    font-family: var(--up-font);
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    border-radius: var(--up-radius-sm);
+    border: 1px solid transparent;
+    box-shadow: var(--up-shadow);
+    color: var(--up-on-primary);
+    background-color: var(--up-primary);
+    text-decoration: none;
+    transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.05s ease;
+}
+
+.up-btn:hover {
+    background-color: var(--up-primary-hover);
+    color: var(--up-on-primary);
+    text-decoration: none;
+}
+
+.up-btn:active {
+    transform: translateY(1px);
+}
+
+.up-btn:disabled,
+.up-btn[aria-disabled="true"] {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.up-btn--success {
+    background-color: var(--up-success-dark);
+}
+
+.up-btn--success:hover {
+    background-color: var(--up-success);
+}
+
+.up-btn--danger {
+    background-color: var(--up-danger-dark);
+}
+
+.up-btn--danger:hover {
+    background-color: var(--up-danger);
+}
+
+.up-btn--ghost {
+    background-color: transparent;
+    color: var(--up-text);
+    border-color: var(--up-border);
+    box-shadow: none;
+}
+
+.up-btn--ghost:hover {
+    background-color: var(--up-surface-alt);
+    color: var(--up-text);
+}
+
+.up-btn--sm {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+}
+
+.up-btn--block {
+    display: flex;
+    width: 100%;
+}
+
+.up-btn-group {
+    display: flex;
+    gap: var(--up-space-2);
+    flex-wrap: wrap;
+}
+
+/* icon-only action buttons (delete/mark-read/etc.) */
+.up-icon-btn {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--up-border);
+    background: var(--up-surface);
+    color: var(--up-text);
+}
+
+.up-icon-btn:hover {
+    background: var(--up-surface-alt);
+}
+
+/* ---------- alerts / notices ---------- */
+
+.up-alert {
+    border-radius: var(--up-radius);
+    padding: var(--up-space-3);
+    margin-bottom: var(--up-space-3);
+    border: 1px solid transparent;
+    font-size: 0.9rem;
+}
+
+.up-alert--info {
+    background: #eef3fb;
+    border-color: #cfe0f5;
+    color: #1c3a5e;
+}
+
+.up-alert--success {
+    background: #eaf7ea;
+    border-color: #c9e8c9;
+    color: #1e4620;
+}
+
+.up-alert--danger {
+    background: #fbeaea;
+    border-color: #f0caca;
+    color: #5e1c1c;
+}
+
+.up-alert--warning {
+    background: #fff6e5;
+    border-color: #f3ddaa;
+    color: #5e4a1c;
+}
+
+@media (prefers-color-scheme: dark) {
+    .up-alert--info { background: #172633; border-color: #24405c; color: bisque; }
+    .up-alert--success { background: #142a16; border-color: #1f4a22; color: bisque; }
+    .up-alert--danger { background: #331616; border-color: #5c2424; color: bisque; }
+    .up-alert--warning { background: #332a14; border-color: #5c4a1f; color: bisque; }
+}
+
+/* ---------- badges ---------- */
+
+.up-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    background: var(--up-surface-alt);
+    color: var(--up-text-muted);
+    border: 1px solid var(--up-border);
+}
+
+.up-badge--primary { background: var(--up-primary); color: var(--up-on-primary); border-color: transparent; }
+.up-badge--success { background: var(--up-success-dark); color: #fff; border-color: transparent; }
+.up-badge--danger { background: var(--up-danger-dark); color: #fff; border-color: transparent; }
+
+/* ---------- empty state ---------- */
+
+.up-empty {
+    text-align: center;
+    padding: var(--up-space-5) var(--up-space-3);
+    color: var(--up-text-muted);
+}
+
+.up-empty__icon {
+    font-size: 2rem;
+    margin-bottom: var(--up-space-2);
+    opacity: 0.6;
+}
+
+/* ---------- pagination ---------- */
+
+.up-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--up-space-1);
+    margin: var(--up-space-3) 0;
+}
+
+.up-pagination a,
+.up-pagination span {
+    display: inline-flex;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--up-radius-sm);
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--up-text);
+}
+
+.up-pagination a {
+    border: 1px solid var(--up-border);
+    background: var(--up-surface);
+}
+
+.up-pagination a:hover {
+    background: var(--up-surface-alt);
+    text-decoration: none;
+}
+
+.up-pagination span.up-pagination__current {
+    background: var(--up-primary);
+    color: var(--up-on-primary);
+    font-weight: 600;
+}
+
+/* ---------- list items (notifications, comments, edits...) ---------- */
+
+.up-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--up-space-2);
+}
+
+.up-list-item {
+    background: var(--up-surface);
+    border: 1px solid var(--up-border);
+    border-radius: var(--up-radius);
+    padding: var(--up-space-3);
+    position: relative;
+}
+
+.up-list-item--unread {
+    border-inline-start: 4px solid var(--up-primary);
+}
+
+.up-list-item__meta {
+    color: var(--up-text-muted);
+    font-size: 0.8rem;
+    margin-inline-start: var(--up-space-2);
+}
+
+.up-list-item__actions {
+    display: flex;
+    gap: var(--up-space-2);
+    margin-top: var(--up-space-2);
+}
+
+/* ---------- toasts ---------- */
+
+.up-toast-container {
+    position: fixed;
+    bottom: var(--up-space-4);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1080;
+    display: flex;
+    flex-direction: column;
+    gap: var(--up-space-2);
+    align-items: center;
+    pointer-events: none;
+    width: 100%;
+    padding: 0 var(--up-space-3);
+}
+
+.up-toast {
+    pointer-events: auto;
+    width: max-content;
+    max-width: min(420px, 90vw);
+    padding: 10px 20px;
+    border-radius: var(--up-radius);
+    box-shadow: var(--up-shadow-sm);
+    color: #fff;
+    background: var(--up-gray);
+    font-size: 0.85rem;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.up-toast--visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.up-toast--success {
+    background: var(--up-success-dark);
+}
+
+.up-toast--error {
+    background: var(--up-danger-dark);
+}
+
+/* ---------- confirm modal (replaces window.confirm) ---------- */
+
+.up-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1090;
+    padding: var(--up-space-3);
+}
+
+.up-modal-backdrop[hidden] {
+    display: none;
+}
+
+.up-modal {
+    background: var(--up-surface);
+    border-radius: var(--up-radius-lg);
+    box-shadow: var(--up-shadow-sm);
+    padding: var(--up-space-4);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.up-modal__message {
+    margin: 0 0 var(--up-space-4);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.up-modal__actions {
+    display: flex;
+    gap: var(--up-space-2);
+    justify-content: center;
+}
+
+.up-modal__actions .up-btn {
+    flex: 1;
+}
+
+body.up-modal-open {
+    overflow: hidden;
+}
+
+/* ---------- small utilities ---------- */
+
+.up-mt-0 { margin-top: 0; }
+.up-text-muted { color: var(--up-text-muted); }
+.up-text-center { text-align: center; }

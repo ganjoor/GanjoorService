@@ -1,0 +1,11 @@
+@* Styled replacement for window.confirm(). Included once by
+   _UserPanelLayout.cshtml. Trigger with JS: await upConfirm('پیام شما') *@
+<div class="up-modal-backdrop" id="upConfirmBackdrop" hidden>
+    <div class="up-modal" role="alertdialog" aria-modal="true" aria-labelledby="upConfirmTitle">
+        <p id="upConfirmTitle" class="up-modal__message"></p>
+        <div class="up-modal__actions">
+            <button type="button" class="up-btn up-btn--ghost" id="upConfirmCancel">انصراف</button>
+            <button type="button" class="up-btn up-btn--danger" id="upConfirmOk">تأیید</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+@*
+    Renders the pagination links used throughout the User area.
+    Every list page already builds a List<NameIdUrlImage> called
+    PaginationLinks (Name = label, Url = link, or Url == "" for the
+    current/disabled page) — pass that model straight in:
+
+        <partial name="_Pagination" model="Model.PaginationLinks" />
+
+    Replaces the hand-written @foreach loop that was copy-pasted at the
+    top and bottom of every list page.
+*@
+@model System.Collections.Generic.List<GSpotifyProxy.Models.NameIdUrlImage>
+
+@if (Model != null && Model.Count > 0)
+{
+    <nav class="up-pagination" aria-label="صفحه‌بندی">
+        @foreach (var link in Model)
+        {
+            if (!string.IsNullOrEmpty(link.Url))
+            {
+                <a href="@link.Url">@link.Name</a>
+            }
+            else
+            {
+                <span class="up-pagination__current" aria-current="page">@link.Name</span>
+            }
+        }
+    </nav>
+}

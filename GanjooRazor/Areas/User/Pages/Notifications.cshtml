@@ -1,170 +1,129 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.NotificationsModel
 @using DNTPersianUtils.Core
 @{
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "اعلان‌های من";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
-    string color = "gray";
 }
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 else
 {
     <script>
-        function deleteNotification(notificationId) {
-               if (!confirm('آیا از حذف این اعلان اطمینان دارید؟'))
-                   return;
+        async function deleteNotification(notificationId) {
+            var ok = await upConfirm('آیا از حذف این اعلان اطمینان دارید؟');
+            if (!ok) return;
 
-               var url = '?handler=Notification';
+            $.ajax({
+                type: "DELETE",
+                url: '?handler=Notification',
+                data: { id: notificationId },
+                success: function () {
+                    $('#notification-' + notificationId).remove();
+                    upToast('اعلان حذف شد.', 'success');
+                },
+                error: function (e) {
+                    upToast(e.responseText || 'حذف اعلان با خطا مواجه شد.', 'error');
+                }
+            });
+        }
 
-               $.ajax({
-                   type: "DELETE",
-                   url: url,
-                   data: {
-                       id: notificationId
-                   },
-                   success: function () {
-                       var notificationBlockId = '#notification-' + notificationId;
-                       $(notificationBlockId).remove();
-                   },
-               });
-           }
+        function markReadNotification(notificationId) {
+            $.ajax({
+                type: "PUT",
+                url: '?handler=MarkRead',
+                data: { id: notificationId },
+                success: function () {
+                    var item = document.getElementById('notification-' + notificationId);
+                    if (item) item.classList.remove('up-list-item--unread');
+                    var btn = document.getElementById('unread-' + notificationId);
+                    if (btn) btn.remove();
+                },
+                error: function (e) {
+                    upToast(e.responseText || 'ثبت خوانده شدن اعلان با خطا مواجه شد.', 'error');
+                }
+            });
+        }
 
-           function markReadNotification(notificationId) {
-               var url = '?handler=MarkRead';
+        async function markAllRead() {
+            var ok = await upConfirm('آیا از علامتگذاری همهٔ اعلان‌ها به عنوان خوانده شده اطمینان دارید؟', { danger: false, okText: 'بله، علامتگذاری کن' });
+            if (!ok) return;
 
-               $.ajax({
-                   type: "PUT",
-                   url: url,
-                   data: {
-                       id: notificationId
-                   },
-                   success: function () {
-                       var notificationBlockId = '#unread-' + notificationId;
-                       $(notificationBlockId).remove();
-                   },
-               });
-           }
+            $.ajax({
+                type: "PUT",
+                url: '?handler=MarkAllRead',
+                error: function (e) {
+                    upToast(e.responseText || 'خطایی رخ داد.', 'error');
+                },
+                success: function () {
+                    location.reload();
+                },
+            });
+        }
 
-         function markAllRead() {
-             if (!confirm('آیا از علامتگذاری همهٔ اعلانها به عنوان خوانده شده اطمینان دارید؟'))
-                   return;
+        async function deleteAllRead() {
+            var ok = await upConfirm('آیا از حذف همهٔ اعلان‌های خوانده شده اطمینان دارید؟');
+            if (!ok) return;
 
-               var url = '?handler=MarkAllRead';
-
-               $.ajax({
-                   type: "PUT",
-                   url: url,
-                   error: function (e) {
-                   if (e.responseText == null)
-                       alert(e);
-                   else
-                       alert(e.responseText);
-                   },
-                   success: function () {
-                       location.reload();
-                   },
-               });
-         }
-
-         function deleteAllRead() {
-             if (!confirm('آیا از حذف همهٔ اعلانهای خوانده شده اطمینان دارید؟'))
-                   return;
-
-               var url = '?handler=AllRead';
-
-               $.ajax({
-                   type: "DELETE",
-                   url: url,
-                   error: function (e) {
-                   if (e.responseText == null)
-                       alert(e);
-                   else
-                       alert(e.responseText);
-                   },
-                   success: function () {
-                       location.reload();
-                   },
-               });
-         }
+            $.ajax({
+                type: "DELETE",
+                url: '?handler=AllRead',
+                error: function (e) {
+                    upToast(e.responseText || 'خطایی رخ داد.', 'error');
+                },
+                success: function () {
+                    location.reload();
+                },
+            });
+        }
     </script>
 
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
+    <partial name="_Pagination" model="Model.PaginationLinks" />
 
     @if (Model.Notifications.Count == 0)
     {
-        <p>
-            در حال حاضر اعلانی وجود ندارد. در صورتی که کاربری با زدن دکمهٔ «پاسخگویی» برای حاشیهٔ شما پاسخی بنویسد یا شما با پیشنهاد آهنگ مرتبط با شعر یا روش دیگری در گنجور مشارکت کنید و مشارکت شما بررسی شود در قسمت «اعلان‌های من» با دریافت یک اعلان از این رویدادها مطلع می شوید.
-        </p>
+        <partial name="_EmptyState" model="@("در حال حاضر اعلانی وجود ندارد. در صورتی که کاربری با زدن دکمهٔ «پاسخگویی» برای حاشیهٔ شما پاسخی بنویسد یا شما با پیشنهاد آهنگ مرتبط با شعر یا روش دیگری در گنجور مشارکت کنید و مشارکت شما بررسی شود در قسمت «اعلان‌های من» با دریافت یک اعلان از این رویدادها مطلع می‌شوید.")" />
     }
     else
     {
-        <p>
-            <a role="button" onclick="markAllRead()" class="pagebutton">همه را خواندم</a>
-        </p>
-         <p>
-            <a role="button" onclick="deleteAllRead()" class="pagebutton">حذف همهٔ خوانده شده‌ها</a>
-        </p>
-    }
-
-    @foreach (var notification in Model.Notifications)
-    {
-        if (color == "gray")
-            color = "lightsteelblue";
-        else
-            color = "gray";
-
-        <div style="background-color:@color" id="notification-@notification.Id">
-            <blockquote>
-                <p>
-                    @notification.Subject <small>در @notification.DateTime.ToFriendlyPersianDateTextify()</small>
-                </p>
-                <div id="notification-text-@notification.Id">
-                    @Html.Raw(notification.HtmlText)
-                </div>
-            </blockquote>
-            <p>
-                <a role="button" onclick="deleteNotification('@notification.Id')" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
-                @if (notification.Status == RSecurityBackend.Models.Notification.NotificationStatus.Unread)
-                {
-                    <a role="button" onclick="markReadNotification('@notification.Id')" class="actionlink" title="خواندم" id="unread-@notification.Id"><i class="noindent-info-button done-icon"></i></a>
-                }
-            </p>
+        <div class="up-btn-group up-mt-0" style="margin-bottom: var(--up-space-3);">
+            <a role="button" onclick="markAllRead()" class="up-btn up-btn--ghost">همه را خواندم</a>
+            <a role="button" onclick="deleteAllRead()" class="up-btn up-btn--ghost">حذف همهٔ خوانده شده‌ها</a>
         </div>
 
+        <div class="up-list">
+            @foreach (var notification in Model.Notifications)
+            {
+                bool unread = notification.Status == RSecurityBackend.Models.Notification.NotificationStatus.Unread;
+                <div class="up-list-item @(unread ? "up-list-item--unread" : "")" id="notification-@notification.Id">
+                    <div>
+                        <strong>@notification.Subject</strong>
+                        <span class="up-list-item__meta">@notification.DateTime.ToFriendlyPersianDateTextify()</span>
+                    </div>
+                    <div id="notification-text-@notification.Id">
+                        @Html.Raw(notification.HtmlText)
+                    </div>
+                    <div class="up-list-item__actions">
+                        <a role="button" onclick="deleteNotification('@notification.Id')" class="up-icon-btn" title="حذف" aria-label="حذف این اعلان">
+                            <i class="noindent-info-button delete-icon"></i>
+                        </a>
+                        @if (unread)
+                        {
+                            <a role="button" onclick="markReadNotification('@notification.Id')" class="up-icon-btn" title="خواندم" aria-label="علامت‌گذاری به عنوان خوانده شده" id="unread-@notification.Id">
+                                <i class="noindent-info-button done-icon"></i>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
 
-        <hr />
+        <partial name="_Pagination" model="Model.PaginationLinks" />
     }
-
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
-
-
 }

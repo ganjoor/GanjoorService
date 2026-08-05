@@ -1,0 +1,12 @@
+@*
+    A consistent "nothing here yet" state for list pages, instead of a bare
+    <p>. Pass the explanatory text as the model:
+
+        <partial name="_EmptyState" model="@("در حال حاضر اعلانی وجود ندارد.")" />
+*@
+@model string
+
+<div class="up-empty">
+    <div class="up-empty__icon" aria-hidden="true">&#9679;</div>
+    <p>@Model</p>
+</div>

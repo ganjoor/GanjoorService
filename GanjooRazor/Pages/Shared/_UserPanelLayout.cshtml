@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link href="/css/p8.css?version=86" rel="stylesheet" type="text/css" />
+    <link href="/css/user-panel.css?version=1" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -180,16 +181,18 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container up-shell">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-
+    <partial name="_Toasts" />
+    <partial name="_ConfirmModal" />
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="/js/user-panel.js?version=1"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
     <div id="footer"></div>
