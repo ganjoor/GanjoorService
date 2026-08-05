@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.Panel.Pages.IndexModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
@@ -50,137 +50,81 @@ else
     </div>
 
     <div class="up-card">
-    <form method="post" asp-page-handler="SetMyPass">
-        <table style="width:100%" class="noborder">
-            <tr>
-                <td colspan="2">
-                    <h2>تغییر گذرواژه</h2>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">گذرواژهٔ کنونی: </span>
-                </td>
-                <td>
-                    <input type="password" style="width:100%" asp-for="ChangePasswordModel.OldPassword" /><br />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">گذرواژهٔ جدید: </span>
-                </td>
-                <td>
-                    <input type="password" style="width:100%" asp-for="ChangePasswordModel.NewPassword" /><br />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">تکرار گذرواژهٔ جدید: </span>
-                </td>
-                <td>
-                    <input type="password" style="width:100%" asp-for="ChangePasswordModel.NewPasswordRepeat" /><br />
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
-                    @Model.PasswordChanged
-                </td>
-                <td>
-                    <button type="submit" name="approve" id="approve" class="up-btn up-btn--success up-btn--block">تغییر گذرواژه</button>
-                </td>
-            </tr>
-
-        </table>
-    </form>
+        <h2 class="up-card__title">تغییر گذرواژه</h2>
+        <form method="post" asp-page-handler="SetMyPass" class="up-form">
+            @if (!string.IsNullOrEmpty(Model.PasswordChanged))
+            {
+                <div class="up-alert up-alert--success">@Model.PasswordChanged</div>
+            }
+            <div class="up-field">
+                <label asp-for="ChangePasswordModel.OldPassword">گذرواژهٔ کنونی</label>
+                <input type="password" asp-for="ChangePasswordModel.OldPassword" />
+            </div>
+            <div class="up-field">
+                <label asp-for="ChangePasswordModel.NewPassword">گذرواژهٔ جدید</label>
+                <input type="password" asp-for="ChangePasswordModel.NewPassword" />
+            </div>
+            <div class="up-field">
+                <label asp-for="ChangePasswordModel.NewPasswordRepeat">تکرار گذرواژهٔ جدید</label>
+                <input type="password" asp-for="ChangePasswordModel.NewPasswordRepeat" />
+            </div>
+            <div class="up-form-actions">
+                <button type="submit" name="approve" id="approve" class="up-btn up-btn--success">تغییر گذرواژه</button>
+            </div>
+        </form>
     </div>
+
     <div class="up-card">
-    <form method="post" asp-page-handler="SetMyInfo">
-        <table style="width:100%" class="noborder">
-            <tr>
-                <td colspan="2">
-                    <h2>مشخصات من</h2>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">پست الکترونیکی: </span>
-                </td>
-                <td>
-                    <span class="inputlabel lft">@Model.UserInfo.Email</span>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">نام: </span>
-                </td>
-                <td>
-                    <input style="width:100%" asp-for="UserInfo.FirstName" /><br />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">نام خانوادگی: </span>
-                </td>
-                <td>
-                    <input style="width:100%" asp-for="UserInfo.SurName" /><br />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">نام مستعار (نمایش در حاشیه‌ها، لطفاً از درج عناوین شغلی در نام مستعار خودداری کنید): </span>
-                </td>
-                <td>
-                    <input style="width:100%" asp-for="UserInfo.NickName" /><br />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel"><a target="_blank" href="@Html.Raw(Model.UserInfo.Website)">وبگاه:</a></span>
-                </td>
-                <td>
-                    <input style="width:100%;text-align:left;direction:ltr;" asp-for="UserInfo.Website" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">دربارهٔ من: </span>
-                </td>
-                <td>
-                    <textarea asp-for="UserInfo.Bio" class="editor"></textarea>
-                    <span class="inputlabel"><strong>تذکر مهم:</strong> استفاده از این متن برای مخابرهٔ پیام‌های نامناسب (توهین، فحاشی و ...) منجر به حذف حساب کاربر بدون اخطار قبلی خواهد شد.</span>
-                    <br />
-                    <span class="inputlabel">در صورتی که از این متن، وبگاه و از نام مستعار برای تبلیغ کسب و کار غیرادبی خود استفاده کنید به گونه‌ای که نمایهٔ شما به نمایه‌ای تبلیغاتی شباهت پیدا کند حساب کاربری شما بدون اخطار قبلی حذف خواهد شد.</span>
-                    <span class="inputlabel red-color"><strong>لطفاً از درج تلفن و اطلاعات خصوصی در نام و مشخصات یا متن دربارهٔ من خودداری کنید.</strong></span><span> انتشار اطلاعات شخصی به صورت عمومی ممکن است باعث سوء استفادهٔ کلاهبرداران بشود لذا از انتشار چنین اطلاعاتی خودداری فرمایید.</span>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="hidden" asp-for="UserInfo.Id" />
-                    <input type="hidden" asp-for="UserInfo.Email" />
-                    <input type="hidden" asp-for="UserInfo.Username" />
-                    <input type="hidden" asp-for="UserInfo.Password" />
-                    <input type="hidden" asp-for="UserInfo.PhoneNumber" />
-                    <input type="hidden" asp-for="UserInfo.Status" />
-                    <input type="hidden" asp-for="UserInfo.RImageId" />
-                </td>
-                <td>
-                    <button type="submit" name="approve" id="approveProfile" class="up-btn up-btn--success up-btn--block">ذخیره</button>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <a href="/hashieha/?userid=@Model.UserInfo.Id" target="_blank">نمایهٔ عمومی من</a>
-                </td>
-            </tr>
+        <h2 class="up-card__title">مشخصات من</h2>
+        <form method="post" asp-page-handler="SetMyInfo" class="up-form">
+            <div class="up-field up-field--ltr">
+                <label>پست الکترونیکی</label>
+                <div class="up-field-static">@Model.UserInfo.Email</div>
+            </div>
+            <div class="up-field">
+                <label asp-for="UserInfo.FirstName">نام</label>
+                <input asp-for="UserInfo.FirstName" />
+            </div>
+            <div class="up-field">
+                <label asp-for="UserInfo.SurName">نام خانوادگی</label>
+                <input asp-for="UserInfo.SurName" />
+            </div>
+            <div class="up-field">
+                <label asp-for="UserInfo.NickName">نام مستعار</label>
+                <input asp-for="UserInfo.NickName" />
+                <span class="up-hint">نمایش در حاشیه‌ها؛ لطفاً از درج عناوین شغلی در نام مستعار خودداری کنید.</span>
+            </div>
+            <div class="up-field up-field--ltr">
+                <label>
+                    وبگاه
+                    @if (!string.IsNullOrWhiteSpace(Model.UserInfo.Website))
+                    {
+                        <a target="_blank" href="@Html.Raw(Model.UserInfo.Website)">(مشاهده)</a>
+                    }
+                </label>
+                <input asp-for="UserInfo.Website" />
+            </div>
+            <div class="up-field">
+                <label asp-for="UserInfo.Bio">دربارهٔ من</label>
+                <textarea asp-for="UserInfo.Bio" class="editor"></textarea>
+                <span class="up-hint"><strong>تذکر مهم:</strong> استفاده از این متن برای مخابرهٔ پیام‌های نامناسب (توهین، فحاشی و ...) منجر به حذف حساب کاربر بدون اخطار قبلی خواهد شد.</span>
+                <span class="up-hint">در صورتی که از این متن، وبگاه و از نام مستعار برای تبلیغ کسب و کار غیرادبی خود استفاده کنید به گونه‌ای که نمایهٔ شما به نمایه‌ای تبلیغاتی شباهت پیدا کند حساب کاربری شما بدون اخطار قبلی حذف خواهد شد.</span>
+                <span class="up-hint up-hint--danger"><strong>لطفاً از درج تلفن و اطلاعات خصوصی در نام و مشخصات یا متن دربارهٔ من خودداری کنید.</strong> انتشار اطلاعات شخصی به صورت عمومی ممکن است باعث سوء استفادهٔ کلاهبرداران بشود لذا از انتشار چنین اطلاعاتی خودداری فرمایید.</span>
+            </div>
 
-            <tr>
-                <td colspan="2">
-                    <a role="button" class="up-btn up-btn--danger up-btn--block" href="/User/DeleteAccount">حذف حساب کاربری</a>
-                </td>
-            </tr>
+            <input type="hidden" asp-for="UserInfo.Id" />
+            <input type="hidden" asp-for="UserInfo.Email" />
+            <input type="hidden" asp-for="UserInfo.Username" />
+            <input type="hidden" asp-for="UserInfo.Password" />
+            <input type="hidden" asp-for="UserInfo.PhoneNumber" />
+            <input type="hidden" asp-for="UserInfo.Status" />
+            <input type="hidden" asp-for="UserInfo.RImageId" />
 
-        </table>
-    </form>
+            <div class="up-form-actions">
+                <button type="submit" name="approve" id="approveProfile" class="up-btn up-btn--success">ذخیره</button>
+                <a href="/hashieha/?userid=@Model.UserInfo.Id" target="_blank" class="up-btn up-btn--ghost">نمایهٔ عمومی من</a>
+                <a role="button" class="up-btn up-btn--danger" href="/User/DeleteAccount">حذف حساب کاربری</a>
+            </div>
+        </form>
     </div>
 }

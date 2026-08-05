@@ -475,6 +475,98 @@ body.up-modal-open {
 .up-text-muted { color: var(--up-text-muted); }
 .up-text-center { text-align: center; }
 
+/* ---------- forms ---------- */
+
+.up-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--up-space-3);
+}
+
+.up-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--up-space-1);
+}
+
+.up-field > label {
+    font-size: 0.85rem;
+    color: var(--up-text-muted);
+}
+
+.up-field input[type="text"],
+.up-field input[type="password"],
+.up-field input[type="email"],
+.up-field input:not([type]),
+.up-field textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--up-border);
+    border-radius: var(--up-radius-sm);
+    background: var(--up-surface);
+    color: var(--up-text);
+    font-family: var(--up-font);
+    font-size: 0.9rem;
+}
+
+.up-field textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.up-field input:focus,
+.up-field textarea:focus {
+    outline: none;
+    border-color: var(--up-primary);
+    box-shadow: 0 0 0 3px rgba(51, 0, 0, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+    .up-field input:focus,
+    .up-field textarea:focus {
+        box-shadow: 0 0 0 3px rgba(165, 74, 74, 0.25);
+    }
+}
+
+.up-field--ltr input,
+.up-field--ltr .up-field-static {
+    direction: ltr;
+    text-align: left;
+}
+
+.up-field-static {
+    padding: 9px 0;
+    color: var(--up-text-muted);
+    font-size: 0.9rem;
+}
+
+.up-hint {
+    font-size: 0.78rem;
+    color: var(--up-text-muted);
+    line-height: 1.6;
+}
+
+.up-hint--danger {
+    color: var(--up-danger-dark);
+}
+
+.up-form-actions {
+    display: flex;
+    gap: var(--up-space-2);
+    flex-wrap: wrap;
+}
+
+/* ---------- danger zone (destructive account actions) ---------- */
+
+.up-danger-zone {
+    border-color: var(--up-danger-dark);
+}
+
+.up-danger-zone .up-card__title {
+    color: var(--up-danger-dark);
+    border-bottom-color: var(--up-danger-dark);
+}
+
 /* ---------- navbar dropdowns ---------- */
 /* Bootstrap 4's default (non-RTL) build anchors dropdown-menu to the left
    and left-aligns text, which reads wrong on this RTL page. */
