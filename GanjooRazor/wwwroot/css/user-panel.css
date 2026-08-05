@@ -444,8 +444,57 @@ body.up-modal-open {
     overflow: hidden;
 }
 
+/* ---------- dashboard quick links ---------- */
+
+.up-quick-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--up-space-3);
+    margin-bottom: var(--up-space-4);
+}
+
+.up-quick-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--up-space-1);
+    text-decoration: none;
+    color: var(--up-text);
+    transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.up-quick-link:hover {
+    text-decoration: none;
+    color: var(--up-text);
+    box-shadow: var(--up-shadow);
+    transform: translateY(-2px);
+}
+
 /* ---------- small utilities ---------- */
 
 .up-mt-0 { margin-top: 0; }
 .up-text-muted { color: var(--up-text-muted); }
 .up-text-center { text-align: center; }
+
+/* ---------- navbar dropdowns ---------- */
+/* Bootstrap 4's default (non-RTL) build anchors dropdown-menu to the left
+   and left-aligns text, which reads wrong on this RTL page. */
+
+.navbar .dropdown-menu {
+    right: 0;
+    left: auto;
+    text-align: right;
+    border-radius: var(--up-radius);
+    border-color: var(--up-border);
+    box-shadow: var(--up-shadow-sm);
+}
+
+.navbar .dropdown-item {
+    text-align: right;
+}
+
+.navbar .up-badge {
+    margin-inline-start: 6px;
+    vertical-align: middle;
+    font-size: 0.65rem;
+    padding: 1px 8px;
+}

@@ -6,13 +6,50 @@
     ViewData["Title"] = "پیشخان کاربر";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+    @{
+        var displayName = !string.IsNullOrWhiteSpace(Model.UserInfo?.NickName) ? Model.UserInfo.NickName : Model.UserInfo?.FirstName;
+    }
+    @if (!string.IsNullOrWhiteSpace(displayName))
+    {
+        <div class="up-page-subtitle">خوش آمدید، @displayName</div>
+    }
+</div>
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 else
 {
+    <div class="up-quick-links">
+        <a class="up-card up-quick-link" asp-area="User" asp-page="/Edits">
+            <strong>ویرایش‌های من</strong>
+            <span class="up-text-muted">پیگیری وضعیت ویرایش‌های پیشنهادی شما</span>
+        </a>
+        <a class="up-card up-quick-link" asp-area="User" asp-page="/MyComments">
+            <strong>حاشیه‌های من</strong>
+            <span class="up-text-muted">حاشیه‌هایی که نوشته‌اید</span>
+        </a>
+        <a class="up-card up-quick-link" asp-area="User" asp-page="/MyBookmarks">
+            <strong>نشان‌شده‌های من</strong>
+            <span class="up-text-muted">شعرهایی که نشان کرده‌اید</span>
+        </a>
+        <a class="up-card up-quick-link" asp-area="User" asp-page="/Notifications">
+            <strong>اعلان‌های من</strong>
+            <span class="up-text-muted">پاسخ‌ها و رویدادهای مرتبط با شما</span>
+        </a>
+        <a class="up-card up-quick-link" asp-area="User" asp-page="/History">
+            <strong>ادامهٔ مطالعه</strong>
+            <span class="up-text-muted">از جایی که مانده بودید ادامه دهید</span>
+        </a>
+        <a class="up-card up-quick-link" asp-area="User" asp-page="/MySuggestedQuotes">
+            <strong>مشق‌های پیشنهادی من</strong>
+            <span class="up-text-muted">اشعاری که به عنوان مشق پیشنهاد داده‌اید</span>
+        </a>
+    </div>
+
+    <div class="up-card">
     <form method="post" asp-page-handler="SetMyPass">
         <table style="width:100%" class="noborder">
             <tr>
@@ -50,12 +87,14 @@ else
                     @Model.PasswordChanged
                 </td>
                 <td>
-                    <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">تغییر گذرواژه</button>
+                    <button type="submit" name="approve" id="approve" class="up-btn up-btn--success up-btn--block">تغییر گذرواژه</button>
                 </td>
             </tr>
 
         </table>
     </form>
+    </div>
+    <div class="up-card">
     <form method="post" asp-page-handler="SetMyInfo">
         <table style="width:100%" class="noborder">
             <tr>
@@ -126,7 +165,7 @@ else
                     <input type="hidden" asp-for="UserInfo.RImageId" />
                 </td>
                 <td>
-                    <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">ذخیره</button>
+                    <button type="submit" name="approve" id="approveProfile" class="up-btn up-btn--success up-btn--block">ذخیره</button>
                 </td>
             </tr>
             <tr>
@@ -137,10 +176,11 @@ else
 
             <tr>
                 <td colspan="2">
-                    <a role="button" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" href="/User/DeleteAccount">حذف حساب کاربری</a>
+                    <a role="button" class="up-btn up-btn--danger up-btn--block" href="/User/DeleteAccount">حذف حساب کاربری</a>
                 </td>
             </tr>
 
         </table>
     </form>
+    </div>
 }

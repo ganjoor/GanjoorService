@@ -81,99 +81,86 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    @{
+                        bool hasModerationTools =
+                            ViewData.ContainsKey("ganjoor-songrevu") ||
+                            ViewData.ContainsKey("ganjoor-moderate") ||
+                            ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ArtifactEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName}") ||
+                            ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.GanjoorEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModeratePoetPhotos}") ||
+                            ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.FAQEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModerateOperationShortName}") ||
+                            ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.GanjoorEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModifyOperationShortName}");
+                    }
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="User" asp-page="/Index">خانه</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-page="/MyComments">حاشیه‌های من</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-page="/MyBookmarks">نشان‌شده‌های من</a>
-                        </li>
-
-                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="User" asp-page="/Notifications">اعلان‌‌های من</a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-page="/UpVotedRecitations">خوانش‌های نشان شده</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link text-dark dropdown-toggle" href="#" id="upContribsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">مشارکت‌های من</a>
+                            <div class="dropdown-menu" aria-labelledby="upContribsDropdown">
+                                <a class="dropdown-item" asp-area="User" asp-page="/Edits">ویرایش‌‌های من</a>
+                                <a class="dropdown-item" asp-area="User" asp-page="/SectionEdits">ویرایش‌‌های قطعات من</a>
+                                <a class="dropdown-item" asp-area="User" asp-page="/CatEdits">ویرایش‌‌های بخش‌های من</a>
+                                <a class="dropdown-item" asp-area="User" asp-page="/MySuggestedQuotes">مشق‌های پیشنهادی من</a>
+                                <a class="dropdown-item" asp-area="User" asp-page="/MySuggestedSongs">آهنگ‌های پیشنهادی من</a>
+                            </div>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-page="/History">ادامهٔ مطالعه</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link text-dark dropdown-toggle" href="#" id="upEngagementDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">تعامل من</a>
+                            <div class="dropdown-menu" aria-labelledby="upEngagementDropdown">
+                                <a class="dropdown-item" asp-area="User" asp-page="/MyComments">حاشیه‌های من</a>
+                                <a class="dropdown-item" asp-area="User" asp-page="/MyBookmarks">نشان‌شده‌های من</a>
+                                <a class="dropdown-item" asp-area="User" asp-page="/UpVotedRecitations">خوانش‌های نشان شده</a>
+                                <a class="dropdown-item" asp-area="User" asp-page="/History">ادامهٔ مطالعه</a>
+                            </div>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-page="/MySuggestedSongs">آهنگ‌های پیشنهادی من</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-page="/Edits">ویرایش‌‌های من</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-page="/SectionEdits">ویرایش‌‌های قطعات من</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-page="/CatEdits">ویرایش‌‌های بخش‌های من</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-page="/MySuggestedQuotes">مشق‌های پیشنهادی من</a>
-                        </li>
-
-                        @if (ViewData.ContainsKey("ganjoor-songrevu"))
+                        @if (hasModerationTools)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="User" asp-page="/ReviewSongs">آهنگ‌ها</a>
-                            </li>
-                        }
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="upModerationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    ابزارهای مدیریت
+                                    <span class="up-badge up-badge--primary">ویژه</span>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="upModerationDropdown">
+                                    @if (ViewData.ContainsKey("ganjoor-songrevu"))
+                                    {
+                                        <a class="dropdown-item" asp-area="User" asp-page="/ReviewSongs">آهنگ‌ها</a>
+                                    }
 
-                        @if (ViewData.ContainsKey("ganjoor-moderate"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="User" asp-page="/ReportedComments">حاشیه‌های گزارش شده</a>
-                            </li>
+                                    @if (ViewData.ContainsKey("ganjoor-moderate"))
+                                    {
+                                        <a class="dropdown-item" asp-area="User" asp-page="/ReportedComments">حاشیه‌های گزارش شده</a>
+                                        <a class="dropdown-item" asp-area="User" asp-page="/AwaitingComments">حاشیه‌های در انتظار تأیید</a>
+                                    }
 
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="User" asp-page="/AwaitingComments">حاشیه‌های در انتظار تأیید</a>
-                            </li>
-                        }
+                                    @if (ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ArtifactEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName}"))
+                                    {
+                                        <a class="dropdown-item" asp-area="User" asp-page="/FinalizeImages">نهایی‌سازی تصاویر</a>
+                                    }
 
-                        @if (ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ArtifactEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ReviewGanjoorLinksOperationShortName}"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="User" asp-page="/FinalizeImages">نهایی‌سازی تصاویر</a>
-                            </li>
-                        }
+                                    @if (ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.GanjoorEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModeratePoetPhotos}"))
+                                    {
+                                        <a class="dropdown-item" asp-area="User" asp-page="/SuggestedPoetSpecLines">نکات پیشنهادی</a>
+                                        <a class="dropdown-item" asp-area="User" asp-page="/SuggestedPoetPhotos">تصاویر پیشنهادی</a>
+                                    }
 
+                                    @if (ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.FAQEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModerateOperationShortName}"))
+                                    {
+                                        <a class="dropdown-item" asp-area="User" asp-page="/FAQItems">FAQ</a>
+                                    }
 
-                        @if (ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.GanjoorEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModeratePoetPhotos}"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="User" asp-page="/SuggestedPoetSpecLines">نکات پیشنهادی</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="User" asp-page="/SuggestedPoetPhotos">تصاویر پیشنهادی</a>
-                            </li>
-                        }
-
-                        @if (ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.FAQEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModerateOperationShortName}"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="User" asp-page="/FAQItems">FAQ</a>
-                            </li>
-                        }
-
-                        @if (ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.GanjoorEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModifyOperationShortName}"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Admin" asp-page="/ReviewEdits">مدیریت</a>
+                                    @if (ViewData.ContainsKey($"{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.GanjoorEntityShortName}-{RMuseum.Models.Auth.Memory.RMuseumSecurableItem.ModifyOperationShortName}"))
+                                    {
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" asp-area="Admin" asp-page="/ReviewEdits">مدیریت</a>
+                                    }
+                                </div>
                             </li>
                         }
                     </ul>
