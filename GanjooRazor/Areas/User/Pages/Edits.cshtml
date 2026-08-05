@@ -6,12 +6,13 @@
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "ویرایش‌های من";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
-    string color = "gray";
 }
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 else
 {
@@ -21,7 +22,7 @@ else
         @if (Model.Profile != null)
         {
 
-            <div id="profile">
+            <div id="profile" class="up-card">
                 <p>
                     <a href="/hashieha?userId=@Model.Profile.Id">@Model.Profile.NickName</a>
 
@@ -38,22 +39,19 @@ else
                     @Html.Raw(Model.Profile.Bio)
                 }
             </div>
-            <hr />
         }
         else
         {
-            <div class="clear-both">
-                <p>
-                    <a role="button" href="/User/Edits?AllUsers=1" class="pagebutton">ویرایش‌های همه</a>
-                </p>
+            <div class="up-form-actions">
+                <a role="button" href="/User/Edits?AllUsers=1" class="up-btn up-btn--ghost">ویرایش‌های همه</a>
             </div>
         }
 
         <script>
-            function rollBackCorrection(correctionId){
-                if (!confirm('ویرایش معکوس ایجاد شود؟')) {
-                    return;
-                }
+            async function rollBackCorrection(correctionId) {
+                var ok = await upConfirm('ویرایش معکوس ایجاد شود؟');
+                if (!ok) return;
+
                 $.ajax({
                     type: "POST",
                     url: '?handler=RollBackCorrection',
@@ -61,15 +59,11 @@ else
                         correctionId: correctionId,
                     },
                     success: function () {
-                        alert('انجام شد.');
-                        location.reload(true);     
+                        upToast('انجام شد.', 'success');
+                        location.reload(true);
                     },
                     error: function (e) {
-                        if (e.responseText == null)
-                            alert(e);
-                        else
-                            alert(e.responseText);
-                       
+                        upToast(e.responseText || 'خطایی رخ داد.', 'error');
                     }
 
                 });
@@ -78,36 +72,16 @@ else
 
     }
 
+    <partial name="_Pagination" model="Model.PaginationLinks" />
+
     @if (Model.Corrections.Count == 0)
     {
-        <p>
-            شما هنوز هیچ ویرایشی در گنجور انجام نداده‌اید. برای آشنایی با نحوهٔ ویرایش اشعار <a href="https://blog.ganjoor.net/1400/05/23/notes-for-suggesting-corrections/" target="_blank">اینجا</a> را ببینید.
-        </p>
+        <partial name="_EmptyState" model="@("شما هنوز هیچ ویرایشی در گنجور انجام نداده‌اید. برای آشنایی با نحوهٔ ویرایش اشعار <a href=\"https://blog.ganjoor.net/1400/05/23/notes-for-suggesting-corrections/\" target=\"_blank\">اینجا</a> را ببینید.")" />
     }
-
-
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
 
     @foreach (var correction in Model.Corrections)
     {
-        if (color == "gray")
-            color = "lightsteelblue";
-        else
-            color = "gray";
-
-        <div style="background-color:@color" id="correction-@correction.Id">
+        <div class="up-list-item" id="correction-@correction.Id">
             <table>
                 <tr>
                     <td colspan="3"><a href="/?p=@correction.PoemId" target="_blank">مشاهدهٔ متن شعر یا بخش</a></td>
@@ -136,19 +110,7 @@ else
                             <p style="color:green" id="title-edited-@correction.Id">@correction.Title</p>
                         </td>
                         <td>
-                            @if (correction.Result == CorrectionReviewResult.NotReviewed)
-                            {
-                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
-                            }
-                            else
-                            @if (correction.Result == CorrectionReviewResult.Approved)
-                            {
-                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
-                            }
-                            else
-                            {
-                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
-                            }
+                            <partial name="_ReviewResultBadge" model="correction.Result" />
                         </td>
                     </tr>
                     <tr>
@@ -181,19 +143,7 @@ else
                             <p style="color:green">@correction.Rhythm</p>
                         </td>
                         <td>
-                            @if (correction.RhythmResult == CorrectionReviewResult.NotReviewed)
-                            {
-                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.RhythmResult)</p>
-                            }
-                            else
-                            @if (correction.RhythmResult == CorrectionReviewResult.Approved)
-                            {
-                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.RhythmResult)</p>
-                            }
-                            else
-                            {
-                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.RhythmResult)</p>
-                            }
+                            <partial name="_ReviewResultBadge" model="correction.RhythmResult" />
                         </td>
                     </tr>
                     @if (!string.IsNullOrEmpty(correction.ReviewNote))
@@ -217,19 +167,7 @@ else
                             <p style="color:green" id="summary-edited-@correction.Id">@correction.PoemSummary</p>
                         </td>
                         <td>
-                            @if (correction.SummaryReviewResult == CorrectionReviewResult.NotReviewed)
-                            {
-                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.SummaryReviewResult)</p>
-                            }
-                            else
-                            @if (correction.SummaryReviewResult == CorrectionReviewResult.Approved)
-                            {
-                                <p style="color:green" id="summary-original-@correction.Id">@CorrectionReviewResultConvertor.GetString(correction.SummaryReviewResult)</p>
-                            }
-                            else
-                            {
-                                <p style="color:red" id="summary-edited-@correction.Id">@CorrectionReviewResultConvertor.GetString(correction.SummaryReviewResult)</p>
-                            }
+                            <partial name="_ReviewResultBadge" model="correction.SummaryReviewResult" />
                         </td>
                     </tr>
                     <tr>
@@ -263,19 +201,7 @@ else
                             <p style="color:green">@correction.RhymeLetters</p>
                         </td>
                         <td>
-                            @if (correction.RhymeLettersReviewResult == CorrectionReviewResult.Approved)
-                            {
-                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.RhymeLettersReviewResult)</p>
-                            }
-                            else
-                            @if (correction.RhymeLettersReviewResult == CorrectionReviewResult.Approved)
-                            {
-                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.RhymeLettersReviewResult)</p>
-                            }
-                            else
-                            {
-                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.RhymeLettersReviewResult)</p>
-                            }
+                            <partial name="_ReviewResultBadge" model="correction.RhymeLettersReviewResult" />
                         </td>
                     </tr>
                     @if (!string.IsNullOrEmpty(correction.ReviewNote))
@@ -305,19 +231,7 @@ else
                             <p style="color:green">@correction.Rhythm2</p>
                         </td>
                         <td>
-                            @if (correction.Rhythm2Result == CorrectionReviewResult.NotReviewed)
-                            {
-                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.Rhythm2Result)</p>
-                            }
-                            else
-                            @if (correction.Rhythm2Result == CorrectionReviewResult.Approved)
-                            {
-                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.Rhythm2Result)</p>
-                            }
-                            else
-                            {
-                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.Rhythm2Result)</p>
-                            }
+                            <partial name="_ReviewResultBadge" model="correction.Rhythm2Result" />
                         </td>
                     </tr>
                     @if (!string.IsNullOrEmpty(correction.ReviewNote))
@@ -346,19 +260,7 @@ else
                             <p style="color:green">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(correction.PoemFormat)</p>
                         </td>
                         <td>
-                            @if (correction.PoemFormatReviewResult == CorrectionReviewResult.NotReviewed)
-                            {
-                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.PoemFormatReviewResult)</p>
-                            }
-                            else
-                            @if (correction.PoemFormatReviewResult == CorrectionReviewResult.Approved)
-                            {
-                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.PoemFormatReviewResult)</p>
-                            }
-                            else
-                            {
-                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.PoemFormatReviewResult)</p>
-                            }
+                            <partial name="_ReviewResultBadge" model="correction.PoemFormatReviewResult" />
                         </td>
                     </tr>
                     @if (!string.IsNullOrEmpty(correction.ReviewNote))
@@ -386,19 +288,7 @@ else
                                     <p>باید حذف شود</p>
                                 </td>
                                 <td>
-                                    @if (verse.MarkForDeleteResult == CorrectionReviewResult.NotReviewed)
-                                    {
-                                        <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.MarkForDeleteResult)</p>
-                                    }
-                                    else
-                                   if (verse.MarkForDeleteResult == CorrectionReviewResult.Approved)
-                                    {
-                                        <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.MarkForDeleteResult)</p>
-                                    }
-                                    else
-                                    {
-                                        <p style="color:red">@CorrectionReviewResultConvertor.GetString(verse.MarkForDeleteResult)</p>
-                                    }
+                                    <partial name="_ReviewResultBadge" model="verse.MarkForDeleteResult" />
                                 </td>
                             </tr>
                             <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
@@ -414,19 +304,7 @@ else
                                     <p>@verse.Text</p>
                                 </td>
                                 <td>
-                                    @if (verse.NewVerseResult == CorrectionReviewResult.NotReviewed)
-                                    {
-                                        <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.NewVerseResult)</p>
-                                    }
-                                    else
-                                   if (verse.NewVerseResult == CorrectionReviewResult.Approved)
-                                    {
-                                        <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.NewVerseResult)</p>
-                                    }
-                                    else
-                                    {
-                                        <p style="color:red">@CorrectionReviewResultConvertor.GetString(verse.NewVerseResult)</p>
-                                    }
+                                    <partial name="_ReviewResultBadge" model="verse.NewVerseResult" />
                                 </td>
                             </tr>
                             <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
@@ -441,19 +319,7 @@ else
                                     <p style="color:green" id="verse-@verse.Id-edited-@correction.Id">@verse.Text</p>
                                 </td>
                                 <td>
-                                    @if (verse.Result == CorrectionReviewResult.NotReviewed)
-                                    {
-                                        <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.Result)</p>
-                                    }
-                                    else
-                                   if (verse.Result == CorrectionReviewResult.Approved)
-                                    {
-                                        <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.Result)</p>
-                                    }
-                                    else
-                                    {
-                                        <p style="color:red">@CorrectionReviewResultConvertor.GetString(verse.Result)</p>
-                                    }
+                                    <partial name="_ReviewResultBadge" model="verse.Result" />
                                 </td>
                             </tr>
                             <tr>
@@ -483,19 +349,7 @@ else
                                     <p style="color:green" id="verse-summary-@verse.Id-edited-@correction.Id">@verse.CoupletSummary</p>
                                 </td>
                                 <td>
-                                    @if (verse.SummaryReviewResult == CorrectionReviewResult.NotReviewed)
-                                    {
-                                        <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.SummaryReviewResult)</p>
-                                    }
-                                    else
-                                   if (verse.SummaryReviewResult == CorrectionReviewResult.Approved)
-                                    {
-                                        <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.SummaryReviewResult)</p>
-                                    }
-                                    else
-                                    {
-                                        <p style="color:red">@CorrectionReviewResultConvertor.GetString(verse.SummaryReviewResult)</p>
-                                    }
+                                    <partial name="_ReviewResultBadge" model="verse.SummaryReviewResult" />
                                 </td>
                             </tr>
                             <tr>
@@ -528,19 +382,7 @@ else
                                     <p style="color:orange">تبدیل نوع مصرع به @RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((VersePosition)verse.VersePosition)</p>
                                 </td>
                                 <td>
-                                    @if (verse.VersePositionResult == CorrectionReviewResult.NotReviewed)
-                                    {
-                                        <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.VersePositionResult)</p>
-                                    }
-                                    else
-                                   if (verse.VersePositionResult == CorrectionReviewResult.Approved)
-                                    {
-                                        <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.VersePositionResult)</p>
-                                    }
-                                    else
-                                    {
-                                        <p style="color:red">@CorrectionReviewResultConvertor.GetString(verse.VersePositionResult)</p>
-                                    }
+                                    <partial name="_ReviewResultBadge" model="verse.VersePositionResult" />
                                 </td>
                             </tr>
                             <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
@@ -574,19 +416,7 @@ else
                                     }
                                 </td>
                                 <td>
-                                    @if (verse.LanguageReviewResult == CorrectionReviewResult.NotReviewed)
-                                    {
-                                        <p style="color:blue">@CorrectionReviewResultConvertor.GetString(verse.LanguageReviewResult)</p>
-                                    }
-                                    else
-                                   if (verse.LanguageReviewResult == CorrectionReviewResult.Approved)
-                                    {
-                                        <p style="color:green">@CorrectionReviewResultConvertor.GetString(verse.LanguageReviewResult)</p>
-                                    }
-                                    else
-                                    {
-                                        <p style="color:red">@CorrectionReviewResultConvertor.GetString(verse.LanguageReviewResult)</p>
-                                    }
+                                    <partial name="_ReviewResultBadge" model="verse.LanguageReviewResult" />
                                 </td>
                             </tr>
                             <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
@@ -616,11 +446,11 @@ else
                     <td colspan="3">
                         @if (correction.Reviewed)
                         {
-                            <a role="button" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" href="/User/Editor?id=@correction.PoemId">ویرایش مجدد</a>
+                            <a role="button" class="up-btn up-btn--danger up-btn--block" href="/User/Editor?id=@correction.PoemId">ویرایش مجدد</a>
                         }
                         else
                         {
-                            <a role="button" style="cursor:pointer;width:100%;color:white;background-color:blue;display:block" href="/User/Editor?id=@correction.PoemId">مشاهده</a>
+                            <a role="button" class="up-btn up-btn--primary up-btn--block" href="/User/Editor?id=@correction.PoemId">مشاهده</a>
                         }
                     </td>
                 </tr>
@@ -629,7 +459,7 @@ else
                 {
                     <tr>
                         <td colspan="3">
-                            <a role="button" style="cursor:pointer;width:100%;color:white;background-color:orange;display:block" onclick="rollBackCorrection(@correction.Id)">برگشت به وضعیت قبل از این ویرایش</a>
+                            <a role="button" class="up-btn up-btn--ghost up-btn--block" onclick="rollBackCorrection(@correction.Id)">برگشت به وضعیت قبل از این ویرایش</a>
                         </td>
                     </tr>
                 }
@@ -637,27 +467,7 @@ else
             </table>
 
         </div>
-
-
-        <hr />
     }
 
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
-
-
-
-
-
+    <partial name="_Pagination" model="Model.PaginationLinks" />
 }

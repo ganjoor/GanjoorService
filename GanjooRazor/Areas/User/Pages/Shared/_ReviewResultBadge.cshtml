@@ -1,0 +1,17 @@
+@*
+    Renders a correction review result (NotReviewed/Approved/Rejected...)
+    as a colored badge instead of an ad hoc <p style="color:...">.
+    Used on Edits.cshtml / CatEdits.cshtml / SectionEdits.cshtml.
+
+        <partial name="_ReviewResultBadge" model="correction.Result" />
+*@
+@model RMuseum.Models.Ganjoor.CorrectionReviewResult
+@{
+    var cssClass = Model switch
+    {
+        RMuseum.Models.Ganjoor.CorrectionReviewResult.NotReviewed => "up-badge--primary",
+        RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved => "up-badge--success",
+        _ => "up-badge--danger",
+    };
+}
+<span class="up-badge @cssClass">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(Model)</span>
