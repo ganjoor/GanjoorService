@@ -1,63 +1,52 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.Admin.Pages.ExpensesModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "هزینه‌ها";
 }
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
-<h1>@ViewData["Title"]</h1>
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <div class="up-alert up-alert--info">@Model.LastMessage</div>
+}
 
-<p>@Model.LastMessage</p>
+<div class="up-card">
+    <h2 class="up-card__title">هزینهٔ جدید</h2>
+    <form method="post" class="up-form">
+        <div class="up-field">
+            <label asp-for="Expense.ExpenseDate">تاریخ</label>
+            <input type="date" asp-for="Expense.ExpenseDate" />
+        </div>
+        <div class="up-field">
+            <label asp-for="Expense.Amount">مبلغ</label>
+            <input type="number" asp-for="Expense.Amount" />
+        </div>
+        <div class="up-field">
+            <label asp-for="Expense.Unit">واحد</label>
+            <input asp-for="Expense.Unit" />
+        </div>
+        <div class="up-field">
+            <label asp-for="Expense.Description">شرح</label>
+            <input asp-for="Expense.Description" />
+        </div>
+        <div class="up-form-actions">
+            <button type="submit" class="up-btn up-btn--success">ثبت هزینهٔ جدید</button>
+        </div>
+    </form>
+</div>
 
-<form method="post">
-    <table>
-        <tr>
-            <td>
-                تاریخ:
-            </td>
-            <td>
-                <input type="date" asp-for="Expense.ExpenseDate" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                مبلغ:
-            </td>
-            <td>
-                <input type="number" asp-for="Expense.Amount" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                واحد:
-            </td>
-            <td>
-                <input asp-for="Expense.Unit" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                شرح:
-            </td>
-            <td>
-                <input size="50" asp-for="Expense.Description" />
-            </td>
-        </tr>
-
-        <tr>
-            <td colspan="2">
-                <input type="submit" value="ثبت هزینهٔ جدید" />
-            </td>
-        </tr>
-
-    </table>
-
-</form>
-
-<p><a href="/donate" target="_blank">مشاهدهٔ صفحه</a></p>
-<p>@Model.ShowAccountInfo</p>
-<p><a role="button" onclick="rebuildDonationsPage()" class="actionlink" title="بازسازی صفحهٔ کمک‌ها">بازسازی صفحهٔ کمک‌ها</a></p>
+<div class="up-form-actions" style="margin-bottom:var(--up-space-3);">
+    <a href="/donate" target="_blank" class="up-btn up-btn--ghost">مشاهدهٔ صفحه</a>
+    <a role="button" onclick="rebuildDonationsPage()" class="up-btn up-btn--ghost" title="بازسازی صفحهٔ کمک‌ها">بازسازی صفحهٔ کمک‌ها</a>
+</div>
+@if (!string.IsNullOrEmpty(Model.ShowAccountInfo))
+{
+    <p class="up-hint">@Model.ShowAccountInfo</p>
+}
 
 @if (Model.Expenses != null)
 {
@@ -66,9 +55,7 @@
             <th>تاریخ</th>
             <th>مبلغ</th>
             <th>شرح</th>
-            <th>
-                #
-            </th>
+            <th>#</th>
         </tr>
         @foreach (var expense in Model.Expenses)
         {
@@ -77,12 +64,10 @@
                 <td>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(expense.Amount)</td>
                 <td>@expense.Description</td>
                 <td>
-                    <a role="button" href="/Admin/ExpenseEdit/?id=@expense.Id" class="actionlink" title="ویرایش">✎</a>
-                    <a role="button" onclick="deleteItem(@expense.Id, 'هزینه')" class="actionlink" title="حذف">🗑</a>
+                    <a role="button" href="/Admin/ExpenseEdit/?id=@expense.Id" class="up-icon-btn" title="ویرایش" aria-label="ویرایش این هزینه">✎</a>
+                    <a role="button" onclick="deleteItem(@expense.Id, 'هزینه')" class="up-icon-btn" title="حذف" aria-label="حذف این هزینه">🗑</a>
                 </td>
             </tr>
         }
     </table>
-
-
 }

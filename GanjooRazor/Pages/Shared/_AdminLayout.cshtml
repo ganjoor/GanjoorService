@@ -53,24 +53,29 @@
                     url: $(urlInput).val(),
                     active: $(activeInput).is(":checked")
                 },
+                error: function (e) {
+                    upToast(e.responseText || 'خطا رخ داد.', 'error');
+                },
                 success: function() {
-                    alert('آگاهی به درستی ویرایش شد.')
+                    upToast('آگاهی به درستی ویرایش شد.', 'success');
                 },
 
             });
         }
 
-        function deleteBanner(bannerId) {
+        async function deleteBanner(bannerId) {
 
-            if (!confirm('آیا از حذف این آگاهی اطمینان دارید؟'))
-                return;
-
+            var ok = await upConfirm('آیا از حذف این آگاهی اطمینان دارید؟');
+            if (!ok) return;
 
             $.ajax({
                 type: "DELETE",
                 url: '',
                 data: {
                     id: bannerId
+                },
+                error: function (e) {
+                    upToast(e.responseText || 'خطا رخ داد.', 'error');
                 },
                 success: function() {
                     var bannerIdBlockId = '#tr-' + bannerId;
@@ -79,9 +84,9 @@
             });
         }
 
-        function rebuildDonationsPage() {
-            if (!confirm('آیا از بازسازی صفحهٔ کمک‌ها اطمینان دارید؟'))
-                return;
+        async function rebuildDonationsPage() {
+            var ok = await upConfirm('آیا از بازسازی صفحهٔ کمک‌ها اطمینان دارید؟');
+            if (!ok) return;
 
             var url = '?handler=RebuildPage';
 
@@ -89,21 +94,20 @@
                 type: "POST",
                 url: url,
                 error: function() {
-                    alert('خطا رخ داد.')
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function() {
-                    alert('صفحه به درستی بازسازی شد.')
+                    upToast('صفحه به درستی بازسازی شد.', 'success');
                 },
 
             });
         }
 
 
-        function deleteItem(itemId, itemName) {
+        async function deleteItem(itemId, itemName) {
 
-            if (!confirm('آیا از حذف این ' + itemName + ' اطمینان دارید؟'))
-                return;
-
+            var ok = await upConfirm('آیا از حذف این ' + itemName + ' اطمینان دارید؟');
+            if (!ok) return;
 
             $.ajax({
                 type: "DELETE",
@@ -112,7 +116,7 @@
                     id: itemId
                 },
                 error: function() {
-                    alert('خطا رخ داد.');
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function() {
                     location.reload();
@@ -339,9 +343,9 @@
 
 
 
-        function exportAll() {
-            if (!confirm('آیا از تولید مجدد همهٔ فایلهای گنجور رومیزی اطمینان دارید؟'))
-                return;
+        async function exportAll() {
+            var ok = await upConfirm('آیا از تولید مجدد همهٔ فایلهای گنجور رومیزی اطمینان دارید؟');
+            if (!ok) return;
 
             var url = '?handler=ExportAll';
 
@@ -349,10 +353,10 @@
                 type: "POST",
                 url: url,
                 error: function() {
-                    alert('خطا رخ داد.')
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function() {
-                    alert('فرایند تولید مجدد همهٔ فایلهای گنجور رومیزی شروع شد.')
+                    upToast('فرایند تولید مجدد همهٔ فایلهای گنجور رومیزی شروع شد.', 'success');
                 },
 
             });

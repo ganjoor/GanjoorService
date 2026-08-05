@@ -1,75 +1,63 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.Admin.Pages.DonationsModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "کمک‌های مالی";
 }
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
-<h1>@ViewData["Title"]</h1>
-
-
-
-<p>@Model.LastMessage</p>
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <div class="up-alert up-alert--info">@Model.LastMessage</div>
+}
 
 @if (!string.IsNullOrEmpty(Model.EmailContent))
 {
-    <textarea rows="5" cols="50">@Model.EmailContent</textarea>
+    <div class="up-field">
+        <label>متن ایمیل</label>
+        <textarea rows="5" cols="50">@Model.EmailContent</textarea>
+    </div>
 }
 
 @if (Model.Donation != null)
 {
-    <form method="post">
-        <table>
-            <tr>
-                <td>
-                    تاریخ:
-                </td>
-                <td>
-                    <input type="date" asp-for="Donation.RecordDate" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    مبلغ:
-                </td>
-                <td>
-                    <input type="number" asp-for="Donation.Amount" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    واحد:
-                </td>
-                <td>
-                    <input asp-for="Donation.Unit" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    اهدا کننده:
-                </td>
-                <td>
-                    <input size="50" asp-for="Donation.DonorName" />
-                </td>
-            </tr>
-
-            <tr>
-                <td colspan="2">
-                    <input type="submit" value="ثبت کمک مالی جدید" />
-                </td>
-            </tr>
-
-        </table>
-
-    </form>
+    <div class="up-card">
+        <h2 class="up-card__title">کمک مالی جدید</h2>
+        <form method="post" class="up-form">
+            <div class="up-field">
+                <label asp-for="Donation.RecordDate">تاریخ</label>
+                <input type="date" asp-for="Donation.RecordDate" />
+            </div>
+            <div class="up-field">
+                <label asp-for="Donation.Amount">مبلغ</label>
+                <input type="number" asp-for="Donation.Amount" />
+            </div>
+            <div class="up-field">
+                <label asp-for="Donation.Unit">واحد</label>
+                <input asp-for="Donation.Unit" />
+            </div>
+            <div class="up-field">
+                <label asp-for="Donation.DonorName">اهدا کننده</label>
+                <input size="50" asp-for="Donation.DonorName" />
+            </div>
+            <div class="up-form-actions">
+                <button type="submit" class="up-btn up-btn--success">ثبت کمک مالی جدید</button>
+            </div>
+        </form>
+    </div>
 }
 
-
-
-<p><a href="/donate" target="_blank">مشاهدهٔ صفحه</a></p>
-<p>@Model.ShowAccountInfo</p>
-<p><a role="button" onclick="rebuildDonationsPage()" class="actionlink" title="بازسازی صفحهٔ کمک‌ها">بازسازی صفحهٔ کمک‌ها</a></p>
+<div class="up-form-actions" style="margin-bottom:var(--up-space-3);">
+    <a href="/donate" target="_blank" class="up-btn up-btn--ghost">مشاهدهٔ صفحه</a>
+    <a role="button" onclick="rebuildDonationsPage()" class="up-btn up-btn--ghost" title="بازسازی صفحهٔ کمک‌ها">بازسازی صفحهٔ کمک‌ها</a>
+</div>
+@if (!string.IsNullOrEmpty(Model.ShowAccountInfo))
+{
+    <p class="up-hint">@Model.ShowAccountInfo</p>
+}
 
 @if (Model.Donations != null)
 {
@@ -78,9 +66,7 @@
             <th>تاریخ</th>
             <th>مبلغ</th>
             <th>اهدا کننده</th>
-            <th>
-                #
-            </th>
+            <th>#</th>
         </tr>
         @foreach (var donation in Model.Donations)
         {
@@ -89,9 +75,9 @@
                 <td>@donation.AmountString</td>
                 <td>@donation.DonorName</td>
                 <td>
-                    <a role="button" href="/Admin/DonationEdit/?id=@donation.Id" class="actionlink" title="ویرایش">✎</a>
-                    <a role="button" onclick="deleteItem(@donation.Id, 'کمک')" class="actionlink" title="حذف">🗑</a>
-                    <a role="button" href="/Admin/Donations?id=@donation.Id" class="actionlink" title="تولید محتوای پیام">#</a>
+                    <a role="button" href="/Admin/DonationEdit/?id=@donation.Id" class="up-icon-btn" title="ویرایش" aria-label="ویرایش این کمک مالی">✎</a>
+                    <a role="button" onclick="deleteItem(@donation.Id, 'کمک')" class="up-icon-btn" title="حذف" aria-label="حذف این کمک مالی">🗑</a>
+                    <a role="button" href="/Admin/Donations?id=@donation.Id" class="up-icon-btn" title="تولید محتوای پیام" aria-label="تولید محتوای پیام">#</a>
                 </td>
             </tr>
         }

@@ -1,19 +1,24 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.Admin.Pages.PoetsModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "مدیریت سخنوران";
 }
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
-<h1>@ViewData["Title"]</h1>
-
-<p>@Model.LastMessage</p>
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <div class="up-alert up-alert--info">@Model.LastMessage</div>
+}
 
 <script>
-    function savePoetMeta(id, name) {
-        if (!confirm('آیا از ذخیرهٔ اطلاعات سال تولد و وفات و ترتیب برای ' + name + ' اطمینان دارید؟'))
-            return;
+    async function savePoetMeta(id, name) {
+        var ok = await upConfirm('آیا از ذخیرهٔ اطلاعات سال تولد و وفات و ترتیب برای ' + name + ' اطمینان دارید؟');
+        if (!ok) return;
+
         $.ajax({
             type: "POST",
             url: '?handler=SavePoetMeta',
@@ -28,35 +33,35 @@
                 deathlocation: $('#death-place-' + String(id)).val(),
             },
             error: function (e) {
-                if (e.responseText == null)
-                    alert(e);
-                else
-                    alert(e.responseText);
+                upToast(e.responseText || 'خطا رخ داد.', 'error');
             },
             success: function () {
-                alert('انجام شد.');
+                upToast('انجام شد.', 'success');
             },
         });
     }
 
-    function savePoetsMeta() {
-        if (!confirm('آیا از به‌روزرسانی گروه‌بندی بر اساس قرن اطمینان دارید؟'))
-            return;
+    async function savePoetsMeta() {
+        var ok = await upConfirm('آیا از به‌روزرسانی گروه‌بندی بر اساس قرن اطمینان دارید؟');
+        if (!ok) return;
+
         $.ajax({
             type: "POST",
             url: '?handler=UpdatePeriods',
             success: function () {
-                alert('انجام شد.');
+                upToast('انجام شد.', 'success');
             },
             error: function (e) {
-                if (e.responseText == null)
-                    alert(e);
-                else
-                    alert(e.responseText);
+                upToast(e.responseText || 'خطا رخ داد.', 'error');
             },
         });
     }
 </script>
+
+<div class="up-form-actions" style="margin-bottom:var(--up-space-3);">
+    <a href="/Admin/Poet" class="up-btn up-btn--success">سخنور جدید</a>
+    <a role="button" onclick="savePoetsMeta()" class="up-btn up-btn--ghost">ذخیرهٔ گروه‌بندی بر اساس قرن</a>
+</div>
 
 <table>
     <tr>
@@ -64,14 +69,6 @@
         <th>زاده</th>
         <th>درگذشته</th>
         <th>چسبانی</th>
-    </tr>
-    <tr>
-        <td colspan="4"><a href="/Admin/Poet">سخنور جدید</a></td>
-    </tr>
-    <tr>
-        <td colspan="4">
-            <a role="button" onclick="savePoetsMeta()" class="actionlink">ذخیرهٔ گروه‌بندی بر اساس قرن</a>
-        </td>
     </tr>
 
     @foreach (var poet in Model.Poets)
@@ -90,7 +87,6 @@
                 {
                     <input type="checkbox" name="@($"birth-valid-{poet.Id}")" id="@($"birth-valid-{poet.Id}")" />
                 }
-
             </td>
             <td>
                 <input type="text" name="@($"death-{poet.Id}")" id="@($"death-{poet.Id}")" value="@poet.DeathYearInLHijri" />
@@ -103,7 +99,6 @@
                     <input type="checkbox" name="@($"death-valid-{poet.Id}")" id="@($"death-valid-{poet.Id}")" />
                 }
             </td>
-
             <td>
                 <input type="text" name="@($"pinorder-{poet.Id}")" id="@($"pinorder-{poet.Id}")" value="@poet.PinOrder" />
             </td>
@@ -125,7 +120,6 @@
                             {
                                 <option value="@location.Name">@location.Name</option>
                             }
-
                         }
                     }
                 </select>
@@ -160,17 +154,12 @@
         </tr>
         <tr>
             <td colspan="4">
-                <a role="button" onclick="savePoetMeta(@poet.Id, '@poet.Nickname')" class="actionlink">ذخیرهٔ @poet.Nickname</a>
+                <a role="button" onclick="savePoetMeta(@poet.Id, '@poet.Nickname')" class="up-btn up-btn--success up-btn--sm">ذخیرهٔ @poet.Nickname</a>
             </td>
         </tr>
     }
 </table>
 
-
-
-
-<table>
-    <tr>
-        <td><a role="button" onclick="exportAll()" class="actionlink">sqlite</a></td>
-    </tr>
-</table>
+<div class="up-form-actions" style="margin-top:var(--up-space-3);">
+    <a role="button" onclick="exportAll()" class="up-btn up-btn--ghost">sqlite</a>
+</div>
