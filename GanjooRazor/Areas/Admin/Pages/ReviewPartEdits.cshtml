@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.Admin.Pages.ReviewPartEditsModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using DNTPersianUtils.Core
@@ -15,149 +15,126 @@ else
     ViewData["Title"] = "بازبینی ویرایش‌های قطعات";
 }
 
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
-<h1>@ViewData["Title"]</h1>
-
-@if (Model.DeletedUserSections == false)
-{
-    <a role="button" href="/Admin/ReviewPartEdits/?deletedUserSections=true" class="pagebutton">وزن‌های نیافته</a>
-}
-else
-{
-    <a role="button" href="/Admin/ReviewPartEdits" class="pagebutton">پیشنهادهای عادی</a>
-}
+<div class="up-form-actions" style="margin-bottom:var(--up-space-3);">
+    @if (Model.DeletedUserSections == false)
+    {
+        <a role="button" href="/Admin/ReviewPartEdits/?deletedUserSections=true" class="up-btn up-btn--ghost">وزن‌های نیافته</a>
+    }
+    else
+    {
+        <a role="button" href="/Admin/ReviewPartEdits" class="up-btn up-btn--ghost">پیشنهادهای عادی</a>
+    }
+</div>
 
 @if (!string.IsNullOrEmpty(Model.FatalError))
 {
-    <p>@Model.FatalError</p>
+    <div class="up-alert up-alert--danger">@Model.FatalError</div>
 }
-else if (@Model.Correction == null)
+else if (Model.Correction == null)
 {
-    <p>ویرایشی وجود ندارد.</p>
+    <partial name="_EmptyState" model="@("ویرایشی وجود ندارد.")" />
 }
 else if (Model.DeletedUserSections)
 {
+    <div class="up-card">
+        <p class="up-hint">تعداد کل: @Model.TotalCount</p>
+        <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="up-btn up-btn--ghost up-btn--sm">@Model.PageInformation.FullTitle</a></p>
 
-    <table>
-        <tr>
-            <td>
-                تعداد کل: @Model.TotalCount
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.Raw(Model.PoemSection.HtmlText)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                وزن:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <label for="select-search">جستجوی وزن:</label><br />
-                <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo('select-search', 'rhythm-new')" list="inputRhythms" autocomplete="off" size="50" autofocus />
-                <datalist id="inputRhythms">
-                    @if (Model.RhythmsByVerseCount != null)
-                        @foreach (var rhythm in Model.RhythmsByVerseCount)
-                        {
-                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
-                        }
-                </datalist>
+        <div>@Html.Raw(Model.PoemSection.HtmlText)</div>
 
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <script>
-                    function suggestRhythmForDeletedUser(id, correctionId) {
-                        var rhythm_new = $('#rhythm-new').val();
-
-
-                        $('#savecorrections').hide();
-                        $('#saving').text('در حال ذخیره ...');
-
-
-                        var url = '?handler=SuggestRhythm';
-
-                        $.ajax({
-                            type: "POST",
-                            url: url,
-                            data: {
-                                sectionId: id,
-                                correctionId: correctionId,
-                                rhythm: rhythm_new
-                            },
-                            success: function () {
-                                location.reload(true);
-                            },
-                            error: function (e) {
-                                if (e.responseText == null)
-                                    alert(e);
-                                else
-                                    alert(e.responseText);
-                                $('#savecorrections').show();
-                                $('#saving').text('');
-                            }
-
-                        });
-
-
-                    }
-
-                </script>
-                <a role="button" id="savecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="suggestRhythmForDeletedUser(@Model.PoemSection.Id, @Model.Correction.Id)">ذخیره</a>
-            </td>
-        <tr>
-            <td>
-                <label for="rhythm-new">وزن انتخاب شده:</label>
-                <br />
-                <select id="rhythm-new" name="rhythm-new">
-                    @foreach (var rhythm in Model.RhythmsAlphabetically)
+        <div class="up-field">
+            <label for="select-search">جستجوی وزن</label>
+            <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo('select-search', 'rhythm-new')" list="inputRhythms" autocomplete="off" autofocus />
+            <datalist id="inputRhythms">
+                @if (Model.RhythmsByVerseCount != null)
+                {
+                    foreach (var rhythm in Model.RhythmsByVerseCount)
                     {
-                        <option value="@rhythm.Rhythm">@(rhythm.Rhythm == "" ? "هیچکدام" : rhythm.Rhythm == "null" ? "وزن‌یابی نشده" : rhythm.Rhythm)</option>
+                        <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
                     }
-                </select>
-                <a role="button" onclick="resetRhythm('rhythm-new')" class="pagebutton">پاک کردن وزن</a>
-                <br />
-                <script>
-                    function newRhythm() {
-                        var rhythm = prompt("پیشنهاد وزن جدید", "");
-                        if (rhythm != null) {
-                            var select = document.getElementById('rhythm-new');
-                            var options = select.options;
-                            for (let i = 0; i < options.length; i++) {
-                                if (options[i].value == rhythm) {
-                                    alert('وزن پیشنهادی تکراری است.');
-                                    return;
-                                }
-                            }
-                            var opt = document.createElement('option');
-                            opt.value = rhythm;
-                            opt.innerHTML = rhythm;
-                            select.appendChild(opt);
+                }
+            </datalist>
+        </div>
 
-                            var opt2 = document.createElement('option');
-                            opt2.value = rhythm;
-                            opt2.innerHTML = rhythm;
-                            document.getElementById('rhythm-new2').appendChild(opt2);
+        <script>
+            function suggestRhythmForDeletedUser(id, correctionId) {
+                var rhythm_new = $('#rhythm-new').val();
 
-                            alert('وزن پیشنهادی به انتهای لیست وزن‌ها اضافه شده. لطفاً از لیست آن را انتخاب کنید.');
+                $('#savecorrections').hide();
+                $('#saving').text('در حال ذخیره ...');
+
+                var url = '?handler=SuggestRhythm';
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {
+                        sectionId: id,
+                        correctionId: correctionId,
+                        rhythm: rhythm_new
+                    },
+                    success: function () {
+                        location.reload(true);
+                    },
+                    error: function (e) {
+                        upToast(e.responseText || 'خطا رخ داد.', 'error');
+                        $('#savecorrections').show();
+                        $('#saving').text('');
+                    }
+
+                });
+            }
+        </script>
+
+        <div class="up-field">
+            <label for="rhythm-new">وزن انتخاب شده</label>
+            <select id="rhythm-new" name="rhythm-new">
+                @foreach (var rhythm in Model.RhythmsAlphabetically)
+                {
+                    <option value="@rhythm.Rhythm">@(rhythm.Rhythm == "" ? "هیچکدام" : rhythm.Rhythm == "null" ? "وزن‌یابی نشده" : rhythm.Rhythm)</option>
+                }
+            </select>
+            <div class="up-form-actions" style="margin-top:var(--up-space-2);">
+                <a role="button" onclick="resetRhythm('rhythm-new')" class="up-btn up-btn--ghost up-btn--sm">پاک کردن وزن</a>
+                <a role="button" onclick="newRhythm()" class="up-btn up-btn--ghost up-btn--sm">پیشنهاد وزن جدید</a>
+            </div>
+        </div>
+
+        <script>
+            function newRhythm() {
+                var rhythm = prompt("پیشنهاد وزن جدید", "");
+                if (rhythm != null) {
+                    var select = document.getElementById('rhythm-new');
+                    var options = select.options;
+                    for (let i = 0; i < options.length; i++) {
+                        if (options[i].value == rhythm) {
+                            upToast('وزن پیشنهادی تکراری است.', 'error');
+                            return;
                         }
                     }
-                </script>
-                <a role="button" onclick="newRhythm()" class="pagebutton">پیشنهاد وزن جدید</a>
-            </td>
-        </tr>
+                    var opt = document.createElement('option');
+                    opt.value = rhythm;
+                    opt.innerHTML = rhythm;
+                    select.appendChild(opt);
 
-        
-    </table>
+                    var opt2 = document.createElement('option');
+                    opt2.value = rhythm;
+                    opt2.innerHTML = rhythm;
+                    document.getElementById('rhythm-new2').appendChild(opt2);
+
+                    upToast('وزن پیشنهادی به انتهای لیست وزن‌ها اضافه شده. لطفاً از لیست آن را انتخاب کنید.', 'success');
+                }
+            }
+        </script>
+
+        <div class="up-form-actions">
+            <a role="button" id="savecorrections" class="up-btn up-btn--success" onclick="suggestRhythmForDeletedUser(@Model.PoemSection.Id, @Model.Correction.Id)">ذخیره</a>
+        </div>
+    </div>
 }
 else
 {
@@ -166,7 +143,6 @@ else
 
             $('#moderatecorrections').hide();
             $('#saving').text('در حال بررسی ...');
-
 
             var breakFromVIndices = [];
             for (var i = 0; i <= verseCount; i++) {
@@ -177,7 +153,7 @@ else
             }
 
             if (breakFromVIndices.length > 10) {
-                alert('حداکثر از ۱۰ محل می‌توانید قطعه را بشکنید.');
+                upToast('حداکثر از ۱۰ محل می‌توانید قطعه را بشکنید.', 'error');
                 return;
             }
 
@@ -201,7 +177,6 @@ else
                 poemformatReviewResult = $('input[name=poemformat_review_result]:checked').val()
             }
 
-
             var url = '?handler=SendCorrectionsModeration';
 
             $.ajax({
@@ -223,17 +198,11 @@ else
                     location.reload(true);
                 },
                 error: function (e) {
-                    if (e.responseText == null)
-                        alert(e);
-                    else
-                        alert(e.responseText);
+                    upToast(e.responseText || 'خطا رخ داد.', 'error');
                     $('#moderatecorrections').show();
                     $('#saving').text('');
                 }
             });
-
-
-
         }
 
         function checkAllNotCorrect(verseCount) {
@@ -251,370 +220,306 @@ else
         }
     </script>
 
+    <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="up-btn up-btn--ghost up-btn--sm">@Model.PageInformation.FullTitle</a></p>
+    <p><a href="/User/AllPoemSections?id=@Model.PageInformation.Id" class="up-btn up-btn--ghost up-btn--sm">همهٔ قطعات شعر</a></p>
 
-    <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
+    <div class="up-card">
+        <div class="up-field">
+            <label>پیشنهاد دهنده</label>
+            <div class="up-field-static"><a href="/hashieha/?userid=@Model.Correction.UserId" target="_blank">@Model.Correction.UserNickname</a></div>
+        </div>
+        <div class="up-field">
+            <label>زمان</label>
+            <div class="up-field-static">@Model.Correction.Date.ToFriendlyPersianDateTextify()</div>
+        </div>
+        <p class="up-hint">تعداد کل: @Model.TotalCount</p>
+        <div class="up-field">
+            <label>شکستن</label>
+            @if (Model.Correction.BreakFromVerse1VOrder != null)
+            {
+                <span class="up-badge up-badge--danger">دارد</span>
+            }
+            else
+            {
+                <span class="up-badge">ندارد</span>
+            }
+        </div>
 
-    <p>
-        <a href="/User/AllPoemSections?id=@Model.PageInformation.Id">
-            همهٔ قطعات شعر
-        </a>
-    </p>
+        <div class="up-form-actions">
+            <a role="button" onclick="checkAllNotCorrect(@Model.Verses.Count)" class="up-btn up-btn--ghost up-btn--sm">درست نیست</a>
+        </div>
 
+        <p id="saving" class="up-hint">&nbsp;</p>
 
-    <table>
-        <tr>
-            <td>
-                پیشنهاد دهنده:
-            </td>
-            <td>
-                <a href="/hashieha/?userid=@Model.Correction.UserId" target="_blank">@Model.Correction.UserNickname</a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a role="button" id="moderatecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="moderateSectionCorrections(@Model.Correction.Id, @Model.Verses.Count)">بررسی</a>
-            </td>
-            <td>
-                <form method="post">
-                    <button type="submit" name="next" id="next" style="width:100%;color:white;background-color:orange">بعدی</button>
-                </form>
-            </td>
-        </tr>
-
-        <tr>
-            <td>
-                زمان:
-            </td>
-            <td>
-                @Model.Correction.Date.ToFriendlyPersianDateTextify()
-            </td>
-        </tr>
-
-        <tr>
-            <td>
-                تعداد کل:
-            </td>
-            <td>
-                @Model.TotalCount
-            </td>
-        </tr>
-        <tr>
-            <td>
-                شکستن
-            </td>
-            <td>
-                @if(Model.Correction.BreakFromVerse1VOrder != null)
-                {
-                    <span class="background-red color-white">دارد</span>
-                }
-                else
-                {
-                    <text>ندارد</text>
-                }
-            </td>
-        </tr>
-
-        <tr>
-            <td colspan=2>
-                <a role="button" onclick="checkAllNotCorrect(@Model.Verses.Count)" class="pagebutton">درست نیست</a>
-            </td>
-        </tr>
-
-        <tr>
-            <td colspan="2"><p id="saving">&nbsp;</p></td>
-        </tr>
         @if (Model.TextSourceImage != null)
         {
-            <tr>
-                <td colspan="2">
-                    <div class="related-images">
-                        <div class="related-image-container">
-                            <a target="_blank" href="@Html.Raw(Model.TextSourceImage.TargetPageUrl)">
-                                <img src="@Html.Raw(Model.TextSourceImage.ThumbnailImageUrl)" alt="@Model.TextSourceImage.AltText" loading="lazy" width="200" class="related-image">
-                            </a>
-
-                        </div>
-                    </div>
-                </td>
-            </tr>
+            <div class="related-images">
+                <div class="related-image-container">
+                    <a target="_blank" href="@Html.Raw(Model.TextSourceImage.TargetPageUrl)">
+                        <img src="@Html.Raw(Model.TextSourceImage.ThumbnailImageUrl)" alt="@Model.TextSourceImage.AltText" loading="lazy" width="200" class="related-image">
+                    </a>
+                </div>
+            </div>
         }
 
         @if (Model.Correction.Rhythm != null)
         {
-            <tr>
-                <td colspan="2">
-                    وزن
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    @Html.Raw(Model.PoemSection.HtmlText)
-                </td>
-            </tr>
-            <tr>
-                <td>متن اولیه</td>
-                <td>پیشنهاد</td>
-            </tr>
-            <tr>
-                <td>
-                    <p style="color:red">@Model.Correction.OriginalRhythm</p>
-                </td>
-                <td>
-                    <p style="color:green">@Model.Correction.Rhythm</p>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-
-                    @if (Model.Correction.RhythmResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
-                    {
+            <h2 class="up-card__title">وزن</h2>
+            <div>@Html.Raw(Model.PoemSection.HtmlText)</div>
+            <div class="up-field">
+                <label>متن اولیه</label>
+                <p class="red-color">@Model.Correction.OriginalRhythm</p>
+            </div>
+            <div class="up-field">
+                <label>پیشنهاد</label>
+                <p class="green-color">@Model.Correction.Rhythm</p>
+            </div>
+            <div class="up-field">
+                @if (Model.Correction.RhythmResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
+                {
+                    <div class="up-radio-option">
                         <input type="radio" id="rhythm_review_result_Approved" name="rhythm_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
                         <label for="rhythm_review_result_Approved">تأیید می‌شود</label>
-
-                        <br>
+                    </div>
+                    <div class="up-radio-option">
                         <input type="radio" id="rhythm_review_result_NotChanged" name="rhythm_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
-                    }
-                    else
-                    {
+                        <label for="rhythm_review_result_NotChanged">تغییری نکرده</label>
+                    </div>
+                }
+                else
+                {
+                    <div class="up-radio-option">
                         <input type="radio" id="rhythm_review_result_Approved" name="rhythm_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
                         <label for="rhythm_review_result_Approved">تأیید می‌شود</label>
-
-                        <br>
+                    </div>
+                    <div class="up-radio-option">
                         <input type="radio" id="rhythm_review_result_NotChanged" name="rhythm_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
-                    }
-                    <label for="rhythm_review_result_NotChanged">تغییری نکرده</label><br>
+                        <label for="rhythm_review_result_NotChanged">تغییری نکرده</label>
+                    </div>
+                }
+                <div class="up-radio-option">
                     <input type="radio" id="rhythm_review_result_RejectedBecauseWrong" name="rhythm_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                    <label for="rhythm_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <label for="rhythm_review_result_RejectedBecauseWrong">درست نیست</label>
+                </div>
+                <div class="up-radio-option">
                     <input type="radio" id="rhythm_review_result_RejectedBecauseVariant" name="rhythm_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
-                    <label for="rhythm_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
-                    <input type="text" id="title_review_note" name="title_review_note" value="" size="50" />
-                </td>
-            </tr>
-
+                    <label for="rhythm_review_result_Rejected">به دلیل دیگری رد می‌شود</label>
+                </div>
+                <input type="text" id="title_review_note" name="title_review_note" value="" placeholder="یادداشت بررسی" />
+            </div>
         }
 
         @if (Model.Correction.RhymeLetters != null)
         {
-            <tr>
-                <td colspan="2">
-                    قافیه
-                </td>
-            </tr>
+            <h2 class="up-card__title">قافیه</h2>
             @if (Model.Correction.Rhythm == null)
             {
-                <tr>
-                    <td colspan="2">
-                        @Html.Raw(Model.PoemSection.HtmlText)
-                    </td>
-                </tr>
+                <div>@Html.Raw(Model.PoemSection.HtmlText)</div>
             }
-            <tr>
-                <td>متن اولیه</td>
-                <td>پیشنهاد</td>
-            </tr>
-            <tr>
-                <td>
-                    <p style="color:red">@Model.PoemSection.RhymeLetters</p>
-                </td>
-                <td>
-                    <p style="color:green">@Model.Correction.RhymeLetters</p>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-
-                    @if (Model.Correction.RhymeLettersReviewResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
-                    {
+            <div class="up-field">
+                <label>متن اولیه</label>
+                <p class="red-color">@Model.PoemSection.RhymeLetters</p>
+            </div>
+            <div class="up-field">
+                <label>پیشنهاد</label>
+                <p class="green-color">@Model.Correction.RhymeLetters</p>
+            </div>
+            <div class="up-field">
+                @if (Model.Correction.RhymeLettersReviewResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
+                {
+                    <div class="up-radio-option">
                         <input type="radio" id="rhyme_review_result_Approved" name="rhyme_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
                         <label for="rhyme_review_result_Approved">تأیید می‌شود</label>
-
-                        <br>
+                    </div>
+                    <div class="up-radio-option">
                         <input type="radio" id="rhyme_review_result_NotChanged" name="rhyme_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
-                    }
-                    else
-                    {
+                        <label for="rhyme_review_result_NotChanged">تغییری نکرده</label>
+                    </div>
+                }
+                else
+                {
+                    <div class="up-radio-option">
                         <input type="radio" id="rhyme_review_result_Approved" name="rhyme_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
                         <label for="rhyme_review_result_Approved">تأیید می‌شود</label>
-
-                        <br>
+                    </div>
+                    <div class="up-radio-option">
                         <input type="radio" id="rhyme_review_result_NotChanged" name="rhyme_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
-                    }
-                    <label for="rhyme_review_result_NotChanged">تغییری نکرده</label><br>
+                        <label for="rhyme_review_result_NotChanged">تغییری نکرده</label>
+                    </div>
+                }
+                <div class="up-radio-option">
                     <input type="radio" id="rhyme_review_result_RejectedBecauseWrong" name="rhyme_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                    <label for="rhyme_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <label for="rhyme_review_result_RejectedBecauseWrong">درست نیست</label>
+                </div>
+                <div class="up-radio-option">
                     <input type="radio" id="rhyme_review_result_RejectedBecauseVariant" name="rhyme_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
-                    <label for="rhyme_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
-                    <input type="text" id="title_review_note" name="title_review_note" value="" size="50" />
-                </td>
-            </tr>
+                    <label for="rhyme_review_result_Rejected">به دلیل دیگری رد می‌شود</label>
+                </div>
+                <input type="text" id="title_review_note" name="title_review_note" value="" placeholder="یادداشت بررسی" />
+            </div>
         }
 
         @if (Model.Correction.Language != null)
         {
-            <tr>
-                <td colspan="2">
-                    زبان
-                </td>
-            </tr>
-            <tr>
-                <td>متن اولیه</td>
-                <td>پیشنهاد</td>
-            </tr>
-            <tr>
-                <td>
-                    <p id="original-language" class="red-color">@Model.Correction.OriginalLanguage</p>
-                </td>
-                <td>
-                    <p id="edited-language" class="green-color">@Model.Correction.Language</p>
-                </td>
-            </tr>
-
-            <tr>
-                <td colspan="2">
-                    @if (Model.Correction.LanguageReviewResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
-                    {
+            <h2 class="up-card__title">زبان</h2>
+            <div class="up-field">
+                <label>متن اولیه</label>
+                <p id="original-language" class="red-color">@Model.Correction.OriginalLanguage</p>
+            </div>
+            <div class="up-field">
+                <label>پیشنهاد</label>
+                <p id="edited-language" class="green-color">@Model.Correction.Language</p>
+            </div>
+            <div class="up-field">
+                @if (Model.Correction.LanguageReviewResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
+                {
+                    <div class="up-radio-option">
                         <input type="radio" id="language_review_result_Approved" name="language_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
                         <label for="language_review_result_Approved">تأیید می‌شود</label>
-
-                        <br>
+                    </div>
+                    <div class="up-radio-option">
                         <input type="radio" id="language_review_result_NotChanged" name="language_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
-                    }
-                    else
-                    {
+                        <label for="language_review_result_NotChanged">تغییری نکرده</label>
+                    </div>
+                }
+                else
+                {
+                    <div class="up-radio-option">
                         <input type="radio" id="language_review_result_Approved" name="language_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
                         <label for="language_review_result_Approved">تأیید می‌شود</label>
-
-                        <br>
+                    </div>
+                    <div class="up-radio-option">
                         <input type="radio" id="language_review_result_NotChanged" name="language_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
-                    }
-                    <label for="language_review_result_NotChanged">تغییری نکرده</label><br>
+                        <label for="language_review_result_NotChanged">تغییری نکرده</label>
+                    </div>
+                }
+                <div class="up-radio-option">
                     <input type="radio" id="language_review_result_RejectedBecauseWrong" name="language_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                    <label for="language_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <label for="language_review_result_RejectedBecauseWrong">درست نیست</label>
+                </div>
+                <div class="up-radio-option">
                     <input type="radio" id="language_review_result_RejectedBecauseVariant" name="language_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
-                    <label for="language_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
+                    <label for="language_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label>
+                </div>
+                <div class="up-radio-option">
                     <input type="radio" id="language_review_result_Rejected" name="language_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-                    <label for="language_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
-                    <input type="text" id="language_review_note" name="language_review_note" value="" size="50" />
-                </td>
-            </tr>
+                    <label for="language_review_result_Rejected">به دلیل دیگری رد می‌شود</label>
+                </div>
+                <input type="text" id="language_review_note" name="language_review_note" value="" placeholder="یادداشت بررسی" />
+            </div>
         }
 
         @if (Model.Correction.PoemFormat != null)
         {
-            <tr>
-                <td colspan="2">
-                    قالب شعری
-                </td>
-            </tr>
-            <tr>
-                <td>متن اولیه</td>
-                <td>پیشنهاد</td>
-            </tr>
-            <tr>
-                <td>
-                    <p id="original-poemformat" class="red-color">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(Model.Correction.OriginalPoemFormat)</p>
-                </td>
-                <td>
-                    <p id="edited-poemformat" class="green-color">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(Model.Correction.PoemFormat)</p>
-                </td>
-            </tr>
-
-            <tr>
-                <td colspan="2">
-                    @if (Model.Correction.PoemFormatReviewResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
-                    {
+            <h2 class="up-card__title">قالب شعری</h2>
+            <div class="up-field">
+                <label>متن اولیه</label>
+                <p id="original-poemformat" class="red-color">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(Model.Correction.OriginalPoemFormat)</p>
+            </div>
+            <div class="up-field">
+                <label>پیشنهاد</label>
+                <p id="edited-poemformat" class="green-color">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(Model.Correction.PoemFormat)</p>
+            </div>
+            <div class="up-field">
+                @if (Model.Correction.PoemFormatReviewResult == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
+                {
+                    <div class="up-radio-option">
                         <input type="radio" id="poemformat_review_result_Approved" name="poemformat_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
                         <label for="poemformat_review_result_Approved">تأیید می‌شود</label>
-
-                        <br>
+                    </div>
+                    <div class="up-radio-option">
                         <input type="radio" id="poemformat_review_result_NotChanged" name="poemformat_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
-                    }
-                    else
-                    {
+                        <label for="poemformat_review_result_NotChanged">تغییری نکرده</label>
+                    </div>
+                }
+                else
+                {
+                    <div class="up-radio-option">
                         <input type="radio" id="poemformat_review_result_Approved" name="poemformat_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
                         <label for="poemformat_review_result_Approved">تأیید می‌شود</label>
-
-                        <br>
+                    </div>
+                    <div class="up-radio-option">
                         <input type="radio" id="poemformat_review_result_NotChanged" name="poemformat_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
-                    }
-                    <label for="poemformat_review_result_NotChanged">تغییری نکرده</label><br>
+                        <label for="poemformat_review_result_NotChanged">تغییری نکرده</label>
+                    </div>
+                }
+                <div class="up-radio-option">
                     <input type="radio" id="poemformat_review_result_RejectedBecauseWrong" name="poemformat_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-                    <label for="poemformat_review_result_RejectedBecauseWrong">درست نیست</label><br>
+                    <label for="poemformat_review_result_RejectedBecauseWrong">درست نیست</label>
+                </div>
+                <div class="up-radio-option">
                     <input type="radio" id="poemformat_review_result_RejectedBecauseVariant" name="poemformat_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
-                    <label for="poemformat_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
+                    <label for="poemformat_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label>
+                </div>
+                <div class="up-radio-option">
                     <input type="radio" id="poemformat_review_result_Rejected" name="poemformat_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-                    <label for="poemformat_review_result_Rejected">به دلیل دیگری رد می‌شود</label><br>
-                    <input type="text" id="poemformat_review_note" name="poemformat_review_note" value="" size="50" />
-                </td>
-            </tr>
+                    <label for="poemformat_review_result_Rejected">به دلیل دیگری رد می‌شود</label>
+                </div>
+                <input type="text" id="poemformat_review_note" name="poemformat_review_note" value="" placeholder="یادداشت بررسی" />
+            </div>
         }
 
         @if (!string.IsNullOrEmpty(Model.Correction.Note))
         {
-            <tr>
-                <td>یادداشت:</td>
-                <td>
-                    @Model.Correction.Note
-                </td>
-            </tr>
+            <div class="up-field">
+                <label>یادداشت</label>
+                <div class="up-field-static">@Model.Correction.Note</div>
+            </div>
         }
 
-        @for (int v = 0; v < Model.Verses.Count; v++)
-        {
-            if
-            (
-            Model.Correction.BreakFromVerse1VOrder == Model.Verses[v].VOrder
-            ||
-            Model.Correction.BreakFromVerse2VOrder == Model.Verses[v].VOrder
-            ||
-            Model.Correction.BreakFromVerse3VOrder == Model.Verses[v].VOrder
-            ||
-            Model.Correction.BreakFromVerse4VOrder == Model.Verses[v].VOrder
-            ||
-            Model.Correction.BreakFromVerse5VOrder == Model.Verses[v].VOrder
-            ||
-            Model.Correction.BreakFromVerse6VOrder == Model.Verses[v].VOrder
-            ||
-            Model.Correction.BreakFromVerse7VOrder == Model.Verses[v].VOrder
-            ||
-            Model.Correction.BreakFromVerse8VOrder == Model.Verses[v].VOrder
-            ||
-            Model.Correction.BreakFromVerse9VOrder == Model.Verses[v].VOrder
-            ||
-            Model.Correction.BreakFromVerse10VOrder == Model.Verses[v].VOrder
-            )
+        <div class="up-field">
+            <label>ابیات</label>
+            @for (int v = 0; v < Model.Verses.Count; v++)
             {
-                <tr>
-                    <td colspan="2">
+                if (
+                Model.Correction.BreakFromVerse1VOrder == Model.Verses[v].VOrder
+                ||
+                Model.Correction.BreakFromVerse2VOrder == Model.Verses[v].VOrder
+                ||
+                Model.Correction.BreakFromVerse3VOrder == Model.Verses[v].VOrder
+                ||
+                Model.Correction.BreakFromVerse4VOrder == Model.Verses[v].VOrder
+                ||
+                Model.Correction.BreakFromVerse5VOrder == Model.Verses[v].VOrder
+                ||
+                Model.Correction.BreakFromVerse6VOrder == Model.Verses[v].VOrder
+                ||
+                Model.Correction.BreakFromVerse7VOrder == Model.Verses[v].VOrder
+                ||
+                Model.Correction.BreakFromVerse8VOrder == Model.Verses[v].VOrder
+                ||
+                Model.Correction.BreakFromVerse9VOrder == Model.Verses[v].VOrder
+                ||
+                Model.Correction.BreakFromVerse10VOrder == Model.Verses[v].VOrder
+                )
+                {
+                    <div class="up-radio-option">
                         <input type="checkbox" name="break-from-@v" id="break-from-@v" checked />
-                        @Model.Verses[v].Text
-                    </td>
-                </tr>
+                        <label for="break-from-@v">@Model.Verses[v].Text</label>
+                    </div>
+                }
+                else
+                {
+                    <p>@Model.Verses[v].Text</p>
+                }
             }
-            else
-            {
-                <tr>
-                    <td colspan="2">
-                        @Model.Verses[v].Text
-                    </td>
-                </tr>
-            }
-        }
+        </div>
 
-        <tr>
-            <td>یادداشت بررسی:</td>
-            <td><input type="text" id="review_note" name="review_note" value="" size="50" /></td>
-        </tr>
-
+        <div class="up-field">
+            <label for="review_note">یادداشت بررسی</label>
+            <input type="text" id="review_note" name="review_note" value="" />
+        </div>
 
         @if (Model.PoemSection != null)
         {
-            <tr>
-                <td colspan="2">
-                    <a role="button" href=@($"/User/Section?poemId={Model.PoemSection.PoemId}&index={Model.PoemSection.Index}") class="pagebutton" target="_blank">خودم ویرایش کنم</a>
-                </td>
-            </tr>
+            <p><a role="button" href=@($"/User/Section?poemId={Model.PoemSection.PoemId}&index={Model.PoemSection.Index}") class="up-btn up-btn--ghost up-btn--sm" target="_blank">خودم ویرایش کنم</a></p>
         }
 
-    </table>
+        <div class="up-form-actions">
+            <a role="button" id="moderatecorrections" class="up-btn up-btn--success" onclick="moderateSectionCorrections(@Model.Correction.Id, @Model.Verses.Count)">بررسی</a>
+            <form method="post">
+                <button type="submit" name="next" id="next" class="up-btn up-btn--ghost">بعدی</button>
+            </form>
+        </div>
+    </div>
 }

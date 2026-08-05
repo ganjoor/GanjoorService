@@ -1,4 +1,4 @@
-﻿@page
+@page
 @using DNTPersianUtils.Core
 @model GanjooRazor.Areas.Admin.Pages.ReviewCatEditsModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -6,241 +6,175 @@
     Layout = "_AdminLayout";
     ViewData["Title"] = "ویرایش‌های بخش‌ها";
 }
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
 @if (!string.IsNullOrEmpty(Model.FatalError))
 {
-    <p>@Model.FatalError</p>
+    <div class="up-alert up-alert--danger">@Model.FatalError</div>
     return;
 }
 
 @if (Model.Correction == null)
 {
-    <p>ویرایشی وجود ندارد.</p>
+    <partial name="_EmptyState" model="@("ویرایشی وجود ندارد.")" />
     return;
 }
 
 <script>
     function moderateCorrections(correctionId) {
 
-    $('#moderatecorrections').hide();
-    $('#saving').text('در حال بررسی ...');
+        $('#moderatecorrections').hide();
+        $('#saving').text('در حال بررسی ...');
 
-
-    var descriptionReviewResult = 'DontCare';
-    if ($('#description_review_result_Approved').length > 0) { //has title
-    descriptionReviewResult = $('input[name=description_review_result]:checked').val()
-    }
-
-
-    var url = '?handler=SendCorrectionsModeration';
-
-    var pms = {};
-
-    pms.correctionId= correctionId;
-    pms.titleReviewResult = descriptionReviewResult;
-    pms.titleReviewNote= $('#review_note') == null ? null : $('#review_note').val();
-
-    $.ajax({
-    type: "POST",
-    url: url,
-    data: JSON.stringify(pms),
-    contentType: "application/json; charset=utf-8",
-    dataType: "json",
-    success: function() {
-    location.reload(true);
-    },
-    error: function(e) {
-    if (e.responseText == null)
-    alert(e);
-    else
-    alert(e.responseText);
-    $('#moderatecorrections').show();
-    $('#saving').text('');
-    }
-    });
-
-    }
-
-</script>
-
-<table>
-    <tr>
-        <td>
-            پیشنهاد دهنده:
-        </td>
-        <td>
-            <a href="/hashieha/?userid=@Model.Correction.UserId" target="_blank">@Model.Correction.UserNickname</a>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <a role="button" id="moderatecorrections" style="cursor:pointer;width:100%;color:white;background-color:green;display:block" onclick="moderateCorrections(@Model.Correction.Id)">بررسی</a>
-        </td>
-        <td>
-            <form method="post">
-                <button type="submit" name="next" id="next" style="width:100%;color:white;background-color:orange">بعدی</button>
-            </form>
-        </td>
-    </tr>
-
-    <tr>
-        <td>
-            زمان:
-        </td>
-        <td>
-            @Model.Correction.Date.ToFriendlyPersianDateTextify()
-        </td>
-    </tr>
-
-    <tr>
-        <td>
-            تعداد کل:
-        </td>
-        <td>
-            @Model.TotalCount
-        </td>
-    </tr>
-
-    <tr>
-        <td colspan="2">
-            <a href="/?p=@Model.Correction.PageId">مشاهدهٔ بخش</a>
-        </td>
-    </tr>
-
-    <tr>
-        <td colspan="2">
-            تغییرات متن
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <p class="red-color" id="description-lastedit-original">@Model.Correction.OriginalDescription</p>
-        </td>
-        <td>
-            <p class="green-color" id="description-lastedit-edited">@Model.Correction.Description</p>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <p id="description-lastedit-compare">@Model.Correction.OriginalDescription</p>
-            <script>
-                $(document).ready(function () {
-                compareCorrectionBlocks('description-lastedit-original', 'description-lastedit-edited', 'description-lastedit-compare');
-                });
-            </script>
-        </td>
-    </tr>
-
-    <tr>
-        <td colspan="2">
-            Html
-        </td>
-    </tr>
-
-    <tr>
-        <td colspan="2">
-            @Html.Raw(Model.Correction.DescriptionHtml)
-        </td>
-    </tr>
-
-    @if(Model.Links != null)
-        foreach (var link in Model.Links)
-        {
-            <tr>
-                <td colspan="2">
-                    <a href="@link">پیوند داخل متن:</a>
-                </td>
-            </tr>
-
-            <tr>
-                <td colspan="2">
-                    <p class="red-color lft">
-                        @if (link.Length > 20)
-                        {
-                            @Html.Raw(link.Substring(0, 19) + " ...")
-                        }
-                        else
-                        {
-                            @Html.Raw(link)
-                        }
-
-                    </p>
-                   
-                </td>
-            </tr>
+        var descriptionReviewResult = 'DontCare';
+        if ($('#description_review_result_Approved').length > 0) { //has title
+            descriptionReviewResult = $('input[name=description_review_result]:checked').val()
         }
 
-    <tr>
-        <td colspan="2">
-            <textarea rows="10" cols="50" style="direction:ltr;text-align:left">
-                @Html.Raw(Model.Correction.DescriptionHtml)
-            </textarea>
-            
-        </td>
-    </tr>
+        var url = '?handler=SendCorrectionsModeration';
 
+        var pms = {};
 
-    <tr>
-        <td colspan="2">
-            @if (Model.Correction.Result == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
-            {
+        pms.correctionId = correctionId;
+        pms.titleReviewResult = descriptionReviewResult;
+        pms.titleReviewNote = $('#review_note') == null ? null : $('#review_note').val();
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: JSON.stringify(pms),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function () {
+                location.reload(true);
+            },
+            error: function (e) {
+                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                $('#moderatecorrections').show();
+                $('#saving').text('');
+            }
+        });
+
+    }
+</script>
+
+<div class="up-card">
+    <div class="up-field">
+        <label>پیشنهاد دهنده</label>
+        <div class="up-field-static"><a href="/hashieha/?userid=@Model.Correction.UserId" target="_blank">@Model.Correction.UserNickname</a></div>
+    </div>
+    <div class="up-field">
+        <label>زمان</label>
+        <div class="up-field-static">@Model.Correction.Date.ToFriendlyPersianDateTextify()</div>
+    </div>
+    <p class="up-hint">تعداد کل: @Model.TotalCount</p>
+
+    <p><a href="/?p=@Model.Correction.PageId" class="up-btn up-btn--ghost up-btn--sm">مشاهدهٔ بخش</a></p>
+
+    <h2 class="up-card__title">تغییرات متن</h2>
+    <div class="up-field">
+        <label>متن اولیه</label>
+        <p class="red-color" id="description-lastedit-original">@Model.Correction.OriginalDescription</p>
+    </div>
+    <div class="up-field">
+        <label>تغییرات پیشنهادی</label>
+        <p class="green-color" id="description-lastedit-edited">@Model.Correction.Description</p>
+    </div>
+    <div id="description-lastedit-compare" class="up-hint">@Model.Correction.OriginalDescription</div>
+    <script>
+        $(document).ready(function () {
+            compareCorrectionBlocks('description-lastedit-original', 'description-lastedit-edited', 'description-lastedit-compare');
+        });
+    </script>
+
+    <h2 class="up-card__title">Html</h2>
+    <div>@Html.Raw(Model.Correction.DescriptionHtml)</div>
+
+    @if (Model.Links != null)
+    {
+        foreach (var link in Model.Links)
+        {
+            <div class="up-field up-field--ltr">
+                <label><a href="@link">پیوند داخل متن</a></label>
+                <p class="red-color">
+                    @if (link.Length > 20)
+                    {
+                        @Html.Raw(link.Substring(0, 19) + " ...")
+                    }
+                    else
+                    {
+                        @Html.Raw(link)
+                    }
+                </p>
+            </div>
+        }
+    }
+
+    <div class="up-field up-field--ltr">
+        <label>متن HTML خام</label>
+        <textarea rows="10">@Html.Raw(Model.Correction.DescriptionHtml)</textarea>
+    </div>
+
+    <div class="up-field">
+        <label>نتیجهٔ بررسی</label>
+        @if (Model.Correction.Result == RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)
+        {
+            <div class="up-radio-option">
                 <input type="radio" id="description_review_result_Approved" name="description_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
                 <label for="description_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
-
-                <br>
+            </div>
+            <div class="up-radio-option">
                 <input type="radio" id="description_review_result_NotChanged" name="description_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged" checked="checked">
-            }
-            else
-            {
+                <label for="description_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label>
+            </div>
+        }
+        else
+        {
+            <div class="up-radio-option">
                 <input type="radio" id="description_review_result_Approved" name="description_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
                 <label for="description_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
-
-                <br>
+            </div>
+            <div class="up-radio-option">
                 <input type="radio" id="description_review_result_NotChanged" name="description_review_result" class="radio-notchanged" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged">
-            }
-            <label for="description_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label><br>
+                <label for="description_review_result_NotChanged">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.NotChanged)</label>
+            </div>
+        }
+        <div class="up-radio-option">
             <input type="radio" id="description_review_result_RejectedBecauseWrong" name="description_review_result" class="radio-notcorrect" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong">
-            <label for="description_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label><br>
+            <label for="description_review_result_RejectedBecauseWrong">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseWrong)</label>
+        </div>
+        <div class="up-radio-option">
             <input type="radio" id="description_review_result_RejectedBecauseVariant" name="description_review_result" class="radio-variant" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.RejectedBecauseVariant">
-            <label for="description_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label><br>
+            <label for="description_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label>
+        </div>
+        <div class="up-radio-option">
             <input type="radio" id="description_review_result_Rejected" name="description_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
-            <label for="description_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label><br>
-            <p>دلیل را در یادداشت بررسی بنویسید.</p>
-        </td>
-    </tr>
-
-
-    <tr>
-        <td colspan="2"><p id="saving">&nbsp;</p></td>
-    </tr>
-
-
-
-
-
-
-
-
-
+            <label for="description_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label>
+        </div>
+        <p class="up-hint up-hint--danger">دلیل را در یادداشت بررسی بنویسید.</p>
+    </div>
 
     @if (!string.IsNullOrEmpty(Model.Correction.Note))
     {
-        <tr>
-            <td>یادداشت:</td>
-            <td>
-                @Model.Correction.Note
-            </td>
-        </tr>
+        <div class="up-field">
+            <label>یادداشت</label>
+            <div class="up-field-static">@Model.Correction.Note</div>
+        </div>
     }
 
+    <div class="up-field">
+        <label for="review_note">یادداشت بررسی</label>
+        <input type="text" id="review_note" name="review_note" value="" />
+    </div>
 
+    <p id="saving" class="up-hint">&nbsp;</p>
 
-    <tr>
-        <td>یادداشت بررسی:</td>
-        <td><input type="text" id="review_note" name="review_note" value="" size="50" /></td>
-    </tr>
-
-
-
-
-</table>
+    <div class="up-form-actions">
+        <a role="button" id="moderatecorrections" class="up-btn up-btn--success" onclick="moderateCorrections(@Model.Correction.Id)">بررسی</a>
+        <form method="post">
+            <button type="submit" name="next" id="next" class="up-btn up-btn--ghost">بعدی</button>
+        </form>
+    </div>
+</div>

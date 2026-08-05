@@ -469,6 +469,20 @@ body.up-modal-open {
     transform: translateY(-2px);
 }
 
+/* ---------- moderation review-result radio options ---------- */
+
+.up-radio-option {
+    display: flex;
+    align-items: center;
+    gap: var(--up-space-1);
+    padding: 3px 0;
+}
+
+.up-radio-option label {
+    margin: 0;
+    cursor: pointer;
+}
+
 /* ---------- small utilities ---------- */
 
 .up-mt-0 { margin-top: 0; }
@@ -529,6 +543,7 @@ body.up-modal-open {
 }
 
 .up-field--ltr input,
+.up-field--ltr textarea,
 .up-field--ltr .up-field-static {
     direction: ltr;
     text-align: left;
