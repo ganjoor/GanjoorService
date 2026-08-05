@@ -127,9 +127,9 @@
 
         
 
-        function rebuildSitemap() {
-            if (!confirm('آیا از بازسازی نقشهٔ سایت اطمینان دارید؟'))
-                return;
+        async function rebuildSitemap() {
+            var ok = await upConfirm('آیا از بازسازی نقشهٔ سایت اطمینان دارید؟');
+            if (!ok) return;
 
             var url = '?handler=RebuildSitemap';
 
@@ -137,18 +137,18 @@
                 type: "POST",
                 url: url,
                 error: function() {
-                    alert('خطا رخ داد.')
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function() {
-                    alert('فرایند بازسازی نقشهٔ سایت شروع شد.')
+                    upToast('فرایند بازسازی نقشهٔ سایت شروع شد.', 'success');
                 },
 
             });
         }
 
-        function rebuildTajikSitemap() {
-            if (!confirm('آیا از بازسازی نقشهٔ سایت تاجیکی اطمینان دارید؟'))
-                return;
+        async function rebuildTajikSitemap() {
+            var ok = await upConfirm('آیا از بازسازی نقشهٔ سایت تاجیکی اطمینان دارید؟');
+            if (!ok) return;
 
             var url = '?handler=RebuildTajikSitemap';
 
@@ -156,10 +156,10 @@
                 type: "POST",
                 url: url,
                 error: function () {
-                    alert('خطا رخ داد.')
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function () {
-                    alert('فرایند بازسازی نقشهٔ سایت تاجیکی شروع شد.')
+                    upToast('فرایند بازسازی نقشهٔ سایت تاجیکی شروع شد.', 'success');
                 },
 
             });
@@ -167,9 +167,9 @@
 
 
 
-        function rebuildStats() {
-            if (!confirm('آیا از بازسازی صفحات آمار اطمینان دارید؟'))
-                return;
+        async function rebuildStats() {
+            var ok = await upConfirm('آیا از بازسازی صفحات آمار اطمینان دارید؟');
+            if (!ok) return;
 
             var url = '?handler=RebuildStats';
 
@@ -177,10 +177,10 @@
                 type: "POST",
                 url: url,
                 error: function() {
-                    alert('خطا رخ داد.')
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function() {
-                    alert('فرایند بازسازی صفحات آمار شروع شد.')
+                    upToast('فرایند بازسازی صفحات آمار شروع شد.', 'success');
                 },
 
             });
@@ -188,9 +188,9 @@
 
         
 
-        function refillCoupletCounts() {
-            if (!confirm('آیا از بازشماری تعداد ابیات قطعات اطمینان دارید؟'))
-                return;
+        async function refillCoupletCounts() {
+            var ok = await upConfirm('آیا از بازشماری تعداد ابیات قطعات اطمینان دارید؟');
+            if (!ok) return;
 
             var url = '?handler=RefillSectionsCoupletCounts';
 
@@ -198,18 +198,18 @@
                 type: "POST",
                 url: url,
                 error: function() {
-                    alert('خطا رخ داد.')
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function() {
-                    alert('فرایند بازشماری تعداد ابیات قطعات شروع شد.')
+                    upToast('فرایند بازشماری تعداد ابیات قطعات شروع شد.', 'success');
                 },
 
             });
         }
 
-        function rebuildRelatedPages() {
-            if (!confirm('آیا از بازسازی محتوای صفحات استقبال‌ها اطمینان دارید؟'))
-                return;
+        async function rebuildRelatedPages() {
+            var ok = await upConfirm('آیا از بازسازی محتوای صفحات استقبال‌ها اطمینان دارید؟');
+            if (!ok) return;
 
             var url = '?handler=RebuildRelatedPages';
 
@@ -217,18 +217,18 @@
                 type: "POST",
                 url: url,
                 error: function () {
-                    alert('خطا رخ داد.')
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function () {
-                    alert('فرایند بازسازی صفحات آمار شروع شد.')
+                    upToast('فرایند بازسازی صفحات آمار شروع شد.', 'success');
                 },
 
             });
         }
 
-        function rebuildDigitalSourcesStats() {
-            if (!confirm('آیا از بازسازی آمار منابع دیجیتال اطمینان دارید؟'))
-                return;
+        async function rebuildDigitalSourcesStats() {
+            var ok = await upConfirm('آیا از بازسازی آمار منابع دیجیتال اطمینان دارید؟');
+            if (!ok) return;
 
             var url = '?handler=RebuildDigitalSourcesStats';
 
@@ -236,10 +236,10 @@
                 type: "POST",
                 url: url,
                 error: function () {
-                    alert('خطا رخ داد.')
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function () {
-                    alert('فرایند بازسازی شروع شد.')
+                    upToast('فرایند بازسازی شروع شد.', 'success');
                 },
 
             });
@@ -247,9 +247,9 @@
 
         
 
-        function transilerate() {
-            if (!confirm('آیا از شروع برگردان تاجیکی اطمینان دارید؟'))
-                return;
+        async function transilerate() {
+            var ok = await upConfirm('آیا از شروع برگردان تاجیکی اطمینان دارید؟');
+            if (!ok) return;
 
             var url = '?handler=Transilerate';
 
@@ -257,21 +257,22 @@
                 type: "POST",
                 url: url,
                 error: function () {
-                    alert('خطا رخ داد.')
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function () {
-                    alert('فرایند شروع شد.')
+                    upToast('فرایند شروع شد.', 'success');
                 },
 
             });
         }
 
-        function rebuildRebuildWordCounts(poetId) {
-            if(!confirm('فقط شاعر جاری؟')){
+        async function rebuildRebuildWordCounts(poetId) {
+            var onlyCurrentPoet = await upConfirm('فقط شاعر جاری؟', { danger: false });
+            if (!onlyCurrentPoet) {
                 poetId = 0;
             }
-            if (!confirm('آیا از شمارش واژگان برای شاعر جاری با کد '+poetId.toString() + ' اطمینان دارید؟'))
-                return;
+            var ok = await upConfirm('آیا از شمارش واژگان برای شاعر جاری با کد ' + poetId.toString() + ' اطمینان دارید؟');
+            if (!ok) return;
 
             var url = '?handler=RebuildWordCounts';
 
@@ -282,10 +283,10 @@
                 },
                 url: url,
                 error: function () {
-                    alert('خطا رخ داد.')
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function () {
-                    alert('فرایند بازسازی شروع شد.')
+                    upToast('فرایند بازسازی شروع شد.', 'success');
                 },
 
             });
@@ -306,10 +307,10 @@
                 },
                 url: url,
                 error: function () {
-                    alert('خطا رخ داد.')
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function () {
-                    alert('فرایند بازسازی شروع شد.')
+                    upToast('فرایند بازسازی شروع شد.', 'success');
                 },
 
             });
@@ -326,10 +327,10 @@
                 },
                 url: url,
                 error: function () {
-                    alert('خطا رخ داد.')
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function () {
-                    alert('فرایند بازسازی شروع شد.')
+                    upToast('فرایند بازسازی شروع شد.', 'success');
                 },
 
             });
@@ -338,10 +339,6 @@
 
 
         
-
-
-
-
 
         async function exportAll() {
             var ok = await upConfirm('آیا از تولید مجدد همهٔ فایلهای گنجور رومیزی اطمینان دارید؟');
@@ -365,9 +362,9 @@
 
 
 
-        function cleanCache(id) {
-            if (!confirm('آیا از حذف کش این صفحه اطمینان دارید؟'))
-                return;
+        async function cleanCache(id) {
+            var ok = await upConfirm('آیا از حذف کش این صفحه اطمینان دارید؟');
+            if (!ok) return;
 
             var url = '?handler=CleanCache';
 
@@ -378,10 +375,10 @@
                     id: id
                 },
                 error: function() {
-                    alert('خطا رخ داد.')
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function() {
-                    alert('کش صفحه پاک شد.')
+                    upToast('کش صفحه پاک شد.', 'success');
                 },
 
             });

@@ -1,18 +1,21 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.Admin.Pages.ModifyPageModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "ویرایش";
 }
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
-<h1>@ViewData["Title"]</h1>
-
-<p>@Html.Raw(Model.LastMessage)</p>
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <div class="up-alert up-alert--info">@Html.Raw(Model.LastMessage)</div>
+}
 
 @if (Model.PageInformation != null)
 {
-
     <script>
         function defaultHtmlText() {
             $('#ModifyModel_HtmlText').html('@Model.DefaultHtmlText');
@@ -26,7 +29,7 @@
                     id: poemId
                 },
                 error: function() {
-                    alert('خطا رخ داد.');
+                    upToast('خطا رخ داد.', 'error');
                 },
                 success: function(rhyme) {
                     $(elementId).val(rhyme);
@@ -36,250 +39,93 @@
         }
     </script>
 
+    <div class="up-card">
+        <form method="post" class="up-form">
+            <div class="up-field">
+                <label>شناسهٔ صفحه</label>
+                <div class="up-field-static"><a href="/?p=@Request.Query["id"]">@Request.Query["id"]</a></div>
+            </div>
+            <div class="up-field">
+                <label asp-for="ModifyModel.Title">عنوان</label>
+                <input asp-for="ModifyModel.Title" />
+            </div>
+            <div class="up-field up-field--ltr">
+                <label asp-for="ModifyModel.UrlSlug">نامک</label>
+                <input asp-for="ModifyModel.UrlSlug" />
+            </div>
+            <div class="up-field">
+                <label asp-for="ModifyModel.HtmlText">متن</label>
+                <textarea asp-for="ModifyModel.HtmlText" tabindex="4" rows="20"></textarea>
+            </div>
 
-    <form method="post">
-        <table style="width:100%" class="noborder">
-            <tr>
-                <td>
-                    <span class="inputlabel">شناسهٔ صفحه: </span>
-                </td>
-                <td>
-                    <span class="inputlabel"><a href="/?p=@Request.Query["id"]">@Request.Query["id"]</a></span>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">عنوان: </span>
-                </td>
-                <td>
-                    <input asp-for="ModifyModel.Title" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">نامک: </span>
-                </td>
-                <td>
-                    <input style="text-align:left;direction:ltr;" asp-for="ModifyModel.UrlSlug" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">متن: </span>
-                </td>
-                <td>
-                    <textarea asp-for="ModifyModel.HtmlText" tabindex="4" rows="20" cols="80"></textarea>
-                </td>
-            </tr>
             @if (Model.PageInformation.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.PoemPage)
             {
-                <tr>
-                    <td>
-                        <span class="inputlabel">منبع: </span>
-                    </td>
-                    <td>
-                        <table>
-                            <tr>
-                                <td><span>نام:</span> <input asp-for="ModifyModel.SourceName" /></td>
-                            </tr>
-                            <tr>
-                                <td><span>نشانی:</span> <input style="text-align:left;direction:ltr;" asp-for="ModifyModel.SourceUrlSlug" /></td>
-                            </tr>
-                        </table>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span class="inputlabel">دسته‌بندی کهن: </span>
-                    </td>
-                    <td>
-                        <table>
-                            <tr>
-                                <td><span>نام:</span> <input asp-for="ModifyModel.OldTag" /></td>
-                            </tr>
-                            <tr>
-                                <td><span>نشانی:</span> <input style="text-align:left;direction:ltr;" asp-for="ModifyModel.OldTagPageUrl" /></td>
-                            </tr>
-                        </table>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span class="inputlabel">وزن: </span>
-                    </td>
-                    <td>
-                        <input asp-for="ModifyModel.Rhythm" size="50" list="rythms" />
-                        <datalist id="rythms">
-                            @if (Model.Rhythms != null)
-                                @foreach (var rhythm in Model.Rhythms)
-                                {
-                                    <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
-                                }
-                        </datalist>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span class="inputlabel">حروف قافیه: </span>
-                    </td>
-                    <td>
-                        <input asp-for="ModifyModel.RhymeLetters" />
-                        <a role="button" onclick="computePoemRhyme(@Request.Query["id"], '#ModifyModel_RhymeLetters')" class="actionlink">محاسبه</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span class="inputlabel">زبان (برای کدگذاری صفحه و نه مشخصات لهجه‌ها)</span>
-                    </td>
-                    <td>
-                        <select asp-for="ModifyModel.Language">
-                            <option value="">فارسی</option>
-                            <option value="azb">ترکی</option>
-                            <option value="ar">عربی</option>
-                            <option value="ckb">کردی</option>
-                        </select>
-                    </td>
-                </tr>
+                <div class="up-field">
+                    <label>منبع</label>
+                    <input asp-for="ModifyModel.SourceName" placeholder="نام" />
+                    <input asp-for="ModifyModel.SourceUrlSlug" placeholder="نشانی" style="direction:ltr;text-align:left;" />
+                </div>
+                <div class="up-field">
+                    <label>دسته‌بندی کهن</label>
+                    <input asp-for="ModifyModel.OldTag" placeholder="نام" />
+                    <input asp-for="ModifyModel.OldTagPageUrl" placeholder="نشانی" style="direction:ltr;text-align:left;" />
+                </div>
+                <div class="up-field">
+                    <label asp-for="ModifyModel.Rhythm">وزن</label>
+                    <input asp-for="ModifyModel.Rhythm" list="rythms" />
+                    <datalist id="rythms">
+                        @if (Model.Rhythms != null)
+                        {
+                            foreach (var rhythm in Model.Rhythms)
+                            {
+                                <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                            }
+                        }
+                    </datalist>
+                </div>
+                <div class="up-field">
+                    <label asp-for="ModifyModel.RhymeLetters">حروف قافیه</label>
+                    <div class="up-form-actions">
+                        <input asp-for="ModifyModel.RhymeLetters" style="flex:1;" />
+                        <a role="button" onclick="computePoemRhyme(@Request.Query["id"], '#ModifyModel_RhymeLetters')" class="up-btn up-btn--ghost up-btn--sm">محاسبه</a>
+                    </div>
+                </div>
+                <div class="up-field">
+                    <label asp-for="ModifyModel.Language">زبان (برای کدگذاری صفحه و نه مشخصات لهجه‌ها)</label>
+                    <select asp-for="ModifyModel.Language">
+                        <option value="">فارسی</option>
+                        <option value="azb">ترکی</option>
+                        <option value="ar">عربی</option>
+                        <option value="ckb">کردی</option>
+                    </select>
+                </div>
             }
 
             @if (Model.PageInformation.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.CatPage || Model.PageInformation.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.PoetPage || Model.PageInformation.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.PoemPage)
             {
-                <tr>
-                    <td>
-                        <span class="inputlabel">منتشر شده (فعلا استفاده نشده)</span>
-                    </td>
-                    <td>
-                        <input type="checkbox" asp-for="ModifyModel.Published" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span class="inputlabel">ترتیب در فهرستها:</span>
-                    </td>
-                    <td>
-                        <input asp-for="ModifyModel.MixedModeOrder" />
-                    </td>
-                </tr>
+                <div class="up-field">
+                    <label asp-for="ModifyModel.Published">منتشر شده (فعلا استفاده نشده)</label>
+                    <input type="checkbox" asp-for="ModifyModel.Published" />
+                </div>
+                <div class="up-field">
+                    <label asp-for="ModifyModel.MixedModeOrder">ترتیب در فهرستها</label>
+                    <input asp-for="ModifyModel.MixedModeOrder" />
+                </div>
             }
-
 
             @if (Model.PageInformation.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.CatPage || Model.PageInformation.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.PoetPage)
             {
-                <tr>
-                    <td>
-                        <span class="inputlabel">نوع بخش (فقط بخش‌ها)</span>
-                    </td>
-                    <td>
-                        <select asp-for="ModifyModel.CatType">
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorCatType.Default">پیش‌فرض</option>
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorCatType.Book">کتاب</option>
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorCatType.BookPart">بخش</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span class="inputlabel">نحوهٔ فهرست‌گذاری بخش (فقط بخش‌ها)</span>
-                    </td>
-                    <td>
-                        <select asp-for="ModifyModel.TableOfContentsStyle">
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.Analyse">بر اساس تحلیل بخش</option>
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.OnlyTitles">فقط عناوین</option>
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstVerse">عنوان و مصرع اول</option>
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithFirstVerse">الفبایی با مصرع اول</option>
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithSecondVerse">الفبایی با مصرع دوم</option>
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithFirstCouplet">الفبایی با بیت اول</option>
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndSecondVerse">عنوان و مصرع دوم</option>
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstCouplet">عنوان و بیت اول</option>
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstCenteredVerse">عنوان و مصرع بند</option>
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstCenteredCouplet">عنوان و بیت بند</option>
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithFirstVerseNotSorted">الفبایی با مصرع اول - مرتب نشده</option>
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithSecondVerseNotSorted">الفبایی با مصرع دوم - مرتب نشده</option>
-                            <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithFirstCoupletNotSorted">الفبایی با بیت اول - مرتب نشده</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span class="inputlabel">توضیحات متنی بخش (فقط بخش‌ها): </span>
-                    </td>
-                    <td>
-                        <textarea asp-for="ModifyModel.Description" rows="20" cols="80"></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <span class="inputlabel">توضیحات Html بخش (فقط بخش‌ها): </span>
-                    </td>
-                    <td>
-                        <textarea asp-for="ModifyModel.DescriptionHtml" class="editor width-100per"></textarea>
-                    </td>
-                </tr>
-            }
-
-            <tr>
-                <td>
-                    <span class="inputlabel">ایندکس نشود</span>
-                </td>
-                <td>
-                    <input type="checkbox" asp-for="ModifyModel.NoIndex" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">از این نشانی (کامل) هم به این صفحه ری‌دایرکت شود</span>
-                </td>
-                <td>
-                    <input style="text-align:left;direction:ltr;" asp-for="ModifyModel.RedirectFromFullUrl" />
-                </td>
-            </tr>
-
-            <tr>
-                <td>
-                    <span class="inputlabel">توضیح این ویرایش: </span>
-                </td>
-                <td>
-                    <input asp-for="ModifyModel.Note" />
-
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">ذخیره</button>
-                </td>
-            </tr>
-
-            <tr>
-                <td colspan="2">
-                    <a href="/Admin/PageHistory?id=@Request.Query["id"]">سوابق</a>
-                </td>
-            </tr>
-
-            <tr>
-                <td colspan="2">
-                    <a role="button" href="/Admin/CatUtils?url=@Model.PageInformation.FullUrl" class="actionlink">مدیریت بخش متناظر</a>
-                </td>
-            </tr>
-            @if (Model.PageInformation.PoetOrCat != null)
-            {
-                <tr>
-                    <td colspan="2">
-                        <a role="button" href="/Admin/Poet?id=@Model.PageInformation.PoetOrCat.Poet.Id" class="actionlink">سخنور</a>
-                    </td>
-                </tr>
-            }
-
-        </table>
-    </form>
-
-    <form action="?Handler=GenerateCatPage&id=@Model.PageInformation.Id" method="post">
-        <table>
-            <tr>
-                <td>
-                    <select asp-for="GanjoorTOC">
+                <div class="up-field">
+                    <label asp-for="ModifyModel.CatType">نوع بخش (فقط بخش‌ها)</label>
+                    <select asp-for="ModifyModel.CatType">
+                        <option value="@RMuseum.Models.Ganjoor.GanjoorCatType.Default">پیش‌فرض</option>
+                        <option value="@RMuseum.Models.Ganjoor.GanjoorCatType.Book">کتاب</option>
+                        <option value="@RMuseum.Models.Ganjoor.GanjoorCatType.BookPart">بخش</option>
+                    </select>
+                </div>
+                <div class="up-field">
+                    <label asp-for="ModifyModel.TableOfContentsStyle">نحوهٔ فهرست‌گذاری بخش (فقط بخش‌ها)</label>
+                    <select asp-for="ModifyModel.TableOfContentsStyle">
                         <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.Analyse">بر اساس تحلیل بخش</option>
                         <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.OnlyTitles">فقط عناوین</option>
                         <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstVerse">عنوان و مصرع اول</option>
@@ -294,61 +140,112 @@
                         <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithSecondVerseNotSorted">الفبایی با مصرع دوم - مرتب نشده</option>
                         <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithFirstCoupletNotSorted">الفبایی با بیت اول - مرتب نشده</option>
                     </select>
-                </td>
-                <td>
-                    <button type="submit" style="width:100%;color:white;background-color:blue">تولید</button>
-                    <button type="submit" name="directInsert" id="directInsert" style="width:100%;color:white;background-color:blue">درج مستقیم</button>
-                </td>
-            </tr>
-        </table>
-    </form>
+                </div>
+                <div class="up-field">
+                    <label asp-for="ModifyModel.Description">توضیحات متنی بخش (فقط بخش‌ها)</label>
+                    <textarea asp-for="ModifyModel.Description" rows="20"></textarea>
+                </div>
+                <div class="up-field">
+                    <label asp-for="ModifyModel.DescriptionHtml">توضیحات Html بخش (فقط بخش‌ها)</label>
+                    <textarea asp-for="ModifyModel.DescriptionHtml" class="editor"></textarea>
+                </div>
+            }
+
+            <div class="up-field">
+                <label asp-for="ModifyModel.NoIndex">ایندکس نشود</label>
+                <input type="checkbox" asp-for="ModifyModel.NoIndex" />
+            </div>
+            <div class="up-field up-field--ltr">
+                <label asp-for="ModifyModel.RedirectFromFullUrl">از این نشانی (کامل) هم به این صفحه ری‌دایرکت شود</label>
+                <input asp-for="ModifyModel.RedirectFromFullUrl" />
+            </div>
+            <div class="up-field">
+                <label asp-for="ModifyModel.Note">توضیح این ویرایش</label>
+                <input asp-for="ModifyModel.Note" />
+            </div>
+
+            <div class="up-form-actions">
+                <button type="submit" name="approve" id="approve" class="up-btn up-btn--success">ذخیره</button>
+            </div>
+
+            <div class="up-form-actions" style="margin-top:var(--up-space-3);">
+                <a href="/Admin/PageHistory?id=@Request.Query["id"]" class="up-btn up-btn--ghost up-btn--sm">سوابق</a>
+                <a role="button" href="/Admin/CatUtils?url=@Model.PageInformation.FullUrl" class="up-btn up-btn--ghost up-btn--sm">مدیریت بخش متناظر</a>
+                @if (Model.PageInformation.PoetOrCat != null)
+                {
+                    <a role="button" href="/Admin/Poet?id=@Model.PageInformation.PoetOrCat.Poet.Id" class="up-btn up-btn--ghost up-btn--sm">سخنور</a>
+                }
+            </div>
+        </form>
+    </div>
+
+    <div class="up-card">
+        <form action="?Handler=GenerateCatPage&id=@Model.PageInformation.Id" method="post" class="up-form">
+            <div class="up-field">
+                <label asp-for="GanjoorTOC">تولید فهرست</label>
+                <select asp-for="GanjoorTOC">
+                    <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.Analyse">بر اساس تحلیل بخش</option>
+                    <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.OnlyTitles">فقط عناوین</option>
+                    <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstVerse">عنوان و مصرع اول</option>
+                    <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithFirstVerse">الفبایی با مصرع اول</option>
+                    <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithSecondVerse">الفبایی با مصرع دوم</option>
+                    <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithFirstCouplet">الفبایی با بیت اول</option>
+                    <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndSecondVerse">عنوان و مصرع دوم</option>
+                    <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstCouplet">عنوان و بیت اول</option>
+                    <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstCenteredVerse">عنوان و مصرع بند</option>
+                    <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.TitlesAndFirstCenteredCouplet">عنوان و بیت بند</option>
+                    <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithFirstVerseNotSorted">الفبایی با مصرع اول - مرتب نشده</option>
+                    <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithSecondVerseNotSorted">الفبایی با مصرع دوم - مرتب نشده</option>
+                    <option value="@RMuseum.Models.Ganjoor.GanjoorTOC.AlphabeticWithFirstCoupletNotSorted">الفبایی با بیت اول - مرتب نشده</option>
+                </select>
+            </div>
+            <div class="up-form-actions">
+                <button type="submit" class="up-btn up-btn--primary">تولید</button>
+                <button type="submit" name="directInsert" id="directInsert" class="up-btn up-btn--primary">درج مستقیم</button>
+            </div>
+        </form>
+    </div>
 
     @if (Model.PageInformation.Poem != null)
     {
-        @if (Model.PageInformation.Poem.Previous != null)
-        {
-            <p><a href="/Admin/ModifyPage?id=@Model.PageInformation.Poem.Previous.Id">ویرایش شعر قبل</a></p>
-        }
-        @if (Model.PageInformation.Poem.Next != null)
-        {
-            <p><a href="/Admin/ModifyPage?id=@Model.PageInformation.Poem.Next.Id">ویرایش شعر بعد</a></p>
-        }
+        <div class="up-form-actions">
+            @if (Model.PageInformation.Poem.Previous != null)
+            {
+                <a href="/Admin/ModifyPage?id=@Model.PageInformation.Poem.Previous.Id" class="up-btn up-btn--ghost up-btn--sm">ویرایش شعر قبل</a>
+            }
+            @if (Model.PageInformation.Poem.Next != null)
+            {
+                <a href="/Admin/ModifyPage?id=@Model.PageInformation.Poem.Next.Id" class="up-btn up-btn--ghost up-btn--sm">ویرایش شعر بعد</a>
+            }
+        </div>
     }
 
-    <p><a role="button" onclick="defaultHtmlText()" class="actionlink" title="چینش پیش‌فرض ابیات">چینش پیش‌فرض ابیات</a></p>
+    <div class="up-card">
+        <h2 class="up-card__title">ابزارها</h2>
+        <div class="up-form-actions">
+            <a role="button" onclick="defaultHtmlText()" class="up-btn up-btn--ghost up-btn--sm" title="چینش پیش‌فرض ابیات">چینش پیش‌فرض ابیات</a>
+            <a role="button" onclick="cleanCache(@Model.PageInformation.Id)" class="up-btn up-btn--ghost up-btn--sm" title="حذف کش صفحه">حذف کش صفحه</a>
+            <a role="button" onclick="rebuildSitemap()" class="up-btn up-btn--ghost up-btn--sm" title="بازسازی نقشهٔ سایت">بازسازی نقشهٔ سایت</a>
+            <a role="button" onclick="rebuildTajikSitemap()" class="up-btn up-btn--ghost up-btn--sm" title="بازسازی نقشهٔ سایت">بازسازی نقشهٔ سایت تاجیکی</a>
+            <a role="button" onclick="refillCoupletCounts()" class="up-btn up-btn--ghost up-btn--sm">بازشماری تعداد ابیات قطعات</a>
+            <a role="button" onclick="rebuildStats()" class="up-btn up-btn--ghost up-btn--sm" title="بازسازی صفحات آمار و اوزان عروضی">بازسازی صفحات آمار و اوزان عروضی</a>
+            <a role="button" onclick="rebuildRelatedPages()" class="up-btn up-btn--ghost up-btn--sm" title="بازسازی صفحات استقبالها">بازسازی صفحات استقبالها</a>
+            <a role="button" onclick="rebuildDigitalSourcesStats()" class="up-btn up-btn--ghost up-btn--sm" title="بازسازی آمار منابع دیجیتال">بازسازی آمار منابع دیجیتال</a>
+            <a role="button" onclick="transilerate()" class="up-btn up-btn--ghost up-btn--sm" title="برگردان تاجیکی">برگردان تاجیکی</a>
+        </div>
 
-    <p><a role="button" onclick="cleanCache(@Model.PageInformation.Id)" class="actionlink" title="حذف کش صفحه">حذف کش صفحه</a></p>
+        @if (Model.PageInformation.PoetOrCat != null)
+        {
+            <div class="up-form-actions" style="margin-top:var(--up-space-2);">
+                <a role="button" onclick="rebuildRebuildWordCounts(@Model.PageInformation.PoetOrCat.Poet.Id)" class="up-btn up-btn--ghost up-btn--sm" title="شمارش واژگان">شمارش واژگان</a>
+                <a role="button" onclick="discoverNaskbanPaperSources(@Model.PageInformation.PoetOrCat.Poet.Id)" class="up-btn up-btn--ghost up-btn--sm" title="فهرست کردن کتابهای نسکبان">فهرست کردن کتابهای نسکبان</a>
+                <a role="button" onclick="discoverMusuemPaperSources(@Model.PageInformation.PoetOrCat.Poet.Id)" class="up-btn up-btn--ghost up-btn--sm" title="فهرست کردن کتابهای گنجینه">فهرست کردن کتابهای گنجینه</a>
+            </div>
+        }
+    </div>
 
-    <p><a role="button" onclick="rebuildSitemap()" class="actionlink" title="بازسازی نقشهٔ سایت">بازسازی نقشهٔ سایت</a></p>
-
-    <p><a role="button" onclick="rebuildTajikSitemap()" class="actionlink" title="بازسازی نقشهٔ سایت">بازسازی نقشهٔ سایت تاجیکی</a></p>
-
-    <p><a role="button" onclick="refillCoupletCounts()" class="actionlink">بازشماری تعداد ابیات قطعات</a></p>
-
-    <p><a role="button" onclick="rebuildStats()" class="actionlink" title="بازسازی صفحات آمار و اوزان عروضی">بازسازی صفحات آمار و اوزان عروضی</a></p>
-
-    <p><a role="button" onclick="rebuildRelatedPages()" class="actionlink" title="بازسازی صفحات استقبالها">بازسازی صفحات استقبالها</a></p>
-
-    <p><a role="button" onclick="rebuildDigitalSourcesStats()" class="actionlink" title="بازسازی آمار منابع دیجیتال">بازسازی آمار منابع دیجیتال</a></p>
-
-    @if (Model.PageInformation.PoetOrCat != null)
-    {
-        <p><a role="button" onclick="rebuildRebuildWordCounts(@Model.PageInformation.PoetOrCat.Poet.Id)" class="actionlink" title="شمارش واژگان">شمارش واژگان</a></p>
-        <p><a role="button" onclick="discoverNaskbanPaperSources(@Model.PageInformation.PoetOrCat.Poet.Id)" class="actionlink" title="فهرست کردن کتابهای نسکبان">فهرست کردن کتابهای نسکبان</a></p>
-        <p><a role="button" onclick="discoverMusuemPaperSources(@Model.PageInformation.PoetOrCat.Poet.Id)" class="actionlink" title="فهرست کردن کتابهای گنجینه">فهرست کردن کتابهای گنجینه</a></p>
-       
-    }
-
-
-    <p><a role="button" onclick="transilerate()" class="actionlink" title="برگردان تاجیکی">برگردان تاجیکی</a></p>
-
-
-    <table>
-        <tr>
-            <td><a role="button" href="/Admin/ModifyPage?id=0" class="actionlink">صفحهٔ جدید</a></td>
-        </tr>
-        <tr>
-            <td><a role="button" href="/Admin/PageDel/?url=@Model.PageInformation.FullUrl" class="actionlink">حذف صفحه</a></td>
-        </tr>
-    </table>
+    <div class="up-form-actions">
+        <a role="button" href="/Admin/ModifyPage?id=0" class="up-btn up-btn--ghost up-btn--sm">صفحهٔ جدید</a>
+        <a role="button" href="/Admin/PageDel/?url=@Model.PageInformation.FullUrl" class="up-btn up-btn--danger up-btn--sm">حذف صفحه</a>
+    </div>
 }
