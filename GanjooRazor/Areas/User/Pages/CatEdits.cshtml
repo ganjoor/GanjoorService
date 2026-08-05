@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.CatEditsModel
 @using RMuseum.Models.Ganjoor
 @using RMuseum.Services.Implementation
@@ -6,55 +6,33 @@
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "ویرایش‌های بخشهای من";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
-    string color = "gray";
 }
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 else
 {
-
     if (@Model.CanEdit)
     {
-        <div class="clear-both">
-            <p>
-                <a role="button" href="/User/CatEdits?AllUsers=1" class="pagebutton">ویرایش‌های بخش‌های همه</a>
-            </p>
+        <div class="up-form-actions">
+            <a role="button" href="/User/CatEdits?AllUsers=1" class="up-btn up-btn--ghost">ویرایش‌های بخش‌های همه</a>
         </div>
     }
 
+    <partial name="_Pagination" model="Model.PaginationLinks" />
+
     @if (Model.Corrections.Count == 0)
     {
-        <p>
-            شما هنوز هیچ ویرایشی در بخش‌های انجام نداده‌اید.
-        </p>
+        <partial name="_EmptyState" model="@("شما هنوز هیچ ویرایشی در بخش‌های انجام نداده‌اید.")" />
     }
-
-
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
 
     @foreach (var correction in Model.Corrections)
     {
-        if (color == "gray")
-            color = "lightsteelblue";
-        else
-            color = "gray";
-
-        <div style="background-color:@color" id="correction-@correction.Id">
+        <div class="up-list-item" id="correction-@correction.Id">
             <table>
 
                 @if (Model.AllUsersEdits)
@@ -87,19 +65,7 @@ else
                             <p style="color:green">@correction.Description</p>
                         </td>
                         <td>
-                            @if (correction.Result == CorrectionReviewResult.NotReviewed)
-                            {
-                                <p style="color:blue">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
-                            }
-                            else
-                            @if (correction.Result == CorrectionReviewResult.Approved)
-                            {
-                                <p style="color:green">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
-                            }
-                            else
-                            {
-                                <p style="color:red">@CorrectionReviewResultConvertor.GetString(correction.Result)</p>
-                            }
+                            <partial name="_ReviewResultBadge" model="correction.Result" />
                         </td>
                     </tr>
                     @if (!string.IsNullOrEmpty(correction.ReviewNote))
@@ -111,8 +77,6 @@ else
                         </tr>
                     }
                 }
-
-             
 
                 @if (!string.IsNullOrEmpty(correction.Note))
                 {
@@ -134,31 +98,9 @@ else
                     </tr>
                 }
 
-
             </table>
-
         </div>
-
-
-        <hr />
     }
 
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
-
-
-
-
-
+    <partial name="_Pagination" model="Model.PaginationLinks" />
 }

@@ -1,69 +1,42 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.MySuggestedQuotesModel
 @{
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "مشق‌های پیشنهادی من";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
-    string color = "gray";
 }
-
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 else
 {
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
+    <partial name="_Pagination" model="Model.PaginationLinks" />
 
     @if (Model.SuggestedQuotes.Count == 0)
     {
-        <p>
-            شما هنوز هیچ مشق شهری را پیشنهاد نداده‌اید.
-         </p>
+        <partial name="_EmptyState" model="@("شما هنوز هیچ مشق شهری را پیشنهاد نداده‌اید.")" />
     }
 
     @foreach (var GanjoorQuotedPoem in Model.SuggestedQuotes)
     {
-        if (color == "gray")
-            color = "lightsteelblue";
-        else
-            color = "gray";
+        <div class="up-list-item" id="bookmark-@GanjoorQuotedPoem.Id">
 
-        <div style="background-color:@color" id="bookmark-@GanjoorQuotedPoem.Id">
-
-            @if(GanjoorQuotedPoem.Rejected)
+            @if (GanjoorQuotedPoem.Rejected)
             {
-                <p class="red-color">
-                    رد شده
-                </p>
+                <span class="up-badge up-badge--danger">رد شده</span>
             }
-            else
-            @if (GanjoorQuotedPoem.Published)
+            else if (GanjoorQuotedPoem.Published)
             {
-                <p class="green-color">
-                    تأیید شده
-                </p>
+                <span class="up-badge up-badge--success">تأیید شده</span>
             }
             else
             {
-                <p>
-                   بررسی نشده
-                </p>
+                <span class="up-badge up-badge--primary">بررسی نشده</span>
             }
-         
 
             @if (GanjoorQuotedPoem.Rejected)
             {
@@ -72,7 +45,6 @@ else
                 </p>
             }
 
-
             <table>
 
                 <tr>
@@ -80,7 +52,7 @@ else
                         <a href="/?p=@GanjoorQuotedPoem.PoemId">شعر مرجع</a>:
                     </td>
                 </tr>
-               
+
                 <tr>
                     <td>
                         شاعر مرجع:
@@ -118,7 +90,7 @@ else
                 </tr>
                 <tr>
                     <td>
-                        <input type="checkbox" @(GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized ? "checked=\"checked\"" : "") />
+                        <input type="checkbox" disabled @(GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized ? "checked=\"checked\"" : "") />
                     </td>
                 </tr>
                 <tr>
@@ -139,7 +111,7 @@ else
                 </tr>
                 <tr>
                     <td>
-                        <input type="checkbox" @(GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized ? "checked=\"checked\"" : "") />
+                        <input type="checkbox" disabled @(GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized ? "checked=\"checked\"" : "") />
                     </td>
                 </tr>
 
@@ -150,7 +122,7 @@ else
                 </tr>
                 <tr>
                     <td>
-                        <input type="checkbox" @(GanjoorQuotedPoem.ClaimedByBothPoets ? "checked=\"checked\"" : "") />
+                        <input type="checkbox" disabled @(GanjoorQuotedPoem.ClaimedByBothPoets ? "checked=\"checked\"" : "") />
                     </td>
                 </tr>
                 <tr>
@@ -226,25 +198,8 @@ else
                 </tr>
 
             </table>
-           
-
         </div>
-
-
-        <hr />
     }
 
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
+    <partial name="_Pagination" model="Model.PaginationLinks" />
 }
