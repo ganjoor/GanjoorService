@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.ReviewSongsModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using DNTPersianUtils.Core
@@ -7,266 +7,187 @@
     ViewData["Title"] = "آهنگ‌های پیشنهادی";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 else if (@Model.PoemMusicTrackViewModel == null)
 {
-    <p>پیشنهادی وجود ندارد.</p>
+    <partial name="_EmptyState" model="@("پیشنهادی وجود ندارد.")" />
 }
 else if (@Model.Poem == null)
 {
-    <p>شعر مرتبط یافت نشد!</p>
+    <div class="up-alert up-alert--warning">شعر مرتبط یافت نشد!</div>
 }
 else
 {
-
-
-
-    <form method="post">
-        <table style="width:100%" class="noborder">
-            <tr>
-                <td>
-                    <span class="inputlabel">شعر: </span>
-                </td>
-                <td>
+    <div class="up-card">
+        <form method="post" class="up-form">
+            <div class="up-field">
+                <label>شعر</label>
+                <div>
                     <a href="@Html.Raw(Model.Poem.FullUrl)" target="_blank">@Model.Poem.FullTitle</a>
                     <input type="hidden" asp-for="PoemMusicTrackViewModel.Id" />
                     <input type="hidden" asp-for="PoemMusicTrackViewModel.PoemId" />
                     <input type="hidden" asp-for="PoemMusicTrackViewModel.GolhaTrackId" />
                     <input type="hidden" asp-for="PoemMusicTrackViewModel.TrackType" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">پیشنهاد دهنده: </span>
-                </td>
-                <td>
-                    <a href="/hashieha/?userid=@Model.PoemMusicTrackViewModel.SuggestedById" target="_blank">@Model.PoemMusicTrackViewModel.SuggestedByNickName</a>
-                </td>
-            </tr>
+                </div>
+            </div>
+
+            <div class="up-field">
+                <label>پیشنهاد دهنده</label>
+                <div><a href="/hashieha/?userid=@Model.PoemMusicTrackViewModel.SuggestedById" target="_blank">@Model.PoemMusicTrackViewModel.SuggestedByNickName</a></div>
+            </div>
+
             @if (Model.UserSongSuggestionsHistory != null && (Model.UserSongSuggestionsHistory.Approved + Model.UserSongSuggestionsHistory.Rejected) > 0)
             {
-                <tr>
-                    <td>
-                        @if (Model.UserSongSuggestionsHistory.Approved > 0)
-                        {
-                            <span style="color:green"><strong>@Model.UserSongSuggestionsHistory.Approved.ToPersianNumbers()</strong> پیشنهاد تأیید شده</span>
-                        }
-
-                    </td>
-                    <td>
-                        @if (Model.UserSongSuggestionsHistory.Rejected > 0)
-                        {
-                            <span style="color:red"><strong>@Model.UserSongSuggestionsHistory.Rejected.ToPersianNumbers()</strong> پیشنهاد رد شده</span>
-                        }
-                    </td>
-                </tr>
+                <div class="up-form-actions">
+                    @if (Model.UserSongSuggestionsHistory.Approved > 0)
+                    {
+                        <span class="up-badge up-badge--success">@Model.UserSongSuggestionsHistory.Approved.ToPersianNumbers() پیشنهاد تأیید شده</span>
+                    }
+                    @if (Model.UserSongSuggestionsHistory.Rejected > 0)
+                    {
+                        <span class="up-badge up-badge--danger">@Model.UserSongSuggestionsHistory.Rejected.ToPersianNumbers() پیشنهاد رد شده</span>
+                    }
+                </div>
             }
 
-            <tr>
-                <td colspan="2">
-                    @{
-                        switch (Model.PoemMusicTrackViewModel.TrackType)
-                        {
-                            case RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify:
-                                <img src="/image/spotify.png" alt="اسپاتیفای" height="32" />
-                                break;
-                            case RMuseum.Models.Ganjoor.PoemMusicTrackType.Golha:
-                                <img src="/image/golha.png" alt="گلها" height="32" />
-                                break;
-                            default:
-                                <img src="/image/beeptunes.png" alt="بیپ‌تونز" height="32" />
-                                break;
-                        }
+            <div>
+                @{
+                    switch (Model.PoemMusicTrackViewModel.TrackType)
+                    {
+                        case RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify:
+                            <img src="/image/spotify.png" alt="اسپاتیفای" height="32" />
+                            break;
+                        case RMuseum.Models.Ganjoor.PoemMusicTrackType.Golha:
+                            <img src="/image/golha.png" alt="گلها" height="32" />
+                            break;
+                        default:
+                            <img src="/image/beeptunes.png" alt="بیپ‌تونز" height="32" />
+                            break;
                     }
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">خواننده: </span>
-                </td>
-                <td>
-                    <input style="width:100%" asp-for="PoemMusicTrackViewModel.ArtistName" /><br />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel"><a target="_blank" href="@Html.Raw(Model.PoemMusicTrackViewModel.ArtistUrl)">نشانی خواننده:</a></span>
-                </td>
-                <td>
-                    <input style="width:100%;text-align:left;direction:ltr;" asp-for="PoemMusicTrackViewModel.ArtistUrl" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                </td>
-                <td>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">آلبوم:</span>
-                </td>
-                <td>
-                    <input style="width:100%" asp-for="PoemMusicTrackViewModel.AlbumName" /><br />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel"><a target="_blank" href="@Html.Raw(Model.PoemMusicTrackViewModel.AlbumUrl)">نشانی آلبوم:</a></span>
-                </td>
-                <td>
-                    <input style="width:100%;text-align:left;direction:ltr;" asp-for="PoemMusicTrackViewModel.AlbumUrl" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">آهنگ:</span>
-                </td>
-                <td>
-                    <input style="width:100%" asp-for="PoemMusicTrackViewModel.TrackName" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel"><a target="_blank" href="@Html.Raw(Model.PoemMusicTrackViewModel.TrackUrl)">نشانی آهنگ:</a></span>
-                </td>
-                <td>
-                    <input style="width:100%;text-align:left;direction:ltr;" asp-for="PoemMusicTrackViewModel.TrackUrl" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">توضیح: </span>
-                </td>
-                <td>
-                    <input style="width:100%" asp-for="PoemMusicTrackViewModel.Description" /><br />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">
-                        @if (Model.EditMode)
-                        {
-                            <text>اصلاح</text>
-                        }
-                        else
-                        {
-                            <text>تأیید</text>
-                        }
-                    </button>
-                </td>
-                <td>
-                    <table style="width:100%" class="noborder">
-                        @if (Model.EditMode)
-                        {
-                            <tr>
-                                <td>
-                                    <button type="submit" name="delsong" id="delsong" style="width:100%;color:white;background-color:darkred">حذف</button>
-                                </td>
+                }
+            </div>
 
-                            </tr>
+            <div class="up-field">
+                <label asp-for="PoemMusicTrackViewModel.ArtistName">خواننده</label>
+                <input asp-for="PoemMusicTrackViewModel.ArtistName" />
+            </div>
+            <div class="up-field up-field--ltr">
+                <label><a target="_blank" href="@Html.Raw(Model.PoemMusicTrackViewModel.ArtistUrl)">نشانی خواننده</a></label>
+                <input asp-for="PoemMusicTrackViewModel.ArtistUrl" />
+            </div>
 
-                        }
-                        else
-                        {
-                            <tr>
-                                <td>
-                                    <button type="submit" name="reject1" id="reject1" style="width:100%;color:white;background-color:darkred">در آهنگ این شعر خوانده نشده</button>
-                                </td>
+            <div class="up-field">
+                <label asp-for="PoemMusicTrackViewModel.AlbumName">آلبوم</label>
+                <input asp-for="PoemMusicTrackViewModel.AlbumName" />
+            </div>
+            <div class="up-field up-field--ltr">
+                <label><a target="_blank" href="@Html.Raw(Model.PoemMusicTrackViewModel.AlbumUrl)">نشانی آلبوم</a></label>
+                <input asp-for="PoemMusicTrackViewModel.AlbumUrl" />
+            </div>
 
-                            </tr>
-                            <tr>
-                                <td>
-                                    <button type="submit" name="reject2" id="reject2" style="width:100%;color:white;background-color:darkred">لینک یا اطلاعات آهنگ ایراد دارد</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <button type="submit" name="reject3" id="reject3" style="width:100%;color:white;background-color:darkred">رد به دلیل دیگر:</button>
-                                </td>
-                                <td>
-                                    <input style="width:100%" asp-for="PoemMusicTrackViewModel.RejectionCause" /><br />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <button type="submit" name="next" id="next" style="width:100%;color:white;background-color:orange">بعدی</button>
-                                </td>
-                            </tr>
-                        }
-                    </table>
+            <div class="up-field">
+                <label asp-for="PoemMusicTrackViewModel.TrackName">آهنگ</label>
+                <input asp-for="PoemMusicTrackViewModel.TrackName" />
+            </div>
+            <div class="up-field up-field--ltr">
+                <label><a target="_blank" href="@Html.Raw(Model.PoemMusicTrackViewModel.TrackUrl)">نشانی آهنگ</a></label>
+                <input asp-for="PoemMusicTrackViewModel.TrackUrl" />
+            </div>
 
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    تعداد کل:
-                </td>
-                <td>
-                    @Model.TotalCount
-                </td>
-            </tr>
-        </table>
+            <div class="up-field">
+                <label asp-for="PoemMusicTrackViewModel.Description">توضیح</label>
+                <input asp-for="PoemMusicTrackViewModel.Description" />
+            </div>
 
-    </form>
+            <div class="up-form-actions">
+                <button type="submit" name="approve" id="approve" class="up-btn up-btn--success">
+                    @if (Model.EditMode)
+                    {
+                        <text>اصلاح</text>
+                    }
+                    else
+                    {
+                        <text>تأیید</text>
+                    }
+                </button>
 
+                @if (Model.EditMode)
+                {
+                    <button type="submit" name="delsong" id="delsong" class="up-btn up-btn--danger">حذف</button>
+                }
+                else
+                {
+                    <button type="submit" name="reject1" id="reject1" class="up-btn up-btn--danger">در آهنگ این شعر خوانده نشده</button>
+                    <button type="submit" name="reject2" id="reject2" class="up-btn up-btn--danger">لینک یا اطلاعات آهنگ ایراد دارد</button>
+                    <button type="submit" name="next" id="next" class="up-btn up-btn--ghost">بعدی</button>
+                }
+            </div>
 
+            @if (!Model.EditMode)
+            {
+                <div class="up-field">
+                    <label asp-for="PoemMusicTrackViewModel.RejectionCause">رد به دلیل دیگر</label>
+                    <div class="up-form-actions">
+                        <input asp-for="PoemMusicTrackViewModel.RejectionCause" style="flex:1;" />
+                        <button type="submit" name="reject3" id="reject3" class="up-btn up-btn--danger">رد</button>
+                    </div>
+                </div>
+            }
 
+            <p class="up-hint">تعداد کل: @Model.TotalCount</p>
+        </form>
+    </div>
 }
 
 @if (ViewData.ContainsKey("ganjoor-songrevu"))
 {
-    <a class="nav-link text-dark" asp-area="User" asp-page="/AddSong">اضافه کردن آهنگ از منبع دلخواه</a>
+    <div class="up-form-actions">
+        <a class="up-btn up-btn--ghost" asp-area="User" asp-page="/AddSong">اضافه کردن آهنگ از منبع دلخواه</a>
+    </div>
 }
 
 <script>
-    function rebuildMundex() {
-        if (!confirm('آیا از بازسازی صفحات نمایهٔ موسیقی اطمینان دارید؟'))
-            return;
-
-        var url = '?handler=RebuildMundex';
+    async function rebuildMundex() {
+        var ok = await upConfirm('آیا از بازسازی صفحات نمایهٔ موسیقی اطمینان دارید؟');
+        if (!ok) return;
 
         $.ajax({
             type: "POST",
-            url: url,
+            url: '?handler=RebuildMundex',
             error: function () {
-                alert('خطا رخ داد.')
+                upToast('خطا رخ داد.', 'error');
             },
             success: function () {
-                alert('فرایند بازسازی صفحات نمایهٔ موسیقی شروع شد.')
+                upToast('فرایند بازسازی صفحات نمایهٔ موسیقی شروع شد.', 'success');
             },
-
         });
     }
 
-    function cleanMundexCache() {
-        if (!confirm('آیا از حذف کش صفحات موسیقی اطمینان دارید؟'))
-            return;
-
-        var url = '?handler=CleanMundexCache';
+    async function cleanMundexCache() {
+        var ok = await upConfirm('آیا از حذف کش صفحات موسیقی اطمینان دارید؟');
+        if (!ok) return;
 
         $.ajax({
             type: "POST",
-            url: url,
+            url: '?handler=CleanMundexCache',
             error: function () {
-                alert('خطا رخ داد.')
+                upToast('خطا رخ داد.', 'error');
             },
             success: function () {
-                alert('کش صفخات پاک شد.')
+                upToast('کش صفحات پاک شد.', 'success');
             },
-
         });
     }
 </script>
 
-<p><a role="button" onclick="rebuildMundex()" class="actionlink" title="بازسازی صفحات نمایهٔ موسیقی">بازسازی صفحات نمایهٔ موسیقی</a></p>
-
-<p><a role="button" onclick="cleanMundexCache()" class="actionlink" title="حذف کش صفحات نمایهٔ موسیقی">حذف کش صفحات نمایهٔ موسیقی</a></p>
-
-
-
+<div class="up-form-actions">
+    <a role="button" onclick="rebuildMundex()" class="up-btn up-btn--ghost" title="بازسازی صفحات نمایهٔ موسیقی">بازسازی صفحات نمایهٔ موسیقی</a>
+    <a role="button" onclick="cleanMundexCache()" class="up-btn up-btn--ghost" title="حذف کش صفحات نمایهٔ موسیقی">حذف کش صفحات نمایهٔ موسیقی</a>
+</div>

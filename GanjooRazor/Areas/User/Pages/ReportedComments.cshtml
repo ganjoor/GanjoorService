@@ -1,112 +1,83 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.ReportedCommentsModel
 @using DNTPersianUtils.Core
 @{
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "حاشیه‌های گزارش شده";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
-    string color = "gray";
 }
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 else
 {
-
     <script>
-        function moderateReportedComment(reportId) {
-            if (!confirm('آیا از حذف این حاشیه اطمینان دارید؟'))
-                return;
-
+        async function moderateReportedComment(reportId) {
+            var ok = await upConfirm('آیا از حذف این حاشیه اطمینان دارید؟');
+            if (!ok) return;
 
             $.ajax({
                 type: "POST",
                 url: '?handler=ModerateComment',
-                data: {
-                    id: reportId,
+                data: { id: reportId },
+                error: function (e) {
+                    upToast(e.responseText || 'خطا رخ داد.', 'error');
                 },
                 success: function () {
-                    var commentBlockId = '#report-' + reportId;
-                    $(commentBlockId).remove();
+                    $('#report-' + reportId).remove();
+                    upToast('حاشیه حذف شد.', 'success');
                 },
             });
-
         }
 
         function deleteReport(reportId) {
             $.ajax({
                 type: "DELETE",
                 url: '?handler=Report',
-                data: {
-                    id: reportId
+                data: { id: reportId },
+                error: function (e) {
+                    upToast(e.responseText || 'خطا رخ داد.', 'error');
                 },
                 success: function () {
-                    var commentBlockId = '#report-' + reportId;
-                    $(commentBlockId).remove();
+                    $('#report-' + reportId).remove();
+                    upToast('گزارش حذف شد.', 'success');
                 },
             });
-
         }
     </script>
 
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
+    <partial name="_Pagination" model="Model.PaginationLinks" />
 
-    @foreach (var report in Model.Reports)
+    @if (Model.Reports.Count == 0)
     {
-        if (color == "gray")
-            color = "lightsteelblue";
-        else
-            color = "gray";
-
-<div style="background-color:@color" id="report-@report.Id">
-    <p style="color:red">
-        @report.ReasonCode
-    </p>
-    <hr />
-    <p style="color:red">
-        @report.ReasonText
-    </p>
-    <hr />
-    <blockquote>
-        @Html.Raw(report.Comment.HtmlComment)
-        <p>
-                    @report.Comment.AuthorName <small>در @report.Comment.CommentDate.ToFriendlyPersianDateTextify()</small> دربارهٔ <a href="@report.Comment.Poem.UrlSlug#comment-@report.Comment.Id">@report.Comment.Poem.Title</a>
-        </p>
-    </blockquote>
-    <a role="button" onclick="moderateReportedComment(@report.Id)" class="actionlink" style="color:green" title="تأیید و حذف حاشیه">✓ درست می‌گوید</a>
-    &nbsp;&nbsp;&nbsp;
-    <a role="button" onclick="deleteReport(@report.Id, @report.Comment.Id)" class="actionlink" style="color:red" title="حذف گزارش">گزارش نابجا ❌</a>
-</div>
-
-
-        <hr />
+        <partial name="_EmptyState" model="@("گزارش رسیدگی‌نشده‌ای وجود ندارد.")" />
+    }
+    else
+    {
+        <div class="up-list">
+            @foreach (var report in Model.Reports)
+            {
+                <div class="up-list-item" id="report-@report.Id">
+                    <span class="up-badge up-badge--danger">@report.ReasonCode</span>
+                    <p>@report.ReasonText</p>
+                    <blockquote>
+                        @Html.Raw(report.Comment.HtmlComment)
+                        <div class="up-list-item__meta">
+                            @report.Comment.AuthorName در @report.Comment.CommentDate.ToFriendlyPersianDateTextify() دربارهٔ <a href="@report.Comment.Poem.UrlSlug#comment-@report.Comment.Id">@report.Comment.Poem.Title</a>
+                        </div>
+                    </blockquote>
+                    <div class="up-list-item__actions">
+                        <a role="button" onclick="moderateReportedComment(@report.Id)" class="up-btn up-btn--danger up-btn--sm" title="تأیید و حذف حاشیه">✓ درست می‌گوید</a>
+                        <a role="button" onclick="deleteReport(@report.Id)" class="up-btn up-btn--ghost up-btn--sm" title="حذف گزارش">گزارش نابجا ❌</a>
+                    </div>
+                </div>
+            }
+        </div>
     }
 
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
+    <partial name="_Pagination" model="Model.PaginationLinks" />
 }

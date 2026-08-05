@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.FinalizeImagesModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
@@ -6,50 +6,49 @@
     ViewData["Title"] = "نهایی‌سازی تصاویر پیشنهادی";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 
-
-
-@if (Model.MainImage != null)
+@if (Model.MainImage == null)
 {
-<table style="width:100%" class="noborder">
-    <tr>
-        <td colspan="2">
-            <a href="@Model.MainImage.GanjoorUrl" target="_blank">@Model.MainImage.GanjoorTitle</a>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <img src="@Model.MainImage.ExternalNormalSizeImageUrl" />
-        </td>
-        <td>
+    <partial name="_EmptyState" model="@("تصویری برای نهایی‌سازی وجود ندارد.")" />
+}
+else
+{
+    <div class="up-card">
+        <p><a href="@Model.MainImage.GanjoorUrl" target="_blank">@Model.MainImage.GanjoorTitle</a></p>
+
+        <div style="display:flex;gap:var(--up-space-3);flex-wrap:wrap;">
+            <div>
+                <p class="up-hint">تصویر پیشنهادی</p>
+                <img src="@Model.MainImage.ExternalNormalSizeImageUrl" style="max-width:100%;" />
+            </div>
             @if (Model.PreviouslyLinkedImage != null)
             {
-                    <img src="@Model.PreviouslyLinkedImage.ExternalNormalSizeImageUrl" />
+                <div>
+                    <p class="up-hint">تصویر فعلی</p>
+                    <img src="@Model.PreviouslyLinkedImage.ExternalNormalSizeImageUrl" style="max-width:100%;" />
+                </div>
             }
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <form method="post">
-                <input type="hidden" asp-for="ImageLinkFinalizeModel.Id" />
+        </div>
+
+        <form method="post" class="up-form">
+            <input type="hidden" asp-for="ImageLinkFinalizeModel.Id" />
+            <div class="up-field">
+                <label asp-for="ImageLinkFinalizeModel.DisplayOnPage"></label>
                 <input asp-for="ImageLinkFinalizeModel.DisplayOnPage" />
-                <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">تأیید</button>
-            </form>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            تعداد کل:
-        </td>
-        <td>
-            @Model.TotalCount
-        </td>
-    </tr>
-</table>
+            </div>
+            <div class="up-form-actions">
+                <button type="submit" name="approve" id="approve" class="up-btn up-btn--success">تأیید</button>
+            </div>
+        </form>
+
+        <p class="up-hint">تعداد کل: @Model.TotalCount</p>
+    </div>
 }

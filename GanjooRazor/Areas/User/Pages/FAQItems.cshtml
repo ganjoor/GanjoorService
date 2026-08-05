@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.FAQItemsModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
@@ -6,104 +6,99 @@
     ViewData["Title"] = "پرسش‌های متداول";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
 @if (!string.IsNullOrEmpty(Model.LastMessage))
 {
-    <p>
-        @Model.LastMessage
-    </p>
+    <div class="up-alert up-alert--info">@Model.LastMessage</div>
 }
 else
 {
     <script>
-        function editCategory(){
+        function editCategory() {
             location.href = '/User/FAQCatEdit?id=' + String(document.getElementById('cat').value);
         }
-        function newItem(){
+        function newItem() {
             location.href = '/User/FAQItemEdit?catId=' + String(document.getElementById('cat').value);
         }
-        function deleteCategory() {
 
+        function faqItemRow(item) {
+            return '<div class="up-list-item">' +
+                '<a href="/User/FAQItemEdit?id=' + String(item.id) + '">' + item.question + '</a>' +
+                '<div class="up-list-item__actions">' +
+                '<a role="button" onclick="deleteItem(' + String(item.id) + ')" class="up-icon-btn" title="حذف" aria-label="حذف این پرسش"><i class="noindent-info-button delete-icon"></i></a>' +
+                '</div>' +
+                '</div>';
+        }
+
+        async function deleteCategory() {
             var sel = document.getElementById('cat');
-            var text= sel.options[sel.selectedIndex].text;
+            var text = sel.options[sel.selectedIndex].text;
 
-            if (!confirm('آیا از حذف '+text+' اطمینان دارید؟'))
-                return;
+            var ok = await upConfirm('آیا از حذف ' + text + ' اطمینان دارید؟');
+            if (!ok) return;
 
             $.ajax({
                 type: "DELETE",
                 url: '',
-                data: {
-                    id: sel.value
-                },
+                data: { id: sel.value },
                 error: function (e) {
-                    if (e.responseText == null)
-                        alert(e);
-                    else
-                        alert(e.responseText);
+                    upToast(e.responseText || 'خطا رخ داد.', 'error');
                 },
                 success: function () {
-                     location.reload();
+                    location.reload();
                 },
             });
-
         }
-        function deleteItem(id) {
-            if (!confirm('آیا از حذف این پرسش اطمینان دارید؟'))
-                return;
+
+        async function deleteItem(id) {
+            var ok = await upConfirm('آیا از حذف این پرسش اطمینان دارید؟');
+            if (!ok) return;
 
             $.ajax({
                 type: "DELETE",
                 url: '?Handler=Item',
-                data: {
-                    id: id
-                },
+                data: { id: id },
                 error: function (e) {
-                    if (e.responseText == null)
-                        alert(e);
-                    else
-                        alert(e.responseText);
+                    upToast(e.responseText || 'خطا رخ داد.', 'error');
                 },
                 success: function () {
-                     location.reload();
+                    location.reload();
                 },
             });
-
         }
-        function onSelectedCatChanged(){
+
+        function onSelectedCatChanged() {
             var sel = document.getElementById('cat');
-            if(sel.selectedIndex >= 0){
+            if (sel.selectedIndex >= 0) {
                 document.getElementById('catItems').innerHTML = 'در حال بارگذاری ...';
                 $.ajax({
-                type: "GET",
-                url: '?Handler=CategoryItems',
-                data: {
-                    id: sel.value
-                },
-                error: function (e) {
-                    document.getElementById('catItems').innerHTML = '';
-                    if (e.responseText == null)
-                        alert(e);
-                    else
-                        alert(e.responseText);
-                },
-                success: function (items) {
-                     var s = '';
-                     for(var i=0; i<items.length; i++){
-                         s += ('<p><a href="/User/FAQItemEdit?id='+String(items[i].id)+'">' + '<p>' + items[i].question + '</a></p>');
-                         s += ('<a role="button" onclick="deleteItem('+String(items[i].id)+')" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>');
-                     }
-                     document.getElementById('catItems').innerHTML = s;
-                },
-            });
+                    type: "GET",
+                    url: '?Handler=CategoryItems',
+                    data: { id: sel.value },
+                    error: function (e) {
+                        document.getElementById('catItems').innerHTML = '';
+                        upToast(e.responseText || 'خطا رخ داد.', 'error');
+                    },
+                    success: function (items) {
+                        var s = '';
+                        for (var i = 0; i < items.length; i++) {
+                            s += faqItemRow(items[i]);
+                        }
+                        document.getElementById('catItems').innerHTML = s || '<p class="up-text-muted">پرسشی در این دسته نیست.</p>';
+                    },
+                });
             }
         }
     </script>
-    <table>
-        <tr>
-            <td>دسته‌بندی پرسش‌ها:</td>
-            <td>
-                <select name="cat" id="cat" onchange="onSelectedCatChanged()">
+
+    <div class="up-card">
+        <div class="up-field">
+            <label for="cat">دسته‌بندی پرسش‌ها</label>
+            <div class="up-form-actions">
+                <select name="cat" id="cat" onchange="onSelectedCatChanged()" style="flex:1;">
                     @foreach (var category in Model.Categories)
                     {
                         @if (category.Id == Model.CatId)
@@ -116,31 +111,32 @@ else
                         }
                     }
                 </select>
-                <a role="button" onclick="editCategory()" class="actionlink" title="ویرایش"><i class="noindent-info-button edit-poem-button"></i></a>
-                <a role="button" onclick="deleteCategory()" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <a role="button" href="/User/FAQCatEdit" class="pagebutton" title="جدید">دستهٔ جدید</a>
-            </td>
-        </tr>
-    </table>
+                <a role="button" onclick="editCategory()" class="up-icon-btn" title="ویرایش" aria-label="ویرایش دسته"><i class="noindent-info-button edit-poem-button"></i></a>
+                <a role="button" onclick="deleteCategory()" class="up-icon-btn" title="حذف" aria-label="حذف دسته"><i class="noindent-info-button delete-icon"></i></a>
+            </div>
+        </div>
+        <a role="button" href="/User/FAQCatEdit" class="up-btn up-btn--ghost" title="جدید">دستهٔ جدید</a>
+    </div>
 
-    <h2>پرسش‌های دستهٔ جاری</h2>
-    <p>
-        <a role="button" onclick="newItem()" class="pagebutton">پرسش جدید</a>
-    </p>
-    <div id="catItems">
+    <div class="up-page-header">
+        <h2>پرسش‌های دستهٔ جاری</h2>
+    </div>
+    <div class="up-form-actions" style="margin-bottom:var(--up-space-3);">
+        <a role="button" onclick="newItem()" class="up-btn up-btn--success">پرسش جدید</a>
+    </div>
+
+    <div id="catItems" class="up-list">
         @if (Model.CategoryItems != null)
         {
             @foreach (var item in Model.CategoryItems)
             {
-                <p><a href="/User/FAQItemEdit?id=@item.Id">@item.Question</a></p>
-                <a role="button" onclick="deleteItem(@item.Id)" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
+                <div class="up-list-item">
+                    <a href="/User/FAQItemEdit?id=@item.Id">@item.Question</a>
+                    <div class="up-list-item__actions">
+                        <a role="button" onclick="deleteItem(@item.Id)" class="up-icon-btn" title="حذف" aria-label="حذف این پرسش"><i class="noindent-info-button delete-icon"></i></a>
+                    </div>
+                </div>
             }
         }
     </div>
-
-
 }

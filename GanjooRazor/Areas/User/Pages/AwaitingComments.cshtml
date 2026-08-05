@@ -1,201 +1,119 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.AwaitingCommentsModel
 @using DNTPersianUtils.Core
 @{
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "حاشیه‌های در انتظار تأیید";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
-    string color = "gray";
 }
-
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 else
 {
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
-
     <script>
-        function deleteAwaitingComment(commentId) {
-            if (!confirm('آیا از حذف این حاشیه اطمینان دارید؟'))
-                return;
-
-            var url = '?handler=Comment';
+        async function deleteAwaitingComment(commentId) {
+            var ok = await upConfirm('آیا از حذف این حاشیه اطمینان دارید؟');
+            if (!ok) return;
 
             $.ajax({
                 type: "DELETE",
-                url: url,
-                data: {
-                    id: commentId
-                },
-                error: function () {
-                alert('خطا رخ داد.');
+                url: '?handler=Comment',
+                data: { id: commentId },
+                error: function (e) {
+                    upToast(e.responseText || 'خطا رخ داد.', 'error');
                 },
                 success: function () {
-                    var commentBlockId = '#comment-' + commentId;
-                    $(commentBlockId).remove();
+                    $('#comment-' + commentId).remove();
+                    upToast('حاشیه حذف شد.', 'success');
                 },
             });
-
         }
 
-        function publishAwaitingComment(commentId) {
-           if (!confirm('آیا از انتشار این حاشیه اطمینان دارید؟'))
-                return;
-
-            var url = '?handler=Approve';
+        async function publishAwaitingComment(commentId) {
+            var ok = await upConfirm('آیا از انتشار این حاشیه اطمینان دارید؟', { danger: false, okText: 'بله، منتشر شود' });
+            if (!ok) return;
 
             $.ajax({
                 type: "PUT",
-                url: url,
-                data: {
-                    id: commentId
-                },
-                error: function () {
-                alert('خطا رخ داد.');
+                url: '?handler=Approve',
+                data: { id: commentId },
+                error: function (e) {
+                    upToast(e.responseText || 'خطا رخ داد.', 'error');
                 },
                 success: function () {
-                    var commentBlockId = '#comment-' + commentId;
-                    $(commentBlockId).remove();
+                    $('#comment-' + commentId).remove();
+                    upToast('حاشیه منتشر شد.', 'success');
                 },
             });
         }
 
         function switchOption(start) {
-            if(start == false){
-
-                document.getElementById('switch-tracking-button').style.visibility = 'hidden';
-                document.getElementById('processing').innerHTML = 'در حال پردازش ...';
-
-                $.ajax({
-                type: "POST",
-                url: '?handler=StopKeeping',
-                error: function() {
-                    alert('خطا رخ داد.');
-                    location.reload();
-                },
-                success: function () {
-                   location.reload();
-                },
-                });
-                return;
-            }
-
             document.getElementById('switch-tracking-button').style.visibility = 'hidden';
             document.getElementById('processing').innerHTML = 'در حال پردازش ...';
 
             $.ajax({
                 type: "POST",
-                url: '?handler=StartKeeping',
-                error: function() {
-                    alert('خطا رخ داد.');
+                url: start ? '?handler=StartKeeping' : '?handler=StopKeeping',
+                error: function () {
+                    upToast('خطا رخ داد.', 'error');
                     location.reload();
                 },
                 success: function () {
-                   location.reload();
+                    location.reload();
                 },
-                });
+            });
         }
     </script>
 
-    <div class="related-images-frame">
+    <partial name="_Pagination" model="Model.PaginationLinks" />
+
+    <div class="up-card">
         @if (Model.KeepFirstTimeUsersComments)
         {
-            <p style="text-align:center; color: green">
-                نگه داشتن حاشیه‌های حاشیه‌گذاران بدون سابقه فعال است.
-            </p>
-
-            <p>
-                <a role="button" onclick="switchOption(false)" id="switch-tracking-button" class="pagebutton">غیرفعال کردن</a>
-            </p>
-
-            <p id="processing">
-
-            </p>
-
+            <div class="up-alert up-alert--success up-text-center">نگه داشتن حاشیه‌های حاشیه‌گذاران بدون سابقه فعال است.</div>
+            <div class="up-form-actions" style="justify-content:center;">
+                <a role="button" onclick="switchOption(false)" id="switch-tracking-button" class="up-btn up-btn--ghost">غیرفعال کردن</a>
+            </div>
         }
         else
         {
-            <p>
-                نگه داشتن حاشیه‌های حاشیه‌گذاران بدون سابقه غیرفعال است.
-            </p>
-
-            <p>
-                <a role="button" onclick="switchOption(true)" id="switch-tracking-button" class="pagebutton">فعال کردن</a>
-            </p>
-
-            <p id="processing">
-
-            </p>
-
-
+            <p class="up-text-center">نگه داشتن حاشیه‌های حاشیه‌گذاران بدون سابقه غیرفعال است.</p>
+            <div class="up-form-actions" style="justify-content:center;">
+                <a role="button" onclick="switchOption(true)" id="switch-tracking-button" class="up-btn up-btn--success">فعال کردن</a>
+            </div>
         }
-
+        <p id="processing" class="up-text-center"></p>
     </div>
 
     @if (Model.Comments.Count == 0)
     {
-        <p>
-            موردی وجود ندارد.
-        </p>
+        <partial name="_EmptyState" model="@("موردی وجود ندارد.")" />
     }
-
-    @foreach (var comment in Model.Comments)
+    else
     {
-        if (color == "gray")
-            color = "lightsteelblue";
-        else
-            color = "gray";
-
-        <div style="background-color:@color" id="comment-@comment.Id">
-            <blockquote>
-                <div id="comment-text-@comment.Id">
-                    @Html.Raw(comment.HtmlComment)
+        <div class="up-list">
+            @foreach (var comment in Model.Comments)
+            {
+                <div class="up-list-item" id="comment-@comment.Id">
+                    <div id="comment-text-@comment.Id">
+                        @Html.Raw(comment.HtmlComment)
+                    </div>
+                    <div class="up-list-item__meta">
+                        <a href="/Admin/ExamineUser?id=@comment.UserId">@comment.AuthorName</a> در @comment.CommentDate.ToFriendlyPersianDateTextify() دربارهٔ <a href="@comment.Poem.UrlSlug#comment-@comment.Id">@comment.Poem.Title</a>
+                    </div>
+                    <div class="up-list-item__actions">
+                        <a role="button" onclick="deleteAwaitingComment(@comment.Id)" class="up-icon-btn" title="حذف حاشیه" aria-label="حذف این حاشیه"><i class="noindent-info-button delete-icon"></i></a>
+                        <a role="button" onclick="publishAwaitingComment(@comment.Id)" class="up-icon-btn" title="انتشار حاشیه" aria-label="انتشار این حاشیه"><i class="noindent-info-button done-icon"></i></a>
+                    </div>
                 </div>
-                <p>
-                    @comment.AuthorName <small>در @comment.CommentDate.ToFriendlyPersianDateTextify()</small> دربارهٔ <a href="@comment.Poem.UrlSlug#comment-@comment.Id">@comment.Poem.Title</a>
-                </p>
-                <p>
-                    <a href="/Admin/ExamineUser?id=@comment.UserId">#</a>
-                </p>
-            </blockquote>
-            <p>
-                <a role="button" onclick="deleteAwaitingComment(@comment.Id)" class="actionlink" title="حذف حاشیه"><i class="noindent-info-button delete-icon"></i></a>
-                <a role="button" onclick="publishAwaitingComment(@comment.Id)" class="actionlink" title="انتشار حاشیه"><i class="noindent-info-button done-icon"></i></a>
-            </p>
+            }
         </div>
-
-
-        <hr />
     }
 
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
-
-
+    <partial name="_Pagination" model="Model.PaginationLinks" />
 }

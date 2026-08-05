@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.SuggestedPoetSpecLinesModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
@@ -6,84 +6,50 @@
     ViewData["Title"] = "نکات پیشنهادی برای تصاویر سخنوران";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
-
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 else
 {
-    <form method="post">
-        <table style="width:100%" class="noborder">
-            <tr>
-                <td>
-                    <span class="inputlabel">سخنور: </span>
-                </td>
-                <td>
+    <div class="up-card">
+        <form method="post" class="up-form">
+            <div class="up-field">
+                <label>سخنور</label>
+                <div>
                     <a href="/photos?p=@Model.Poet.FullUrl.Substring(1)" target="_blank">@Model.Poet.Nickname</a>
                     <input type="hidden" asp-for="Suggestion.Id" />
                     <input type="hidden" asp-for="Suggestion.PoetId" />
                     <input type="hidden" asp-for="Suggestion.LineOrder" />
                     <input type="hidden" asp-for="Suggestion.SuggestedById" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <span class="inputlabel">پیشنهاد دهنده: </span>
-                </td>
-                <td>
-                    <a href="/hashieha/?userid=@Model.Suggestion.SuggestedById" target="_blank">@Model.Suggestion.SuggestedById</a>
-                </td>
-            </tr>
+                </div>
+            </div>
 
-            <tr>
-                <td>
-                    <span class="inputlabel">نکته: </span>
-                </td>
-                <td>
-                    <textarea asp-for="Suggestion.Contents" class="editor"></textarea>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <button type="submit" name="approve" id="approve" style="width:100%;color:white;background-color:green">تأیید</button>
-                </td>
-                <td>
-                    <table style="width:100%" class="noborder">
-                        <tr>
-                            <td>
-                                <span class="inputlabel">علت رد: </span>
-                                <input asp-for="Suggestion.RejectionCause" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <button type="submit" name="reject" id="reject" style="width:100%;color:white;background-color:darkred">رد</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <button type="submit" name="next" id="next" style="width:100%;color:white;background-color:orange">بعدی</button>
-                            </td>
-                        </tr>
-                    </table>
+            <div class="up-field">
+                <label>پیشنهاد دهنده</label>
+                <div><a href="/hashieha/?userid=@Model.Suggestion.SuggestedById" target="_blank">@Model.Suggestion.SuggestedById</a></div>
+            </div>
 
-                </td>
-            </tr>
+            <div class="up-field">
+                <label asp-for="Suggestion.Contents">نکته</label>
+                <textarea asp-for="Suggestion.Contents" class="editor"></textarea>
+            </div>
 
-            <tr>
-                <td>
-                    تعداد کل:
-                </td>
-                <td>
-                    @Model.TotalCount
-                </td>
-            </tr>
+            <div class="up-field">
+                <label asp-for="Suggestion.RejectionCause">علت رد (در صورت رد)</label>
+                <input asp-for="Suggestion.RejectionCause" />
+            </div>
 
+            <div class="up-form-actions">
+                <button type="submit" name="approve" id="approve" class="up-btn up-btn--success">تأیید</button>
+                <button type="submit" name="reject" id="reject" class="up-btn up-btn--danger">رد</button>
+                <button type="submit" name="next" id="next" class="up-btn up-btn--ghost">بعدی</button>
+            </div>
 
-        </table>
-
-    </form>
-
+            <p class="up-hint">تعداد کل: @Model.TotalCount</p>
+        </form>
+    </div>
 }
