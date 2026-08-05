@@ -7,7 +7,9 @@
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
     string color = "#eee";
 }
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 <script>
     $(document).ready(function () {
         $('[contenteditable]').keypress(function (e) { return e.which != 13; });
@@ -190,9 +192,9 @@
         });
     }
 
-    function deletePoemCorrections(id) {
-        if (!confirm('آیا از حذف تغییرات پیشنهادی اطمینان دارید؟'))
-            return;
+    async function deletePoemCorrections(id) {
+        var ok = await upConfirm('آیا از حذف تغییرات پیشنهادی اطمینان دارید؟');
+        if (!ok) return;
 
         $('#deletecorrections').hide();
         $('#saving').text('در حال ذخیره ...');
@@ -205,8 +207,8 @@
             data: {
                 poemid: id,
             },
-            error: function () {
-                alert('خطا رخ داد.')
+            error: function (e) {
+                upToast(e.responseText || 'خطا رخ داد.', 'error');
             },
             success: function () {
                 location.reload(true);
@@ -468,19 +470,22 @@
 </script>
 @if (!string.IsNullOrEmpty(Model.FatalError))
 {
-    <p>@Model.FatalError</p>
+    <div class="up-alert up-alert--danger">@Model.FatalError</div>
 }
 else
 {
 
-    <p>لطفاً در ویرایش متن به <a href="https://blog.ganjoor.net/1400/05/23/notes-for-suggesting-corrections/" target="_blank">این نکات</a> توجه فرمایید.</p>
-    <p><span class="red-color">جدید:</span> در مورد رسم‌الخط پیشنهادی گنجور <a href="https://blog.ganjoor.net/1402/12/11/dastoor-e-khat/" target="_blank">اینجا</a> را ببینید.</p>
-    <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="actionlink">@Model.PageInformation.FullTitle</a></p>
+    <div class="up-alert up-alert--info">
+        <p>لطفاً در ویرایش متن به <a href="https://blog.ganjoor.net/1400/05/23/notes-for-suggesting-corrections/" target="_blank">این نکات</a> توجه فرمایید.</p>
+        <p class="up-mt-0"><span class="red-color">جدید:</span> در مورد رسم‌الخط پیشنهادی گنجور <a href="https://blog.ganjoor.net/1402/12/11/dastoor-e-khat/" target="_blank">اینجا</a> را ببینید.</p>
+    </div>
+    <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="up-btn up-btn--ghost">@Model.PageInformation.FullTitle</a></p>
 
 
 
     if (Model.MyLastEdit != null)
     {
+        <div class="up-card">
         <table>
             <tr>
                 <td colspan="2">ویرایشهای بررسی نشدهٔ من</td>
@@ -741,11 +746,12 @@ else
 
             <tr>
                 <td colspan="2" class="td-button-container">
-                    <a role="button" id="deletecorrections" class="editor-button background-red" onclick="deletePoemCorrections(@Model.PageInformation.Poem.Id)">انصراف و حذف این ویرایش</a>
+                    <a role="button" id="deletecorrections" class="up-btn up-btn--danger" onclick="deletePoemCorrections(@Model.PageInformation.Poem.Id)">انصراف و حذف این ویرایش</a>
                 </td>
             </tr>
 
         </table>
+        </div>
     }
 
     <table>

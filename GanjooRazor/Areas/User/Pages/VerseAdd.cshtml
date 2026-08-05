@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.VerseAddPageModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using DNTPersianUtils.Core
@@ -15,117 +15,67 @@
     <title>پیشنهاد اضافه شدن مصرع‌های جا افتاده</title>
     <script src="/lib/jquery/dist/jquery.min.js"></script>
     <link href="/css/p8.css?version=86" rel="stylesheet" type="text/css" />
-    <style>
-        label {
-            width: 100px;
-            display: block;
-        }
-
-        input#submit {
-            text-align: center;
-            background-color: #fff;
-            border: 2px solid #300;
-            color: #300
-        }
-
-            input#submit:hover {
-                background-color: #300;
-                color: #fff;
-                border: 2px solid #433;
-            }
-    </style>
+    <link href="/css/user-panel.css?version=1" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <div id="fa">
-        <div id="hdr">
-            <h1><a href="/" title="گنجور"><img src="/image/gdap.png" alt="گنجور" style="width:auto;margin:auto;" /></a></h1>
+    <div id="fa" class="up-shell" style="max-width:640px;margin:0 auto;padding:var(--up-space-4);">
+        <div id="hdr" class="up-text-center" style="margin-bottom:var(--up-space-4);">
+            <a href="/" title="گنجور"><img src="/image/gdap.png" alt="گنجور" style="width:auto;margin:auto;" /></a>
         </div>
         @if (!string.IsNullOrEmpty(Model.LastError))
         {
-            <div class="width-100per">
-                <div class="width-100per text-align-center">
-                    <p class="alert-text">
-                        @Model.LastError
-                    </p>
-                </div>
-            </div>
+            <div class="up-alert up-alert--danger up-text-center">@Model.LastError</div>
         }
-        else
-        if (!Model.LoggedIn)
+        else if (!Model.LoggedIn)
         {
-            <div class="width-100per">
-                <div class="width-100per text-align-center">
-                    <p class="alert-text">
-                        برای ثبت خطا در خوانش‌ها لازم است ابتدا با نام کاربری خود وارد گنجور شوید.
-                    </p>
-                    <p class="text-align-center">
-                        <a href=@Html.Raw($"/login/?redirect=/User/SuggestNewVerses?id={Model.PageInformation.Id}")>ورود به گنجور</a>
-                    </p>
-                </div>
+            <div class="up-alert up-alert--warning up-text-center">
+                <p>برای ثبت خطا در خوانش‌ها لازم است ابتدا با نام کاربری خود وارد گنجور شوید.</p>
+                <p><a href=@Html.Raw($"/login/?redirect=/User/SuggestNewVerses?id={Model.PageInformation.Id}") class="up-btn up-btn--primary">ورود به گنجور</a></p>
             </div>
         }
         else
         {
-            <div class="poem">
-                <h2>پیشنهاد اضافه شدن مصرع‌های جا افتاده</h2>
-                @if (Model.PostSuccess)
-                {
-                    <p>درخواست شما ثبت شد. این درخواست در فرصت مناسب بررسی و در صورت تناسب با معیارهای اضافه شدن مصرع‌های جا افتاده، این متن به‌روزرسانی خواهد شد.</p>
-                }
-                else
-                {
-                    <p>
-                        <span style="color:red">لطفاً</span> تنها در صورتی که مصرع‌های پیشنهادی مربوط به نسخهٔ دیگری است که مرجع گنجور نیست آنها را در قالب حاشیه ثبت فرمایید.
-                    </p>
-                }
+            <div class="up-page-header">
+                <h1 style="font-size:1.2rem;">پیشنهاد اضافه شدن مصرع‌های جا افتاده</h1>
             </div>
-            @if (!Model.PostSuccess)
+            @if (Model.PostSuccess)
             {
-                <div class="content">
-                    <form method="post">
-                        <table class="width-100per">
-                            <tr>
-                                <td>
-                                    مصرع‌ها قبل از کدام مصرع می‌بایست درج شوند:
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <select asp-for="NewVerses.VOrder" style="width:100%">
-                                        @if (Model.PageInformation.Poem.Verses.Length == 0)
-                                        {
-                                            <option value="1">*</option>
-                                        }
-                                        else
-                                        {
-                                            foreach (var verse in Model.PageInformation.Poem.Verses)
-                                            {
-                                                <option value="@verse.VOrder">@($"{(verse.CoupletIndex + 1).ToPersianNumbers()} - {verse.Text}")</option>
-                                            }
-                                            <option value="@(1 + Model.PageInformation.Poem.Verses.Last().VOrder)">* بعد از مصرع آخر</option>
-                                        }
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    مصرع‌های جا افتاده (هر مصرع یک خط):
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <textarea rows="4" style="width:100%" asp-for="NewVerses.Lines"></textarea>
-                                </td>
-                            </tr>
+                <div class="up-alert up-alert--success">درخواست شما ثبت شد. این درخواست در فرصت مناسب بررسی و در صورت تناسب با معیارهای اضافه شدن مصرع‌های جا افتاده، این متن به‌روزرسانی خواهد شد.</div>
+            }
+            else
+            {
+                <div class="up-alert up-alert--warning">لطفاً تنها در صورتی که مصرع‌های پیشنهادی مربوط به نسخهٔ دیگری است که مرجع گنجور نیست آنها را در قالب حاشیه ثبت فرمایید.</div>
 
-                            <tr>
-                                <td>
-                                    <input type="hidden" asp-for="NewVerses.PoemId" />
-                                    <input style="width:100%" type="submit" name="submit" id="submit" value="ثبت" />
-                                </td>
-                            </tr>
+                <div class="up-card">
+                    <form method="post" class="up-form">
+                        <div class="up-field">
+                            <label asp-for="NewVerses.VOrder">مصرع‌ها قبل از کدام مصرع می‌بایست درج شوند</label>
+                            <select asp-for="NewVerses.VOrder">
+                                @if (Model.PageInformation.Poem.Verses.Length == 0)
+                                {
+                                    <option value="1">*</option>
+                                }
+                                else
+                                {
+                                    foreach (var verse in Model.PageInformation.Poem.Verses)
+                                    {
+                                        <option value="@verse.VOrder">@($"{(verse.CoupletIndex + 1).ToPersianNumbers()} - {verse.Text}")</option>
+                                    }
+                                    <option value="@(1 + Model.PageInformation.Poem.Verses.Last().VOrder)">* بعد از مصرع آخر</option>
+                                }
+                            </select>
+                        </div>
 
-                        </table>
+                        <div class="up-field">
+                            <label asp-for="NewVerses.Lines">مصرع‌های جا افتاده (هر مصرع یک خط)</label>
+                            <textarea rows="4" asp-for="NewVerses.Lines"></textarea>
+                        </div>
+
+                        <input type="hidden" asp-for="NewVerses.PoemId" />
+
+                        <div class="up-form-actions">
+                            <button type="submit" name="submit" id="submit" class="up-btn up-btn--success up-btn--block">ثبت</button>
+                        </div>
                     </form>
                 </div>
             }
