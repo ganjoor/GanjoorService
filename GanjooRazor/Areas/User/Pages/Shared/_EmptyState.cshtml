@@ -3,10 +3,14 @@
     <p>. Pass the explanatory text as the model:
 
         <partial name="_EmptyState" model="@("در حال حاضر اعلانی وجود ندارد.")" />
+
+    The message is rendered with Html.Raw, so simple trusted inline markup
+    (e.g. a <a> link) is fine - only pass hardcoded, developer-authored
+    strings here, never raw user input.
 *@
 @model string
 
 <div class="up-empty">
     <div class="up-empty__icon" aria-hidden="true">&#9679;</div>
-    <p>@Model</p>
+    <p>@Html.Raw(Model)</p>
 </div>

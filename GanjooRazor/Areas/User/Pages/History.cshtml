@@ -1,59 +1,57 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.HistoryModel
 @using DNTPersianUtils.Core
 @{
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "ادامهٔ مطالعه";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
-    string color = "gray";
 }
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 else
 {
     <script>
-        function deleteHistoryItem(historyItemId) {
-            if (!confirm('آیا از حذف این مورد اطمینان دارید؟'))
-                return;
-
-            var url = '?handler=HistoryItem';
+        async function deleteHistoryItem(historyItemId) {
+            var ok = await upConfirm('آیا از حذف این مورد اطمینان دارید؟');
+            if (!ok) return;
 
             $.ajax({
                 type: "DELETE",
-                url: url,
-                data: {
-                    id: historyItemId
+                url: '?handler=HistoryItem',
+                data: { id: historyItemId },
+                error: function (e) {
+                    upToast(e.responseText || 'حذف مورد با خطا مواجه شد.', 'error');
                 },
                 success: function () {
-                    var notificationBlockId = '#history-item-' + historyItemId;
-                    $(notificationBlockId).remove();
+                    $('#history-item-' + historyItemId).remove();
+                    upToast('مورد حذف شد.', 'success');
                 },
             });
         }
 
-        function switchTracking(start) {
-            if(start == false){
-                if (!confirm('آیا از توقف ذخیرهٔ تاریخچه و حذف تاریخچهٔ بازدیدها اطمینان دارید؟'))
-                {
-                    return;
-                }
+        async function switchTracking(start) {
+            if (start == false) {
+                var ok = await upConfirm('آیا از توقف ذخیرهٔ تاریخچه و حذف تاریخچهٔ بازدیدها اطمینان دارید؟');
+                if (!ok) return;
 
                 document.getElementById('switch-tracking-button').style.visibility = 'hidden';
                 document.getElementById('processing').innerHTML = 'در حال پردازش ...';
 
                 $.ajax({
-                type: "POST",
-                url: '?handler=StopTracking',
-                error: function() {
-                    alert('خطا رخ داد.');
-                    location.reload();
-                },
-                success: function () {
-                   location.reload();
-                },
+                    type: "POST",
+                    url: '?handler=StopTracking',
+                    error: function () {
+                        upToast('خطا رخ داد.', 'error');
+                        location.reload();
+                    },
+                    success: function () {
+                        location.reload();
+                    },
                 });
                 return;
             }
@@ -64,130 +62,71 @@ else
             $.ajax({
                 type: "POST",
                 url: '?handler=StartTracking',
-                error: function() {
-                    alert('خطا رخ داد.');
+                error: function () {
+                    upToast('خطا رخ داد.', 'error');
                     location.reload();
                 },
                 success: function () {
-                   location.reload();
+                    location.reload();
                 },
-                });
+            });
         }
     </script>
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
 
-    <div class="related-images-frame">
+    <partial name="_Pagination" model="Model.PaginationLinks" />
+
+    <div class="up-card">
         @if (Model.TrackingIsEnabled)
         {
-            <p style="text-align:center; color: green">
-                ذخیرهٔ تاریخچهٔ بازدیدهای شما فعال است.
-            </p>
-
-            <p>
-                <a role="button" onclick="switchTracking(false)" id="switch-tracking-button" class="pagebutton">توقف ذخیرهٔ تاریخچه</a>
-            </p>
-
-            <p id="processing">
-
-            </p>
-
-            <p>
-                <span style="color:red">تذکر مهم: </span> توقف ذخیرهٔ تاریخچه باعث حذف تاریخچهٔ ذخیره شده تا به حال می شود.
-            </p>
-
+            <div class="up-alert up-alert--success up-text-center">ذخیرهٔ تاریخچهٔ بازدیدهای شما فعال است.</div>
+            <div class="up-form-actions up-text-center" style="justify-content:center;">
+                <a role="button" onclick="switchTracking(false)" id="switch-tracking-button" class="up-btn up-btn--danger">توقف ذخیرهٔ تاریخچه</a>
+            </div>
+            <p id="processing" class="up-text-center"></p>
+            <p class="up-hint up-hint--danger up-text-center">تذکر مهم: توقف ذخیرهٔ تاریخچه باعث حذف تاریخچهٔ ذخیره‌شده تا به حال می‌شود.</p>
         }
         else
         {
-            <p>
-                ذخیرهٔ تاریخچهٔ بازدیدهای شما غیرفعال است.
-            </p>
-
-            <p>
-                <a role="button" onclick="switchTracking(true)" id="switch-tracking-button" class="pagebutton">فعالسازی ذخیرهٔ تاریخچه</a>
-            </p>
-
-            <p id="processing">
-
-            </p>
-
-            <p>
-                تاریخچهٔ بازیدهای شما فقط به خود شما نمایش داده می‌شود و از آن استفادهٔ دیگری نمی‌شود. هر زمان که بخواهید می‌توانید ذخیرهٔ تاریخچه را متوقف کنید و تاریخچهٔ بازدیدهایتان را پاک کنید.
-            </p>
+            <p class="up-text-center">ذخیرهٔ تاریخچهٔ بازدیدهای شما غیرفعال است.</p>
+            <div class="up-form-actions up-text-center" style="justify-content:center;">
+                <a role="button" onclick="switchTracking(true)" id="switch-tracking-button" class="up-btn up-btn--success">فعال‌سازی ذخیرهٔ تاریخچه</a>
+            </div>
+            <p id="processing" class="up-text-center"></p>
+            <p class="up-hint up-text-center">تاریخچهٔ بازدیدهای شما فقط به خود شما نمایش داده می‌شود و از آن استفادهٔ دیگری نمی‌شود. هر زمان که بخواهید می‌توانید ذخیرهٔ تاریخچه را متوقف کنید و تاریخچهٔ بازدیدهایتان را پاک کنید.</p>
         }
-
-        <p>
-            <span style="color:red">نکته: </span> اگر روی دستگاههای متعدد به گنجور وارد شده‌اید توقف ذخیرهٔ تاریخچه روی همهٔ آنها اعمال می‌شود اما فعالسازی ذخیرهٔ تاریخچه مستلزم آن است که روی هر دستگاه دیگری غیر از دستگاهی که فعالسازی روی آن انجام شده یک بار از این صفحه بازدید کنید یا از حساب کاربری خود در گنجور خارج و مجدداً به آن وارد شوید.
-        </p>
+        <p class="up-hint up-text-center">نکته: اگر روی دستگاه‌های متعدد به گنجور وارد شده‌اید، توقف ذخیرهٔ تاریخچه روی همهٔ آنها اعمال می‌شود اما فعال‌سازی ذخیرهٔ تاریخچه مستلزم آن است که روی هر دستگاه دیگری غیر از دستگاهی که فعال‌سازی روی آن انجام شده یک‌بار از این صفحه بازدید کنید یا از حساب کاربری خود در گنجور خارج و مجدداً به آن وارد شوید.</p>
     </div>
 
-
-
-
-
-    @foreach (var historyItem in Model.HistoryItems)
+    @if (Model.HistoryItems.Count == 0)
     {
-        if (color == "gray")
-            color = "lightsteelblue";
-        else
-            color = "gray";
-
-        <div style="background-color:@color" id="history-item-@historyItem.Id">
-            <blockquote>
-                <p>
-                    <a href="@historyItem.PoemFullUrl">@historyItem.PoemFullTitle</a> <small>در @historyItem.DateTime.ToFriendlyPersianDateTextify()</small>
-                </p>
-                <a href="@historyItem.PoemFullUrl">
-                    <img src="@historyItem.PoetImageUrl" style="width:unset;display:unset;border:unset" alt="@historyItem.PoetName" />
-                </a>
-                <div id="historyItem-text-@historyItem.Id">
-                    <p>
-                        @historyItem.VerseText
-                    </p>
-
-                    @if (!string.IsNullOrEmpty(historyItem.Verse2Text))
-                    {
-                        <p>
-                            @historyItem.Verse2Text
-                        </p>
-                    }
-
+        <partial name="_EmptyState" model="@("هنوز آیتمی در تاریخچهٔ مطالعهٔ شما ثبت نشده است.")" />
+    }
+    else
+    {
+        <div class="up-list">
+            @foreach (var historyItem in Model.HistoryItems)
+            {
+                <div class="up-list-item" id="history-item-@historyItem.Id">
+                    <div class="up-list-item__meta">
+                        <a href="@historyItem.PoemFullUrl">@historyItem.PoemFullTitle</a> در @historyItem.DateTime.ToFriendlyPersianDateTextify()
+                    </div>
+                    <a href="@historyItem.PoemFullUrl">
+                        <img src="@historyItem.PoetImageUrl" style="width:unset;display:unset;border:unset" alt="@historyItem.PoetName" />
+                    </a>
+                    <div id="historyItem-text-@historyItem.Id">
+                        <p>@historyItem.VerseText</p>
+                        @if (!string.IsNullOrEmpty(historyItem.Verse2Text))
+                        {
+                            <p>@historyItem.Verse2Text</p>
+                        }
+                    </div>
+                    <div class="up-list-item__actions">
+                        <a role="button" onclick="deleteHistoryItem('@historyItem.Id')" class="up-icon-btn" title="حذف" aria-label="حذف این مورد"><i class="noindent-info-button delete-icon"></i></a>
+                    </div>
                 </div>
-            </blockquote>
-            <p>
-                <a role="button" onclick="deleteHistoryItem('@historyItem.Id')" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
-            </p>
-
+            }
         </div>
-
-
-        <hr />
     }
 
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
-
-
+    <partial name="_Pagination" model="Model.PaginationLinks" />
 }

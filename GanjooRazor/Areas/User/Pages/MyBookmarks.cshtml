@@ -1,35 +1,35 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.MyBookmarksModel
 @using DNTPersianUtils.Core
 @{
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "نشان‌شده‌های من";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
-    string color = "gray";
 }
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 else
 {
     <script>
-        function deleteBookmark(bookmarkId) {
-            if (!confirm('آیا از حذف این نشان‌شده اطمینان دارید؟'))
-                return;
-
-            var url = '?handler=Bookmark';
+        async function deleteBookmark(bookmarkId) {
+            var ok = await upConfirm('آیا از حذف این نشان‌شده اطمینان دارید؟');
+            if (!ok) return;
 
             $.ajax({
                 type: "DELETE",
-                url: url,
-                data: {
-                    id: bookmarkId
+                url: '?handler=Bookmark',
+                data: { id: bookmarkId },
+                error: function (e) {
+                    upToast(e.responseText || 'حذف نشان‌شده با خطا مواجه شد.', 'error');
                 },
-                success: function() {
-                    var notificationBlockId = '#bookmark-' + bookmarkId;
-                    $(notificationBlockId).remove();
+                success: function () {
+                    $('#bookmark-' + bookmarkId).remove();
+                    upToast('نشان‌شده حذف شد.', 'success');
                 },
             });
         }
@@ -42,130 +42,88 @@ else
         }
 
         function editPrivateNoteFinal() {
-            $("#editnoteform").unbind('submit').bind('submit', function(e) {
-
-                e.preventDefault(); // avoid to execute the actual submit of the form.
-
-                var url = '?handler=BookmarkNote';
+            $("#editnoteform").unbind('submit').bind('submit', function (e) {
+                e.preventDefault();
 
                 var bookmarkId = $("#editbookmarkId").val();
 
-
                 $.ajax({
                     type: "PUT",
-                    url: url,
+                    url: '?handler=BookmarkNote',
                     data: {
                         id: bookmarkId,
                         note: $("textarea#editNoteText").val()
                     },
-                    success: function() {
-                        document.getElementById('bookmark-note-dialog').style.display = 'none';
-
-                        var noteTextBlockId = '#note-text-' + bookmarkId;
-
-                        $(noteTextBlockId).html($("textarea#editNoteText").val());
+                    error: function (e) {
+                        upToast(e.responseText || 'ثبت یادداشت با خطا مواجه شد.', 'error');
                     },
-
+                    success: function () {
+                        document.getElementById('bookmark-note-dialog').style.display = 'none';
+                        var noteTextBlockId = '#note-text-' + bookmarkId;
+                        $(noteTextBlockId).html($("textarea#editNoteText").val());
+                        upToast('یادداشت ثبت شد.', 'success');
+                    },
                 });
             });
         }
     </script>
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
+
+    <partial name="_Pagination" model="Model.PaginationLinks" />
+
+    <div class="up-card">
+        <form method="get" id="searchcommentsform" class="up-form-actions">
+            <input type="text" name="w" id="w" value="@Model.Query" placeholder="جستجو در یادداشت‌ها" style="flex:1;min-width:200px;" />
+            <button type="submit" class="up-btn up-btn--primary">جستجو</button>
+        </form>
+    </div>
 
     @if (Model.Bookmarks.Count == 0)
     {
-        <p>
-            شما هنوز هیچ بیتی را نشان نکرده‌اید. برای آشنایی با نحوهٔ نشان کردن اشعار <a href="https://blog.ganjoor.net/1400/07/08/ganjoor-bookmarking/" target="_blank">اینجا</a> را ببینید.
-        </p>
+        <partial name="_EmptyState" model="@("شما هنوز هیچ بیتی را نشان نکرده‌اید. برای آشنایی با نحوهٔ نشان کردن اشعار <a href=\"https://blog.ganjoor.net/1400/07/08/ganjoor-bookmarking/\" target=\"_blank\">اینجا</a> را ببینید.")" />
     }
-
-    <div class="sitem actionbox">
-        <div class="related-images-frame padding-20px">
-            <form method="get" id="searchcommentsform">
-                <input type="text" name="w" id="w" class="width-100per" value="@Model.Query" placeholder="جستجو در یادداشتها" />
-                <input type="submit" class="width-100per margin-top-5px" value="جستجو در یادداشتها" />
-            </form>
-        </div><!-- related-images-frame -->
-    </div> <!-- sitem actionbo -->
-
-    @foreach (var bookmark in Model.Bookmarks)
+    else
     {
-        if (color == "gray")
-            color = "lightsteelblue";
-        else
-            color = "gray";
-
-        <div style="background-color:@color" id="bookmark-@bookmark.Id">
-            <blockquote>
-                <p>
-                    از <a href="@($"{bookmark.PoemFullUrl}{(bookmark.CoupletIndex < 0 ? $"#comment-{-bookmark.CoupletIndex}" :$"#bn{bookmark.CoupletIndex + 1}")}")">@bookmark.PoemFullTitle</a> <small>در @bookmark.DateTime.ToFriendlyPersianDateTextify()</small>
-                </p>
-                <a href="@($"{bookmark.PoemFullUrl}{(bookmark.CoupletIndex < 0 ? $"#comment-{-bookmark.CoupletIndex}" :$"#bn{bookmark.CoupletIndex + 1}")}")">
-                    <img src="@bookmark.PoetImageUrl" style="width:unset;display:unset;border:unset" alt="@bookmark.PoetName" />
-                </a>
-                <div id="bookmark-text-@bookmark.Id">
-                    <p>
-                        @bookmark.VerseText
-                    </p>
-
-                    @if (!string.IsNullOrEmpty(bookmark.Verse2Text))
+        <div class="up-list">
+            @foreach (var bookmark in Model.Bookmarks)
+            {
+                var bookmarkUrl = $"{bookmark.PoemFullUrl}{(bookmark.CoupletIndex < 0 ? $"#comment-{-bookmark.CoupletIndex}" : $"#bn{bookmark.CoupletIndex + 1}")}";
+                <div class="up-list-item" id="bookmark-@bookmark.Id">
+                    <div class="up-list-item__meta">
+                        از <a href="@bookmarkUrl">@bookmark.PoemFullTitle</a> در @bookmark.DateTime.ToFriendlyPersianDateTextify()
+                    </div>
+                    <a href="@bookmarkUrl">
+                        <img src="@bookmark.PoetImageUrl" style="width:unset;display:unset;border:unset" alt="@bookmark.PoetName" />
+                    </a>
+                    <div id="bookmark-text-@bookmark.Id">
+                        <p>@bookmark.VerseText</p>
+                        @if (!string.IsNullOrEmpty(bookmark.Verse2Text))
+                        {
+                            <p>@bookmark.Verse2Text</p>
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(bookmark.PrivateNote))
                     {
-                        <p>
-                            @bookmark.Verse2Text
-                        </p>
+                        <div>
+                            <span class="up-badge">یادداشت</span>
+                            <div id="note-text-@bookmark.Id" class="ganjoor-comment">
+                                @Html.Raw(bookmark.PrivateNote)
+                            </div>
+                        </div>
                     }
-
+                    else
+                    {
+                        <div id="note-text-@bookmark.Id"></div>
+                    }
+                    <div class="up-list-item__actions">
+                        <a role="button" onclick="deleteBookmark('@bookmark.Id')" class="up-icon-btn" title="حذف" aria-label="حذف این نشان‌شده"><i class="noindent-info-button delete-icon"></i></a>
+                        <a role="button" onclick="editPrivateNote('@bookmark.Id')" class="up-icon-btn" title="یادداشت شخصی" aria-label="ویرایش یادداشت شخصی"><i class="noindent-info-button edit-poem-button"></i></a>
+                    </div>
                 </div>
-                @if (!string.IsNullOrEmpty(bookmark.PrivateNote))
-                {
-                    <span class="red-color">یادداشت:</span>
-                    <div id="note-text-@bookmark.Id" class="ganjoor-comment">
-                        @Html.Raw(bookmark.PrivateNote)
-                    </div>
-                }
-                else
-                {
-                    <div id="note-text-@bookmark.Id">
-                    </div>
-                }
-            </blockquote>
-            <p>
-                <a role="button" onclick="deleteBookmark('@bookmark.Id')" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
-            </p>
-            <p>
-                <a role="button" onclick="editPrivateNote('@bookmark.Id')" class="actionlink" title="یادداشت شخصی"><i class="noindent-info-button edit-poem-button"></i></a>
-            </p>
+            }
         </div>
-
-
-        <hr />
     }
 
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
+    <partial name="_Pagination" model="Model.PaginationLinks" />
 
     <div id="bookmark-note-dialog" class="modal">
         <span onclick="document.getElementById('bookmark-note-dialog').style.display='none'"
@@ -185,13 +143,10 @@ else
                 </tr>
                 <tr>
                     <td>
-                        یادداشتهایی که روی نشان‌شده‌ها می‌نویسید خصوصی هستند و با حذف نشان‌شده پاک می‌شوند.
+                        یادداشت‌هایی که روی نشان‌شده‌ها می‌نویسید خصوصی هستند و با حذف نشان‌شده پاک می‌شوند.
                     </td>
                 </tr>
             </table>
         </form>
     </div>
-
-
 }
-

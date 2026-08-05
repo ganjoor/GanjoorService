@@ -1,45 +1,37 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.User.Pages.MyCommentsModel
 @using DNTPersianUtils.Core
 @{
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "حاشیه‌های من";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
-    string color = "gray";
 }
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 else
 {
-
     <script>
-        function deleteThisComment(commentId) {
-            if (!confirm('آیا از حذف این حاشیه اطمینان دارید؟'))
-                return;
-
-            var url = '?handler=MyComment';
+        async function deleteThisComment(commentId) {
+            var ok = await upConfirm('آیا از حذف این حاشیه اطمینان دارید؟');
+            if (!ok) return;
 
             $.ajax({
                 type: "DELETE",
-                url: url,
-                data: {
-                    id: commentId
-                },
+                url: '?handler=MyComment',
+                data: { id: commentId },
                 error: function (e) {
-                    if (e.responseText == null)
-                        alert(e);
-                    else
-                        alert(e.responseText);
+                    upToast(e.responseText || 'حذف حاشیه با خطا مواجه شد.', 'error');
                 },
                 success: function () {
-                    var commentBlockId = '#comment-' + commentId;
-                    $(commentBlockId).remove();
+                    $('#comment-' + commentId).remove();
+                    upToast('حاشیه حذف شد.', 'success');
                 },
             });
-
         }
 
         function editThisComment(commentId) {
@@ -51,99 +43,59 @@ else
 
         function editCommentFinal() {
             $("#editcommentform").unbind('submit').bind('submit', function (e) {
-
-                e.preventDefault(); // avoid to execute the actual submit of the form.
-
-                var url = '?handler=MyComment';
+                e.preventDefault();
 
                 var commentId = $("#editCommentId").val();
 
-
                 $.ajax({
                     type: "PUT",
-                    url: url,
+                    url: '?handler=MyComment',
                     data: {
                         id: commentId,
                         comment: $("textarea#editCommentText").val()
                     },
                     error: function (e) {
-                    if (e.responseText == null)
-                        alert(e);
-                    else
-                        alert(e.responseText);
-                },
+                        upToast(e.responseText || 'ویرایش حاشیه با خطا مواجه شد.', 'error');
+                    },
                     success: function () {
                         document.getElementById('id02').style.display = 'none';
-
                         var commentTextBlockId = '#comment-text-' + commentId;
-
                         $(commentTextBlockId).html($("textarea#editCommentText").val());
+                        upToast('حاشیه ویرایش شد.', 'success');
                     },
-
                 });
             });
         }
     </script>
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
+
+    <partial name="_Pagination" model="Model.PaginationLinks" />
 
     @if (Model.Comments.Count == 0)
     {
-        <p>
-            حاشیه‌ای یافت نشد.
-        </p>
+        <partial name="_EmptyState" model="@("حاشیه‌ای یافت نشد.")" />
     }
-
-    @foreach (var comment in Model.Comments)
+    else
     {
-        if (color == "gray")
-            color = "lightsteelblue";
-        else
-            color = "gray";
-
-        <div style="background-color:@color" id="comment-@comment.Id">
-            <blockquote>
-                <div id="comment-text-@comment.Id">
-                    @Html.Raw(comment.HtmlComment)
+        <div class="up-list">
+            @foreach (var comment in Model.Comments)
+            {
+                <div class="up-list-item" id="comment-@comment.Id">
+                    <div id="comment-text-@comment.Id">
+                        @Html.Raw(comment.HtmlComment)
+                    </div>
+                    <div class="up-list-item__meta">
+                        @Model.UserInfo.NickName در @comment.CommentDate.ToFriendlyPersianDateTextify() دربارهٔ <a href="@comment.Poem.UrlSlug#comment-@comment.Id">@comment.Poem.Title</a>
+                    </div>
+                    <div class="up-list-item__actions">
+                        <a role="button" onclick="deleteThisComment(@comment.Id)" class="up-icon-btn" title="حذف حاشیه" aria-label="حذف این حاشیه"><i class="noindent-info-button delete-icon"></i></a>
+                        <a role="button" onclick="editThisComment(@comment.Id)" class="up-icon-btn" title="ویرایش حاشیه" aria-label="ویرایش این حاشیه"><i class="noindent-info-button edit-poem-button"></i></a>
+                    </div>
                 </div>
-                <p>
-                    @Model.UserInfo.NickName <small>در @comment.CommentDate.ToFriendlyPersianDateTextify()</small> دربارهٔ <a href="@comment.Poem.UrlSlug#comment-@comment.Id">@comment.Poem.Title</a>
-                </p>
-            </blockquote>
-            <p>
-                <a role="button" onclick="deleteThisComment(@comment.Id)" class="actionlink" title="حذف حاشیه"><i class="noindent-info-button delete-icon"></i></a>
-                <a role="button" onclick="editThisComment(@comment.Id)" class="actionlink" title="ویرایش حاشیه"><i class="noindent-info-button edit-poem-button"></i></a>
-            </p>
+            }
         </div>
-
-
-        <hr />
     }
 
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
+    <partial name="_Pagination" model="Model.PaginationLinks" />
 
     <div id="id02" class="modal">
         <span onclick="document.getElementById('id02').style.display='none'"
