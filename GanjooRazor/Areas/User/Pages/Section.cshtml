@@ -160,7 +160,7 @@ else
         <h2 class="up-card__title">وزن</h2>
 
         <div class="up-field">
-            <label>وزن فعلی</label>
+            <label><span class="up-field-icon" aria-hidden="true">🎵</span> وزن فعلی</label>
             <p id="rhythm-old" class="up-field-static">@(Model.PoemSection.GanjoorMetre == null ? "" : Model.PoemSection.GanjoorMetre.Rhythm)</p>
         </div>
 
@@ -169,7 +169,7 @@ else
         </div>
 
         <div class="up-field">
-            <label for="select-search">جستجوی وزن</label>
+            <label for="select-search"><span class="up-field-icon" aria-hidden="true">🎵</span> جستجوی وزن</label>
             <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo('select-search', 'rhythm-new')" list="inputRhythms" autocomplete="off" />
             <datalist id="inputRhythms">
                 @if (Model.RhythmsByVerseCount != null)
@@ -181,7 +181,7 @@ else
         </div>
 
         <div class="up-field">
-            <label for="rhythm-new">وزن ویراستهٔ من</label>
+            <label for="rhythm-new"><span class="up-field-icon" aria-hidden="true">🎵</span> وزن ویراستهٔ من</label>
             <select id="rhythm-new" name="rhythm-new">
                 @foreach (var rhythm in Model.RhythmsAlphabetically)
                 {
@@ -236,12 +236,12 @@ else
         <h2 class="up-card__title">قافیه</h2>
 
         <div class="up-field">
-            <label>حروف قافیهٔ فعلی</label>
+            <label><span class="up-field-icon" aria-hidden="true">🔤</span> حروف قافیهٔ فعلی</label>
             <p id="rhyme-letters-old" class="up-field-static">@Model.PoemSection.RhymeLetters</p>
         </div>
 
         <div class="up-field">
-            <label for="rhyme-letters">حروف قافیهٔ پیشنهادی من (بدون فاصله و حرکات)</label>
+            <label for="rhyme-letters"><span class="up-field-icon" aria-hidden="true">🔤</span> حروف قافیهٔ پیشنهادی من (بدون فاصله و حرکات)</label>
             <div class="up-btn-group up-mt-0">
                 @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.RhymeLetters))
                 {
@@ -314,7 +314,7 @@ else
         <h2 class="up-card__title">زبان</h2>
 
         <div class="up-field">
-            <label>زبان فعلی</label>
+            <label><span class="up-field-icon" aria-hidden="true">🌐</span> زبان فعلی</label>
             <p class="up-field-static">
                 @RMuseum.Models.Ganjoor.GanjoorLanguage.LanguageNameFromCode(Model.Languages, Model.PoemSection.Language)
                 <span id="language-old" class="hidden-recitation">@Model.PoemSection.Language</span>
@@ -322,7 +322,7 @@ else
         </div>
 
         <div class="up-field">
-            <label for="language">زبان</label>
+            <label for="language"><span class="up-field-icon" aria-hidden="true">🌐</span> زبان</label>
             <select id="language">
                 @foreach (var lang in Model.Languages)
                 {
@@ -360,7 +360,7 @@ else
         </div>
 
         <div class="up-field">
-            <label for="poemformat">قالب شعری</label>
+            <label for="poemformat"><span class="up-field-icon" aria-hidden="true">📐</span> قالب شعری</label>
             <select id="poemformat">
                 @foreach (var poemFormat in System.Enum.GetValues(typeof(RMuseum.Models.Ganjoor.GanjoorPoemFormat)))
                 {
@@ -384,7 +384,7 @@ else
 
     <div class="up-card">
         <div class="up-field">
-            <label for="note">توضیح این ویرایش</label>
+            <label for="note"><span class="up-field-icon" aria-hidden="true">🗒️</span> توضیح این ویرایش</label>
             @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.Note))
             {
                 <input type="text" id="note" name="note" value="@Model.MyLastEdit.Note" />

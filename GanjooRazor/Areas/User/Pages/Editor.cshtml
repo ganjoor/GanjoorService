@@ -241,6 +241,18 @@
         var a = document.getElementById(originalPrefix + id.toString());
         var b = document.getElementById(editedPrefix + id.toString());
         var result = document.getElementById(comparePrefix + id.toString());
+        var changed = a.textContent !== b.textContent;
+
+        var origReveal = document.getElementById(originalPrefix + 'reveal-' + id.toString());
+        var compareReveal = document.getElementById(comparePrefix + 'reveal-' + id.toString());
+        if (origReveal) origReveal.style.display = changed ? '' : 'none';
+        if (compareReveal) compareReveal.style.display = changed ? '' : 'none';
+
+        if (!changed) {
+            result.textContent = a.textContent;
+            return;
+        }
+
         var diff = JsDiff.diffChars(a.textContent, b.textContent);
         var fragment = document.createDocumentFragment();
         for (var i = 0; i < diff.length; i++) {
@@ -778,12 +790,7 @@ else
         <h2 class="up-card__title">ویرایش متن</h2>
 
         <div class="up-field">
-            <label>عنوان فعلی</label>
-            <p id="original-0" class="up-field-static">@Model.PageInformation.Poem.Title</p>
-        </div>
-
-        <div class="up-field">
-            <label for="id-0">عنوان ویراستهٔ من</label>
+            <label for="id-0"><span class="up-field-icon" aria-hidden="true">🏷️</span> عنوان ویراستهٔ من</label>
             @if (Model.MyLastEdit != null && Model.MyLastEdit.Title != null)
             {
                 <div id="id-0" name="id-0" contenteditable="true" class="up-editable">@Model.MyLastEdit.Title</div>
@@ -807,9 +814,18 @@ else
             }
         </div>
 
-        <div class="up-field">
-            <label>تغییرات</label>
-            <p id="compare-0" class="up-field-static">@Model.PageInformation.Poem.Title</p>
+        <div id="original-reveal-0" class="up-reveal" style="display:none">
+            <div class="up-field">
+                <label>عنوان فعلی</label>
+                <p id="original-0" class="up-field-static">@Model.PageInformation.Poem.Title</p>
+            </div>
+        </div>
+
+        <div id="compare-reveal-0" class="up-reveal" style="display:none">
+            <div class="up-field">
+                <label>تغییرات</label>
+                <p id="compare-0" class="up-field-static">@Model.PageInformation.Poem.Title</p>
+            </div>
         </div>
     </div>
 
@@ -822,12 +838,7 @@ else
                 <p class="up-hint">بیت @Model.GetVerseCoupletNumber(verse).ToPersianNumbers() &mdash; ترتیب مصرع یا خط از ابتدا: @verse.VOrder.ToPersianNumbers()</p>
 
                 <div class="up-field">
-                    <label>متن فعلی</label>
-                    <p id="original-@($"{verse.VOrder}")" class="up-field-static">@verse.Text</p>
-                </div>
-
-                <div class="up-field">
-                    <label for="id-@($"{verse.VOrder}")">ویراستهٔ من</label>
+                    <label for="id-@($"{verse.VOrder}")"><span class="up-field-icon" aria-hidden="true">📝</span> ویراستهٔ من</label>
                     @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && !string.IsNullOrEmpty(v.Text)).Any())
                     {
                         <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" class="up-editable">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().Text</div>
@@ -851,88 +862,91 @@ else
                     }
                 </div>
 
-                <div class="up-field">
-                    <label>تغییرات</label>
-                    <p id="compare-@($"{verse.VOrder}")" class="up-field-static">@verse.Text</p>
+                <div id="original-reveal-@($"{verse.VOrder}")" class="up-reveal" style="display:none">
+                    <div class="up-field">
+                        <label>متن فعلی</label>
+                        <p id="original-@($"{verse.VOrder}")" class="up-field-static">@verse.Text</p>
+                    </div>
                 </div>
 
-                <div class="up-field">
-                    <label for="versepostion-@($"{verse.VOrder}")">نوع</label>
-                    <select id="versepostion-@($"{verse.VOrder}")" name="versepostion-@($"{verse.VOrder}")">
-                        @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && v.VersePosition != null).Any())
+                <div id="compare-reveal-@($"{verse.VOrder}")" class="up-reveal" style="display:none">
+                    <div class="up-field">
+                        <label>تغییرات</label>
+                        <p id="compare-@($"{verse.VOrder}")" class="up-field-static">@verse.Text</p>
+                    </div>
+                </div>
+
+                <div class="up-field-row">
+                    <div class="up-field">
+                        <label for="versepostion-@($"{verse.VOrder}")"><span class="up-field-icon" aria-hidden="true">🔀</span> نوع</label>
+                        <select id="versepostion-@($"{verse.VOrder}")" name="versepostion-@($"{verse.VOrder}")">
+                            @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && v.VersePosition != null).Any())
+                            {
+                                @foreach (var verseposition in RMuseum.Models.Ganjoor.VersePositionHelper.VersePositions)
+                                    if (verseposition.VersePosition == Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().VersePosition)
+                                    {
+                                        <option value="@verseposition.VersePosition" selected>@verseposition.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@verseposition.VersePosition">@verseposition.Text</option>
+                                    }
+                            }
+                            else
+                            {
+                                @foreach (var verseposition in RMuseum.Models.Ganjoor.VersePositionHelper.VersePositions)
+                                    if (verseposition.VersePosition == verse.VersePosition)
+                                    {
+                                        <option value="@verseposition.VersePosition" selected>@verseposition.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@verseposition.VersePosition">@verseposition.Text</option>
+                                    }
+                            }
+                        </select>
+                        @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
                         {
-                            @foreach (var verseposition in RMuseum.Models.Ganjoor.VersePositionHelper.VersePositions)
-                                if (verseposition.VersePosition == Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().VersePosition)
-                                {
-                                    <option value="@verseposition.VersePosition" selected>@verseposition.Text</option>
-                                }
-                                else
-                                {
-                                    <option value="@verseposition.VersePosition">@verseposition.Text</option>
-                                }
+                            <input type="hidden" id="versepostion-original-@($"{verse.VOrder}")" name="versepostion-original-@($"{verse.VOrder}")" value="@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().VersePosition" />
                         }
                         else
                         {
-                            @foreach (var verseposition in RMuseum.Models.Ganjoor.VersePositionHelper.VersePositions)
-                                if (verseposition.VersePosition == verse.VersePosition)
+                            <input type="hidden" id="versepostion-original-@($"{verse.VOrder}")" name="versepostion-original-@($"{verse.VOrder}")" value="@verse.VersePosition" />
+                        }
+                    </div>
+
+                    <div class="up-field">
+                        <label for="language-@verse.VOrder"><span class="up-field-icon" aria-hidden="true">🌐</span> زبان</label>
+                        <select id="language-@verse.VOrder">
+                            @foreach (var lang in Model.Languages)
+                            {
+                                @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && v.LanguageId == lang.Id).Any())
                                 {
-                                    <option value="@verseposition.VersePosition" selected>@verseposition.Text</option>
+                                    <option value="@lang.Id" selected>@lang.Name</option>
+                                }
+                                else if (verse.LanguageId == null && lang.Id == 1)
+                                {
+                                    <option value="1" selected>فارسی</option>
+                                }
+                                else if (verse.LanguageId == lang.Id)
+                                {
+                                    <option value="@lang.Id" selected>@lang.Name</option>
                                 }
                                 else
                                 {
-                                    <option value="@verseposition.VersePosition">@verseposition.Text</option>
+                                    <option value="@lang.Id">@lang.Name</option>
                                 }
-                        }
-                    </select>
-                    @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).Any())
-                    {
-                        <input type="hidden" id="versepostion-original-@($"{verse.VOrder}")" name="versepostion-original-@($"{verse.VOrder}")" value="@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().VersePosition" />
-                    }
-                    else
-                    {
-                        <input type="hidden" id="versepostion-original-@($"{verse.VOrder}")" name="versepostion-original-@($"{verse.VOrder}")" value="@verse.VersePosition" />
-                    }
-                </div>
-
-                <div class="up-field">
-                    <label>زبان فعلی</label>
-                    <p class="up-field-static">
+                            }
+                        </select>
                         @if (verse.LanguageId == null)
                         {
-                            @("فارسی")
                             <span id="language-old-@verse.VOrder" class="hidden-recitation">1</span>
                         }
                         else
                         {
-                            @Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Name
                             <span id="language-old-@verse.VOrder" class="hidden-recitation">@Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Id</span>
                         }
-                    </p>
-                </div>
-
-                <div class="up-field">
-                    <label for="language-@verse.VOrder">زبان</label>
-                    <select id="language-@verse.VOrder">
-                        @foreach (var lang in Model.Languages)
-                        {
-                            @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && v.LanguageId == lang.Id).Any())
-                            {
-                                <option value="@lang.Id" selected>@lang.Name</option>
-                            }
-                            else if (verse.LanguageId == null && lang.Id == 1)
-                            {
-                                <option value="1" selected>فارسی</option>
-                            }
-                            else if (verse.LanguageId == lang.Id)
-                            {
-                                <option value="@lang.Id" selected>@lang.Name</option>
-                            }
-                            else
-                            {
-                                <option value="@lang.Id">@lang.Name</option>
-                            }
-                        }
-                    </select>
+                    </div>
                 </div>
 
                 <div class="up-check-row">
@@ -978,7 +992,7 @@ else
             </div>
 
             <div class="up-field">
-                <label for="select-search">جستجوی وزن</label>
+                <label for="select-search"><span class="up-field-icon" aria-hidden="true">🎵</span> جستجوی وزن</label>
                 <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo('select-search', 'rhythm-new')" list="inputRhythms" autocomplete="off" />
                 <datalist id="inputRhythms">
                     @if (Model.RhythmsByVerseCount != null)
@@ -990,7 +1004,7 @@ else
             </div>
 
             <div class="up-field">
-                <label for="rhythm-new">وزن ویراستهٔ من</label>
+                <label for="rhythm-new"><span class="up-field-icon" aria-hidden="true">🎵</span> وزن ویراستهٔ من</label>
                 <select id="rhythm-new" name="rhythm-new">
                     @foreach (var rhythm in Model.RhythmsAlphabetically)
                     {
@@ -1051,7 +1065,7 @@ else
             </div>
 
             <div class="up-field">
-                <label for="rhyme-letters">حروف قافیهٔ ویراستهٔ من (بدون فاصله و حرکات)</label>
+                <label for="rhyme-letters"><span class="up-field-icon" aria-hidden="true">🔤</span> حروف قافیهٔ ویراستهٔ من (بدون فاصله و حرکات)</label>
                 <div class="up-btn-group up-mt-0">
                     @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.RhymeLetters))
                     {
@@ -1080,7 +1094,7 @@ else
                 <p id="rhythm-old2" class="up-field-static">@(Model.GanjoorMetre2 == null ? "" : Model.GanjoorMetre2.Rhythm)</p>
             </div>
             <div id="secondr4" class="up-field" style="display:none">
-                <label for="select-search2">جستجوی وزن (دوم)</label>
+                <label for="select-search2"><span class="up-field-icon" aria-hidden="true">🎵</span> جستجوی وزن (دوم)</label>
                 <input type="text" id="select-search2" value="" oninput="doSearchInRhythmsCombo('select-search2', 'rhythm-new2')" list="inputRhythms2" autocomplete="off" />
                 <datalist id="inputRhythms2">
                     @if (Model.RhythmsByVerseCount != null)
@@ -1091,7 +1105,7 @@ else
                 </datalist>
             </div>
             <div id="secondr5" class="up-field" style="display:none">
-                <label for="rhythm-new2">وزن (دوم) انتخاب شده</label>
+                <label for="rhythm-new2"><span class="up-field-icon" aria-hidden="true">🎵</span> وزن (دوم) انتخاب شده</label>
                 <select id="rhythm-new2" name="rhythm-new2">
                     @foreach (var rhythm in Model.RhythmsAlphabetically)
                     {
@@ -1127,7 +1141,7 @@ else
             </div>
 
             <div class="up-field">
-                <label for="poemformat">قالب شعری</label>
+                <label for="poemformat"><span class="up-field-icon" aria-hidden="true">📐</span> قالب شعری</label>
                 <select id="poemformat">
                     @foreach (var poemFormat in System.Enum.GetValues(typeof(RMuseum.Models.Ganjoor.GanjoorPoemFormat)))
                     {
@@ -1153,7 +1167,7 @@ else
 
     <div class="up-card">
         <div class="up-field">
-            <label for="note">توضیح این ویرایش</label>
+            <label for="note"><span class="up-field-icon" aria-hidden="true">🗒️</span> توضیح این ویرایش</label>
             @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.Note))
             {
                 <input type="text" id="note" name="note" value="@Model.MyLastEdit.Note" />
@@ -1179,16 +1193,7 @@ else
         <p class="up-hint">اگر متن یا شعر یک مفهوم و خلاصهٔ کلی ندارد (مثل خیلی از غزلیات حافظ) برای آن متن کلی وارد نکنید.</p>
 
         <div class="up-field">
-            <label>خلاصهٔ فعلی</label>
-            <p id="originalsummary-0" class="up-field-static">@Model.PageInformation.Poem.PoemSummary</p>
-            @if (string.IsNullOrEmpty(Model.PageInformation.Poem.PoemSummary))
-            {
-                <p class="up-hint">هنوز متنی برای خلاصهٔ کلی نوشته نشده است.</p>
-            }
-        </div>
-
-        <div class="up-field">
-            <label for="summary-0">خلاصهٔ ویراستهٔ من (به زبان غیرمحاوره‌ای و همه‌کس فهم)</label>
+            <label for="summary-0"><span class="up-field-icon" aria-hidden="true">💬</span> خلاصهٔ ویراستهٔ من (به زبان غیرمحاوره‌ای و همه‌کس فهم)</label>
             @if (Model.MyLastEdit != null && Model.MyLastEdit.PoemSummary != null)
             {
                 <div id="summary-0" name="summary-0" contenteditable="true" class="up-editable">@Model.MyLastEdit.PoemSummary</div>
@@ -1210,11 +1215,24 @@ else
                     }, false);
                 </script>
             }
+            @if (string.IsNullOrEmpty(Model.PageInformation.Poem.PoemSummary))
+            {
+                <p class="up-hint">هنوز متنی برای خلاصهٔ کلی نوشته نشده است.</p>
+            }
         </div>
 
-        <div class="up-field">
-            <label>تغییرات</label>
-            <p id="comparesummary-0" class="up-field-static">@Model.PageInformation.Poem.PoemSummary</p>
+        <div id="originalsummary-reveal-0" class="up-reveal" style="display:none">
+            <div class="up-field">
+                <label>خلاصهٔ فعلی</label>
+                <p id="originalsummary-0" class="up-field-static">@Model.PageInformation.Poem.PoemSummary</p>
+            </div>
+        </div>
+
+        <div id="comparesummary-reveal-0" class="up-reveal" style="display:none">
+            <div class="up-field">
+                <label>تغییرات</label>
+                <p id="comparesummary-0" class="up-field-static">@Model.PageInformation.Poem.PoemSummary</p>
+            </div>
         </div>
 
         <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">لغزش به دکمهٔ ذخیره</a>
@@ -1264,16 +1282,7 @@ else
                     </div>
 
                     <div class="up-field">
-                        <label>معنای فعلی</label>
-                        <p id="originalsummary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" class="up-field-static">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</p>
-                        @if (string.IsNullOrEmpty(Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary))
-                        {
-                            <p class="up-hint">هنوز متنی برای معنی نوشته نشده است.</p>
-                        }
-                    </div>
-
-                    <div class="up-field">
-                        <label for="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")">معنای ویراستهٔ من (به زبان غیرمحاوره‌ای و همه‌کس فهم)</label>
+                        <label for="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")"><span class="up-field-icon" aria-hidden="true">💬</span> معنای ویراستهٔ من (به زبان غیرمحاوره‌ای و همه‌کس فهم)</label>
                         @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder && !string.IsNullOrEmpty(v.CoupletSummary)).Any())
                         {
                             <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" contenteditable="true" class="up-editable">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder).First().CoupletSummary</div>
@@ -1295,11 +1304,24 @@ else
                                 }, false);
                             </script>
                         }
+                        @if (string.IsNullOrEmpty(Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary))
+                        {
+                            <p class="up-hint">هنوز متنی برای معنی نوشته نشده است.</p>
+                        }
                     </div>
 
-                    <div class="up-field">
-                        <label>تغییرات</label>
-                        <p id="comparesummary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" class="up-field-static">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</p>
+                    <div id="originalsummary-reveal-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" class="up-reveal" style="display:none">
+                        <div class="up-field">
+                            <label>معنای فعلی</label>
+                            <p id="originalsummary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" class="up-field-static">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</p>
+                        </div>
+                    </div>
+
+                    <div id="comparesummary-reveal-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" class="up-reveal" style="display:none">
+                        <div class="up-field">
+                            <label>تغییرات</label>
+                            <p id="comparesummary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" class="up-field-static">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</p>
+                        </div>
                     </div>
 
                     <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">لغزش به دکمهٔ ذخیره</a>
