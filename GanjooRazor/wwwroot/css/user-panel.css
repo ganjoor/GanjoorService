@@ -136,6 +136,14 @@
     transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.05s ease;
 }
 
+/* p8.css (site-wide, pre-existing) separately defines .up-btn::after as part of an
+   unrelated arrow_circle_up/down/left/right icon family for vote-style controls.
+   That class name collides with ours - cancel its injected icon here since
+   user-panel.css loads after p8.css and wins the cascade at equal specificity. */
+.up-btn::after {
+    content: none;
+}
+
 .up-btn:hover {
     background-color: var(--up-primary-hover);
     color: var(--up-on-primary);
