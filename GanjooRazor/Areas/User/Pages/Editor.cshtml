@@ -5,7 +5,6 @@
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "ویرایشگر";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
-    string color = "#eee";
 }
 <div class="up-page-header">
     <h1>@ViewData["Title"]</h1>
@@ -22,7 +21,7 @@
             var newVersePosition = 'versepostion-' + i.toString();
             document.getElementById(newVersePosition).value = i % 2 == 1 ? 'Right' : 'Left';
         }
-        alert('انجام شد.');
+        upToast('انجام شد.');
     }
 
     function tarkib4VersePositions(verseCount) {
@@ -35,7 +34,7 @@
                 index = 1;
             }
         }
-        alert('انجام شد.');
+        upToast('انجام شد.');
     }
 
     function tarkib5VersePositions(verseCount) {
@@ -48,7 +47,7 @@
                 index = 1;
             }
         }
-        alert('انجام شد.');
+        upToast('انجام شد.');
     }
 
     function tarkib6VersePositions(verseCount) {
@@ -61,7 +60,7 @@
                 index = 1;
             }
         }
-        alert('انجام شد.');
+        upToast('انجام شد.');
     }
 
 
@@ -126,7 +125,7 @@
 
         if (verseOrderText.length == 0 && verseOrderSummaries.length == 0) {
             if (rhythm_new == null && rhythm_new2 == null && rhyme_letters == null && section_format == null) {
-                alert('شما هیچ تغییری در اطلاعات نداده‌اید!');
+                upToast('شما هیچ تغییری در اطلاعات نداده‌اید!', 'error');
                 return;
             }
         }
@@ -160,10 +159,7 @@
                 location.reload(true);
             },
             error: function (e) {
-                if (e.responseText == null)
-                    alert(e);
-                else
-                    alert(e.responseText);
+                upToast(e.responseText || String(e), 'error');
                 $('#savecorrections').show();
                 $('#saving').text('');
             }
@@ -179,11 +175,8 @@
             data: {
                 id: poemId
             },
-            error: function () {
-                if (e.responseText == null)
-                    alert(e);
-                else
-                    alert(e.responseText);
+            error: function (e) {
+                upToast(e.responseText || String(e), 'error');
             },
             success: function (rhyme) {
                 $(elementId).val(rhyme);
@@ -233,10 +226,7 @@
 
             },
             error: function (e) {
-                if (e.responseText == null)
-                    alert(e);
-                else
-                    alert(e.responseText);
+                upToast(e.responseText || String(e), 'error');
             },
             success: function () {
                 location.reload(true);
@@ -289,9 +279,9 @@
         internalEditorcompare(id, 'originalsummary-', 'summary-', 'comparesummary-');
     }
 
-    function breakPoem(poemId, vOrder, vText) {
-        if (!confirm(vText))
-            return;
+    async function breakPoem(poemId, vOrder, vText) {
+        var ok = await upConfirm(vText);
+        if (!ok) return;
         $('#breakpoem-' + String(vOrder)).hide();
 
         var url = '?handler=BreakPoem';
@@ -305,16 +295,13 @@
             },
             success: function (id) {
                 if (String(id) == '-1') {
-                    alert('کار شکستن شعر شروع شد.');
+                    upToast('کار شکستن شعر شروع شد.');
                     return;
                 }
                 location.href = '/?p=' + String(id);
             },
             error: function (e) {
-                if (e.responseText == null)
-                    alert(e);
-                else
-                    alert(e.responseText);
+                upToast(e.responseText || String(e), 'error');
                 $('#breakpoem-' + String(vOrder)).show();
             }
 
@@ -332,13 +319,10 @@
                 rhyme: rhymeletters,
             },
             success: function () {
-                alert('انجام شد.');
+                upToast('انجام شد.');
             },
             error: function (e) {
-                if (e.responseText == null)
-                    alert(e);
-                else
-                    alert(e.responseText);
+                upToast(e.responseText || String(e), 'error');
             }
 
         });
@@ -353,10 +337,9 @@
         document.getElementById('secondr-btn').style.display = 'none';
     }
 
-    function updateCoupletIndices(id){
-        if (!confirm('آیا از بازسازی اندیس‌های ابیات اطمینان دارید؟'))
-            return;
-
+    async function updateCoupletIndices(id){
+        var ok = await upConfirm('آیا از بازسازی اندیس‌های ابیات اطمینان دارید؟');
+        if (!ok) return;
 
         var url = '?handler=RefillCoupletIndices';
 
@@ -367,26 +350,21 @@
                 id: id,
             },
             error: function (e) {
-                if (e.responseText == null)
-                    alert(e);
-                else
-                    alert(e.responseText);
+                upToast(e.responseText || String(e), 'error');
             },
             success: function () {
-                alert('انجام شد.');
+                upToast('انجام شد.');
             },
 
         });
     }
 
-    function regenerateSections(id) {
-        if (!confirm('آیا از قطعه‌بندی مجدد اطمینان دارید؟'))
-            return;
+    async function regenerateSections(id) {
+        var ok = await upConfirm('آیا از قطعه‌بندی مجدد اطمینان دارید؟');
+        if (!ok) return;
 
-        if (!confirm('قطعه‌بندی مجدد باعث حذف اطلاعات وزن‌ها می‌شود. آیا اطمینان دارید؟'))
-            return;
-
-
+        var ok2 = await upConfirm('قطعه‌بندی مجدد باعث حذف اطلاعات وزن‌ها می‌شود. آیا اطمینان دارید؟');
+        if (!ok2) return;
 
         var url = '?handler=RegeneratePoemSections';
 
@@ -397,13 +375,10 @@
                 id: id,
             },
             error: function (e) {
-                if (e.responseText == null)
-                    alert(e);
-                else
-                    alert(e.responseText);
+                upToast(e.responseText || String(e), 'error');
             },
             success: function () {
-                alert('انجام شد.');
+                upToast('انجام شد.');
             },
 
         });
@@ -433,19 +408,15 @@
                 location.reload();
             },
             error: function (e) {
-                if (e.responseText == null)
-                    alert(e);
-                else
-                    alert(e.responseText);
+                upToast(e.responseText || String(e), 'error');
             }
 
         });
     }
 
-    function deletTag(tagId) {
-        if (!confirm('آیا از حذف این برچسب اطمینان دارید؟')) {
-            return;
-        }
+    async function deletTag(tagId) {
+        var ok = await upConfirm('آیا از حذف این برچسب اطمینان دارید؟');
+        if (!ok) return;
 
         $.ajax({
             type: "DELETE",
@@ -454,14 +425,11 @@
                 id: tagId,
             },
             success: function () {
-                alert('انجام شد.');
+                upToast('انجام شد.');
                 location.reload();
             },
             error: function (e) {
-                if (e.responseText == null)
-                    alert(e);
-                else
-                    alert(e.responseText);
+                upToast(e.responseText || String(e), 'error');
             }
 
         });
@@ -486,11 +454,8 @@ else
     if (Model.MyLastEdit != null)
     {
         <div class="up-card">
+        <h2 class="up-card__title">ویرایش‌های بررسی‌نشدهٔ من</h2>
         <table>
-            <tr>
-                <td colspan="2">ویرایشهای بررسی نشدهٔ من</td>
-            </tr>
-
             <tr>
                 <td>متن اولیه</td>
                 <td>تغییرات من</td>
@@ -754,197 +719,118 @@ else
         </div>
     }
 
-    <table>
-        <tr>
-            <td><a href="/User/PoemCorrectionsHistory?id=@Model.PageInformation.Id" role="button" class="pagebutton" target="_blank">سوابق ویرایش</a></td>
-        </tr>
+    <div class="up-btn-group">
+        <a href="/User/PoemCorrectionsHistory?id=@Model.PageInformation.Id" role="button" class="up-btn up-btn--ghost" target="_blank">سوابق ویرایش</a>
         @if (Model.PageInformation.Poem.Previous != null)
         {
-            <tr>
-                <td>
-                    @if (Model.ShowAdminOps)
-                    {
-                        <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Previous.Id" role="button" class="pagebutton">ویرایش شعر قبل</a>
-                    }
-                    else
-                    {
-                        <a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button" class="pagebutton">ویرایش شعر قبل</a>
-                    }
-                </td>
-            </tr>
-        }
-        @if (Model.PageInformation.Poem.Next != null)
-        {
-            <tr>
-                <td>
-                    @if (Model.ShowAdminOps)
-                    {
-                        <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Next.Id" role="button" class="pagebutton">ویرایش شعر بعد</a>
-                    }
-                    else
-                    {
-                        <a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="pagebutton">ویرایش شعر بعد</a>
-                    }
-                </td>
-            </tr>
-        }
-        @if (Model.CanAssignRhythms)
-        {
-            <tr>
-                <td class="td-button-container">
-                    <a role="button" href="#rhythms-section" class="editor-button background-gray">لغزش به بخش وزن</a>
-                </td>
-            </tr>
-        }
-        else
-        {
-            <tr>
-                <td class="td-button-container">
-                    <a role="button" href="#poem-sections" class="editor-button background-gray">لغزش به بخش قطعات</a>
-                </td>
-            </tr>
-
-        }
-
-        <tr>
-            <td class="td-button-container">
-                <a role="button" href="#summaries" class="editor-button background-gray">لغزش به بخش معنی </a>
-            </td>
-        </tr>
-
-        <tr>
-            <td class="td-button-container">
-                <a role="button" href="#footer" class="editor-button background-gray">لغزش به پایین صفحه </a>
-            </td>
-        </tr>
-
-        @if (Model.CanEdit && !Model.ShowAdminOps)
-        {
-            <tr>
-                <td><a role="button" href="/User/Editor?id=@Model.PageInformation.Id&admin=1" class="pagebutton">امکانات مدیریتی</a></td>
-            </tr>
-        }
-        @if (Model.TextSourceImage != null)
-        {
-            <tr>
-                <td>
-                    <p><strong>منبع کاغذی:</strong></p>
-                    <p>(متن پیشنهادی نمی‌بایست از نسخهٔ متفاوتی باشد)</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="related-images">
-                        <div class="related-image-container">
-                            <a target="_blank" href="@Html.Raw(Model.TextSourceImage.TargetPageUrl)">
-                                <img src="@Html.Raw(Model.TextSourceImage.ThumbnailImageUrl)" alt="@Model.TextSourceImage.AltText" loading="lazy" class="related-image-main">
-                            </a>
-
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        }
-        <tr>
-            <td>
-                <p><strong>ویرایش متن:</strong></p>
-            </td>
-        </tr>
-
-        <tr>
-            <td>
-                عنوان فعلی:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p id="original-0">@Model.PageInformation.Poem.Title</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                عنوان ویراستهٔ من:
-            </td>
-        </tr>
-        <tr>
-            <td>
-
-                @if (Model.MyLastEdit != null && Model.MyLastEdit.Title != null)
-                {
-                    <div id="id-0" name="id-0" contenteditable="true" class="background-white">@Model.MyLastEdit.Title</div>
-                    <script>
-                        $(document).ready(function () {
-                            editorcompare(0);
-                        });
-                        document.getElementById("id-0").addEventListener("input", function () {
-                            editorcompare(0)
-                        }, false);
-                    </script>
-                }
-                else
-                {
-                    <div type="text" id="id-0" name="id-0" contenteditable="true" class="background-white">@Model.PageInformation.Poem.Title</div>
-                    <script>
-                        document.getElementById("id-0").addEventListener("input", function () {
-                            editorcompare(0)
-                        }, false);
-                    </script>
-                }
-            </td>
-        </tr>
-        <tr>
-            <td>
-                تغییرات:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p id="compare-0">@Model.PageInformation.Poem.Title</p>
-            </td>
-        </tr>
-        @foreach (var verse in Model.PageInformation.Poem.Verses)
-        {
-            if (color == "#eee")
+            @if (Model.ShowAdminOps)
             {
-                color = "#ddd";
+                <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Previous.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر قبل</a>
             }
             else
             {
-                color = "#eee";
+                <a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر قبل</a>
             }
-            <tr id="tr-@verse.VOrder" style="background-color:@color">
-                <td>
-                    بیت @Model.GetVerseCoupletNumber(verse).ToPersianNumbers()
-                </td>
-            </tr>
-            <tr style="background-color:@color">
-                <td>
-                    ترتیب مصرع یا خط از ابتدا: @verse.VOrder.ToPersianNumbers()
-                </td>
-            </tr>
+        }
+        @if (Model.PageInformation.Poem.Next != null)
+        {
+            @if (Model.ShowAdminOps)
+            {
+                <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Next.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر بعد</a>
+            }
+            else
+            {
+                <a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر بعد</a>
+            }
+        }
+        @if (Model.CanAssignRhythms)
+        {
+            <a role="button" href="#rhythms-section" class="up-btn up-btn--sm up-btn--ghost">لغزش به بخش وزن</a>
+        }
+        else
+        {
+            <a role="button" href="#poem-sections" class="up-btn up-btn--sm up-btn--ghost">لغزش به بخش قطعات</a>
+        }
+        <a role="button" href="#summaries" class="up-btn up-btn--sm up-btn--ghost">لغزش به بخش معنی</a>
+        <a role="button" href="#footer" class="up-btn up-btn--sm up-btn--ghost">لغزش به پایین صفحه</a>
+        @if (Model.CanEdit && !Model.ShowAdminOps)
+        {
+            <a role="button" href="/User/Editor?id=@Model.PageInformation.Id&admin=1" class="up-btn up-btn--ghost">امکانات مدیریتی</a>
+        }
+    </div>
 
-            <tr style="background-color:@color">
-                <td>
-                    متن فعلی:
-                </td>
-            </tr>
-            <tr style="background-color:@color">
-                <td>
-                    <p id="original-@($"{verse.VOrder}")">@verse.Text</p>
-                </td>
-            </tr>
-            <tr style="background-color:@color">
-                <td>
-                    ویراستهٔ من:
-                </td>
-            </tr>
-            <tr style="background-color:@color">
-                <td>
+    @if (Model.TextSourceImage != null)
+    {
+        <div class="up-card">
+            <p><strong>منبع کاغذی:</strong></p>
+            <p class="up-hint">(متن پیشنهادی نمی‌بایست از نسخهٔ متفاوتی باشد)</p>
+            <div class="related-images">
+                <div class="related-image-container">
+                    <a target="_blank" href="@Html.Raw(Model.TextSourceImage.TargetPageUrl)">
+                        <img src="@Html.Raw(Model.TextSourceImage.ThumbnailImageUrl)" alt="@Model.TextSourceImage.AltText" loading="lazy" class="related-image-main">
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="up-card">
+        <h2 class="up-card__title">ویرایش متن</h2>
+
+        <div class="up-field">
+            <label>عنوان فعلی</label>
+            <p id="original-0" class="up-field-static">@Model.PageInformation.Poem.Title</p>
+        </div>
+
+        <div class="up-field">
+            <label for="id-0">عنوان ویراستهٔ من</label>
+            @if (Model.MyLastEdit != null && Model.MyLastEdit.Title != null)
+            {
+                <div id="id-0" name="id-0" contenteditable="true" class="background-white">@Model.MyLastEdit.Title</div>
+                <script>
+                    $(document).ready(function () {
+                        editorcompare(0);
+                    });
+                    document.getElementById("id-0").addEventListener("input", function () {
+                        editorcompare(0)
+                    }, false);
+                </script>
+            }
+            else
+            {
+                <div type="text" id="id-0" name="id-0" contenteditable="true" class="background-white">@Model.PageInformation.Poem.Title</div>
+                <script>
+                    document.getElementById("id-0").addEventListener("input", function () {
+                        editorcompare(0)
+                    }, false);
+                </script>
+            }
+        </div>
+
+        <div class="up-field">
+            <label>تغییرات</label>
+            <p id="compare-0" class="up-field-static">@Model.PageInformation.Poem.Title</p>
+        </div>
+    </div>
+
+    <div class="up-card">
+        <h2 class="up-card__title">ویرایش مصرع‌ها</h2>
+
+        @foreach (var verse in Model.PageInformation.Poem.Verses)
+        {
+            <div class="up-verse-row" id="tr-@verse.VOrder">
+                <p class="up-hint">بیت @Model.GetVerseCoupletNumber(verse).ToPersianNumbers() &mdash; ترتیب مصرع یا خط از ابتدا: @verse.VOrder.ToPersianNumbers()</p>
+
+                <div class="up-field">
+                    <label>متن فعلی</label>
+                    <p id="original-@($"{verse.VOrder}")" class="up-field-static">@verse.Text</p>
+                </div>
+
+                <div class="up-field">
+                    <label for="id-@($"{verse.VOrder}")">ویراستهٔ من</label>
                     @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && !string.IsNullOrEmpty(v.Text)).Any())
                     {
                         <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" class="background-white">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().Text</div>
-
-
                         <script>
                             document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
                                 editorcompare(@verse.VOrder)
@@ -963,28 +849,15 @@ else
                             }, false);
                         </script>
                     }
-                </td>
-            </tr>
-            <tr style="background-color:@color">
-                <td>
-                    تغییرات:
-                </td>
-            </tr>
-            <tr style="background-color:@color">
-                <td>
-                    <p id="compare-@($"{verse.VOrder}")">@verse.Text</p>
-                </td>
-            </tr>
+                </div>
 
+                <div class="up-field">
+                    <label>تغییرات</label>
+                    <p id="compare-@($"{verse.VOrder}")" class="up-field-static">@verse.Text</p>
+                </div>
 
-            <tr style="background-color:@color">
-                <td>
-                    نوع
-                </td>
-            </tr>
-            <tr style="background-color:@color">
-                <td>
-
+                <div class="up-field">
+                    <label for="versepostion-@($"{verse.VOrder}")">نوع</label>
                     <select id="versepostion-@($"{verse.VOrder}")" name="versepostion-@($"{verse.VOrder}")">
                         @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && v.VersePosition != null).Any())
                         {
@@ -1019,36 +892,26 @@ else
                     {
                         <input type="hidden" id="versepostion-original-@($"{verse.VOrder}")" name="versepostion-original-@($"{verse.VOrder}")" value="@verse.VersePosition" />
                     }
+                </div>
 
-                </td>
+                <div class="up-field">
+                    <label>زبان فعلی</label>
+                    <p class="up-field-static">
+                        @if (verse.LanguageId == null)
+                        {
+                            @("فارسی")
+                            <span id="language-old-@verse.VOrder" class="hidden-recitation">1</span>
+                        }
+                        else
+                        {
+                            @Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Name
+                            <span id="language-old-@verse.VOrder" class="hidden-recitation">@Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Id</span>
+                        }
+                    </p>
+                </div>
 
-            </tr>
-
-            <tr style="background-color:@color">
-                <td>
-                    زبان فعلی:
-                </td>
-            </tr>
-
-            <tr style="background-color:@color">
-                <td>
-                    @if (verse.LanguageId == null)
-                    {
-                        @("فارسی")
-                        <div id="language-old-@verse.VOrder" class="hidden-recitation">1</div>
-                    }
-                    else
-                    {
-                        @Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Name
-                        <div id="language-old-@verse.VOrder" class="hidden-recitation">@Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Id</div>
-                    }
-                </td>
-            </tr>
-
-            <tr style="background-color:@color">
-                <td>
-                    <label for="language-@verse.VOrder">زبان:</label>
-                    <br />
+                <div class="up-field">
+                    <label for="language-@verse.VOrder">زبان</label>
                     <select id="language-@verse.VOrder">
                         @foreach (var lang in Model.Languages)
                         {
@@ -1070,116 +933,88 @@ else
                             }
                         }
                     </select>
-                </td>
-            </tr>
+                </div>
 
-
-
-            <tr style="background-color:@color">
-                <td>
+                <div class="up-check-row">
                     @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && v.MarkForDelete).Any())
                     {
                         <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" checked />
-                        <label for="marked-for-delete-@verse.VOrder">باید حذف شود</label>
                     }
                     else
                     {
                         <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" />
-                        <label for="marked-for-delete-@verse.VOrder">باید حذف شود</label>
                     }
-                </td>
-            </tr>
+                    <label for="marked-for-delete-@verse.VOrder">باید حذف شود</label>
+                </div>
 
-            <tr style="background-color:@color">
-                <td class="td-button-container">
-                    <a role="button" href="#savecorrections" class="editor-button background-gray">لغزش به دکمهٔ ذخیره</a>
-                </td>
-            </tr>
-
-            @if (Model.ShowAdminOps && verse.VOrder > 1 && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)
-            {
-                <tr style="background-color:@color">
-                    <td class="td-button-container">
-                        <a role="button" id="breakpoem-@verse.VOrder" class="editor-button background-red" onclick="breakPoem(@Model.PageInformation.Poem.Id, @verse.VOrder, '@verse.Text')">شکستن از اینجا</a>
-                    </td>
-                </tr>
-            }
-
+                <div class="up-btn-group">
+                    <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">لغزش به دکمهٔ ذخیره</a>
+                    @if (Model.ShowAdminOps && verse.VOrder > 1 && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)
+                    {
+                        <a role="button" id="breakpoem-@verse.VOrder" class="up-btn up-btn--sm up-btn--danger" onclick="breakPoem(@Model.PageInformation.Poem.Id, @verse.VOrder, '@verse.Text')">شکستن از اینجا</a>
+                    }
+                </div>
+            </div>
         }
+    </div>
 
-        @if (!Model.CanAssignRhythms)
-        {
-            <tr>
-                <td>
-                    <p class="red-color">این مورد شامل بیش از یک قطعه شعر یا دارای پاراگراف نثر است و امکان انتساب وزن و قالب شعری به آن و یا تعیین حروف قافیهٔ آن وجود ندارد.</p>
-                </td>
-            </tr>
-        }
-        else
-        {
+    @if (!Model.CanAssignRhythms)
+    {
+        <div class="up-alert up-alert--warning">این مورد شامل بیش از یک قطعه شعر یا دارای پاراگراف نثر است و امکان انتساب وزن و قالب شعری به آن و یا تعیین حروف قافیهٔ آن وجود ندارد.</div>
+    }
+    else
+    {
 
-            <tr id="rhythms-section">
-                <td>
-                    وزن فعلی:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p id="rhythm-old">@(Model.GanjoorMetre1 == null ? "" : Model.GanjoorMetre1.Rhythm)</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p class="red-color">توجه داشته باشید که کارکرد برچسب‌گذاری اشعار در گنجور یافتن اشعار هم‌وزن است. از این جهت از پیشنهاد صورت‌های سلیقه‌ای و متفاوت یک وزن خودداری کنید تا این قابلیت مختل نشود. <a href="https://ganjoor.net/faq?id=14" target="_blank">این نکته</a> را هم مد نظر داشته باشید.</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    وزن ویراستهٔ من:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="select-search">جستجوی وزن:</label><br />
-                    <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo('select-search', 'rhythm-new')" list="inputRhythms" autocomplete="off" size="50" />
-                    <datalist id="inputRhythms">
-                        @if (Model.RhythmsByVerseCount != null)
-                            @foreach (var rhythm in Model.RhythmsByVerseCount)
-                            {
-                                <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
-                            }
-                    </datalist>
+        <div class="up-card" id="rhythms-section">
+            <h2 class="up-card__title">وزن</h2>
 
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label for="rhythm-new">وزن انتخاب شده:</label>
-                    <br />
-                    <select id="rhythm-new" name="rhythm-new">
-                        @foreach (var rhythm in Model.RhythmsAlphabetically)
+            <div class="up-field">
+                <label>وزن فعلی</label>
+                <p id="rhythm-old" class="up-field-static">@(Model.GanjoorMetre1 == null ? "" : Model.GanjoorMetre1.Rhythm)</p>
+            </div>
+
+            <div class="up-alert up-alert--warning">
+                <p class="up-mt-0">توجه داشته باشید که کارکرد برچسب‌گذاری اشعار در گنجور یافتن اشعار هم‌وزن است. از این جهت از پیشنهاد صورت‌های سلیقه‌ای و متفاوت یک وزن خودداری کنید تا این قابلیت مختل نشود. <a href="https://ganjoor.net/faq?id=14" target="_blank">این نکته</a> را هم مد نظر داشته باشید.</p>
+            </div>
+
+            <div class="up-field">
+                <label for="select-search">جستجوی وزن</label>
+                <input type="text" id="select-search" value="" oninput="doSearchInRhythmsCombo('select-search', 'rhythm-new')" list="inputRhythms" autocomplete="off" />
+                <datalist id="inputRhythms">
+                    @if (Model.RhythmsByVerseCount != null)
+                        @foreach (var rhythm in Model.RhythmsByVerseCount)
                         {
-                            if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm == rhythm.Rhythm)
+                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                        }
+                </datalist>
+            </div>
+
+            <div class="up-field">
+                <label for="rhythm-new">وزن ویراستهٔ من</label>
+                <select id="rhythm-new" name="rhythm-new">
+                    @foreach (var rhythm in Model.RhythmsAlphabetically)
+                    {
+                        if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm == rhythm.Rhythm)
+                        {
+                            <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
+                        }
+                        else
+                        {
+                            if (Model.GanjoorMetre1 != null && Model.GanjoorMetre1.Rhythm == rhythm.Rhythm)
                             {
                                 <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
                             }
                             else
                             {
-                                if (Model.GanjoorMetre1 != null && Model.GanjoorMetre1.Rhythm == rhythm.Rhythm)
-                                {
-                                    <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
-                                }
-                                else
-                                {
-                                    <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
-                                }
-
+                                <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
                             }
 
                         }
-                    </select>
-                    <a role="button" onclick="resetRhythm('rhythm-new')" class="pagebutton">پاک کردن وزن</a>
-                    <br />
+
+                    }
+                </select>
+                <div class="up-btn-group up-mt-0">
+                    <a role="button" onclick="resetRhythm('rhythm-new')" class="up-btn up-btn--sm up-btn--ghost">پاک کردن وزن</a>
                     <script>
                         function newRhythm() {
                             var rhythm = prompt("پیشنهاد وزن جدید", "");
@@ -1188,7 +1023,7 @@ else
                                 var options = select.options;
                                 for (let i = 0; i < options.length; i++) {
                                     if (options[i].value == rhythm) {
-                                        alert('وزن پیشنهادی تکراری است.');
+                                        upToast('وزن پیشنهادی تکراری است.', 'error');
                                         return;
                                     }
                                 }
@@ -1202,266 +1037,192 @@ else
                                 opt2.innerHTML = rhythm;
                                 document.getElementById('rhythm-new2').appendChild(opt2);
 
-                                alert('وزن پیشنهادی به انتهای لیست وزن‌ها اضافه شده. لطفاً از لیست آن را انتخاب کنید.');
+                                upToast('وزن پیشنهادی به انتهای لیست وزن‌ها اضافه شده. لطفاً از لیست آن را انتخاب کنید.');
                             }
                         }
                     </script>
-                    <a role="button" onclick="newRhythm()" class="pagebutton">پیشنهاد وزن جدید</a>
-                </td>
-            </tr>
+                    <a role="button" onclick="newRhythm()" class="up-btn up-btn--sm up-btn--ghost">پیشنهاد وزن جدید</a>
+                </div>
+            </div>
 
-            <tr>
-                <td>
-                    حروف قافیهٔ فعلی:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <p id="rhyme-letters-old">@Model.RhymeLetters</p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    حروف قافیهٔ ویراستهٔ من (بدون فاصله و حرکات):
-                </td>
-            </tr>
-            <tr>
-                <td>
+            <div class="up-field">
+                <label>حروف قافیهٔ فعلی</label>
+                <p id="rhyme-letters-old" class="up-field-static">@Model.RhymeLetters</p>
+            </div>
 
+            <div class="up-field">
+                <label for="rhyme-letters">حروف قافیهٔ ویراستهٔ من (بدون فاصله و حرکات)</label>
+                <div class="up-btn-group up-mt-0">
                     @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.RhymeLetters))
                     {
-                        <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.MyLastEdit.RhymeLetters" size="50" />
+                        <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.MyLastEdit.RhymeLetters" style="flex:1;" />
                     }
                     else
                     {
-                        <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.RhymeLetters" size="50" />
+                        <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.RhymeLetters" style="flex:1;" />
                     }
-                    <a role="button" onclick="computePoemRhyme(@Model.PageInformation.Id, '#rhyme-letters')" class="pagebutton">محاسبه</a>
+                    <a role="button" onclick="computePoemRhyme(@Model.PageInformation.Id, '#rhyme-letters')" class="up-btn up-btn--ghost">محاسبه</a>
+                </div>
+            </div>
 
-                </td>
-            </tr>
+            <div id="secondr-btn">
+                <a role="button" onclick="secondR()" class="up-btn up-btn--sm up-btn--ghost">این شعر دو وزنی است</a>
+            </div>
 
-
-
-            <tr id="secondr-btn">
-                <td>
-                    <a role="button" onclick="secondR()" class="pagebutton">این شعر دو وزنی است</a>
-                </td>
-            </tr>
-
-            <tr id="secondr1" style="display:none">
-                <td>
-                    وزن دوم (شعرهای چندوزنی):
-                </td>
-
-            </tr>
-            <tr id="secondr2" style="display:none">
-                <td>
-                    <p class="red-color">تعدادی کمی از شعرها دو وزنی هستند.</p>
-                </td>
-            </tr>
-            <tr id="secondr3" style="display:none">
-                <td>
-                    <p id="rhythm-old2">@(Model.GanjoorMetre2 == null ? "" : Model.GanjoorMetre2.Rhythm)</p>
-                </td>
-            </tr>
-            <tr id="secondr4" style="display:none">
-                <td>
-                    وزن ویراستهٔ من (دوم):
-                </td>
-            </tr>
-            <tr id="secondr5" style="display:none">
-                <td>
-                    <label for="select-search2">جستجوی وزن (دوم):</label><br />
-                    <input type="text" id="select-search2" value="" oninput="doSearchInRhythmsCombo('select-search2', 'rhythm-new2')" list="inputRhythms" autocomplete="off" size="50" />
-                    <datalist id="inputRhythms2">
-                        @if (Model.RhythmsByVerseCount != null)
-                            @foreach (var rhythm in Model.RhythmsByVerseCount)
-                            {
-                                <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
-                            }
-                    </datalist>
-
-                </td>
-            </tr>
-            <tr id="secondr6" style="display:none">
-                <td>
-                    <label for="rhythm-new2">وزن (دوم) انتخاب شده:</label><br /><select id="rhythm-new2" name="rhythm-new2">
-                        @foreach (var rhythm in Model.RhythmsAlphabetically)
+            <div id="secondr1" style="display:none">
+                <h3 class="up-card__title">وزن دوم (شعرهای چندوزنی)</h3>
+            </div>
+            <div id="secondr2" class="up-alert up-alert--warning" style="display:none">
+                <p class="up-mt-0">تعدادی کمی از شعرها دو وزنی هستند.</p>
+            </div>
+            <div id="secondr3" class="up-field" style="display:none">
+                <label>وزن دوم فعلی</label>
+                <p id="rhythm-old2" class="up-field-static">@(Model.GanjoorMetre2 == null ? "" : Model.GanjoorMetre2.Rhythm)</p>
+            </div>
+            <div id="secondr4" class="up-field" style="display:none">
+                <label for="select-search2">جستجوی وزن (دوم)</label>
+                <input type="text" id="select-search2" value="" oninput="doSearchInRhythmsCombo('select-search2', 'rhythm-new2')" list="inputRhythms2" autocomplete="off" />
+                <datalist id="inputRhythms2">
+                    @if (Model.RhythmsByVerseCount != null)
+                        @foreach (var rhythm in Model.RhythmsByVerseCount)
                         {
-                            if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm2 == rhythm.Rhythm)
+                            <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
+                        }
+                </datalist>
+            </div>
+            <div id="secondr5" class="up-field" style="display:none">
+                <label for="rhythm-new2">وزن (دوم) انتخاب شده</label>
+                <select id="rhythm-new2" name="rhythm-new2">
+                    @foreach (var rhythm in Model.RhythmsAlphabetically)
+                    {
+                        if (Model.MyLastEdit != null && Model.MyLastEdit.Rhythm2 == rhythm.Rhythm)
+                        {
+                            <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
+                        }
+                        else
+                        {
+                            if (Model.GanjoorMetre2 != null && Model.GanjoorMetre2.Rhythm == rhythm.Rhythm)
                             {
                                 <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
                             }
                             else
                             {
-                                if (Model.GanjoorMetre2 != null && Model.GanjoorMetre2.Rhythm == rhythm.Rhythm)
-                                {
-                                    <option value="@rhythm.Rhythm" selected>@rhythm.Rhythm</option>
-                                }
-                                else
-                                {
-                                    <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
-                                }
-
+                                <option value="@rhythm.Rhythm">@rhythm.Rhythm</option>
                             }
 
                         }
-                    </select>
-                    <a role="button" onclick="resetRhythm('rhythm-new2')" class="pagebutton">پاک کردن وزن</a>
-                </td>
-            </tr>
 
-            <tr>
-                <td>
-                    قالب شعری فعلی:
-                </td>
-            </tr>
+                    }
+                </select>
+                <a role="button" onclick="resetRhythm('rhythm-new2')" class="up-btn up-btn--sm up-btn--ghost">پاک کردن وزن</a>
+            </div>
+            <div id="secondr6" style="display:none"></div>
 
-            <tr>
-                <td>
+            <div class="up-field">
+                <label>قالب شعری فعلی</label>
+                <p class="up-field-static">
                     @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(Model.PoemFormat)
-                    <div id="poemformat-old" class="hidden-recitation">@Model.PoemFormat</div>
-                </td>
-            </tr>
+                    <span id="poemformat-old" class="hidden-recitation">@Model.PoemFormat</span>
+                </p>
+            </div>
 
-            <tr>
-                <td>
-                    <label for="">قالب شعری:</label>
-                    <br />
-                    <select id="poemformat">
-                        @foreach (var poemFormat in System.Enum.GetValues(typeof(RMuseum.Models.Ganjoor.GanjoorPoemFormat)))
+            <div class="up-field">
+                <label for="poemformat">قالب شعری</label>
+                <select id="poemformat">
+                    @foreach (var poemFormat in System.Enum.GetValues(typeof(RMuseum.Models.Ganjoor.GanjoorPoemFormat)))
+                    {
+                        @if (Model.MyLastEdit != null && (Model.MyLastEdit.PoemFormat == (RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat))
                         {
-                            @if (Model.MyLastEdit != null && (Model.MyLastEdit.PoemFormat == (RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat))
-                            {
-                                <option value="@poemFormat" selected>@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
-                            }
-                            else if (Model.PoemFormat == (RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)
-                            {
-                                <option value="@poemFormat" selected>@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
-                            }
-                            else
-                            {
-                                <option value="@poemFormat">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
-                            }
-
+                            <option value="@poemFormat" selected>@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
                         }
-                    </select>
-                </td>
-            </tr>
+                        else if (Model.PoemFormat == (RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)
+                        {
+                            <option value="@poemFormat" selected>@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
+                        }
+                        else
+                        {
+                            <option value="@poemFormat">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString((RMuseum.Models.Ganjoor.GanjoorPoemFormat)poemFormat)</option>
+                        }
 
-        }
+                    }
+                </select>
+            </div>
+        </div>
 
+    }
 
-        <tr>
-            <td>
-                توضیح این ویرایش:
-            </td>
-        </tr>
+    <div class="up-card">
+        <div class="up-field">
+            <label for="note">توضیح این ویرایش</label>
+            @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.Note))
+            {
+                <input type="text" id="note" name="note" value="@Model.MyLastEdit.Note" />
+            }
+            else
+            {
+                <input type="text" id="note" name="note" value="" />
+            }
+        </div>
+    </div>
 
-        <tr>
-            <td>
-                @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.Note))
-                {
-                    <input type="text" id="note" name="note" value="@Model.MyLastEdit.Note" size="50" />
-                }
-                else
-                {
-                    <input type="text" id="note" name="note" value="" size="50" />
-                }
-            </td>
-        </tr>
+    <div class="up-card" id="summaries">
+        <h2 class="up-card__title">خلاصه و معنی</h2>
+        <div class="up-alert up-alert--warning">
+            <p>توجه فرمایید که هدف از این بخش، تفسیر متن اشعار <span style="color:red">نیست</span>. انتظار می‌رود در این بخش برای متون و اشعاری مثل داستان‌ها خلاصه یا لب مطلب را بنویسید (برای بعضی از انواع اشعار مثل غزل‌ها ممکن است خلاصهٔ کلی معنی نداشته باشد). برای خطوط یا ابیات نیز برگردان متن به نثر قابل فهم امروزی نوشته شود (لازم نیست برای همهٔ خطوط برگردان نثر نوشته شود). برای تفسیر یا درج عقاید شخصی خود راجع به اشعار از حاشیه‌ها استفاده کنید.</p>
+            <p>متن باید خلاصه، به فارسی نوشتاری رسمی (غیرمحاوره‌ای)، خالی از لغات نامأنوس (زبان همه‌کس فهم) و بدون غلط املایی و تایپی باشد.</p>
+            <p>اگر متن موجود به اندازهٔ کافی خوب باشد ممکن است متن خیلی متفاوت جایگزین تأیید نشود.</p>
+            <p>نام و مشخصات نویسندهٔ متن در صفحهٔ شعر نمایش داده نمی‌شود اما در تاریخچهٔ تغییرات نگهداری می‌شود.</p>
+            <p class="up-mt-0">در صورتی که متن تولید شده توسط <span style="color:red">هوش مصنوعی</span> را ویرایش می‌کنید عبارت نشان‌دهندهٔ تولید هوش مصنوعی بودن آن را <span style="color:red">حذف کنید</span>.</p>
+        </div>
 
-        <tr>
-            <td id="summaries" style="background-color:black; color: white">خلاصه و معنی</td>
-        </tr>
-        <tr>
-            <td style="background-color:#ffffe1">
-                <p>توجه فرمایید که هدف از این بخش، تفسیر متن اشعار <span style="color:red">نیست</span>. انتظار می‌رود در این بخش برای متون و اشعاری مثل داستان‌ها خلاصه یا لب مطلب را بنویسید (برای بعضی از انواع اشعار مثل غزل‌ها ممکن است خلاصهٔ کلی معنی نداشته باشد). برای خطوط یا ابیات نیز برگردان متن به نثر قابل فهم امروزی نوشته شود (لازم نیست برای همهٔ خطوط برگردان نثر نوشته شود). برای تفسیر یا درج عقاید شخصی خود راجع به اشعار از حاشیه‌ها استفاده کنید.</p>
-                <p>متن باید خلاصه، به فارسی نوشتاری رسمی (غیرمحاوره‌ای)، خالی از لغات نامأنوس (زبان همه‌کس فهم) و بدون غلط املایی و تایپی باشد.</p>
-                <p>
-                    اگر متن موجود به اندازهٔ کافی خوب باشد ممکن است متن خیلی متفاوت جایگزین تأیید نشود.
-                </p>
-                <p>
-                    نام و مشخصات نویسندهٔ متن در صفحهٔ شعر نمایش داده نمی‌شود اما در تاریخچهٔ تغییرات نگهداری می‌شود.
-                </p>
-                <p>
-                    در صورتی که متن تولید شده توسط <span style="color:red">هوش مصنوعی</span> را ویرایش می‌کنید عبارت نشان‌دهندهٔ تولید هوش مصنوعی بودن آن را <span style="color:red">حذف کنید</span>.
-                </p>
+        <h3 class="up-card__title">خلاصه یا مفهوم کلی شعر یا متن</h3>
+        <p class="up-hint">اگر متن یا شعر یک مفهوم و خلاصهٔ کلی ندارد (مثل خیلی از غزلیات حافظ) برای آن متن کلی وارد نکنید.</p>
 
-            </td>
-        </tr>
-        <tr>
-            <td style="background-color:black; color: white">خلاصه یا مفهوم کلی شعر یا متن:</td>
-        </tr>
-        <tr>
-            <td style="background-color:#ffffe1">
-                اگر متن یا شعر یک مفهوم و خلاصهٔ کلی ندارد (مثل خیلی از غزلیات حافظ) برای آن متن کلی وارد نکنید.
-            </td>
-        </tr>
+        <div class="up-field">
+            <label>خلاصهٔ فعلی</label>
+            <p id="originalsummary-0" class="up-field-static">@Model.PageInformation.Poem.PoemSummary</p>
+            @if (string.IsNullOrEmpty(Model.PageInformation.Poem.PoemSummary))
+            {
+                <p class="up-hint">هنوز متنی برای خلاصهٔ کلی نوشته نشده است.</p>
+            }
+        </div>
 
-        <tr>
-            <td>
-                <p id="originalsummary-0">@Model.PageInformation.Poem.PoemSummary</p>
-                @if (string.IsNullOrEmpty(Model.PageInformation.Poem.PoemSummary))
-                {
-                    <p>هنوز متنی برای خلاصهٔ کلی نوشته نشده است.</p>
-                }
-            </td>
-        </tr>
-        <tr>
-            <td>
-                خلاصهٔ ویراستهٔ من (به زبان غیرمحاوره‌ای و همه‌کس فهم):
-            </td>
-        </tr>
+        <div class="up-field">
+            <label for="summary-0">خلاصهٔ ویراستهٔ من (به زبان غیرمحاوره‌ای و همه‌کس فهم)</label>
+            @if (Model.MyLastEdit != null && Model.MyLastEdit.PoemSummary != null)
+            {
+                <div id="summary-0" name="summary-0" contenteditable="true" class="background-white">@Model.MyLastEdit.PoemSummary</div>
+                <script>
+                    document.getElementById("summary-0").addEventListener("input", function () {
+                        summarycompare(0)
+                    }, false);
+                    $(document).ready(function () {
+                        summarycompare(0);
+                    });
+                </script>
+            }
+            else
+            {
+                <div id="summary-0" name="summary-0" contenteditable="true" class="background-white">@Model.PageInformation.Poem.PoemSummary</div>
+                <script>
+                    document.getElementById("summary-0").addEventListener("input", function () {
+                        summarycompare(0)
+                    }, false);
+                </script>
+            }
+        </div>
 
-        <tr>
-            <td>
-                @if (Model.MyLastEdit != null && Model.MyLastEdit.PoemSummary != null)
-                {
-                    <div id="summary-0" name="summary-0" contenteditable="true" class="background-white">@Model.MyLastEdit.PoemSummary</div>
+        <div class="up-field">
+            <label>تغییرات</label>
+            <p id="comparesummary-0" class="up-field-static">@Model.PageInformation.Poem.PoemSummary</p>
+        </div>
 
+        <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">لغزش به دکمهٔ ذخیره</a>
+    </div>
 
-                    <script>
-                        document.getElementById("summary-0").addEventListener("input", function () {
-                            summarycompare(0)
-                        }, false);
-                        $(document).ready(function () {
-                            summarycompare(0);
-                        });
-                    </script>
-                }
-                else
-                {
-                    <div id="summary-0" name="summary-0" contenteditable="true" class="background-white">@Model.PageInformation.Poem.PoemSummary</div>
-                    <script>
-                        document.getElementById("summary-0").addEventListener("input", function () {
-                            summarycompare(0)
-                        }, false);
-                    </script>
-                }
-            </td>
-        </tr>
-        <tr>
-            <td>
-                تغییرات:
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p id="comparesummary-0">@Model.PageInformation.Poem.PoemSummary</p>
-            </td>
-        </tr>
+    <div class="up-card">
+        <h2 class="up-card__title">برگردان خطوط به زبان ساده</h2>
 
-        <tr>
-            <td class="td-button-container">
-                <a role="button" href="#savecorrections" class="editor-button background-gray">لغزش به دکمهٔ ذخیره</a>
-            </td>
-        </tr>
-
-        <tr>
-            <td style="background-color:black; color: white">برگردان خطوط به زبان ساده:</td>
-        </tr>
         @for (int verseIndex = 0; verseIndex < Model.PageInformation.Poem.Verses.Length; verseIndex++)
         {
             @if (
@@ -1470,23 +1231,16 @@ else
            || Model.PageInformation.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph
            )
             {
-                if (color == "#eee")
-                {
-                    color = "#ddd";
-                }
-                else
-                {
-                    color = "#eee";
-                }
-                <tr style="background-color:@color">
-                    <td>
+                <div class="up-verse-row">
+                    <div class="up-field">
+                        <label>متن</label>
                         @if (Model.PageInformation.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph)
                         {
-                            @Model.PageInformation.Poem.Verses[verseIndex].Text
+                            <p class="up-field-static">@Model.PageInformation.Poem.Verses[verseIndex].Text</p>
                         }
                         else
                         {
-                            <table>
+                            <div class="up-field-static">
                                 @for (int nIndex = verseIndex; nIndex < Model.PageInformation.Poem.Verses.Length &&
 
                                (nIndex == verseIndex
@@ -1498,52 +1252,31 @@ else
                                ))
                                ; nIndex++)
                                 {
-                                    <tr>
-                                        <td>@Model.PageInformation.Poem.Verses[nIndex].Text</td>
-                                    </tr>
+                                    <div>@Model.PageInformation.Poem.Verses[nIndex].Text</div>
                                 }
-                            </table>
-
+                            </div>
                         }
-                    </td>
-                </tr>
-                <tr style="background-color:@color">
-                    <td>
-                        معنای خط یا بیت:
-                    </td>
+                    </div>
 
-                </tr>
-                <tr>
-                    <td>
-                        <p><span style="color:red">تذکّر مهم:</span> از این کادر برای نوشتن چیزی جز معنی استفاده <span style="color:red">نکنید</span>.</p>
-                        <p>
-                            در صورتی که متن تولید شده توسط هوش مصنوعی را ویرایش می‌کنید عبارت نشان‌دهندهٔ تولید <span style="color:red">هوش مصنوعی</span> بودن آن را <span style="color:red">حذف کنید</span>.
-                        </p>
-                    </td>
-                </tr>
+                    <div class="up-alert up-alert--warning">
+                        <p class="up-mt-0"><span style="color:red">تذکّر مهم:</span> از این کادر برای نوشتن چیزی جز معنی استفاده <span style="color:red">نکنید</span>.</p>
+                        <p class="up-mt-0">در صورتی که متن تولید شده توسط هوش مصنوعی را ویرایش می‌کنید عبارت نشان‌دهندهٔ تولید <span style="color:red">هوش مصنوعی</span> بودن آن را <span style="color:red">حذف کنید</span>.</p>
+                    </div>
 
-                <tr style="background-color:@color">
-                    <td>
-                        <p id="originalsummary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</p>
+                    <div class="up-field">
+                        <label>معنای فعلی</label>
+                        <p id="originalsummary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" class="up-field-static">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</p>
                         @if (string.IsNullOrEmpty(Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary))
                         {
-                            <p>هنوز متنی برای معنی نوشته نشده است.</p>
+                            <p class="up-hint">هنوز متنی برای معنی نوشته نشده است.</p>
                         }
-                    </td>
-                </tr>
-                <tr style="background-color:@color">
-                    <td>
-                        معنای ویراستهٔ من (به زبان غیرمحاوره‌ای و همه‌کس فهم):
-                    </td>
-                </tr>
+                    </div>
 
-                <tr style="background-color:@color">
-                    <td>
+                    <div class="up-field">
+                        <label for="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")">معنای ویراستهٔ من (به زبان غیرمحاوره‌ای و همه‌کس فهم)</label>
                         @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder && !string.IsNullOrEmpty(v.CoupletSummary)).Any())
                         {
                             <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" contenteditable="true" class="background-white">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder).First().CoupletSummary</div>
-
-
                             <script>
                                 document.getElementById("summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")").addEventListener("input", function () {
                                     summarycompare(@Model.PageInformation.Poem.Verses[verseIndex].VOrder)
@@ -1562,427 +1295,311 @@ else
                                 }, false);
                             </script>
                         }
-                    </td>
-                </tr>
-                <tr style="background-color:@color">
-                    <td>
-                        تغییرات:
-                    </td>
-                </tr>
-                <tr style="background-color:@color">
-                    <td>
-                        <p id="comparesummary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</p>
-                    </td>
-                </tr>
+                    </div>
 
-                <tr>
-                    <td class="td-button-container">
-                        <a role="button" href="#savecorrections" class="editor-button background-gray">لغزش به دکمهٔ ذخیره</a>
-                    </td>
-                </tr>
+                    <div class="up-field">
+                        <label>تغییرات</label>
+                        <p id="comparesummary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" class="up-field-static">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</p>
+                    </div>
+
+                    <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">لغزش به دکمهٔ ذخیره</a>
+                </div>
             }
         }
+    </div>
 
-
-
-        @if (Model.PageInformation.Poem.Sections.Count(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First) > 1)
-        {
-            <tr>
-                <td id="poem-sections">
-                    قطعات:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <table>
-                        @foreach (var poemSetion in Model.PageInformation.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First).ToList())
-                        {
-                            <tr>
-                                <td>
-                                    <a href="/User/Section?poemId=@poemSetion.PoemId&index=@poemSetion.Index" role="button" class="pagebutton">
-                                        قطعهٔ @(poemSetion.Number.ToPersianNumbers()):
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    @Html.Raw(poemSetion.HtmlText)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    وزن: @(poemSetion.GanjoorMetre == null ? "تعیین نشده" : poemSetion.GanjoorMetre.Rhythm)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <hr />
-                                </td>
-                            </tr>
-                        }
-                    </table>
-                </td>
-            </tr>
-        }
-        else
-       if (Model.PageInformation.Poem.Sections.Count(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First) == 1)
-        {
-            foreach (var poemSetion in Model.PageInformation.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First).ToList())
+    @if (Model.PageInformation.Poem.Sections.Count(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First) > 1)
+    {
+        <div class="up-card" id="poem-sections">
+            <h2 class="up-card__title">قطعات</h2>
+            @foreach (var poemSetion in Model.PageInformation.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First).ToList())
             {
-                <tr>
-                    <td id="poem-sections">
-                        <a href="/User/Section?poemId=@poemSetion.PoemId&index=@poemSetion.Index" role="button" class="pagebutton">
-                            شکستن شعر به قطعات مجزا
-                        </a>
-                    </td>
-                </tr>
+                <div class="up-verse-row">
+                    <a href="/User/Section?poemId=@poemSetion.PoemId&index=@poemSetion.Index" role="button" class="up-btn up-btn--sm up-btn--ghost">
+                        قطعهٔ @(poemSetion.Number.ToPersianNumbers()):
+                    </a>
+                    <p>@Html.Raw(poemSetion.HtmlText)</p>
+                    <p class="up-hint">وزن: @(poemSetion.GanjoorMetre == null ? "تعیین نشده" : poemSetion.GanjoorMetre.Rhythm)</p>
+                </div>
             }
-        }
-
-        <tr>
-            <td>
-                <a href="/User/AllPoemSections?id=@Model.PageInformation.Id" role="button" class="pagebutton">
-                    همهٔ قطعات شعر
+        </div>
+    }
+    else
+   if (Model.PageInformation.Poem.Sections.Count(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First) == 1)
+    {
+        foreach (var poemSetion in Model.PageInformation.Poem.Sections.Where(s => s.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem && s.VerseType == RMuseum.Models.Ganjoor.VersePoemSectionType.First).ToList())
+        {
+            <p id="poem-sections">
+                <a href="/User/Section?poemId=@poemSetion.PoemId&index=@poemSetion.Index" role="button" class="up-btn up-btn--ghost">
+                    شکستن شعر به قطعات مجزا
                 </a>
-            </td>
-        </tr>
+            </p>
+        }
+    }
 
-        <tr>
-            <td><a role="button" onclick="resetVersePositions(@Model.PageInformation.Poem.Verses.Length)" class="pagebutton">چینش پیش‌فرض نوع مصرع‌ها</a></td>
-        </tr>
-
-        <tr>
-            <td><a role="button" onclick="tarkib4VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="pagebutton">چینش مربعی</a></td>
-        </tr>
-
-        <tr>
-            <td><a role="button" onclick="tarkib5VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="pagebutton">چینش مخمسی</a></td>
-        </tr>
-
-        <tr>
-            <td><a role="button" onclick="tarkib6VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="pagebutton">چینش مسدسی</a></td>
-        </tr>
-
-
-        <tr>
-            <td><a role="button" href="/User/VerseAdd/?id=@Model.PageInformation.Id" class="pagebutton">اضافه کردن مصرع‌های جاافتاده</a></td>
-        </tr>
-
-
+    <div class="up-btn-group">
+        <a href="/User/AllPoemSections?id=@Model.PageInformation.Id" role="button" class="up-btn up-btn--ghost">
+            همهٔ قطعات شعر
+        </a>
+        <a role="button" onclick="resetVersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">چینش پیش‌فرض نوع مصرع‌ها</a>
+        <a role="button" onclick="tarkib4VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">چینش مربعی</a>
+        <a role="button" onclick="tarkib5VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">چینش مخمسی</a>
+        <a role="button" onclick="tarkib6VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">چینش مسدسی</a>
+        <a role="button" href="/User/VerseAdd/?id=@Model.PageInformation.Id" class="up-btn up-btn--ghost">اضافه کردن مصرع‌های جاافتاده</a>
         @if (Model.PageInformation.Poem.Previous != null)
         {
-            <tr>
-                <td>
-                    @if (Model.ShowAdminOps)
-                    {
-                        <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Previous.Id" role="button" class="pagebutton">ویرایش شعر قبل</a>
-                    }
-                    else
-                    {
-                        <a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button" class="pagebutton">ویرایش شعر قبل</a>
-                    }
-                </td>
-            </tr>
+            @if (Model.ShowAdminOps)
+            {
+                <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Previous.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر قبل</a>
+            }
+            else
+            {
+                <a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر قبل</a>
+            }
         }
         @if (Model.PageInformation.Poem.Next != null)
         {
-            <tr>
-                <td>
-                    @if (Model.ShowAdminOps)
-                    {
-                        <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Next.Id" role="button" class="pagebutton">ویرایش شعر بعد</a>
-                    }
-                    else
-                    {
-                        <a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="pagebutton">ویرایش شعر بعد</a>
-                    }
-                </td>
-            </tr>
+            @if (Model.ShowAdminOps)
+            {
+                <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Next.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر بعد</a>
+            }
+            else
+            {
+                <a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر بعد</a>
+            }
         }
-
         @if (Model.ShowAdminOps && Model.GanjoorMetre1 != null && !string.IsNullOrEmpty(Model.RhymeLetters))
         {
-            <tr>
-                <td><a role="button" onclick="updateRelatedSections(@Model.GanjoorMetre1.Id, '@Model.RhymeLetters')" class="pagebutton">بازسازی فهرست اشعار هم‌آهنگ با وزن اول</a></td>
-            </tr>
+            <a role="button" onclick="updateRelatedSections(@Model.GanjoorMetre1.Id, '@Model.RhymeLetters')" class="up-btn up-btn--ghost">بازسازی فهرست اشعار هم‌آهنگ با وزن اول</a>
         }
-
         @if (Model.ShowAdminOps && Model.GanjoorMetre2 != null && !string.IsNullOrEmpty(Model.RhymeLetters))
         {
-            <tr>
-                <td><a role="button" onclick="updateRelatedSections(@Model.GanjoorMetre2.Id, '@Model.RhymeLetters')" class="pagebutton">بازسازی فهرست اشعار هم‌آهنگ با وزن دوم</a></td>
-            </tr>
+            <a role="button" onclick="updateRelatedSections(@Model.GanjoorMetre2.Id, '@Model.RhymeLetters')" class="up-btn up-btn--ghost">بازسازی فهرست اشعار هم‌آهنگ با وزن دوم</a>
         }
-
         @if (Model.ShowAdminOps)
         {
-            <tr>
-                <td><a role="button" onclick="updateCoupletIndices(@Model.PageInformation.Poem.Id)" class="pagebutton">تصحیح اندیس‌های ابیات</a></td>
-            </tr>
+            <a role="button" onclick="updateCoupletIndices(@Model.PageInformation.Poem.Id)" class="up-btn up-btn--ghost">تصحیح اندیس‌های ابیات</a>
         }
-
         @if (Model.ShowAdminOps)
         {
-            <tr>
-                <td><a role="button" onclick="regenerateSections(@Model.PageInformation.Poem.Id)" class="pagebutton">قطعه‌بندی مجدد</a></td>
-            </tr>
-
-            <tr>
-                <td>برای حذف شعر از قسمت مدیریت بخش اقدام کنید.</td>
-            </tr>
+            <a role="button" onclick="regenerateSections(@Model.PageInformation.Poem.Id)" class="up-btn up-btn--ghost">قطعه‌بندی مجدد</a>
         }
-
         @if (Model.CanEdit && !Model.ShowAdminOps)
         {
-            <tr>
-                <td><a role="button" href="/User/Editor?id=@Model.PageInformation.Id&admin=1" class="pagebutton">امکانات مدیریتی</a></td>
-            </tr>
+            <a role="button" href="/User/Editor?id=@Model.PageInformation.Id&admin=1" class="up-btn up-btn--ghost">امکانات مدیریتی</a>
         }
+    </div>
 
-        <tr>
-            <td>
-                @if (Model.MyLastEdit != null && Model.MyLastEdit.HideMyName)
+    @if (Model.ShowAdminOps)
+    {
+        <p class="up-hint">برای حذف شعر از قسمت مدیریت بخش اقدام کنید.</p>
+    }
+
+    <div class="up-card">
+        <div class="up-check-row">
+            @if (Model.MyLastEdit != null && Model.MyLastEdit.HideMyName)
+            {
+                <input type="checkbox" name="hide-my-name" id="hide-my-name" checked />
+            }
+            else
+            {
+                <input type="checkbox" name="hide-my-name" id="hide-my-name" />
+            }
+            <label for="hide-my-name">مشخصات من در تاریخچهٔ ویرایش‌های این شعر نمایش داده نشود</label>
+        </div>
+
+        <div class="up-form-actions">
+            <a role="button" id="savecorrections" class="up-btn up-btn--success up-btn--block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
+        </div>
+        <p id="saving" class="up-hint">&nbsp;</p>
+    </div>
+
+    @if (Model.ShowAdminOps)
+    {
+        <div class="up-card">
+            <h2 class="up-card__title">برچسب‌های زمان و مکان</h2>
+            <table>
+                <tr>
+                    <th>مکان</th>
+                    <th>سال</th>
+                    <th>ماه</th>
+                    <th>روز</th>
+                    <th>تاریخ مستند</th>
+                    <th>مختص شعر</th>
+                    <th>#</th>
+                </tr>
+                @foreach (var tag in Model.PoemGeoDateTags)
                 {
-                    <input type="checkbox" name="hide-my-name" id="hide-my-name" checked />
+                    <tr id="tag-@tag.Id">
+                        <td>@($"{(tag.Location == null ? "" : tag.Location.Name)}")</td>
+                        <td>@tag.LunarYear</td>
+                        <td>
+                            @{
+                                switch (tag.LunarMonth)
+                                {
+                                    case 1:
+                                        @("محرم")
+                                        ;
+                                        break;
+                                    case 2:
+                                        @("صفر")
+                                        ;
+                                        break;
+                                    case 3:
+                                        @("ربیع‌الاول")
+                                        ;
+                                        break;
+                                    case 4:
+                                        @("ربیع‌الثانی")
+                                        ;
+                                        break;
+                                    case 5:
+                                        @("جمادی‌الاول")
+                                        ;
+                                        break;
+                                    case 6:
+                                        @("جمادی‌الثانی")
+                                        ;
+                                        break;
+                                    case 7:
+                                        @("رجب")
+                                        ;
+                                        break;
+                                    case 8:
+                                        @("شعبان")
+                                        ;
+                                        break;
+                                    case 9:
+                                        @("رمضان")
+                                        ;
+                                        break;
+                                    case 10:
+                                        @("شوال")
+                                        ;
+                                        break;
+                                    case 11:
+                                        @("ذیقعده")
+                                        ;
+                                        break;
+                                    case 12:
+                                        @("ذیحجه")
+                                        ;
+                                        break;
+                                }
+                            }
+                        </td>
+                        <td>@tag.LunarDay</td>
+                        <td>
+                            @if (tag.VerifiedDate)
+                            {
+                                <input type="checkbox" disabled checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" disabled />
+                            }
+                        </td>
+                        <td>
+                            @if (tag.IgnoreInCategory)
+                            {
+                                <input type="checkbox" disabled checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox" disabled />
+                            }
+                        </td>
+                        <td>
+                            <a role="button" onclick="deletTag(@tag.Id)" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td>
+                        <select id="location">
+                            @{
+                                foreach (var location in Model.Locations)
+                                {
+                                    <option value="@location.Id">@location.Name</option>
+                                }
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" id="year" />
+                    </td>
+                    <td>
+                        <select id="month">
+                            <option value="0">هیچکدام</option>
+                            <option value="1">محرم</option>
+                            <option value="2">صفر</option>
+                            <option value="3">ربیع‌الاول</option>
+                            <option value="4">ربیع‌الثانی</option>
+                            <option value="5">جمادی‌الاول</option>
+                            <option value="6">جمادی‌الثانی</option>
+                            <option value="7">رجب</option>
+                            <option value="8">شعبان</option>
+                            <option value="9">رمضان</option>
+                            <option value="10">شوال</option>
+                            <option value="11">ذیقعده</option>
+                            <option value="12">ذیحجه</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" id="day" />
+                    </td>
+                    <td>
+                        <input type="checkbox" id="verifiedDate" />
+                    </td>
+                    <td>
+                        <input type="checkbox" id="ignoreInCategory" />
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="7">
+                        <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="newGeoDateTag(@Model.PageInformation.Id)">برچسب جدید</a>
+                    </td>
+                </tr>
+            </table>
+            <a href="/Admin/Locations" role="button" class="up-btn up-btn--sm up-btn--ghost">مکان‌ها</a>
+        </div>
+    }
+
+    @if (Model.ShowAdminOps)
+    {
+        <div class="up-card">
+            <h2 class="up-card__title">ابرداده‌های اضافه</h2>
+
+            <div class="up-check-row">
+                @if (Model.PageInformation.NoIndex)
+                {
+                    <input type="checkbox" id="chk_noindex" name="chk_noindex" checked />
                 }
                 else
                 {
-                    <input type="checkbox" name="hide-my-name" id="hide-my-name" />
+                    <input type="checkbox" id="chk_noindex" name="chk_noindex" />
                 }
-                <label for="hide-my-name">مشخصات من در تاریخچهٔ ویرایش‌های این شعر نمایش داده نشود</label>
+                <label for="chk_noindex">ایندکس نشود</label>
+            </div>
 
-            </td>
-        </tr>
-        <tr>
-            <td class="td-button-container">
-                <a role="button" id="savecorrections" class="editor-button background-green" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
-            </td>
-        </tr>
+            <div class="up-field up-field--ltr">
+                <label for="redirect_from_url">از این نشانی (کامل) هم به این صفحه ری‌دایرکت شود</label>
+                <input value="@Model.PageInformation.RedirectFromFullUrl" id="redirect_from_url" name="redirect_from_url" />
+            </div>
 
-        <tr>
-            <td><p id="saving">&nbsp;</p></td>
-        </tr>
+            <div class="up-field">
+                <label for="mixed_mode_order">ترتیب در فهرست‌ها</label>
+                <input value="@Model.PageInformation.Poem.MixedModeOrder" id="mixed_mode_order" name="mixed_mode_order" />
+            </div>
 
-        @if (Model.ShowAdminOps)
-        {
-            <tr>
-                <td>برچسب‌های زمان و  مکان</td>
-            </tr>
-            <tr>
-                <td>
-                    <table>
-                        <tr>
-                            <th>مکان</th>
-                            <th>سال</th>
-                            <th>ماه</th>
-                            <th>روز</th>
-                            <th>تاریخ مستند</th>
-                            <th>مختص شعر</th>
-                            <th>#</th>
-                        </tr>
-                        @foreach (var tag in Model.PoemGeoDateTags)
-                        {
-                            <tr id="tag-@tag.Id">
-                                <td>@($"{(tag.Location == null ? "" : tag.Location.Name)}")</td>
-                                <td>@tag.LunarYear</td>
-                                <td>
-                                    @{
-                                        switch (tag.LunarMonth)
-                                        {
-                                            case 1:
-                                                @("محرم")
-                                                ;
-                                                break;
-                                            case 2:
-                                                @("صفر")
-                                                ;
-                                                break;
-                                            case 3:
-                                                @("ربیع‌الاول")
-                                                ;
-                                                break;
-                                            case 4:
-                                                @("ربیع‌الثانی")
-                                                ;
-                                                break;
-                                            case 5:
-                                                @("جمادی‌الاول")
-                                                ;
-                                                break;
-                                            case 6:
-                                                @("جمادی‌الثانی")
-                                                ;
-                                                break;
-                                            case 7:
-                                                @("رجب")
-                                                ;
-                                                break;
-                                            case 8:
-                                                @("شعبان")
-                                                ;
-                                                break;
-                                            case 9:
-                                                @("رمضان")
-                                                ;
-                                                break;
-                                            case 10:
-                                                @("شوال")
-                                                ;
-                                                break;
-                                            case 11:
-                                                @("ذیقعده")
-                                                ;
-                                                break;
-                                            case 12:
-                                                @("ذیحجه")
-                                                ;
-                                                break;
-                                        }
-                                    }
-                                </td>
-                                <td>@tag.LunarDay</td>
-                                <td>
-                                    @if (tag.VerifiedDate)
-                                    {
-                                        <input type="checkbox" disabled checked />
-                                    }
-                                    else
-                                    {
-                                        <input type="checkbox" disabled />
-                                    }
+            <div class="up-form-actions">
+                <a role="button" class="up-btn up-btn--success" onclick="savemeta(@Model.PageInformation.Id)">ذخیرهٔ ابرداده‌ها</a>
+            </div>
+        </div>
+    }
 
-                                </td>
-                                <td>
-                                    @if (tag.IgnoreInCategory)
-                                    {
-                                        <input type="checkbox" disabled checked />
-                                    }
-                                    else
-                                    {
-                                        <input type="checkbox" disabled />
-                                    }
-                                </td>
-                                <td>
-                                    <a role="button" onclick="deletTag(@tag.Id)" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
-                                </td>
-                            </tr>
-                        }
-                        <tr>
-                            <td>
-                                <select id="location">
-                                    @{
-                                        foreach (var location in Model.Locations)
-                                        {
-                                            <option value="@location.Id">@location.Name</option>
-                                        }
-                                    }
-                                </select>
-                            </td>
-                            <td>
-                                <input type="text" id="year" />
-                            </td>
-                            <td>
-                                <select id="month">
-                                    <option value="0">هیچکدام</option>
-                                    <option value="1">محرم</option>
-                                    <option value="2">صفر</option>
-                                    <option value="3">ربیع‌الاول</option>
-                                    <option value="4">ربیع‌الثانی</option>
-                                    <option value="5">جمادی‌الاول</option>
-                                    <option value="6">جمادی‌الثانی</option>
-                                    <option value="7">رجب</option>
-                                    <option value="8">شعبان</option>
-                                    <option value="9">رمضان</option>
-                                    <option value="10">شوال</option>
-                                    <option value="11">ذیقعده</option>
-                                    <option value="12">ذیحجه</option>
-                                </select>
-                            </td>
-                            <td>
-                                <input type="text" id="day" />
-                            </td>
-                            <td>
-                                <input type="checkbox" id="verifiedDate" />
-
-                            </td>
-                            <td>
-                                <input type="checkbox" id="ignoreInCategory" />
-                            </td>
-                            <td>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="7">
-                                <a role="button" class="pagebutton" onclick="newGeoDateTag(@Model.PageInformation.Id)">برچسب جدید</a>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="/Admin/Locations" role="button" class="pagebutton">مکان‌ها</a>
-                </td>
-            </tr>
-        }
-
-        @if (Model.ShowAdminOps)
-        {
-            <tr>
-                <td>
-                    <table>
-                        <tr>
-                            <td colspan="2">ابرداده‌های اضافه</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span class="inputlabel">ایندکس نشود</span>
-                            </td>
-                            <td>
-                                @if (Model.PageInformation.NoIndex)
-                                {
-                                    <input type="checkbox" id="chk_noindex" name="chk_noindex" checked />
-                                }
-                                else
-                                {
-                                    <input type="checkbox" id="chk_noindex" name="chk_noindex" />
-                                }
-
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span class="inputlabel">از این نشانی (کامل) هم به این صفحه ری‌دایرکت شود</span>
-                            </td>
-                            <td>
-                                <input style="text-align:left;direction:ltr;" value="@Model.PageInformation.RedirectFromFullUrl" id="redirect_from_url" name="redirect_from_url" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span class="inputlabel">ترتیب در فهرستها:</span>
-                            </td>
-                            <td>
-                                <input value="@Model.PageInformation.Poem.MixedModeOrder" id="mixed_mode_order" name="mixed_mode_order" />
-                            </td>
-                        </tr>
-                        <tr style="background-color:@color">
-                            <td class="td-button-container" colspan="2">
-                                <a role="button" class="editor-button background-green" onclick="savemeta(@Model.PageInformation.Id)">ذخیرهٔ ابرداده‌ها</a>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        }
-
-        <tr>
-            <td class="td-button-container">
-                <a role="button" href="#" class="editor-button background-gray">لغزش به بالای صفحه</a>
-            </td>
-        </tr>
-    </table>
-
-
-
+    <p id="footer" class="up-text-center">
+        <a role="button" href="#" class="up-btn up-btn--sm up-btn--ghost">لغزش به بالای صفحه</a>
+    </p>
 }
