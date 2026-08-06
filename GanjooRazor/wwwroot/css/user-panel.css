@@ -469,18 +469,30 @@ body.up-modal-open {
     transform: translateY(-2px);
 }
 
-/* ---------- moderation review-result radio options ---------- */
+/* ---------- moderation review-result radio options / generic checkbox rows ---------- */
 
-.up-radio-option {
+.up-radio-option,
+.up-check-row {
     display: flex;
     align-items: center;
     gap: var(--up-space-1);
     padding: 3px 0;
 }
 
-.up-radio-option label {
+.up-radio-option label,
+.up-check-row label {
     margin: 0;
     cursor: pointer;
+}
+
+.up-verse-row {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--up-border);
+    line-height: 1.9;
+}
+
+.up-verse-row:last-child {
+    border-bottom: none;
 }
 
 /* ---------- small utilities ---------- */
