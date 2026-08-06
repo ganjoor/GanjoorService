@@ -786,7 +786,7 @@ else
             <label for="id-0">عنوان ویراستهٔ من</label>
             @if (Model.MyLastEdit != null && Model.MyLastEdit.Title != null)
             {
-                <div id="id-0" name="id-0" contenteditable="true" class="background-white">@Model.MyLastEdit.Title</div>
+                <div id="id-0" name="id-0" contenteditable="true" class="up-editable">@Model.MyLastEdit.Title</div>
                 <script>
                     $(document).ready(function () {
                         editorcompare(0);
@@ -798,7 +798,7 @@ else
             }
             else
             {
-                <div type="text" id="id-0" name="id-0" contenteditable="true" class="background-white">@Model.PageInformation.Poem.Title</div>
+                <div type="text" id="id-0" name="id-0" contenteditable="true" class="up-editable">@Model.PageInformation.Poem.Title</div>
                 <script>
                     document.getElementById("id-0").addEventListener("input", function () {
                         editorcompare(0)
@@ -830,7 +830,7 @@ else
                     <label for="id-@($"{verse.VOrder}")">ویراستهٔ من</label>
                     @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && !string.IsNullOrEmpty(v.Text)).Any())
                     {
-                        <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" class="background-white">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().Text</div>
+                        <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" class="up-editable">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder).First().Text</div>
                         <script>
                             document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
                                 editorcompare(@verse.VOrder)
@@ -842,7 +842,7 @@ else
                     }
                     else
                     {
-                        <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" class="background-white">@verse.Text</div>
+                        <div id="id-@($"{verse.VOrder}")" name="name-@($"{verse.VOrder}")" contenteditable="true" class="up-editable">@verse.Text</div>
                         <script>
                             document.getElementById("id-@($"{verse.VOrder}")").addEventListener("input", function () {
                                 editorcompare(@verse.VOrder)
@@ -1191,7 +1191,7 @@ else
             <label for="summary-0">خلاصهٔ ویراستهٔ من (به زبان غیرمحاوره‌ای و همه‌کس فهم)</label>
             @if (Model.MyLastEdit != null && Model.MyLastEdit.PoemSummary != null)
             {
-                <div id="summary-0" name="summary-0" contenteditable="true" class="background-white">@Model.MyLastEdit.PoemSummary</div>
+                <div id="summary-0" name="summary-0" contenteditable="true" class="up-editable">@Model.MyLastEdit.PoemSummary</div>
                 <script>
                     document.getElementById("summary-0").addEventListener("input", function () {
                         summarycompare(0)
@@ -1203,7 +1203,7 @@ else
             }
             else
             {
-                <div id="summary-0" name="summary-0" contenteditable="true" class="background-white">@Model.PageInformation.Poem.PoemSummary</div>
+                <div id="summary-0" name="summary-0" contenteditable="true" class="up-editable">@Model.PageInformation.Poem.PoemSummary</div>
                 <script>
                     document.getElementById("summary-0").addEventListener("input", function () {
                         summarycompare(0)
@@ -1276,7 +1276,7 @@ else
                         <label for="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")">معنای ویراستهٔ من (به زبان غیرمحاوره‌ای و همه‌کس فهم)</label>
                         @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder && !string.IsNullOrEmpty(v.CoupletSummary)).Any())
                         {
-                            <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" contenteditable="true" class="background-white">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder).First().CoupletSummary</div>
+                            <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" contenteditable="true" class="up-editable">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder).First().CoupletSummary</div>
                             <script>
                                 document.getElementById("summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")").addEventListener("input", function () {
                                     summarycompare(@Model.PageInformation.Poem.Verses[verseIndex].VOrder)
@@ -1288,7 +1288,7 @@ else
                         }
                         else
                         {
-                            <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" contenteditable="true" class="background-white">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</div>
+                            <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" contenteditable="true" class="up-editable">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</div>
                             <script>
                                 document.getElementById("summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")").addEventListener("input", function () {
                                     summarycompare(@Model.PageInformation.Poem.Verses[verseIndex].VOrder)

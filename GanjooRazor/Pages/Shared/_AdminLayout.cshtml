@@ -463,7 +463,7 @@
             </div>
         </nav>
     </header>
-    <div class="container up-shell">
+    <div class="container up-shell @(ViewData["WideShell"] is true ? "up-shell--wide" : "")">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

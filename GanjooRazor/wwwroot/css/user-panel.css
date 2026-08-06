@@ -62,6 +62,14 @@
     font-family: var(--up-font);
     color: var(--up-text);
     text-align: right;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+/* opt-out for pages that are genuinely wide data grids (Poets, Donations,
+   Banners, LongRunningJobs, Expenses) - set via ViewData["WideShell"] */
+.up-shell--wide {
+    max-width: none;
 }
 
 .up-page-header {
@@ -524,7 +532,8 @@ body.up-modal-open {
 .up-field input[type="password"],
 .up-field input[type="email"],
 .up-field input:not([type]),
-.up-field textarea {
+.up-field textarea,
+.up-field select {
     width: 100%;
     padding: 9px 12px;
     border: 1px solid var(--up-border);
@@ -535,17 +544,72 @@ body.up-modal-open {
     font-size: 0.9rem;
 }
 
+.up-field select {
+    width: auto;
+    max-width: 100%;
+    cursor: pointer;
+}
+
 .up-field textarea {
     min-height: 120px;
     resize: vertical;
 }
 
 .up-field input:focus,
-.up-field textarea:focus {
+.up-field textarea:focus,
+.up-field select:focus {
     outline: none;
     border-color: var(--up-primary);
     box-shadow: 0 0 0 3px rgba(51, 0, 0, 0.12);
 }
+
+/* ---------- editable surfaces (contenteditable divs standing in for inputs) ----------
+   Needs a strong, unmistakable affordance since it isn't a native form control -
+   nothing else on the page should look like this. */
+
+.up-editable {
+    display: block;
+    width: 100%;
+    min-height: 1.6em;
+    padding: 9px 12px;
+    border: 1px solid var(--up-primary);
+    border-radius: var(--up-radius-sm);
+    background: var(--up-surface-alt);
+    color: var(--up-text);
+    font-family: var(--up-font);
+    font-size: 0.9rem;
+    cursor: text;
+    transition: box-shadow .15s ease, border-color .15s ease, background .15s ease;
+}
+
+.up-editable:hover {
+    border-color: var(--up-primary);
+    box-shadow: 0 0 0 2px rgba(51, 0, 0, 0.08);
+}
+
+.up-editable:focus {
+    outline: none;
+    background: var(--up-surface);
+    border-color: var(--up-primary);
+    box-shadow: 0 0 0 3px rgba(51, 0, 0, 0.16);
+}
+
+@media (prefers-color-scheme: dark) {
+    .up-editable:hover {
+        box-shadow: 0 0 0 2px rgba(165, 74, 74, 0.18);
+    }
+    .up-editable:focus {
+        box-shadow: 0 0 0 3px rgba(165, 74, 74, 0.3);
+    }
+}
+
+/* read-only display text: kept deliberately plain/quiet so it never competes
+   visually with .up-editable / real form controls */
+.up-field-static {
+    background: none;
+    border: none;
+}
+
 
 @media (prefers-color-scheme: dark) {
     .up-field input:focus,

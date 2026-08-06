@@ -1,9 +1,10 @@
-@page
+﻿@page
 @model GanjooRazor.Areas.Admin.Pages.LongRunningJobsModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "کارهای جاری";
+    ViewData["WideShell"] = true;
 }
 <div class="up-page-header">
     <h1>@ViewData["Title"]</h1>

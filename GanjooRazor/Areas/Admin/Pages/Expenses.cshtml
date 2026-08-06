@@ -1,9 +1,10 @@
-@page
+﻿@page
 @model GanjooRazor.Areas.Admin.Pages.ExpensesModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "هزینه‌ها";
+    ViewData["WideShell"] = true;
 }
 <div class="up-page-header">
     <h1>@ViewData["Title"]</h1>
