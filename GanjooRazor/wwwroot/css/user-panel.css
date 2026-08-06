@@ -197,6 +197,21 @@
     flex-wrap: wrap;
 }
 
+.up-btn-group + .up-btn-group,
+.up-btn-group + .up-btn-group-label {
+    margin-top: var(--up-space-3);
+}
+
+.up-btn-group-label {
+    font-size: 0.72rem;
+    color: var(--up-text-muted);
+    margin-bottom: var(--up-space-1);
+}
+
+.up-btn-group-label:first-child {
+    margin-top: 0;
+}
+
 /* icon-only action buttons (delete/mark-read/etc.) */
 .up-icon-btn {
     cursor: pointer;

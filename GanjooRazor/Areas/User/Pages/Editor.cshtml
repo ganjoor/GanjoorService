@@ -459,7 +459,7 @@ else
         <p>لطفاً در ویرایش متن به <a href="https://blog.ganjoor.net/1400/05/23/notes-for-suggesting-corrections/" target="_blank">این نکات</a> توجه فرمایید.</p>
         <p class="up-mt-0"><span class="red-color">جدید:</span> در مورد رسم‌الخط پیشنهادی گنجور <a href="https://blog.ganjoor.net/1402/12/11/dastoor-e-khat/" target="_blank">اینجا</a> را ببینید.</p>
     </div>
-    <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="up-btn up-btn--ghost">@Model.PageInformation.FullTitle</a></p>
+    <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="up-btn up-btn--ghost">🔗 @Model.PageInformation.FullTitle</a></p>
 
 
 
@@ -723,7 +723,7 @@ else
 
             <tr>
                 <td colspan="2" class="td-button-container">
-                    <a role="button" id="deletecorrections" class="up-btn up-btn--danger" onclick="deletePoemCorrections(@Model.PageInformation.Poem.Id)">انصراف و حذف این ویرایش</a>
+                    <a role="button" id="deletecorrections" class="up-btn up-btn--danger" onclick="deletePoemCorrections(@Model.PageInformation.Poem.Id)">🗑 انصراف و حذف این ویرایش</a>
                 </td>
             </tr>
 
@@ -731,45 +731,53 @@ else
         </div>
     }
 
+    <p class="up-btn-group-label">پیمایش</p>
     <div class="up-btn-group">
-        <a href="/User/PoemCorrectionsHistory?id=@Model.PageInformation.Id" role="button" class="up-btn up-btn--ghost" target="_blank">سوابق ویرایش</a>
+        <a href="/User/PoemCorrectionsHistory?id=@Model.PageInformation.Id" role="button" class="up-btn up-btn--ghost" target="_blank">🕘 سوابق ویرایش</a>
         @if (Model.PageInformation.Poem.Previous != null)
         {
             @if (Model.ShowAdminOps)
             {
-                <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Previous.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر قبل</a>
+                <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Previous.Id" role="button" class="up-btn up-btn--ghost">◀ شعر قبل</a>
             }
             else
             {
-                <a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر قبل</a>
+                <a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button" class="up-btn up-btn--ghost">◀ شعر قبل</a>
             }
         }
         @if (Model.PageInformation.Poem.Next != null)
         {
             @if (Model.ShowAdminOps)
             {
-                <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Next.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر بعد</a>
+                <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Next.Id" role="button" class="up-btn up-btn--ghost">شعر بعد ▶</a>
             }
             else
             {
-                <a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر بعد</a>
+                <a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="up-btn up-btn--ghost">شعر بعد ▶</a>
             }
         }
+    </div>
+
+    <p class="up-btn-group-label">لغزش سریع</p>
+    <div class="up-btn-group">
         @if (Model.CanAssignRhythms)
         {
-            <a role="button" href="#rhythms-section" class="up-btn up-btn--sm up-btn--ghost">لغزش به بخش وزن</a>
+            <a role="button" href="#rhythms-section" class="up-btn up-btn--sm up-btn--ghost">🎵 بخش وزن</a>
         }
         else
         {
-            <a role="button" href="#poem-sections" class="up-btn up-btn--sm up-btn--ghost">لغزش به بخش قطعات</a>
+            <a role="button" href="#poem-sections" class="up-btn up-btn--sm up-btn--ghost">🧩 بخش قطعات</a>
         }
-        <a role="button" href="#summaries" class="up-btn up-btn--sm up-btn--ghost">لغزش به بخش معنی</a>
-        <a role="button" href="#footer" class="up-btn up-btn--sm up-btn--ghost">لغزش به پایین صفحه</a>
-        @if (Model.CanEdit && !Model.ShowAdminOps)
-        {
-            <a role="button" href="/User/Editor?id=@Model.PageInformation.Id&admin=1" class="up-btn up-btn--ghost">امکانات مدیریتی</a>
-        }
+        <a role="button" href="#summaries" class="up-btn up-btn--sm up-btn--ghost">💬 بخش معنی</a>
+        <a role="button" href="#footer" class="up-btn up-btn--sm up-btn--ghost">⬇ پایین صفحه</a>
     </div>
+
+    @if (Model.CanEdit && !Model.ShowAdminOps)
+    {
+        <div class="up-btn-group">
+            <a role="button" href="/User/Editor?id=@Model.PageInformation.Id&admin=1" class="up-btn up-btn--ghost">⚙️ امکانات مدیریتی</a>
+        </div>
+    }
 
     @if (Model.TextSourceImage != null)
     {
@@ -962,10 +970,10 @@ else
                 </div>
 
                 <div class="up-btn-group">
-                    <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">لغزش به دکمهٔ ذخیره</a>
+                    <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">💾 ذخیره</a>
                     @if (Model.ShowAdminOps && verse.VOrder > 1 && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)
                     {
-                        <a role="button" id="breakpoem-@verse.VOrder" class="up-btn up-btn--sm up-btn--danger" onclick="breakPoem(@Model.PageInformation.Poem.Id, @verse.VOrder, '@verse.Text')">شکستن از اینجا</a>
+                        <a role="button" id="breakpoem-@verse.VOrder" class="up-btn up-btn--sm up-btn--danger" onclick="breakPoem(@Model.PageInformation.Poem.Id, @verse.VOrder, '@verse.Text')">✂️ شکستن از اینجا</a>
                     }
                 </div>
             </div>
@@ -1028,7 +1036,7 @@ else
                     }
                 </select>
                 <div class="up-btn-group up-mt-0">
-                    <a role="button" onclick="resetRhythm('rhythm-new')" class="up-btn up-btn--sm up-btn--ghost">پاک کردن وزن</a>
+                    <a role="button" onclick="resetRhythm('rhythm-new')" class="up-btn up-btn--sm up-btn--ghost">🧹 پاک کردن وزن</a>
                     <script>
                         function newRhythm() {
                             var rhythm = prompt("پیشنهاد وزن جدید", "");
@@ -1055,7 +1063,7 @@ else
                             }
                         }
                     </script>
-                    <a role="button" onclick="newRhythm()" class="up-btn up-btn--sm up-btn--ghost">پیشنهاد وزن جدید</a>
+                    <a role="button" onclick="newRhythm()" class="up-btn up-btn--sm up-btn--ghost">➕ پیشنهاد وزن جدید</a>
                 </div>
             </div>
 
@@ -1075,12 +1083,12 @@ else
                     {
                         <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.RhymeLetters" style="flex:1;" />
                     }
-                    <a role="button" onclick="computePoemRhyme(@Model.PageInformation.Id, '#rhyme-letters')" class="up-btn up-btn--ghost">محاسبه</a>
+                    <a role="button" onclick="computePoemRhyme(@Model.PageInformation.Id, '#rhyme-letters')" class="up-btn up-btn--ghost">🧮 محاسبه</a>
                 </div>
             </div>
 
             <div id="secondr-btn">
-                <a role="button" onclick="secondR()" class="up-btn up-btn--sm up-btn--ghost">این شعر دو وزنی است</a>
+                <a role="button" onclick="secondR()" class="up-btn up-btn--sm up-btn--ghost">🎶 این شعر دو وزنی است</a>
             </div>
 
             <div id="secondr1" style="display:none">
@@ -1128,7 +1136,7 @@ else
 
                     }
                 </select>
-                <a role="button" onclick="resetRhythm('rhythm-new2')" class="up-btn up-btn--sm up-btn--ghost">پاک کردن وزن</a>
+                <a role="button" onclick="resetRhythm('rhythm-new2')" class="up-btn up-btn--sm up-btn--ghost">🧹 پاک کردن وزن</a>
             </div>
             <div id="secondr6" style="display:none"></div>
 
@@ -1235,7 +1243,7 @@ else
             </div>
         </div>
 
-        <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">لغزش به دکمهٔ ذخیره</a>
+        <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">💾 ذخیره</a>
     </div>
 
     <div class="up-card">
@@ -1324,7 +1332,7 @@ else
                         </div>
                     </div>
 
-                    <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">لغزش به دکمهٔ ذخیره</a>
+                    <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">💾 ذخیره</a>
                 </div>
             }
         }
@@ -1338,7 +1346,7 @@ else
             {
                 <div class="up-verse-row">
                     <a href="/User/Section?poemId=@poemSetion.PoemId&index=@poemSetion.Index" role="button" class="up-btn up-btn--sm up-btn--ghost">
-                        قطعهٔ @(poemSetion.Number.ToPersianNumbers()):
+                        🧩 قطعهٔ @(poemSetion.Number.ToPersianNumbers()):
                     </a>
                     <p>@Html.Raw(poemSetion.HtmlText)</p>
                     <p class="up-hint">وزن: @(poemSetion.GanjoorMetre == null ? "تعیین نشده" : poemSetion.GanjoorMetre.Rhythm)</p>
@@ -1353,64 +1361,77 @@ else
         {
             <p id="poem-sections">
                 <a href="/User/Section?poemId=@poemSetion.PoemId&index=@poemSetion.Index" role="button" class="up-btn up-btn--ghost">
-                    شکستن شعر به قطعات مجزا
+                    ✂️ شکستن شعر به قطعات مجزا
                 </a>
             </p>
         }
     }
 
+    <p class="up-btn-group-label">قطعات و مصرع‌ها</p>
     <div class="up-btn-group">
         <a href="/User/AllPoemSections?id=@Model.PageInformation.Id" role="button" class="up-btn up-btn--ghost">
-            همهٔ قطعات شعر
+            📚 همهٔ قطعات شعر
         </a>
-        <a role="button" onclick="resetVersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">چینش پیش‌فرض نوع مصرع‌ها</a>
-        <a role="button" onclick="tarkib4VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">چینش مربعی</a>
-        <a role="button" onclick="tarkib5VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">چینش مخمسی</a>
-        <a role="button" onclick="tarkib6VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">چینش مسدسی</a>
-        <a role="button" href="/User/VerseAdd/?id=@Model.PageInformation.Id" class="up-btn up-btn--ghost">اضافه کردن مصرع‌های جاافتاده</a>
+        <a role="button" href="/User/VerseAdd/?id=@Model.PageInformation.Id" class="up-btn up-btn--ghost">➕ مصرع‌های جاافتاده</a>
+    </div>
+
+    <p class="up-btn-group-label">چینش مصرع‌ها</p>
+    <div class="up-btn-group">
+        <a role="button" onclick="resetVersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">🔄 پیش‌فرض</a>
+        <a role="button" onclick="tarkib4VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">4️⃣ مربعی</a>
+        <a role="button" onclick="tarkib5VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">5️⃣ مخمسی</a>
+        <a role="button" onclick="tarkib6VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">6️⃣ مسدسی</a>
+    </div>
+
+    <p class="up-btn-group-label">پیمایش</p>
+    <div class="up-btn-group">
         @if (Model.PageInformation.Poem.Previous != null)
         {
             @if (Model.ShowAdminOps)
             {
-                <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Previous.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر قبل</a>
+                <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Previous.Id" role="button" class="up-btn up-btn--ghost">◀ شعر قبل</a>
             }
             else
             {
-                <a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر قبل</a>
+                <a href="/User/Editor?id=@Model.PageInformation.Poem.Previous.Id" role="button" class="up-btn up-btn--ghost">◀ شعر قبل</a>
             }
         }
         @if (Model.PageInformation.Poem.Next != null)
         {
             @if (Model.ShowAdminOps)
             {
-                <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Next.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر بعد</a>
+                <a href="/User/Editor?admin=1&id=@Model.PageInformation.Poem.Next.Id" role="button" class="up-btn up-btn--ghost">شعر بعد ▶</a>
             }
             else
             {
-                <a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="up-btn up-btn--ghost">ویرایش شعر بعد</a>
+                <a href="/User/Editor?id=@Model.PageInformation.Poem.Next.Id" role="button" class="up-btn up-btn--ghost">شعر بعد ▶</a>
             }
         }
-        @if (Model.ShowAdminOps && Model.GanjoorMetre1 != null && !string.IsNullOrEmpty(Model.RhymeLetters))
-        {
-            <a role="button" onclick="updateRelatedSections(@Model.GanjoorMetre1.Id, '@Model.RhymeLetters')" class="up-btn up-btn--ghost">بازسازی فهرست اشعار هم‌آهنگ با وزن اول</a>
-        }
-        @if (Model.ShowAdminOps && Model.GanjoorMetre2 != null && !string.IsNullOrEmpty(Model.RhymeLetters))
-        {
-            <a role="button" onclick="updateRelatedSections(@Model.GanjoorMetre2.Id, '@Model.RhymeLetters')" class="up-btn up-btn--ghost">بازسازی فهرست اشعار هم‌آهنگ با وزن دوم</a>
-        }
-        @if (Model.ShowAdminOps)
-        {
-            <a role="button" onclick="updateCoupletIndices(@Model.PageInformation.Poem.Id)" class="up-btn up-btn--ghost">تصحیح اندیس‌های ابیات</a>
-        }
-        @if (Model.ShowAdminOps)
-        {
-            <a role="button" onclick="regenerateSections(@Model.PageInformation.Poem.Id)" class="up-btn up-btn--ghost">قطعه‌بندی مجدد</a>
-        }
-        @if (Model.CanEdit && !Model.ShowAdminOps)
-        {
-            <a role="button" href="/User/Editor?id=@Model.PageInformation.Id&admin=1" class="up-btn up-btn--ghost">امکانات مدیریتی</a>
-        }
     </div>
+
+    @if (Model.ShowAdminOps)
+    {
+        <p class="up-btn-group-label">ابزارهای مدیریتی</p>
+        <div class="up-btn-group">
+            @if (Model.GanjoorMetre1 != null && !string.IsNullOrEmpty(Model.RhymeLetters))
+            {
+                <a role="button" onclick="updateRelatedSections(@Model.GanjoorMetre1.Id, '@Model.RhymeLetters')" class="up-btn up-btn--ghost">🔁 هم‌آهنگ‌های وزن اول</a>
+            }
+            @if (Model.GanjoorMetre2 != null && !string.IsNullOrEmpty(Model.RhymeLetters))
+            {
+                <a role="button" onclick="updateRelatedSections(@Model.GanjoorMetre2.Id, '@Model.RhymeLetters')" class="up-btn up-btn--ghost">🔁 هم‌آهنگ‌های وزن دوم</a>
+            }
+            <a role="button" onclick="updateCoupletIndices(@Model.PageInformation.Poem.Id)" class="up-btn up-btn--ghost">🔢 تصحیح اندیس‌های ابیات</a>
+            <a role="button" onclick="regenerateSections(@Model.PageInformation.Poem.Id)" class="up-btn up-btn--ghost">♻️ قطعه‌بندی مجدد</a>
+        </div>
+    }
+
+    @if (Model.CanEdit && !Model.ShowAdminOps)
+    {
+        <div class="up-btn-group">
+            <a role="button" href="/User/Editor?id=@Model.PageInformation.Id&admin=1" class="up-btn up-btn--ghost">⚙️ امکانات مدیریتی</a>
+        </div>
+    }
 
     @if (Model.ShowAdminOps)
     {
@@ -1431,7 +1452,7 @@ else
         </div>
 
         <div class="up-form-actions">
-            <a role="button" id="savecorrections" class="up-btn up-btn--success up-btn--block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">ذخیره</a>
+            <a role="button" id="savecorrections" class="up-btn up-btn--success up-btn--block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">💾 ذخیره</a>
         </div>
         <p id="saving" class="up-hint">&nbsp;</p>
     </div>
@@ -1580,11 +1601,11 @@ else
                 </tr>
                 <tr>
                     <td colspan="7">
-                        <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="newGeoDateTag(@Model.PageInformation.Id)">برچسب جدید</a>
+                        <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="newGeoDateTag(@Model.PageInformation.Id)">➕ برچسب جدید</a>
                     </td>
                 </tr>
             </table>
-            <a href="/Admin/Locations" role="button" class="up-btn up-btn--sm up-btn--ghost">مکان‌ها</a>
+            <a href="/Admin/Locations" role="button" class="up-btn up-btn--sm up-btn--ghost">📍 مکان‌ها</a>
         </div>
     }
 
@@ -1616,12 +1637,12 @@ else
             </div>
 
             <div class="up-form-actions">
-                <a role="button" class="up-btn up-btn--success" onclick="savemeta(@Model.PageInformation.Id)">ذخیرهٔ ابرداده‌ها</a>
+                <a role="button" class="up-btn up-btn--success" onclick="savemeta(@Model.PageInformation.Id)">💾 ذخیرهٔ ابرداده‌ها</a>
             </div>
         </div>
     }
 
     <p id="footer" class="up-text-center">
-        <a role="button" href="#" class="up-btn up-btn--sm up-btn--ghost">لغزش به بالای صفحه</a>
+        <a role="button" href="#" class="up-btn up-btn--sm up-btn--ghost">⬆ بالای صفحه</a>
     </p>
 }

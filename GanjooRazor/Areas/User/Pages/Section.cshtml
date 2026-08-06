@@ -132,22 +132,23 @@ else
         }
     </script>
 
-    <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="up-btn up-btn--ghost">@Model.PageInformation.FullTitle</a></p>
+    <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="up-btn up-btn--ghost">🔗 @Model.PageInformation.FullTitle</a></p>
 
+    <p class="up-btn-group-label">پیمایش</p>
     <div class="up-btn-group">
         <a href="/User/AllPoemSections?id=@Model.PageInformation.Id" role="button" class="up-btn up-btn--ghost">
-            همهٔ قطعات شعر
+            📚 همهٔ قطعات شعر
         </a>
         @if (Model.Previous != null)
         {
             <a href="/User/Section?poemId=@Model.PageInformation.Id&index=@Model.Previous.Index" role="button" class="up-btn up-btn--ghost">
-                قطعهٔ قبل
+                ◀ قطعهٔ قبل
             </a>
         }
         @if (Model.Next != null)
         {
             <a href="/User/Section?poemId=@Model.PageInformation.Id&index=@Model.Next.Index" role="button" class="up-btn up-btn--ghost">
-                قطعهٔ بعد
+                قطعهٔ بعد ▶
             </a>
         }
     </div>
@@ -205,7 +206,7 @@ else
                 }
             </select>
             <div class="up-btn-group up-mt-0">
-                <a role="button" onclick="resetRhythm('rhythm-new')" class="up-btn up-btn--sm up-btn--ghost">پاک کردن وزن</a>
+                <a role="button" onclick="resetRhythm('rhythm-new')" class="up-btn up-btn--sm up-btn--ghost">🧹 پاک کردن وزن</a>
                 <script>
                     function newRhythm() {
                         var rhythm = prompt("پیشنهاد وزن جدید", "");
@@ -227,7 +228,7 @@ else
                         }
                     }
                 </script>
-                <a role="button" onclick="newRhythm()" class="up-btn up-btn--sm up-btn--ghost">پیشنهاد وزن جدید</a>
+                <a role="button" onclick="newRhythm()" class="up-btn up-btn--sm up-btn--ghost">➕ پیشنهاد وزن جدید</a>
             </div>
         </div>
     </div>
@@ -251,7 +252,7 @@ else
                 {
                     <input type="text" id="rhyme-letters" name="rhyme-letters" value="@Model.PoemSection.RhymeLetters" style="flex:1;" />
                 }
-                <a role="button" onclick="computeSectionRhyme(@Model.PoemSection.Id, '#rhyme-letters')" class="up-btn up-btn--ghost">محاسبه</a>
+                <a role="button" onclick="computeSectionRhyme(@Model.PoemSection.Id, '#rhyme-letters')" class="up-btn up-btn--ghost">🧮 محاسبه</a>
             </div>
         </div>
     </div>
@@ -344,7 +345,7 @@ else
 
         @if (Model.CanEdit)
         {
-            <a href="/User/Languages" role="button" class="up-btn up-btn--sm up-btn--ghost">زبان‌ها</a>
+            <a href="/User/Languages" role="button" class="up-btn up-btn--sm up-btn--ghost">🌐 زبان‌ها</a>
         }
     </div>
 
@@ -396,7 +397,7 @@ else
         </div>
 
         <div class="up-form-actions">
-            <a role="button" id="savecorrections" class="up-btn up-btn--success up-btn--block" onclick="saveSectionCorrection(@Model.PoemSection.Id, @Model.Verses.Count)">ذخیره</a>
+            <a role="button" id="savecorrections" class="up-btn up-btn--success up-btn--block" onclick="saveSectionCorrection(@Model.PoemSection.Id, @Model.Verses.Count)">💾 ذخیره</a>
         </div>
         <p id="saving" class="up-hint">&nbsp;</p>
     </div>
@@ -405,18 +406,18 @@ else
         @if (Model.Previous != null)
         {
             <a href="/User/Section?poemId=@Model.PageInformation.Id&index=@Model.Previous.Index" role="button" class="up-btn up-btn--ghost">
-                قطعهٔ قبل
+                ◀ قطعهٔ قبل
             </a>
         }
         @if (Model.Next != null)
         {
             <a href="/User/Section?poemId=@Model.PageInformation.Id&index=@Model.Next.Index" role="button" class="up-btn up-btn--ghost">
-                قطعهٔ بعد
+                قطعهٔ بعد ▶
             </a>
         }
         @if (Model.CanEdit)
         {
-            <a role="button" href="/Admin/SectionDel?poemId=@Model.PageInformation.Id&sectionIndex=@Model.PoemSection.Index" class="up-btn up-btn--danger">حذف قطعه</a>
+            <a role="button" href="/Admin/SectionDel?poemId=@Model.PageInformation.Id&sectionIndex=@Model.PoemSection.Index" class="up-btn up-btn--danger">🗑 حذف قطعه</a>
         }
     </div>
 }
