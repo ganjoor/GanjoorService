@@ -74,11 +74,36 @@
 :root {
     --tg-paper: #faf6ee;
     --tg-paper-edge: #efe6d3;
+    --tg-surface: #ffffff;
     --tg-ink: #2b2620;
     --tg-ink-soft: #5b5346;
     --tg-accent: #8a5a2b;
     --tg-accent-deep: #6b3f1d;
     --tg-rule: #d9cdb2;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --tg-paper: #211d18;
+        --tg-paper-edge: #2c2620;
+        --tg-surface: #2c2620;
+        --tg-ink: #ece6d9;
+        --tg-ink-soft: #bfb6a4;
+        --tg-accent: #d1a06a;
+        --tg-accent-deep: #e3b988;
+        --tg-rule: #453d32;
+    }
+
+    /* poet portrait circles keep a light backing regardless of theme -
+       the portraits are illustrations on a light background, and a
+       pure-white disc reads as a deliberate frame against the dark
+       page rather than a mismatched surface */
+    .tg-poet-portrait,
+    .tg-poet-portrait-lg,
+    .sitem-poet-portrait,
+    .tg-crumb-poet img {
+        background: #f4efe4;
+    }
 }
 
 html, body {
@@ -117,12 +142,77 @@ html, body {
 .navbar input[type="search"] {
     font-family: 'PT Sans', sans-serif;
     border: 1px solid var(--tg-rule);
-    background: #fff;
+    background: var(--tg-surface);
+    color: var(--tg-ink);
 }
 
 .footer {
     font-family: 'PT Sans', sans-serif;
     font-size: 0.85rem;
+}
+
+.footer a {
+    color: var(--tg-accent-deep);
+}
+
+/* ---------- poem prev/next navigation ---------- */
+
+.tg-poem-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 12px;
+    max-width: 720px;
+    margin: 24px auto 8px auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--tg-rule);
+}
+
+.tg-poem-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 46%;
+    padding: 6px 10px;
+    text-decoration: none;
+    color: var(--tg-ink-soft);
+    border-radius: 6px;
+}
+
+.tg-poem-nav-link:hover {
+    background-color: var(--tg-paper-edge);
+    color: var(--tg-accent-deep);
+}
+
+.tg-poem-nav-next {
+    margin-inline-start: auto;
+    text-align: end;
+    flex-direction: row-reverse;
+}
+
+.tg-poem-nav-arrow {
+    font-size: 1.1rem;
+    flex: 0 0 auto;
+}
+
+.tg-poem-nav-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.tg-poem-nav-caption {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 0.72rem;
+    opacity: 0.75;
+}
+
+.tg-poem-nav-title {
+    font-family: 'PT Serif', serif;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ---------- poem page: printed-book feel ---------- */

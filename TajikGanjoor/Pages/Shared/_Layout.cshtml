@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
+    <link rel="icon" href="~/favicon.ico" sizes="any" />
+    <meta name="theme-color" content="#6b3f1d" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/tajik-ganjoor.css" asp-append-version="true" />
@@ -25,19 +27,40 @@
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
+        @if (!string.IsNullOrEmpty(ViewData["PreviousUrl"]?.ToString()) || !string.IsNullOrEmpty(ViewData["NextUrl"]?.ToString()))
+        {
+            <nav class="tg-poem-nav">
+                @if (!string.IsNullOrEmpty(ViewData["PreviousUrl"]?.ToString()))
+                {
+                    <a class="tg-poem-nav-link tg-poem-nav-prev" href="@ViewData["PreviousUrl"]" title="@ViewData["PreviousTitle"]">
+                        <span class="tg-poem-nav-arrow">←</span>
+                        <span class="tg-poem-nav-text">
+                            <span class="tg-poem-nav-caption">қаблӣ</span>
+                            <span class="tg-poem-nav-title">@ViewData["PreviousTitle"]</span>
+                        </span>
+                    </a>
+                }
+                else
+                {
+                    <span></span>
+                }
+                @if (!string.IsNullOrEmpty(ViewData["NextUrl"]?.ToString()))
+                {
+                    <a class="tg-poem-nav-link tg-poem-nav-next" href="@ViewData["NextUrl"]" title="@ViewData["NextTitle"]">
+                        <span class="tg-poem-nav-text">
+                            <span class="tg-poem-nav-caption">баъдӣ</span>
+                            <span class="tg-poem-nav-title">@ViewData["NextTitle"]</span>
+                        </span>
+                        <span class="tg-poem-nav-arrow">→</span>
+                    </a>
+                }
+            </nav>
+        }
     </div>
 
     <footer class="border-top footer text-muted">
         <span>Ба неруии <a href="http://persian-tajik.ir/FarsiTotajiki.aspx" target="_blank">пиршяни тоҷик</a></span>
         <span><a href="@ViewData["GoogleTranslateLink"]" target="_blank">Дар ганҷури форсӣ</a></span>
-        @if (ViewData["PreviousUrl"] != null && !string.IsNullOrEmpty(ViewData["PreviousUrl"].ToString()))
-        {
-            <span><a href="@ViewData["PreviousUrl"]">қаблӣ</a></span>
-        }
-        @if (ViewData["NextUrl"] != null && !string.IsNullOrEmpty(ViewData["NextUrl"].ToString()))
-        {
-            <span><a href="@ViewData["NextUrl"]">баъдӣ</a></span>
-        }
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
