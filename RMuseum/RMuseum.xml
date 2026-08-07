@@ -2481,6 +2481,25 @@
             <param name="poetId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.RegenerateTajikCatAndPoetHtmlTextAsync">
+            <summary>
+            re-runs the Tajik poet/category HTML generators for every already-imported poet and
+            category page, overwriting their stored TajikHtmlText. Needed one-time after changing
+            either generator function (e.g. adding poem excerpts to the table of contents), since
+            the normal SQLite import skips pages that already exist and never refreshes them.
+            Runs as a background job - check the Admin area's LongRunningJobs page for progress.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.RestoreTajikPoemHtmlTextAsync">
+            <summary>
+            recovery job: regenerates TajikHtmlText for every Tajik poem from its TajikVerses,
+            overwriting whatever is currently stored - use after RegenerateTajikCatAndPoetHtmlText
+            (or anything else) may have corrupted poem pages. Check the Admin area's
+            LongRunningJobs page for progress.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetTajikPoetsAsync">
             <summary>
             tajik poets
@@ -18297,6 +18316,24 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.RegenerateTajikCatAndPoetHtmlTextAsync">
+            <summary>
+            re-runs the Tajik poet/category HTML generators for every already-imported poet and
+            category page, overwriting their stored TajikHtmlText - needed one-time after changing
+            either generator function, since the normal SQLite import skips pages that already exist.
+            Runs as a background job; returns immediately once the job is queued.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.RestoreTajikPoemHtmlTextAsync">
+            <summary>
+            recovery job: regenerates TajikHtmlText for every Tajik poem from its TajikVerses,
+            overwriting whatever is currently stored. Safe to run on every poem regardless of
+            whether it was actually affected by anything - it recomputes each poem's correct
+            HTML from its real verse data every time.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32)">
             <summary>
             fill couplet summaries using open ai
@@ -21317,6 +21354,35 @@
             <param name="catPoems"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExtractExcerpt(System.String)">
+            <summary>
+            short plain-text excerpt (first non-empty line) for a Tajik poem's next/previous nav link
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.RegenerateTajikCatAndPoetHtmlTextAsync">
+            <summary>
+            re-runs the Tajik poet/category HTML generators for every already-imported poet and
+            category page, overwriting their stored TajikHtmlText. Needed one-time after changing
+            either generator function (e.g. adding poem excerpts to the table of contents), since
+            the normal SQLite import skips pages that already exist and never refreshes them.
+            Runs as a background job (same pattern as TajikImportFromSqlite) since the number of
+            poets/categories/poems involved can be large enough to exceed a normal request timeout;
+            progress can be tracked the same way as other long running jobs (e.g. the Admin area's
+            LongRunningJobs page).
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.RestoreTajikPoemHtmlTextAsync">
+            <summary>
+            recovery job: regenerates TajikHtmlText for every Tajik poem from its TajikVerses,
+            overwriting whatever is currently stored. GanjoorTajikVerse rows carry no VersePosition
+            of their own, so it's recovered by joining back to the original GanjoorVerses row with
+            the same Id (the SQLite import sets GanjoorTajikVerse.Id = the original verse's Id).
+            Safe to run on every poem regardless of whether it was actually affected by the CatPage
+            id bug that RegenerateTajikCatAndPoetHtmlTextAsync had (see its cat-loop comment) - this
+            simply recomputes each poem's correct HTML from its real verse data every time, so poems
+            that were never touched come out unchanged.
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SearchTajikAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
             <summary>
             Search
@@ -22191,6 +22257,19 @@
             </summary>
             <param name="text"></param>
             <returns></returns>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.LanguageUtils._persianToTajikMap">
+            <summary>
+            simple, best-effort Perso-Arabic -> Tajik Cyrillic letter substitution.
+            NOT a linguistically correct transliteration: Perso-Arabic script does not
+            write short vowels, so a letter-by-letter map cannot recover them (that's
+            why a dedicated tool like persian-tajik.ir exists, and why the bulk of
+            TajikGanjoor's content comes from real TajikPoems/TajikCats/TajikPoets rows
+            rather than on-the-fly conversion). This exists only as a fallback for
+            spots - like a neighbouring poem's excerpt on the next/previous nav - that
+            don't have a proper Tajik translation in the database yet, so at least
+            something in Cyrillic is shown instead of raw Perso-Arabic script.
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.LanguageUtils.FindRhyme(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse},System.Boolean,System.Boolean,System.Boolean)">
             <summary>

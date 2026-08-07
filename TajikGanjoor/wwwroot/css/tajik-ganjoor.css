@@ -604,3 +604,67 @@ html, body {
     font-family: 'PT Serif', serif;
     color: var(--tg-accent-deep) !important;
 }
+
+/* ---------- poem recitations (audio) ---------- */
+
+.tg-recitations {
+    max-width: 560px;
+    margin: 28px auto 0 auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--tg-rule);
+    text-align: start;
+}
+
+.tg-recitations-title {
+    font-family: 'PT Serif', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--tg-accent-deep);
+    margin-bottom: 10px;
+}
+
+.tg-recitation {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background-color: var(--tg-paper-edge);
+    border-radius: 8px;
+}
+
+.tg-recitation audio {
+    max-width: 100%;
+    height: 34px;
+}
+
+.tg-recitation-caption {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--tg-ink-soft);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.tg-recitation-title {
+    color: var(--tg-ink);
+}
+
+.tg-recitation-download {
+    color: var(--tg-accent-deep);
+    text-decoration: none;
+    margin-inline-start: 4px;
+}
+
+.tg-recitation-download:hover {
+    opacity: 0.7;
+}
+
+@media (max-width: 480px) {
+    .tg-recitation audio {
+        width: 100%;
+    }
+}

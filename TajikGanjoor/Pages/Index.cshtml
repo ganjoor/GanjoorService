@@ -93,6 +93,29 @@
         else if (Model.IsPoemPage)
         {
             @Html.Raw(Model.GanjoorPage.HtmlText)
+
+            @if (Model.GanjoorPage.Poem.Recitations != null && Model.GanjoorPage.Poem.Recitations.Length > 0)
+            {
+                <div class="tg-recitations">
+                    <div class="tg-recitations-title">Хониш</div>
+                    @foreach (var recitation in Model.GanjoorPage.Poem.Recitations)
+                    {
+                        <div class="tg-recitation">
+                            <audio controls preload="none">
+                                <source src="@recitation.Mp3Url" />
+                            </audio>
+                            <div class="tg-recitation-caption">
+                                <span class="tg-recitation-title">@recitation.AudioTitle</span>
+                                @if (!string.IsNullOrEmpty(recitation.AudioArtist))
+                                {
+                                    <span class="tg-recitation-artist">— @recitation.AudioArtist</span>
+                                }
+                                <a class="tg-recitation-download" href="@recitation.Mp3Url" download title="Боргирӣ">⬇</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
         }
         else
         {
