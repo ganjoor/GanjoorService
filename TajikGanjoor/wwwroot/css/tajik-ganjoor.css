@@ -458,11 +458,12 @@ html, body {
 .tg-cat-page p:has(> a:only-child) {
     font-family: 'PT Sans', sans-serif;
     font-size: 1rem;
-    text-align: center;
+    text-align: start;
     margin: 0;
     padding: 10px 14px;
     border-bottom: 1px solid var(--tg-rule);
     max-width: 620px;
+    line-height: 1.6;
 }
 
 .tg-poet-page p:has(> a:only-child):first-of-type,
@@ -475,6 +476,16 @@ html, body {
 .tg-cat-page p:has(> a:only-child) a {
     color: var(--tg-accent-deep);
     text-decoration: none;
+    font-weight: 700;
+}
+
+/* the excerpt trailing the link (": ..." from PrepareTajikCatHtmlTextAsync /
+   PrepareTajikPoetHtmlTextAsync) is plain text in the same <p>, so it can only
+   be dimmed via the paragraph's own color - the link's explicit color above
+   still wins for the title itself */
+.tg-poet-page p:has(> a:only-child),
+.tg-cat-page p:has(> a:only-child) {
+    color: var(--tg-ink-soft);
 }
 
 .tg-poet-page p:has(> a:only-child):hover,

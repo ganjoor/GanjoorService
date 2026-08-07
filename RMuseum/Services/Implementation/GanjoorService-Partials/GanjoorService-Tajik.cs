@@ -255,11 +255,100 @@ namespace RMuseum.Services.Implementation
                                         foreach (var tajikCat in tajikCats)
                                         {
                                             await jobProgressServiceEF.UpdateJob(job.Id, done, $"cat: {tajikCat.Id}");
-                                            var tajikPage = await context.TajikPages.Where(p => p.Id == tajikCat.Id).SingleOrDefaultAsync();
-                                            if (tajikPage != null)
+                                            // tajikCat.Id is the CATEGORY's own id (GanjoorCategories.Id), which is a
+                                            // completely different id space from GanjoorPages.Id (catPageId is generated
+                                            // independently at import time - see GanjoorService-SQLiteImport.cs). Must
+                                            // resolve the actual CatPage's GanjoorPages.Id first, exactly like the poet
+                                            // loop above already does - using tajikCat.Id directly here previously
+                                            // caused TajikPages rows to be looked up (and overwritten) by the wrong id,
+                                            // corrupting whichever unrelated page (often a poem) happened to have that id.
+                                            var catPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.CatPage && p.CatId == tajikCat.Id).SingleOrDefaultAsync();
+                                            if (catPage != null)
                                             {
-                                                tajikPage.TajikHtmlText = await PrepareTajikCatHtmlTextAsync(context, tajikCat);
-                                                await context.SaveChangesAsync();
+                                                var tajikPage = await context.TajikPages.Where(p => p.Id == catPage.Id).SingleOrDefaultAsync();
+                                                if (tajikPage != null)
+                                                {
+                                                    tajikPage.TajikHtmlText = await PrepareTajikCatHtmlTextAsync(context, tajikCat);
+                                                    await context.SaveChangesAsync();
+                                                }
+                                            }
+                                            done++;
+                                        }
+
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                    }
+                                    catch (Exception exp)
+                                    {
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                    }
+                                }
+                            }
+                            );
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
+            return new RServiceResult<bool>(true);
+        }
+
+        /// <summary>
+        /// recovery job: regenerates TajikHtmlText for every Tajik poem from its TajikVerses,
+        /// overwriting whatever is currently stored. GanjoorTajikVerse rows carry no VersePosition
+        /// of their own, so it's recovered by joining back to the original GanjoorVerses row with
+        /// the same Id (the SQLite import sets GanjoorTajikVerse.Id = the original verse's Id).
+        /// Safe to run on every poem regardless of whether it was actually affected by the CatPage
+        /// id bug that RegenerateTajikCatAndPoetHtmlTextAsync had (see its cat-loop comment) - this
+        /// simply recomputes each poem's correct HTML from its real verse data every time, so poems
+        /// that were never touched come out unchanged.
+        /// </summary>
+        public RServiceResult<bool> RestoreTajikPoemHtmlTextAsync()
+        {
+            try
+            {
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                            (
+                            async token =>
+                            {
+                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
+                                {
+                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                    var job = (await jobProgressServiceEF.NewJob("RestoreTajikPoemHtmlText", "Query data")).Result;
+
+                                    try
+                                    {
+                                        var tajikPoems = await context.TajikPoems.AsNoTracking().ToListAsync();
+                                        int done = 0;
+                                        foreach (var tajikPoem in tajikPoems)
+                                        {
+                                            await jobProgressServiceEF.UpdateJob(job.Id, done, $"poem: {tajikPoem.Id}");
+
+                                            var tajikVerses = await context.TajikVerses.AsNoTracking().Where(v => v.PoemId == tajikPoem.Id).ToListAsync();
+                                            if (tajikVerses.Count > 0)
+                                            {
+                                                var originalVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == tajikPoem.Id).ToListAsync();
+                                                var verses = tajikVerses
+                                                    .Select(tv =>
+                                                    {
+                                                        var original = originalVerses.SingleOrDefault(v => v.Id == tv.Id);
+                                                        return new GanjoorVerse()
+                                                        {
+                                                            VOrder = tv.VOrder,
+                                                            VersePosition = original != null ? original.VersePosition : VersePosition.Paragraph,
+                                                            Text = tv.TajikText,
+                                                        };
+                                                    })
+                                                    .OrderBy(v => v.VOrder)
+                                                    .ToList();
+
+                                                // TajikPages.Id == the poem's own Id for poem pages (see
+                                                // GanjoorService-TajikSQLiteImport.cs) - no GanjoorPages lookup needed here
+                                                var tajikPage = await context.TajikPages.Where(p => p.Id == tajikPoem.Id).SingleOrDefaultAsync();
+                                                if (tajikPage != null)
+                                                {
+                                                    tajikPage.TajikHtmlText = PrepareHtmlText(verses);
+                                                    await context.SaveChangesAsync();
+                                                }
                                             }
                                             done++;
                                         }

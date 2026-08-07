@@ -4547,6 +4547,27 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// recovery job: regenerates TajikHtmlText for every Tajik poem from its TajikVerses,
+        /// overwriting whatever is currently stored - use after RegenerateTajikCatAndPoetHtmlText
+        /// (or anything else) may have corrupted poem pages. Check the Admin area's
+        /// LongRunningJobs page for progress.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("tajik/restore-poem-html")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult RestoreTajikPoemHtmlTextAsync()
+        {
+            RServiceResult<bool> res =
+                _ganjoorService.RestoreTajikPoemHtmlTextAsync();
+            if (res.Result)
+                return Ok();
+            return BadRequest(res.ExceptionString);
+        }
+
+        /// <summary>
         /// tajik poets
         /// </summary>
         /// <returns></returns>

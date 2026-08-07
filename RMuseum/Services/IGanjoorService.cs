@@ -1591,6 +1591,15 @@ namespace RMuseum.Services
         /// <returns></returns>
         RServiceResult<bool> RegenerateTajikCatAndPoetHtmlTextAsync();
 
+        /// <summary>
+        /// recovery job: regenerates TajikHtmlText for every Tajik poem from its TajikVerses,
+        /// overwriting whatever is currently stored. Safe to run on every poem regardless of
+        /// whether it was actually affected by anything - it recomputes each poem's correct
+        /// HTML from its real verse data every time.
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> RestoreTajikPoemHtmlTextAsync();
+
 
 
         /// <summary>
