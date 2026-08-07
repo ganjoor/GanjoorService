@@ -149,7 +149,17 @@ namespace RMuseum.Services.Implementation
                         var nextPoem = await _context.TajikPoems.AsNoTracking().Where(p => p.Id == page.Poem.Next.Id).SingleOrDefaultAsync();
                         if(nextPoem != null)
                         {
+                            // real Tajik translation exists for the neighbouring poem - use it
                             page.Poem.Next.Title = nextPoem.TajikTitle;
+                            page.Poem.Next.Excerpt = ExtractExcerpt(nextPoem.TajikPlainText);
+                        }
+                        else
+                        {
+                            // no Tajik translation for this poem yet - fall back to a simple
+                            // best-effort letter transliteration rather than showing raw
+                            // Perso-Arabic script (see LanguageUtils.TransliteratePersianToTajik)
+                            page.Poem.Next.Title = LanguageUtils.TransliteratePersianToTajik(page.Poem.Next.Title);
+                            page.Poem.Next.Excerpt = LanguageUtils.TransliteratePersianToTajik(page.Poem.Next.Excerpt);
                         }
                     }
                     if (page.Poem.Previous != null)
@@ -158,6 +168,12 @@ namespace RMuseum.Services.Implementation
                         if (prePoem != null)
                         {
                             page.Poem.Previous.Title = prePoem.TajikTitle;
+                            page.Poem.Previous.Excerpt = ExtractExcerpt(prePoem.TajikPlainText);
+                        }
+                        else
+                        {
+                            page.Poem.Previous.Title = LanguageUtils.TransliteratePersianToTajik(page.Poem.Previous.Title);
+                            page.Poem.Previous.Excerpt = LanguageUtils.TransliteratePersianToTajik(page.Poem.Previous.Excerpt);
                         }
                     }
                 }
@@ -167,6 +183,16 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<GanjoorPageCompleteViewModel>(null, exp.ToString());
             }
+        }
+
+        /// <summary>
+        /// short plain-text excerpt (first non-empty line) for a Tajik poem's next/previous nav link
+        /// </summary>
+        private static string ExtractExcerpt(string plainText)
+        {
+            if (string.IsNullOrWhiteSpace(plainText)) return "";
+            var firstLine = plainText.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
+            return firstLine.Length > 80 ? firstLine.Substring(0, 80) + "…" : firstLine;
         }
 
 

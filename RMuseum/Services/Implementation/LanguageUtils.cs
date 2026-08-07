@@ -92,6 +92,85 @@ namespace RMuseum.Services.Implementation
                        ;
         }
 
+        /// <summary>
+        /// simple, best-effort Perso-Arabic -> Tajik Cyrillic letter substitution.
+        /// NOT a linguistically correct transliteration: Perso-Arabic script does not
+        /// write short vowels, so a letter-by-letter map cannot recover them (that's
+        /// why a dedicated tool like persian-tajik.ir exists, and why the bulk of
+        /// TajikGanjoor's content comes from real TajikPoems/TajikCats/TajikPoets rows
+        /// rather than on-the-fly conversion). This exists only as a fallback for
+        /// spots - like a neighbouring poem's excerpt on the next/previous nav - that
+        /// don't have a proper Tajik translation in the database yet, so at least
+        /// something in Cyrillic is shown instead of raw Perso-Arabic script.
+        /// </summary>
+        private static readonly Dictionary<char, string> _persianToTajikMap = new Dictionary<char, string>()
+        {
+            ['آ'] = "о",
+            ['ا'] = "о",
+            ['ب'] = "б",
+            ['پ'] = "п",
+            ['ت'] = "т",
+            ['ث'] = "с",
+            ['ج'] = "ҷ",
+            ['چ'] = "ч",
+            ['ح'] = "ҳ",
+            ['خ'] = "х",
+            ['د'] = "д",
+            ['ذ'] = "з",
+            ['ر'] = "р",
+            ['ز'] = "з",
+            ['ژ'] = "ж",
+            ['س'] = "с",
+            ['ش'] = "ш",
+            ['ص'] = "с",
+            ['ض'] = "з",
+            ['ط'] = "т",
+            ['ظ'] = "з",
+            ['ع'] = "ъ",
+            ['غ'] = "ғ",
+            ['ف'] = "ф",
+            ['ق'] = "қ",
+            ['ک'] = "к",
+            ['ك'] = "к",
+            ['گ'] = "г",
+            ['ل'] = "л",
+            ['م'] = "м",
+            ['ن'] = "н",
+            ['و'] = "в",
+            ['ه'] = "ҳ",
+            ['ی'] = "ӣ",
+            ['ي'] = "ӣ",
+            ['ئ'] = "ъ",
+            ['ؤ'] = "в",
+            ['ء'] = "ъ",
+            ['ة'] = "ат",
+            ['؟'] = "?",
+            ['،'] = ",",
+            ['؛'] = ";",
+            ['۰'] = "0",
+            ['۱'] = "1",
+            ['۲'] = "2",
+            ['۳'] = "3",
+            ['۴'] = "4",
+            ['۵'] = "5",
+            ['۶'] = "6",
+            ['۷'] = "7",
+            ['۸'] = "8",
+            ['۹'] = "9",
+        };
+
+        public static string TransliteratePersianToTajik(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            text = CleanTextForTransileration(text);
+            var sb = new System.Text.StringBuilder(text.Length);
+            foreach (char c in text)
+            {
+                sb.Append(_persianToTajikMap.TryGetValue(c, out string mapped) ? mapped : c.ToString());
+            }
+            return sb.ToString();
+        }
+
 
         public static string SameSoundLetters(string text)
         {
