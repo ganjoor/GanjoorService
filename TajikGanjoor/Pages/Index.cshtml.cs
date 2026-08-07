@@ -221,16 +221,28 @@ namespace TajikGanjoor.Pages
             if (IsPoetPage)
             {
                 ViewData["Title"] = $"Ганҷур - {GanjoorPage?.PoetOrCat.Poet.Nickname}";
-                BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.PoetOrCat.Poet.FullUrl}\">{GanjoorPage?.PoetOrCat.Poet.Nickname}</a>";
+                BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.PoetOrCat.Poet.FullUrl}\" class=\"tg-crumb-poet\"><img src=\"/images/poets/{GanjoorPage?.PoetOrCat.Poet.Id}.png\" alt=\"\" onerror=\"this.onerror=null;this.src='/images/poets/999.png';\" />{GanjoorPage?.PoetOrCat.Poet.Nickname}</a>";
             }
             else
             if (IsCatPage || IsPoemPage)
             {
                 string title = $"Ганҷур - ";
+                bool firstAncestor = true;
                 foreach (var gran in GanjoorPage.PoetOrCat.Cat.Ancestors)
                 {
                     title += $"{gran.Title} - ";
-                    BreadCrumpUrls += $" - <a href=\"{gran.FullUrl}\">{gran.Title}</a>";
+                    if (firstAncestor)
+                    {
+                        // Ancestors[0] is always the poet's own root category (see GanjoorService._GetCatById,
+                        // which walks Parent all the way up) - prefix it with the poet's portrait instead of
+                        // adding a separate crumb, so the image and the poet's name stay a single link.
+                        BreadCrumpUrls += $" - <a href=\"{gran.FullUrl}\" class=\"tg-crumb-poet\"><img src=\"/images/poets/{GanjoorPage.PoetOrCat.Poet.Id}.png\" alt=\"\" onerror=\"this.onerror=null;this.src='/images/poets/999.png';\" />{gran.Title}</a>";
+                        firstAncestor = false;
+                    }
+                    else
+                    {
+                        BreadCrumpUrls += $" - <a href=\"{gran.FullUrl}\">{gran.Title}</a>";
+                    }
                 }
                 title += GanjoorPage.PoetOrCat.Cat.Title;
                 BreadCrumpUrls += $" - <a href=\"{GanjoorPage?.PoetOrCat.Cat.FullUrl}\">{GanjoorPage?.PoetOrCat.Cat.Title}</a>";

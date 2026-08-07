@@ -98,6 +98,11 @@ html, body {
 .tg-breadcrumb {
     font-family: 'PT Sans', sans-serif;
     font-size: 0.95rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 4px;
+    row-gap: 2px;
 }
 
 .tg-breadcrumb a:first-child {
@@ -321,47 +326,26 @@ html, body {
     display: block;
 }
 
-/* small inline poet badge, used above category pages and poem pages so
-   readers landing on a poem or a subcategory can still see whose work
-   it is at a glance, without the full bio-page header treatment */
-.tg-poet-badge {
+/* small poet portrait inlined into the breadcrumb, prefixing the poet's
+   name wherever it appears there (poet page's own crumb, and the first
+   ancestor crumb on category/poem pages, which is always the poet's root
+   category - see Index.cshtml.cs) */
+.tg-crumb-poet {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    margin: 4px auto 16px auto;
-    text-decoration: none;
-    color: var(--tg-ink-soft);
+    gap: 5px;
+    vertical-align: middle;
 }
 
-.tg-poet-portrait-sm {
-    display: block;
-    width: 36px;
-    height: 36px;
+.tg-crumb-poet img {
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
-    overflow: hidden;
-    border: 2px solid var(--tg-rule);
-    background: #fff;
-    flex: 0 0 auto;
-}
-
-.tg-poet-portrait-sm img {
-    width: 100%;
-    height: 100%;
     object-fit: cover;
-    display: block;
-}
-
-.tg-poet-badge-name {
-    font-family: 'PT Serif', serif;
-    font-size: 0.95rem;
-}
-
-.tg-poet-badge:hover .tg-poet-portrait-sm {
-    border-color: var(--tg-accent);
-}
-
-.tg-poet-badge:hover .tg-poet-badge-name {
-    color: var(--tg-accent-deep);
+    border: 1px solid var(--tg-rule);
+    background: #fff;
+    vertical-align: middle;
+    flex: 0 0 auto;
 }
 
 /* GanjoorPage.HtmlText for poet/cat pages is server-generated plain
