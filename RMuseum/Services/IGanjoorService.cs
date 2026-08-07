@@ -1582,6 +1582,14 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCompleteViewModel[] Items)>> SearchTajikAsync(PagingParameterModel paging, string term, int? poetId, int? catId);
 
+        /// <summary>
+        /// re-runs the Tajik poet/category HTML generators for every already-imported poet and
+        /// category page, overwriting their stored TajikHtmlText - needed one-time after changing
+        /// either generator function, since the normal SQLite import skips pages that already exist
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> RegenerateTajikCatAndPoetHtmlTextAsync();
+
 
 
         /// <summary>

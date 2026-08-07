@@ -43,7 +43,11 @@ namespace RMuseum.Services.Implementation
                 var tajikPoem = tajikPoems.Where(p => p.Id == catPoem.Id).SingleOrDefault();
                 if(tajikPoem != null)
                 {
-                    html += $"<p><a href=\"{catPoem.FullUrl}\">{LanguageUtils.CleanTextForTransileration(tajikPoem.TajikTitle)}</a></p>";
+                    string excerpt = ExtractExcerpt(tajikPoem.TajikPlainText);
+                    string title = LanguageUtils.CleanTextForTransileration(tajikPoem.TajikTitle);
+                    html += string.IsNullOrEmpty(excerpt)
+                        ? $"<p><a href=\"{catPoem.FullUrl}\">{title}</a></p>"
+                        : $"<p><a href=\"{catPoem.FullUrl}\">{title}</a>: {excerpt}</p>";
                 }
                 
             }
@@ -76,7 +80,11 @@ namespace RMuseum.Services.Implementation
                 var tajikPoem = tajikPoems.Where(p => p.Id == catPoem.Id).SingleOrDefault();
                 if(tajikPoem != null)
                 {
-                    html += $"<p><a href=\"{catPoem.FullUrl}\">{LanguageUtils.CleanTextForTransileration(tajikPoem.TajikTitle)}</a></p>";
+                    string excerpt = ExtractExcerpt(tajikPoem.TajikPlainText);
+                    string title = LanguageUtils.CleanTextForTransileration(tajikPoem.TajikTitle);
+                    html += string.IsNullOrEmpty(excerpt)
+                        ? $"<p><a href=\"{catPoem.FullUrl}\">{title}</a></p>"
+                        : $"<p><a href=\"{catPoem.FullUrl}\">{title}</a>: {excerpt}</p>";
                 }
             }
             return html;

@@ -144,6 +144,17 @@ namespace RMuseum.Services.Implementation
                         verse.Text = tajikVerses.Where(v => v.VOrder == verse.VOrder).Single().TajikText;
                     }
 
+                    if (page.Poem.Recitations != null)
+                    {
+                        // no TajikRecitations table exists - this audio metadata has no real Tajik
+                        // translation source anywhere, so transliteration is the only option
+                        foreach (var recitation in page.Poem.Recitations)
+                        {
+                            recitation.AudioTitle = LanguageUtils.TransliteratePersianToTajik(recitation.AudioTitle);
+                            recitation.AudioArtist = LanguageUtils.TransliteratePersianToTajik(recitation.AudioArtist);
+                        }
+                    }
+
                     if(page.Poem.Next != null)
                     {
                         var nextPoem = await _context.TajikPoems.AsNoTracking().Where(p => p.Id == page.Poem.Next.Id).SingleOrDefaultAsync();
@@ -193,6 +204,46 @@ namespace RMuseum.Services.Implementation
             if (string.IsNullOrWhiteSpace(plainText)) return "";
             var firstLine = plainText.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
             return firstLine.Length > 80 ? firstLine.Substring(0, 80) + "…" : firstLine;
+        }
+
+        /// <summary>
+        /// re-runs PrepareTajikPoetHtmlTextAsync / PrepareTajikCatHtmlTextAsync for every poet and
+        /// category page that already has a stored TajikPages row, overwriting TajikHtmlText with
+        /// freshly generated output. Needed one-time after changing either generator function
+        /// (e.g. adding poem excerpts to the table of contents), because the normal SQLite import
+        /// (GanjoorService-TajikSQLiteImport.cs) explicitly skips pages that already exist and so
+        /// never refreshes previously generated HTML on its own.
+        /// </summary>
+        public async Task<RServiceResult<bool>> RegenerateTajikCatAndPoetHtmlTextAsync()
+        {
+            try
+            {
+                var tajikPoets = await _context.TajikPoets.AsNoTracking().ToListAsync();
+                foreach (var tajikPoet in tajikPoets)
+                {
+                    var poetPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == tajikPoet.Id).SingleOrDefaultAsync();
+                    if (poetPage == null) continue;
+                    var tajikPage = await _context.TajikPages.Where(p => p.Id == poetPage.Id).SingleOrDefaultAsync();
+                    if (tajikPage == null) continue;
+                    tajikPage.TajikHtmlText = await PrepareTajikPoetHtmlTextAsync(_context, tajikPoet);
+                }
+                await _context.SaveChangesAsync();
+
+                var tajikCats = await _context.TajikCats.AsNoTracking().ToListAsync();
+                foreach (var tajikCat in tajikCats)
+                {
+                    var tajikPage = await _context.TajikPages.Where(p => p.Id == tajikCat.Id).SingleOrDefaultAsync();
+                    if (tajikPage == null) continue;
+                    tajikPage.TajikHtmlText = await PrepareTajikCatHtmlTextAsync(_context, tajikCat);
+                }
+                await _context.SaveChangesAsync();
+
+                return new RServiceResult<bool>(true);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<bool>(false, exp.ToString());
+            }
         }
 
 
