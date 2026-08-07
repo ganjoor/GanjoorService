@@ -34,20 +34,18 @@
                 var poem = Model.Poems[poemIndex];
 
                 <div class="sitem">
-
-
-                    <h2>
-                        <a href="@poem.FullUrl">@poem.FullTitle</a>
-                    </h2>
-                    <div class="spacer">&nbsp;</div>
-                    <div class="sit">
-                        @Html.Raw(poem.PlainText)
+                    <a class="sitem-poet-portrait" href="@poem.Category.Poet.FullUrl" title="@poem.Category.Poet.Nickname">
+                        <img src="/images/poets/@(poem.Category.Poet.Id).png" alt="@poem.Category.Poet.Nickname" loading="lazy"
+                             onerror="this.onerror=null;this.src='/images/poets/999.png';" />
+                    </a>
+                    <div class="sitem-body">
+                        <h2>
+                            <a href="@poem.FullUrl">@poem.FullTitle</a>
+                        </h2>
+                        <div class="sit">
+                            @Html.Raw(poem.PlainText)
+                        </div>
                     </div>
-
-
-
-                    <div class="spacer">&nbsp;</div>
-
                 </div>
             }
 
@@ -59,14 +57,61 @@
     else
     @if (Model.IsHomePage)
     {
-        @foreach (var poet in Model.Poets)
-        {
-            <p><a href="@poet.FullUrl">@poet.Nickname</a></p>
-        }
+        <div class="tg-poet-grid">
+            @foreach (var poet in Model.Poets)
+            {
+                <a class="tg-poet-card" href="@poet.FullUrl" title="@poet.Name">
+                    <span class="tg-poet-portrait">
+                        <img src="/images/poets/@(poet.Id).png" alt="@poet.Nickname" loading="lazy"
+                             onerror="this.onerror=null;this.src='/images/poets/999.png';" />
+                    </span>
+                    <span class="tg-poet-name">@poet.Nickname</span>
+                </a>
+            }
+        </div>
     }
     else
     {
-        @Html.Raw(Model.GanjoorPage.HtmlText)
+        @if (Model.IsPoetPage)
+        {
+            <div class="tg-poet-header">
+                <span class="tg-poet-portrait-lg">
+                    <img src="/images/poets/@(Model.GanjoorPage.PoetOrCat.Poet.Id).png" alt="@Model.GanjoorPage.PoetOrCat.Poet.Nickname" loading="lazy"
+                         onerror="this.onerror=null;this.src='/images/poets/999.png';" />
+                </span>
+            </div>
+            <div class="tg-poet-page">
+                @Html.Raw(Model.GanjoorPage.HtmlText)
+            </div>
+        }
+        else if (Model.IsCatPage)
+        {
+            <a class="tg-poet-badge" href="@Model.GanjoorPage.PoetOrCat.Poet.FullUrl" title="@Model.GanjoorPage.PoetOrCat.Poet.Nickname">
+                <span class="tg-poet-portrait-sm">
+                    <img src="/images/poets/@(Model.GanjoorPage.PoetOrCat.Poet.Id).png" alt="@Model.GanjoorPage.PoetOrCat.Poet.Nickname" loading="lazy"
+                         onerror="this.onerror=null;this.src='/images/poets/999.png';" />
+                </span>
+                <span class="tg-poet-badge-name">@Model.GanjoorPage.PoetOrCat.Poet.Nickname</span>
+            </a>
+            <div class="tg-cat-page">
+                @Html.Raw(Model.GanjoorPage.HtmlText)
+            </div>
+        }
+        else if (Model.IsPoemPage)
+        {
+            <a class="tg-poet-badge" href="@Model.GanjoorPage.Poem.Category.Poet.FullUrl" title="@Model.GanjoorPage.Poem.Category.Poet.Nickname">
+                <span class="tg-poet-portrait-sm">
+                    <img src="/images/poets/@(Model.GanjoorPage.Poem.Category.Poet.Id).png" alt="@Model.GanjoorPage.Poem.Category.Poet.Nickname" loading="lazy"
+                         onerror="this.onerror=null;this.src='/images/poets/999.png';" />
+                </span>
+                <span class="tg-poet-badge-name">@Model.GanjoorPage.Poem.Category.Poet.Nickname</span>
+            </a>
+            @Html.Raw(Model.GanjoorPage.HtmlText)
+        }
+        else
+        {
+            @Html.Raw(Model.GanjoorPage.HtmlText)
+        }
     }
 
 </div>

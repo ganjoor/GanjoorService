@@ -1,0 +1,521 @@
+/* ==========================================================================
+   TajikGanjoor typography & layout
+   Self-hosted fonts: PT Serif (poem/body text) + PT Sans (UI chrome).
+   Subset used: cyrillic-ext — the plain "cyrillic" subset is MISSING the
+   six Tajik-specific letters (ғ ӣ қ ӯ ҳ ҷ), cyrillic-ext has them.
+   ========================================================================== */
+
+@font-face {
+    font-family: 'PT Serif';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/ptserif/pt-serif-cyrillic-ext-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'PT Serif';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/ptserif/pt-serif-cyrillic-ext-400-italic.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'PT Serif';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/ptserif/pt-serif-cyrillic-ext-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'PT Serif';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/ptserif/pt-serif-cyrillic-ext-700-italic.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'PT Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/ptsans/pt-sans-cyrillic-ext-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'PT Sans';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/ptsans/pt-sans-cyrillic-ext-400-italic.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'PT Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/ptsans/pt-sans-cyrillic-ext-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'PT Sans';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/ptsans/pt-sans-cyrillic-ext-700-italic.woff2') format('woff2');
+}
+
+/* ---------- base page: warm paper tone, PT Sans chrome ---------- */
+
+:root {
+    --tg-paper: #faf6ee;
+    --tg-paper-edge: #efe6d3;
+    --tg-ink: #2b2620;
+    --tg-ink-soft: #5b5346;
+    --tg-accent: #8a5a2b;
+    --tg-accent-deep: #6b3f1d;
+    --tg-rule: #d9cdb2;
+}
+
+html, body {
+    background-color: var(--tg-paper);
+    color: var(--tg-ink);
+    font-family: 'PT Sans', Tahoma, sans-serif;
+}
+
+.navbar {
+    background-color: var(--tg-paper) !important;
+    border-bottom: 1px solid var(--tg-rule) !important;
+    font-family: 'PT Sans', sans-serif;
+}
+
+/* BreadCrumpUrls always starts with <a href="/">Ганҷур</a> (see Index.cshtml.cs) -
+   style that first link as the site's wordmark rather than duplicating it. */
+.tg-breadcrumb {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 0.95rem;
+}
+
+.tg-breadcrumb a:first-child {
+    font-family: 'PT Serif', serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--tg-accent-deep);
+    text-decoration: none;
+    margin-inline-end: 4px;
+}
+
+.navbar input[type="search"] {
+    font-family: 'PT Sans', sans-serif;
+    border: 1px solid var(--tg-rule);
+    background: #fff;
+}
+
+.footer {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 0.85rem;
+}
+
+/* ---------- poem page: printed-book feel ---------- */
+
+.container {
+    max-width: 720px;
+}
+
+.b, .b2, .n, .l {
+    font-family: 'PT Serif', serif;
+}
+
+/* one beyt (couplet): two stacked mesras, book-style, not side-by-side
+   columns — matches how Cyrillic verse is actually typeset (and matches
+   ganjoor.net's own <768px fallback), and needs no breakpoint since it's
+   already a single column at any width. */
+.b {
+    max-width: 480px;
+    margin: 0 auto 1.35em auto;
+    text-align: center;
+    clear: both;
+}
+
+.b .m1, .b .m2 {
+    float: none;
+    width: auto;
+    display: block;
+}
+
+.b .m1 p, .b .m2 p {
+    font-family: 'PT Serif', serif;
+    font-weight: 400;
+    font-size: 1.15rem;
+    line-height: 1.9;
+    margin: 0;
+    text-shadow: none;
+    text-align: center;
+}
+
+.b .m2 p {
+    opacity: 0.92;
+}
+
+/* rubaʼi-style already-centered couplet */
+.b2 p {
+    font-family: 'PT Serif', serif;
+    font-size: 1.15rem;
+    line-height: 1.9;
+    text-align: center;
+    margin: 0;
+}
+
+/* paragraph / single-line verses */
+.n p, .l p {
+    font-family: 'PT Serif', serif;
+    font-size: 1.1rem;
+    line-height: 1.9;
+    text-align: center;
+    margin: 0 auto 1.2em auto;
+    max-width: 560px;
+}
+
+/* comments / notes: quieter, sans-serif, clearly not part of the poem */
+.c {
+    max-width: 90%;
+    margin: 10px auto;
+    padding: 8px 14px;
+    background-color: var(--tg-paper-edge);
+    border-inline-start: 3px solid var(--tg-accent);
+    clear: both;
+}
+
+.c p {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--tg-ink-soft);
+    margin: 0;
+}
+
+/* poem title */
+.text-center h1, .text-center h2 {
+    font-family: 'PT Serif', serif;
+    font-weight: 700;
+    color: var(--tg-accent-deep);
+}
+
+.text-center h1 a, .text-center h2 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* faint rule between poems on a listing/category page */
+.item {
+    padding-top: 20px;
+    border-top: 1px solid var(--tg-rule);
+    margin-top: 20px;
+}
+
+.item:first-child {
+    border-top: none;
+    margin-top: 0;
+}
+
+/* search hit highlighting - keep legible on the paper background */
+.hilite, .hilite1, .hilite2, .hilite3 {
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+/* ---------- homepage: poet card grid ---------- */
+
+.tg-poet-grid {
+    max-width: 980px;
+    margin: 10px auto 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 18px 12px;
+    padding: 0 8px;
+}
+
+.tg-poet-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--tg-ink);
+}
+
+.tg-poet-card .tg-poet-portrait {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--tg-rule);
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.tg-poet-card .tg-poet-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.tg-poet-card .tg-poet-name {
+    margin-top: 8px;
+    font-family: 'PT Serif', serif;
+    font-size: 0.92rem;
+    text-align: center;
+    line-height: 1.25;
+}
+
+.tg-poet-card:hover .tg-poet-portrait {
+    border-color: var(--tg-accent);
+}
+
+.tg-poet-card:hover .tg-poet-name {
+    color: var(--tg-accent-deep);
+}
+
+@media (max-width: 480px) {
+    .tg-poet-grid {
+        grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+        gap: 14px 8px;
+    }
+
+    .tg-poet-card .tg-poet-portrait {
+        width: 64px;
+        height: 64px;
+    }
+
+    .tg-poet-card .tg-poet-name {
+        font-size: 0.8rem;
+    }
+}
+
+/* ---------- poet bio page ---------- */
+
+.tg-poet-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.tg-poet-header .tg-poet-portrait-lg {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--tg-rule);
+    background: #fff;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.tg-poet-header .tg-poet-portrait-lg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* small inline poet badge, used above category pages and poem pages so
+   readers landing on a poem or a subcategory can still see whose work
+   it is at a glance, without the full bio-page header treatment */
+.tg-poet-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px auto 16px auto;
+    text-decoration: none;
+    color: var(--tg-ink-soft);
+}
+
+.tg-poet-portrait-sm {
+    display: block;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--tg-rule);
+    background: #fff;
+    flex: 0 0 auto;
+}
+
+.tg-poet-portrait-sm img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.tg-poet-badge-name {
+    font-family: 'PT Serif', serif;
+    font-size: 0.95rem;
+}
+
+.tg-poet-badge:hover .tg-poet-portrait-sm {
+    border-color: var(--tg-accent);
+}
+
+.tg-poet-badge:hover .tg-poet-badge-name {
+    color: var(--tg-accent-deep);
+}
+
+/* GanjoorPage.HtmlText for poet/cat pages is server-generated plain
+   <p> tags (bio prose) followed by more <p><a>...</a></p> tags (sub-
+   category / poem links) with no distinguishing classes at all - the
+   markup is identical for both, so it's told apart here structurally:
+   a paragraph whose only content is a single link is a nav row, any
+   other paragraph is bio prose. */
+.tg-poet-page p,
+.tg-cat-page p {
+    font-family: 'PT Serif', serif;
+    font-size: 1.05rem;
+    line-height: 1.85;
+    text-align: start;
+    margin: 0 auto 0.9em auto;
+    max-width: 620px;
+}
+
+.tg-poet-page p:has(> a:only-child),
+.tg-cat-page p:has(> a:only-child) {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 1rem;
+    text-align: center;
+    margin: 0;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--tg-rule);
+    max-width: 620px;
+}
+
+.tg-poet-page p:has(> a:only-child):first-of-type,
+.tg-cat-page p:has(> a:only-child):first-of-type {
+    border-top: 1px solid var(--tg-rule);
+    margin-top: 12px;
+}
+
+.tg-poet-page p:has(> a:only-child) a,
+.tg-cat-page p:has(> a:only-child) a {
+    color: var(--tg-accent-deep);
+    text-decoration: none;
+}
+
+.tg-poet-page p:has(> a:only-child):hover,
+.tg-cat-page p:has(> a:only-child):hover {
+    background-color: var(--tg-paper-edge);
+}
+
+/* ---------- search results ---------- */
+
+.sitem {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 16px 4px;
+    border-top: 1px solid var(--tg-rule);
+    text-align: start;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.sitem:first-of-type {
+    border-top: none;
+}
+
+.sitem-poet-portrait {
+    flex: 0 0 auto;
+    display: block;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--tg-rule);
+    background: #fff;
+}
+
+.sitem-poet-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.sitem-poet-portrait:hover {
+    border-color: var(--tg-accent);
+}
+
+.sitem-body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.sitem h2 {
+    font-family: 'PT Serif', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.sitem h2 a {
+    color: var(--tg-accent-deep);
+    text-decoration: none;
+}
+
+.sit {
+    float: none;
+    max-width: none;
+    font-family: 'PT Serif', serif;
+    font-size: 0.98rem;
+    line-height: 1.8;
+    color: var(--tg-ink-soft);
+}
+
+.sit p {
+    margin: 0 0 4px 0;
+}
+
+@media (max-width: 420px) {
+    .sitem-poet-portrait {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* ---------- pagination bar (GeneratePagingBarHtml in Index.cshtml.cs) ---------- */
+
+.circled-number, .circled-number-diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin: 2px;
+    border-radius: 50%;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 0.9rem;
+}
+
+.circled-number {
+    border: 1px solid var(--tg-rule);
+    color: var(--tg-ink-soft);
+}
+
+.circled-number:hover {
+    border-color: var(--tg-accent);
+    color: var(--tg-accent-deep);
+}
+
+.circled-number-diff {
+    background-color: var(--tg-accent-deep);
+    color: #fff;
+}
+
+/* ---------- error page ---------- */
+
+.text-danger {
+    font-family: 'PT Serif', serif;
+    color: var(--tg-accent-deep) !important;
+}
