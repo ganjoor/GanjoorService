@@ -7,6 +7,7 @@ using RMuseum.Models.Ganjoor.ViewModels;
 using System.Linq;
 using RSecurityBackend.Services.Implementation;
 using System.Collections.Generic;
+using RMuseum.DbContext;
 
 namespace RMuseum.Services.Implementation
 {
@@ -207,43 +208,77 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// re-runs PrepareTajikPoetHtmlTextAsync / PrepareTajikCatHtmlTextAsync for every poet and
-        /// category page that already has a stored TajikPages row, overwriting TajikHtmlText with
-        /// freshly generated output. Needed one-time after changing either generator function
-        /// (e.g. adding poem excerpts to the table of contents), because the normal SQLite import
-        /// (GanjoorService-TajikSQLiteImport.cs) explicitly skips pages that already exist and so
-        /// never refreshes previously generated HTML on its own.
+        /// re-runs the Tajik poet/category HTML generators for every already-imported poet and
+        /// category page, overwriting their stored TajikHtmlText. Needed one-time after changing
+        /// either generator function (e.g. adding poem excerpts to the table of contents), since
+        /// the normal SQLite import skips pages that already exist and never refreshes them.
+        /// Runs as a background job (same pattern as TajikImportFromSqlite) since the number of
+        /// poets/categories/poems involved can be large enough to exceed a normal request timeout;
+        /// progress can be tracked the same way as other long running jobs (e.g. the Admin area's
+        /// LongRunningJobs page).
         /// </summary>
-        public async Task<RServiceResult<bool>> RegenerateTajikCatAndPoetHtmlTextAsync()
+        public RServiceResult<bool> RegenerateTajikCatAndPoetHtmlTextAsync()
         {
             try
             {
-                var tajikPoets = await _context.TajikPoets.AsNoTracking().ToListAsync();
-                foreach (var tajikPoet in tajikPoets)
-                {
-                    var poetPage = await _context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == tajikPoet.Id).SingleOrDefaultAsync();
-                    if (poetPage == null) continue;
-                    var tajikPage = await _context.TajikPages.Where(p => p.Id == poetPage.Id).SingleOrDefaultAsync();
-                    if (tajikPage == null) continue;
-                    tajikPage.TajikHtmlText = await PrepareTajikPoetHtmlTextAsync(_context, tajikPoet);
-                }
-                await _context.SaveChangesAsync();
+                _backgroundTaskQueue.QueueBackgroundWorkItem
+                            (
+                            async token =>
+                            {
+                                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                                {
+                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                    var job = (await jobProgressServiceEF.NewJob("RegenerateTajikCatAndPoetHtmlText", "Query data")).Result;
 
-                var tajikCats = await _context.TajikCats.AsNoTracking().ToListAsync();
-                foreach (var tajikCat in tajikCats)
-                {
-                    var tajikPage = await _context.TajikPages.Where(p => p.Id == tajikCat.Id).SingleOrDefaultAsync();
-                    if (tajikPage == null) continue;
-                    tajikPage.TajikHtmlText = await PrepareTajikCatHtmlTextAsync(_context, tajikCat);
-                }
-                await _context.SaveChangesAsync();
+                                    try
+                                    {
+                                        var tajikPoets = await context.TajikPoets.AsNoTracking().ToListAsync();
+                                        int done = 0;
+                                        foreach (var tajikPoet in tajikPoets)
+                                        {
+                                            await jobProgressServiceEF.UpdateJob(job.Id, done, $"poet: {tajikPoet.Id}");
+                                            var poetPage = await context.GanjoorPages.AsNoTracking().Where(p => p.GanjoorPageType == GanjoorPageType.PoetPage && p.PoetId == tajikPoet.Id).SingleOrDefaultAsync();
+                                            if (poetPage != null)
+                                            {
+                                                var tajikPage = await context.TajikPages.Where(p => p.Id == poetPage.Id).SingleOrDefaultAsync();
+                                                if (tajikPage != null)
+                                                {
+                                                    tajikPage.TajikHtmlText = await PrepareTajikPoetHtmlTextAsync(context, tajikPoet);
+                                                    await context.SaveChangesAsync();
+                                                }
+                                            }
+                                            done++;
+                                        }
 
-                return new RServiceResult<bool>(true);
+                                        var tajikCats = await context.TajikCats.AsNoTracking().ToListAsync();
+                                        done = 0;
+                                        foreach (var tajikCat in tajikCats)
+                                        {
+                                            await jobProgressServiceEF.UpdateJob(job.Id, done, $"cat: {tajikCat.Id}");
+                                            var tajikPage = await context.TajikPages.Where(p => p.Id == tajikCat.Id).SingleOrDefaultAsync();
+                                            if (tajikPage != null)
+                                            {
+                                                tajikPage.TajikHtmlText = await PrepareTajikCatHtmlTextAsync(context, tajikCat);
+                                                await context.SaveChangesAsync();
+                                            }
+                                            done++;
+                                        }
+
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                    }
+                                    catch (Exception exp)
+                                    {
+                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                    }
+                                }
+                            }
+                            );
             }
             catch (Exception exp)
             {
                 return new RServiceResult<bool>(false, exp.ToString());
             }
+            return new RServiceResult<bool>(true);
         }
 
 

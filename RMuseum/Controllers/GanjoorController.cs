@@ -4529,6 +4529,7 @@ namespace RMuseum.Controllers
         /// category page, overwriting their stored TajikHtmlText. Needed one-time after changing
         /// either generator function (e.g. adding poem excerpts to the table of contents), since
         /// the normal SQLite import skips pages that already exist and never refreshes them.
+        /// Runs as a background job - check the Admin area's LongRunningJobs page for progress.
         /// </summary>
         /// <returns></returns>
         [HttpPut]
@@ -4536,10 +4537,10 @@ namespace RMuseum.Controllers
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> RegenerateTajikCatAndPoetHtmlTextAsync()
+        public IActionResult RegenerateTajikCatAndPoetHtmlTextAsync()
         {
             RServiceResult<bool> res =
-                await _ganjoorService.RegenerateTajikCatAndPoetHtmlTextAsync();
+                _ganjoorService.RegenerateTajikCatAndPoetHtmlTextAsync();
             if (res.Result)
                 return Ok();
             return BadRequest(res.ExceptionString);

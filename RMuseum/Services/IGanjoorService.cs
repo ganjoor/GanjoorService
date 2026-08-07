@@ -1585,10 +1585,11 @@ namespace RMuseum.Services
         /// <summary>
         /// re-runs the Tajik poet/category HTML generators for every already-imported poet and
         /// category page, overwriting their stored TajikHtmlText - needed one-time after changing
-        /// either generator function, since the normal SQLite import skips pages that already exist
+        /// either generator function, since the normal SQLite import skips pages that already exist.
+        /// Runs as a background job; returns immediately once the job is queued.
         /// </summary>
         /// <returns></returns>
-        Task<RServiceResult<bool>> RegenerateTajikCatAndPoetHtmlTextAsync();
+        RServiceResult<bool> RegenerateTajikCatAndPoetHtmlTextAsync();
 
 
 
