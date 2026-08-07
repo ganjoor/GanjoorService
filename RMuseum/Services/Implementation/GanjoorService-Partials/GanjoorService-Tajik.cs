@@ -72,22 +72,44 @@ namespace RMuseum.Services.Implementation
 
                 int catId = page.Poem != null ? page.Poem.Category.Cat.Id : page.PoetOrCat.Cat.Id;
 
-                var tajikCat = await _context.TajikCats.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
+                var tajikCat = await _context.TajikCats.AsNoTracking().Where(c => c.Id == catId).SingleOrDefaultAsync();
+                if (tajikCat == null)
+                    return new RServiceResult<GanjoorPageCompleteViewModel>(null, "Ин бахш ҳануз ба тоҷикӣ баргардонида нашудааст.");
                 if (page.Poem != null && page.Poem.Category != null && page.Poem.Category.Cat != null)
                 {
                     page.Poem.Category.Cat.Title = tajikCat.TajikTitle;
                     page.Poem.Category.Cat.Description = tajikCat.TajikDescription;
                     foreach (var parent in page.Poem.Category.Cat.Ancestors)
                     {
-                        var tajikParent = await _context.TajikCats.AsNoTracking().Where(c => c.Id == parent.Id).SingleAsync();
-                        parent.Title = tajikParent.TajikTitle;
-                        parent.Description = tajikParent.TajikDescription;
+                        // ancestors/children/siblings are supplementary navigation, not the page's
+                        // own content - a missing translation here shouldn't take down the whole
+                        // page, so fall back to transliteration the same way the poem next/prev
+                        // links already do (see LanguageUtils.TransliteratePersianToTajik)
+                        var tajikParent = await _context.TajikCats.AsNoTracking().Where(c => c.Id == parent.Id).SingleOrDefaultAsync();
+                        if (tajikParent != null)
+                        {
+                            parent.Title = tajikParent.TajikTitle;
+                            parent.Description = tajikParent.TajikDescription;
+                        }
+                        else
+                        {
+                            parent.Title = LanguageUtils.TransliteratePersianToTajik(parent.Title);
+                            parent.Description = LanguageUtils.TransliteratePersianToTajik(parent.Description);
+                        }
                     }
                     foreach (var child in page.Poem.Category.Cat.Children)
                     {
-                        var tajikChild = await _context.TajikCats.AsNoTracking().Where(c => c.Id == child.Id).SingleAsync();
-                        child.Title = tajikChild.TajikTitle;
-                        child.Description = tajikChild.TajikDescription;
+                        var tajikChild = await _context.TajikCats.AsNoTracking().Where(c => c.Id == child.Id).SingleOrDefaultAsync();
+                        if (tajikChild != null)
+                        {
+                            child.Title = tajikChild.TajikTitle;
+                            child.Description = tajikChild.TajikDescription;
+                        }
+                        else
+                        {
+                            child.Title = LanguageUtils.TransliteratePersianToTajik(child.Title);
+                            child.Description = LanguageUtils.TransliteratePersianToTajik(child.Description);
+                        }
                     }
                 }
 
@@ -97,25 +119,41 @@ namespace RMuseum.Services.Implementation
                     page.PoetOrCat.Cat.Description = tajikCat.TajikDescription;
                     foreach (var parent in page.PoetOrCat.Cat.Ancestors)
                     {
-                        var tajikParent = await _context.TajikCats.AsNoTracking().Where(c => c.Id == parent.Id).SingleAsync();
-                        parent.Title = tajikParent.TajikTitle;
-                        parent.Description = tajikParent.TajikDescription;
+                        var tajikParent = await _context.TajikCats.AsNoTracking().Where(c => c.Id == parent.Id).SingleOrDefaultAsync();
+                        if (tajikParent != null)
+                        {
+                            parent.Title = tajikParent.TajikTitle;
+                            parent.Description = tajikParent.TajikDescription;
+                        }
+                        else
+                        {
+                            parent.Title = LanguageUtils.TransliteratePersianToTajik(parent.Title);
+                            parent.Description = LanguageUtils.TransliteratePersianToTajik(parent.Description);
+                        }
                     }
                     foreach (var child in page.PoetOrCat.Cat.Children)
                     {
-                        var tajikChild = await _context.TajikCats.AsNoTracking().Where(c => c.Id == child.Id).SingleAsync();
-                        child.Title = tajikChild.TajikTitle;
-                        child.Description = tajikChild.TajikDescription;
+                        var tajikChild = await _context.TajikCats.AsNoTracking().Where(c => c.Id == child.Id).SingleOrDefaultAsync();
+                        if (tajikChild != null)
+                        {
+                            child.Title = tajikChild.TajikTitle;
+                            child.Description = tajikChild.TajikDescription;
+                        }
+                        else
+                        {
+                            child.Title = LanguageUtils.TransliteratePersianToTajik(child.Title);
+                            child.Description = LanguageUtils.TransliteratePersianToTajik(child.Description);
+                        }
                     }
                     if (page.PoetOrCat.Cat.Next != null)
                     {
-                        var nextCat = await _context.TajikCats.AsNoTracking().Where(c => c.Id == page.PoetOrCat.Cat.Next.Id).SingleAsync();
-                        page.PoetOrCat.Cat.Next.Title = nextCat.TajikTitle;
+                        var nextCat = await _context.TajikCats.AsNoTracking().Where(c => c.Id == page.PoetOrCat.Cat.Next.Id).SingleOrDefaultAsync();
+                        page.PoetOrCat.Cat.Next.Title = nextCat != null ? nextCat.TajikTitle : LanguageUtils.TransliteratePersianToTajik(page.PoetOrCat.Cat.Next.Title);
                     }
                     if (page.PoetOrCat.Cat.Previous != null)
                     {
-                        var preCat = await _context.TajikCats.AsNoTracking().Where(c => c.Id == page.PoetOrCat.Cat.Previous.Id).SingleAsync();
-                        page.PoetOrCat.Cat.Previous.Title = preCat.TajikTitle;
+                        var preCat = await _context.TajikCats.AsNoTracking().Where(c => c.Id == page.PoetOrCat.Cat.Previous.Id).SingleOrDefaultAsync();
+                        page.PoetOrCat.Cat.Previous.Title = preCat != null ? preCat.TajikTitle : LanguageUtils.TransliteratePersianToTajik(page.PoetOrCat.Cat.Previous.Title);
                     }
 
                     if (page.PoetOrCat.Cat.Poems != null)
