@@ -1,10 +1,9 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.Admin.Pages.ExpensesModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "هزینه‌ها";
-    ViewData["WideShell"] = true;
 }
 <div class="up-page-header">
     <h1>@ViewData["Title"]</h1>
@@ -49,7 +48,7 @@
     <p class="up-hint">@Model.ShowAccountInfo</p>
 }
 
-@if (Model.Expenses != null)
+@if (Model.Expenses != null && Model.Expenses.Length > 0)
 {
     <table>
         <tr>
@@ -71,4 +70,8 @@
             </tr>
         }
     </table>
+}
+else
+{
+    <partial name="_EmptyState" model="@("هنوز هزینه‌ای ثبت نشده است.")" />
 }

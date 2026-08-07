@@ -1,10 +1,9 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.Admin.Pages.PoetsModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "مدیریت سخنوران";
-    ViewData["WideShell"] = true;
 }
 <div class="up-page-header">
     <h1>@ViewData["Title"]</h1>
@@ -72,8 +71,10 @@
         <th>چسبانی</th>
     </tr>
 
-    @foreach (var poet in Model.Poets)
+    @if (Model.Poets != null && Model.Poets.Length > 0)
     {
+        @foreach (var poet in Model.Poets)
+        {
         <tr>
             <td>
                 <a href="/Admin/Poet?id=@poet.Id">@poet.Nickname</a>
@@ -156,6 +157,15 @@
         <tr>
             <td colspan="4">
                 <a role="button" onclick="savePoetMeta(@poet.Id, '@poet.Nickname')" class="up-btn up-btn--success up-btn--sm">ذخیرهٔ @poet.Nickname</a>
+            </td>
+        </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="4">
+                <partial name="_EmptyState" model="@("هنوز سخنوری ثبت نشده است.")" />
             </td>
         </tr>
     }

@@ -1,10 +1,9 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.Admin.Pages.LongRunningJobsModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "کارهای جاری";
-    ViewData["WideShell"] = true;
 }
 <div class="up-page-header">
     <h1>@ViewData["Title"]</h1>
@@ -50,7 +49,7 @@
     }
 </script>
 
-@if (Model.Jobs != null)
+@if (Model.Jobs != null && Model.Jobs.Length > 0)
 {
     <div class="up-form-actions" style="margin-bottom:var(--up-space-3);">
         <a role="button" onclick="cleanUpJobs()" class="up-btn up-btn--ghost" title="حذف کارهای قدیمی">حذف کارهای قدیمی <i class="noindent-info-button delete-icon"></i></a>
@@ -82,10 +81,11 @@
         }
     </table>
 
-    @if (Model.Jobs.Length > 0)
-    {
-        <div class="up-form-actions" style="margin-top:var(--up-space-3);">
-            <a role="button" onclick="cleanUpJobs()" class="up-btn up-btn--ghost" title="حذف کارهای قدیمی">حذف کارهای قدیمی <i class="noindent-info-button delete-icon"></i></a>
-        </div>
-    }
+    <div class="up-form-actions" style="margin-top:var(--up-space-3);">
+        <a role="button" onclick="cleanUpJobs()" class="up-btn up-btn--ghost" title="حذف کارهای قدیمی">حذف کارهای قدیمی <i class="noindent-info-button delete-icon"></i></a>
+    </div>
+}
+else if (Model.Jobs != null)
+{
+    <partial name="_EmptyState" model="@("در حال حاضر کار جاری یا اخیری وجود ندارد.")" />
 }

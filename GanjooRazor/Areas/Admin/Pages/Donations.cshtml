@@ -1,10 +1,9 @@
-﻿@page
+@page
 @model GanjooRazor.Areas.Admin.Pages.DonationsModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "کمک‌های مالی";
-    ViewData["WideShell"] = true;
 }
 <div class="up-page-header">
     <h1>@ViewData["Title"]</h1>
@@ -60,7 +59,7 @@
     <p class="up-hint">@Model.ShowAccountInfo</p>
 }
 
-@if (Model.Donations != null)
+@if (Model.Donations != null && Model.Donations.Length > 0)
 {
     <table>
         <tr>
@@ -83,4 +82,8 @@
             </tr>
         }
     </table>
+}
+else
+{
+    <partial name="_EmptyState" model="@("هنوز کمک مالی‌ای ثبت نشده است.")" />
 }

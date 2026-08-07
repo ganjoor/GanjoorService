@@ -1,129 +1,102 @@
 ﻿@page
 @model GanjooRazor.Areas.User.Pages.AllPoemSectionsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using DNTPersianUtils.Core
 @{
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "همهٔ قطعات شعر";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 @if (!string.IsNullOrEmpty(Model.FatalError))
 {
-    @Html.Raw(Model.FatalError)
+    <div class="up-alert up-alert--danger">@Html.Raw(Model.FatalError)</div>
 }
 else
 {
     <script>
-        function rebuildRelatedSections(sectionId, meterId, rhyming) {
-        if (!confirm(String(meterId) + ' : ' + rhyming))
-            return;
-        $('#rebuild-related-' + String(sectionId)).hide();
+        async function rebuildRelatedSections(sectionId, meterId, rhyming) {
+            var ok = await upConfirm(String(meterId) + ' : ' + rhyming);
+            if (!ok) return;
+            $('#rebuild-related-' + String(sectionId)).hide();
 
-        var url = '?handler=RebuildRelatedSections';
+            var url = '?handler=RebuildRelatedSections';
 
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: {
-                meterId: meterId,
-                rhyming: rhyming
-            },
-            success: function() {
-               alert('شروع شد.');
-            },
-            error: function(e) {
-                if (e.responseText == null)
-                    alert(e);
-                else
-                    alert(e.responseText);
-                $('#rebuild-related-' + String(sectionId)).show();
-            }
-        });
-    }
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    meterId: meterId,
+                    rhyming: rhyming
+                },
+                success: function() {
+                   upToast('شروع شد.');
+                },
+                error: function(e) {
+                    upToast(e.responseText || String(e), 'error');
+                    $('#rebuild-related-' + String(sectionId)).show();
+                }
+            });
+        }
     </script>
-    <table>
+
+    @if (Model.PoemSections != null && Model.PoemSections.Length > 0)
+    {
         @foreach (var poemSection in Model.PoemSections)
         {
-            @if (poemSection.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem)
-            {
-                <tr>
-                    <td colspan="2">
-                        <a href="/User/Section?poemId=@poemSection.PoemId&index=@poemSection.Index"  role="button" class="pagebutton">
+            <div class="up-card">
+                @if (poemSection.SectionType == RMuseum.Models.Ganjoor.PoemSectionType.WholePoem)
+                {
+                    <h2 class="up-card__title">
+                        <a href="/User/Section?poemId=@poemSection.PoemId&index=@poemSection.Index" role="button" class="up-btn up-btn--sm up-btn--ghost">
                             قطعهٔ @(poemSection.Number.ToPersianNumbers()):
                         </a>
-                    </td>
-                </tr>
-            }
+                    </h2>
+                }
 
-            <tr>
-                <td colspan="2">
-                    @Html.Raw(poemSection.HtmlText)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    نوع
-                </td>
-                <td>
-                    @poemSection.SectionType
-                </td>
-            </tr>
+                <p>@Html.Raw(poemSection.HtmlText)</p>
 
-            <tr>
-                <td>
-                    Verse Type
-                </td>
-                <td>
-                    @poemSection.VerseType
-                </td>
-            </tr>
+                <div class="up-field-row">
+                    <div class="up-field">
+                        <label>نوع</label>
+                        <p class="up-field-static">@poemSection.SectionType</p>
+                    </div>
+                    <div class="up-field">
+                        <label>Verse Type</label>
+                        <p class="up-field-static">@poemSection.VerseType</p>
+                    </div>
+                    <div class="up-field">
+                        <label>Index</label>
+                        <p class="up-field-static">@poemSection.Index</p>
+                    </div>
+                    <div class="up-field">
+                        <label>Number</label>
+                        <p class="up-field-static">@poemSection.Number</p>
+                    </div>
+                </div>
 
-            <tr>
-                <td>
-                    Index
-                </td>
-                <td>
-                    @poemSection.Index
-                </td>
-            </tr>
+                <div class="up-field-row">
+                    <div class="up-field">
+                        <label><span class="up-field-icon" aria-hidden="true">🎵</span> وزن</label>
+                        <p class="up-field-static">@(poemSection.GanjoorMetre == null ? "تعیین نشده" : poemSection.GanjoorMetre.Rhythm)</p>
+                    </div>
+                    <div class="up-field">
+                        <label><span class="up-field-icon" aria-hidden="true">🔤</span> حروف قافیه</label>
+                        <p class="up-field-static">@poemSection.RhymeLetters</p>
+                    </div>
+                </div>
 
-            <tr>
-                <td>
-                    Number
-                </td>
-                <td>
-                    @poemSection.Number
-                </td>
-            </tr>
-
-
-            <tr>
-                <td>
-                    وزن
-                </td>
-                <td>
-                    @(poemSection.GanjoorMetre == null ? "تعیین نشده" : poemSection.GanjoorMetre.Rhythm)
-                </td>
-            </tr>
-
-            <tr>
-                <td>
-                    حروف قافیه
-                </td>
-                <td>
-                    @poemSection.RhymeLetters
-                </td>
-            </tr>
-
-            @if (poemSection.GanjoorMetre != null && !string.IsNullOrEmpty(poemSection.RhymeLetters) && Model.CanEdit)
-            {
-                <tr>
-                    <td colspan="2">
-                        <a role="button" id="rebuild-related-@poemSection.Id" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" onclick="rebuildRelatedSections(@poemSection.Id, @poemSection.GanjoorMetreId, '@poemSection.RhymeLetters')">بازسازی مرتبط‌ها</a>
-                    </td>
-                </tr>
-            }
+                @if (poemSection.GanjoorMetre != null && !string.IsNullOrEmpty(poemSection.RhymeLetters) && Model.CanEdit)
+                {
+                    <a role="button" id="rebuild-related-@poemSection.Id" class="up-btn up-btn--danger up-btn--block" onclick="rebuildRelatedSections(@poemSection.Id, @poemSection.GanjoorMetreId, '@poemSection.RhymeLetters')">🔁 بازسازی مرتبط‌ها</a>
+                }
+            </div>
         }
-    </table>
-
+    }
+    else
+    {
+        <partial name="_EmptyState" model="@("قطعه‌ای برای این شعر یافت نشد.")" />
+    }
 }

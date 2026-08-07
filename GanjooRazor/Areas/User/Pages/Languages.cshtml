@@ -6,78 +6,52 @@
     ViewData["Title"] = "زبان‌ها و نویسش‌ها";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
 @if (!string.IsNullOrEmpty(Model.LastMessage))
 {
-    <p>
-        @Model.LastMessage
-    </p>
+    <div class="up-alert up-alert--info">@Model.LastMessage</div>
 }
 else
 {
-    <form method="post">
-        <table>
-            <tr>
-                <td>
-                    نام:
-                </td>
-                <td>
-                    <input asp-for="Language.Name" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    کد:
-                </td>
-                <td>
-                    <input style="direction:ltr" asp-for="Language.Code" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    نام بومی زبان:
-                </td>
-                <td>
-                    <input style="direction:ltr" asp-for="Language.NativeName" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    راست به چپ:
-                </td>
-                <td>
-                    <input type="checkbox" asp-for="Language.RightToLeft" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    شرح:
-                </td>
-                <td>
-                    <input asp-for="Language.Description" />
-                </td>
-            </tr>
+    <div class="up-card">
+        <h2 class="up-card__title">زبان جدید</h2>
+        <form method="post" class="up-form">
+            <div class="up-field">
+                <label for="Language_Name">نام</label>
+                <input asp-for="Language.Name" />
+            </div>
+            <div class="up-field up-field--ltr">
+                <label for="Language_Code">کد</label>
+                <input asp-for="Language.Code" />
+            </div>
+            <div class="up-field up-field--ltr">
+                <label for="Language_NativeName">نام بومی زبان</label>
+                <input asp-for="Language.NativeName" />
+            </div>
+            <div class="up-check-row">
+                <input type="checkbox" asp-for="Language.RightToLeft" />
+                <label for="Language_RightToLeft">راست به چپ</label>
+            </div>
+            <div class="up-field">
+                <label for="Language_Description">شرح</label>
+                <input asp-for="Language.Description" />
+            </div>
+            <div class="up-form-actions">
+                <input type="submit" value="ایجاد زبان" class="up-btn up-btn--success" />
+            </div>
+        </form>
+    </div>
 
-            <tr>
-                <td colspan="2">
-                    <input type="submit" value="ایجاد زبان" />
-                </td>
-            </tr>
-
-        </table>
-
-    </form>
-
-
-    @if (Model.Languages != null)
+    @if (Model.Languages != null && Model.Languages.Length > 0)
     {
         <script>
-            function deleteLanguage(itemId, itemName) {
+            async function deleteLanguage(itemId, itemName) {
 
-                if (!confirm('آیا از حذف این ' + itemName + ' اطمینان دارید؟'))
-                    return;
-
+                var ok = await upConfirm('آیا از حذف این ' + itemName + ' اطمینان دارید؟');
+                if (!ok) return;
 
                 $.ajax({
                     type: "DELETE",
@@ -86,7 +60,7 @@ else
                         id: itemId
                     },
                     error: function () {
-                        alert('خطا رخ داد.');
+                        upToast('خطا رخ داد.', 'error');
                     },
                     success: function () {
                         location.reload();
@@ -123,11 +97,15 @@ else
                     </td>
                     <td>@language.Description</td>
                     <td>
-                        <a role="button" href="/User/LanguageEdit?id=@language.Id" class="actionlink" title="ویرایش">✎</a>
-                        <a role="button" onclick="deleteLanguage(@language.Id, 'زبان')" class="actionlink" title="حذف">🗑</a>
+                        <a role="button" href="/User/LanguageEdit?id=@language.Id" class="up-icon-btn" title="ویرایش" aria-label="ویرایش این زبان">✎</a>
+                        <a role="button" onclick="deleteLanguage(@language.Id, 'زبان')" class="up-icon-btn" title="حذف" aria-label="حذف این زبان">🗑</a>
                     </td>
                 </tr>
             }
         </table>
+    }
+    else
+    {
+        <partial name="_EmptyState" model="@("هنوز زبانی ثبت نشده است.")" />
     }
 }

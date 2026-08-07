@@ -126,7 +126,7 @@ else
     </div>
 
     <div id="catItems" class="up-list">
-        @if (Model.CategoryItems != null)
+        @if (Model.CategoryItems != null && Model.CategoryItems.Length > 0)
         {
             @foreach (var item in Model.CategoryItems)
             {
@@ -137,6 +137,10 @@ else
                     </div>
                 </div>
             }
+        }
+        else
+        {
+            <p class="up-text-muted">پرسشی در این دسته نیست.</p>
         }
     </div>
 }

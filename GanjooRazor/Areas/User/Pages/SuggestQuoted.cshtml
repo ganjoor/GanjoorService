@@ -8,9 +8,14 @@
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
-<p class="red-color">@Html.Raw(Model.LastMessage)</p>
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <div class="up-alert up-alert--danger">@Html.Raw(Model.LastMessage)</div>
+}
 
 @if (Model.GanjoorQuotedPoem != null && Model.Couplets != null)
 {
@@ -95,7 +100,7 @@
 
                     if (json.poem == null) {
                         document.getElementById('loading-selection').style.display = 'none';
-                        alert('صفحه‌ای که انتخاب کرده‌اید حاوی یک شعر نیست.');
+                        upToast('صفحه‌ای که انتخاب کرده‌اید حاوی یک شعر نیست.', 'error');
                         selectGanjoorPage();
                         return;
                     }
@@ -127,305 +132,150 @@
 
                 }).catch((error) => {
                     document.getElementById('loading-selection').style.display = 'none';
-                    alert('در انتخاب صفحه خطایی رخ داد. جزئیات بیشتر: ' + error);
+                    upToast('در انتخاب صفحه خطایی رخ داد. جزئیات بیشتر: ' + error, 'error');
                     selectGanjoorPage();
                 });
 
         }
 
     </script>
-    <div class="notice">
-        <p>
-            از این طریق می‌توانید نقل قول یک شاعر از یک شاعر دیگر را در گنجور ثبت کنید. توجه داشته باشید که اقتفا (یکسانی قافیه) دلیل کافی بر نقل قول نیست. باید در شعرها حداقل یک مصرع بعینه (با تخفیف تفاوت جزئی واژگان) نقل قول شده باشد.
-        </p>
+    <div class="up-alert up-alert--info">
+        <p class="up-mt-0">از این طریق می‌توانید نقل قول یک شاعر از یک شاعر دیگر را در گنجور ثبت کنید. توجه داشته باشید که اقتفا (یکسانی قافیه) دلیل کافی بر نقل قول نیست. باید در شعرها حداقل یک مصرع بعینه (با تخفیف تفاوت جزئی واژگان) نقل قول شده باشد.</p>
     </div>
-    <form method="post">
-        <table>
-            <tr>
-                <td>
-                    <div class="notice">
-                        <p>
-                            از فهرست زیر بیتی را که نقل قول در آن رخ داده مشخص کنید.
-                        </p>
-                    </div>
+    <div class="up-card">
+        <form method="post" class="up-form">
+            <div class="up-alert up-alert--info">
+                <p class="up-mt-0">از فهرست زیر بیتی را که نقل قول در آن رخ داده مشخص کنید.</p>
+            </div>
 
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    بیت مرجع از <a href="/?p=@Model.GanjoorQuotedPoem.PoemId">شعر</a>:
-                    <input type="hidden" asp-for="GanjoorQuotedPoem.Id" />
-                    <input type="hidden" asp-for="GanjoorQuotedPoem.PoemId" />
-                    <input type="hidden" asp-for="GanjoorQuotedPoem.PoetId" />
+            <p>
+                بیت مرجع از <a href="/?p=@Model.GanjoorQuotedPoem.PoemId">شعر</a>:
+                <input type="hidden" asp-for="GanjoorQuotedPoem.Id" />
+                <input type="hidden" asp-for="GanjoorQuotedPoem.PoemId" />
+                <input type="hidden" asp-for="GanjoorQuotedPoem.PoetId" />
+            </p>
 
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <select asp-for="GanjoorQuotedPoem.CoupletIndex" style="width:100%">
-                        @foreach (var item in Model.Couplets)
-                        {
-                            <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
-                        }
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    نقل قول در مصرع اول:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.CoupletVerse1ShouldBeEmphasized" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    نقل قول در مصرع دوم:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.CoupletVerse2ShouldBeEmphasized" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="notice">
-                        <p>اگر شعر مرتبط در گنجور وجود دارد آن را با «گزینش شعر مرتبط» و پیدا کردن آن در صفحه‌ای که باز می‌شود مشخص کنید.</p>
+            <div class="up-field">
+                <label for="GanjoorQuotedPoem_CoupletIndex">بیت</label>
+                <select asp-for="GanjoorQuotedPoem.CoupletIndex">
+                    @foreach (var item in Model.Couplets)
+                    {
+                        <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
+                    }
+                </select>
+            </div>
 
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a onclick="finalizeSelectPage()" class="pagebutton" role="button" id="finalize-select2" style="display:none">انتخاب کردم</a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <iframe id="select-poem" src="/" height="600" style="display:none;width:100%;margin:auto"></iframe>
-                </td>
-            </tr>
+            <div class="up-check-row">
+                <input asp-for="GanjoorQuotedPoem.CoupletVerse1ShouldBeEmphasized" />
+                <label for="GanjoorQuotedPoem_CoupletVerse1ShouldBeEmphasized">نقل قول در مصرع اول</label>
+            </div>
+            <div class="up-check-row">
+                <input asp-for="GanjoorQuotedPoem.CoupletVerse2ShouldBeEmphasized" />
+                <label for="GanjoorQuotedPoem_CoupletVerse2ShouldBeEmphasized">نقل قول در مصرع دوم</label>
+            </div>
 
-            <tr>
-                <td>
-                    <a onclick="selectGanjoorPage()" class="pagebutton" role="button" id="display-frame">گزینش شعر مرتبط</a>
-                    <input asp-for="GanjoorQuotedPoem.RelatedPoemId" type="hidden" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a onclick="finalizeSelectPage()" class="pagebutton" role="button" id="finalize-select" style="display:none">انتخاب کردم</a>
-                    <div id="loading-selection" style="display:none"><img src="/image/loading.gif" /></div>
-                </td>
-            </tr>
+            <div class="up-alert up-alert--info">
+                <p class="up-mt-0">اگر شعر مرتبط در گنجور وجود دارد آن را با «گزینش شعر مرتبط» و پیدا کردن آن در صفحه‌ای که باز می‌شود مشخص کنید.</p>
+            </div>
 
+            <a onclick="finalizeSelectPage()" class="up-btn up-btn--ghost" role="button" id="finalize-select2" style="display:none">انتخاب کردم</a>
+            <iframe id="select-poem" src="/" height="600" style="display:none;width:100%;margin:auto"></iframe>
+
+            <div class="up-btn-group">
+                <a onclick="selectGanjoorPage()" class="up-btn up-btn--ghost" role="button" id="display-frame">🔎 گزینش شعر مرتبط</a>
+                <input asp-for="GanjoorQuotedPoem.RelatedPoemId" type="hidden" />
+                <a onclick="finalizeSelectPage()" class="up-btn up-btn--ghost" role="button" id="finalize-select" style="display:none">انتخاب کردم</a>
+                <div id="loading-selection" style="display:none"><img src="/image/loading.gif" /></div>
+            </div>
 
             @if (Model.GanjoorQuotedPoem.RelatedPoemId != null)
             {
-                <tr>
-                    <td>
-                        <a href="/?p=@Model.GanjoorQuotedPoem.RelatedPoemId">مشاهدهٔ شعر مرتبط</a>
-                    </td>
-                </tr>
+                <p><a href="/?p=@Model.GanjoorQuotedPoem.RelatedPoemId">🔗 مشاهدهٔ شعر مرتبط</a></p>
             }
 
+            <div class="up-field">
+                <label for="GanjoorQuotedPoem_RelatedCoupletIndex">بیت مرتبط</label>
+                <select asp-for="GanjoorQuotedPoem.RelatedCoupletIndex">
+                    @foreach (var item in Model.RelatedCouplets)
+                    {
+                        <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
+                    }
+                </select>
+            </div>
 
-            <tr>
-                <td>
-                    بیت مرتبط:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <select asp-for="GanjoorQuotedPoem.RelatedCoupletIndex" style="width:100%;">
-                        @foreach (var item in Model.RelatedCouplets)
-                        {
-                            <option value="@item.Item1">@($"{(item.Item1 + 1).ToPersianNumbers()} - {item.Item2}")</option>
-                        }
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="notice">
-                        اگر شعر مرتبط در گنجور وجود ندارد مصرع اول و دوم مرتبط آن را در کادرهای بعد تایپ کنید.
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    مصرع اول مرتبط (خارج از گنجور):
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="notice">
-                        <p>
-                            اگر شعر را از طریق دکمهٔ «گزینش شعر مرتبط» انتخاب کرده‌اید کادر زیر را خالی بگذارید.
-                        </p>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse1" size="65" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    نقل قول در مصرع اول شعر مرتبط:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    مصرع دوم مرتبط (خارج از گنجور):
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="notice">
-                        <p>
-                            اگر شعر را از طریق دکمهٔ «گزینش شعر مرتبط» انتخاب کرده‌اید کادر زیر را خالی بگذارید.
-                        </p>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse2" size="65" />
-                </td>
-            </tr>
+            <div class="up-alert up-alert--info">
+                <p class="up-mt-0">اگر شعر مرتبط در گنجور وجود ندارد مصرع اول و دوم مرتبط آن را در کادرهای بعد تایپ کنید.</p>
+            </div>
 
-            <tr>
-                <td>
-                    نقل قول در مصرع دوم شعر مرتبط:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized" />
-                    <input asp-for="GanjoorQuotedPoem.SortOrder" hidden />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    این شعر قدیمی‌تر از شعر مرتبط است:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.IsPriorToRelated" />
-                    <input asp-for="GanjoorQuotedPoem.ChosenForMainList" type="hidden" />
-                    <input asp-for="GanjoorQuotedPoem.IndirectQuotation" type="hidden" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    منتسب به هر دو شاعر:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.ClaimedByBothPoets" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    شاعر:
-                </td>
-            </tr>
+            <div class="up-field">
+                <label for="GanjoorQuotedPoem_RelatedCoupletVerse1">مصرع اول مرتبط (خارج از گنجور)</label>
+                <p class="up-hint">اگر شعر را از طریق دکمهٔ «گزینش شعر مرتبط» انتخاب کرده‌اید کادر زیر را خالی بگذارید.</p>
+                <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse1" size="65" />
+            </div>
+            <div class="up-check-row">
+                <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse1ShouldBeEmphasized" />
+                <label for="GanjoorQuotedPoem_RelatedCoupletVerse1ShouldBeEmphasized">نقل قول در مصرع اول شعر مرتبط</label>
+            </div>
 
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.RelatedPoetId" hidden />
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetName" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    سالمرگ شاعر:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetDeathYearInLHijri" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    نشانی صفحهٔ شاعر:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetUrl" style="direction:ltr;text-align:left" size="65" />
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetImage" type="hidden" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    عنوان شعر:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullTitle" size="65" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    نشانی شعر:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullUrl" style="direction:ltr;text-align:left" size="65" />
-                    <input asp-for="GanjoorQuotedPoem.Published" hidden />
-                    <input asp-for="GanjoorQuotedPoem.SamePoemsQuotedCount" hidden />
-                </td>
-            </tr>
+            <div class="up-field">
+                <label for="GanjoorQuotedPoem_RelatedCoupletVerse2">مصرع دوم مرتبط (خارج از گنجور)</label>
+                <p class="up-hint">اگر شعر را از طریق دکمهٔ «گزینش شعر مرتبط» انتخاب کرده‌اید کادر زیر را خالی بگذارید.</p>
+                <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse2" size="65" />
+            </div>
+            <div class="up-check-row">
+                <input asp-for="GanjoorQuotedPoem.RelatedCoupletVerse2ShouldBeEmphasized" />
+                <label for="GanjoorQuotedPoem_RelatedCoupletVerse2ShouldBeEmphasized">نقل قول در مصرع دوم شعر مرتبط</label>
+                <input asp-for="GanjoorQuotedPoem.SortOrder" hidden />
+            </div>
 
-            <tr>
-                <td>
-                    یادداشت:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <textarea asp-for="GanjoorQuotedPoem.Note" rows="4" cols="80" class="editor"></textarea>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="notice">
-                        <p>
-                            نیازی به پیشنهاد معکوس این نقل قول نیست. در صورت تأیید، معکوس آن هم به طور خودکار ایجاد می‌شود.
-                        </p>
-                    </div>
-                </td>
-            </tr>
+            <div class="up-check-row">
+                <input asp-for="GanjoorQuotedPoem.IsPriorToRelated" />
+                <label for="GanjoorQuotedPoem_IsPriorToRelated">این شعر قدیمی‌تر از شعر مرتبط است</label>
+                <input asp-for="GanjoorQuotedPoem.ChosenForMainList" type="hidden" />
+                <input asp-for="GanjoorQuotedPoem.IndirectQuotation" type="hidden" />
+            </div>
 
-            <tr>
-                <td>
-                    <input type="submit" class="width-100per" value="پیشنهاد" />
-                </td>
-            </tr>
+            <div class="up-check-row">
+                <input asp-for="GanjoorQuotedPoem.ClaimedByBothPoets" />
+                <label for="GanjoorQuotedPoem_ClaimedByBothPoets">منتسب به هر دو شاعر</label>
+            </div>
 
-            <tr><td><hr /></td></tr>
+            <div class="up-field">
+                <label for="GanjoorQuotedPoem_CachedRelatedPoemPoetName">شاعر</label>
+                <input asp-for="GanjoorQuotedPoem.RelatedPoetId" hidden />
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetName" />
+            </div>
+            <div class="up-field">
+                <label for="GanjoorQuotedPoem_CachedRelatedPoemPoetDeathYearInLHijri">سالمرگ شاعر</label>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetDeathYearInLHijri" />
+            </div>
+            <div class="up-field up-field--ltr">
+                <label for="GanjoorQuotedPoem_CachedRelatedPoemPoetUrl">نشانی صفحهٔ شاعر</label>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetUrl" size="65" />
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemPoetImage" type="hidden" />
+            </div>
+            <div class="up-field">
+                <label for="GanjoorQuotedPoem_CachedRelatedPoemFullTitle">عنوان شعر</label>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullTitle" size="65" />
+            </div>
+            <div class="up-field up-field--ltr">
+                <label for="GanjoorQuotedPoem_CachedRelatedPoemFullUrl">نشانی شعر</label>
+                <input asp-for="GanjoorQuotedPoem.CachedRelatedPoemFullUrl" size="65" />
+                <input asp-for="GanjoorQuotedPoem.Published" hidden />
+                <input asp-for="GanjoorQuotedPoem.SamePoemsQuotedCount" hidden />
+            </div>
 
-        </table>
-    </form>
+            <div class="up-field">
+                <label for="GanjoorQuotedPoem_Note"><span class="up-field-icon" aria-hidden="true">🗒️</span> یادداشت</label>
+                <textarea asp-for="GanjoorQuotedPoem.Note" rows="4" cols="80" class="editor"></textarea>
+            </div>
+
+            <div class="up-hint">نیازی به پیشنهاد معکوس این نقل قول نیست. در صورت تأیید، معکوس آن هم به طور خودکار ایجاد می‌شود.</div>
+
+            <div class="up-form-actions">
+                <input type="submit" value="پیشنهاد" class="up-btn up-btn--success up-btn--block" />
+            </div>
+        </form>
+    </div>
 
 }

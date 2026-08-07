@@ -1,5 +1,6 @@
 ﻿@page
 @model GanjooRazor.Areas.User.Pages.PoemCorrectionsHistoryModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using RMuseum.Models.Ganjoor
 @using RMuseum.Services.Implementation
 @using DNTPersianUtils.Core;
@@ -7,21 +8,22 @@
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "سوابق ویرایش";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
-    string color = "gray";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 @if (Model.LastError != "")
 {
-    <h2>@Model.LastError</h2>
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
 }
 else
 {
     <script>
-        function rollBackCorrection(correctionId) {
-            if (!confirm('ویرایش معکوس ایجاد شود؟')) {
-                return;
-            }
+        async function rollBackCorrection(correctionId) {
+            var ok = await upConfirm('ویرایش معکوس ایجاد شود؟');
+            if (!ok) return;
+
             $.ajax({
                 type: "POST",
                 url: '?handler=RollBackCorrection',
@@ -29,312 +31,308 @@ else
                     correctionId: correctionId,
                 },
                 success: function () {
-                    alert('انجام شد.');
-                   
+                    upToast('انجام شد.');
+
                 },
                 error: function (e) {
-                    if (e.responseText == null)
-                        alert(e);
-                    else
-                        alert(e.responseText);
-
+                    upToast(e.responseText || String(e), 'error');
                 }
 
             });
         }
     </script>
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
-        {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
-        }
-    </p>
 
-    @foreach (var correction in Model.Corrections)
+    @if (Model.PaginationLinks != null && Model.PaginationLinks.Count > 0)
     {
-        if (color == "gray")
-            color = "lightsteelblue";
-        else
-            color = "gray";
-
-        <div style="background-color:@color" id="correction-@correction.Id">
-            <table>
-                @if(Model.CanEdit)
+        <div class="up-btn-group up-text-center" style="justify-content:center;">
+            @foreach (var paginationLink in Model.PaginationLinks)
+            {
+                if (!string.IsNullOrEmpty(paginationLink.Url))
                 {
-                    <tr>
-                        <td colspan="2"><a href="/User/Edits?UserId=@correction.UserId&AllUsers=1" target="_blank">@correction.UserId</a></td>
-                    </tr>
-
+                    <a href="@paginationLink.Url" class="up-btn up-btn--sm up-btn--ghost">@paginationLink.Name</a>
                 }
-                <tr>
-                    <td colspan="2"><a href="/?p=@correction.PoemId" target="_blank">مشاهدهٔ متن شعر یا بخش</a></td>
-                </tr>
-                <tr>
-                    <td colspan="2">@correction.ReviewDate.ToFriendlyPersianDateTextify()</td>
-                </tr>
-                <tr>
-                    <td>متن اولیه</td>
-                    <td>متن جدید</td>
-                </tr>
-
-                @if (correction.Title != null && correction.Result == CorrectionReviewResult.Approved)
+                else
                 {
-                    <tr>
-                        <td>
-                            <p style="color:red" id="title-original-@correction.Id">@correction.OriginalTitle</p>
-                        </td>
-                        <td>
-                            <p style="color:green" id="title-edited-@correction.Id">@correction.Title</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <p id="title-compare-@correction.Id">@correction.OriginalTitle</p>
-                            <script>
-                                $(document).ready(function () {
-                                    compareCorrectionBlocks('title-original-@correction.Id', 'title-edited-@correction.Id', 'title-compare-@correction.Id');
-                                });
-                            </script>
-                        </td>
-                    </tr>
+                    <span class="up-btn up-btn--sm up-btn--ghost" aria-current="page">@paginationLink.Name</span>
                 }
-                @if (correction.PoemSummary != null && correction.SummaryReviewResult == CorrectionReviewResult.Approved)
-                {
-                    <tr>
-                        <td>
-                            خلاصه: <p style="color:red" id="summary-original-@correction.Id">@correction.OriginalPoemSummary</p>
-                        </td>
-                        <td>
-                            <p style="color:green" id="summary-edited-@correction.Id">@correction.PoemSummary</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <p id="summary-compare-@correction.Id">@correction.OriginalPoemSummary</p>
-                            <script>
-                                $(document).ready(function () {
-                                    compareCorrectionBlocks('summary-original-@correction.Id', 'summary-edited-@correction.Id', 'summary-compare-@correction.Id');
-                                });
-                            </script>
-                        </td>
-                    </tr>
-                }
-                @if (correction.Rhythm != null && correction.RhythmResult == CorrectionReviewResult.Approved)
-                {
-                    <tr>
-                        <td>
-                            <p style="color:red">@correction.OriginalRhythm</p>
-                        </td>
-                        <td>
-                            <p style="color:green">@correction.Rhythm</p>
-                        </td>
-
-                    </tr>
-
-                }
-                @if (correction.RhymeLetters != null && correction.RhymeLettersReviewResult == CorrectionReviewResult.Approved)
-                {
-                    <tr>
-                        <td>
-                            <p style="color:red">قافیه: @correction.OriginalRhymeLetters</p>
-                        </td>
-                        <td>
-                            <p style="color:green">@correction.RhymeLetters</p>
-                        </td>
-
-                    </tr>
-
-                }
-                @if (correction.PoemFormat != null && correction.PoemFormatReviewResult == CorrectionReviewResult.Approved)
-                {
-                    <tr>
-                        <td>
-                            <p style="color:red">قالب شعری: @RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(correction.OriginalPoemFormat)</p>
-                        </td>
-                        <td>
-                            <p style="color:green">@RMuseum.Services.Implementation.GanjoorPoemFormatConvertor.GetString(correction.PoemFormat)</p>
-                        </td>
-
-                    </tr>
-
-                }
-                @if (correction.VerseOrderText != null)
-                    @foreach (var verse in correction.VerseOrderText)
-                    {
-                        @if (verse.MarkForDelete)
-                        {
-                            if (verse.MarkForDeleteResult == CorrectionReviewResult.Approved)
-                            {
-                                <tr>
-                                    <td>
-                                        <p style="color:red">@verse.OriginalText</p>
-                                    </td>
-                                    <td>
-                                        <p style="color:red">حذف شد</p>
-                                    </td>
-
-                                </tr>
-                            }
-                        }
-                        else if (verse.NewVerse)
-                        {
-                            if (verse.NewVerseResult == CorrectionReviewResult.Approved)
-                            {
-                                <tr>
-                                    <td>
-                                        <p style="color:green">@verse.Text</p>
-                                    </td>
-                                    <td>
-                                        <p style="color:green">اضافه شد</p>
-                                    </td>
-
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            if (verse.Result == CorrectionReviewResult.Approved)
-                            {
-                                <tr>
-                                    <td>
-                                        <p id="verse-original-@correction.Id-edit-@verse.VORder" style="color:red">@verse.OriginalText</p>
-                                    </td>
-                                    <td>
-                                        <p id="verse-edited-@correction.Id-edit-@verse.VORder"  style="color:green">@verse.Text</p>
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <p id="verse-compare-@correction.Id-edit-@verse.VORder">@verse.OriginalText</p>
-                                        <script>
-                                            $(document).ready(function () {
-                                                compareCorrectionBlocks('verse-original-@correction.Id-edit-@verse.VORder', 'verse-edited-@correction.Id-edit-@verse.VORder', 'verse-compare-@correction.Id-edit-@verse.VORder');
-                                            });
-                                        </script>
-                                    </td>
-
-                                </tr>
-                            }
-
-                            if (verse.SummaryReviewResult == CorrectionReviewResult.Approved)
-                            {
-                                <tr>
-                                    <td colspan="2">
-                                        @verse.OriginalText
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        معنی: <p style="color:red" id="versesummary-original-@correction.Id-edit-@verse.VORder">@verse.OriginalCoupletSummary</p>
-                                    </td>
-                                    <td>
-                                        <p style="color:green" id="versesummary-edited-@correction.Id-edit-@verse.VORder">@verse.CoupletSummary</p>
-                                    </td>
-
-                                </tr>
-                                <tr>
-                                    <td colspan="2">
-                                        <p id="versesummary-compare-@correction.Id-edit-@verse.VORder">@verse.OriginalText</p>
-                                        <script>
-                                            $(document).ready(function () {
-                                                compareCorrectionBlocks('versesummary-original-@correction.Id-edit-@verse.VORder', 'versesummary-edited-@correction.Id-edit-@verse.VORder', 'versesummary-compare-@correction.Id-edit-@verse.VORder');
-                                            });
-                                        </script>
-                                    </td>
-
-                                </tr>
-                            }
-
-                            if (verse.VersePosition != null && verse.VersePositionResult == CorrectionReviewResult.Approved)
-                            {
-                                <tr>
-                                    <td colspan="2">
-                                        @verse.OriginalText
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-
-                                        <p style="color:red">تبدیل نوع مصرع از @RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((VersePosition)verse.OriginalVersePosition)</p>
-                                    </td>
-                                    <td>
-                                        <p>@verse.Text</p>
-                                        <p style="color:green">تبدیل نوع مصرع به @RMuseum.Models.Ganjoor.VersePositionHelper.GetVersePositionString((VersePosition)verse.VersePosition)</p>
-                                    </td>
-                                </tr>
-                            }
-
-                            @if (verse.LanguageId != null && verse.LanguageReviewResult == CorrectionReviewResult.Approved)
-                            {
-                                <tr>
-                                    <td colspan="2">
-                                        @verse.OriginalText
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        @if (verse.OriginalLanguageId != null)
-                                        {
-                                            <p>تغییر زبان از @Model.Languages.Where(l => l.Id == verse.OriginalLanguageId).Single().Name </p>
-                                        }
-                                        else
-                                        {
-                                            <p>تغییر زبان از فارسی</p>
-                                        }
-                                    </td>
-                                    <td>
-                                        @if (verse.LanguageId != null)
-                                        {
-                                            <p>به @Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Name </p>
-                                        }
-                                        else
-                                        {
-                                            <p>به فارسی</p>
-                                        }
-                                    </td>
-
-                                </tr>
-                            }
-
-                            <tr><td colspan="2" style="background-color:black">&nbsp;</td></tr>
-                        }
-                    }
-
-                <tr>
-                    <td colspan="2">
-                        <a role="button" style="cursor:pointer;width:100%;color:white;background-color:orange;display:block" onclick="rollBackCorrection(@correction.Id)">برگشت به وضعیت قبل از این ویرایش</a>
-                    </td>
-                </tr>
-
-            </table>
-
+            }
         </div>
-
-
-        <hr />
     }
 
-    <p style="text-align:center">
-        @foreach (var paginationLink in Model.PaginationLinks)
+    @if (Model.Corrections != null && Model.Corrections.Count > 0)
+    {
+        @foreach (var correction in Model.Corrections)
         {
-            if (!string.IsNullOrEmpty(paginationLink.Url))
-            {
-                <a href="@paginationLink.Url">@paginationLink.Name</a>
-            }
-            else
-            {
-                @paginationLink.Name
-            }
+            <div class="up-card" id="correction-@correction.Id">
+                @if (Model.CanEdit)
+                {
+                    <p><a href="/User/Edits?UserId=@correction.UserId&AllUsers=1" target="_blank">🧑 @correction.UserId</a></p>
+                }
+                <p><a href="/?p=@correction.PoemId" target="_blank">🔗 مشاهدهٔ متن شعر یا بخش</a></p>
+                <p class="up-hint">🕘 @correction.ReviewDate.ToFriendlyPersianDateTextify()</p>
+
+                <table>
+                    <tr>
+                        <td>متن اولیه</td>
+                        <td>متن جدید</td>
+                    </tr>
+
+                    @if (correction.Title != null && correction.Result == CorrectionReviewResult.Approved)
+                    {
+                        <tr>
+                            <td colspan="2">
+                                تغییرات عنوان
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p class="red-color" id="title-original-@correction.Id">@correction.OriginalTitle</p>
+                            </td>
+                            <td>
+                                <p class="green-color" id="title-edited-@correction.Id">@correction.Title</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <p id="title-compare-@correction.Id">@correction.OriginalTitle</p>
+                                <script>
+                                    $(document).ready(function () {
+                                        compareCorrectionBlocks('title-original-@correction.Id', 'title-edited-@correction.Id', 'title-compare-@correction.Id');
+                                    });
+                                </script>
+                            </td>
+                        </tr>
+                    }
+                    @if (correction.PoemSummary != null && correction.SummaryReviewResult == CorrectionReviewResult.Approved)
+                    {
+                        <tr>
+                            <td colspan="2">
+                                تغییرات خلاصه
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p class="red-color" id="summary-original-@correction.Id">@correction.OriginalPoemSummary</p>
+                            </td>
+                            <td>
+                                <p class="green-color" id="summary-edited-@correction.Id">@correction.PoemSummary</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <p id="summary-compare-@correction.Id">@correction.OriginalPoemSummary</p>
+                                <script>
+                                    $(document).ready(function () {
+                                        compareCorrectionBlocks('summary-original-@correction.Id', 'summary-edited-@correction.Id', 'summary-compare-@correction.Id');
+                                    });
+                                </script>
+                            </td>
+                        </tr>
+                    }
+                    @if (correction.Rhythm != null && correction.RhythmResult == CorrectionReviewResult.Approved)
+                    {
+                        <tr>
+                            <td>
+                                <p class="red-color">@correction.OriginalRhythm</p>
+                            </td>
+                            <td>
+                                <p class="green-color">@correction.Rhythm</p>
+                            </td>
+
+                        </tr>
+
+                    }
+                    @if (correction.RhymeLetters != null && correction.RhymeLettersReviewResult == CorrectionReviewResult.Approved)
+                    {
+                        <tr>
+                            <td>
+                                <p class="red-color">قافیه: @correction.OriginalRhymeLetters</p>
+                            </td>
+                            <td>
+                                <p class="green-color">@correction.RhymeLetters</p>
+                            </td>
+
+                        </tr>
+
+                    }
+                    @if (correction.PoemFormat != null && correction.PoemFormatReviewResult == CorrectionReviewResult.Approved)
+                    {
+                        <tr>
+                            <td>
+                                <p class="red-color">قالب شعری: @GanjoorPoemFormatConvertor.GetString(correction.OriginalPoemFormat)</p>
+                            </td>
+                            <td>
+                                <p class="green-color">@GanjoorPoemFormatConvertor.GetString(correction.PoemFormat)</p>
+                            </td>
+
+                        </tr>
+
+                    }
+                    @if (correction.VerseOrderText != null)
+                        @foreach (var verse in correction.VerseOrderText)
+                        {
+                            @if (verse.MarkForDelete)
+                            {
+                                if (verse.MarkForDeleteResult == CorrectionReviewResult.Approved)
+                                {
+                                    <tr>
+                                        <td>
+                                            <p class="red-color">@verse.OriginalText</p>
+                                        </td>
+                                        <td>
+                                            <p class="red-color">حذف شد</p>
+                                        </td>
+
+                                    </tr>
+                                }
+                            }
+                            else if (verse.NewVerse)
+                            {
+                                if (verse.NewVerseResult == CorrectionReviewResult.Approved)
+                                {
+                                    <tr>
+                                        <td>
+                                            <p class="green-color">@verse.Text</p>
+                                        </td>
+                                        <td>
+                                            <p class="green-color">اضافه شد</p>
+                                        </td>
+
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                if (verse.Result == CorrectionReviewResult.Approved)
+                                {
+                                    <tr>
+                                        <td>
+                                            <p id="verse-original-@correction.Id-edit-@verse.VORder" class="red-color">@verse.OriginalText</p>
+                                        </td>
+                                        <td>
+                                            <p id="verse-edited-@correction.Id-edit-@verse.VORder" class="green-color">@verse.Text</p>
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <p id="verse-compare-@correction.Id-edit-@verse.VORder">@verse.OriginalText</p>
+                                            <script>
+                                                $(document).ready(function () {
+                                                    compareCorrectionBlocks('verse-original-@correction.Id-edit-@verse.VORder', 'verse-edited-@correction.Id-edit-@verse.VORder', 'verse-compare-@correction.Id-edit-@verse.VORder');
+                                                });
+                                            </script>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                                if (verse.SummaryReviewResult == CorrectionReviewResult.Approved)
+                                {
+                                    <tr>
+                                        <td colspan="2">
+                                            @verse.OriginalText
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            معنی: <p class="red-color" id="versesummary-original-@correction.Id-edit-@verse.VORder">@verse.OriginalCoupletSummary</p>
+                                        </td>
+                                        <td>
+                                            <p class="green-color" id="versesummary-edited-@correction.Id-edit-@verse.VORder">@verse.CoupletSummary</p>
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <p id="versesummary-compare-@correction.Id-edit-@verse.VORder">@verse.OriginalText</p>
+                                            <script>
+                                                $(document).ready(function () {
+                                                    compareCorrectionBlocks('versesummary-original-@correction.Id-edit-@verse.VORder', 'versesummary-edited-@correction.Id-edit-@verse.VORder', 'versesummary-compare-@correction.Id-edit-@verse.VORder');
+                                                });
+                                            </script>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                                if (verse.VersePosition != null && verse.VersePositionResult == CorrectionReviewResult.Approved)
+                                {
+                                    <tr>
+                                        <td colspan="2">
+                                            @verse.OriginalText
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+
+                                            <p class="red-color">تبدیل نوع مصرع از @VersePositionHelper.GetVersePositionString((VersePosition)verse.OriginalVersePosition)</p>
+                                        </td>
+                                        <td>
+                                            <p>@verse.Text</p>
+                                            <p class="green-color">تبدیل نوع مصرع به @VersePositionHelper.GetVersePositionString((VersePosition)verse.VersePosition)</p>
+                                        </td>
+                                    </tr>
+                                }
+
+                                @if (verse.LanguageId != null && verse.LanguageReviewResult == CorrectionReviewResult.Approved)
+                                {
+                                    <tr>
+                                        <td colspan="2">
+                                            @verse.OriginalText
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @if (verse.OriginalLanguageId != null)
+                                            {
+                                                <p>تغییر زبان از @Model.Languages.Where(l => l.Id == verse.OriginalLanguageId).Single().Name </p>
+                                            }
+                                            else
+                                            {
+                                                <p>تغییر زبان از فارسی</p>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (verse.LanguageId != null)
+                                            {
+                                                <p>به @Model.Languages.Where(l => l.Id == verse.LanguageId).Single().Name </p>
+                                            }
+                                            else
+                                            {
+                                                <p>به فارسی</p>
+                                            }
+                                        </td>
+
+                                    </tr>
+                                }
+                            }
+                        }
+                </table>
+
+                <a role="button" class="up-btn up-btn--danger up-btn--block" onclick="rollBackCorrection(@correction.Id)">↩️ برگشت به وضعیت قبل از این ویرایش</a>
+            </div>
         }
-    </p>
+    }
+    else
+    {
+        <partial name="_EmptyState" model="@("سابقهٔ ویرایشی برای این شعر ثبت نشده است.")" />
+    }
 
-
+    @if (Model.PaginationLinks != null && Model.PaginationLinks.Count > 0)
+    {
+        <div class="up-btn-group up-text-center" style="justify-content:center;">
+            @foreach (var paginationLink in Model.PaginationLinks)
+            {
+                if (!string.IsNullOrEmpty(paginationLink.Url))
+                {
+                    <a href="@paginationLink.Url" class="up-btn up-btn--sm up-btn--ghost">@paginationLink.Name</a>
+                }
+                else
+                {
+                    <span class="up-btn up-btn--sm up-btn--ghost" aria-current="page">@paginationLink.Name</span>
+                }
+            }
+        </div>
+    }
 }

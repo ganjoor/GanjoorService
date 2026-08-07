@@ -6,9 +6,14 @@
     ViewData["Title"] = "خاستگاه‌ها";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
-<p>@Model.LastMessage</p>
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <div class="up-alert up-alert--info">@Model.LastMessage</div>
+}
 
 <script>
     function displayLocationOnMap() {
@@ -17,53 +22,32 @@
         link.target = "_blank"
         link.click()
     }
-    
+
 </script>
 
-<form method="post">
-    <table>
-        <tr>
-            <td>
-                نام:
-            </td>
-            <td>
-                <input asp-for="Location.Name" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                عرض جغرافیایی (N):
-            </td>
-            <td>
-                <input asp-for="Location.Latitude" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                طول جغرافیایی (E):
-            </td>
-            <td>
-                <input asp-for="Location.Longitude" />
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <a onclick="displayLocationOnMap()" class="pagebutton" role="button">مشاهده روی نقشه</a>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <input type="submit" value="خاستگاه جدید" />
-            </td>
-        </tr>
-    </table>
+<div class="up-card">
+    <h2 class="up-card__title">خاستگاه جدید</h2>
+    <form method="post" class="up-form">
+        <div class="up-field">
+            <label for="Location_Name">نام</label>
+            <input asp-for="Location.Name" />
+        </div>
+        <div class="up-field">
+            <label for="Location_Latitude">عرض جغرافیایی (N)</label>
+            <input asp-for="Location.Latitude" />
+        </div>
+        <div class="up-field">
+            <label for="Location_Longitude">طول جغرافیایی (E)</label>
+            <input asp-for="Location.Longitude" />
+        </div>
+        <div class="up-form-actions">
+            <a onclick="displayLocationOnMap()" class="up-btn up-btn--ghost" role="button">🗺️ مشاهده روی نقشه</a>
+            <input type="submit" value="خاستگاه جدید" class="up-btn up-btn--success" />
+        </div>
+    </form>
+</div>
 
-
-
-
-</form>
-
-@if (Model.Locations != null)
+@if (Model.Locations != null && Model.Locations.Length > 0)
 {
     <script>
         function editLocation(itemId) {
@@ -82,23 +66,19 @@
                     longitude: $(lonInput).val(),
                 },
                 error: function(e) {
-                    if (e.responseText == null)
-                        alert(e);
-                    else
-                        alert(e.responseText);
+                    upToast(e.responseText || String(e), 'error');
                 },
                 success: function() {
-                    alert('ردیف به درستی ویرایش شد.')
+                    upToast('ردیف به درستی ویرایش شد.');
                 },
 
             });
         }
 
-        function deleteLocation(itemId) {
+        async function deleteLocation(itemId) {
 
-            if (!confirm('آیا از حذف این ردیف اطمینان دارید؟'))
-                return;
-
+            var ok = await upConfirm('آیا از حذف این ردیف اطمینان دارید؟');
+            if (!ok) return;
 
             $.ajax({
                 type: "DELETE",
@@ -107,10 +87,7 @@
                     id: itemId
                 },
                 error: function(e) {
-                    if (e.responseText == null)
-                        alert(e);
-                    else
-                        alert(e.responseText);
+                    upToast(e.responseText || String(e), 'error');
                 },
                 success: function() {
                     var itemIdBlockId = '#tr-' + itemId;
@@ -135,14 +112,15 @@
                 <td><input type="text" name="lat-@location.Id" id="lat-@location.Id" value="@location.Latitude" /></td>
                 <td><input type="text" name="lon-@location.Id" id="lon-@location.Id" value="@location.Longitude" /></td>
                 <td>
-                    <a role="button" onclick="editLocation(@location.Id)" class="actionlink" title="ویرایش">✎</a>
-                    <a role="button" onclick="deleteLocation(@location.Id)" class="actionlink" title="حذف">🗑</a>
-                    <a role="button" onclick="viewLocation('@location.Latitude', '@location.Longitude')" class="actionlink" title="مشاهده">مشاهده</a>
+                    <a role="button" onclick="editLocation(@location.Id)" class="up-icon-btn" title="ویرایش" aria-label="ویرایش این خاستگاه">✎</a>
+                    <a role="button" onclick="deleteLocation(@location.Id)" class="up-icon-btn" title="حذف" aria-label="حذف این خاستگاه">🗑</a>
+                    <a role="button" onclick="viewLocation('@location.Latitude', '@location.Longitude')" class="up-icon-btn" title="مشاهده" aria-label="مشاهدهٔ این خاستگاه روی نقشه">🗺️</a>
                 </td>
             </tr>
         }
     </table>
-
 }
-
-
+else
+{
+    <partial name="_EmptyState" model="@("هنوز خاستگاهی ثبت نشده است.")" />
+}

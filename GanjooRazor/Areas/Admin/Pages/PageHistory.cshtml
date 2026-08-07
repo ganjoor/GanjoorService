@@ -7,11 +7,16 @@
     ViewData["Title"] = "سابقهٔ ویرایش";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
-<p>@Model.LastMessage</p>
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <p class="up-hint">@Model.LastMessage</p>
+}
 
-@if (Model.OlderVersions != null)
+@if (Model.OlderVersions != null && Model.OlderVersions.Length > 0)
 {
     <table>
         <tr>
@@ -34,5 +39,8 @@
             </tr>
         }
     </table>
-
+}
+else
+{
+    <partial name="_EmptyState" model="@("سابقه‌ای برای این صفحه ثبت نشده است.")" />
 }

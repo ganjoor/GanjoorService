@@ -6,19 +6,20 @@
     ViewData["Title"] = "انتقال بخش";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
 
 @if (!string.IsNullOrEmpty(Model.LastMessage))
 {
-    @Html.Raw(Model.LastMessage)
+    <div class="up-alert up-alert--info">@Html.Raw(Model.LastMessage)</div>
 }
 else
 {
     <script>
-        function deleteThisOne(id) {
-            if (!confirm('آیا از حذف این مورد اطمینان دارید؟'))
-                return;
-
+        async function deleteThisOne(id) {
+            var ok = await upConfirm('آیا از حذف این مورد اطمینان دارید؟');
+            if (!ok) return;
 
             $.ajax({
                 type: "DELETE",
@@ -27,10 +28,7 @@ else
                     id: id
                 },
                 error: function(e) {
-                    if (e.responseText == null)
-                        alert(e);
-                    else
-                        alert(e.responseText);
+                    upToast(e.responseText || String(e), 'error');
                 },
                 success: function() {
                     var trBlockId = '#tr-' + id;
@@ -40,71 +38,74 @@ else
 
         }
     </script>
-    <table>
-        <tr>
-            <th>مبدأ</th>
-            <th>مصرع اول</th>
-            <th>مقصد</th>
-            <th>مصرع اول</th>
-            <th>#</th>
-        </tr>
 
-        @foreach (var poem in Model.Poems)
-        {
-            <tr id="tr-@poem.Id">
-                <td>
-                    <a href="@poem.SrcPoemFullUrl">@poem.SrcPoemFullTitle</a>
-                </td>
-                <td>
-                    @poem.FirstVerse
-                </td>
-                <td>
-                    @if (!string.IsNullOrEmpty(poem.DestPoemFullUrl))
-                    {
-                        <a href="@poem.DestPoemFullUrl">@poem.DestPoemFullTitle</a>
-                    }
-                </td>
-                <td>
-                    @if (!string.IsNullOrEmpty(poem.DestPoemFirstVerse))
-                    {
-                        @poem.DestPoemFirstVerse
-                    }
-                </td>
-                <td>
-                    <a role="button" onclick="deleteThisOne(@poem.Id)" class="actionlink" title="حذف"><i class="noindent-info-button delete-icon"></i></a>
+    @if (Model.Poems != null && Model.Poems.Length > 0)
+    {
+        <table>
+            <tr>
+                <th>مبدأ</th>
+                <th>مصرع اول</th>
+                <th>مقصد</th>
+                <th>مصرع اول</th>
+                <th>#</th>
+            </tr>
+
+            @foreach (var poem in Model.Poems)
+            {
+                <tr id="tr-@poem.Id">
+                    <td>
+                        <a href="@poem.SrcPoemFullUrl">@poem.SrcPoemFullTitle</a>
+                    </td>
+                    <td>
+                        @poem.FirstVerse
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(poem.DestPoemFullUrl))
+                        {
+                            <a href="@poem.DestPoemFullUrl">@poem.DestPoemFullTitle</a>
+                        }
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(poem.DestPoemFirstVerse))
+                        {
+                            @poem.DestPoemFirstVerse
+                        }
+                    </td>
+                    <td>
+                        <a role="button" onclick="deleteThisOne(@poem.Id)" class="up-icon-btn" title="حذف" aria-label="حذف این مورد"><i class="noindent-info-button delete-icon"></i></a>
+                    </td>
+                </tr>
+            }
+
+            <tr>
+                <td colspan="3">
+                    <a href="/Admin/CatTrans?id=@Model.CatId&empty=1">فقط بدون مقصد</a>
                 </td>
             </tr>
-        }
+        </table>
+    }
+    else
+    {
+        <partial name="_EmptyState" model="@("موردی برای انتقال یافت نشد.")" />
+    }
 
-        <tr>
-            <td colspan="3">
-                <a href="/Admin/CatTrans?id=@Model.CatId&empty=1">فقط بدون مقصد</a>
-            </td>
-        </tr>
-    </table>
+    <div class="up-card">
+        <div class="up-field">
+            <label for="DestCatId">مشابه‌یابی در بخش</label>
+            <form method="post" action="/Admin/CatTrans?Handler=FindDuplicates&id=@Model.CatId" class="up-form-actions">
+                <input asp-for="DestCatId" style="flex:1;" />
+                <input type="submit" value="شروع مشابه‌یابی" class="up-btn up-btn--ghost" />
+            </form>
+        </div>
+    </div>
 
-    <table>
-        <tr>
-            <td>مشابه‌یابی در بخش:</td>
-            <td>
-                <form method="post" action="/Admin/CatTrans?Handler=FindDuplicates&id=@Model.CatId">
-                    <input asp-for="DestCatId" />
-                    <input type="submit" value="شروع مشابه‌یابی" />
-                </form>
-            </td>
-        </tr>
-    </table>
-
-    <table>
-        <tr>
-            <td>نهایی سازی انتقال به بخش:</td>
-            <td>
-                <form method="post" action="/Admin/CatTrans?Handler=Finalize&id=@Model.CatId">
-                    <input asp-for="DestCatId" />
-                    <input type="submit" value="نهایی سازی" />
-                </form>
-            </td>
-        </tr>
-    </table>
+    <div class="up-card">
+        <div class="up-field">
+            <label for="DestCatId">نهایی‌سازی انتقال به بخش</label>
+            <form method="post" action="/Admin/CatTrans?Handler=Finalize&id=@Model.CatId" class="up-form-actions">
+                <input asp-for="DestCatId" style="flex:1;" />
+                <input type="submit" value="نهایی سازی" class="up-btn up-btn--success" />
+            </form>
+        </div>
+    </div>
 }
-
