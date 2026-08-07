@@ -101,7 +101,7 @@
                     @foreach (var recitation in Model.GanjoorPage.Poem.Recitations)
                     {
                         <div class="tg-recitation">
-                            <audio controls preload="none">
+                            <audio id="tg-audio-@recitation.Id" controls preload="none">
                                 <source src="@recitation.Mp3Url" />
                             </audio>
                             <div class="tg-recitation-caption">
@@ -112,6 +112,15 @@
                                 }
                                 <a class="tg-recitation-download" href="@recitation.Mp3Url" download title="Боргирӣ">⬇</a>
                             </div>
+                            @if (recitation.InSyncWithText)
+                            {
+                                <script>
+                                    tgInitRecitationSync(
+                                        document.getElementById('tg-audio-@recitation.Id'),
+                                        '@Html.Raw($"{TajikGanjoor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")'
+                                    );
+                                </script>
+                            }
                         </div>
                     }
                 </div>

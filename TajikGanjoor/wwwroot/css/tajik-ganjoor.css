@@ -668,3 +668,11 @@ html, body {
         width: 100%;
     }
 }
+
+/* verse currently being recited, highlighted by recitation-sync.js */
+.tg-verse-active {
+    color: var(--tg-accent-deep) !important;
+    background-color: var(--tg-paper-edge);
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
