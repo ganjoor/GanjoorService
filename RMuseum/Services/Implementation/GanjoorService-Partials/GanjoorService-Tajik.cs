@@ -335,10 +335,11 @@ namespace RMuseum.Services.Implementation
         /// overwriting whatever is currently stored. GanjoorTajikVerse rows carry no VersePosition
         /// of their own, so it's recovered by joining back to the original GanjoorVerses row with
         /// the same Id (the SQLite import sets GanjoorTajikVerse.Id = the original verse's Id).
-        /// Safe to run on every poem regardless of whether it was actually affected by the CatPage
-        /// id bug that RegenerateTajikCatAndPoetHtmlTextAsync had (see its cat-loop comment) - this
-        /// simply recomputes each poem's correct HTML from its real verse data every time, so poems
-        /// that were never touched come out unchanged.
+        /// Only processes poems whose stored TajikHtmlText currently contains a link - correct poem
+        /// HTML (from PrepareHtmlText) is pure verse markup (.b/.m1/.m2/.n/.l) and never contains an
+        /// &lt;a href=...&gt;, so a link inside it is the signature the CatPage id bug left behind
+        /// (it overwrote the affected poems with category-style link-list HTML). Scoping to that
+        /// signature instead of every poem cuts the run down to just the actually-corrupted ones.
         /// </summary>
         public RServiceResult<bool> RestoreTajikPoemHtmlTextAsync()
         {
@@ -355,16 +356,20 @@ namespace RMuseum.Services.Implementation
 
                                     try
                                     {
-                                        var tajikPoems = await context.TajikPoems.AsNoTracking().ToListAsync();
-                                        int done = 0;
-                                        foreach (var tajikPoem in tajikPoems)
-                                        {
-                                            await jobProgressServiceEF.UpdateJob(job.Id, done, $"poem: {tajikPoem.Id}");
+                                        var corruptedPoemIds = await context.TajikPages
+                                            .Where(tp => tp.TajikHtmlText.Contains("<a href=") && context.TajikPoems.Any(pm => pm.Id == tp.Id))
+                                            .Select(tp => tp.Id)
+                                            .ToListAsync();
 
-                                            var tajikVerses = await context.TajikVerses.AsNoTracking().Where(v => v.PoemId == tajikPoem.Id).ToListAsync();
+                                        int done = 0;
+                                        foreach (var poemId in corruptedPoemIds)
+                                        {
+                                            await jobProgressServiceEF.UpdateJob(job.Id, done, $"poem: {poemId} ({done}/{corruptedPoemIds.Count})");
+
+                                            var tajikVerses = await context.TajikVerses.AsNoTracking().Where(v => v.PoemId == poemId).ToListAsync();
                                             if (tajikVerses.Count > 0)
                                             {
-                                                var originalVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == tajikPoem.Id).ToListAsync();
+                                                var originalVerses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poemId).ToListAsync();
                                                 var verses = tajikVerses
                                                     .Select(tv =>
                                                     {
@@ -381,7 +386,7 @@ namespace RMuseum.Services.Implementation
 
                                                 // TajikPages.Id == the poem's own Id for poem pages (see
                                                 // GanjoorService-TajikSQLiteImport.cs) - no GanjoorPages lookup needed here
-                                                var tajikPage = await context.TajikPages.Where(p => p.Id == tajikPoem.Id).SingleOrDefaultAsync();
+                                                var tajikPage = await context.TajikPages.Where(p => p.Id == poemId).SingleOrDefaultAsync();
                                                 if (tajikPage != null)
                                                 {
                                                     tajikPage.TajikHtmlText = PrepareHtmlText(verses);

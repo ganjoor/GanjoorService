@@ -4547,10 +4547,10 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// recovery job: regenerates TajikHtmlText for every Tajik poem from its TajikVerses,
-        /// overwriting whatever is currently stored - use after RegenerateTajikCatAndPoetHtmlText
-        /// (or anything else) may have corrupted poem pages. Check the Admin area's
-        /// LongRunningJobs page for progress.
+        /// recovery job: regenerates TajikHtmlText for Tajik poems whose stored HTML currently
+        /// contains a link (the signature left by the CatPage id corruption bug) - use after
+        /// RegenerateTajikCatAndPoetHtmlText (or anything else) may have corrupted poem pages.
+        /// Check the Admin area's LongRunningJobs page for progress.
         /// </summary>
         /// <returns></returns>
         [HttpPut]
