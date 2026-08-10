@@ -1,4 +1,4 @@
-﻿using GanjooRazor.Utils;
+using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
@@ -29,7 +29,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             LastMessage = "";
 
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {

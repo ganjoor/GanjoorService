@@ -1,4 +1,4 @@
-﻿using GanjooRazor.Models;
+using GanjooRazor.Models;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -173,7 +173,7 @@ namespace GanjooRazor.Pages
                 // Kept as its own using/PrepareClient block rather than WithSecureClientAsync: this
                 // handler needs to fall through to OnGetAsync() regardless of outcome (success,
                 // upload failure, or auth failure), which doesn't fit the early-return helper shape.
-                using (HttpClient secureClient = new HttpClient())
+                using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 {
                     if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {

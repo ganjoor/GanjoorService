@@ -111,7 +111,7 @@ namespace GanjooRazor.Areas.User.Pages
             LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]);
 
 
-            using (HttpClient _httpClient = new HttpClient())
+            using (HttpClient _httpClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(_httpClient, Request, Response))
                 {

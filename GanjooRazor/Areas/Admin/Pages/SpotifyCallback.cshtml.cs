@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -63,7 +63,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 string encryptedAccessToken = EncDecUtil.Encrypt(access_token, Configuration.GetSection("Spotify")["Salt"]);
                 string encryptedRefreshToken = EncDecUtil.Encrypt(refresh_token, Configuration.GetSection("Spotify")["Salt"]);
 
-                using (HttpClient secureClient = new HttpClient())
+                using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 {
                     if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {

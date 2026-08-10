@@ -56,7 +56,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         public async Task<IActionResult> OnPostAsync()
         {
             LastResult = "";
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
 

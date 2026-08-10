@@ -1,4 +1,4 @@
-﻿using GanjooRazor.Models.MuseumLink;
+using GanjooRazor.Models.MuseumLink;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -47,7 +47,7 @@ namespace GanjooRazor.Pages
             else
             if (Request.Query["final"] == "1")
             {
-                using (HttpClient secureClient = new HttpClient())
+                using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 {
                     if(await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {

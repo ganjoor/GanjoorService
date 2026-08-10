@@ -2493,10 +2493,10 @@
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.RestoreTajikPoemHtmlTextAsync">
             <summary>
-            recovery job: regenerates TajikHtmlText for every Tajik poem from its TajikVerses,
-            overwriting whatever is currently stored - use after RegenerateTajikCatAndPoetHtmlText
-            (or anything else) may have corrupted poem pages. Check the Admin area's
-            LongRunningJobs page for progress.
+            recovery job: regenerates TajikHtmlText for Tajik poems whose stored HTML currently
+            contains a link (the signature left by the CatPage id corruption bug) - use after
+            RegenerateTajikCatAndPoetHtmlText (or anything else) may have corrupted poem pages.
+            Check the Admin area's LongRunningJobs page for progress.
             </summary>
             <returns></returns>
         </member>
@@ -18327,10 +18327,9 @@
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.RestoreTajikPoemHtmlTextAsync">
             <summary>
-            recovery job: regenerates TajikHtmlText for every Tajik poem from its TajikVerses,
-            overwriting whatever is currently stored. Safe to run on every poem regardless of
-            whether it was actually affected by anything - it recomputes each poem's correct
-            HTML from its real verse data every time.
+            recovery job: regenerates TajikHtmlText for Tajik poems whose stored HTML currently
+            contains a link (the signature left by the CatPage id corruption bug - correct poem
+            HTML never contains one), overwriting just those with correct verse markup.
             </summary>
             <returns></returns>
         </member>
@@ -21377,10 +21376,11 @@
             overwriting whatever is currently stored. GanjoorTajikVerse rows carry no VersePosition
             of their own, so it's recovered by joining back to the original GanjoorVerses row with
             the same Id (the SQLite import sets GanjoorTajikVerse.Id = the original verse's Id).
-            Safe to run on every poem regardless of whether it was actually affected by the CatPage
-            id bug that RegenerateTajikCatAndPoetHtmlTextAsync had (see its cat-loop comment) - this
-            simply recomputes each poem's correct HTML from its real verse data every time, so poems
-            that were never touched come out unchanged.
+            Only processes poems whose stored TajikHtmlText currently contains a link - correct poem
+            HTML (from PrepareHtmlText) is pure verse markup (.b/.m1/.m2/.n/.l) and never contains an
+            &lt;a href=...&gt;, so a link inside it is the signature the CatPage id bug left behind
+            (it overwrote the affected poems with category-style link-list HTML). Scoping to that
+            signature instead of every poem cuts the run down to just the actually-corrupted ones.
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SearchTajikAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">

@@ -48,7 +48,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 return false;
             }
             CatId = int.Parse(Request.Query["id"]);
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -90,7 +90,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         public async Task<IActionResult> OnPostFindDuplicatesAsync()
         {
             CatId = int.Parse(Request.Query["id"]);
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -117,7 +117,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         public async Task<IActionResult> OnPostFinalizeAsync()
         {
             CatId = int.Parse(Request.Query["id"]);
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -143,7 +143,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnDeleteAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {

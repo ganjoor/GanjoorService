@@ -49,7 +49,7 @@ namespace GanjooRazor.Areas.User.Pages
                 return Redirect("/");
 
             LastError = "";
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
                     {
@@ -148,7 +148,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostModerateComment(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -167,7 +167,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnDeleteReport(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {

@@ -113,7 +113,7 @@ namespace GanjooRazor.Areas.User.Pages
             FatalError = "";
             CanEdit = Request.Cookies["CanEdit"] == "True";
 
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -200,7 +200,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostSendSectionCorrectionsAsync(int sectionId, string rhythm, string rhyme, int[] breakFromVIndices, string note, string lang, GanjoorPoemFormat? format)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -340,7 +340,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnGetComputeRhymeAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {

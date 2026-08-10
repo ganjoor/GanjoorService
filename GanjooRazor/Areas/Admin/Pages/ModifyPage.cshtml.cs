@@ -182,7 +182,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostAsync(GanjoorModifyPageViewModel ModifyModel)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -238,7 +238,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             if (Request.Form["directInsert"].Count == 1)
             {
-                using (HttpClient secureClient = new HttpClient())
+                using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 {
                     if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {
@@ -261,7 +261,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             else
             {
-                using (HttpClient secureClient = new HttpClient())
+                using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 {
                     if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {
@@ -289,7 +289,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostRebuildSitemapAsync()
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -306,7 +306,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostRebuildTajikSitemapAsync()
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -324,7 +324,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostRebuildStatsAsync()
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -342,7 +342,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         
         public async Task<IActionResult> OnPostRefillSectionsCoupletCountsAsync()
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -362,7 +362,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostRebuildRelatedPagesAsync()
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -379,7 +379,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostRebuildDigitalSourcesStatsAsync()
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -396,7 +396,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostTransilerateAsync()
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -417,7 +417,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostCleanCacheAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -434,7 +434,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostRebuildWordCountsAsync(int poetId)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -451,7 +451,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostImportNaskbanPaperSourcesAsync(int poetId, string username, string password)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -479,7 +479,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public async Task<IActionResult> OnPostImportMuseumPaperSourcesAsync(int poetId)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {

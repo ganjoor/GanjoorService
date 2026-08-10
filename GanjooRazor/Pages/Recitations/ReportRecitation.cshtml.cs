@@ -236,7 +236,7 @@ namespace GanjooRazor.Pages
             if (Report.NumberOfLinesAffected < 1)
                 Report.NumberOfLinesAffected = 1;
 
-            using (HttpClient _httpClient = new HttpClient())
+            using (HttpClient _httpClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(_httpClient, Request, Response))
                 {

@@ -36,7 +36,7 @@ namespace GanjooRazor.Areas.User.Pages
 
             CatId = 0;
 
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -73,7 +73,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnDeleteAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -94,7 +94,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnGetCategoryItemsAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -116,7 +116,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnDeleteItemAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {

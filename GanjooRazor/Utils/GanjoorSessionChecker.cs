@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
@@ -38,17 +38,55 @@ namespace GanjooRazor.Utils
             else
             if(r.StatusCode == HttpStatusCode.Unauthorized)
             {
-                var reLoginUrl = $"{APIRoot.Url}/api/users/relogin/{request.Cookies["SessionId"]}";
-                var reLoginResponse = await secureClient.PutAsync(reLoginUrl, null);
-
-                if (reLoginResponse.StatusCode != HttpStatusCode.OK)
+                var newToken = await TryReloginAsync(request, response);
+                if (string.IsNullOrEmpty(newToken))
                 {
                     return false;
                 }
 
-                LoggedOnUserModelEx loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await reLoginResponse.Content.ReadAsStringAsync());
+                secureClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", newToken);
 
-                secureClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loggedOnUser.Token);
+                return true;
+
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Calls /api/users/relogin/{sessionId} to get a fresh token for an expired/invalidated session,
+        /// and - if successful - writes the refreshed session cookies (Token, SessionId, UserId, ...) to
+        /// <paramref name="response"/>, exactly the way a fresh login would.
+        ///
+        /// This is the single place that knows how to recover from a 401 caused by token expiration; both
+        /// <see cref="PrepareClient(HttpClient, HttpRequest, HttpResponse)"/> (for the up-front session
+        /// check) and <see cref="GanjoorReloginHandler"/> (for any individual authorized API call that
+        /// unexpectedly gets a 401) call this same method so the relogin/cookie-refresh logic exists and
+        /// is fixed in exactly one place.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="response"></param>
+        /// <returns>the new bearer token on success, or null if the relogin attempt itself failed (e.g. the session is truly gone)</returns>
+        public static async Task<string> TryReloginAsync(HttpRequest request, HttpResponse response)
+        {
+            if (string.IsNullOrEmpty(request.Cookies["SessionId"]))
+                return null;
+
+            using (HttpClient reloginClient = new HttpClient())
+            {
+                if (!string.IsNullOrEmpty(request.Cookies["Token"]))
+                {
+                    reloginClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", request.Cookies["Token"]);
+                }
+
+                var reLoginUrl = $"{APIRoot.Url}/api/users/relogin/{request.Cookies["SessionId"]}";
+                var reLoginResponse = await reloginClient.PutAsync(reLoginUrl, null);
+
+                if (reLoginResponse.StatusCode != HttpStatusCode.OK)
+                {
+                    return null;
+                }
+
+                LoggedOnUserModelEx loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await reLoginResponse.Content.ReadAsStringAsync());
 
                 var cookieOption = new CookieOptions()
                 {
@@ -64,10 +102,10 @@ namespace GanjooRazor.Utils
 
                 bool canEditContent = false;
                 var ganjoorEntity = loggedOnUser.SecurableItem.Where(s => s.ShortName == RMuseumSecurableItem.GanjoorEntityShortName).SingleOrDefault();
-                if(ganjoorEntity != null)
+                if (ganjoorEntity != null)
                 {
                     var op = ganjoorEntity.Operations.Where(o => o.ShortName == SecurableItem.ModifyOperationShortName).SingleOrDefault();
-                    if(op != null)
+                    if (op != null)
                     {
                         canEditContent = op.Status;
                     }
@@ -75,11 +113,8 @@ namespace GanjooRazor.Utils
 
                 response.Cookies.Append("CanEdit", canEditContent.ToString(), cookieOption);
 
-
-                return true;
-
+                return loggedOnUser.Token;
             }
-            return false;
         }
 
         /// <summary>
@@ -92,7 +127,7 @@ namespace GanjooRazor.Utils
         public static async Task<bool> IsPermitted(HttpRequest request, HttpResponse response, string secuableShortName, string operationShortName)
         {
 
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(request, response)))
             {
                 if (await PrepareClient(secureClient, request, response))
                 {
@@ -129,7 +164,7 @@ namespace GanjooRazor.Utils
         /// <param name="viewData"></param>
         public static async Task ApplyPermissionsToViewData(HttpRequest request, HttpResponse response, ViewDataDictionary viewData)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(request, response)))
             {
                 if (await PrepareClient(secureClient, request, response))
                 {

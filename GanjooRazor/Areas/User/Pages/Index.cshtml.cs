@@ -49,7 +49,7 @@ namespace GanjooRazor.Areas.Panel.Pages
 
         private async Task _PreparePage()
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -91,7 +91,7 @@ namespace GanjooRazor.Areas.Panel.Pages
         {
             LastError = "";
             PasswordChanged = "";
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -135,7 +135,7 @@ namespace GanjooRazor.Areas.Panel.Pages
                 LastError = "گذرواژهٔ جدید با گذرواژهٔ کنونی یکسان است.";
                 return Page();
             }
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {

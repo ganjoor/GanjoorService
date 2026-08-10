@@ -1,4 +1,4 @@
-﻿using GanjooRazor.Pages;
+using GanjooRazor.Pages;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -206,7 +206,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             // Full-page form post: re-renders the page with LastMessage on failure rather than
             // returning a bare error result, so this keeps its own client/session block instead of
             // going through WithSecureClientAsync (which is for AJAX-style handlers).
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
 
@@ -249,7 +249,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         public async Task<IActionResult> OnPostNumberingAsync(GanjoorNumbering NumberingModel)
         {
             // Same note as OnPostAsync above re: full-page form post.
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
 
@@ -396,7 +396,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             // Full-page form post (file upload): re-renders the page with LastMessage, so this keeps
             // its own client/session block rather than using WithSecureClientAsync.
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
 
@@ -456,7 +456,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             // Full-page form post: re-renders the page with LastMessage on failure (or redirects on
             // success), so this keeps its own client/session block rather than using
             // WithSecureClientAsync.
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
 

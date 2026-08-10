@@ -1,4 +1,4 @@
-﻿using GanjooRazor.Utils;
+using GanjooRazor.Utils;
 using GSpotifyProxy.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -145,7 +145,7 @@ namespace GanjooRazor.Pages
             PoemMusicTrackViewModel.TrackType = PoemMusicTrackType.Spotify;
             InsertedSongId = 0;
 
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -200,7 +200,7 @@ namespace GanjooRazor.Pages
             {
                 if (!_memoryCache.TryGetValue("SpotifyAccessToken", out string spotifyAccessToken))
                 {
-                    using (HttpClient secureClient = new HttpClient())
+                    using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                     {
                         if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                         {
@@ -282,7 +282,7 @@ namespace GanjooRazor.Pages
         {
             if (_memoryCache.TryGetValue("SpotifyAccessToken", out string spotifyAccessToken))
             {
-                using (HttpClient secureClient = new HttpClient())
+                using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 {
                     if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {
@@ -311,7 +311,7 @@ namespace GanjooRazor.Pages
             }
 
             string refresh_token;
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -348,7 +348,7 @@ namespace GanjooRazor.Pages
                 var parsed = JObject.Parse(json);
                 string access_token = parsed.SelectToken("access_token").Value<string>();
                 string encryptedAccessToken = EncDecUtil.Encrypt(access_token, Configuration.GetSection("Spotify")["Salt"]);
-                using (HttpClient secureClient = new HttpClient())
+                using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 {
                     if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {
@@ -388,7 +388,7 @@ namespace GanjooRazor.Pages
             {
                 if (!_memoryCache.TryGetValue("SpotifyAccessToken", out string spotifyAccessToken))
                 {
-                    using (HttpClient secureClient = new HttpClient())
+                    using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                     {
                         if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                         {
@@ -499,7 +499,7 @@ namespace GanjooRazor.Pages
             {
                 if (!_memoryCache.TryGetValue("SpotifyAccessToken", out string spotifyAccessToken))
                 {
-                    using (HttpClient secureClient = new HttpClient())
+                    using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                     {
                         if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                         {
@@ -602,7 +602,7 @@ namespace GanjooRazor.Pages
             {
                 if (!_memoryCache.TryGetValue("SpotifyAccessToken", out string spotifyAccessToken))
                 {
-                    using (HttpClient secureClient = new HttpClient())
+                    using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                     {
                         if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                         {

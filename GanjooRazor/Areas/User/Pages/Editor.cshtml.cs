@@ -135,7 +135,7 @@ namespace GanjooRazor.Areas.User.Pages
             CanEdit = Request.Cookies["CanEdit"] == "True";
 
             ShowAdminOps = CanEdit && Request.Query["admin"] == "1";
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -281,7 +281,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostDeletePoemCorrectionsAsync(int poemid)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -325,7 +325,7 @@ namespace GanjooRazor.Areas.User.Pages
                     return new BadRequestObjectResult("خطای پیش‌بینی نشده: لطفاً نشانی این شعر را به ganjoor@ganjoor.net ارسال بفرمایید تا بررسی بیشتری انجام شود.");
                 }
 
-                using (HttpClient secureClient = new HttpClient())
+                using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 {
                     if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {
@@ -495,7 +495,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostBreakPoemAsync(int poemId, int vOrder)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -526,7 +526,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostUpdateRelatedSectionsAsync(int meterId, string rhyme)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -549,7 +549,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostRefillCoupletIndicesAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -572,7 +572,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostRegeneratePoemSectionsAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -598,7 +598,7 @@ namespace GanjooRazor.Areas.User.Pages
         public async Task<IActionResult> OnGetComputeRhymeAsync(int id)
         {
 
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -620,7 +620,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostNewGeoDateTagAsync(int poemId, int locationId, string year, int month, string day, bool verifiedDate, bool ignoreInCategory)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -656,7 +656,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnDeleteGeoDateTagAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -678,7 +678,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostSaveMetaAsync(int poemId, bool noindex, string redirectfromurl, int mixedmodeorder)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {

@@ -1,4 +1,4 @@
-﻿using DNTPersianUtils.Core;
+using DNTPersianUtils.Core;
 using GanjooRazor.Utils;
 using KontorService.Models.Reporting.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -148,7 +148,7 @@ namespace GanjooRazor.Pages
                 && Guid.TryParse(Request.Cookies["UserId"], out Guid userId)
                 && userId != Guid.Empty)
             {
-                using (HttpClient secureClient = new HttpClient())
+                using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 {
                     if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {
@@ -368,7 +368,7 @@ namespace GanjooRazor.Pages
 
             if (GanjoorPage.Poem.Recitations.Length > 0)
             {
-                using (HttpClient secureClient = new HttpClient())
+                using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 {
                     if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {
@@ -392,7 +392,7 @@ namespace GanjooRazor.Pages
 
             if (GanjoorPage.Poem.Comments.Length > 0)
             {
-                using (HttpClient secureClient = new HttpClient())
+                using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 {
                     if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {
@@ -982,7 +982,7 @@ namespace GanjooRazor.Pages
                 if (Guid.TryParse(Request.Cookies["UserId"], out Guid userId))
                     if (userId != Guid.Empty)
                     {
-                        using (HttpClient secureClient = new HttpClient())
+                        using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                         {
                             if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                             {

@@ -32,7 +32,7 @@ namespace GanjooRazor.Areas.User.Pages
 
             if (!string.IsNullOrWhiteSpace(Request.Query["id"]))
             {
-                using (HttpClient secureClient = new HttpClient())
+                using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 {
                     if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                     {
@@ -65,7 +65,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
                 HttpResponseMessage response =

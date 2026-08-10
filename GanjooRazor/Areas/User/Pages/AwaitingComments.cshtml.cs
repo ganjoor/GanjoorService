@@ -44,7 +44,7 @@ namespace GanjooRazor.Areas.User.Pages
                 return Redirect("/");
 
             LastError = "";
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
 
@@ -151,7 +151,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnDeleteCommentAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -173,7 +173,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPutApproveAsync(int id)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -193,7 +193,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostStopKeepingAsync()
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -213,7 +213,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostStartKeepingAsync()
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {

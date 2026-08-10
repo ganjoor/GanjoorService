@@ -1,4 +1,4 @@
-﻿using GanjooRazor.Models.BeepTunes;
+using GanjooRazor.Models.BeepTunes;
 using GanjooRazor.Utils;
 using GSpotifyProxy.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -132,7 +132,7 @@ namespace GanjooRazor.Pages
             PoemMusicTrackViewModel.TrackType = PoemMusicTrackType.BeepTunesOrKhosousi;
             InsertedSongId = 0;
 
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {

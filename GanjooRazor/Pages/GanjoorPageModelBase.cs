@@ -65,7 +65,7 @@ namespace GanjooRazor.Pages
             Func<HttpClient, Task<IActionResult>> operation,
             IActionResult unauthorizedResult = null)
         {
-            using var secureClient = new HttpClient();
+            using var secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response));
             if (!await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
             {
                 return unauthorizedResult ?? new BadRequestObjectResult(NotLoggedInMessage);

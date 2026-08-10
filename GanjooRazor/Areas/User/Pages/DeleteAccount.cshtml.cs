@@ -55,7 +55,7 @@ namespace GanjooRazor.Areas.User.Pages
         {
             Step1 = true;
             FatalError = "";
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
@@ -90,7 +90,7 @@ namespace GanjooRazor.Areas.User.Pages
         {
             FatalError = "";
             Step1 = false;
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {

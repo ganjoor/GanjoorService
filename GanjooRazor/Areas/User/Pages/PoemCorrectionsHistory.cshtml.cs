@@ -60,7 +60,7 @@ namespace GanjooRazor.Areas.User.Pages
             CanEdit = Request.Cookies["CanEdit"] == "True";
 
             LastError = "";
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
 
@@ -166,7 +166,7 @@ namespace GanjooRazor.Areas.User.Pages
 
         public async Task<IActionResult> OnPostRollBackCorrectionAsync(int correctionId)
         {
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {

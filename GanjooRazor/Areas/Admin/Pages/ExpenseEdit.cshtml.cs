@@ -60,7 +60,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         public async Task<IActionResult> OnPostAsync()
         {
             LastMessage = "";
-            using (HttpClient secureClient = new HttpClient())
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
                 await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response);
                 HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/donations/expense/{Request.Query["id"]}", new StringContent(JsonConvert.SerializeObject(Expense), Encoding.UTF8, "application/json"));
