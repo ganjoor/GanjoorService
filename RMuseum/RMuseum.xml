@@ -20601,6 +20601,15 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._RegenerateHalfCenturies(RMuseum.DbContext.RMuseumDbContext)">
+            <summary>
+            same as <see cref="M:RMuseum.Services.Implementation.GanjoorService.RegenerateHalfCenturiesAsync"/>, but against an explicitly-passed
+            context instead of the injected <see cref="F:RMuseum.Services.Implementation.GanjoorService._context"/> — needed so background jobs
+            that construct their own short-lived <see cref="T:RMuseum.DbContext.RMuseumDbContext"/> (because the
+            request-scoped <see cref="F:RMuseum.Services.Implementation.GanjoorService._context"/> may already be disposed by the time a background
+            job runs) can call this too, e.g. right after a public-data import finishes.
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.RateCommentAsync(System.Guid,System.Int32,System.Int16)">
             <summary>
             like / dislike / clear rating for a comment
@@ -21150,7 +21159,18 @@
             of what actually gets written.
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportCatTreeToJson(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorCat,System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.Dictionary{System.Int32,System.String})">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportPoetContent(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorPoet,RMuseum.Models.Ganjoor.GanjoorCat,System.Collections.Generic.Dictionary{System.Int32,RMuseum.Models.Ganjoor.GanjoorMetre},System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.Dictionary{System.Int32,System.String})">
+            <summary>
+            Batch-loads this poet's entire sections/verses in two queries (instead of the
+            two-per-poem queries the old per-poem approach ran), then walks the poet's category
+            tree writing everything from memory. This is the fix for the export consistently
+            taking about as long on every run regardless of how much content changed — the
+            "skip unchanged files" logic in DeterministicJsonWriter only ever saved disk writes,
+            never the DB round-trips, which were the actual dominant cost (roughly 3 sequential
+            queries per poem — tens of thousands of round-trips for the full corpus, every run).
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportCatTreeToJson(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorCat,System.Collections.Generic.Dictionary{System.Int32,RMuseum.Models.Ganjoor.GanjoorMetre},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorPoemSection}},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse}},System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.Dictionary{System.Int32,System.String})">
             <summary>
             recursively writes _cat.json for <paramref name="cat"/> and every poem directly
             under it, then recurses into child categories. Returns the number of poems written
@@ -21161,11 +21181,25 @@
             either; every category/poem under a published poet is exported.
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportPoemToJson(System.String,RMuseum.Models.Ganjoor.GanjoorPoem,RMuseum.Models.Ganjoor.GanjoorMetre,System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorPoemSection},System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse})">
+            <summary>
+            Pure in-memory write — no DB access. Sections/verses/metre are pre-loaded by the caller
+            (see <see cref="M:RMuseum.Services.Implementation.GanjoorService.ExportPoetContent(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorPoet,RMuseum.Models.Ganjoor.GanjoorCat,System.Collections.Generic.Dictionary{System.Int32,RMuseum.Models.Ganjoor.GanjoorMetre},System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.Dictionary{System.Int32,System.String})"/>) instead of queried per poem.
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.BuildApiMarkdown(RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto)">
             <summary>
             generates the repo-root API.md every run, so the docs can never drift out of sync with
             UrlTemplates/IdIndexShardSize in manifest.json. Not hand-edited — if you want to add
             prose, add it here, not in the generated file.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BuildReadmeMarkdown(RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto)">
+            <summary>
+            generates the repo-root README.md every run — the landing document GitHub shows by
+            default, so this is where a first-time visitor's "where do I even start?" question
+            needs to be answered in the first few lines, before they'd ever think to look for
+            API.md.
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SyntheticCatPageId(System.Int32)">

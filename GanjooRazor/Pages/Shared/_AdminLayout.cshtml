@@ -186,6 +186,25 @@
             });
         }
 
+        async function regeneratePublicData() {
+            var ok = await upConfirm('آیا از بازسازی و ارسال دادهٔ عمومی گنجور (مخزن گیت) اطمینان دارید؟ ممکن است مدتی طول بکشد.');
+            if (!ok) return;
+
+            var url = '?handler=RegeneratePublicData';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                error: function () {
+                    upToast('خطا رخ داد.', 'error');
+                },
+                success: function () {
+                    upToast('فرایند بازسازی دادهٔ عمومی در پس‌زمینه شروع شد.', 'success');
+                },
+
+            });
+        }
+
         
 
         async function refillCoupletCounts() {

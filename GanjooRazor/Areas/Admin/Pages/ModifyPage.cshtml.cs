@@ -339,6 +339,28 @@ namespace GanjooRazor.Areas.Admin.Pages
             return new OkObjectResult(false);
         }
 
+        /// <summary>
+        /// (re)generate the public git-tracked data export (poets/categories/poems as JSON,
+        /// pushed to the configured git remote) — runs as a background job, same as the other
+        /// rebuild/regenerate tools on this page; check the Jobs page for progress
+        /// </summary>
+        public async Task<IActionResult> OnPostRegeneratePublicDataAsync()
+        {
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/publicdata/batchexport", null);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    }
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
+
         
         public async Task<IActionResult> OnPostRefillSectionsCoupletCountsAsync()
         {
