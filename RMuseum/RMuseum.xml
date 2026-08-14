@@ -1781,6 +1781,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartImportFromPublicDataRepo(RMuseum.Models.Ganjoor.PublicExport.PublicDataImportRequestDto)">
+            <summary>
+            (re)build local Ganjoor content from a public data export tree (local folder or HTTP) —
+            intended for local development use, not for production servers
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetUserPublicProfile(System.Guid)">
             <summary>
             Get user public profile
@@ -11180,6 +11187,28 @@
             couplets (virtual) for Masnavi
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.PublicDataImportRequestDto">
+            <summary>
+            where to read the exported public data tree from, for StartImportFromPublicDataRepo
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicDataImportRequestDto.UseHttp">
+            <summary>
+            true: fetch over HTTP, Location is a base URL (e.g. jsDelivr).
+            false: read from a local folder, Location is a filesystem path (e.g. a `git clone`).
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicDataImportRequestDto.Location">
+            <summary>
+            base URL (UseHttp=true) or local folder path (UseHttp=false) of the exported data tree
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicDataImportRequestDto.PoetId">
+            <summary>
+            0 imports every poet in the export; a specific poet id imports only that poet — handy
+            on a slow connection, or when only one poet's data is needed for local testing
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto">
             <summary>
             Root manifest written at the repository root (manifest.json).
@@ -11196,6 +11225,18 @@
             <summary>
             UTC generation timestamp of this run (informational only — never embed per-file
             timestamps inside poem/cat files, that would defeat deterministic diffs)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto.IdIndexShardSize">
+            <summary>
+            number of ids grouped into each id-index shard file (see UrlTemplates.CatIdIndexShard /
+            PoemIdIndexShard). A consumer resolving id X fetches shard file "{X / IdIndexShardSize}.json".
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto.UrlTemplates">
+            <summary>
+            URL patterns for every file kind in this export, so an app can treat this repo as an
+            API without having to read the export source code. {placeholders} are literal.
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PublicExport.PoetPublicDto">
@@ -17451,6 +17492,17 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartImportFromPublicDataRepo(System.Boolean,System.String,System.Int32)">
+            <summary>
+            (re)build local Ganjoor content (poets/categories/poems/verses/sections + their pages)
+            from a public data export tree, read locally or over HTTP. Safe to re-run — existing
+            entities (by id) are left untouched, only missing ones are added.
+            </summary>
+            <param name="useHttp">true: fetch over HTTP (location is a base URL). false: read from a local folder (location is a path).</param>
+            <param name="location">base URL or local folder path of the exported data tree</param>
+            <param name="poetId">0 imports every poet; a specific id imports only that poet (useful on a slow connection)</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.HealthCheckContents">
             <summary>
             examine site pages for broken links
@@ -20344,6 +20396,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -21077,21 +21132,64 @@
             <param name="metre"></param>
             <returns></returns>
         </member>
+        <member name="F:RMuseum.Services.Implementation.GanjoorService.IdIndexShardSize">
+            <summary>
+            how many ids are grouped into each id-index shard file — kept small enough that a
+            shard stays a cheap single fetch, large enough that the id-space doesn't produce an
+            unreasonable number of tiny files. 2000 ids/shard means ~500 shard files for Ganjoor's
+            current poem count.
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBatchExportPublicGitData">
             <summary>
-            start exporting all published Ganjoor data (poets/categories/poems/verses) to a
+            start exporting all Ganjoor data (poets/categories/poems/verses) belonging to
+            published poets to a
             git-tracked JSON tree and pushing it to the configured remote. User-linked tables
             (comments, bookmarks, visits, corrections, accounting, ...) are never touched by
             this code path — see RMuseum.Models.Ganjoor.PublicExport for the allowlisted shape
             of what actually gets written.
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportCatTreeToJson(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorCat)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportCatTreeToJson(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorCat,System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.Dictionary{System.Int32,System.String})">
             <summary>
-            recursively writes _cat.json for <paramref name="cat"/> and every published poem directly
-            under it, then recurses into published child categories. Returns the number of poems written
-            in this subtree (for manifest counts).
+            recursively writes _cat.json for <paramref name="cat"/> and every poem directly
+            under it, then recurses into child categories. Returns the number of poems written
+            in this subtree (for manifest counts). Only the poet-level Published flag is a real
+            visibility gate in this codebase (see GetPoets) — GanjoorCat.Published and
+            GanjoorPoem.Published are not checked anywhere the live site actually serves content
+            (GetCatByUrl/GetPoemByUrl ignore them entirely), so this export doesn't filter on them
+            either; every category/poem under a published poet is exported.
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BuildApiMarkdown(RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto)">
+            <summary>
+            generates the repo-root API.md every run, so the docs can never drift out of sync with
+            UrlTemplates/IdIndexShardSize in manifest.json. Not hand-edited — if you want to add
+            prose, add it here, not in the generated file.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SyntheticCatPageId(System.Int32)">
+            <summary>
+            Category (and root-poet) pages don't carry a real production page id in the public
+            export — GanjoorPage isn't part of that data set — so this importer mints one
+            deterministically from the category id, kept well clear of any real id range so it can
+            never collide with an actual production GanjoorPage/GanjoorPoem id. Poem pages don't
+            need this: they reuse the poem's own id, matching the convention already used by
+            _ImportSQLiteCatChildren (see GanjoorService-SQLiteImport.cs).
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartImportFromPublicDataRepo(System.Boolean,System.String,System.Int32)">
+            <summary>
+            (Re)builds Ganjoor content — poets, categories, poems, verses, sections, and their
+            GanjoorPage routing entries — from a public data export tree, read either from a local
+            `git clone` or fetched over HTTP. Safe to run against an empty database (bootstrap) or
+            one that already has some content (merge): every entity is looked up by its id first
+            and only inserted if missing, so re-running never duplicates or overwrites anything —
+            including content a developer may have hand-edited locally after a previous import.
+            </summary>
+            <param name="useHttp">true: fetch over HTTP (location is a base URL). false: read from a local folder (location is a path).</param>
+            <param name="location">base URL or local folder path of the exported data tree</param>
+            <param name="poetId">0 imports every poet in the export's manifest; a specific id imports only that poet — useful on a slow connection, or when a developer only needs one poet's data for local testing</param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ModerateGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemModerationViewModel,System.Guid)">
             <summary>
@@ -23945,6 +24043,30 @@
             nothing changed since last run — a normal, expected outcome on most nightly runs).
             </summary>
         </member>
+        <member name="T:RMuseum.Utils.PublicDataExport.IdIndexWriter">
+            <summary>
+            A bare numeric id (poem id, category id, ...) is meaningless to a static file tree unless
+            something maps it to a path. Writing one giant id-&gt;path file doesn't scale to Ganjoor's
+            poem count, so ids are bucketed by <c>id / shardSize</c> into small shard files a client can
+            compute the name of directly — no lookup-before-the-lookup needed.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.PublicDataExport.IdIndexWriter.WriteFlatIndexAsync(System.String,System.String,System.Collections.Generic.Dictionary{System.Int32,System.String})">
+            <summary>
+            Writes every id in <paramref name="idToPath"/> to poets-by-id.json (or configured file
+            name) with no sharding — for tables small enough that one file is fine (e.g. poets: a
+            few hundred rows).
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.PublicDataExport.IdIndexWriter.WriteShardedIndexAsync(System.String,System.String,System.Collections.Generic.Dictionary{System.Int32,System.String},System.Int32)">
+            <summary>
+            Writes <paramref name="idToPath"/> as bucketed shard files under
+            <paramref name="repoRoot"/>/index/{category}-by-id/{bucket}.json, where
+            bucket = id / shardSize. Only buckets that actually contain ids get a file — an empty
+            bucket produces no request-able file, which is fine since a client only ever asks for
+            the bucket of an id it already has.
+            </summary>
+        </member>
         <member name="T:RMuseum.Utils.PublicDataExport.PublicExportSafetyGuard">
             <summary>
             Belt-and-suspenders check on top of the allowlist design: even though the export DTOs
@@ -23963,6 +24085,38 @@
             <summary>
             Scans every public class in the PublicExport DTO namespace. Throws InvalidOperationException
             naming the offending type/property if anything trips the checks.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Utils.PublicDataExport.TextFileWriter">
+            <summary>
+            Same no-op-if-unchanged, LF/UTF-8-no-BOM behavior as <see cref="T:RMuseum.Utils.PublicDataExport.DeterministicJsonWriter"/>,
+            for plain-text files (currently just the generated API.md) rather than JSON.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Utils.PublicDataImport.IPublicDataSource">
+            <summary>
+            Abstracts "read a relative path from the public data export" so the importer doesn't care
+            whether it's reading a local `git clone` or fetching over HTTP from a CDN.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.PublicDataImport.IPublicDataSource.ReadTextAsync(System.String)">
+            <summary>
+            Returns the file's text content, or null if it doesn't exist at this path
+            (a missing file is a normal, expected outcome — e.g. a leaf category has no children).
+            </summary>
+        </member>
+        <member name="T:RMuseum.Utils.PublicDataImport.LocalFileSystemPublicDataSource">
+            <summary>
+            Reads from a local folder — the expected path for a developer who already ran
+            `git clone` on the public data repo, which is both the faster option and the one that
+            doesn't put load on jsDelivr/GitHub for a full-corpus import.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Utils.PublicDataImport.HttpPublicDataSource">
+            <summary>
+            Fetches over HTTP — point <paramref name="baseUrl"/> at either the jsDelivr CDN URL
+            (https://cdn.jsdelivr.net/gh/ORG/REPO@main/) or raw.githubusercontent.com. A missing file
+            (404) is treated the same as "doesn't exist", not an error.
             </summary>
         </member>
         <member name="P:RMuseum.WebServiceUrl.Url">

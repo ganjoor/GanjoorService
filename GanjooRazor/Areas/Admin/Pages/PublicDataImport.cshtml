@@ -1,0 +1,92 @@
+@page
+@model GanjooRazor.Areas.Admin.Pages.PublicDataImportModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "درون‌ریزی دادهٔ عمومی گنجور";
+}
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <div class="up-alert up-alert--info">@Model.LastMessage</div>
+}
+
+<div class="up-alert up-alert--info">
+    این ابزار محتوای گنجور (سخنوران، بخش‌ها، شعرها) را از روی
+    <a href="https://github.com/ganjoor/ganjoor-data" target="_blank">مخزن گیت دادهٔ عمومی گنجور</a>
+    (یا یک پوشهٔ محلی که از آن <code>git clone</code> شده) در پایگاه‌دادهٔ همین نسخه وارد می‌کند —
+    راهی سریع‌تر و ساده‌تر برای راه‌اندازی یک فورک یا نسخهٔ محلی کارآمد از گنجور، به‌جای واردکردن
+    فایل‌های اسکوئل‌لایت به‌صورت جداگانه برای هر سخنور.
+    <br />
+    هر بار اجرا با خیال راحت قابل تکرار است: فقط داده‌هایی که هنوز در پایگاه‌داده نیستند اضافه
+    می‌شوند و هیچ داده‌ای بازنویسی یا حذف نمی‌شود.
+    <br />
+    این فرایند در پس‌زمینه اجرا می‌شود؛ برای پیگیری وضعیت و درصد پیشرفت به
+    <a asp-area="Admin" asp-page="LongRunningJobs">صفحهٔ کارها</a> مراجعه کنید.
+</div>
+
+<script>
+    async function startPublicDataImport() {
+        var useHttp = $('#source-http').is(':checked');
+        var location = $('#location').val();
+        var poetId = parseInt($('#poet-id').val(), 10) || 0;
+
+        if (!location) {
+            upToast('مسیر پوشه یا نشانی اینترنتی را وارد کنید.', 'error');
+            return;
+        }
+
+        var confirmMsg = poetId === 0
+            ? 'آیا از درون‌ریزی دادهٔ همهٔ سخنوران اطمینان دارید؟ ممکن است مدتی طول بکشد.'
+            : 'آیا از درون‌ریزی دادهٔ سخنور با کد ' + poetId + ' اطمینان دارید؟';
+
+        var ok = await upConfirm(confirmMsg);
+        if (!ok) return;
+
+        $.ajax({
+            type: "POST",
+            url: '?handler=Import',
+            data: {
+                useHttp: useHttp,
+                location: location,
+                poetId: poetId
+            },
+            error: function (e) {
+                upToast(e.responseText || 'خطا رخ داد.', 'error');
+            },
+            success: function () {
+                upToast('فرایند درون‌ریزی در پس‌زمینه شروع شد. برای پیگیری وضعیت به صفحهٔ کارها مراجعه کنید.', 'success');
+            },
+        });
+    }
+</script>
+
+<div style="display:flex;flex-direction:column;gap:var(--up-space-3);max-width:560px;">
+    <div>
+        <label style="display:block;margin-bottom:4px;">
+            <input type="radio" name="source" id="source-local" value="local" checked />
+            پوشهٔ محلی (که با <code>git clone</code> گرفته‌اید)
+        </label>
+        <label style="display:block;">
+            <input type="radio" name="source" id="source-http" value="http" />
+            نشانی اینترنتی (مثلاً jsDelivr یا raw.githubusercontent.com)
+        </label>
+    </div>
+
+    <div>
+        <label for="location" style="display:block;margin-bottom:4px;">مسیر پوشه یا نشانی:</label>
+        <input type="text" id="location" style="width:100%;" placeholder="C:\ganjoor-public-data یا https://cdn.jsdelivr.net/gh/ganjoor/ganjoor-data@main/" />
+    </div>
+
+    <div>
+        <label for="poet-id" style="display:block;margin-bottom:4px;">کد سخنور (۰ برای همهٔ سخنوران):</label>
+        <input type="number" id="poet-id" value="0" style="width:140px;" />
+    </div>
+
+    <div>
+        <a role="button" onclick="startPublicDataImport()" class="up-btn up-btn--success">شروع درون‌ریزی</a>
+    </div>
+</div>
