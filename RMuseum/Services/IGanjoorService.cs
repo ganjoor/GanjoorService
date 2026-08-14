@@ -647,8 +647,9 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="useHttp">true: fetch over HTTP (location is a base URL). false: read from a local folder (location is a path).</param>
         /// <param name="location">base URL or local folder path of the exported data tree</param>
+        /// <param name="poetId">0 imports every poet; a specific id imports only that poet (useful on a slow connection)</param>
         /// <returns></returns>
-        RServiceResult<bool> StartImportFromPublicDataRepo(bool useHttp, string location);
+        RServiceResult<bool> StartImportFromPublicDataRepo(bool useHttp, string location, int poetId = 0);
 
         /// <summary>
         /// examine site pages for broken links

@@ -40,9 +40,11 @@ namespace RMuseum.Services.Implementation
         /// one that already has some content (merge): every entity is looked up by its id first
         /// and only inserted if missing, so re-running never duplicates or overwrites anything —
         /// including content a developer may have hand-edited locally after a previous import.
-        /// Always imports every poet in the export's manifest; there's no partial/single-poet mode.
         /// </summary>
-        public RServiceResult<bool> StartImportFromPublicDataRepo(bool useHttp, string location)
+        /// <param name="useHttp">true: fetch over HTTP (location is a base URL). false: read from a local folder (location is a path).</param>
+        /// <param name="location">base URL or local folder path of the exported data tree</param>
+        /// <param name="poetId">0 imports every poet in the export's manifest; a specific id imports only that poet — useful on a slow connection, or when a developer only needs one poet's data for local testing</param>
+        public RServiceResult<bool> StartImportFromPublicDataRepo(bool useHttp, string location, int poetId = 0)
         {
             try
             {
@@ -70,11 +72,19 @@ namespace RMuseum.Services.Implementation
 
                                 var manifest = JsonSerializer.Deserialize<PublicExportManifestDto>(manifestJson, _importJsonOptions);
 
+                                var poetsToImport = manifest.Poets;
+                                if (poetId != 0)
+                                {
+                                    poetsToImport = manifest.Poets.Where(p => p.Id == poetId).ToList();
+                                    if (poetsToImport.Count == 0)
+                                        throw new Exception($"poet id {poetId} was not found in manifest.json");
+                                }
+
                                 int poetIndex = 0;
-                                foreach (var poetEntry in manifest.Poets)
+                                foreach (var poetEntry in poetsToImport)
                                 {
                                     poetIndex++;
-                                    await jobProgressServiceEF.UpdateJob(job.Id, (int)(100.0 * poetIndex / Math.Max(1, manifest.Poets.Count)), $"Importing {poetEntry.Nickname}");
+                                    await jobProgressServiceEF.UpdateJob(job.Id, (int)(100.0 * poetIndex / Math.Max(1, poetsToImport.Count)), $"Importing {poetEntry.Nickname}");
                                     await ImportPoetFromPublicData(context, source, poetEntry.Id, poetEntry.FullUrl);
                                 }
 

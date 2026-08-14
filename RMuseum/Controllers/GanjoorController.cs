@@ -2462,7 +2462,7 @@ namespace RMuseum.Controllers
         {
             try
             {
-                var res = _ganjoorService.StartImportFromPublicDataRepo(request.UseHttp, request.Location);
+                var res = _ganjoorService.StartImportFromPublicDataRepo(request.UseHttp, request.Location, request.PoetId);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 return Ok();

@@ -15,5 +15,11 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         /// base URL (UseHttp=true) or local folder path (UseHttp=false) of the exported data tree
         /// </summary>
         public string Location { get; set; }
+
+        /// <summary>
+        /// 0 imports every poet in the export; a specific poet id imports only that poet — handy
+        /// on a slow connection, or when only one poet's data is needed for local testing
+        /// </summary>
+        public int PoetId { get; set; }
     }
 }
