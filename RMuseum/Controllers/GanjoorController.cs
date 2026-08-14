@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Auth.ViewModel;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Ganjoor.PublicExport;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.GanjoorIntegration;
@@ -2437,6 +2438,31 @@ namespace RMuseum.Controllers
             try
             {
                 var res = _ganjoorService.StartBatchExportPublicGitData();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// (re)build local Ganjoor content from a public data export tree (local folder or HTTP) —
+        /// intended for local development use, not for production servers
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("publicdata/import")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public IActionResult StartImportFromPublicDataRepo([FromBody] PublicDataImportRequestDto request)
+        {
+            try
+            {
+                var res = _ganjoorService.StartImportFromPublicDataRepo(request.UseHttp, request.Location);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 return Ok();

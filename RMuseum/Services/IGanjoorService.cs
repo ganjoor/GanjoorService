@@ -641,6 +641,16 @@ namespace RMuseum.Services
         RServiceResult<bool> StartBatchExportPublicGitData();
 
         /// <summary>
+        /// (re)build local Ganjoor content (poets/categories/poems/verses/sections + their pages)
+        /// from a public data export tree, read locally or over HTTP. Safe to re-run — existing
+        /// entities (by id) are left untouched, only missing ones are added.
+        /// </summary>
+        /// <param name="useHttp">true: fetch over HTTP (location is a base URL). false: read from a local folder (location is a path).</param>
+        /// <param name="location">base URL or local folder path of the exported data tree</param>
+        /// <returns></returns>
+        RServiceResult<bool> StartImportFromPublicDataRepo(bool useHttp, string location);
+
+        /// <summary>
         /// examine site pages for broken links
         /// </summary>
         /// <returns></returns>
