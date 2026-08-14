@@ -634,6 +634,13 @@ namespace RMuseum.Services
         RServiceResult<bool> StartBatchGenerateGDBFiles();
 
         /// <summary>
+        /// start exporting all published data (poets/categories/poems/verses) to the public
+        /// git-tracked JSON data set, committing and pushing changes since the last run
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartBatchExportPublicGitData();
+
+        /// <summary>
         /// examine site pages for broken links
         /// </summary>
         /// <returns></returns>

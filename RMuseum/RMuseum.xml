@@ -1775,6 +1775,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartBatchExportPublicGitData">
+            <summary>
+            start exporting all published Ganjoor data to the public git-tracked JSON data set
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetUserPublicProfile(System.Guid)">
             <summary>
             Get user public profile
@@ -11174,6 +11180,61 @@
             couplets (virtual) for Masnavi
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto">
+            <summary>
+            Root manifest written at the repository root (manifest.json).
+            Lets consuming apps detect schema changes and do cheap "did anything change" checks
+            without downloading the whole tree.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto.SchemaVersion">
+            <summary>
+            bump this whenever a DTO shape changes in a way consumers should know about
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto.GeneratedAtUtc">
+            <summary>
+            UTC generation timestamp of this run (informational only — never embed per-file
+            timestamps inside poem/cat files, that would defeat deterministic diffs)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.PoetPublicDto">
+            <summary>
+            poet.json — biographical data only, no account/user linkage exists on GanjoorPoet at all
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.CatPublicDto">
+            <summary>
+            _cat.json — one per category/collection folder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.CatPublicDto.ChildCats">
+            <summary>
+            child categories, sorted by Id for deterministic output
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.CatPublicDto.Poems">
+            <summary>
+            poems directly under this category, sorted by Id for deterministic output
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.PoemPublicDto">
+            <summary>
+            {poem-slug}.json — the poem text itself. GanjoorPoem/GanjoorVerse/GanjoorPoemSection carry
+            no user/account reference in the source schema, so this is a straight field allowlist,
+            not a redaction pass.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.MetrePublicDto">
+            <summary>
+            metres.json — shared lookup table written once at the repo root
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.LanguagePublicDto">
+            <summary>
+            languages.json — shared lookup table written once at the repo root
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.UpdatingRelSectsLog">
             <summary>
             Updating related sections logs
@@ -17383,6 +17444,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartBatchExportPublicGitData">
+            <summary>
+            start exporting all published data (poets/categories/poems/verses) to the public
+            git-tracked JSON data set, committing and pushing changes since the last run
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.HealthCheckContents">
             <summary>
             examine site pages for broken links
@@ -20273,6 +20341,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -21005,6 +21076,22 @@
             <param name="id">problable metre id</param>
             <param name="metre"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBatchExportPublicGitData">
+            <summary>
+            start exporting all published Ganjoor data (poets/categories/poems/verses) to a
+            git-tracked JSON tree and pushing it to the configured remote. User-linked tables
+            (comments, bookmarks, visits, corrections, accounting, ...) are never touched by
+            this code path — see RMuseum.Models.Ganjoor.PublicExport for the allowlisted shape
+            of what actually gets written.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportCatTreeToJson(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorCat)">
+            <summary>
+            recursively writes _cat.json for <paramref name="cat"/> and every published poem directly
+            under it, then recurses into published child categories. Returns the number of poems written
+            in this subtree (for manifest counts).
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ModerateGanjoorQuotedPoemAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemModerationViewModel,System.Guid)">
             <summary>
@@ -23786,6 +23873,97 @@
             </summary>
             <param name="poemHtml"></param>
             <returns></returns>
+        </member>
+        <member name="T:RMuseum.Utils.PublicDataExport.DeterministicJsonWriter">
+             <summary>
+             Writes JSON in a way that is stable across runs: fixed indentation, LF line endings,
+             UTF-8 without BOM, a single trailing newline, and Persian/Arabic text left unescaped
+             (the default encoder \u-escapes non-ASCII, which is both hard to review in a diff and
+             bloats file size for a mostly-Persian dataset).
+            
+             Callers are responsible for sorting any collections before serializing — this class only
+             guarantees stable *encoding*, not stable *ordering*, since ordering is a data decision.
+            
+             Files are only actually written to disk when the content differs from what's already
+             there, so an unmodified poem never shows up in `git status` even if the whole tree is
+             regenerated every run.
+             </summary>
+        </member>
+        <member name="M:RMuseum.Utils.PublicDataExport.DeterministicJsonWriter.WriteIfChangedAsync``1(System.String,``0)">
+            <summary>
+            Serializes <paramref name="value"/> and writes it to <paramref name="path"/> only if the
+            resulting bytes differ from the file's current content. Creates parent directories as needed.
+            Returns true if the file was created or changed, false if it was already up to date.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Utils.PublicDataExport.GitRepoPublisherOptions">
+            <summary>
+            Options for publishing the public export tree to a git remote.
+            Bind this from the "PublicDataExport" configuration section.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.PublicDataExport.GitRepoPublisherOptions.LocalWorkingCopyPath">
+            <summary>
+            local working copy path (e.g. C:\ganjoor-public-data or /var/ganjoor/public-data)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.PublicDataExport.GitRepoPublisherOptions.RemoteUrl">
+            <summary>
+            remote URL, e.g. https://github.com/ganjoor/ganjoor-data.git
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.PublicDataExport.GitRepoPublisherOptions.PushEnabled">
+            <summary>
+            if false, everything is written and committed locally but never pushed —
+            useful for a first dry run before wiring up real credentials
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.PublicDataExport.GitRepoPublisherOptions.GitUserName">
+            <summary>
+            git username for the push (for GitHub, a PAT is used as both username-independent
+            and as the token below — GitHub only checks the token)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.PublicDataExport.GitRepoPublisherOptions.GitToken">
+            <summary>
+            personal access token / app token with push rights to RemoteUrl. Keep this in
+            user-secrets / environment variables, never committed to appsettings.json.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.PublicDataExport.GitRepoPublisher.EnsureWorkingCopyUpToDate">
+            <summary>
+            Ensures the local working copy exists and is up to date with the remote before the
+            export job starts writing files into it. Clones on first run, fetches + hard-resets
+            to the remote branch on subsequent runs (this working copy is bot-owned; nobody
+            should be hand-editing it, so a hard reset is safe and keeps the job idempotent).
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.PublicDataExport.GitRepoPublisher.CommitAndPush(System.String)">
+            <summary>
+            Stages every change under the working copy and, if anything actually changed,
+            commits and (if enabled) pushes. Returns the number of files touched (0 means
+            nothing changed since last run — a normal, expected outcome on most nightly runs).
+            </summary>
+        </member>
+        <member name="T:RMuseum.Utils.PublicDataExport.PublicExportSafetyGuard">
+            <summary>
+            Belt-and-suspenders check on top of the allowlist design: even though the export DTOs
+            only ever declare the fields we explicitly want published, this scans every DTO type in
+            the RMuseum.Models.Ganjoor.PublicExport namespace by reflection and throws if a property
+            name or type looks like it could carry personal data. Call this once at application
+            startup (Development/CI) and/or from a test — see AssertSafe().
+            </summary>
+        </member>
+        <member name="F:RMuseum.Utils.PublicDataExport.PublicExportSafetyGuard._forbiddenNamePatterns">
+            <summary>
+            property-name patterns that must never appear on an export DTO
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.PublicDataExport.PublicExportSafetyGuard.AssertSafe">
+            <summary>
+            Scans every public class in the PublicExport DTO namespace. Throws InvalidOperationException
+            naming the offending type/property if anything trips the checks.
+            </summary>
         </member>
         <member name="P:RMuseum.WebServiceUrl.Url">
             <summary>

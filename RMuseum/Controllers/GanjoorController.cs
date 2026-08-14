@@ -2424,6 +2424,30 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// start exporting all published Ganjoor data to the public git-tracked JSON data set
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("publicdata/batchexport")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ReviewSongs)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public IActionResult StartBatchExportPublicGitData()
+        {
+            try
+            {
+                var res = _ganjoorService.StartBatchExportPublicGitData();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Get user public profile
         /// </summary>
         /// <param name="id"></param>

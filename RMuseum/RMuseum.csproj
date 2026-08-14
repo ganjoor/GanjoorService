@@ -22,6 +22,7 @@
     <PackageReference Include="DNTPersianUtils.Core" Version="7.0.0" />
     <PackageReference Include="FluentFTP" Version="54.2.0" />
     <PackageReference Include="HtmlSanitizer" Version="9.1.982" />
+    <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.10">
       <PrivateAssets>all</PrivateAssets>
