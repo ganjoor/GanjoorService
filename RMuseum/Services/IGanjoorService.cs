@@ -641,6 +641,13 @@ namespace RMuseum.Services
         RServiceResult<bool> StartBatchExportPublicGitData();
 
         /// <summary>
+        /// start exporting the Tajik (Cyrillic) overlay data to its own separate git-tracked JSON
+        /// data set — only entities that actually have a Tajik translation are included
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartBatchExportTajikPublicGitData();
+
+        /// <summary>
         /// (re)build local Ganjoor content (poets/categories/poems/verses/sections + their pages)
         /// from a public data export tree, read locally or over HTTP. Safe to re-run — existing
         /// entities (by id) are left untouched, only missing ones are added.

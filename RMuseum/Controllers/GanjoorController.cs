@@ -2449,6 +2449,32 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// start exporting the Tajik (Cyrillic) overlay data to its own, separate public
+        /// git-tracked JSON data set — only poets/categories/poems with an actual Tajik
+        /// translation are included
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("tajik/publicdata/batchexport")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public IActionResult StartBatchExportTajikPublicGitData()
+        {
+            try
+            {
+                var res = _ganjoorService.StartBatchExportTajikPublicGitData();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// (re)build local Ganjoor content from a public data export tree (local folder or HTTP) —
         /// intended for local development use, not for production servers
         /// </summary>
