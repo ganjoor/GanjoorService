@@ -24,7 +24,29 @@ namespace RMuseum.Models.Ganjoor.PublicExport
 
         public int PoemsCount { get; set; }
 
+        /// <summary>
+        /// number of ids grouped into each id-index shard file (see UrlTemplates.CatIdIndexShard /
+        /// PoemIdIndexShard). A consumer resolving id X fetches shard file "{X / IdIndexShardSize}.json".
+        /// </summary>
+        public int IdIndexShardSize { get; set; }
+
+        /// <summary>
+        /// URL patterns for every file kind in this export, so an app can treat this repo as an
+        /// API without having to read the export source code. {placeholders} are literal.
+        /// </summary>
+        public PublicExportUrlTemplatesDto UrlTemplates { get; set; } = new PublicExportUrlTemplatesDto();
+
         public List<PublicExportManifestPoetEntryDto> Poets { get; set; } = new List<PublicExportManifestPoetEntryDto>();
+    }
+
+    public class PublicExportUrlTemplatesDto
+    {
+        public string Poet { get; set; } = "poets/{poetSlug}/poet.json";
+        public string Category { get; set; } = "poets/{poetSlug}/{catPath}/_cat.json";
+        public string Poem { get; set; } = "poets/{poetSlug}/{catPath}/{poemSlug}.json";
+        public string PoetIdIndex { get; set; } = "index/poets-by-id.json";
+        public string CatIdIndexShard { get; set; } = "index/cats-by-id/{bucket}.json";
+        public string PoemIdIndexShard { get; set; } = "index/poems-by-id/{bucket}.json";
     }
 
     public class PublicExportManifestPoetEntryDto

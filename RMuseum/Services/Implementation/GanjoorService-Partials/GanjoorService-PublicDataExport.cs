@@ -19,6 +19,14 @@ namespace RMuseum.Services.Implementation
     public partial class GanjoorService : IGanjoorService
     {
         /// <summary>
+        /// how many ids are grouped into each id-index shard file — kept small enough that a
+        /// shard stays a cheap single fetch, large enough that the id-space doesn't produce an
+        /// unreasonable number of tiny files. 2000 ids/shard means ~500 shard files for Ganjoor's
+        /// current poem count.
+        /// </summary>
+        private const int IdIndexShardSize = 2000;
+
+        /// <summary>
         /// start exporting all published Ganjoor data (poets/categories/poems/verses) to a
         /// git-tracked JSON tree and pushing it to the configured remote. User-linked tables
         /// (comments, bookmarks, visits, corrections, accounting, ...) are never touched by
@@ -61,7 +69,12 @@ namespace RMuseum.Services.Implementation
                                 var manifest = new PublicExportManifestDto
                                 {
                                     GeneratedAtUtc = DateTime.UtcNow.ToString("O"),
+                                    IdIndexShardSize = IdIndexShardSize,
                                 };
+
+                                var poetIdIndex = new Dictionary<int, string>();
+                                var catIdIndex = new Dictionary<int, string>();
+                                var poemIdIndex = new Dictionary<int, string>();
 
                                 int poetIndex = 0;
                                 foreach (var poet in poets)
@@ -76,8 +89,9 @@ namespace RMuseum.Services.Implementation
                                         continue;
 
                                     await ExportPoetToJson(context, repoRoot, poet, catPoet);
+                                    poetIdIndex[poet.Id] = catPoet.FullUrl;
 
-                                    int poemCount = await ExportCatTreeToJson(context, repoRoot, catPoet);
+                                    int poemCount = await ExportCatTreeToJson(context, repoRoot, catPoet, catIdIndex, poemIdIndex);
                                     manifest.PoemsCount += poemCount;
 
                                     manifest.Poets.Add(new PublicExportManifestPoetEntryDto
@@ -90,7 +104,13 @@ namespace RMuseum.Services.Implementation
 
                                 manifest.PoetsCount = manifest.Poets.Count;
 
+                                await jobProgressServiceEF.UpdateJob(job.Id, 98, "Writing id indexes");
+                                await IdIndexWriter.WriteFlatIndexAsync(repoRoot, "index/poets-by-id.json", poetIdIndex);
+                                await IdIndexWriter.WriteShardedIndexAsync(repoRoot, "cats", catIdIndex, IdIndexShardSize);
+                                await IdIndexWriter.WriteShardedIndexAsync(repoRoot, "poems", poemIdIndex, IdIndexShardSize);
+
                                 await DeterministicJsonWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "manifest.json"), manifest);
+                                await TextFileWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "API.md"), BuildApiMarkdown(manifest));
 
                                 await jobProgressServiceEF.UpdateJob(job.Id, 99, "Committing and pushing");
                                 int changed = publisher.CommitAndPush($"data: export {manifest.PoetsCount} poets / {manifest.PoemsCount} poems — {DateTime.UtcNow:yyyy-MM-dd}");
@@ -185,7 +205,8 @@ namespace RMuseum.Services.Implementation
         /// under it, then recurses into published child categories. Returns the number of poems written
         /// in this subtree (for manifest counts).
         /// </summary>
-        private async Task<int> ExportCatTreeToJson(RMuseumDbContext context, string repoRoot, GanjoorCat cat)
+        private async Task<int> ExportCatTreeToJson(RMuseumDbContext context, string repoRoot, GanjoorCat cat,
+            Dictionary<int, string> catIdIndex, Dictionary<int, string> poemIdIndex)
         {
             var childCats = await context.GanjoorCategories.AsNoTracking()
                                     .Where(c => c.ParentId == cat.Id && c.Published)
@@ -196,6 +217,8 @@ namespace RMuseum.Services.Implementation
                                     .Where(p => p.CatId == cat.Id && p.Published)
                                     .OrderBy(p => p.Id)
                                     .ToListAsync();
+
+            catIdIndex[cat.Id] = cat.FullUrl;
 
             var catDto = new CatPublicDto
             {
@@ -219,11 +242,12 @@ namespace RMuseum.Services.Implementation
             foreach (var poem in poems)
             {
                 await ExportPoemToJson(context, repoRoot, poem);
+                poemIdIndex[poem.Id] = poem.FullUrl;
             }
 
             foreach (var childCat in childCats)
             {
-                poemCount += await ExportCatTreeToJson(context, repoRoot, childCat);
+                poemCount += await ExportCatTreeToJson(context, repoRoot, childCat, catIdIndex, poemIdIndex);
             }
 
             return poemCount;
@@ -293,6 +317,69 @@ namespace RMuseum.Services.Implementation
             if (string.IsNullOrEmpty(url)) return url;
             url = url.Replace('/', Path.DirectorySeparatorChar);
             return url.TrimStart(Path.DirectorySeparatorChar);
+        }
+
+        /// <summary>
+        /// generates the repo-root API.md every run, so the docs can never drift out of sync with
+        /// UrlTemplates/IdIndexShardSize in manifest.json. Not hand-edited — if you want to add
+        /// prose, add it here, not in the generated file.
+        /// </summary>
+        private static string BuildApiMarkdown(PublicExportManifestDto manifest)
+        {
+            var t = manifest.UrlTemplates;
+            return
+$@"# Ganjoor public data — static API
+
+This repository is served as a static API through jsDelivr's GitHub CDN. There is no server —
+every ""endpoint"" below is a file in this repo, fetched over plain HTTPS with CORS enabled.
+
+Base URL (tracks the latest commit on `main`):
+
+    https://cdn.jsdelivr.net/gh/ganjoor/ganjoor-data@main/
+
+Note: since this currently tracks `@main` rather than tagged releases, jsDelivr's edge cache
+(up to ~7 days) means a fetch can lag behind the newest commit. If you need a frozen snapshot,
+pin to an exact commit instead of `@main`:
+
+    https://cdn.jsdelivr.net/gh/ganjoor/ganjoor-data@<commit-sha>/
+
+## Discovery
+
+`GET manifest.json` — schema version, generation timestamp, poet/poem counts, the list of poets
+with their paths, and the URL templates below (`manifest.json` is the source of truth for this
+file; if they ever disagree, trust `manifest.json`).
+
+## Content
+
+- `GET {t.Poet}` — poet biography
+- `GET {t.Category}` — a category/collection: title, description, ordered child categories and poems
+- `GET {t.Poem}` — a poem: metre, rhyme, sections, verses
+
+`{{poetSlug}}`/`{{catPath}}`/`{{poemSlug}}` are exactly the path segments of the poem's Ganjoor
+URL, e.g. the poem at ganjoor.net/hafez/ghazal/sh1 is at `poets/hafez/ghazal/sh1.json`.
+
+## Resolving a numeric id
+
+If you have a poet/category/poem id (not a slug), resolve it via the id index instead of
+guessing a path:
+
+- `GET {t.PoetIdIndex}` — small enough to fetch whole: `{{ ""1"": ""/hafez"", ... }}`
+- `GET {t.CatIdIndexShard}` / `GET {t.PoemIdIndexShard}` — bucketed. The shard file for id `X` is
+  `bucket = X / {manifest.IdIndexShardSize}` (integer division), so e.g. poem id 4321 with the
+  current shard size of {manifest.IdIndexShardSize} lives in shard `{4321 / manifest.IdIndexShardSize}`,
+  i.e. `index/poems-by-id/{4321 / manifest.IdIndexShardSize}.json`.
+  Each shard maps ids in its range to a `FullUrl` you then fetch with the `{t.Poem}` pattern above.
+
+## Not included
+
+No comments, bookmarks, reading history, edit/correction history, or any other user-account-linked
+data — see the repo this data set is exported from for details. Only `Published` poets/categories/
+poems are included.
+
+## Search
+
+Not available as a static endpoint in this data set yet.
+";
         }
     }
 }
