@@ -60,6 +60,13 @@ namespace RMuseum.Services.Implementation
                                 await jobProgressServiceEF.UpdateJob(job.Id, 1, "Writing shared lookup tables");
                                 await ExportSharedLookupTables(context, repoRoot);
 
+                                // loaded once for the whole run instead of once per poem (was the
+                                // single biggest cost in this job: ~3 round-trips per poem, tens of
+                                // thousands of poems, on every run regardless of what changed) — see
+                                // ExportPoetContent for how sections/verses are batched per-poet.
+                                var metresById = (await context.GanjoorMetres.AsNoTracking().ToListAsync())
+                                                    .ToDictionary(m => m.Id);
+
                                 var poets = await context.GanjoorPoets.AsNoTracking()
                                                     .Include(p => p.BirthLocation)
                                                     .Include(p => p.DeathLocation)
@@ -92,7 +99,7 @@ namespace RMuseum.Services.Implementation
                                     await ExportPoetToJson(context, repoRoot, poet, catPoet);
                                     poetIdIndex[poet.Id] = catPoet.FullUrl;
 
-                                    int poemCount = await ExportCatTreeToJson(context, repoRoot, catPoet, catIdIndex, poemIdIndex);
+                                    int poemCount = await ExportPoetContent(context, repoRoot, poet, catPoet, metresById, catIdIndex, poemIdIndex);
                                     manifest.PoemsCount += poemCount;
 
                                     manifest.Poets.Add(new PublicExportManifestPoetEntryDto
@@ -203,6 +210,35 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// Batch-loads this poet's entire sections/verses in two queries (instead of the
+        /// two-per-poem queries the old per-poem approach ran), then walks the poet's category
+        /// tree writing everything from memory. This is the fix for the export consistently
+        /// taking about as long on every run regardless of how much content changed — the
+        /// "skip unchanged files" logic in DeterministicJsonWriter only ever saved disk writes,
+        /// never the DB round-trips, which were the actual dominant cost (roughly 3 sequential
+        /// queries per poem — tens of thousands of round-trips for the full corpus, every run).
+        /// </summary>
+        private async Task<int> ExportPoetContent(RMuseumDbContext context, string repoRoot, GanjoorPoet poet, GanjoorCat catPoet,
+            Dictionary<int, GanjoorMetre> metresById, Dictionary<int, string> catIdIndex, Dictionary<int, string> poemIdIndex)
+        {
+            var sectionsByPoem = (await context.GanjoorPoemSections.AsNoTracking()
+                                        .Where(s => s.Poem.Cat.PoetId == poet.Id)
+                                        .OrderBy(s => s.Index)
+                                        .ToListAsync())
+                                    .GroupBy(s => s.PoemId)
+                                    .ToDictionary(g => g.Key, g => g.ToList());
+
+            var versesByPoem = (await context.GanjoorVerses.AsNoTracking()
+                                        .Where(v => v.Poem.Cat.PoetId == poet.Id)
+                                        .OrderBy(v => v.VOrder)
+                                        .ToListAsync())
+                                    .GroupBy(v => v.PoemId)
+                                    .ToDictionary(g => g.Key, g => g.ToList());
+
+            return await ExportCatTreeToJson(context, repoRoot, catPoet, metresById, sectionsByPoem, versesByPoem, catIdIndex, poemIdIndex);
+        }
+
+        /// <summary>
         /// recursively writes _cat.json for <paramref name="cat"/> and every poem directly
         /// under it, then recurses into child categories. Returns the number of poems written
         /// in this subtree (for manifest counts). Only the poet-level Published flag is a real
@@ -212,6 +248,8 @@ namespace RMuseum.Services.Implementation
         /// either; every category/poem under a published poet is exported.
         /// </summary>
         private async Task<int> ExportCatTreeToJson(RMuseumDbContext context, string repoRoot, GanjoorCat cat,
+            Dictionary<int, GanjoorMetre> metresById,
+            Dictionary<int, List<GanjoorPoemSection>> sectionsByPoem, Dictionary<int, List<GanjoorVerse>> versesByPoem,
             Dictionary<int, string> catIdIndex, Dictionary<int, string> poemIdIndex)
         {
             var childCats = await context.GanjoorCategories.AsNoTracking()
@@ -247,34 +285,29 @@ namespace RMuseum.Services.Implementation
 
             foreach (var poem in poems)
             {
-                await ExportPoemToJson(context, repoRoot, poem);
+                sectionsByPoem.TryGetValue(poem.Id, out var sections);
+                versesByPoem.TryGetValue(poem.Id, out var verses);
+                GanjoorMetre metre = poem.GanjoorMetreId != null && metresById.TryGetValue(poem.GanjoorMetreId.Value, out var m) ? m : null;
+
+                await ExportPoemToJson(repoRoot, poem, metre, sections ?? new List<GanjoorPoemSection>(), verses ?? new List<GanjoorVerse>());
                 poemIdIndex[poem.Id] = poem.FullUrl;
             }
 
             foreach (var childCat in childCats)
             {
-                poemCount += await ExportCatTreeToJson(context, repoRoot, childCat, catIdIndex, poemIdIndex);
+                poemCount += await ExportCatTreeToJson(context, repoRoot, childCat, metresById, sectionsByPoem, versesByPoem, catIdIndex, poemIdIndex);
             }
 
             return poemCount;
         }
 
-        private async Task ExportPoemToJson(RMuseumDbContext context, string repoRoot, GanjoorPoem poem)
+        /// <summary>
+        /// Pure in-memory write — no DB access. Sections/verses/metre are pre-loaded by the caller
+        /// (see <see cref="ExportPoetContent"/>) instead of queried per poem.
+        /// </summary>
+        private async Task ExportPoemToJson(string repoRoot, GanjoorPoem poem, GanjoorMetre metre,
+            List<GanjoorPoemSection> sections, List<GanjoorVerse> verses)
         {
-            var metre = poem.GanjoorMetreId == null
-                ? null
-                : await context.GanjoorMetres.AsNoTracking().Where(m => m.Id == poem.GanjoorMetreId).SingleOrDefaultAsync();
-
-            var sections = await context.GanjoorPoemSections.AsNoTracking()
-                                .Where(s => s.PoemId == poem.Id)
-                                .OrderBy(s => s.Index)
-                                .ToListAsync();
-
-            var verses = await context.GanjoorVerses.AsNoTracking()
-                                .Where(v => v.PoemId == poem.Id)
-                                .OrderBy(v => v.VOrder)
-                                .ToListAsync();
-
             var dto = new PoemPublicDto
             {
                 Id = poem.Id,
