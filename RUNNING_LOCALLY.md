@@ -119,10 +119,12 @@ Since the database is brand new and empty, you'll be redirected — first to a l
 This is expected, not an error — an empty database has no poets yet, so there's nothing to show
 on the home page, and Ganjoor routes you here instead of showing a broken page.
 
-## 6. Create your admin account
+## 6. Log in as admin
 
-If you don't already have an account, go to `/signup` and register using the email address
-configured as `RSecurityBackend:FirstUserEmail` in `RMuseum/appsettings.json` — by default:
+You don't need a separate signup step for the very first account. `RSecurityBackend` (the
+library `RMuseum` uses for user management) creates the first user automatically the first time
+you log in with the email address configured as `RSecurityBackend:FirstUserEmail` in
+`RMuseum/appsettings.json` — by default:
 
 ```json
 "RSecurityBackend": {
@@ -130,9 +132,9 @@ configured as `RSecurityBackend:FirstUserEmail` in `RMuseum/appsettings.json` �
 }
 ```
 
-The very first account created with that exact email address automatically becomes the site's
-admin. (You can use a different email if you'd rather — just update `FirstUserEmail` to match
-before signing up.)
+Just go to `/login` and enter that email with any password meeting the site's password
+requirements — that first login creates the account and makes it the site's admin. (You can use a
+different email if you'd rather — just update `FirstUserEmail` to match before your first login.)
 
 ## 7. Import real content
 
@@ -152,8 +154,10 @@ specific poet's numeric id to import just that one for quicker local testing. Po
 `2`, not `1`.
 
 Click **شروع درون‌ریزی** ("start import"). The job runs in the background — track its progress on
-the **Admin → کارها** (Jobs) page. Once it finishes, refresh the home page: your local Ganjoor now
-has real poets, poems, and categories in it.
+the **Admin → کارها** (Jobs) page. It also regenerates the century groupings the home page needs
+right after importing (the same thing the "بازسازی گروه‌بندی بر اساس قرن" button on the Poets admin
+page does) — you don't need to run that separately. Once the job finishes, refresh the home page:
+your local Ganjoor now has real poets, poems, and categories in it.
 
 Re-running the import later (e.g. to pick up a poet you skipped the first time) is always safe —
 it only adds what's missing, and never duplicates or overwrites content already in your database.
