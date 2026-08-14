@@ -44,7 +44,7 @@
             }
             else
             {
-                <form method="post" action="?handler=Login">
+                <form method="post" action="@("?handler=Login&redirect=" + Model.RedirectUrlEncoded)">
                     <table>
                         <tr>
                             <td>

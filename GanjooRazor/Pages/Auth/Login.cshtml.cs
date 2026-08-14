@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Net.Http;
 
 namespace GanjooRazor.Pages
@@ -14,6 +15,12 @@ namespace GanjooRazor.Pages
         public string LastError { get; set; }
 
         public string RedirectUrl { get; set; }
+
+        /// <summary>
+        /// <see cref="RedirectUrl"/>, URL-encoded for embedding directly in the login form's
+        /// action attribute
+        /// </summary>
+        public string RedirectUrlEncoded => Uri.EscapeDataString(RedirectUrl);
 
         public void OnGet()
         {

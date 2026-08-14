@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -139,9 +140,31 @@ namespace GanjooRazor.Pages
                 return Page();
             }
 
+            // A fresh/forked install has an empty (or nearly empty) database: no poets, or no
+            // century grouping yet. The view below assumes at least the "popular poets" group
+            // (Id == 0) exists — PoetGroups.Where(g => g.Id == 0).Single() — and throws on an
+            // empty database instead of rendering something useful. Steer the visitor toward
+            // fixing that instead of letting them hit an unhandled exception: log in first if
+            // needed, then straight to the admin page that can seed real content.
+            if (IsDatabaseEffectivelyEmpty())
+            {
+                const string targetUrl = "/Admin/PublicDataImport";
+                return LoggedIn ? Redirect(targetUrl) : Redirect($"/login?redirect={targetUrl}");
+            }
+
             ViewData["Title"] = "گنجور";
 
             return Page();
+        }
+
+        /// <summary>
+        /// true if there's nothing meaningful to show on the home page yet — no poets at all, or
+        /// no century grouping (the "popular poets" group with Id == 0 that the view relies on).
+        /// </summary>
+        private bool IsDatabaseEffectivelyEmpty()
+        {
+            return Poets == null || Poets.Count == 0
+                || PoetGroups == null || !PoetGroups.Any(g => g.Id == 0);
         }
 
         public async Task<IActionResult> OnGetPoetInformationAsync(int id)

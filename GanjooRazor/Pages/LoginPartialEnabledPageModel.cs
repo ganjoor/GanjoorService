@@ -208,8 +208,27 @@ namespace GanjooRazor.Pages
             }
             Response.Cookies.Append("CanTranslate", canTranlate.ToString(), cookieOption);
 
+            return Redirect(GetSafeRedirectTarget());
+        }
 
-            return Redirect(Request.Path);
+        /// <summary>
+        /// Resolves where to send the visitor after a successful login. Prefers the "redirect"
+        /// query string value (set by <see cref="LoginModel"/>'s form action so a login triggered
+        /// from /login?redirect=X lands on X afterward) over the previous default of always using
+        /// Request.Path, which just bounced back to the login page itself when login was posted
+        /// from there. Only accepts a local, root-relative path ("/..." and not "//..." or a
+        /// scheme — those are how open-redirect payloads look) to avoid the visitor's own
+        /// "redirect" query value being used to send them somewhere else entirely; anything else
+        /// falls back to the old behavior.
+        /// </summary>
+        private string GetSafeRedirectTarget()
+        {
+            string redirect = Request.Query["redirect"];
+            if (!string.IsNullOrEmpty(redirect) && redirect.StartsWith("/") && !redirect.StartsWith("//"))
+            {
+                return redirect;
+            }
+            return Request.Path;
         }
 
         public Task<IActionResult> OnGetCheckIfHasNotificationsAsync()
