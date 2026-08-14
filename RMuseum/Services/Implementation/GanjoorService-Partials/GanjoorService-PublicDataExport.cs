@@ -27,7 +27,8 @@ namespace RMuseum.Services.Implementation
         private const int IdIndexShardSize = 2000;
 
         /// <summary>
-        /// start exporting all published Ganjoor data (poets/categories/poems/verses) to a
+        /// start exporting all Ganjoor data (poets/categories/poems/verses) belonging to
+        /// published poets to a
         /// git-tracked JSON tree and pushing it to the configured remote. User-linked tables
         /// (comments, bookmarks, visits, corrections, accounting, ...) are never touched by
         /// this code path — see RMuseum.Models.Ganjoor.PublicExport for the allowlisted shape
@@ -85,7 +86,7 @@ namespace RMuseum.Services.Implementation
                                     var catPoet = await context.GanjoorCategories.AsNoTracking()
                                                         .Where(c => c.PoetId == poet.Id && c.ParentId == null)
                                                         .SingleOrDefaultAsync();
-                                    if (catPoet == null || !catPoet.Published)
+                                    if (catPoet == null)
                                         continue;
 
                                     await ExportPoetToJson(context, repoRoot, poet, catPoet);
@@ -201,20 +202,24 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// recursively writes _cat.json for <paramref name="cat"/> and every published poem directly
-        /// under it, then recurses into published child categories. Returns the number of poems written
-        /// in this subtree (for manifest counts).
+        /// recursively writes _cat.json for <paramref name="cat"/> and every poem directly
+        /// under it, then recurses into child categories. Returns the number of poems written
+        /// in this subtree (for manifest counts). Only the poet-level Published flag is a real
+        /// visibility gate in this codebase (see GetPoets) — GanjoorCat.Published and
+        /// GanjoorPoem.Published are not checked anywhere the live site actually serves content
+        /// (GetCatByUrl/GetPoemByUrl ignore them entirely), so this export doesn't filter on them
+        /// either; every category/poem under a published poet is exported.
         /// </summary>
         private async Task<int> ExportCatTreeToJson(RMuseumDbContext context, string repoRoot, GanjoorCat cat,
             Dictionary<int, string> catIdIndex, Dictionary<int, string> poemIdIndex)
         {
             var childCats = await context.GanjoorCategories.AsNoTracking()
-                                    .Where(c => c.ParentId == cat.Id && c.Published)
+                                    .Where(c => c.ParentId == cat.Id)
                                     .OrderBy(c => c.Id)
                                     .ToListAsync();
 
             var poems = await context.GanjoorPoems.AsNoTracking()
-                                    .Where(p => p.CatId == cat.Id && p.Published)
+                                    .Where(p => p.CatId == cat.Id)
                                     .OrderBy(p => p.Id)
                                     .ToListAsync();
 

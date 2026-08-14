@@ -78,6 +78,15 @@ namespace RMuseum.Utils.PublicDataExport
 
             using var repo = new Repository(_options.LocalWorkingCopyPath);
             var remote = repo.Network.Remotes["origin"];
+            if (remote == null)
+            {
+                // .git existed (e.g. a manual `git init`, or a previous run that failed before
+                // completing its clone) but has no "origin" configured — fix it up rather than
+                // crash, so a half-set-up working copy self-heals on the next run.
+                repo.Network.Remotes.Add("origin", _options.RemoteUrl);
+                remote = repo.Network.Remotes["origin"];
+            }
+
             var fetchOptions = new FetchOptions();
             if (RemoteRequiresAuth())
             {
