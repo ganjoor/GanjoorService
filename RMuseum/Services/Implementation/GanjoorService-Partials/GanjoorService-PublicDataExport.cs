@@ -112,6 +112,7 @@ namespace RMuseum.Services.Implementation
 
                                 await DeterministicJsonWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "manifest.json"), manifest);
                                 await TextFileWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "API.md"), BuildApiMarkdown(manifest));
+                                await TextFileWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "README.md"), BuildReadmeMarkdown(manifest));
 
                                 await jobProgressServiceEF.UpdateJob(job.Id, 99, "Committing and pushing");
                                 int changed = publisher.CommitAndPush($"data: export {manifest.PoetsCount} poets / {manifest.PoemsCount} poems — {DateTime.UtcNow:yyyy-MM-dd}");
@@ -384,6 +385,41 @@ poems are included.
 ## Search
 
 Not available as a static endpoint in this data set yet.
+";
+        }
+
+        /// <summary>
+        /// generates the repo-root README.md every run — the landing document GitHub shows by
+        /// default, so this is where a first-time visitor's "where do I even start?" question
+        /// needs to be answered in the first few lines, before they'd ever think to look for
+        /// API.md.
+        /// </summary>
+        private static string BuildReadmeMarkdown(PublicExportManifestDto manifest)
+        {
+            return
+$@"# ganjoor-data
+
+Public, git-tracked export of [Ganjoor](https://ganjoor.net)'s poetry content — poets,
+categories, and poems, allowlisted to contain none of the site's user-account-linked data
+(comments, bookmarks, edit history, etc.). Generated from
+[GanjoorService](https://github.com/ganjoor/GanjoorService); see that repo if you're looking for
+the application this data set is exported from, or want to run your own copy of Ganjoor locally
+using this data.
+
+Currently tracks **{manifest.PoetsCount} poets** / **{manifest.PoemsCount} poems**, generated {manifest.GeneratedAtUtc}.
+
+## Where do I start?
+
+- **[`manifest.json`](manifest.json)** — the full list of poets (id, nickname, and path), plus the
+  schema version and URL templates for every other file kind in this repo. This is the list to
+  start from if you're building a client and need ""which poets exist and what are their ids"".
+- **[`API.md`](API.md)** — how to fetch any of this over plain HTTPS (no server needed, via
+  jsDelivr), including how to resolve a bare numeric id to its path.
+
+## Not included
+
+No comments, bookmarks, reading history, edit/correction history, or any other data linked to a
+user account. See `API.md` for the full list of what each file kind does and doesn't contain.
 ";
         }
     }
