@@ -88,6 +88,17 @@ namespace RMuseum.Services.Implementation
                                     await ImportPoetFromPublicData(context, source, poetEntry.Id, poetEntry.FullUrl);
                                 }
 
+                                // GanjooRazor's home page groups poets by century (GetCenturiesAsync /
+                                // the "PoetGroups" the view renders) — that grouping is a materialized
+                                // table (GanjorCentury/GanjoorCenturyPoet), not computed on the fly, and
+                                // newly-imported poets aren't in it until this runs. Skipping this step
+                                // is exactly what leaves PoetGroups empty and throws on the home page
+                                // (see Index.cshtml.cs's IsDatabaseEffectivelyEmpty check) even though
+                                // poets now exist.
+                                await jobProgressServiceEF.UpdateJob(job.Id, 99, "Regenerating century groupings");
+                                await _RegenerateHalfCenturies(context);
+                                _memoryCache.Remove("ganjoor/centuries"); // same cache key GetCenturiesAsync/the "periods" endpoint use
+
                                 await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
                             }
                             catch (Exception exp)

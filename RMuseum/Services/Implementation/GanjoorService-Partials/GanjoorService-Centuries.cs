@@ -80,12 +80,24 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> RegenerateHalfCenturiesAsync()
         {
+            return await _RegenerateHalfCenturies(_context);
+        }
+
+        /// <summary>
+        /// same as <see cref="RegenerateHalfCenturiesAsync"/>, but against an explicitly-passed
+        /// context instead of the injected <see cref="_context"/> — needed so background jobs
+        /// that construct their own short-lived <see cref="RMuseumDbContext"/> (because the
+        /// request-scoped <see cref="_context"/> may already be disposed by the time a background
+        /// job runs) can call this too, e.g. right after a public-data import finishes.
+        /// </summary>
+        private async Task<RServiceResult<bool>> _RegenerateHalfCenturies(RMuseumDbContext context)
+        {
             try
             {
-                await _context.Database.ExecuteSqlRawAsync("DELETE FROM GanjoorCenturyPoet");
-                var oldOnes = await _context.GanjoorCenturies.ToArrayAsync();
-                _context.RemoveRange(oldOnes);
-                await _context.SaveChangesAsync();
+                await context.Database.ExecuteSqlRawAsync("DELETE FROM GanjoorCenturyPoet");
+                var oldOnes = await context.GanjoorCenturies.ToArrayAsync();
+                context.RemoveRange(oldOnes);
+                await context.SaveChangesAsync();
 
 
                 var periods = new List<GanjoorCentury>
@@ -191,7 +203,7 @@ namespace RMuseum.Services.Implementation
 
                 };
 
-                var poets = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Published && p.BirthYearInLHijri != 0).OrderBy(p => p.BirthYearInLHijri).ToArrayAsync();
+                var poets = await context.GanjoorPoets.AsNoTracking().Where(p => p.Published && p.BirthYearInLHijri != 0).OrderBy(p => p.BirthYearInLHijri).ToArrayAsync();
 
                 foreach (var poet in poets)
                 {
@@ -236,8 +248,8 @@ namespace RMuseum.Services.Implementation
                 {
                     if (period.Poets != null)
                     {
-                        _context.Add(period);
-                        await _context.SaveChangesAsync();
+                        context.Add(period);
+                        await context.SaveChangesAsync();
                     }
                 }
 
