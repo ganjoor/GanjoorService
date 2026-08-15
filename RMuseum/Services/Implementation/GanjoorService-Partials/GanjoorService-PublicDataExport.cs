@@ -27,6 +27,42 @@ namespace RMuseum.Services.Implementation
         private const int IdIndexShardSize = 2000;
 
         /// <summary>
+        /// Guards against two runs of the same export job (keyed by job name — "PublicDataExport"
+        /// / "TajikPublicDataExport") ever executing concurrently against the same git working
+        /// copy. This exists because deleting a job's row on the admin Jobs page only removes its
+        /// database record — it does not stop the background Task (or its child git.exe process)
+        /// that's still actually running. Without this guard, triggering the job again while a
+        /// previous run hadn't finished starts a second concurrent git process against the same
+        /// folder, which is exactly what produces a ".git/index.lock: File exists" failure.
+        /// </summary>
+        private static readonly object _publicDataExportRunningLock = new object();
+        private static readonly HashSet<string> _publicDataExportRunningJobs = new HashSet<string>();
+
+        /// <summary>
+        /// Returns true (and marks <paramref name="jobName"/> as running) if no run of this job
+        /// was already in progress; false if one was, in which case the caller should refuse to
+        /// start a second one rather than queueing a background task that would race the first.
+        /// </summary>
+        private static bool TryStartExclusiveExportJob(string jobName)
+        {
+            lock (_publicDataExportRunningLock)
+            {
+                if (_publicDataExportRunningJobs.Contains(jobName))
+                    return false;
+                _publicDataExportRunningJobs.Add(jobName);
+                return true;
+            }
+        }
+
+        private static void EndExclusiveExportJob(string jobName)
+        {
+            lock (_publicDataExportRunningLock)
+            {
+                _publicDataExportRunningJobs.Remove(jobName);
+            }
+        }
+
+        /// <summary>
         /// start exporting all Ganjoor data (poets/categories/poems/verses) belonging to
         /// published poets to a
         /// git-tracked JSON tree and pushing it to the configured remote. User-linked tables
@@ -36,21 +72,31 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         public RServiceResult<bool> StartBatchExportPublicGitData()
         {
+            bool acquiredGuard = false;
             try
             {
                 PublicExportSafetyGuard.AssertSafe();
+
+                if (!TryStartExclusiveExportJob("PublicDataExport"))
+                {
+                    return new RServiceResult<bool>(false,
+                        "A public data export is already running (check the Jobs page) — wait for it to finish before starting another.");
+                }
+                acquiredGuard = true;
 
                 _backgroundTaskQueue.QueueBackgroundWorkItem
                 (
                     async token =>
                     {
-                        using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
+                        try
                         {
-                            LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                            var job = (await jobProgressServiceEF.NewJob("PublicDataExport", "Preparing working copy")).Result;
-
-                            try
+                            using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                             {
+                                LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                var job = (await jobProgressServiceEF.NewJob("PublicDataExport", "Preparing working copy")).Result;
+
+                                try
+                                {
                                 var options = ReadPublicDataExportOptions();
                                 var publisher = new GitRepoPublisher(options);
                                 publisher.EnsureWorkingCopyUpToDate();
@@ -126,10 +172,15 @@ namespace RMuseum.Services.Implementation
 
                                 await jobProgressServiceEF.UpdateJob(job.Id, 100, changed == 0 ? "No changes" : $"{changed} files changed", true);
                             }
-                            catch (Exception exp)
-                            {
-                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                catch (Exception exp)
+                                {
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                }
                             }
+                        }
+                        finally
+                        {
+                            EndExclusiveExportJob("PublicDataExport");
                         }
                     }
                 );
@@ -138,6 +189,10 @@ namespace RMuseum.Services.Implementation
             }
             catch (Exception exp)
             {
+                if (acquiredGuard)
+                {
+                    EndExclusiveExportJob("PublicDataExport"); // queueing itself threw after we'd already acquired the guard
+                }
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }

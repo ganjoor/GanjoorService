@@ -31,23 +31,33 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         public RServiceResult<bool> StartBatchExportTajikPublicGitData()
         {
+            bool acquiredGuard = false;
             try
             {
                 // scans every DTO in RMuseum.Models.Ganjoor.PublicExport, which now includes the
                 // Tajik DTOs too — no separate call needed, they're covered automatically
                 PublicExportSafetyGuard.AssertSafe();
 
+                if (!TryStartExclusiveExportJob("TajikPublicDataExport"))
+                {
+                    return new RServiceResult<bool>(false,
+                        "A Tajik public data export is already running (check the Jobs page) — wait for it to finish before starting another.");
+                }
+                acquiredGuard = true;
+
                 _backgroundTaskQueue.QueueBackgroundWorkItem
                 (
                     async token =>
                     {
-                        using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
+                        try
                         {
-                            LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                            var job = (await jobProgressServiceEF.NewJob("TajikPublicDataExport", "Preparing working copy")).Result;
-
-                            try
+                            using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                             {
+                                LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
+                                var job = (await jobProgressServiceEF.NewJob("TajikPublicDataExport", "Preparing working copy")).Result;
+
+                                try
+                                {
                                 var options = ReadTajikPublicDataExportOptions();
                                 var publisher = new GitRepoPublisher(options);
                                 publisher.EnsureWorkingCopyUpToDate();
@@ -110,10 +120,15 @@ namespace RMuseum.Services.Implementation
 
                                 await jobProgressServiceEF.UpdateJob(job.Id, 100, changed == 0 ? "No changes" : $"{changed} files changed", true);
                             }
-                            catch (Exception exp)
-                            {
-                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                catch (Exception exp)
+                                {
+                                    await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
+                                }
                             }
+                        }
+                        finally
+                        {
+                            EndExclusiveExportJob("TajikPublicDataExport");
                         }
                     }
                 );
@@ -122,6 +137,10 @@ namespace RMuseum.Services.Implementation
             }
             catch (Exception exp)
             {
+                if (acquiredGuard)
+                {
+                    EndExclusiveExportJob("TajikPublicDataExport"); // queueing itself threw after we'd already acquired the guard
+                }
                 return new RServiceResult<bool>(false, exp.ToString());
             }
         }

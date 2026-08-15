@@ -99,10 +99,33 @@ namespace RMuseum.Utils.PublicDataExport
                 return;
             }
 
+            RemoveStaleLockFileIfAny();
             EnsureRemoteConfigured();
 
             RunGit(_options.LocalWorkingCopyPath, $"{BuildAuthArgs()}fetch origin {_options.Branch}");
             RunGit(_options.LocalWorkingCopyPath, $"reset --hard origin/{_options.Branch}");
+        }
+
+        /// <summary>
+        /// A .git/index.lock left behind by an abruptly-terminated git process (e.g. an app pool
+        /// recycle, or a previous run of this same job that got killed mid-command rather than
+        /// finishing) blocks every future git command in this working copy with a confusing
+        /// "Another git process seems to be running" error, even when nothing actually is.
+        /// GanjoorService's TryStartExclusiveExportJob already guarantees only one run of a given
+        /// export job (main or Tajik) executes at a time *within this process* — so reaching this
+        /// method at all means the current call is the sole legitimate owner of this working copy
+        /// right now, and any lock file found here can only be a leftover from something that is
+        /// no longer running (that in-process guard doesn't survive an app pool/process restart,
+        /// which is exactly the scenario that leaves an orphaned lock file in the first place).
+        /// Safe to remove unconditionally on that basis.
+        /// </summary>
+        private void RemoveStaleLockFileIfAny()
+        {
+            string lockPath = Path.Combine(_options.LocalWorkingCopyPath, ".git", "index.lock");
+            if (File.Exists(lockPath))
+            {
+                File.Delete(lockPath);
+            }
         }
 
         /// <summary>
