@@ -1,13 +1,14 @@
-using LibGit2Sharp;
 using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using System.Text;
 
 namespace RMuseum.Utils.PublicDataExport
 {
     /// <summary>
     /// Options for publishing the public export tree to a git remote.
-    /// Bind this from the "PublicDataExport" configuration section.
+    /// Bind this from the "PublicDataExport" (or "TajikPublicDataExport") configuration section.
     /// </summary>
     public class GitRepoPublisherOptions
     {
@@ -46,6 +47,23 @@ namespace RMuseum.Utils.PublicDataExport
         public string GitToken { get; set; }
     }
 
+    /// <summary>
+    /// Thin wrapper around the native <c>git</c> CLI (not LibGit2Sharp) for the export job: sync a
+    /// local working copy, stage, commit, push.
+    ///
+    /// This shells out to git.exe deliberately rather than using LibGit2Sharp's own transport.
+    /// LibGit2Sharp's built-in HTTP push turned out to be unreliable at this job's actual scale
+    /// (hundreds of thousands of small files, a correspondingly large push) — it repeatedly failed
+    /// mid-push with "error receiving data from socket: An existing connection was forcibly closed
+    /// by the remote host", a transport-level failure. The native git CLI (what every other git
+    /// client actually uses) handles large pushes far more robustly, so this class runs it as a
+    /// subprocess instead. Requires Git for Windows (or any git install) to be on PATH — the same
+    /// requirement as running `git` from a normal command prompt.
+    ///
+    /// The auth token is passed only via a one-off `-c http.extraHeader=...` argument on whichever
+    /// single invocation needs it (clone/fetch/push) — it's never written into .git/config, so it
+    /// never touches disk.
+    /// </summary>
     public class GitRepoPublisher
     {
         private readonly GitRepoPublisherOptions _options;
@@ -58,8 +76,8 @@ namespace RMuseum.Utils.PublicDataExport
         /// <summary>
         /// Ensures the local working copy exists and is up to date with the remote before the
         /// export job starts writing files into it. Clones on first run, fetches + hard-resets
-        /// to the remote branch on subsequent runs (this working copy is bot-owned; nobody
-        /// should be hand-editing it, so a hard reset is safe and keeps the job idempotent).
+        /// to the remote branch on subsequent runs (this working copy is bot-owned; nobody should
+        /// be hand-editing it, so a hard reset is safe and keeps the job idempotent).
         /// </summary>
         public void EnsureWorkingCopyUpToDate()
         {
@@ -67,84 +85,143 @@ namespace RMuseum.Utils.PublicDataExport
                 !Directory.Exists(Path.Combine(_options.LocalWorkingCopyPath, ".git")))
             {
                 Directory.CreateDirectory(_options.LocalWorkingCopyPath);
-                var cloneOptions = new CloneOptions();
-                if (RemoteRequiresAuth())
-                {
-                    cloneOptions.FetchOptions.CredentialsProvider = CredentialsHandler;
-                }
-                Repository.Clone(_options.RemoteUrl, _options.LocalWorkingCopyPath, cloneOptions);
+                RunGit(_options.LocalWorkingCopyPath, $"{BuildAuthArgs()}clone \"{_options.RemoteUrl}\" .");
                 return;
             }
 
-            using var repo = new Repository(_options.LocalWorkingCopyPath);
-            var remote = repo.Network.Remotes["origin"];
-            if (remote == null)
-            {
-                // .git existed (e.g. a manual `git init`, or a previous run that failed before
-                // completing its clone) but has no "origin" configured — fix it up rather than
-                // crash, so a half-set-up working copy self-heals on the next run.
-                repo.Network.Remotes.Add("origin", _options.RemoteUrl);
-                remote = repo.Network.Remotes["origin"];
-            }
+            EnsureRemoteConfigured();
 
-            var fetchOptions = new FetchOptions();
-            if (RemoteRequiresAuth())
-            {
-                fetchOptions.CredentialsProvider = CredentialsHandler;
-            }
-            Commands.Fetch(repo, remote.Name, remote.FetchRefSpecs.Select(r => r.Specification), fetchOptions, null);
-
-            var remoteBranch = repo.Branches[$"origin/{_options.Branch}"];
-            if (remoteBranch != null)
-            {
-                repo.Reset(ResetMode.Hard, remoteBranch.Tip);
-            }
+            RunGit(_options.LocalWorkingCopyPath, $"{BuildAuthArgs()}fetch origin {_options.Branch}");
+            RunGit(_options.LocalWorkingCopyPath, $"reset --hard origin/{_options.Branch}");
         }
 
         /// <summary>
-        /// Stages every change under the working copy and, if anything actually changed,
-        /// commits and (if enabled) pushes. Returns the number of files touched (0 means
-        /// nothing changed since last run — a normal, expected outcome on most nightly runs).
+        /// Stages every change under the working copy and, if anything actually changed, commits
+        /// and (if enabled) pushes. Returns the number of files touched (0 means nothing changed
+        /// since last run — a normal, expected outcome on most nightly runs).
         /// </summary>
         public int CommitAndPush(string commitMessage)
         {
-            using var repo = new Repository(_options.LocalWorkingCopyPath);
+            RunGit(_options.LocalWorkingCopyPath, "add -A");
 
-            Commands.Stage(repo, "*");
-
-            var status = repo.RetrieveStatus();
-            int changedCount = status.Count(s => s.State != FileStatus.Ignored && s.State != FileStatus.Unaltered);
-            if (changedCount == 0)
+            // "diff --cached --quiet" exits 1 if anything is staged, 0 if not — used purely for
+            // the exit code here, never prints anything either way
+            var diffResult = RunGitAllowNonZero(_options.LocalWorkingCopyPath, "diff --cached --quiet");
+            if (diffResult.ExitCode == 0)
             {
                 return 0;
             }
 
-            var signature = new Signature(_options.CommitAuthorName, _options.CommitAuthorEmail, DateTimeOffset.UtcNow);
-            repo.Commit(commitMessage, signature, signature);
+            string statusOutput = RunGit(_options.LocalWorkingCopyPath, "status --porcelain").StandardOutput;
+            int changedCount = statusOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries).Length;
+
+            string escapedMessage = commitMessage.Replace("\"", "\\\"");
+            RunGit(_options.LocalWorkingCopyPath,
+                $"-c user.name=\"{_options.CommitAuthorName}\" -c user.email=\"{_options.CommitAuthorEmail}\" commit -m \"{escapedMessage}\"");
 
             if (_options.PushEnabled)
             {
-                var pushOptions = new PushOptions();
-                if (RemoteRequiresAuth())
-                {
-                    pushOptions.CredentialsProvider = CredentialsHandler;
-                }
-                var branch = repo.Branches[_options.Branch] ?? repo.CreateBranch(_options.Branch);
-                repo.Network.Push(branch, pushOptions);
+                // push whatever HEAD points to, regardless of the local branch's own name, to the
+                // configured remote branch — avoids depending on the locally checked-out branch
+                // happening to be named the same as _options.Branch
+                RunGit(_options.LocalWorkingCopyPath, $"{BuildAuthArgs()}push origin HEAD:{_options.Branch}");
             }
 
             return changedCount;
         }
 
-        private bool RemoteRequiresAuth() => !string.IsNullOrEmpty(_options.GitToken);
-
-        private Credentials CredentialsHandler(string url, string usernameFromUrl, SupportedCredentialTypes types)
+        private void EnsureRemoteConfigured()
         {
-            return new UsernamePasswordCredentials
+            var result = RunGitAllowNonZero(_options.LocalWorkingCopyPath, "remote get-url origin");
+            if (result.ExitCode != 0)
             {
-                Username = string.IsNullOrEmpty(_options.GitUserName) ? _options.GitToken : _options.GitUserName,
-                Password = _options.GitToken,
+                // .git existed (e.g. a manual `git init`, or a previous run that failed before
+                // completing its clone) but has no "origin" configured — fix it up rather than
+                // fail, so a half-set-up working copy self-heals on the next run
+                RunGit(_options.LocalWorkingCopyPath, $"remote add origin \"{_options.RemoteUrl}\"");
+            }
+            else if (result.StandardOutput.Trim() != _options.RemoteUrl)
+            {
+                RunGit(_options.LocalWorkingCopyPath, $"remote set-url origin \"{_options.RemoteUrl}\"");
+            }
+        }
+
+        private string BuildAuthArgs()
+        {
+            if (string.IsNullOrEmpty(_options.GitToken))
+                return "";
+
+            string username = string.IsNullOrEmpty(_options.GitUserName) ? _options.GitToken : _options.GitUserName;
+            string basicAuth = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{_options.GitToken}"));
+            return $"-c http.extraHeader=\"AUTHORIZATION: basic {basicAuth}\" ";
+        }
+
+        private GitProcessResult RunGit(string workingDirectory, string arguments)
+        {
+            var result = RunGitAllowNonZero(workingDirectory, arguments);
+            if (result.ExitCode != 0)
+            {
+                throw new InvalidOperationException(
+                    $"git {RedactAuth(arguments)} failed (exit code {result.ExitCode}) in '{workingDirectory}':{Environment.NewLine}{result.StandardError}{Environment.NewLine}{result.StandardOutput}");
+            }
+            return result;
+        }
+
+        private GitProcessResult RunGitAllowNonZero(string workingDirectory, string arguments)
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = "git",
+                Arguments = arguments,
+                WorkingDirectory = workingDirectory,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
             };
+
+            using (var process = new Process { StartInfo = psi })
+            {
+                try
+                {
+                    process.Start();
+                }
+                catch (Win32Exception exp)
+                {
+                    throw new InvalidOperationException(
+                        "Could not start 'git'. Make sure Git for Windows is installed and 'git' is on PATH.", exp);
+                }
+
+                string stdout = process.StandardOutput.ReadToEnd();
+                string stderr = process.StandardError.ReadToEnd();
+                process.WaitForExit();
+
+                return new GitProcessResult { ExitCode = process.ExitCode, StandardOutput = stdout, StandardError = stderr };
+            }
+        }
+
+        /// <summary>
+        /// keeps the auth token out of exception messages that might end up logged somewhere
+        /// </summary>
+        private static string RedactAuth(string arguments)
+        {
+            int idx = arguments.IndexOf("http.extraHeader", StringComparison.OrdinalIgnoreCase);
+            if (idx == -1)
+                return arguments;
+
+            int firstQuote = arguments.IndexOf('"', idx);
+            int endQuote = firstQuote >= 0 ? arguments.IndexOf('"', firstQuote + 1) : -1;
+            if (firstQuote == -1 || endQuote == -1)
+                return arguments;
+
+            return arguments.Substring(0, idx) + "http.extraHeader=<redacted> " + arguments.Substring(endQuote + 1);
+        }
+
+        private class GitProcessResult
+        {
+            public int ExitCode { get; set; }
+            public string StandardOutput { get; set; }
+            public string StandardError { get; set; }
         }
     }
 }

@@ -1781,6 +1781,14 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartBatchExportTajikPublicGitData">
+            <summary>
+            start exporting the Tajik (Cyrillic) overlay data to its own, separate public
+            git-tracked JSON data set — only poets/categories/poems with an actual Tajik
+            translation are included
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.StartImportFromPublicDataRepo(RMuseum.Models.Ganjoor.PublicExport.PublicDataImportRequestDto)">
             <summary>
             (re)build local Ganjoor content from a public data export tree (local folder or HTTP) —
@@ -11276,6 +11284,50 @@
             languages.json — shared lookup table written once at the repo root
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.TajikPublicExportManifestDto">
+            <summary>
+            Root manifest for the Tajik data export — a separate, sparser repository from the main
+            ganjoor-data one. Tajik translation only covers a subset of poets/categories/poems, so this
+            export only ever contains entries that actually have a Tajik counterpart in the database
+            (GanjoorTajikPoet/Cat/Poem/Verse) — it does not mirror the full corpus the way the main
+            export does. Ids and FullUrls match the main repo 1:1 (same underlying entity ids), so a
+            consumer resolves structure/metre/sections for a poem by fetching the same id/path from
+            ganjoor-data and merging verses by VOrder.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.TajikPublicExportManifestDto.MainDataRepo">
+            <summary>
+            where to find the structural data (metre, rhyme, sections, full verse text in Persian)
+            this repo's ids/paths correspond to
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.TajikPoetPublicDto">
+            <summary>
+            poet.json — only written for a poet with an actual GanjoorTajikPoet record.
+            FullUrl matches the poet's path in the main ganjoor-data repo exactly.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.TajikCatPublicDto">
+            <summary>
+            _cat.json — only written for a category with an actual GanjoorTajikCat record.
+            ChildCats/Poems only list children that themselves have a Tajik translation — a consumer
+            never gets a link to a file that doesn't exist.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.TajikPoemPublicDto">
+            <summary>
+            {poem-slug}.json — only written for a poem with an actual GanjoorTajikPoem record.
+            Deliberately doesn't carry metre/rhyme/section data — GanjoorTajikPoem/Verse don't store
+            their own copy of that either; fetch it from the same id/path in the main ganjoor-data repo.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.TajikVersePublicDto">
+            <summary>
+            VOrder is the join key back to the corresponding verse in the main repo's poem file — no
+            position/section/couplet data is duplicated here, matching how GanjoorTajikVerse itself
+            stores nothing but the transliterated text and its order.
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.UpdatingRelSectsLog">
             <summary>
             Updating related sections logs
@@ -17492,6 +17544,13 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartBatchExportTajikPublicGitData">
+            <summary>
+            start exporting the Tajik (Cyrillic) overlay data to its own separate git-tracked JSON
+            data set — only entities that actually have a Tajik translation are included
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.StartImportFromPublicDataRepo(System.Boolean,System.String,System.Int32)">
             <summary>
             (re)build local Ganjoor content (poets/categories/poems/verses/sections + their pages)
@@ -20399,6 +20458,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -21619,6 +21681,33 @@
             <param name="poetId"></param>
             <param name="catId"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBatchExportTajikPublicGitData">
+            <summary>
+            Exports the Tajik (Cyrillic transliteration) overlay data — GanjoorTajikPoet/Cat/Poem/Verse
+            — to its own git-tracked JSON repository, separate from the main ganjoor-data export.
+            Kept separate deliberately: Tajik translation coverage is sparse (most poets/categories/
+            poems have no Tajik counterpart at all), the consumer audience is different (Cyrillic
+            Tajik apps, not general Ganjoor API consumers), and update cadence is independent of the
+            main Persian corpus. This export only ever writes entries that actually have a Tajik
+            database record; everything else is skipped. Ids and FullUrls match the main
+            ganjoor-data repo exactly, so a consumer resolves structure/metre/sections for a poem by
+            fetching the same id/path from there and merging verses by VOrder.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportTajikPoetContent(RMuseum.DbContext.RMuseumDbContext,System.String,System.Int32,RMuseum.Models.Ganjoor.GanjoorCat,System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.Dictionary{System.Int32,System.String})">
+            <summary>
+            batch-loads everything Tajik for this poet (mirrors the same "load once per poet, not
+            once per poem" fix applied to the main export) before walking the tree
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportTajikCatTreeToJson(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorCat,System.Collections.Generic.Dictionary{System.Int32,RMuseum.Models.Ganjoor.GanjoorTajikCat},System.Collections.Generic.Dictionary{System.Int32,RMuseum.Models.Ganjoor.GanjoorTajikPoem},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorTajikVerse}},System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.Dictionary{System.Int32,System.String})">
+            <summary>
+            walks the *main* category tree (for structure/ordering — Tajik tables have no tree
+            shape of their own) but only ever writes a file where a Tajik counterpart actually
+            exists; still recurses into every child regardless, since a deeper category can have a
+            translation even when its parent doesn't.
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartRegeneratingTOCs(System.Guid)">
             <summary>
@@ -24031,7 +24120,7 @@
         <member name="T:RMuseum.Utils.PublicDataExport.GitRepoPublisherOptions">
             <summary>
             Options for publishing the public export tree to a git remote.
-            Bind this from the "PublicDataExport" configuration section.
+            Bind this from the "PublicDataExport" (or "TajikPublicDataExport") configuration section.
             </summary>
         </member>
         <member name="P:RMuseum.Utils.PublicDataExport.GitRepoPublisherOptions.LocalWorkingCopyPath">
@@ -24062,19 +24151,43 @@
             user-secrets / environment variables, never committed to appsettings.json.
             </summary>
         </member>
+        <member name="T:RMuseum.Utils.PublicDataExport.GitRepoPublisher">
+             <summary>
+             Thin wrapper around the native <c>git</c> CLI (not LibGit2Sharp) for the export job: sync a
+             local working copy, stage, commit, push.
+            
+             This shells out to git.exe deliberately rather than using LibGit2Sharp's own transport.
+             LibGit2Sharp's built-in HTTP push turned out to be unreliable at this job's actual scale
+             (hundreds of thousands of small files, a correspondingly large push) — it repeatedly failed
+             mid-push with "error receiving data from socket: An existing connection was forcibly closed
+             by the remote host", a transport-level failure. The native git CLI (what every other git
+             client actually uses) handles large pushes far more robustly, so this class runs it as a
+             subprocess instead. Requires Git for Windows (or any git install) to be on PATH — the same
+             requirement as running `git` from a normal command prompt.
+            
+             The auth token is passed only via a one-off `-c http.extraHeader=...` argument on whichever
+             single invocation needs it (clone/fetch/push) — it's never written into .git/config, so it
+             never touches disk.
+             </summary>
+        </member>
         <member name="M:RMuseum.Utils.PublicDataExport.GitRepoPublisher.EnsureWorkingCopyUpToDate">
             <summary>
             Ensures the local working copy exists and is up to date with the remote before the
             export job starts writing files into it. Clones on first run, fetches + hard-resets
-            to the remote branch on subsequent runs (this working copy is bot-owned; nobody
-            should be hand-editing it, so a hard reset is safe and keeps the job idempotent).
+            to the remote branch on subsequent runs (this working copy is bot-owned; nobody should
+            be hand-editing it, so a hard reset is safe and keeps the job idempotent).
             </summary>
         </member>
         <member name="M:RMuseum.Utils.PublicDataExport.GitRepoPublisher.CommitAndPush(System.String)">
             <summary>
-            Stages every change under the working copy and, if anything actually changed,
-            commits and (if enabled) pushes. Returns the number of files touched (0 means
-            nothing changed since last run — a normal, expected outcome on most nightly runs).
+            Stages every change under the working copy and, if anything actually changed, commits
+            and (if enabled) pushes. Returns the number of files touched (0 means nothing changed
+            since last run — a normal, expected outcome on most nightly runs).
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.PublicDataExport.GitRepoPublisher.RedactAuth(System.String)">
+            <summary>
+            keeps the auth token out of exception messages that might end up logged somewhere
             </summary>
         </member>
         <member name="T:RMuseum.Utils.PublicDataExport.IdIndexWriter">
