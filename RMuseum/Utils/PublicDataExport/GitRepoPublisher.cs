@@ -45,6 +45,15 @@ namespace RMuseum.Utils.PublicDataExport
         /// user-secrets / environment variables, never committed to appsettings.json.
         /// </summary>
         public string GitToken { get; set; }
+
+        /// <summary>
+        /// Full path to git.exe, e.g. "C:\Program Files\Git\cmd\git.exe". Optional — leave empty
+        /// to resolve "git" via PATH (with a fallback to common Git-for-Windows install
+        /// locations if that fails, see GitRepoPublisher.ResolveGitExecutable). Set this
+        /// explicitly if the process running this job has a PATH that doesn't include git for
+        /// any reason (e.g. a Windows service running under a service account with its own PATH).
+        /// </summary>
+        public string GitExecutablePath { get; set; }
     }
 
     /// <summary>
@@ -67,6 +76,7 @@ namespace RMuseum.Utils.PublicDataExport
     public class GitRepoPublisher
     {
         private readonly GitRepoPublisherOptions _options;
+        private string _resolvedGitExecutable;
 
         public GitRepoPublisher(GitRepoPublisherOptions options)
         {
@@ -171,7 +181,7 @@ namespace RMuseum.Utils.PublicDataExport
         {
             var psi = new ProcessStartInfo
             {
-                FileName = "git",
+                FileName = ResolveGitExecutable(),
                 Arguments = arguments,
                 WorkingDirectory = workingDirectory,
                 RedirectStandardOutput = true,
@@ -189,7 +199,12 @@ namespace RMuseum.Utils.PublicDataExport
                 catch (Win32Exception exp)
                 {
                     throw new InvalidOperationException(
-                        "Could not start 'git'. Make sure Git for Windows is installed and 'git' is on PATH.", exp);
+                        "Could not start 'git'. This process's PATH may be stale (common right " +
+                        "after installing Git while Visual Studio/IIS Express was already " +
+                        "running — fully restart them so they pick up the new PATH), or git " +
+                        "genuinely isn't installed. As a workaround, set " +
+                        "PublicDataExport:GitExecutablePath (or TajikPublicDataExport:...) to " +
+                        "the full path of git.exe.", exp);
                 }
 
                 string stdout = process.StandardOutput.ReadToEnd();
@@ -198,6 +213,83 @@ namespace RMuseum.Utils.PublicDataExport
 
                 return new GitProcessResult { ExitCode = process.ExitCode, StandardOutput = stdout, StandardError = stderr };
             }
+        }
+
+        /// <summary>
+        /// Resolves which git executable to launch, cached for the lifetime of this instance.
+        /// Prefers an explicitly configured path; otherwise tries "git" (PATH resolution via
+        /// Process/CreateProcess) and, only if that file genuinely doesn't exist anywhere on
+        /// PATH, falls back to checking the usual Git-for-Windows install locations directly —
+        /// covers the common case where the process that's running this job has a stale PATH
+        /// snapshot from before git was installed (e.g. Visual Studio/IIS Express started before
+        /// the PATH environment variable was updated).
+        /// </summary>
+        private string ResolveGitExecutable()
+        {
+            if (_resolvedGitExecutable != null)
+                return _resolvedGitExecutable;
+
+            if (!string.IsNullOrEmpty(_options.GitExecutablePath))
+            {
+                _resolvedGitExecutable = _options.GitExecutablePath;
+                return _resolvedGitExecutable;
+            }
+
+            if (IsOnPath("git"))
+            {
+                _resolvedGitExecutable = "git";
+                return _resolvedGitExecutable;
+            }
+
+            string[] fallbackCandidates =
+            {
+                Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Git\cmd\git.exe"),
+                Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Git\bin\git.exe"),
+                Environment.ExpandEnvironmentVariables(@"%ProgramFiles(x86)%\Git\cmd\git.exe"),
+                Environment.ExpandEnvironmentVariables(@"%ProgramFiles(x86)%\Git\bin\git.exe"),
+                Environment.ExpandEnvironmentVariables(@"%LocalAppData%\Programs\Git\cmd\git.exe"),
+            };
+
+            foreach (var candidate in fallbackCandidates)
+            {
+                if (File.Exists(candidate))
+                {
+                    _resolvedGitExecutable = candidate;
+                    return _resolvedGitExecutable;
+                }
+            }
+
+            // nothing found - fall through with plain "git" so the resulting Win32Exception
+            // message (with its own guidance) is what the caller sees
+            _resolvedGitExecutable = "git";
+            return _resolvedGitExecutable;
+        }
+
+        /// <summary>
+        /// checks every directory on this process's own PATH for the given executable, without
+        /// actually starting it — used only to decide whether to bother trying the Git-for-Windows
+        /// fallback locations
+        /// </summary>
+        private static bool IsOnPath(string executableName)
+        {
+            string pathEnv = Environment.GetEnvironmentVariable("PATH") ?? "";
+            foreach (var dir in pathEnv.Split(Path.PathSeparator))
+            {
+                if (string.IsNullOrWhiteSpace(dir))
+                    continue;
+
+                try
+                {
+                    string candidate = Path.Combine(dir, executableName + ".exe");
+                    if (File.Exists(candidate))
+                        return true;
+                }
+                catch (ArgumentException)
+                {
+                    // malformed PATH entry - ignore and keep checking the rest
+                }
+            }
+            return false;
         }
 
         /// <summary>

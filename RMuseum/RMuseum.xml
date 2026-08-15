@@ -24151,6 +24151,15 @@
             user-secrets / environment variables, never committed to appsettings.json.
             </summary>
         </member>
+        <member name="P:RMuseum.Utils.PublicDataExport.GitRepoPublisherOptions.GitExecutablePath">
+            <summary>
+            Full path to git.exe, e.g. "C:\Program Files\Git\cmd\git.exe". Optional — leave empty
+            to resolve "git" via PATH (with a fallback to common Git-for-Windows install
+            locations if that fails, see GitRepoPublisher.ResolveGitExecutable). Set this
+            explicitly if the process running this job has a PATH that doesn't include git for
+            any reason (e.g. a Windows service running under a service account with its own PATH).
+            </summary>
+        </member>
         <member name="T:RMuseum.Utils.PublicDataExport.GitRepoPublisher">
              <summary>
              Thin wrapper around the native <c>git</c> CLI (not LibGit2Sharp) for the export job: sync a
@@ -24183,6 +24192,24 @@
             Stages every change under the working copy and, if anything actually changed, commits
             and (if enabled) pushes. Returns the number of files touched (0 means nothing changed
             since last run — a normal, expected outcome on most nightly runs).
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.PublicDataExport.GitRepoPublisher.ResolveGitExecutable">
+            <summary>
+            Resolves which git executable to launch, cached for the lifetime of this instance.
+            Prefers an explicitly configured path; otherwise tries "git" (PATH resolution via
+            Process/CreateProcess) and, only if that file genuinely doesn't exist anywhere on
+            PATH, falls back to checking the usual Git-for-Windows install locations directly —
+            covers the common case where the process that's running this job has a stale PATH
+            snapshot from before git was installed (e.g. Visual Studio/IIS Express started before
+            the PATH environment variable was updated).
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.PublicDataExport.GitRepoPublisher.IsOnPath(System.String)">
+            <summary>
+            checks every directory on this process's own PATH for the given executable, without
+            actually starting it — used only to decide whether to bother trying the Git-for-Windows
+            fallback locations
             </summary>
         </member>
         <member name="M:RMuseum.Utils.PublicDataExport.GitRepoPublisher.RedactAuth(System.String)">

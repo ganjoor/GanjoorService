@@ -155,6 +155,7 @@ namespace RMuseum.Services.Implementation
                 PushEnabled = bool.TryParse(section["PushEnabled"], out var push) && push,
                 GitUserName = section["GitUserName"],
                 GitToken = section["GitToken"],
+                GitExecutablePath = section["GitExecutablePath"],
             };
         }
 
