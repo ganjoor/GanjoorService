@@ -27,10 +27,13 @@
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    background-color: #f5f7fb;
+    min-height: 100vh;
+    min-height: 100dvh; /* FIXED (#10): avoids mobile toolbar overshoot */
+    background-color: var(--bg-page) !important;
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
 #hdr, #hdr2 {
@@ -47,7 +50,8 @@ body {
 }
 
 #hdr2 {
-    margin-bottom: 3px;
+    max-width: 860px !important;
+    margin: 15px auto !important;
 }
 
 h1 {
@@ -74,7 +78,8 @@ h1 a img {
 }
 
 a {
-    text-decoration: none;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
 }
 
 .bk-background {
@@ -127,14 +132,51 @@ form:after, form div:after {
 }
 
 
-#main, .sitem, .poem {
-    max-width: 752px;
-    margin: auto;
-    display: block;
-    border: 2px solid #300;
-    border-radius: 20px;
-    padding: 20px;
-    background: transparent url(/image/papere.jpg) top center repeat scroll;
+#main,
+.poem,
+.sitem {
+    background-color: var(--card-paper) !important;
+
+    background-image:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0,
+            transparent 29px,
+            var(--card-line) 29px,
+            var(--card-line) 30px
+        ),
+        radial-gradient(
+            circle at center,
+            var(--card-dot) 0,
+            var(--card-dot) 1px,
+            /* FIXED (#8): wider feather kills the sub-pixel shimmer/moiré
+               some GPUs produced with a 1.25px cutoff. */
+            transparent 2px
+        ) !important;
+
+    background-repeat:
+        repeat,
+        repeat !important;
+
+    background-size:
+        120px 120px,
+        30px 30px !important;
+
+    background-position:
+        0 0,
+        15px 15px !important;
+
+    border: 2px solid var(--border-gold) !important;
+    outline: 5px solid var(--card-paper) !important;
+
+    box-shadow:
+        0 0 0 7px var(--border-gold),
+        var(--card-shadow) !important;
+
+    border-radius: 6px !important;
+    max-width: 800px !important;
+    margin: 25px auto !important;
+    padding: 30px 22px !important;
 }
 
 
@@ -165,15 +207,13 @@ label {
     color: #000
 }
 
-input, select, textarea {
-    font-family: 'Vazirmatn';
-    font-weight: 300;
-    font-size: 0.8em;
-    padding: 2px;
-    text-align: right;
-    color: #7f7f7f;
-    border: 2px solid #300;
-    background-color: #fff
+select,
+input,
+textarea {
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    background: var(--card-inner) !important;
+    border-color: var(--border-gold) !important;
 }
 
 select {
@@ -192,10 +232,9 @@ select {
 }
 
 #guides {
-    display: block;
-    text-align: center;
-    margin: auto;
-    width: 100%;
+    max-width: 860px !important;
+    margin: 15px auto !important;
+    padding: 0 10px !important;
 }
 
     #guides p {
@@ -208,9 +247,12 @@ select {
     }
 
 .poet {
-    display: inline-table;
-    width: 82px;
-    margin-right: 1px;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 126px !important;
+    margin: 0 !important;
+    transition: transform 0.2s ease !important;
 }
 
 .poemtab {
@@ -222,17 +264,17 @@ select {
 }
 
 .poemtablinks {
-    display: inline-table;
+    display: block !important;
+    max-height: none !important;
 }
 
 .poet .caption {
-    display: block;
-    width: 100%;
-    font-family: 'Vazirmatn';
-    font-weight: 300;
-    font-size: 0.8em;
-    text-align: center;
-    margin-bottom: 30px;
+    width: 100% !important;
+    margin: 6px 0 0 0 !important;
+    text-align: center !important;
+    max-height: none !important;
+    display: flex !important;
+    justify-content: center !important;
 }
 
     .poet .caption a, .poemtablinks a {
@@ -318,9 +360,12 @@ div.n, div.l {
 
 
 .navigation {
-    width: 75%;
-    margin: auto;
-    display: block
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 820px !important;
+    margin: 0 auto !important;
 }
 
 .navleft {
@@ -336,39 +381,54 @@ div.n, div.l {
 }
 
 .b {
-    margin: auto;
-    margin-bottom: 20px;
-    text-align: center;
-    clear: both;
+    display: flex !important;
+    flex-direction: row !important;
+    direction: rtl !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+    padding: 2px 0 !important;
+    width: 100% !important;
+    max-width: 820px !important;
+    position: relative !important;
 }
 
 .m1 {
-    width: 45%;
-    float: right;
+    order: 2 !important;
+    flex: 1 1 46% !important;
+    width: 46% !important;
+    max-width: 48% !important;
+    min-width: 0 !important;
+    float: none !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
 }
 
 .m2 {
-    width: 45%;
-    float: left;
+    order: 4 !important;
+    flex: 1 1 46% !important;
+    width: 46% !important;
+    max-width: 48% !important;
+    min-width: 0 !important;
+    float: none !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
 }
 
     .m1 p, .m2 p {
-        font-family: 'Vazirmatn';
-        font-weight: 300;
-        font-size: 0.9em;
-        font-style: normal;
-        text-indent: 0;
-        margin: 0;
-        line-height: 30px;
-    }
-
-.m1 p {
-    text-align: left;
+    font-size: clamp(1.1rem, 2.05vw, 1.48rem) !important; /* FIXED: slightly lower floor helps long meters fit before wrapping */
+    font-weight: normal !important;
+    line-height: 2.35 !important;
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    text-shadow: none !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
 }
 
-.m2 p {
-    text-align: right;
-}
+.m1 p { text-align: left !important; padding-left: 4px !important; }
+
+.m2 p { text-align: right !important; padding-right: 4px !important; }
 
 .b2 p {
     text-align: center;
@@ -434,7 +494,8 @@ div.n, div.l {
 }
 
 .c p {
-    font-size: 0.8em;
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
 }
 
 #commentsp h3, #comments h3 {
@@ -651,10 +712,17 @@ td.c2 {
     }
 
 .bnum {
-    width: 50px !important;
-    height: 28px;
-    clear: right;
-    margin-left: -50px;
+    order: 1 !important;
+    display: block !important;
+    width: 36px !important;
+    height: 22px !important;
+    flex-shrink: 0 !important;
+    background-repeat: no-repeat !important;
+    background-size: contain !important;
+    background-position: center !important;
+    opacity: 0.85 !important;
+    filter: sepia(0.8) hue-rotate(330deg) brightness(0.4) contrast(1.4) !important;
+    margin: 0 0 0 6px !important;
     cursor: pointer;
 }
 
@@ -1220,36 +1288,37 @@ ol {
 }
 
 #footer {
-    max-width: 752px;
-    margin-left: auto;
-    margin-top: auto;
-    margin-right: auto;
-    margin-bottom: 50px;
-    text-align: center;
-    display: block;
-    clear: both;
-    font-size: 0.8em;
-    border-radius: 20px;
-    background: rgba(127,127,127,0.2);
+    background: var(--card-inner) !important;
+    border: 1.5px solid var(--border-gold) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06) !important;
+    padding: 24px 20px !important;
+    max-width: 860px !important;
+    margin: 30px auto !important;
 }
 
     #footer ul {
-        list-style: none;
-    }
+    padding: 0 !important;
+    margin: 0 !important;
+}
 
     #footer li {
-        text-align: right;
-        padding-right: 20px;
-        margin-top: 5px;
-    }
+    margin-top: 8px !important;
+}
 
         #footer li a {
-            color: #300;
-        }
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    font-weight: 600 !important;
+    font-size: 0.88rem !important;
+    transition: all 0.2s ease !important;
+}
 
             #footer li a:hover {
-                border-bottom: 2px solid #300;
-            }
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    border-bottom: 1.5px solid var(--border-gold) !important;
+}
 
     #footer .link-list-tools li {
         padding-right: 50px;
@@ -1272,27 +1341,44 @@ ol {
 }
 
 .bnum-partial-narrators {
-    width: 49%;
-    float: right;
+    flex: 1 1 180px !important;
+    min-width: 150px !important;
+    height: 36px !important;
+    padding: 4px 10px !important;
+    border: 1px solid var(--border-gold) !important;
+    border-radius: 6px !important;
+    background: var(--card-paper) !important;
 }
 
 .bnum-partial-narrate-btn {
-    cursor: pointer;
-    width: 49%;
-    color: white !important;
-    background-color: green;
-    display: block;
-    text-align: center;
-    border-color: #300;
-    padding: 1px;
-    float: left;
-    margin-top: 3px;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 36px !important;
+    padding: 6px 14px !important;
+    background: var(--lapis) !important;
+    border: 1px solid var(--lapis) !important;
+    border-radius: 6px !important;
+    color: var(--card-paper) !important;
+    -webkit-text-fill-color: var(--card-paper) !important;
+    cursor: pointer !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
 }
 
 .bnum-partial-action-box {
-    width: 100%;
-    clear: both;
-    background-color: #300;
+    background: var(--card-inner) !important;
+    border: 1px solid var(--border-gold) !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin: 12px 0 16px !important;
+    padding: 10px 0 !important;
+    border-top: 1px solid var(--gold-light) !important;
+    border-bottom: 1px solid var(--gold-light) !important;
 }
 
 
@@ -1431,13 +1517,15 @@ audio {
 }
 
 .circled-number-container {
-    width: 100%;    
-    direction: ltr;
-    display: inline-flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    row-gap: 2px;
-    column-gap: 5px;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 16px auto !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 600px !important;
 }
 
 .circled-number, .circled-number-diff, .navbar-help-button {
@@ -1455,7 +1543,19 @@ audio {
 }
 
 .circled-number-diff {
-    background-color: rgba(255, 0, 0, 0.5);
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: var(--card-nested) !important;
+    border: 1.5px solid var(--border-gold) !important;
+    padding: 0 !important;
+    margin: 8px auto !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+    cursor: pointer !important;
+    text-align: center !important;
 }
 
 .navbar-help-button {
@@ -1473,8 +1573,19 @@ audio {
 
 
 #findpoet {
-    margin-top: 10px;
-    text-align: center;
+    background: var(--card-inner) !important;
+    border: 1.5px solid var(--border-gold) !important;
+    border-radius: 20px !important;
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    padding: 8px 20px !important;
+    font-size: 0.9rem !important;
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 15px auto !important;
+    display: block !important;
+    text-align: center !important;
+    box-shadow: inset 0 1px 4px rgba(0,0,0,0.06) !important;
 }
 
 
@@ -1582,22 +1693,23 @@ fieldset {
 }
 
     #main-navbar .pagebutton {
-        display: inline-table;
-        border: 3px solid black;
-        padding-top: 0;
-        padding-bottom: 0;
-        padding-left: 10px;
-        padding-right: 10px;
-        background-color: darkred;
-    }
+    background: var(--card-nested) !important;
+    border: 1px solid var(--border-gold) !important;
+    border-radius: 20px !important;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    font-weight: 600 !important;
+}
 
     #main-navbar .circled-number {
         background-color: darkred;
     }
 
 .utilbar {
-    background: none;
-    border: none;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 12px auto 8px auto !important;
 }
 /* The sticky class is added to the navbar with JS when it reaches its scroll position */
 .sticky {
@@ -2118,7 +2230,11 @@ fieldset {
 }
 
 mark {
-    background: orange;
+    background: var(--gold-subtle) !important;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    border-radius: 4px;
+    padding: 0 4px;
 }
 
     mark.currentInlineResult {
