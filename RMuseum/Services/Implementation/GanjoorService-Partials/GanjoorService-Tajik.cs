@@ -180,8 +180,13 @@ namespace RMuseum.Services.Implementation
                     var tajikVerses = await _context.TajikVerses.AsNoTracking().Where(v => v.PoemId ==  page.Poem.Id).OrderBy(v => v.VOrder).ToListAsync();
                     foreach( var verse in page.Poem.Verses)
                     {
+                        verse.OriginalText = verse.Text;
                         verse.Text = tajikVerses.Where(v => v.VOrder == verse.VOrder).Single().TajikText;
                     }
+                    // recompute fresh on every request (verses are already in memory) rather than
+                    // relying on the precomputed TajikHtmlText blob - keeps this in sync with the
+                    // verse data automatically, no regeneration job needed if it ever changes again
+                    page.HtmlText = PrepareBilingualHtmlText(page.Poem.Verses);
 
                     if (page.Poem.Recitations != null)
                     {
@@ -243,6 +248,101 @@ namespace RMuseum.Services.Implementation
             if (string.IsNullOrWhiteSpace(plainText)) return "";
             var firstLine = plainText.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
             return firstLine.Length > 80 ? firstLine.Substring(0, 80) + "…" : firstLine;
+        }
+
+        /// <summary>
+        /// Tajik counterpart of PrepareHtmlText (GanjoorService-SQLiteImport.cs) - same
+        /// VersePosition-based structure/CSS classes, but each verse's Persian original
+        /// (GanjoorVerse.OriginalText, set just before this is called) is rendered as an
+        /// extra &lt;p class="tg-fa" dir="rtl"&gt; line directly under its Tajik line, for
+        /// an interlinear/bilingual display. Computed fresh per-request rather than stored,
+        /// since it's cheap given the verses are already loaded for the response.
+        /// </summary>
+        private static string PrepareBilingualHtmlText(GanjoorVerseViewModel[] verses)
+        {
+            string FaLine(string text) => string.IsNullOrEmpty(text) ? "" : $"<p class=\"tg-fa\" dir=\"rtl\">{text}</p>";
+
+            string htmlText = "";
+            int coupletIndex = 0;
+            for (int vIndex = 0; vIndex < verses.Length; vIndex++)
+            {
+                GanjoorVerseViewModel v = verses[vIndex];
+                if (v.VersePosition == VersePosition.CenteredVerse1)
+                {
+                    coupletIndex++;
+                    if (((vIndex + 1) < verses.Length) && (verses[vIndex + 1].VersePosition == VersePosition.CenteredVerse2))
+                    {
+                        htmlText += $"<div class=\"b2\" id=\"bn{coupletIndex}\"><p>{v.Text}</p>{FaLine(v.OriginalText)}{Environment.NewLine}";
+                    }
+                    else
+                    {
+                        htmlText += $"<div class=\"b2\" id=\"bn{coupletIndex}\"><p>{v.Text}</p>{FaLine(v.OriginalText)}</div>{Environment.NewLine}";
+                    }
+                }
+                else
+                if (v.VersePosition == VersePosition.CenteredVerse2)
+                {
+                    htmlText += $"<p>{v.Text}</p>{FaLine(v.OriginalText)}</div>{Environment.NewLine}";
+                }
+                else
+                if (v.VersePosition == VersePosition.Right)
+                {
+                    coupletIndex++;
+                    htmlText += $"<div class=\"b\" id=\"bn{coupletIndex}\"><div class=\"m1\"><p>{v.Text}</p>{FaLine(v.OriginalText)}</div>{Environment.NewLine}";
+                }
+                else
+                if (v.VersePosition == VersePosition.Left)
+                {
+                    htmlText += $"<div class=\"m2\"><p>{v.Text}</p>{FaLine(v.OriginalText)}</div></div>{Environment.NewLine}";
+                }
+                else
+                if (v.VersePosition == VersePosition.Comment)
+                {
+                    htmlText += $"<div class=\"c\"><p>{v.Text}</p>{FaLine(v.OriginalText)}</div>{Environment.NewLine}";
+                }
+                else
+                if (v.VersePosition == VersePosition.Paragraph || v.VersePosition == VersePosition.Single)
+                {
+                    coupletIndex++;
+                    string[] lines = v.Text.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] faLines = string.IsNullOrEmpty(v.OriginalText) ? new string[0] : v.OriginalText.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    string cssClass = v.VersePosition == VersePosition.Paragraph ? "n" : "l";
+
+                    if (lines.Length != 0)
+                    {
+                        if (v.Text.Length / lines.Length < 150)
+                        {
+                            htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>{v.Text.Replace("\r\n", " ")}</p>{FaLine(v.OriginalText?.Replace("\r\n", " "))}</div>{Environment.NewLine}";
+                        }
+                        else
+                        {
+                            // Persian original might not split into the exact same number of
+                            // lines as its Tajik translation - matched by index on a best-effort
+                            // basis; this branch only fires for long paragraph/note text, not the
+                            // actual poem verses (Right/Left/CenteredVerse), so a rare misalignment
+                            // here is a minor cosmetic issue, not a poem-text-accuracy one
+                            for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
+                            {
+                                string faOne = lineIndex < faLines.Length ? faLines[lineIndex] : "";
+                                htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>{lines[lineIndex]}</p>{FaLine(faOne)}</div>{Environment.NewLine}";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(v.Text))
+                        {
+                            htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>&nbsp;</p></div>{Environment.NewLine}";//empty line!
+                        }
+                        else
+                        {
+                            htmlText += $"<div class=\"{cssClass}\" id=\"bn{coupletIndex}\"><p>{v.Text}</p>{FaLine(v.OriginalText)}</div>{Environment.NewLine}";//not brave enough to ignore it!
+                        }
+                    }
+                }
+            }
+            return htmlText.Trim();
         }
 
         /// <summary>

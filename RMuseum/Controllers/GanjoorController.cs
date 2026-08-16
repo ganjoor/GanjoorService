@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Auth.ViewModel;
 using RMuseum.Models.Ganjoor;
-using RMuseum.Models.Ganjoor.PublicExport;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.GanjoorIntegration;
@@ -2414,81 +2413,6 @@ namespace RMuseum.Controllers
             {
 
                 var res = _ganjoorService.StartBatchGenerateGDBFiles();
-                if (!string.IsNullOrEmpty(res.ExceptionString))
-                    return BadRequest(res.ExceptionString);
-                return Ok();
-            }
-            catch (Exception exp)
-            {
-                return BadRequest(exp.ToString());
-            }
-        }
-
-        /// <summary>
-        /// start exporting all published Ganjoor data to the public git-tracked JSON data set
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("publicdata/batchexport")]
-        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public IActionResult StartBatchExportPublicGitData()
-        {
-            try
-            {
-                var res = _ganjoorService.StartBatchExportPublicGitData();
-                if (!string.IsNullOrEmpty(res.ExceptionString))
-                    return BadRequest(res.ExceptionString);
-                return Ok();
-            }
-            catch (Exception exp)
-            {
-                return BadRequest(exp.ToString());
-            }
-        }
-
-        /// <summary>
-        /// start exporting the Tajik (Cyrillic) overlay data to its own, separate public
-        /// git-tracked JSON data set — only poets/categories/poems with an actual Tajik
-        /// translation are included
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("tajik/publicdata/batchexport")]
-        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public IActionResult StartBatchExportTajikPublicGitData()
-        {
-            try
-            {
-                var res = _ganjoorService.StartBatchExportTajikPublicGitData();
-                if (!string.IsNullOrEmpty(res.ExceptionString))
-                    return BadRequest(res.ExceptionString);
-                return Ok();
-            }
-            catch (Exception exp)
-            {
-                return BadRequest(exp.ToString());
-            }
-        }
-
-        /// <summary>
-        /// (re)build local Ganjoor content from a public data export tree (local folder or HTTP) —
-        /// intended for local development use, not for production servers
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("publicdata/import")]
-        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        public IActionResult StartImportFromPublicDataRepo([FromBody] PublicDataImportRequestDto request)
-        {
-            try
-            {
-                var res = _ganjoorService.StartImportFromPublicDataRepo(request.UseHttp, request.Location, request.PoetId);
                 if (!string.IsNullOrEmpty(res.ExceptionString))
                     return BadRequest(res.ExceptionString);
                 return Ok();

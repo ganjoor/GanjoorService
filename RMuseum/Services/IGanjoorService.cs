@@ -634,31 +634,6 @@ namespace RMuseum.Services
         RServiceResult<bool> StartBatchGenerateGDBFiles();
 
         /// <summary>
-        /// start exporting all published data (poets/categories/poems/verses) to the public
-        /// git-tracked JSON data set, committing and pushing changes since the last run
-        /// </summary>
-        /// <returns></returns>
-        RServiceResult<bool> StartBatchExportPublicGitData();
-
-        /// <summary>
-        /// start exporting the Tajik (Cyrillic) overlay data to its own separate git-tracked JSON
-        /// data set — only entities that actually have a Tajik translation are included
-        /// </summary>
-        /// <returns></returns>
-        RServiceResult<bool> StartBatchExportTajikPublicGitData();
-
-        /// <summary>
-        /// (re)build local Ganjoor content (poets/categories/poems/verses/sections + their pages)
-        /// from a public data export tree, read locally or over HTTP. Safe to re-run — existing
-        /// entities (by id) are left untouched, only missing ones are added.
-        /// </summary>
-        /// <param name="useHttp">true: fetch over HTTP (location is a base URL). false: read from a local folder (location is a path).</param>
-        /// <param name="location">base URL or local folder path of the exported data tree</param>
-        /// <param name="poetId">0 imports every poet; a specific id imports only that poet (useful on a slow connection)</param>
-        /// <returns></returns>
-        RServiceResult<bool> StartImportFromPublicDataRepo(bool useHttp, string location, int poetId = 0);
-
-        /// <summary>
         /// examine site pages for broken links
         /// </summary>
         /// <returns></returns>

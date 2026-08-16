@@ -1775,27 +1775,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.StartBatchExportPublicGitData">
-            <summary>
-            start exporting all published Ganjoor data to the public git-tracked JSON data set
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.StartBatchExportTajikPublicGitData">
-            <summary>
-            start exporting the Tajik (Cyrillic) overlay data to its own, separate public
-            git-tracked JSON data set — only poets/categories/poems with an actual Tajik
-            translation are included
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.StartImportFromPublicDataRepo(RMuseum.Models.Ganjoor.PublicExport.PublicDataImportRequestDto)">
-            <summary>
-            (re)build local Ganjoor content from a public data export tree (local folder or HTTP) —
-            intended for local development use, not for production servers
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetUserPublicProfile(System.Guid)">
             <summary>
             Get user public profile
@@ -13590,6 +13569,13 @@
             couplet summary
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel.OriginalText">
+            <summary>
+            original (Persian) text - only populated for Tajik responses that need to show
+            the Persian original alongside the Tajik transliteration. This is a pure view
+            model (not an EF entity), so no [NotMapped] or migration concerns here.
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel">
             <summary>
             Ganjoor Poem related music track model
@@ -17535,31 +17521,6 @@
             <summary>
             start generating gdb files
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IGanjoorService.StartBatchExportPublicGitData">
-            <summary>
-            start exporting all published data (poets/categories/poems/verses) to the public
-            git-tracked JSON data set, committing and pushing changes since the last run
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IGanjoorService.StartBatchExportTajikPublicGitData">
-            <summary>
-            start exporting the Tajik (Cyrillic) overlay data to its own separate git-tracked JSON
-            data set — only entities that actually have a Tajik translation are included
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:RMuseum.Services.IGanjoorService.StartImportFromPublicDataRepo(System.Boolean,System.String,System.Int32)">
-            <summary>
-            (re)build local Ganjoor content (poets/categories/poems/verses/sections + their pages)
-            from a public data export tree, read locally or over HTTP. Safe to re-run — existing
-            entities (by id) are left untouched, only missing ones are added.
-            </summary>
-            <param name="useHttp">true: fetch over HTTP (location is a base URL). false: read from a local folder (location is a path).</param>
-            <param name="location">base URL or local folder path of the exported data tree</param>
-            <param name="poetId">0 imports every poet; a specific id imports only that poet (useful on a slow connection)</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.HealthCheckContents">
@@ -21655,6 +21616,16 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ExtractExcerpt(System.String)">
             <summary>
             short plain-text excerpt (first non-empty line) for a Tajik poem's next/previous nav link
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.PrepareBilingualHtmlText(RMuseum.Models.Ganjoor.ViewModels.GanjoorVerseViewModel[])">
+            <summary>
+            Tajik counterpart of PrepareHtmlText (GanjoorService-SQLiteImport.cs) - same
+            VersePosition-based structure/CSS classes, but each verse's Persian original
+            (GanjoorVerse.OriginalText, set just before this is called) is rendered as an
+            extra &lt;p class="tg-fa" dir="rtl"&gt; line directly under its Tajik line, for
+            an interlinear/bilingual display. Computed fresh per-request rather than stored,
+            since it's cheap given the verses are already loaded for the response.
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.RegenerateTajikCatAndPoetHtmlTextAsync">
