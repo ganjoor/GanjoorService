@@ -2691,6 +2691,13 @@ fieldset {
     gap: 8px;
     margin: 12px auto 8px auto !important;
 }
+
+#utils-navbar {
+    width: 100% !important;
+    max-width: 860px !important;
+    margin: 0 auto !important;
+    clear: both !important;
+}
 /* The sticky class is added to the navbar with JS when it reaches its scroll position */
 .sticky {
     position: sticky !important;
