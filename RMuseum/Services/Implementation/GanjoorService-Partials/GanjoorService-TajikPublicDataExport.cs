@@ -292,6 +292,9 @@ namespace RMuseum.Services.Implementation
             return
 $@"# ganjoor-tajik-data
 
+**[▶ Live demo](https://ganjoor.github.io/tjmini/)** — Мини-Ганҷур, a minimal reading app built
+on this data, running client-side in your browser with no server of its own.
+
 Cyrillic Tajik transliteration/translation overlay for [Ganjoor](https://ganjoor.net)'s poetry
 content. This is a **separate, sparser** data set from
 [ganjoor-data](https://github.com/ganjoor/ganjoor-data) — Tajik coverage only exists for some
