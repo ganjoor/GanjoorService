@@ -693,6 +693,38 @@ html, body {
     margin-top: 14px;
 }
 
+/* century-grouped vs. alphabetical homepage view switch */
+.tg-view-switch {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    max-width: 480px;
+    margin: 18px auto 0 auto;
+    padding: 0 8px;
+}
+
+.tg-view-switch-btn {
+    font-family: 'PT Sans', sans-serif;
+    font-size: 0.9rem;
+    padding: 7px 16px;
+    border: 1px solid var(--tg-rule);
+    border-radius: 20px;
+    background: var(--tg-surface);
+    color: var(--tg-ink-soft);
+    cursor: pointer;
+}
+
+.tg-view-switch-btn:hover {
+    border-color: var(--tg-accent);
+    color: var(--tg-accent-deep);
+}
+
+.tg-view-switch-btn.active {
+    background: var(--tg-accent-deep);
+    border-color: var(--tg-accent-deep);
+    color: #fff;
+}
+
 /* ---------- error page ---------- */
 
 .text-danger {

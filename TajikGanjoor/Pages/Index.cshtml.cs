@@ -38,6 +38,13 @@ namespace TajikGanjoor.Pages
         /// poets grouped by century, shown on the home page - mirrors GanjooRazor's Index.cshtml.cs
         /// </summary>
         public List<GanjoorCenturyViewModel> PoetGroups { get; set; }
+
+        /// <summary>
+        /// all translated poets, sorted alphabetically by Tajik nickname - alternate flat view,
+        /// switched to on the home page instead of the century grouping
+        /// </summary>
+        public List<GanjoorPoetViewModel> AlphabeticalPoets { get; set; }
+
         public async Task<IActionResult> OnGetAsync()
         {
             if (bool.Parse(Configuration["MaintenanceMode"] ?? false.ToString()))
@@ -57,6 +64,21 @@ namespace TajikGanjoor.Pages
                 if (false == await PreparePoetGroupsAsync())
                 {
                     return Page();
+                }
+                // plain ordinal sort gets this wrong: the six Tajik-specific letters
+                // (ғ ӣ қ ӯ ҳ ҷ) sit outside the main Cyrillic code point block, so they'd
+                // sort out of alphabetical order (e.g. after "я") under Ordinal - a
+                // culture-aware comparer places them correctly relative to their base
+                // letter (ғ after г, etc). Falls back to Ordinal if "tg-TJ" collation
+                // data isn't available on the server, rather than failing the page.
+                try
+                {
+                    var tajikCulture = System.Globalization.CultureInfo.GetCultureInfo("tg-TJ");
+                    AlphabeticalPoets = Poets.OrderBy(p => p.Nickname, StringComparer.Create(tajikCulture, false)).ToList();
+                }
+                catch (System.Globalization.CultureNotFoundException)
+                {
+                    AlphabeticalPoets = Poets.OrderBy(p => p.Nickname, StringComparer.Ordinal).ToList();
                 }
             }
             int pageNumber = 1;
