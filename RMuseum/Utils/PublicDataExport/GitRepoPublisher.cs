@@ -54,6 +54,14 @@ namespace RMuseum.Utils.PublicDataExport
         /// any reason (e.g. a Windows service running under a service account with its own PATH).
         /// </summary>
         public string GitExecutablePath { get; set; }
+
+        /// <summary>
+        /// how long a single git command is allowed to run before it's killed and the job fails
+        /// with a clear timeout error, instead of hanging forever (e.g. if git ever ends up
+        /// waiting on an interactive prompt with no terminal to answer it — see
+        /// GIT_TERMINAL_PROMPT in GitRepoPublisher)
+        /// </summary>
+        public int CommandTimeoutMinutes { get; set; } = 45;
     }
 
     /// <summary>
@@ -209,12 +217,34 @@ namespace RMuseum.Utils.PublicDataExport
                 WorkingDirectory = workingDirectory,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
+                RedirectStandardInput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
             };
 
-            using (var process = new Process { StartInfo = psi })
+            // Without this, git can end up trying to prompt interactively for credentials or a
+            // host-key confirmation. There is no interactive terminal in this process (it runs
+            // under IIS/a background job) — an unanswered prompt just hangs forever with no error
+            // and no timeout, which is exactly what happened here. This makes git fail fast with
+            // a real error instead.
+            psi.EnvironmentVariables["GIT_TERMINAL_PROMPT"] = "0";
+
+            var stdout = new StringBuilder();
+            var stderr = new StringBuilder();
+
+            using (var process = new Process { StartInfo = psi, EnableRaisingEvents = true })
             {
+                // Reading both redirected streams asynchronously (rather than e.g.
+                // StandardOutput.ReadToEnd() before WaitForExit()) is required here, not optional:
+                // git writes most of its push/fetch progress to stderr, and synchronously draining
+                // stdout first while nobody drains stderr is a classic .NET Process deadlock if
+                // stderr's OS pipe buffer fills up — the child blocks writing to stderr, the parent
+                // blocks reading stdout, and both wait on each other forever. That deadlock (not a
+                // slow network) is almost certainly what actually produced the multi-day hang this
+                // was fixed after.
+                process.OutputDataReceived += (s, e) => { if (e.Data != null) stdout.AppendLine(e.Data); };
+                process.ErrorDataReceived += (s, e) => { if (e.Data != null) stderr.AppendLine(e.Data); };
+
                 try
                 {
                     process.Start();
@@ -230,11 +260,37 @@ namespace RMuseum.Utils.PublicDataExport
                         "the full path of git.exe.", exp);
                 }
 
-                string stdout = process.StandardOutput.ReadToEnd();
-                string stderr = process.StandardError.ReadToEnd();
+                process.StandardInput.Close(); // nothing will ever be typed to it
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                bool exited = process.WaitForExit(_options.CommandTimeoutMinutes * 60 * 1000);
+                if (!exited)
+                {
+                    TryKill(process);
+                    throw new TimeoutException(
+                        $"git {RedactAuth(arguments)} did not finish within {_options.CommandTimeoutMinutes} minutes and was killed. " +
+                        "This is a hang, not normal slowness for this job — most likely git was waiting on a prompt " +
+                        "with no terminal to answer it (should no longer happen with GIT_TERMINAL_PROMPT=0 set above) " +
+                        "or a genuine network stall.");
+                }
+
+                // let the async read handlers finish flushing after the process has exited
                 process.WaitForExit();
 
-                return new GitProcessResult { ExitCode = process.ExitCode, StandardOutput = stdout, StandardError = stderr };
+                return new GitProcessResult { ExitCode = process.ExitCode, StandardOutput = stdout.ToString(), StandardError = stderr.ToString() };
+            }
+        }
+
+        private static void TryKill(Process process)
+        {
+            try
+            {
+                process.Kill(entireProcessTree: true);
+            }
+            catch
+            {
+                // best-effort - if it's already gone, or can't be killed, there's nothing more to do
             }
         }
 

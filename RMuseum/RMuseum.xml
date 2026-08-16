@@ -21211,6 +21211,24 @@
             current poem count.
             </summary>
         </member>
+        <member name="F:RMuseum.Services.Implementation.GanjoorService._publicDataExportRunningLock">
+            <summary>
+            Guards against two runs of the same export job (keyed by job name — "PublicDataExport"
+            / "TajikPublicDataExport") ever executing concurrently against the same git working
+            copy. This exists because deleting a job's row on the admin Jobs page only removes its
+            database record — it does not stop the background Task (or its child git.exe process)
+            that's still actually running. Without this guard, triggering the job again while a
+            previous run hadn't finished starts a second concurrent git process against the same
+            folder, which is exactly what produces a ".git/index.lock: File exists" failure.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.TryStartExclusiveExportJob(System.String)">
+            <summary>
+            Returns true (and marks <paramref name="jobName"/> as running) if no run of this job
+            was already in progress; false if one was, in which case the caller should refuse to
+            start a second one rather than queueing a background task that would race the first.
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartBatchExportPublicGitData">
             <summary>
             start exporting all Ganjoor data (poets/categories/poems/verses) belonging to
@@ -24160,6 +24178,14 @@
             any reason (e.g. a Windows service running under a service account with its own PATH).
             </summary>
         </member>
+        <member name="P:RMuseum.Utils.PublicDataExport.GitRepoPublisherOptions.CommandTimeoutMinutes">
+            <summary>
+            how long a single git command is allowed to run before it's killed and the job fails
+            with a clear timeout error, instead of hanging forever (e.g. if git ever ends up
+            waiting on an interactive prompt with no terminal to answer it — see
+            GIT_TERMINAL_PROMPT in GitRepoPublisher)
+            </summary>
+        </member>
         <member name="T:RMuseum.Utils.PublicDataExport.GitRepoPublisher">
              <summary>
              Thin wrapper around the native <c>git</c> CLI (not LibGit2Sharp) for the export job: sync a
@@ -24185,6 +24211,21 @@
             export job starts writing files into it. Clones on first run, fetches + hard-resets
             to the remote branch on subsequent runs (this working copy is bot-owned; nobody should
             be hand-editing it, so a hard reset is safe and keeps the job idempotent).
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.PublicDataExport.GitRepoPublisher.RemoveStaleLockFileIfAny">
+            <summary>
+            A .git/index.lock left behind by an abruptly-terminated git process (e.g. an app pool
+            recycle, or a previous run of this same job that got killed mid-command rather than
+            finishing) blocks every future git command in this working copy with a confusing
+            "Another git process seems to be running" error, even when nothing actually is.
+            GanjoorService's TryStartExclusiveExportJob already guarantees only one run of a given
+            export job (main or Tajik) executes at a time *within this process* — so reaching this
+            method at all means the current call is the sole legitimate owner of this working copy
+            right now, and any lock file found here can only be a leftover from something that is
+            no longer running (that in-process guard doesn't survive an app pool/process restart,
+            which is exactly the scenario that leaves an orphaned lock file in the first place).
+            Safe to remove unconditionally on that basis.
             </summary>
         </member>
         <member name="M:RMuseum.Utils.PublicDataExport.GitRepoPublisher.CommitAndPush(System.String)">

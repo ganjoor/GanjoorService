@@ -159,6 +159,7 @@ namespace RMuseum.Services.Implementation
                 GitUserName = section["GitUserName"],
                 GitToken = section["GitToken"],
                 GitExecutablePath = section["GitExecutablePath"],
+                CommandTimeoutMinutes = int.TryParse(section["CommandTimeoutMinutes"], out var timeout) ? timeout : 45,
             };
         }
 

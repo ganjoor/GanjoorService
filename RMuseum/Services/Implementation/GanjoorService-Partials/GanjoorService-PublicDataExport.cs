@@ -211,6 +211,7 @@ namespace RMuseum.Services.Implementation
                 GitUserName = section["GitUserName"],
                 GitToken = section["GitToken"],
                 GitExecutablePath = section["GitExecutablePath"],
+                CommandTimeoutMinutes = int.TryParse(section["CommandTimeoutMinutes"], out var timeout) ? timeout : 45,
             };
         }
 
@@ -487,6 +488,9 @@ Not available as a static endpoint in this data set yet.
         {
             return
 $@"# ganjoor-data
+
+**[▶ Live demo](https://ganjoor.github.io/mini/)** — مین‌گنجور, a minimal reading app built
+entirely on this data, running client-side in your browser with no server of its own.
 
 Public, git-tracked export of [Ganjoor](https://ganjoor.net)'s poetry content — poets,
 categories, and poems, allowlisted to contain none of the site's user-account-linked data
