@@ -7,14 +7,15 @@
    does the highlighting.
 
    Verse elements are counted in document order across .m1, .m2 (the two
-   halves of a couplet), .b2 > p (rubaʼi-style already-centered couplets),
+   halves of a couplet), .b2 > p (rubaʼi-style already-centered couplets,
+   excluding the interlinear Persian .tg-fa line added alongside each one),
    .n and .l (paragraph/single-line verses) - same shape PrepareHtmlText
    produces for both the Persian and Tajik sites, so the sync XML's
    VerseOrder values line up the same way. */
 (function () {
     function getVerseElements() {
         return Array.prototype.slice.call(
-            document.querySelectorAll('.m1, .m2, .n, .l, .b2 > p')
+            document.querySelectorAll('.m1, .m2, .n, .l, .b2 > p:not(.tg-fa)')
         );
     }
 

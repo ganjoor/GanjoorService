@@ -57,18 +57,60 @@
     else
     @if (Model.IsHomePage)
     {
-        <div class="tg-poet-grid">
-            @foreach (var poet in Model.Poets)
-            {
-                <a class="tg-poet-card" href="@poet.FullUrl" title="@poet.Name">
-                    <span class="tg-poet-portrait">
-                        <img src="/images/poets/@(poet.Id).png" alt="@poet.Nickname" loading="lazy"
-                             onerror="this.onerror=null;this.src='/images/poets/999.png';" />
-                    </span>
-                    <span class="tg-poet-name">@poet.Nickname</span>
-                </a>
-            }
+        var popularGroup = Model.PoetGroups.SingleOrDefault(g => g.Id == 0);
+        var centuryGroups = Model.PoetGroups.Where(g => g.Id != 0).ToList();
+        @if (popularGroup != null)
+        {
+            <div class="tg-century-heading">Шоирони маъмул</div>
+            <div class="tg-poet-grid">
+                @foreach (var poet in popularGroup.Poets)
+                {
+                    <a class="tg-poet-card" href="@poet.FullUrl" title="@poet.Name" data-value="@poet.Nickname">
+                        <span class="tg-poet-portrait">
+                            <img src="/images/poets/@(poet.Id).png" alt="@poet.Nickname" loading="lazy"
+                                 onerror="this.onerror=null;this.src='/images/poets/999.png';" />
+                        </span>
+                        <span class="tg-poet-name">@poet.Nickname</span>
+                    </a>
+                }
+            </div>
+        }
+
+        <div class="tg-poet-search">
+            <input type="text" id="tg-findpoet" placeholder="Ҷустуҷӯи шоир" oninput="tgInlineSearch(this.value)" />
+            <div class="tg-poet-grid" id="tg-found-poets"></div>
         </div>
+
+        @if (centuryGroups.Count > 0)
+        {
+            <div class="tg-century-heading">Гурӯҳбандӣ бар асоси аср</div>
+            <div class="tg-century-nav">
+                @foreach (var g in centuryGroups)
+                {
+                    <a href="#tg-pg-@g.Id" class="circled-number">@(g.HalfCenturyOrder + 2)</a>
+                }
+            </div>
+
+            @foreach (var century in centuryGroups)
+            {
+                @if (century.ShowInTimeLine)
+                {
+                    <div class="tg-century-heading" id="tg-pg-@century.Id">@century.Name</div>
+                }
+                <div class="tg-poet-grid">
+                    @foreach (var poet in century.Poets)
+                    {
+                        <a class="tg-poet-card" href="@poet.FullUrl" title="@poet.Name" data-value="@poet.Nickname">
+                            <span class="tg-poet-portrait">
+                                <img src="/images/poets/@(poet.Id).png" alt="@poet.Nickname" loading="lazy"
+                                     onerror="this.onerror=null;this.src='/images/poets/999.png';" />
+                            </span>
+                            <span class="tg-poet-name">@poet.Nickname</span>
+                        </a>
+                    }
+                </div>
+            }
+        }
     }
     else
     {

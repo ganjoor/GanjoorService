@@ -8,6 +8,7 @@ using RMuseum.Models.Ganjoor;
 using System.Net;
 using System.Text.RegularExpressions;
 using RSecurityBackend.Models.Generic;
+using RMuseum.Services.Implementation;
 
 
 
@@ -32,6 +33,11 @@ namespace TajikGanjoor.Pages
         public string PagingToolsHtml { get; set; }
 
         public List<GanjoorPoemCompleteViewModel> Poems { get; set; }
+
+        /// <summary>
+        /// poets grouped by century, shown on the home page - mirrors GanjooRazor's Index.cshtml.cs
+        /// </summary>
+        public List<GanjoorCenturyViewModel> PoetGroups { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
             if (bool.Parse(Configuration["MaintenanceMode"] ?? false.ToString()))
@@ -46,6 +52,13 @@ namespace TajikGanjoor.Pages
             }
             IsSearchPage = !string.IsNullOrEmpty(Request.Query["s"]);
             IsHomePage = !IsSearchPage && Request.Path == "/";
+            if (IsHomePage)
+            {
+                if (false == await PreparePoetGroupsAsync())
+                {
+                    return Page();
+                }
+            }
             int pageNumber = 1;
             if (IsSearchPage)
             {
@@ -312,6 +325,77 @@ namespace TajikGanjoor.Pages
             }
 
             Poets = poets ?? [];
+            return true;
+        }
+
+        /// <summary>
+        /// fetches the same /api/ganjoor/centuries grouping GanjooRazor's homepage uses, then
+        /// overlays Tajik nickname/description onto each group's poets the same way
+        /// PreparePoetsAsync does, dropping poets with no Tajik translation and dropping any
+        /// century that ends up empty as a result - century Name itself has no dedicated Tajik
+        /// translation source anywhere, so it falls back to LanguageUtils.TransliteratePersianToTajik
+        /// (a handful of these are short/fixed enough that hand-correcting the wording later,
+        /// directly in this list, would be easy if the transliteration reads awkwardly)
+        /// </summary>
+        private async Task<bool> PreparePoetGroupsAsync()
+        {
+            var cacheKey = $"/api/ganjoor/tajik/centuries";
+            if (!_memoryCache.TryGetValue(cacheKey, out List<GanjoorCenturyViewModel>? poetGroups))
+            {
+                try
+                {
+                    var res1 = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/centuries");
+                    if (!res1.IsSuccessStatusCode)
+                    {
+                        LastError = JsonConvert.DeserializeObject<string>(await res1.Content.ReadAsStringAsync()) ?? "!res1.IsSuccessStatusCode";
+                        return false;
+                    }
+                    var centuries = JArray.Parse(await res1.Content.ReadAsStringAsync()).ToObject<List<GanjoorCenturyViewModel>>();
+                    centuries = centuries ?? [];
+
+                    var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/tajik/poets");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()) ?? "!response.IsSuccessStatusCode";
+                        return false;
+                    }
+                    var tajikPoets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorTajikPoet>>() ?? [];
+
+                    poetGroups = new List<GanjoorCenturyViewModel>();
+                    foreach (var century in centuries)
+                    {
+                        var translatedPoets = new List<GanjoorPoetViewModel>();
+                        foreach (var poet in century.Poets)
+                        {
+                            var tajikPoet = tajikPoets.SingleOrDefault(p => p.Id == poet.Id);
+                            if (tajikPoet != null)
+                            {
+                                poet.Nickname = tajikPoet.TajikNickname;
+                                poet.Description = tajikPoet.TajikDescription;
+                                translatedPoets.Add(poet);
+                            }
+                        }
+                        if (translatedPoets.Count > 0)
+                        {
+                            century.Poets = translatedPoets;
+                            century.Name = LanguageUtils.TransliteratePersianToTajik(century.Name);
+                            poetGroups.Add(century);
+                        }
+                    }
+
+                    if (AggressiveCacheEnabled)
+                    {
+                        _memoryCache.Set(cacheKey, poetGroups, TimeSpan.FromHours(1));
+                    }
+                }
+                catch (Exception e)
+                {
+                    LastError = e.ToString();
+                    return false;
+                }
+            }
+
+            PoetGroups = poetGroups ?? [];
             return true;
         }
         private void PrepareNextPre()

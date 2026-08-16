@@ -69,6 +69,26 @@
     src: url('/fonts/ptsans/pt-sans-cyrillic-ext-700-italic.woff2') format('woff2');
 }
 
+/* Persian original text (interlinear comparison lines) - Cyrillic fonts above have no
+   Arabic-script glyphs at all, so this needs its own font. Vazirmatn is the same font
+   the main ganjoor.net site self-hosts for Persian, reused here for a consistent,
+   recognizable feel across the two sites. */
+@font-face {
+    font-family: 'Vazirmatn';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/vazirmatn/vazirmatn-arabic-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Vazirmatn';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/vazirmatn/vazirmatn-arabic-700-normal.woff2') format('woff2');
+}
+
 /* ---------- base page: warm paper tone, PT Sans chrome ---------- */
 
 :root {
@@ -290,6 +310,27 @@ html, body {
     font-size: 0.85rem;
     color: var(--tg-ink-soft);
     margin: 0;
+}
+
+/* Persian original, shown interlinear directly beneath its Tajik line (per
+   verse.OriginalText - see PrepareBilingualHtmlText). Deliberately smaller
+   and quieter than the Tajik line above it: this is a Tajik-first site, the
+   Persian is a reference/comparison aid, not the primary reading text.
+   Selectors repeat the base verse rules' specificity + the .tg-fa class so
+   this reliably wins regardless of source order. */
+.b .m1 p.tg-fa,
+.b .m2 p.tg-fa,
+.b2 p.tg-fa,
+.n p.tg-fa,
+.l p.tg-fa,
+.c p.tg-fa {
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-size: 0.82em;
+    line-height: 1.7;
+    color: var(--tg-ink-soft);
+    opacity: 0.85;
+    margin: 0.2em 0 0 0;
+    unicode-bidi: isolate;
 }
 
 /* poem title */
@@ -581,6 +622,7 @@ html, body {
     border-radius: 50%;
     font-family: 'PT Sans', sans-serif;
     font-size: 0.9rem;
+    text-decoration: none;
 }
 
 .circled-number {
@@ -596,6 +638,59 @@ html, body {
 .circled-number-diff {
     background-color: var(--tg-accent-deep);
     color: #fff;
+}
+
+/* ---------- homepage: century grouping + inline poet search ---------- */
+
+.tg-century-heading {
+    max-width: 980px;
+    margin: 28px auto 4px auto;
+    padding: 0 8px;
+    font-family: 'PT Serif', serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--tg-accent-deep);
+    text-align: start;
+    border-bottom: 1px solid var(--tg-rule);
+    padding-bottom: 6px;
+}
+
+.tg-century-nav {
+    max-width: 980px;
+    margin: 8px auto 0 auto;
+    padding: 0 8px;
+    text-align: center;
+}
+
+.tg-poet-search {
+    max-width: 480px;
+    margin: 20px auto 0 auto;
+    padding: 0 8px;
+}
+
+.tg-poet-search input {
+    width: 100%;
+    padding: 8px 12px;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 0.95rem;
+    border: 1px solid var(--tg-rule);
+    border-radius: 6px;
+    background: var(--tg-surface);
+    color: var(--tg-ink);
+}
+
+.tg-poet-search input:focus {
+    outline: none;
+    border-color: var(--tg-accent);
+}
+
+/* search results grid only takes up space once populated by tgInlineSearch (site.js) */
+.tg-poet-search .tg-poet-grid:empty {
+    margin: 0;
+}
+
+.tg-poet-search .tg-poet-grid {
+    margin-top: 14px;
 }
 
 /* ---------- error page ---------- */
