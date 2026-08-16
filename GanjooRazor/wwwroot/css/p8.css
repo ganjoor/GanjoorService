@@ -1,3 +1,56 @@
+
+
+html, body,
+div:not([class*="icon"]):not([class*="material"]):not(.bnum),
+p:not(.m1 *):not(.m2 *),
+span:not([class*="icon"]):not([class*="material"]):not(.pageicons):not(.noindent-info-button),
+a:not(#page-hierarchy h2 *),
+h1, h2, h3, h4, h5, h6,
+table, tr, td, th,
+input, select, textarea, button,
+blockquote:not([id^="sb-"]),
+small, label, .century, .notice, .comment-author {
+    font-family: 'Vazirmatn', sans-serif !important;
+}
+
+.material-icons,
+.pageicons,
+.inlinebutton,
+.info-buttons,
+.recitation-icons,
+.noindent-info-button,
+.edit-poem-button,
+.edit-note-poem-button {
+    font-family: 'Material Icons' !important;
+    color: white !important;
+    fill: white !important;
+    -webkit-text-fill-color: white !important;
+}
+
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-feature-settings: 'liga';
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-fill-color: currentColor !important;
+}
+
+.m1 p, .m2 p, .b2 p, .n p, .l p,
+#page-hierarchy h2,
+#page-hierarchy h2 a,
+.poem-title,
+blockquote[id^="sb-"] p,
+.coupletsummary blockquote p {
+    font-family: 'IranNastaliq', 'Noto Nastaliq Urdu', serif !important;
+}
 @font-face {
     font-family: 'Vazirmatn';
     src: url('/fonts/Vazirmatn-Regular.woff2') format('woff2');
@@ -26,6 +79,71 @@
     font-family: 'Vazirmatn';
 }
 
+
+
+:root {
+    color-scheme: light;
+
+    --bg-page:        #fbf6ea;
+    --card-paper:     #fffdf7;
+    --card-inner:     #f6efe3;
+    --card-nested:    #eee3d0;
+
+    --ink-black:      #17130f;
+    --text-muted:     #635543;
+
+    --lapis:          #0d1d30;
+    --lapis-hover:    #163252;
+    --number-ink:     #0d1d30;
+    --gold:           #b88828;
+    --gold-light:     #dfcd9f;
+    --gold-subtle:    rgba(184, 136, 40, 0.12);
+    --border-gold:    #cda458;
+
+    --card-line:      rgba(184, 136, 40, 0.035);
+    --card-dot:       rgba(184, 136, 40, 0.045);
+    --card-shadow:    0 12px 35px rgba(0, 0, 0, 0.16);
+
+    --page-pattern-size: 120px;
+
+    /* Light-mode gold tile */
+    --damask-medallion-crisp: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120' fill='%23b88828'%3E%3Cdefs%3E%3Cpath id='a' d='M0 -9C7 -14 9 -21 0 -29C-9 -21 -7 -14 0 -9Z'/%3E%3Cpath id='b' d='M0 -7C4 -11 5 -16 0 -20C-5 -16 -4 -11 0 -7Z'/%3E%3Cpath id='c' d='M0 -5C4 -8 5 -12 0 -16C-5 -12 -4 -8 0 -5Z'/%3E%3Cpath id='p' d='M0 -2C3 -4 3.4 -7.5 0 -10C-3.4 -7.5 -3 -4 0 -2Z'/%3E%3Cpath id='s' d='M0 -15L2.3 -5.5L10.6 -10.6L5.5 -2.3L15 0L5.5 2.3L10.6 10.6L2.3 5.5L0 15L-2.3 5.5L-10.6 10.6L-5.5 2.3L-15 0L-5.5 -2.3L-10.6 -10.6L-2.3 -5.5Z'/%3E%3Cpath id='t' d='M0 -33C4.5 -37 5.5 -44 0 -49C-5.5 -44 -4.5 -37 0 -33Z'/%3E%3Cpath id='l' d='M0 0C5 -6 13 -8 20 -5C14 1 5 4 0 0Z'/%3E%3Cg id='f'%3E%3Ccircle r='2.6'/%3E%3Cuse href='%23p'/%3E%3Cuse href='%23p' transform='rotate(60)'/%3E%3Cuse href='%23p' transform='rotate(120)'/%3E%3Cuse href='%23p' transform='rotate(180)'/%3E%3Cuse href='%23p' transform='rotate(240)'/%3E%3Cuse href='%23p' transform='rotate(300)'/%3E%3C/g%3E%3Cg id='m'%3E%3Cuse href='%23a'/%3E%3Cuse href='%23a' transform='rotate(45)'/%3E%3Cuse href='%23a' transform='rotate(90)'/%3E%3Cuse href='%23a' transform='rotate(135)'/%3E%3Cuse href='%23a' transform='rotate(180)'/%3E%3Cuse href='%23a' transform='rotate(225)'/%3E%3Cuse href='%23a' transform='rotate(270)'/%3E%3Cuse href='%23a' transform='rotate(315)'/%3E%3Cuse href='%23b' transform='rotate(22.5)'/%3E%3Cuse href='%23b' transform='rotate(67.5)'/%3E%3Cuse href='%23b' transform='rotate(112.5)'/%3E%3Cuse href='%23b' transform='rotate(157.5)'/%3E%3Cuse href='%23b' transform='rotate(202.5)'/%3E%3Cuse href='%23b' transform='rotate(247.5)'/%3E%3Cuse href='%23b' transform='rotate(292.5)'/%3E%3Cuse href='%23b' transform='rotate(337.5)'/%3E%3Cuse href='%23s'/%3E%3Ccircle r='4.6'/%3E%3Cuse href='%23t'/%3E%3Cuse href='%23t' transform='rotate(90)'/%3E%3Cuse href='%23t' transform='rotate(180)'/%3E%3Cuse href='%23t' transform='rotate(270)'/%3E%3Ccircle r='33.5' fill='none' stroke='%23b88828' stroke-width='2.4' stroke-dasharray='0.6 6.2' stroke-linecap='round'/%3E%3C/g%3E%3Cg id='k'%3E%3Cuse href='%23c'/%3E%3Cuse href='%23c' transform='rotate(45)'/%3E%3Cuse href='%23c' transform='rotate(90)'/%3E%3Cuse href='%23c' transform='rotate(135)'/%3E%3Cuse href='%23c' transform='rotate(180)'/%3E%3Cuse href='%23c' transform='rotate(225)'/%3E%3Cuse href='%23c' transform='rotate(270)'/%3E%3Cuse href='%23c' transform='rotate(315)'/%3E%3Cuse href='%23s' transform='scale(0.5)'/%3E%3Ccircle r='2.4'/%3E%3Ccircle r='21' fill='none' stroke='%23b88828' stroke-width='2.2' stroke-dasharray='0.6 5.6' stroke-linecap='round'/%3E%3C/g%3E%3Cg id='w'%3E%3Cpath fill='none' stroke='%23b88828' stroke-width='1.4' stroke-linecap='round' d='M0 -33C-10 -35 -16.5 -43 -14.5 -53C-13.5 -59.5 -6 -61 -5 -54.5'/%3E%3Cuse href='%23l' transform='translate(-5.5 -37) rotate(-118)'/%3E%3Cuse href='%23l' transform='translate(-15 -51) rotate(-35) scale(0.65)'/%3E%3Ccircle cx='-5' cy='-54.5' r='1.7'/%3E%3C/g%3E%3Cg id='v'%3E%3Cuse href='%23w'/%3E%3Cuse href='%23w' transform='scale(-1 1)'/%3E%3Cuse href='%23f' transform='translate(0 -44)'/%3E%3Cpath d='M0 -54C-3 -57 -3 -61 0 -64C3 -61 3 -57 0 -54Z'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23b88828' stroke-opacity='0.11'%3E%3Cpath d='M60 0L120 60L60 120L0 60Z'/%3E%3Cpath stroke-width='2.2' stroke-dasharray='0.6 6' stroke-linecap='round' d='M60 7L113 60L60 113L7 60Z'/%3E%3C/g%3E%3Cg fill-opacity='0.18' stroke-opacity='0.18'%3E%3Cuse href='%23m' transform='translate(60 60)'/%3E%3C/g%3E%3Cg fill-opacity='0.15' stroke-opacity='0.15'%3E%3Cuse href='%23k'/%3E%3Cuse href='%23k' transform='translate(120 0)'/%3E%3Cuse href='%23k' transform='translate(0 120)'/%3E%3Cuse href='%23k' transform='translate(120 120)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(45)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(135)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(225)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(315)'/%3E%3Cuse href='%23f' transform='translate(60 0) scale(1.45)'/%3E%3Cuse href='%23f' transform='translate(60 120) scale(1.45)'/%3E%3Cuse href='%23f' transform='translate(0 60) scale(1.45)'/%3E%3Cuse href='%23f' transform='translate(120 60) scale(1.45)'/%3E%3C/g%3E%3C/svg%3E");
+
+    --damask-ground-crisp: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cg fill='%23b88828' fill-opacity='0.035'%3E%3Cpath d='M10 5.5C11.1 8 12 8.9 14.5 10C12 11.1 11.1 12 10 14.5C8.9 12 8 11.1 5.5 10C8 8.9 8.9 8 10 5.5Z'/%3E%3Ccircle cx='0' cy='0' r='0.8'/%3E%3Ccircle cx='20' cy='0' r='0.8'/%3E%3Ccircle cx='0' cy='20' r='0.8'/%3E%3Ccircle cx='20' cy='20' r='0.8'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+
+        --bg-page:        #081018;
+        --card-paper:     #121922;
+        --card-inner:     #1d2530;
+        --card-nested:    #252e3a;
+
+        --ink-black:      #e6edf3;
+        --text-muted:     #9aa4af;
+
+        --lapis:          #f0f6fc;
+        --lapis-hover:    #78b7ff;
+        --number-ink:     #f0f6fc;
+        --gold:           #c9a050;
+        --gold-light:     #30363d;
+        --gold-subtle:    rgba(240, 246, 252, 0.055);
+        --border-gold:    #9b7332;
+
+        --card-line:      rgba(201, 160, 80, 0.04);
+        --card-dot:       rgba(201, 160, 80, 0.055);
+        --card-shadow:    0 16px 42px rgba(0, 0, 0, 0.42);
+
+        /* FIXED (#2, #11): dedicated dark-mode tiles — brighter gold,
+           higher opacity, tuned for a navy ground instead of reusing
+           the light-mode SVG through a blend-mode hack. */
+        --damask-medallion-crisp: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120' fill='%23c9a050'%3E%3Cdefs%3E%3Cpath id='a' d='M0 -9C7 -14 9 -21 0 -29C-9 -21 -7 -14 0 -9Z'/%3E%3Cpath id='b' d='M0 -7C4 -11 5 -16 0 -20C-5 -16 -4 -11 0 -7Z'/%3E%3Cpath id='c' d='M0 -5C4 -8 5 -12 0 -16C-5 -12 -4 -8 0 -5Z'/%3E%3Cpath id='p' d='M0 -2C3 -4 3.4 -7.5 0 -10C-3.4 -7.5 -3 -4 0 -2Z'/%3E%3Cpath id='s' d='M0 -15L2.3 -5.5L10.6 -10.6L5.5 -2.3L15 0L5.5 2.3L10.6 10.6L2.3 5.5L0 15L-2.3 5.5L-10.6 10.6L-5.5 2.3L-15 0L-5.5 -2.3L-10.6 -10.6L-2.3 -5.5Z'/%3E%3Cpath id='t' d='M0 -33C4.5 -37 5.5 -44 0 -49C-5.5 -44 -4.5 -37 0 -33Z'/%3E%3Cpath id='l' d='M0 0C5 -6 13 -8 20 -5C14 1 5 4 0 0Z'/%3E%3Cg id='f'%3E%3Ccircle r='2.6'/%3E%3Cuse href='%23p'/%3E%3Cuse href='%23p' transform='rotate(60)'/%3E%3Cuse href='%23p' transform='rotate(120)'/%3E%3Cuse href='%23p' transform='rotate(180)'/%3E%3Cuse href='%23p' transform='rotate(240)'/%3E%3Cuse href='%23p' transform='rotate(300)'/%3E%3C/g%3E%3Cg id='m'%3E%3Cuse href='%23a'/%3E%3Cuse href='%23a' transform='rotate(45)'/%3E%3Cuse href='%23a' transform='rotate(90)'/%3E%3Cuse href='%23a' transform='rotate(135)'/%3E%3Cuse href='%23a' transform='rotate(180)'/%3E%3Cuse href='%23a' transform='rotate(225)'/%3E%3Cuse href='%23a' transform='rotate(270)'/%3E%3Cuse href='%23a' transform='rotate(315)'/%3E%3Cuse href='%23b' transform='rotate(22.5)'/%3E%3Cuse href='%23b' transform='rotate(67.5)'/%3E%3Cuse href='%23b' transform='rotate(112.5)'/%3E%3Cuse href='%23b' transform='rotate(157.5)'/%3E%3Cuse href='%23b' transform='rotate(202.5)'/%3E%3Cuse href='%23b' transform='rotate(247.5)'/%3E%3Cuse href='%23b' transform='rotate(292.5)'/%3E%3Cuse href='%23b' transform='rotate(337.5)'/%3E%3Cuse href='%23s'/%3E%3Ccircle r='4.6'/%3E%3Cuse href='%23t'/%3E%3Cuse href='%23t' transform='rotate(90)'/%3E%3Cuse href='%23t' transform='rotate(180)'/%3E%3Cuse href='%23t' transform='rotate(270)'/%3E%3Ccircle r='33.5' fill='none' stroke='%23c9a050' stroke-width='2.4' stroke-dasharray='0.6 6.2' stroke-linecap='round'/%3E%3C/g%3E%3Cg id='k'%3E%3Cuse href='%23c'/%3E%3Cuse href='%23c' transform='rotate(45)'/%3E%3Cuse href='%23c' transform='rotate(90)'/%3E%3Cuse href='%23c' transform='rotate(135)'/%3E%3Cuse href='%23c' transform='rotate(180)'/%3E%3Cuse href='%23c' transform='rotate(225)'/%3E%3Cuse href='%23c' transform='rotate(270)'/%3E%3Cuse href='%23c' transform='rotate(315)'/%3E%3Cuse href='%23s' transform='scale(0.5)'/%3E%3Ccircle r='2.4'/%3E%3Ccircle r='21' fill='none' stroke='%23c9a050' stroke-width='2.2' stroke-dasharray='0.6 5.6' stroke-linecap='round'/%3E%3C/g%3E%3Cg id='w'%3E%3Cpath fill='none' stroke='%23c9a050' stroke-width='1.4' stroke-linecap='round' d='M0 -33C-10 -35 -16.5 -43 -14.5 -53C-13.5 -59.5 -6 -61 -5 -54.5'/%3E%3Cuse href='%23l' transform='translate(-5.5 -37) rotate(-118)'/%3E%3Cuse href='%23l' transform='translate(-15 -51) rotate(-35) scale(0.65)'/%3E%3Ccircle cx='-5' cy='-54.5' r='1.7'/%3E%3C/g%3E%3Cg id='v'%3E%3Cuse href='%23w'/%3E%3Cuse href='%23w' transform='scale(-1 1)'/%3E%3Cuse href='%23f' transform='translate(0 -44)'/%3E%3Cpath d='M0 -54C-3 -57 -3 -61 0 -64C3 -61 3 -57 0 -54Z'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23c9a050' stroke-opacity='0.16'%3E%3Cpath d='M60 0L120 60L60 120L0 60Z'/%3E%3Cpath stroke-width='2.2' stroke-dasharray='0.6 6' stroke-linecap='round' d='M60 7L113 60L60 113L7 60Z'/%3E%3C/g%3E%3Cg fill-opacity='0.24' stroke-opacity='0.24'%3E%3Cuse href='%23m' transform='translate(60 60)'/%3E%3C/g%3E%3Cg fill-opacity='0.2' stroke-opacity='0.2'%3E%3Cuse href='%23k'/%3E%3Cuse href='%23k' transform='translate(120 0)'/%3E%3Cuse href='%23k' transform='translate(0 120)'/%3E%3Cuse href='%23k' transform='translate(120 120)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(45)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(135)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(225)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(315)'/%3E%3Cuse href='%23f' transform='translate(60 0) scale(1.45)'/%3E%3Cuse href='%23f' transform='translate(60 120) scale(1.45)'/%3E%3Cuse href='%23f' transform='translate(0 60) scale(1.45)'/%3E%3Cuse href='%23f' transform='translate(120 60) scale(1.45)'/%3E%3C/g%3E%3C/svg%3E");
+
+        --damask-ground-crisp: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cg fill='%23c9a050' fill-opacity='0.06'%3E%3Cpath d='M10 5.5C11.1 8 12 8.9 14.5 10C12 11.1 11.1 12 10 14.5C8.9 12 8 11.1 5.5 10C8 8.9 8.9 8 10 5.5Z'/%3E%3Ccircle cx='0' cy='0' r='0.8'/%3E%3Ccircle cx='20' cy='0' r='0.8'/%3E%3Ccircle cx='0' cy='20' r='0.8'/%3E%3Ccircle cx='20' cy='20' r='0.8'/%3E%3C/g%3E%3C/svg%3E");
+    }
+}
 body {
     min-height: 100vh;
     min-height: 100dvh; /* FIXED (#10): avoids mobile toolbar overshoot */
@@ -35,6 +153,69 @@ body {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 }
+
+body, body * {
+    color: var(--ink-black);
+}
+
+body * {
+    -webkit-text-fill-color: initial;
+}
+
+html {
+    min-height: 100%;
+    background-color: var(--bg-page) !important;
+}
+
+a:hover {
+    color: var(--lapis-hover) !important;
+    -webkit-text-fill-color: var(--lapis-hover) !important;
+}
+
+p,
+#comments p,
+#commentsp p,
+.notice p,
+.commentquote p,
+label {
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+}
+
+td,
+th {
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    background: var(--card-inner) !important;
+}
+
+body {
+    background-image:
+        var(--damask-medallion-crisp),
+        var(--damask-ground-crisp) !important;
+
+    background-repeat:
+        repeat,
+        repeat !important;
+
+    background-position:
+        center top,
+        center top !important;
+
+    background-size:
+        var(--page-pattern-size) var(--page-pattern-size),
+        20px 20px !important;
+
+    background-attachment:
+        scroll,
+        scroll !important;
+
+    /* FIXED (#2): removed the screen blend-mode hack entirely.
+       Dark mode now uses its own purpose-built SVG tiles above,
+       so no blend trick is needed and nothing washes out to grey. */
+    background-blend-mode: normal, normal;
+}
+
 
 #hdr, #hdr2 {
     max-width: 752px;
@@ -132,6 +313,17 @@ form:after, form div:after {
 }
 
 
+
+
+article#garticle,
+article {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    outline: none !important;
+}
 #main,
 .poem,
 .sitem {
@@ -178,6 +370,21 @@ form:after, form div:after {
     margin: 25px auto !important;
     padding: 30px 22px !important;
 }
+
+@media (max-width: 700px) {
+    :root {
+        --page-pattern-size: 96px;
+    }
+
+    #main,
+    .poem,
+    .sitem {
+        margin: 16px auto !important;
+        padding: 24px 16px !important;
+        border-radius: 5px !important;
+    }
+}
+
 
 
 
@@ -231,6 +438,44 @@ select {
     text-align: left
 }
 
+
+
+#poet-image img {
+    border-radius: 50% !important;
+    border: 2.5px solid var(--gold) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
+    padding: 3px;
+    background: var(--card-paper);
+}
+
+#page-hierarchy {
+    width: 100% !important;
+    text-align: center;
+    margin: 10px 0 12px 0 !important;
+}
+
+#page-hierarchy a,
+#page-hierarchy span {
+    color: var(--text-muted) !important;
+    -webkit-text-fill-color: var(--text-muted) !important;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+}
+
+#page-hierarchy h2 {
+    margin: 6px 0 16px 0 !important;
+}
+
+#page-hierarchy h2 a {
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    font-size: 2.1rem !important;
+    line-height: 2.3 !important;
+    display: inline-block;
+    padding: 0 20px 6px !important;
+    border-bottom: 2px solid var(--border-gold) !important;
+    text-shadow: none !important;
+}
 #guides {
     max-width: 860px !important;
     margin: 15px auto !important;
@@ -259,6 +504,148 @@ select {
     border-top: 1px dashed;
 }
 
+
+
+.century {
+    background: var(--card-inner) !important;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    border: 1.5px solid var(--border-gold) !important;
+    border-radius: 25px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+    display: table !important;
+}
+
+.century a {
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+}
+
+#guides .century {
+    font-size: 1.05rem !important;
+    padding: 6px 30px !important;
+    margin: 28px auto 16px auto !important;
+    clear: both !important;
+}
+
+#guides .spacer,
+.spacer:has(.poet) {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    gap: 16px 12px !important;
+    margin: 15px auto 25px auto !important;
+    padding: 0 !important;
+    clear: both !important;
+}
+
+.poet:hover {
+    transform: translateY(-3px) !important;
+}
+
+.poet > a {
+    display: block !important;
+    width: 96px !important;
+    height: 96px !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    border: 2px solid var(--border-gold) !important;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12) !important;
+    background: var(--card-paper) !important;
+    padding: 2px !important;
+}
+
+.poet > a img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+}
+
+.poet .caption a {
+    background: var(--card-inner) !important;
+    border: 1px solid var(--gold-light) !important;
+    border-radius: 10px !important;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    font-size: 0.76rem !important;
+    font-weight: 600 !important;
+    padding: 4px 6px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    min-height: 34px !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    line-height: 1.35 !important;
+    transition: all 0.2s ease !important;
+    margin: 0 !important;
+}
+
+.poet:hover .caption a,
+.poet .caption a:hover {
+    background: var(--card-nested) !important;
+    border-color: var(--border-gold) !important;
+    color: var(--lapis-hover) !important;
+    -webkit-text-fill-color: var(--lapis-hover) !important;
+}
+
+.circled-number-container a {
+    text-decoration: none !important;
+    display: inline-flex !important;
+}
+
+.circled-number-container .circled-number {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 50% !important;
+    background: var(--card-inner) !important;
+    border: 1.5px solid var(--border-gold) !important;
+    color: var(--number-ink) !important;
+    -webkit-text-fill-color: var(--number-ink) !important;
+    font-family: 'Vazirmatn', sans-serif !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transition: all 0.2s ease !important;
+}
+
+.circled-number-container a:hover .circled-number {
+    background: var(--card-nested) !important;
+    border-color: var(--border-gold) !important;
+    color: var(--lapis-hover) !important;
+    -webkit-text-fill-color: var(--lapis-hover) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15) !important;
+}
+
+.circled-number-container .map-icon {
+    color: var(--number-ink) !important;
+    -webkit-text-fill-color: var(--number-ink) !important;
+    font-size: 18px !important;
+}
+
+.circled-number-container a:hover .map-icon {
+    color: var(--lapis-hover) !important;
+    -webkit-text-fill-color: var(--lapis-hover) !important;
+}
+
+#findpoet::placeholder {
+    color: var(--text-muted) !important;
+    -webkit-text-fill-color: var(--text-muted) !important;
+}
 #tab-items {
     border: none !important;
 }
@@ -359,6 +746,107 @@ div.n, div.l {
 }
 
 
+
+
+#summaries {
+    margin-top: 30px !important;
+}
+
+#summaries > .century {
+    font-size: 1.1rem !important;
+    padding: 6px 32px !important;
+}
+
+#summaries > .century svg {
+    fill: var(--lapis) !important;
+    vertical-align: middle;
+}
+
+.coupletsummary {
+    background: var(--card-inner) !important;
+    border: 1px solid var(--gold-light) !important;
+    border-radius: 8px !important;
+    padding: 16px !important;
+    margin: 16px auto !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03) !important;
+}
+
+.coupletsummary blockquote p,
+blockquote[id^="sb-"] p {
+    font-weight: 700 !important;
+    font-size: 1.25rem !important;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    line-height: 2 !important;
+    margin: 3px 0 !important;
+}
+
+blockquote[id^="sb-"] a {
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+}
+
+.coupletsummary .notice,
+div[id^="sn-"] {
+    background: var(--card-nested) !important;
+    border: none !important;
+    border-right: 3.5px solid var(--border-gold) !important;
+    border-radius: 4px !important;
+    padding: 10px 14px !important;
+    margin-top: 10px !important;
+    box-shadow: none !important;
+    width: 100% !important;
+}
+
+.coupletsummary .notice p,
+div[id^="sn-"] p {
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    font-size: 0.92rem !important;
+    line-height: 1.9 !important;
+}
+
+nav#nav {
+    margin: 25px 0 !important;
+}
+
+.navleft, .navright {
+    float: none !important;
+    padding: 0 !important;
+}
+
+.navleft a, .navright a,
+.pagebutton.comments-link,
+.pagebutton {
+    background: var(--card-inner) !important;
+    border: 1px solid var(--border-gold) !important;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    border-radius: 20px !important;
+    padding: 7px 20px !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+    transition: all 0.25s ease !important;
+    display: inline-block !important;
+}
+
+.navleft a:hover, .navright a:hover,
+.pagebutton:hover {
+    background: var(--card-nested) !important;
+    color: var(--lapis-hover) !important;
+    -webkit-text-fill-color: var(--lapis-hover) !important;
+    transform: translateY(-1px);
+}
+
+.pagebutton svg {
+    fill: var(--lapis) !important;
+    vertical-align: middle;
+}
+
+.pagebutton:hover svg {
+    fill: var(--lapis-hover) !important;
+}
 .navigation {
     display: flex !important;
     justify-content: space-between !important;
@@ -380,6 +868,85 @@ div.n, div.l {
     text-align: center
 }
 
+
+
+.b:hover {
+    background: linear-gradient(90deg, transparent, var(--gold-subtle) 15%, var(--gold-subtle) 85%, transparent) !important;
+    border-radius: 6px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .bnum {
+        filter: invert(0.85) sepia(0.6) hue-rotate(340deg) brightness(1.15) contrast(1.2) !important;
+        opacity: 0.95 !important;
+    }
+}
+
+.b:hover .bnum {
+    opacity: 1 !important;
+    transform: scale(1.06);
+}
+
+.b::after {
+    order: 3 !important;
+    content: "✤" !important;
+    position: static !important;
+    transform: none !important;
+    color: var(--gold) !important;
+    font-size: 0.72rem !important;
+    flex-shrink: 0 !important;
+    margin: 0 6px !important;
+    opacity: 0.75 !important;
+    pointer-events: none;
+}
+
+#fake-inline-div,
+#main-inline-div {
+    margin: 12px auto 14px auto !important;
+    text-align: center;
+}
+
+#fake-inline-search,
+#inline-search {
+    background-color: var(--card-inner) !important;
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    border: 1px solid var(--border-gold) !important;
+    border-radius: 20px !important;
+    padding: 6px 20px !important;
+    height: 32px !important;
+    font-size: 0.85rem !important;
+    text-align: center !important;
+}
+
+.circled-number {
+    background: var(--card-paper) !important;
+    border: 1px solid var(--border-gold) !important;
+    border-radius: 50% !important;
+    color: var(--number-ink) !important;
+    -webkit-text-fill-color: var(--number-ink) !important;
+    width: 34px !important;
+    height: 34px !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.circled-number svg {
+    fill: var(--number-ink) !important;
+    width: 17px !important;
+    height: 17px !important;
+}
+
+.circled-number:hover {
+    background: var(--card-nested) !important;
+    border-color: var(--lapis) !important;
+    transform: translateY(-1px);
+}
+
+.circled-number:hover svg {
+    fill: var(--lapis-hover) !important;
+}
 .b {
     display: flex !important;
     flex-direction: row !important;
@@ -468,6 +1035,218 @@ div.n, div.l {
     max-width: 508px
 }
 
+
+
+#comments {
+    border-top: 1px solid var(--border-gold) !important;
+    margin-top: 35px !important;
+    padding-top: 20px !important;
+}
+
+.comments-sort-toggle,
+.comments-sort-toggle * {
+    color: var(--text-muted) !important;
+    -webkit-text-fill-color: var(--text-muted) !important;
+    font-size: 0.88rem !important;
+}
+
+.comments-sort-toggle a {
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    font-weight: 600;
+}
+
+#comments-list-wrapper > p,
+#comments-list-wrapper > p a {
+    color: var(--text-muted) !important;
+    -webkit-text-fill-color: var(--text-muted) !important;
+    font-size: 0.9rem !important;
+}
+
+#comments-list-wrapper > p a.comments-link {
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    font-weight: 700;
+}
+
+.ganjoor-comment {
+    background: var(--card-inner) !important;
+    border: 1px solid var(--gold-light) !important;
+    border-radius: 10px !important;
+    padding: 18px 22px !important;
+    margin: 18px 0 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+.ganjoor-comment .ganjoor-comment {
+    background: var(--card-nested) !important;
+    border: none !important;
+    border-right: 3px solid var(--border-gold) !important;
+    border-radius: 0 8px 8px 0 !important;
+    margin-top: 16px !important;
+    margin-right: 18px !important;
+    margin-left: 0 !important;
+    padding: 14px 18px !important;
+    box-shadow: none !important;
+}
+
+.comment-author {
+    display: flex !important;
+    align-items: baseline !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+    border-bottom: 1px solid var(--gold-light) !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 12px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    width: 100% !important;
+}
+
+.comment-author a {
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    font-weight: 700 !important;
+}
+
+.comment-author small {
+    color: var(--text-muted) !important;
+    -webkit-text-fill-color: var(--text-muted) !important;
+    font-weight: normal !important;
+    font-size: 0.8rem !important;
+    margin-right: 6px !important;
+}
+
+.ganjoor-comment blockquote {
+    background: transparent !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    quotes: none !important;
+}
+
+.ganjoor-comment blockquote:before {
+    display: none !important;
+}
+
+.ganjoor-comment blockquote p {
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    line-height: 2 !important;
+    font-size: 0.95rem !important;
+    text-align: justify !important;
+    margin: 6px 0 !important;
+    word-break: break-word !important;
+}
+
+.ganjoor-comment blockquote a {
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    text-decoration: underline !important;
+    font-weight: 600;
+}
+
+.ganjoor-comment > p:last-of-type,
+.ganjoor-comment p:has(.pageicons) {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-top: 14px !important;
+    padding-top: 10px !important;
+    border-top: 1px dashed var(--gold-light) !important;
+}
+
+.ganjoor-comment p a[role="button"],
+.ganjoor-comment p a[href*="ReportComment"] {
+    background: var(--card-nested) !important;
+    border: 1px solid var(--gold-light) !important;
+    border-radius: 16px !important;
+    padding: 3px 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.ganjoor-comment p a[role="button"]:hover,
+.ganjoor-comment p a[href*="ReportComment"]:hover {
+    background: var(--border-gold) !important;
+    border-color: var(--border-gold) !important;
+    transform: translateY(-1px);
+}
+
+.ganjoor-comment .pageicons {
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    fill: var(--lapis) !important;
+    font-size: 16px !important;
+    transition: all 0.2s ease !important;
+}
+
+.ganjoor-comment p a:hover .pageicons {
+    color: var(--lapis-hover) !important;
+    -webkit-text-fill-color: var(--lapis-hover) !important;
+    fill: var(--lapis-hover) !important;
+}
+
+.ganjoor-comment small[id^="like-count-"],
+.ganjoor-comment small[id^="dislike-count-"] {
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    font-family: 'Vazirmatn', sans-serif !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    margin: 0 4px 0 2px !important;
+    display: inline-block !important;
+}
+
+#commentform {
+    margin-top: 20px !important;
+}
+
+#commentform.notice p {
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    text-align: center !important;
+}
+
+@media (max-width: 950px) {
+    .b {
+        flex-direction: column !important;
+        padding: 8px 0 !important;
+        border-bottom: 1px dashed var(--gold-light);
+    }
+    .b::after {
+        display: none !important;
+    }
+    .bnum {
+        align-self: flex-start !important;
+        margin-bottom: -10px !important;
+    }
+    .m1, .m2 {
+        width: 100% !important;
+        max-width: 100% !important;
+        white-space: normal !important;
+        overflow: visible !important;
+    }
+    .m1 p, .m2 p {
+        text-align: center !important;
+        font-size: 1.38rem !important;
+        line-height: 2.2 !important;
+        padding: 0 !important;
+        white-space: normal !important;
+    }
+}
 #comments, #profile, .comments-like-div, .bnumdiv {
     margin: 20px auto 6px;
     display: block;
@@ -483,6 +1262,133 @@ div.n, div.l {
     clear: both;
 }
 
+
+
+#tab-items,
+.poemtab {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    border: none !important;
+    margin: 30px auto 16px auto !important;
+    padding: 0 !important;
+}
+
+.poemtablinks a {
+    display: inline-block !important;
+    background: var(--card-inner) !important;
+    border: 1px solid var(--border-gold) !important;
+    border-radius: 20px !important;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    padding: 6px 16px !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
+    margin: 0 !important;
+    transition: all 0.25s ease !important;
+}
+
+.poemtablinks a:hover,
+#fa .poemtablinks.active a,
+#fa .active a {
+    background: var(--card-nested) !important;
+    border-color: var(--border-gold) !important;
+    color: var(--lapis-hover) !important;
+    -webkit-text-fill-color: var(--lapis-hover) !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+.related-images-frame table,
+table {
+    background: var(--card-inner) !important;
+    border: 1.5px solid var(--border-gold) !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    max-width: 500px !important;
+    margin: 12px auto 25px auto !important;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.04) !important;
+}
+
+table tr, table tr.h, table tr.e {
+    background: transparent !important;
+}
+
+table td {
+    border: 1px solid var(--gold-light) !important;
+    padding: 9px 18px !important;
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    font-size: 0.92rem !important;
+    background: var(--card-inner) !important;
+}
+
+table tr:nth-child(even) td {
+    background: var(--card-paper) !important;
+}
+
+table td:first-child {
+    font-weight: 700 !important;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    background: var(--card-nested) !important;
+    width: 35% !important;
+}
+
+table td a {
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    font-weight: 500;
+}
+
+.notice#summary,
+.notice,
+.commentquote {
+    background: var(--card-inner) !important;
+    background-color: var(--card-inner) !important;
+    border: 1.5px solid var(--border-gold) !important;
+    border-radius: 10px !important;
+    box-shadow: inset 0 0 15px var(--gold-subtle), 0 4px 12px rgba(0,0,0,0.04) !important;
+    padding: 22px !important;
+    margin: 22px auto !important;
+    max-width: 680px !important;
+    position: relative;
+    width: 90% !important;
+}
+
+.notice .century {
+    font-size: 1.05rem !important;
+    padding: 4px 28px !important;
+    margin: 0 auto 12px auto !important;
+}
+
+.notice p {
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    font-size: 0.95rem !important;
+    line-height: 2 !important;
+    text-align: justify !important;
+    margin: 8px 4px !important;
+}
+
+.circled-number-diff i,
+.edit-poem-button {
+    font-family: 'Material Icons' !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+    width: auto !important;
+    height: auto !important;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: center !important;
+}
 .notice, .c p {
     width: 90%;
     margin: 6px auto;
@@ -1288,6 +2194,18 @@ ol {
     grid-row: 1/1;
 }
 
+
+
+#footer .footer-icon {
+    fill: var(--lapis) !important;
+    vertical-align: middle;
+    margin-left: 6px;
+    transition: fill 0.2s ease;
+}
+
+#footer li a:hover .footer-icon {
+    fill: var(--lapis-hover) !important;
+}
 #footer {
     background: var(--card-inner) !important;
     border: 1.5px solid var(--border-gold) !important;
@@ -1681,6 +2599,67 @@ fieldset {
     text-align: right;
 }
 
+
+
+#searchform input,
+#searchform select,
+#hdr2 select,
+#hdr2 input[type="text"] {
+    background: var(--card-inner) !important;
+    border: 1px solid var(--border-gold) !important;
+    border-radius: 8px !important;
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    font-size: 0.82rem !important;
+    padding: 4px 10px !important;
+}
+
+#searchform input[type="submit"],
+#hdr2 input[type="submit"] {
+    background: var(--card-inner) !important;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    border: 1px solid var(--border-gold) !important;
+    border-radius: 8px !important;
+    cursor: pointer;
+    font-weight: 600 !important;
+    transition: all 0.2s ease;
+}
+
+#searchform input[type="submit"]:hover,
+#hdr2 input[type="submit"]:hover {
+    background: var(--card-nested) !important;
+    color: var(--lapis-hover) !important;
+    -webkit-text-fill-color: var(--lapis-hover) !important;
+}
+
+#main-navbar {
+    background: var(--card-inner) !important;
+    border: 1.5px solid var(--border-gold) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+    max-width: 860px !important;
+    margin: 10px auto 20px auto !important;
+    padding: 3px 12px !important;
+}
+
+#main-navbar a {
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+}
+
+#main-navbar .color-white {
+    color: var(--lapis) !important;
+    fill: var(--lapis) !important;
+}
+
+#main-navbar .noindent-info-button {
+    fill: var(--lapis) !important;
+}
+
+#main-navbar .pagebutton .noindent-info-button {
+    fill: var(--lapis) !important;
+}
 #main-navbar, .sticky, .utilbar {
     max-width: 752px;
     margin: auto;
@@ -2505,5 +3484,224 @@ mark {
         }
     #main, .sitem, .poem {
         background: none;
+    }
+}
+
+
+a[href*="toggleColorScheme"] {
+    position: fixed !important;
+    bottom: 24px !important;
+    left: 24px !important;
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 50% !important;
+    background: var(--card-paper) !important;
+    border: 2px solid var(--border-gold) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 99999 !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+a[href*="toggleColorScheme"] span {
+    line-height: 1 !important;
+}
+
+a[href*="toggleColorScheme"] svg {
+    fill: var(--lapis) !important;
+    width: 26px !important;
+    height: 26px !important;
+}
+
+a[href*="toggleColorScheme"]:hover {
+    transform: scale(1.12) rotate(20deg);
+    background: var(--card-nested) !important;
+    border-color: var(--border-gold) !important;
+}
+
+.bnumdiv {
+    direction: rtl !important;
+    text-align: right !important;
+    background: var(--card-inner) !important;
+    border: 1px solid var(--border-gold) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.12) !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 760px !important;
+    margin: 14px auto !important;
+    padding: 16px !important;
+    overflow: hidden !important;
+}
+
+.bnumdiv table,
+.bnum-partial-table {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 0 14px 0 !important;
+    background: var(--card-paper) !important;
+    box-shadow: none !important;
+}
+
+.bnumdiv table td,
+.bnum-partial-table td {
+    padding: 8px 12px !important;
+    border: 1px solid var(--gold-light) !important;
+    background: var(--card-paper) !important;
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    vertical-align: middle !important;
+}
+
+.bnumdiv table td:first-child,
+.bnum-partial-table td:first-child {
+    width: 34% !important;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    background: var(--card-nested) !important;
+    font-weight: 700 !important;
+}
+
+.bnumdiv .notice {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+    margin: 10px 0 !important;
+    padding: 14px 16px !important;
+    background: var(--card-paper) !important;
+    border: 1px solid var(--gold-light) !important;
+    border-right: 3px solid var(--border-gold) !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+}
+
+.bnumdiv .notice p {
+    margin: 0 !important;
+    line-height: 2 !important;
+    text-align: right !important;
+}
+
+#play-block-0,
+.bnumdiv [id^="play-block-"] {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin: 12px 0 !important;
+}
+
+.bnum-partial-narrate-btn:hover {
+    background: var(--lapis-hover) !important;
+    border-color: var(--lapis-hover) !important;
+    color: var(--card-paper) !important;
+    -webkit-text-fill-color: var(--card-paper) !important;
+}
+
+.bnum-partial-action-box a {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    background: var(--card-paper) !important;
+    border: 1px solid var(--border-gold) !important;
+    border-radius: 50% !important;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease, background 0.2s ease !important;
+}
+
+.bnum-partial-action-box a:hover {
+    background: var(--card-nested) !important;
+    transform: translateY(-2px) !important;
+}
+
+.bnum-partial-action-box i {
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    font-size: 19px !important;
+}
+
+.bnumdiv > div > table:not(.bnum-partial-table) {
+    margin-top: 12px !important;
+}
+
+.bnumdiv .century {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 16px 0 8px !important;
+    padding: 8px 12px !important;
+    background: var(--card-nested) !important;
+    border: 1px solid var(--border-gold) !important;
+    border-radius: 6px !important;
+    color: var(--lapis) !important;
+    -webkit-text-fill-color: var(--lapis) !important;
+    font-size: 0.9rem !important;
+    text-align: right !important;
+}
+
+.bnumdiv .charContainer {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    margin: 8px 0 14px !important;
+}
+
+.bnumdiv .charCell {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 58px !important;
+    min-height: 32px !important;
+    box-sizing: border-box !important;
+    padding: 5px 9px !important;
+    background: var(--card-paper) !important;
+    border: 1px solid var(--gold-light) !important;
+    border-radius: 5px !important;
+    color: var(--ink-black) !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    font-size: 0.85rem !important;
+}
+
+.bnumdiv .charCell.background-red {
+    background: #f8d7da !important;
+    border-color: #c94c59 !important;
+    color: #7d1d29 !important;
+    -webkit-text-fill-color: #7d1d29 !important;
+    font-weight: 700 !important;
+}
+
+.bnumdiv > p:last-child {
+    margin: 16px 0 0 !important;
+    padding-top: 12px !important;
+    border-top: 1px solid var(--gold-light) !important;
+    color: var(--text-muted) !important;
+    -webkit-text-fill-color: var(--text-muted) !important;
+    font-size: 0.88rem !important;
+    line-height: 1.9 !important;
+}
+
+@media (max-width: 600px) {
+    .bnumdiv {
+        padding: 10px !important;
+        margin: 10px 0 !important;
+    }
+
+    .bnumdiv table td,
+    .bnum-partial-table td {
+        padding: 7px 8px !important;
+        font-size: 0.82rem !important;
+    }
+
+    .bnum-partial-narrate-btn,
+    .bnum-partial-narrators {
+        width: 100% !important;
+        flex-basis: 100% !important;
     }
 }
