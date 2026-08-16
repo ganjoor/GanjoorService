@@ -1036,6 +1036,7 @@ ol {
     direction: ltr;
     -moz-font-feature-settings: 'liga';
     -moz-osx-font-smoothing: grayscale;
+    color: white;
     fill: white;
 }
 
