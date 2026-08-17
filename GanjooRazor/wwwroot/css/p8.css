@@ -1338,7 +1338,6 @@ table {
     overflow: hidden !important;
     border-collapse: separate !important;
     border-spacing: 0 !important;
-    max-width: 500px !important;
     margin: 12px auto 25px auto !important;
     box-shadow: 0 3px 10px rgba(0,0,0,0.04) !important;
 }
@@ -3624,7 +3623,7 @@ a[href*="toggleColorScheme"]:hover {
 
 .part-title-block,
 .part-title-block-alt {
-    background: var(--card-inner) !important;
+    background: var(--gold-light) !important;
     color: var(--lapis) !important;
     -webkit-text-fill-color: var(--lapis) !important;
     border: 1.5px solid var(--border-gold) !important;
@@ -3634,12 +3633,28 @@ a[href*="toggleColorScheme"]:hover {
     margin: 16px auto !important;
     padding: 5px 28px !important;
     text-align: center !important;
+    transition: all 0.2s ease !important;
+    width: 100%;
 }
 
 #fa .part-title-block a,
 #fa .part-title-block-alt a {
-    color: var(--lapis) !important;
-    -webkit-text-fill-color: var(--lapis) !important;
+    color: inherit !important;
+    -webkit-text-fill-color: inherit !important;
+}
+
+#fa .part-title-block:hover {
+    background: var(--card-nested) !important;
+    color: var(--lapis-hover) !important;
+    -webkit-text-fill-color: var(--lapis-hover) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+#fa .part-title-block-alt:hover {
+    background: var(--card-nested) !important;
+    color: var(--lapis-hover) !important;
+    -webkit-text-fill-color: var(--lapis-hover) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
 .submitCommentButton,
