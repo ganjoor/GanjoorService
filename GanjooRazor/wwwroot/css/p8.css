@@ -275,6 +275,12 @@ a {
     text-decoration: none !important;
 }
 
+.poem-excerpt a,
+article a {
+    color: var(--gold) !important;
+    -webkit-text-fill-color: var(--gold) !important;
+}
+
 .bk-background {
 }
 
