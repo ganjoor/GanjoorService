@@ -29,7 +29,7 @@
 
 @font-face {
     font-family: 'IranNastaliq';
-    src: url('/fonts/IranNastaliq-Web.woff2') format('woff2');
+    src: url('/fonts/IranNastaliq-Web.woff2?v=1.5') format('woff2');
     ascent-override: 120%;
     descent-override: 40%;
     line-gap-override: 20%;
