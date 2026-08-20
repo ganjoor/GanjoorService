@@ -547,7 +547,7 @@ a img {
 
 .hilite {
     color: var(--ink-black);
-    background-color: var(--lapis-hover)
+    background-color: var(--gold)
 }
 
 .hilite1 {
@@ -1232,7 +1232,7 @@ pagination-controls {
 
         .b p {
             text-align: center;
-            font-size: 1.4em;
+            font-size: 1.1em;
         }
 
         .b > div:not(.bnum) {
@@ -1241,7 +1241,7 @@ pagination-controls {
         }
 
     .tooltip {
-        font-size: 1.4em;
+        font-size: 1.1em;
     }
 
     .bnum, .n .bnum, .l .bnum {
