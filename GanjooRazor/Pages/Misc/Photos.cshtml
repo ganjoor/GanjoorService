@@ -156,15 +156,17 @@
                         <div class="century">
                             فهرست سخنوران
                         </div>
-                        @foreach (var poet in Model.Poets)
-                        {
-                            <div class="poet" data-value="@poet.Nickname">
-                                <a href="/photos?p=@poet.FullUrl.Substring(1)" title="@poet.Name"><img src="@poet.ImageUrl" alt="@poet.Name" /></a>
-                                <div class="caption">
-                                    <a href="/photos?p=@poet.FullUrl.Substring(1)">@poet.Nickname</a>
+                        <div class="spacer">
+                            @foreach (var poet in Model.Poets)
+                            {
+                                <div class="poet" data-value="@poet.Nickname">
+                                    <a href="/photos?p=@poet.FullUrl.Substring(1)" title="@poet.Name"><img src="@poet.ImageUrl" alt="@poet.Name" /></a>
+                                    <div class="caption">
+                                        <a href="/photos?p=@poet.FullUrl.Substring(1)">@poet.Nickname</a>
+                                    </div>
                                 </div>
-                            </div>
-                        }
+                            }
+                        </div>
                     }
 
                     @if (Model.Poet != null)
