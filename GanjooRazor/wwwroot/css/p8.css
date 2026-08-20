@@ -88,8 +88,8 @@
         --border-gold:    #9b7332;
 
         --page-pattern-size: 120px;
-        --damask-medallion: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120' fill='%23c9a050'%3E%3Cdefs%3E%3Cpath id='a' d='M0 -9C7 -14 9 -21 0 -29C-9 -21 -7 -14 0 -9Z'/%3E%3Cpath id='b' d='M0 -7C4 -11 5 -16 0 -20C-5 -16 -4 -11 0 -7Z'/%3E%3Cpath id='c' d='M0 -5C4 -8 5 -12 0 -16C-5 -12 -4 -8 0 -5Z'/%3E%3Cpath id='p' d='M0 -2C3 -4 3.4 -7.5 0 -10C-3.4 -7.5 -3 -4 0 -2Z'/%3E%3Cpath id='s' d='M0 -15L2.3 -5.5L10.6 -10.6L5.5 -2.3L15 0L5.5 2.3L10.6 10.6L2.3 5.5L0 15L-2.3 5.5L-10.6 10.6L-5.5 2.3L-15 0L-5.5 -2.3L-10.6 -10.6L-2.3 -5.5Z'/%3E%3Cpath id='t' d='M0 -33C4.5 -37 5.5 -44 0 -49C-5.5 -44 -4.5 -37 0 -33Z'/%3E%3Cpath id='l' d='M0 0C5 -6 13 -8 20 -5C14 1 5 4 0 0Z'/%3E%3Cg id='f'%3E%3Ccircle r='2.6'/%3E%3Cuse href='%23p'/%3E%3Cuse href='%23p' transform='rotate(60)'/%3E%3Cuse href='%23p' transform='rotate(120)'/%3E%3Cuse href='%23p' transform='rotate(180)'/%3E%3Cuse href='%23p' transform='rotate(240)'/%3E%3Cuse href='%23p' transform='rotate(300)'/%3E%3C/g%3E%3Cg id='m'%3E%3Cuse href='%23a'/%3E%3Cuse href='%23a' transform='rotate(45)'/%3E%3Cuse href='%23a' transform='rotate(90)'/%3E%3Cuse href='%23a' transform='rotate(135)'/%3E%3Cuse href='%23a' transform='rotate(180)'/%3E%3Cuse href='%23a' transform='rotate(225)'/%3E%3Cuse href='%23a' transform='rotate(270)'/%3E%3Cuse href='%23a' transform='rotate(315)'/%3E%3Cuse href='%23b' transform='rotate(22.5)'/%3E%3Cuse href='%23b' transform='rotate(67.5)'/%3E%3Cuse href='%23b' transform='rotate(112.5)'/%3E%3Cuse href='%23b' transform='rotate(157.5)'/%3E%3Cuse href='%23b' transform='rotate(202.5)'/%3E%3Cuse href='%23b' transform='rotate(247.5)'/%3E%3Cuse href='%23b' transform='rotate(292.5)'/%3E%3Cuse href='%23b' transform='rotate(337.5)'/%3E%3Cuse href='%23s'/%3E%3Ccircle r='4.6'/%3E%3Cuse href='%23t'/%3E%3Cuse href='%23t' transform='rotate(90)'/%3E%3Cuse href='%23t' transform='rotate(180)'/%3E%3Cuse href='%23t' transform='rotate(270)'/%3E%3Ccircle r='33.5' fill='none' stroke='%23c9a050' stroke-width='2.4' stroke-dasharray='0.6 6.2' stroke-linecap='round'/%3E%3C/g%3E%3Cg id='k'%3E%3Cuse href='%23c'/%3E%3Cuse href='%23c' transform='rotate(45)'/%3E%3Cuse href='%23c' transform='rotate(90)'/%3E%3Cuse href='%23c' transform='rotate(135)'/%3E%3Cuse href='%23c' transform='rotate(180)'/%3E%3Cuse href='%23c' transform='rotate(225)'/%3E%3Cuse href='%23c' transform='rotate(270)'/%3E%3Cuse href='%23c' transform='rotate(315)'/%3E%3Cuse href='%23s' transform='scale(0.5)'/%3E%3Ccircle r='2.4'/%3E%3Ccircle r='21' fill='none' stroke='%23c9a050' stroke-width='2.2' stroke-dasharray='0.6 5.6' stroke-linecap='round'/%3E%3C/g%3E%3Cg id='w'%3E%3Cpath fill='none' stroke='%23c9a050' stroke-width='1.4' stroke-linecap='round' d='M0 -33C-10 -35 -16.5 -43 -14.5 -53C-13.5 -59.5 -6 -61 -5 -54.5'/%3E%3Cuse href='%23l' transform='translate(-5.5 -37) rotate(-118)'/%3E%3Cuse href='%23l' transform='translate(-15 -51) rotate(-35) scale(0.65)'/%3E%3Ccircle cx='-5' cy='-54.5' r='1.7'/%3E%3C/g%3E%3Cg id='v'%3E%3Cuse href='%23w'/%3E%3Cuse href='%23w' transform='scale(-1 1)'/%3E%3Cuse href='%23f' transform='translate(0 -44)'/%3E%3Cpath d='M0 -54C-3 -57 -3 -61 0 -64C3 -61 3 -57 0 -54Z'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23c9a050' stroke-opacity='0.05'%3E%3Cpath d='M60 0L120 60L60 120L0 60Z'/%3E%3Cpath stroke-width='2.2' stroke-dasharray='0.6 6' stroke-linecap='round' d='M60 7L113 60L60 113L7 60Z'/%3E%3C/g%3E%3Cg fill-opacity='0.08' stroke-opacity='0.08'%3E%3Cuse href='%23m' transform='translate(60 60)'/%3E%3C/g%3E%3Cg fill-opacity='0.06' stroke-opacity='0.06'%3E%3Cuse href='%23k'/%3E%3Cuse href='%23k' transform='translate(120 0)'/%3E%3Cuse href='%23k' transform='translate(0 120)'/%3E%3Cuse href='%23k' transform='translate(120 120)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(45)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(135)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(225)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(315)'/%3E%3Cuse href='%23f' transform='translate(60 0) scale(1.45)'/%3E%3Cuse href='%23f' transform='translate(60 120) scale(1.45)'/%3E%3Cuse href='%23f' transform='translate(0 60) scale(1.45)'/%3E%3Cuse href='%23f' transform='translate(120 60) scale(1.45)'/%3E%3C/g%3E%3C/svg%3E");
-        --damask-ground: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cg fill='%23c9a050' fill-opacity='0.04'%3E%3Cpath d='M10 5.5C11.1 8 12 8.9 14.5 10C12 11.1 11.1 12 10 14.5C8.9 12 8 11.1 5.5 10C8 8.9 8.9 8 10 5.5Z'/%3E%3Ccircle cx='0' cy='0' r='0.8'/%3E%3Ccircle cx='20' cy='0' r='0.8'/%3E%3Ccircle cx='0' cy='20' r='0.8'/%3E%3Ccircle cx='20' cy='20' r='0.8'/%3E%3C/g%3E%3C/svg%3E");
+        --damask-medallion: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120' fill='%23c9a050'%3E%3Cdefs%3E%3Cpath id='a' d='M0 -9C7 -14 9 -21 0 -29C-9 -21 -7 -14 0 -9Z'/%3E%3Cpath id='b' d='M0 -7C4 -11 5 -16 0 -20C-5 -16 -4 -11 0 -7Z'/%3E%3Cpath id='c' d='M0 -5C4 -8 5 -12 0 -16C-5 -12 -4 -8 0 -5Z'/%3E%3Cpath id='p' d='M0 -2C3 -4 3.4 -7.5 0 -10C-3.4 -7.5 -3 -4 0 -2Z'/%3E%3Cpath id='s' d='M0 -15L2.3 -5.5L10.6 -10.6L5.5 -2.3L15 0L5.5 2.3L10.6 10.6L2.3 5.5L0 15L-2.3 5.5L-10.6 10.6L-5.5 2.3L-15 0L-5.5 -2.3L-10.6 -10.6L-2.3 -5.5Z'/%3E%3Cpath id='t' d='M0 -33C4.5 -37 5.5 -44 0 -49C-5.5 -44 -4.5 -37 0 -33Z'/%3E%3Cpath id='l' d='M0 0C5 -6 13 -8 20 -5C14 1 5 4 0 0Z'/%3E%3Cg id='f'%3E%3Ccircle r='2.6'/%3E%3Cuse href='%23p'/%3E%3Cuse href='%23p' transform='rotate(60)'/%3E%3Cuse href='%23p' transform='rotate(120)'/%3E%3Cuse href='%23p' transform='rotate(180)'/%3E%3Cuse href='%23p' transform='rotate(240)'/%3E%3Cuse href='%23p' transform='rotate(300)'/%3E%3C/g%3E%3Cg id='m'%3E%3Cuse href='%23a'/%3E%3Cuse href='%23a' transform='rotate(45)'/%3E%3Cuse href='%23a' transform='rotate(90)'/%3E%3Cuse href='%23a' transform='rotate(135)'/%3E%3Cuse href='%23a' transform='rotate(180)'/%3E%3Cuse href='%23a' transform='rotate(225)'/%3E%3Cuse href='%23a' transform='rotate(270)'/%3E%3Cuse href='%23a' transform='rotate(315)'/%3E%3Cuse href='%23b' transform='rotate(22.5)'/%3E%3Cuse href='%23b' transform='rotate(67.5)'/%3E%3Cuse href='%23b' transform='rotate(112.5)'/%3E%3Cuse href='%23b' transform='rotate(157.5)'/%3E%3Cuse href='%23b' transform='rotate(202.5)'/%3E%3Cuse href='%23b' transform='rotate(247.5)'/%3E%3Cuse href='%23b' transform='rotate(292.5)'/%3E%3Cuse href='%23b' transform='rotate(337.5)'/%3E%3Cuse href='%23s'/%3E%3Ccircle r='4.6'/%3E%3Cuse href='%23t'/%3E%3Cuse href='%23t' transform='rotate(90)'/%3E%3Cuse href='%23t' transform='rotate(180)'/%3E%3Cuse href='%23t' transform='rotate(270)'/%3E%3Ccircle r='33.5' fill='none' stroke='%23c9a050' stroke-width='2.4' stroke-dasharray='0.6 6.2' stroke-linecap='round'/%3E%3C/g%3E%3Cg id='k'%3E%3Cuse href='%23c'/%3E%3Cuse href='%23c' transform='rotate(45)'/%3E%3Cuse href='%23c' transform='rotate(90)'/%3E%3Cuse href='%23c' transform='rotate(135)'/%3E%3Cuse href='%23c' transform='rotate(180)'/%3E%3Cuse href='%23c' transform='rotate(225)'/%3E%3Cuse href='%23c' transform='rotate(270)'/%3E%3Cuse href='%23c' transform='rotate(315)'/%3E%3Cuse href='%23s' transform='scale(0.5)'/%3E%3Ccircle r='2.4'/%3E%3Ccircle r='21' fill='none' stroke='%23c9a050' stroke-width='2.2' stroke-dasharray='0.6 5.6' stroke-linecap='round'/%3E%3C/g%3E%3Cg id='w'%3E%3Cpath fill='none' stroke='%23c9a050' stroke-width='1.4' stroke-linecap='round' d='M0 -33C-10 -35 -16.5 -43 -14.5 -53C-13.5 -59.5 -6 -61 -5 -54.5'/%3E%3Cuse href='%23l' transform='translate(-5.5 -37) rotate(-118)'/%3E%3Cuse href='%23l' transform='translate(-15 -51) rotate(-35) scale(0.65)'/%3E%3Ccircle cx='-5' cy='-54.5' r='1.7'/%3E%3C/g%3E%3Cg id='v'%3E%3Cuse href='%23w'/%3E%3Cuse href='%23w' transform='scale(-1 1)'/%3E%3Cuse href='%23f' transform='translate(0 -44)'/%3E%3Cpath d='M0 -54C-3 -57 -3 -61 0 -64C3 -61 3 -57 0 -54Z'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%23c9a050' stroke-opacity='0.03'%3E%3Cpath d='M60 0L120 60L60 120L0 60Z'/%3E%3Cpath stroke-width='2.2' stroke-dasharray='0.6 6' stroke-linecap='round' d='M60 7L113 60L60 113L7 60Z'/%3E%3C/g%3E%3Cg fill-opacity='0.05' stroke-opacity='0.05'%3E%3Cuse href='%23m' transform='translate(60 60)'/%3E%3C/g%3E%3Cg fill-opacity='0.04' stroke-opacity='0.04'%3E%3Cuse href='%23k'/%3E%3Cuse href='%23k' transform='translate(120 0)'/%3E%3Cuse href='%23k' transform='translate(0 120)'/%3E%3Cuse href='%23k' transform='translate(120 120)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(45)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(135)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(225)'/%3E%3Cuse href='%23v' transform='translate(60 60) rotate(315)'/%3E%3Cuse href='%23f' transform='translate(60 0) scale(1.45)'/%3E%3Cuse href='%23f' transform='translate(60 120) scale(1.45)'/%3E%3Cuse href='%23f' transform='translate(0 60) scale(1.45)'/%3E%3Cuse href='%23f' transform='translate(120 60) scale(1.45)'/%3E%3C/g%3E%3C/svg%3E");
+        --damask-ground: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cg fill='%23c9a050' fill-opacity='0.025'%3E%3Cpath d='M10 5.5C11.1 8 12 8.9 14.5 10C12 11.1 11.1 12 10 14.5C8.9 12 8 11.1 5.5 10C8 8.9 8.9 8 10 5.5Z'/%3E%3Ccircle cx='0' cy='0' r='0.8'/%3E%3Ccircle cx='20' cy='0' r='0.8'/%3E%3Ccircle cx='0' cy='20' r='0.8'/%3E%3Ccircle cx='20' cy='20' r='0.8'/%3E%3C/g%3E%3C/svg%3E");
 
         --accent-bg:      var(--card-inner);
         --accent-border:  var(--border-gold);
@@ -154,18 +154,11 @@ h1 {
 .home-logo {
     width: auto;
     margin: auto;
-    border: 3px solid var(--brand);
     border-radius: 12px;
     padding: 6px;
-    background-color: var(--card-paper);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.2s ease;
 }
 
-.home-logo:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
-}
 
 h1 a img {
     border: none;
@@ -260,13 +253,20 @@ form:after, form div:after {
 .poem p {
     text-indent: 20px;
     text-align: justify;
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 16px;
+    margin-right: 16px;
 }
 
 .poem-excerpt a {
     color: var(--brand);
     -webkit-text-fill-color: var(--brand);
+    transition: color 0.2s ease, -webkit-text-fill-color 0.2s ease;
+}
+
+.poem-excerpt a:hover {
+    color: var(--lapis);
+    -webkit-text-fill-color: var(--lapis);
+    text-decoration: underline;
 }
 
 
@@ -331,12 +331,12 @@ select {
     flex-direction: column;
     align-items: center;
     width: 110px;
-    margin: 0;
-    transition: transform 0.25s ease;
+    margin: 0 0 10px 0;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .poet:hover {
-    transform: translateY(-4px);
+    transform: translateY(-5px);
 }
 
 .poet > a {
@@ -347,9 +347,9 @@ select {
     overflow: hidden;
     background: var(--card-paper);
     box-shadow:
-        0 0 0 2px var(--border-gold),
-        0 0 0 4px var(--bg-page),
-        0 0 0 6px var(--border-gold),
+        0 0 0 2px var(--gold),
+        0 0 0 5px var(--bg-page),
+        0 0 0 7px var(--border-gold),
         0 4px 12px rgba(0, 0, 0, 0.15);
     transition: box-shadow 0.25s ease;
 }
@@ -357,8 +357,8 @@ select {
 .poet:hover > a {
     box-shadow:
         0 0 0 2px var(--brand),
-        0 0 0 4px var(--bg-page),
-        0 0 0 6px var(--brand),
+        0 0 0 5px var(--bg-page),
+        0 0 0 7px var(--brand),
         0 6px 18px rgba(0, 0, 0, 0.22);
 }
 
@@ -366,7 +366,16 @@ select {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    image-rendering: auto;
+    filter: contrast(1.08) saturate(1.12) brightness(1.02);
 }
+
+.poet > a[href="/map"] {
+    width: 86px;
+    height: 86px;
+    box-shadow: none;
+}
+
 
 .poemtab {
     border-top: 1px dashed var(--border-gold);
@@ -398,20 +407,34 @@ select {
 }
 
     .poet .caption a {
-        border-radius: 10px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
         padding: 6px 12px;
         background-color: var(--card-inner);
         border: 1px solid var(--border-gold);
         margin: 5px 0 8px 0;
-        font-size: 0.76rem;
+        font-size: 0.85rem;
         font-weight: 600;
         color: var(--lapis) !important;
         -webkit-text-fill-color: var(--lapis) !important;
         transition: all 0.2s ease;
+    }
+
+    .poet:hover .caption a {
+        background-color: var(--gold-subtle);
+        border-color: var(--brand);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    }
+
+    .poet .caption a:hover {
+        background-color: var(--gold-subtle);
+        border-color: var(--brand);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
     }
 
     .poemtablinks a {
@@ -441,11 +464,8 @@ select {
     }
 
 
-.caption, .poemtablinks {
-    max-height: 20px;
-}
-
 .poemtablinks {
+    max-height: 20px;
     font-size: 0.8em;
 }
 
@@ -521,7 +541,7 @@ div.spacer, .item, .b2, .c {
     flex-wrap: wrap;
     justify-content: center;
     align-items: flex-start;
-    gap: 16px 12px;
+    gap: 14px 28px;
     margin: 15px auto 25px auto;
     padding: 0;
     clear: both;
@@ -1458,9 +1478,14 @@ ol {
     height: 30px;
     font-family: 'Vazirmatn';
     cursor: pointer;
-    box-shadow: 0 5px 0.3rem rgba(0, 0, 0, 0.3);
 }
 
+.submitCommentButton:hover, form div input.inputSubmit:hover, #postcomment.inputSubmit:hover, input[type="submit"]:hover {
+    background-color: var(--card-nested);
+    color: var(--lapis-hover);
+    -webkit-text-fill-color: var(--lapis-hover);
+    transform: translateY(-1px);
+}
 
 .textualbutton, .pagebutton, .recitation-button {
     cursor: pointer;
@@ -1535,13 +1560,13 @@ ol {
 }
 
 .century a, .century-alt a, .part-title-block a, .part-title-block-alt a {
-    color: var(--brand) !important;
-    -webkit-text-fill-color: var(--brand) !important;
+    color: var(--text-muted) !important;
+    -webkit-text-fill-color: var(--text-muted) !important;
 }
 
 #fa .century a, #fa .century-alt a, #fa .part-title-block a, #fa .part-title-block-alt a {
-    color: var(--brand) !important;
-    -webkit-text-fill-color: var(--brand) !important;
+    color: var(--text-muted) !important;
+    -webkit-text-fill-color: var(--text-muted) !important;
 }
 
 #fa .part-title-block a, #fa .part-title-block-alt a {
@@ -1672,6 +1697,11 @@ ol {
     border: 2px solid var(--accent-border);
     border-radius: 20px;
     padding: 16px;
+}
+
+#map-guide div p,
+#map-guide div p a {
+    color: var(--gold-subtle);
 }
 
 #rangeInput {
@@ -2101,7 +2131,6 @@ audio {
 
 
 #findpoet {
-    margin-top: 10px;
     text-align: center;
 }
 
@@ -2221,6 +2250,17 @@ fieldset {
 
     #main-navbar .circled-number {
         background-color: var(--accent-bg);
+    }
+
+    #main-navbar a[role="button"]:hover .noborder-btn,
+    #main-navbar a[role="button"]:hover .circled-number,
+    #main-navbar a[role="button"]:hover .pagebutton {
+        background: var(--card-nested);
+        transform: translateY(-1px);
+    }
+
+    #main-navbar a[role="button"]:hover svg {
+        fill: var(--lapis-hover);
     }
 
 .utilbar {
@@ -2907,139 +2947,4 @@ mark {
     background: linear-gradient(to bottom, transparent, var(--card-poem));
     pointer-events: none; /* Prevents interaction */
     transition: opacity 0.3s ease-out;
-}
-
-@media(prefers-color-scheme: dark) {
-    .m1 p, .m2 p, .b2 p, .n p {
-        text-shadow: none;
-    }
-
-    * {
-        color: var(--ink-black);
-    }
-
-    div {
-        border-color: var(--border-gold);
-        border-width: 1px;
-    }
-
-    .circled-number {
-        border-color: var(--gold);
-        border-width: 1px;
-    }
-
-    a .circled-number, a .noborder-btn {
-        -webkit-text-fill-color: var(--gold);
-    }
-
-    .footer-icon {
-        fill: var(--gold);
-    }
-
-    #main, .poem, .sitem, .related-images-frame, .comments-like-div {
-        border-color: var(--border-gold);
-    }
-
-    .poet > a {
-        background: var(--card-paper);
-    }
-
-    .noindent-info-button {
-        fill: var(--gold);
-    }
-
-    .color-white {
-        color: var(--gold) !important;
-        fill: var(--gold) !important;
-    }
-
-    .clear-both,
-    .tooltip {
-        background-color: var(--card-paper);
-    }
-
-    a {
-        -webkit-text-fill-color: var(--lapis);
-    }
-
-    #comments, #profile, .comments-like-div, .bnumdiv {
-        background: transparent;
-    }
-
-    .comment-author {
-        background: transparent;
-    }
-
-    #rpoems > div.century {
-        background-color: var(--card-nested);
-    }
-
-    #rpoems {
-        background-color: none;
-    }
-
-    select, input {
-        color: var(--lapis);
-        background: var(--card-paper);
-        border-color: var(--border-gold);
-        border-width: 1px;
-    }
-
-    .notice, .commentquote, .c p {
-        background: var(--card-nested);
-    }
-
-    td {
-        background: var(--card-inner) !important;
-    }
-
-    .bnum {
-        mix-blend-mode: hard-light;
-    }
-
-    .clear-both {
-        background: none;
-    }
-
-    #commentsp p, #comments p {
-        color: var(--ink-black);
-    }
-
-    #footer li a:hover {
-        border-bottom: 2px solid var(--lapis);
-    }
-
-    #footer a {
-        -webkit-text-fill-color: var(--ink-black);
-    }
-
-    .mce-content-body {
-        background-color: var(--card-paper);
-        color: var(--ink-black);
-    }
-
-    #main-navbar {
-        border-color: var(--border-gold);
-    }
-
-    .bg-white {
-        background-color: var(--card-inner) !important;
-    }
-
-    .tox .tox-notification--info p {
-        color: var(--ink-black) !important;
-    }
-
-    .background-white {
-        background-color: var(--card-paper) !important;
-    }
-
-    mark {
-        background: var(--brand);
-        color: var(--ink-black);
-    }
-
-    mark.currentInlineResult {
-        background: var(--card-nested);
-    }
 }
