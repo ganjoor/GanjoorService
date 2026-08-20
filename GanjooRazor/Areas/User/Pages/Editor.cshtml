@@ -843,7 +843,7 @@ else
         @foreach (var verse in Model.PageInformation.Poem.Verses)
         {
             <div class="up-verse-row" id="tr-@verse.VOrder">
-                <p class="up-hint">بیت @Model.GetVerseCoupletNumber(verse).ToPersianNumbers() &mdash; ترتیب مصرع یا خط از ابتدا: @verse.VOrder.ToPersianNumbers()</p>
+                <p><span class="up-verse-number">@Model.GetVerseCoupletNumber(verse).ToPersianNumbers()</span><span class="up-hint">ترتیب مصرع یا خط از ابتدا: @verse.VOrder.ToPersianNumbers()</span></p>
 
                 <div class="up-field">
                     <label for="id-@($"{verse.VOrder}")"><span class="up-field-icon" aria-hidden="true">📝</span> ویراستهٔ من</label>
@@ -970,7 +970,7 @@ else
                 </div>
 
                 <div class="up-btn-group">
-                    <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">💾 ذخیره</a>
+                    <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">⬇ رفتن به ذخیره</a>
                     @if (Model.ShowAdminOps && verse.VOrder > 1 && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)
                     {
                         <a role="button" id="breakpoem-@verse.VOrder" class="up-btn up-btn--sm up-btn--danger" onclick="breakPoem(@Model.PageInformation.Poem.Id, @verse.VOrder, '@verse.Text')">✂️ شکستن از اینجا</a>
@@ -1243,7 +1243,7 @@ else
             </div>
         </div>
 
-        <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">💾 ذخیره</a>
+        <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">⬇ رفتن به ذخیره</a>
     </div>
 
     <div class="up-card">
@@ -1332,7 +1332,7 @@ else
                         </div>
                     </div>
 
-                    <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">💾 ذخیره</a>
+                    <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">⬇ رفتن به ذخیره</a>
                 </div>
             }
         }

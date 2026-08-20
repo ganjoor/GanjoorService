@@ -712,6 +712,23 @@ body.up-modal-open {
     color: var(--up-danger-dark);
 }
 
+.up-verse-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: var(--up-primary);
+    color: var(--up-on-primary);
+    font-weight: 600;
+    font-size: 0.85rem;
+    line-height: 1;
+    margin-inline-end: var(--up-space-2);
+    vertical-align: middle;
+}
+
 .up-form-actions {
     display: flex;
     gap: var(--up-space-2);
