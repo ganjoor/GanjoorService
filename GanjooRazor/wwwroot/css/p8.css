@@ -326,7 +326,7 @@ select {
         line-height: 24px
     }
 
-.poet {
+.spacer .poet {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -335,11 +335,11 @@ select {
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.poet:hover {
+.spacer .poet:hover {
     transform: translateY(-5px);
 }
 
-.poet > a {
+.spacer .poet > a {
     display: block;
     width: 76px;
     height: 96px;
@@ -354,7 +354,7 @@ select {
     transition: box-shadow 0.25s ease;
 }
 
-.poet:hover > a {
+.spacer .poet:hover > a {
     box-shadow:
         0 0 0 2px var(--brand),
         0 0 0 5px var(--bg-page),
@@ -362,7 +362,7 @@ select {
         0 6px 18px rgba(0, 0, 0, 0.22);
 }
 
-.poet > a img {
+.spacer .poet > a img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -370,10 +370,43 @@ select {
     filter: contrast(1.08) saturate(1.12) brightness(1.02);
 }
 
-.poet > a[href="/map"] {
+.spacer .poet > a[href="/map"] {
     width: 86px;
     height: 86px;
     box-shadow: none;
+}
+
+.sitem .poet {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: auto;
+    margin: 8px 0;
+}
+
+.sitem .poet > img {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow:
+        0 0 0 2px var(--gold),
+        0 0 0 4px var(--bg-page),
+        0 0 0 5px var(--border-gold);
+}
+
+.sitem .poet > a {
+    width: auto;
+    height: auto;
+    border-radius: 50%;
+    box-shadow: none;
+    background: none;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
 }
 
 
@@ -395,7 +428,7 @@ select {
     transition: all 0.2s ease;
 }
 
-.poet .caption {
+.spacer .poet .caption {
     display: block;
     width: 100%;
     font-family: 'Vazirmatn';
@@ -406,7 +439,7 @@ select {
     margin-bottom: 12px;
 }
 
-    .poet .caption a {
+    .spacer .poet .caption a {
         border-radius: 12px;
         display: flex;
         align-items: center;
@@ -423,14 +456,14 @@ select {
         transition: all 0.2s ease;
     }
 
-    .poet:hover .caption a {
+    .spacer .poet:hover .caption a {
         background-color: var(--gold-subtle);
         border-color: var(--brand);
         transform: translateY(-1px);
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
     }
 
-    .poet .caption a:hover {
+    .spacer .poet .caption a:hover {
         background-color: var(--gold-subtle);
         border-color: var(--brand);
         transform: translateY(-1px);
@@ -469,7 +502,7 @@ select {
     font-size: 0.8em;
 }
 
-#fa .poet .caption a {
+#fa .spacer .poet .caption a {
     color: var(--brand);
     -webkit-text-fill-color: var(--brand);
 }
@@ -479,7 +512,7 @@ select {
     -webkit-text-fill-color: var(--lapis);
 }
 
-    #fa .poet .caption a:hover, #fa .poemtablinks a:hover {
+    #fa .spacer .poet .caption a:hover, #fa .poemtablinks a:hover {
         font-weight: bold;
         background-color: var(--gold-subtle);
     }
