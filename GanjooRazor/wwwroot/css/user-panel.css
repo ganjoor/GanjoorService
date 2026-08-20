@@ -752,3 +752,22 @@ body.up-modal-open {
     font-size: 0.65rem;
     padding: 1px 8px;
 }
+
+.navbar form {
+    margin-bottom: 0;
+}
+
+.navbar form button.nav-link {
+    background: none;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    line-height: inherit;
+    cursor: pointer;
+}
+
+.navbar form button.nav-link:hover,
+.navbar form button.nav-link:focus {
+    color: var(--up-link-hover, #0056b3);
+    text-decoration: none;
+}
