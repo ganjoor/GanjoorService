@@ -1,0 +1,183 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.RolesModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "مدیریت نقش‌ها";
+}
+
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.LastError))
+{
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
+}
+
+<div class="up-card">
+    <h2 class="up-card__title">نقش جدید</h2>
+    <div class="up-form-actions">
+        <input type="text" id="new-role-name" placeholder="نام نقش" style="flex:1;" />
+        <input type="text" id="new-role-description" placeholder="توضیحات" style="flex:1;" />
+        <a role="button" onclick="createRole()" class="up-btn up-btn--success">➕ ایجاد</a>
+    </div>
+</div>
+
+<script>
+    function createRole() {
+        var name = document.getElementById('new-role-name').value.trim();
+        var description = document.getElementById('new-role-description').value.trim();
+        if (name === '') {
+            upToast('نام نقش خالی است.', 'error');
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: '?handler=NewRole',
+            data: { name: name, description: description },
+            error: function (e) {
+                upToast(e.responseText || String(e), 'error');
+            },
+            success: function () {
+                location.reload(true);
+            }
+        });
+    }
+
+    async function deleteRole(roleName) {
+        var ok = await upConfirm('آیا از حذف نقش «' + roleName + '» اطمینان دارید؟');
+        if (!ok) return;
+
+        $.ajax({
+            type: "DELETE",
+            url: '?handler=Role',
+            data: { roleName: roleName },
+            error: function (e) {
+                upToast(e.responseText || String(e), 'error');
+            },
+            success: function () {
+                var row = document.getElementById('tr-role-' + roleName);
+                row.parentNode.removeChild(row);
+            }
+        });
+    }
+
+    function toggleRolePermissions(roleName) {
+        var row = document.getElementById('perm-row-' + roleName);
+        if (row.style.display === 'none' || row.style.display === '') {
+            row.style.display = 'table-row';
+            loadRolePermissions(roleName);
+        } else {
+            row.style.display = 'none';
+        }
+    }
+
+    function loadRolePermissions(roleName) {
+        var container = document.getElementById('perm-container-' + roleName);
+        container.innerHTML = 'در حال بارگذاری...';
+        $.ajax({
+            type: "GET",
+            url: '?handler=Permissions&roleName=' + encodeURIComponent(roleName),
+            error: function (e) {
+                upToast(e.responseText || String(e), 'error');
+            },
+            success: function (items) {
+                renderPermissionTree(roleName, items);
+            }
+        });
+    }
+
+    function renderPermissionTree(roleName, items) {
+        var container = document.getElementById('perm-container-' + roleName);
+        container.innerHTML = '';
+
+        var tree = document.createElement('div');
+        tree.className = 'up-perm-tree';
+
+        items.forEach(function (item, itemIndex) {
+            var itemRow = document.createElement('div');
+            itemRow.className = 'up-perm-tree__item';
+
+            var itemLabel = document.createElement('strong');
+            itemLabel.textContent = item.description;
+            itemRow.appendChild(itemLabel);
+            tree.appendChild(itemRow);
+
+            var opsWrap = document.createElement('div');
+            opsWrap.className = 'up-perm-tree__ops';
+            item.operations.forEach(function (op, opIndex) {
+                var opLabel = document.createElement('label');
+                opLabel.className = 'up-check-row';
+                var cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.checked = op.status;
+                cb.dataset.itemIndex = itemIndex;
+                cb.dataset.opIndex = opIndex;
+                opLabel.appendChild(cb);
+                opLabel.appendChild(document.createTextNode(op.description));
+                opsWrap.appendChild(opLabel);
+            });
+            tree.appendChild(opsWrap);
+        });
+
+        container.appendChild(tree);
+
+        var saveBtn = document.createElement('a');
+        saveBtn.setAttribute('role', 'button');
+        saveBtn.className = 'up-btn up-btn--success';
+        saveBtn.textContent = '💾 ذخیرهٔ دسترسی‌ها';
+        saveBtn.onclick = function () { saveRolePermissions(roleName, items, tree); };
+        container.appendChild(saveBtn);
+    }
+
+    function saveRolePermissions(roleName, items, tree) {
+        tree.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
+            items[cb.dataset.itemIndex].operations[cb.dataset.opIndex].status = cb.checked;
+        });
+
+        $.ajax({
+            type: "PUT",
+            url: '?handler=Permissions&roleName=' + encodeURIComponent(roleName),
+            contentType: "application/json",
+            data: JSON.stringify(items),
+            error: function (e) {
+                upToast(e.responseText || String(e), 'error');
+            },
+            success: function () {
+                upToast('دسترسی‌های نقش ذخیره شد.');
+            }
+        });
+    }
+</script>
+
+@if (Model.Roles != null && Model.Roles.Length > 0)
+{
+    <table>
+        <tr>
+            <th>نام</th>
+            <th>توضیحات</th>
+            <th>#</th>
+        </tr>
+        @foreach (var role in Model.Roles)
+        {
+            <tr id="tr-role-@role.Name">
+                <td>@role.Name</td>
+                <td>@role.Description</td>
+                <td>
+                    <a role="button" onclick="toggleRolePermissions('@role.Name')" class="up-icon-btn" title="دسترسی‌ها" aria-label="مدیریت دسترسی‌های این نقش">🔑</a>
+                    <a role="button" onclick="deleteRole('@role.Name')" class="up-icon-btn" title="حذف" aria-label="حذف این نقش">🗑</a>
+                </td>
+            </tr>
+            <tr id="perm-row-@role.Name" style="display:none">
+                <td colspan="3">
+                    <div id="perm-container-@role.Name"></div>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <partial name="_EmptyState" model="@("نقشی تعریف نشده است.")" />
+}

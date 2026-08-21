@@ -1,0 +1,216 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.UsersModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "مدیریت کاربران";
+    ViewData["WideShell"] = true;
+}
+
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.LastError))
+{
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
+}
+
+<div class="up-card">
+    <form method="get" class="up-form-actions">
+        <input type="text" name="filterByEmail" value="@Model.FilterByEmail" placeholder="جستجوی ایمیل" style="flex:1;" />
+        <input type="hidden" name="pageSize" value="@Model.PageSize" />
+        <input type="submit" value="🔎 جستجو" class="up-btn up-btn--ghost" />
+    </form>
+</div>
+
+<script>
+    var allRolesCache = null;
+
+    function toggleUserRow(userId) {
+        var row = document.getElementById('roles-row-' + userId);
+        if (row.style.display === 'none' || row.style.display === '') {
+            row.style.display = 'table-row';
+            loadUserRoles(userId);
+        } else {
+            row.style.display = 'none';
+        }
+    }
+
+    function loadUserRoles(userId) {
+        var container = document.getElementById('roles-container-' + userId);
+        container.innerHTML = 'در حال بارگذاری...';
+        $.ajax({
+            type: "GET",
+            url: '?handler=Roles&id=' + userId,
+            error: function (e) {
+                upToast(e.responseText || String(e), 'error');
+            },
+            success: function (roles) {
+                renderUserRoles(userId, roles);
+            }
+        });
+    }
+
+    function renderUserRoles(userId, roles) {
+        var container = document.getElementById('roles-container-' + userId);
+        container.innerHTML = '';
+        roles.forEach(function (role) {
+            var chip = document.createElement('span');
+            chip.className = 'up-role-chip';
+            chip.textContent = role;
+            var removeBtn = document.createElement('a');
+            removeBtn.setAttribute('role', 'button');
+            removeBtn.className = 'up-role-chip__remove';
+            removeBtn.title = 'حذف نقش';
+            removeBtn.textContent = '✕';
+            removeBtn.onclick = function () { removeUserRole(userId, role); };
+            chip.appendChild(removeBtn);
+            container.appendChild(chip);
+        });
+
+        var addBtn = document.createElement('a');
+        addBtn.setAttribute('role', 'button');
+        addBtn.className = 'up-btn up-btn--sm up-btn--ghost';
+        addBtn.textContent = '➕ نقش جدید';
+        addBtn.onclick = function () { showAddRole(userId, roles); };
+        container.appendChild(addBtn);
+    }
+
+    function showAddRole(userId, currentRoles) {
+        function withAllRoles(all) {
+            var unassigned = all.filter(function (r) { return currentRoles.indexOf(r) === -1; });
+            if (unassigned.length === 0) {
+                upToast('این کاربر همهٔ نقش‌های موجود را دارد.', 'error');
+                return;
+            }
+            var select = document.createElement('select');
+            unassigned.forEach(function (r) {
+                var opt = document.createElement('option');
+                opt.value = r;
+                opt.text = r;
+                select.appendChild(opt);
+            });
+            var confirmBtn = document.createElement('a');
+            confirmBtn.setAttribute('role', 'button');
+            confirmBtn.className = 'up-btn up-btn--sm up-btn--success';
+            confirmBtn.textContent = 'تأیید';
+            confirmBtn.onclick = function () { addUserRole(userId, select.value); };
+
+            var container = document.getElementById('roles-container-' + userId);
+            var wrap = document.createElement('span');
+            wrap.appendChild(select);
+            wrap.appendChild(confirmBtn);
+            container.appendChild(wrap);
+        }
+
+        if (allRolesCache != null) {
+            withAllRoles(allRolesCache);
+            return;
+        }
+        $.ajax({
+            type: "GET",
+            url: '?handler=AllRoles',
+            error: function (e) {
+                upToast(e.responseText || String(e), 'error');
+            },
+            success: function (all) {
+                allRolesCache = all;
+                withAllRoles(all);
+            }
+        });
+    }
+
+    function addUserRole(userId, role) {
+        $.ajax({
+            type: "POST",
+            url: '?handler=AddRole',
+            data: { id: userId, role: role },
+            error: function (e) {
+                upToast(e.responseText || String(e), 'error');
+            },
+            success: function () {
+                loadUserRoles(userId);
+            }
+        });
+    }
+
+    function removeUserRole(userId, role) {
+        $.ajax({
+            type: "DELETE",
+            url: '?handler=Role',
+            data: { id: userId, role: role },
+            error: function (e) {
+                upToast(e.responseText || String(e), 'error');
+            },
+            success: function () {
+                loadUserRoles(userId);
+            }
+        });
+    }
+
+    function toggleUserStatus(userId, checkbox) {
+        var active = checkbox.checked;
+        checkbox.disabled = true;
+        $.ajax({
+            type: "POST",
+            url: '?handler=ToggleStatus',
+            data: { id: userId, active: active },
+            error: function (e) {
+                checkbox.checked = !active;
+                checkbox.disabled = false;
+                upToast(e.responseText || String(e), 'error');
+            },
+            success: function () {
+                checkbox.disabled = false;
+                upToast('وضعیت کاربر به‌روز شد.');
+            }
+        });
+    }
+</script>
+
+@if (Model.Users != null && Model.Users.Length > 0)
+{
+    <table>
+        <tr>
+            <th>پست الکترونیکی</th>
+            <th>نام</th>
+            <th>نام خانوادگی</th>
+            <th>فعال</th>
+            <th>#</th>
+        </tr>
+        @foreach (var user in Model.Users)
+        {
+            <tr id="tr-@user.Id">
+                <td>@user.Email</td>
+                <td>@user.FirstName</td>
+                <td>@user.SurName</td>
+                <td>
+                    @if (user.Status == RSecurityBackend.Models.Auth.Db.RAppUserStatus.Active)
+                    {
+                        <input type="checkbox" checked onchange="toggleUserStatus('@user.Id', this)" />
+                    }
+                    else
+                    {
+                        <input type="checkbox" onchange="toggleUserStatus('@user.Id', this)" />
+                    }
+                </td>
+                <td>
+                    <a role="button" onclick="toggleUserRow('@user.Id')" class="up-icon-btn" title="نقش‌ها" aria-label="مدیریت نقش‌های این کاربر">🎭</a>
+                    <a role="button" href="/Admin/ExamineUser?id=@user.Id" class="up-icon-btn" title="مشاهده" aria-label="مشاهدهٔ این کاربر">👁️</a>
+                </td>
+            </tr>
+            <tr id="roles-row-@user.Id" style="display:none">
+                <td colspan="5">
+                    <div id="roles-container-@user.Id" class="up-role-chip-row"></div>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <partial name="_EmptyState" model="@("کاربری یافت نشد.")" />
+}
+
+<partial name="_Pagination" model="Model.PaginationLinks" />

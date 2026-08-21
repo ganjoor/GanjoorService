@@ -713,7 +713,6 @@ body.up-modal-open {
 }
 
 .up-verse-number {
-    display: inline-flex;
     align-items: center;
     justify-content: center;
     min-width: 26px;
@@ -787,4 +786,58 @@ body.up-modal-open {
 .navbar form button.nav-link:focus {
     color: var(--up-link-hover, #0056b3);
     text-decoration: none;
+}
+
+/* ---------- role chips (Users.cshtml) ---------- */
+
+.up-role-chip-row {
+    display: flex;
+    align-items: center;
+    gap: var(--up-space-2);
+    flex-wrap: wrap;
+    padding: var(--up-space-2) 0;
+}
+
+.up-role-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--up-surface-alt);
+    border: 1px solid var(--up-border);
+    font-size: 0.85rem;
+}
+
+.up-role-chip__remove {
+    cursor: pointer;
+    color: var(--up-text-muted);
+    font-size: 0.75rem;
+}
+
+.up-role-chip__remove:hover {
+    color: var(--up-danger, #c0392b);
+}
+
+/* ---------- permission tree (Roles.cshtml) ---------- */
+
+.up-perm-tree {
+    text-align: right;
+    margin-bottom: var(--up-space-3);
+}
+
+.up-perm-tree__item {
+    margin-top: var(--up-space-3);
+}
+
+.up-perm-tree__item:first-child {
+    margin-top: 0;
+}
+
+.up-perm-tree__ops {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--up-space-3);
+    margin-top: var(--up-space-1);
+    padding-right: var(--up-space-3);
 }
