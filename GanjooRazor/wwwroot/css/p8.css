@@ -1241,7 +1241,7 @@ pagination-controls {
         height: 100%;
         padding: 0.5em;
         cursor: pointer;
-        color: var(--card-paper);
+        color: white;
         text-decoration: none;
     }
 

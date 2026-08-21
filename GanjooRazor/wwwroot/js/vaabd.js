@@ -45,12 +45,10 @@ var $google = $('<a>گوگل</a>').css({
     justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',
-    color: 'white',
 });
 
 var $close = $('<a href="#" id="vaabx">غیرفعال شود</a>').css({
     cursor: "pointer",
-    color: "white",
     padding: "10px",
     display: 'flex',
     justifyContent: 'center',
