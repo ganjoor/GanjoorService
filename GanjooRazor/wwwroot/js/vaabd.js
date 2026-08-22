@@ -54,7 +54,7 @@ var $close = $('<a href="#" id="vaabx">غیرفعال شود</a>').css({
     justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',
-    borderTop: '1px solid rgba(255,255,255,0.2)', // Visual separator
+    borderTop: '1px solid #c9a050', // Visual separator
 });
 
 // Tooltip container styling
