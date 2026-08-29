@@ -31,6 +31,16 @@ else
     </tr>
     <tr>
         <td colspan="2">
+            <a role="button" class="up-btn up-btn--ghost" style="display:block" href="/hashieha/?userid=@Model.UserInfo.Id">📝 حاشیه‌های این کاربر</a>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <a role="button" class="up-btn up-btn--ghost" style="display:block" href="/user/edits/?allusers=1&userid=@Model.UserInfo.Id">📜 ویرایش‌های این کاربر</a>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
             <a role="button" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" href="/Admin/KickoutUser?id=@Model.UserInfo.Id">حذف حساب کاربری</a>
         </td>
     </tr>
