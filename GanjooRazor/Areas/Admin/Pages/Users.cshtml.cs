@@ -35,7 +35,9 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public string FilterByEmail { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int pageNumber = 1, int pageSize = 15, string filterByEmail = null)
+        public string FilterByNickName { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(int pageNumber = 1, int pageSize = 15, string filterByEmail = null, string filterByNickName = null)
         {
             if (string.IsNullOrEmpty(Request.Cookies["Token"]))
                 return Redirect("/");
@@ -43,6 +45,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             PageNumber = pageNumber < 1 ? 1 : pageNumber;
             PageSize = pageSize;
             FilterByEmail = filterByEmail;
+            FilterByNickName = filterByNickName;
 
             using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
             {
@@ -51,6 +54,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var url = $"{APIRoot.Url}/api/users?PageNumber={PageNumber}&PageSize={PageSize}";
                     if (!string.IsNullOrEmpty(FilterByEmail))
                         url += $"&filterByEmail={Uri.EscapeDataString(FilterByEmail)}";
+                    if (!string.IsNullOrEmpty(FilterByNickName))
+                        url += $"&filterByNickName={Uri.EscapeDataString(FilterByNickName)}";
 
                     var response = await secureClient.GetAsync(url);
                     if (response.IsSuccessStatusCode)
@@ -66,6 +71,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                                     var pageUrl = $"?pageNumber={p}&pageSize={PageSize}";
                                     if (!string.IsNullOrEmpty(FilterByEmail))
                                         pageUrl += $"&filterByEmail={Uri.EscapeDataString(FilterByEmail)}";
+                                    if (!string.IsNullOrEmpty(FilterByNickName))
+                                        pageUrl += $"&filterByNickName={Uri.EscapeDataString(FilterByNickName)}";
                                     PaginationLinks.Add(new NameIdUrlImage()
                                     {
                                         Name = p.ToString(),
