@@ -66,19 +66,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                             Paging = JsonConvert.DeserializeObject<PaginationMetadata>(values.FirstOrDefault());
                             if (Paging != null)
                             {
-                                for (int p = 1; p <= Paging.totalPages; p++)
-                                {
-                                    var pageUrl = $"?pageNumber={p}&pageSize={PageSize}";
-                                    if (!string.IsNullOrEmpty(FilterByEmail))
-                                        pageUrl += $"&filterByEmail={Uri.EscapeDataString(FilterByEmail)}";
-                                    if (!string.IsNullOrEmpty(FilterByNickName))
-                                        pageUrl += $"&filterByNickName={Uri.EscapeDataString(FilterByNickName)}";
-                                    PaginationLinks.Add(new NameIdUrlImage()
-                                    {
-                                        Name = p.ToString(),
-                                        Url = p == PageNumber ? "" : pageUrl
-                                    });
-                                }
+                                PaginationLinks = BuildPaginationLinks(PageNumber, Paging.totalPages, PageSize, FilterByEmail, FilterByNickName);
                             }
                         }
                     }
@@ -94,6 +82,57 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
 
             return Page();
+        }
+
+        /// <summary>
+        /// Builds a compact pager: first/prev, a window of page numbers around the
+        /// current page (with first/last always included and "…" for gaps), next/last.
+        /// Avoids listing every single page number when there are many pages.
+        /// </summary>
+        private static List<NameIdUrlImage> BuildPaginationLinks(int currentPage, int totalPages, int pageSize, string filterByEmail, string filterByNickName)
+        {
+            var links = new List<NameIdUrlImage>();
+            if (totalPages < 1)
+                return links;
+
+            string UrlFor(int p)
+            {
+                var u = $"?pageNumber={p}&pageSize={pageSize}";
+                if (!string.IsNullOrEmpty(filterByEmail))
+                    u += $"&filterByEmail={Uri.EscapeDataString(filterByEmail)}";
+                if (!string.IsNullOrEmpty(filterByNickName))
+                    u += $"&filterByNickName={Uri.EscapeDataString(filterByNickName)}";
+                return u;
+            }
+
+            // first / previous
+            links.Add(new NameIdUrlImage() { Name = "▶▶ اول", Url = currentPage <= 1 ? "" : UrlFor(1) });
+            links.Add(new NameIdUrlImage() { Name = "▶ قبلی", Url = currentPage <= 1 ? "" : UrlFor(currentPage - 1) });
+
+            // window of page numbers around current, always including page 1 and totalPages
+            const int windowRadius = 2;
+            var pagesToShow = new SortedSet<int>();
+            for (int p = Math.Max(1, currentPage - windowRadius); p <= Math.Min(totalPages, currentPage + windowRadius); p++)
+                pagesToShow.Add(p);
+            pagesToShow.Add(1);
+            pagesToShow.Add(totalPages);
+
+            int? previousShown = null;
+            foreach (var p in pagesToShow)
+            {
+                if (previousShown.HasValue && p > previousShown.Value + 1)
+                {
+                    links.Add(new NameIdUrlImage() { Name = "…", Url = "" });
+                }
+                links.Add(new NameIdUrlImage() { Name = p.ToString(), Url = p == currentPage ? "" : UrlFor(p) });
+                previousShown = p;
+            }
+
+            // next / last
+            links.Add(new NameIdUrlImage() { Name = "بعدی ◀", Url = currentPage >= totalPages ? "" : UrlFor(currentPage + 1) });
+            links.Add(new NameIdUrlImage() { Name = "آخر ◀◀", Url = currentPage >= totalPages ? "" : UrlFor(totalPages) });
+
+            return links;
         }
 
         /// <summary>
