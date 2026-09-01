@@ -3012,3 +3012,18 @@ mark {
     pointer-events: none; /* Prevents interaction */
     transition: opacity 0.3s ease-out;
 }
+
+/* ---------- poet/category bio text links - same size as body text,
+   just a distinguishing color (matches the .poem-excerpt TOC-link look) ---------- */
+
+.ganjoor-bio-text a {
+    color: var(--brand);
+    -webkit-text-fill-color: var(--brand);
+    transition: color 0.2s ease, -webkit-text-fill-color 0.2s ease;
+}
+
+.ganjoor-bio-text a:hover {
+    color: var(--lapis);
+    -webkit-text-fill-color: var(--lapis);
+    text-decoration: underline;
+}

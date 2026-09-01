@@ -253,7 +253,7 @@ namespace RMuseum.Services.Implementation
                 var cat = await context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
                 var poet = await context.GanjoorPoets.AsNoTracking().Where(p => p.Id == cat.PoetId).SingleAsync();
                 var rhythms = await context.GanjoorMetres.ToListAsync();
-                string html = string.IsNullOrEmpty(cat.DescriptionHtml) ? "" : $"{cat.DescriptionHtml.Replace("../", "https://ganjoor.net/")}{Environment.NewLine}";
+                string html = (string.IsNullOrEmpty(cat.DescriptionHtml) ? "" : $"<div class=\"ganjoor-bio-text\">{cat.DescriptionHtml.Replace("../", "https://ganjoor.net/")}</div>") + $"<a id=\"after-bio\"></a>{Environment.NewLine}";
                 var subCats = await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == catId).OrderBy(c => c.MixedModeOrder).ThenBy(c => c.Id).ToListAsync();
                 var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == catId).OrderBy(p => p.MixedModeOrder).ThenBy(p => p.Id).ToListAsync();
 
