@@ -3012,29 +3012,3 @@ mark {
     pointer-events: none; /* Prevents interaction */
     transition: opacity 0.3s ease-out;
 }
-
-/* ---------- distinct links inside poet/category bio text (matches the
-   comment-link boxed style on the حاشیه‌ها page, per user request) ---------- */
-
-.ganjoor-page-body a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2px 6px;
-    margin: 0 1px;
-    border-radius: 6px;
-    background-color: var(--card-inner);
-    border: 1px solid var(--border-gold);
-    color: var(--lapis);
-    -webkit-text-fill-color: var(--lapis);
-    transition: all 0.2s ease;
-}
-
-.ganjoor-page-body a:hover {
-    background-color: var(--brand);
-    border-color: var(--brand);
-    color: var(--card-paper) !important;
-    -webkit-text-fill-color: var(--card-paper) !important;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
-}

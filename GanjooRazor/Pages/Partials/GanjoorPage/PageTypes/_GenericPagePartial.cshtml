@@ -56,7 +56,7 @@
         }
 
         <partial name="~/Pages/Partials/GanjoorPage/_InlinePageUtilsPartial.cshtml" model="Model" />
-        <div class="ganjoor-page-body">@Html.Raw(Model.GanjoorPage.HtmlText)</div>
+        @Html.Raw(Model.GanjoorPage.HtmlText)
 
         @if (Model.GanjoorPage.Id == GanjoorPageModel.GanjoorSlashVaznPageId)
         {
