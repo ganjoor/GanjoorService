@@ -1,3 +1,8 @@
 User-agent: *
-Disallow: 
-Sitemap: http://ganjoor.net/sitemap.xml
+Disallow: /User/
+Disallow: /Admin/
+Disallow: /login
+Disallow: /SignUp
+Disallow: /ResetPassword
+
+Sitemap: https://ganjoor.net/sitemap.xml
