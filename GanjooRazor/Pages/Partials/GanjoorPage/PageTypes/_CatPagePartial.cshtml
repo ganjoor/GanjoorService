@@ -93,23 +93,23 @@
 </div>
 
 @* Navigation *@
-@if (!string.IsNullOrEmpty(Model.NextUrl) || !string.IsNullOrEmpty(Model.PreviousUrl))
+@if (!string.IsNullOrEmpty(Model.PreviousUrl) || !string.IsNullOrEmpty(Model.NextUrl))
 {
     <div class="spacer">&nbsp;</div>
     <nav id="nav">
         <div class="navigation">
             <div class="navleft">
-                @if (!string.IsNullOrEmpty(Model.NextUrl))
+                @if (!string.IsNullOrEmpty(Model.PreviousUrl))
                 {
-                    <a href="@Html.Raw(Model.NextUrl)">@Model.NextTitle</a>
+                    <a href="@Html.Raw(Model.PreviousUrl)">@Model.PreviousTitle</a>
                     <span> &raquo;</span>
                 }
             </div>
             <div class="navright">
-                @if (!string.IsNullOrEmpty(Model.PreviousUrl))
+                @if (!string.IsNullOrEmpty(Model.NextUrl))
                 {
                     <span>&laquo; </span>
-                    <a href="@Html.Raw(Model.PreviousUrl)">@Model.PreviousTitle</a>
+                    <a href="@Html.Raw(Model.NextUrl)">@Model.NextTitle</a>
                 }
             </div>
         </div>
