@@ -101,7 +101,7 @@
             <div class="navleft">
                 @if (!string.IsNullOrEmpty(Model.PreviousUrl))
                 {
-                    <span>&raquo; </span>
+                    <span>&laquo; </span>
                     <a href="@Html.Raw(Model.PreviousUrl)">@Model.PreviousTitle</a>
                 }
             </div>
@@ -109,7 +109,7 @@
                 @if (!string.IsNullOrEmpty(Model.NextUrl))
                 {
                     <a href="@Html.Raw(Model.NextUrl)">@Model.NextTitle</a>
-                    <span> &laquo;</span>
+                    <span> &raquo;</span>
                 }
             </div>
         </div>
