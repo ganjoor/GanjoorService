@@ -23,7 +23,7 @@
         }
 
         <partial name="~/Pages/Partials/GanjoorPage/_InlinePageUtilsPartial.cshtml" model="Model" />
-        @Html.Raw(Model.GanjoorPage.HtmlText)
+        <div class="ganjoor-page-body">@Html.Raw(Model.GanjoorPage.HtmlText)</div>
     </article>
 
     @* Category Tabs *@
@@ -93,23 +93,23 @@
 </div>
 
 @* Navigation *@
-@if (!string.IsNullOrEmpty(Model.PreviousUrl) || !string.IsNullOrEmpty(Model.NextUrl))
+@if (!string.IsNullOrEmpty(Model.NextUrl) || !string.IsNullOrEmpty(Model.PreviousUrl))
 {
     <div class="spacer">&nbsp;</div>
     <nav id="nav">
         <div class="navigation">
             <div class="navleft">
-                @if (!string.IsNullOrEmpty(Model.PreviousUrl))
-                {
-                    <span>&laquo; </span>
-                    <a href="@Html.Raw(Model.PreviousUrl)">@Model.PreviousTitle</a>
-                }
-            </div>
-            <div class="navright">
                 @if (!string.IsNullOrEmpty(Model.NextUrl))
                 {
                     <a href="@Html.Raw(Model.NextUrl)">@Model.NextTitle</a>
                     <span> &raquo;</span>
+                }
+            </div>
+            <div class="navright">
+                @if (!string.IsNullOrEmpty(Model.PreviousUrl))
+                {
+                    <span>&laquo; </span>
+                    <a href="@Html.Raw(Model.PreviousUrl)">@Model.PreviousTitle</a>
                 }
             </div>
         </div>
