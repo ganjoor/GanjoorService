@@ -56,6 +56,41 @@ function bnumClick(poemId, index) {
 
 }
 
+// Reveals the same beyt panel as clicking the (optional) couplet-number badge,
+// but triggered by clicking the verse text itself - so it works even when
+// line numbering is turned off. Reuses bnumClick's own element list so the
+// index always matches what bnumClick itself expects, including for poems
+// mixing .m1/.m2 couplets with single-line .b2/.n/.l verse types.
+function verseTextClick(event) {
+    // don't double-fire when the click actually landed on the number badge
+    // or inside an already-revealed panel - both handle their own clicks
+    if (event.target.closest('.bnum') || event.target.closest('.bnumdiv')) return;
+
+    var verseHalf = event.target.closest('.m1, .m2, .b2, .n, .l');
+    if (!verseHalf) return;
+
+    // a real drag-select, double-click word-select, or long-press selection
+    // leaves text selected by the time click fires - let vaabd.js own that
+    var sel = window.getSelection();
+    if (sel && sel.toString().trim() !== '') return;
+
+    // .m2 (the second hemistich) isn't itself in bnumClick's element list -
+    // resolve it to the sibling .m1 within the same verse container
+    var indexTarget = verseHalf;
+    if (verseHalf.classList.contains('m2')) {
+        var container = verseHalf.parentElement;
+        indexTarget = container ? container.querySelector('.m1') : null;
+        if (!indexTarget) return;
+    }
+
+    var msr1s = getElements("m1", "b2", "n", "l");
+    var index = Array.prototype.indexOf.call(msr1s, indexTarget);
+    if (index === -1) return;
+
+    bnumClick(currentPoemId, index);
+}
+document.addEventListener('click', verseTextClick);
+
 
 function coupletNumImage(bnum, color) {
     let canvas = document.createElement('canvas');
