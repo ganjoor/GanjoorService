@@ -11,11 +11,11 @@
     <title>
         @Html.Raw(ViewData["Title"])
     </title>
-    <link href="/css/p8.css?version=88" rel="stylesheet" type="text/css" />
+    <link href="/css/p8.css?version=89" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="/lib/jquery/dist/jquery.min.js"></script>
-    <script src="/js/bk.js?version=88"></script>
+    <script src="/js/bk.js?version=89"></script>
     <script>
         var cookieValue = getCookie("playerScrollLock");
         var playerScrollLock = cookieValue === "true";
@@ -40,8 +40,8 @@
                 paste_remove_styles_if_webkit: true,
                 paste_strip_class_attributes: true,
                 a11y_advanced_options: true,
-                skin: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "oxide-dark" : localStorage.getItem("scheme") == "dark" ? "oxide-dark" : "oxide"),
-                content_css: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "dark" : localStorage.getItem("scheme") == "dark" ? "dark" : false),
+                skin: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "oxide-dark" : localStorage.getItem("scheme") == "dark" ? "oxide-dark" : ""),
+                content_css: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "dark" : localStorage.getItem("scheme") == "dark" ? "dark" : ""),
             });
 
 
