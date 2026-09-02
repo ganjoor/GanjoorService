@@ -56,6 +56,15 @@
 
             @if (Model.GanjoorPage.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.PoetPage || Model.GanjoorPage.GanjoorPageType == RMuseum.Models.Ganjoor.GanjoorPageType.CatPage)
             {
+                @if (Model.GanjoorPage.HtmlText != null && Model.GanjoorPage.HtmlText.Contains("ganjoor-bio-text"))
+                {
+                    <a href="#after-bio" role="button" class="cursor-pointer" title="لغزش به محتوا">
+                        <div class="circled-number">
+                            <i class="notranslate noindent-info-button menu-icon"></i>
+                        </div>
+                    </a>
+                }
+
                 @if (Model.LoggedIn)
                 {
                     <a href="/User/CatEditor?id=@Model.GanjoorPage.Id" role="button" class="cursor-pointer" title="ویرایش">
@@ -64,12 +73,6 @@
                         </div>
                     </a>
                 }
-
-                <a href="#after-bio" role="button" class="cursor-pointer" title="لغزش به محتوا">
-                    <div class="circled-number">
-                        <i class="notranslate noindent-info-button menu-icon"></i>
-                    </div>
-                </a>
             }
 
             @if (!string.IsNullOrEmpty(Model.PreviousUrl))
