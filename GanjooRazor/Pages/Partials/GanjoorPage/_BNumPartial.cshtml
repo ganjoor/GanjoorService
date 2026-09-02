@@ -35,41 +35,13 @@
     }
 </table>
 
-@foreach (var verse in Model.Verses.Where(v => !string.IsNullOrEmpty(v.CoupletSummary)).ToList())
-{
-    <div id="summary-block-@Model.CoupletIndex-@verse.VOrder" class="width-100per">
-        <div class="notice">
-            <p>@verse.CoupletSummary</p>
-            @if (Model.LoggedIn)
-            {
-                <a href="@($"/User/Editor?id={Model.PoemId}#summary-{verse.VOrder}")" role="button" class="cursor-pointer" title="ویرایش">
-                    <div class="circled-number">
-                        <i class="notranslate noindent-info-button edit-poem-button"></i>
-                    </div>
-                </a>
-            }
-        </div>
-    </div>
-}
-
-<div id="play-block-@Model.CoupletIndex" class="width-100per">
-    <select id="narrators-@Model.CoupletIndex" class="bnum-partial-narrators"></select>
-    <a role="button" id="listen-@Model.CoupletIndex" class="bnum-partial-narrate-btn" onclick="playCouplet(@Model.CoupletIndex)">از اینجا بخواند</a>
-</div>
-<script>
-    fillnarrations('@Model.CoupletIndex');
-</script>
-
 <div class="bnum-partial-action-box">
-    <a role="button" title="رونوشت نشانی" class="cursor-pointer" id="copylink-@Model.CoupletIndex" onclick="copyCoupletUrl(@Model.CoupletIndex)"><i class="notranslate material-icons color-white">link</i></a>
-    <a role="button" title="رونوشت متن" class="cursor-pointer" id="copytext-@Model.CoupletIndex" onclick="copyCoupletText(@Model.CoupletIndex)"><i class="notranslate material-icons color-white">content_copy</i></a>
-    <a role="button" id="share-@Model.CoupletIndex" class="cursor-pointer" onclick="webShareCouplet(@Model.CoupletIndex)" title="همرسانی"><i class="notranslate material-icons color-white">share</i></a>
     @if (Model.LoggedIn)
     {
-        <a role="button" id="bookmark-@Model.CoupletIndex" class="cursor-pointer" onclick="switchBookmark(@Model.PoemId, @Model.CoupletIndex, '-@Model.CoupletIndex')" title="@Model.BookmarkingText"><i class="notranslate material-icons color-white" id="bookmark-icon-@Model.CoupletIndex">@Model.BookmarkingIcon</i></a>
-
         <a role="button" id="editcouplet-@Model.CoupletIndex" class="cursor-pointer" onclick="editCouplet(@Model.PoemId, @Model.CoupletIndex, 'tr')" title="ویرایش از اینجا"><i class="notranslate material-icons color-white">edit</i></a>
         <a role="button" id="editcoupletsummary-@Model.CoupletIndex" class="cursor-pointer" onclick="editCouplet(@Model.PoemId, @Model.CoupletIndex, 'summary')" title="نوشتن معنی به زبان ساده"><i class="notranslate material-icons color-white">edit_note</i></a>
+
+        <a role="button" id="bookmark-@Model.CoupletIndex" class="cursor-pointer" onclick="switchBookmark(@Model.PoemId, @Model.CoupletIndex, '-@Model.CoupletIndex')" title="@Model.BookmarkingText"><i class="notranslate material-icons color-white" id="bookmark-icon-@Model.CoupletIndex">@Model.BookmarkingIcon</i></a>
     }
     @if (Model.SectionsWithMetreAndRhymes.Any())
     {
@@ -84,8 +56,35 @@
             </text>
         }
     }
-
+    <a role="button" id="share-@Model.CoupletIndex" class="cursor-pointer" onclick="webShareCouplet(@Model.CoupletIndex)" title="همرسانی"><i class="notranslate material-icons color-white">share</i></a>
+    <a role="button" title="رونوشت نشانی" class="cursor-pointer" id="copylink-@Model.CoupletIndex" onclick="copyCoupletUrl(@Model.CoupletIndex)"><i class="notranslate material-icons color-white">link</i></a>
+    <a role="button" title="رونوشت متن" class="cursor-pointer" id="copytext-@Model.CoupletIndex" onclick="copyCoupletText(@Model.CoupletIndex)"><i class="notranslate material-icons color-white">content_copy</i></a>
 </div>
+
+@foreach (var verse in Model.Verses.Where(v => !string.IsNullOrEmpty(v.CoupletSummary)).ToList())
+{
+    <div id="summary-block-@Model.CoupletIndex-@verse.VOrder" class="width-100per">
+        <div class="notice">
+            <p>@verse.CoupletSummary</p>
+            @if (Model.LoggedIn)
+            {
+                <a href="@($"/User/Editor?id={Model.PoemId}#summary-{verse.VOrder}")" role="button" class="cursor-pointer" title="ویرایش">
+                    <div class="circled-number">
+                        <i class="notranslate material-icons color-white">edit_note</i>
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+}
+
+<div id="play-block-@Model.CoupletIndex" class="width-100per">
+    <select id="narrators-@Model.CoupletIndex" class="bnum-partial-narrators"></select>
+    <a role="button" id="listen-@Model.CoupletIndex" class="bnum-partial-narrate-btn" onclick="playCouplet(@Model.CoupletIndex)">از اینجا بخواند</a>
+</div>
+<script>
+    fillnarrations('@Model.CoupletIndex');
+</script>
 
 @if (Model.Sections.Where(s => s.GanjoorMetre != null).Any())
 {
@@ -171,8 +170,8 @@
             paste_remove_styles_if_webkit: true,
             paste_strip_class_attributes: true,
             a11y_advanced_options: true,
-            skin: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "oxide-dark" : localStorage.getItem("scheme") == "dark" ? "oxide-dark" : "oxide"),
-            content_css: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "dark" : localStorage.getItem("scheme") == "dark" ? "dark" : false),
+            skin: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "oxide-dark" : localStorage.getItem("scheme") == "dark" ? "oxide-dark" : ""),
+            content_css: (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light" ? "dark" : localStorage.getItem("scheme") == "dark" ? "dark" : ""),
             setup: function (editor) {
                 editor.on('tap', function (e) {
                     if (userNotifiedOnEditInsteadOfComment == false) {
