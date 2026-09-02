@@ -3027,3 +3027,11 @@ mark {
     -webkit-text-fill-color: var(--lapis);
     text-decoration: underline;
 }
+
+/* leaves room above #after-bio so the sticky/pinned #main-navbar (~60-70px,
+   38px circled icon buttons + padding/border) doesn't cover the target when
+   jumping there via the menu-icon button - harmless when the navbar isn't
+   pinned too, just a bit of extra breathing room above the content */
+#after-bio {
+    scroll-margin-top: 50px;
+}
