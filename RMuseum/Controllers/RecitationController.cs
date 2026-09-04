@@ -179,13 +179,15 @@ namespace RMuseum.Controllers
             if (narration.Result == null)
                 return NotFound();
 
-            Response.GetTypedHeaders().LastModified = narration.Result.UploadDate;//TODO: Add a FileLastUpdated field to narrations to indicate the last time the mp3/xml files have been updated
+            DateTime lastModified = narration.Result.UploadDate;//TODO: Add a FileLastUpdated field to narrations to indicate the last time the mp3/xml files have been updated
+            lastModified = new DateTime(lastModified.Year, lastModified.Month, lastModified.Day, lastModified.Hour, lastModified.Minute, lastModified.Second, lastModified.Kind);
+            Response.GetTypedHeaders().LastModified = lastModified;
             Response.Headers.CacheControl = "public,max-age=86400";
             
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= narration.Result.UploadDate)
+                requestHeaders.IfModifiedSince.Value >= lastModified)
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }
@@ -222,12 +224,14 @@ namespace RMuseum.Controllers
             if (narration.Result == null)
                 return NotFound();
 
-            Response.GetTypedHeaders().LastModified = narration.Result.UploadDate;//TODO: Add a FileLastUpdated field to narrations to indicate the last time the mp3/xml files have been updated
+            DateTime lastModified = narration.Result.UploadDate;//TODO: Add a FileLastUpdated field to narrations to indicate the last time the mp3/xml files have been updated
+            lastModified = new DateTime(lastModified.Year, lastModified.Month, lastModified.Day, lastModified.Hour, lastModified.Minute, lastModified.Second, lastModified.Kind);
+            Response.GetTypedHeaders().LastModified = lastModified;
             Response.Headers.CacheControl = "public,max-age=86400";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= narration.Result.UploadDate)
+                requestHeaders.IfModifiedSince.Value >= lastModified)
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }
@@ -259,12 +263,14 @@ namespace RMuseum.Controllers
             if (narration.Result == null)
                 return NotFound();
 
-            Response.GetTypedHeaders().LastModified = narration.Result.UploadDate;//TODO: Add a FileLastUpdated field to narrations to indicate the last time the mp3/xml files have been updated
+            DateTime lastModified = narration.Result.UploadDate;//TODO: Add a FileLastUpdated field to narrations to indicate the last time the mp3/xml files have been updated
+            lastModified = new DateTime(lastModified.Year, lastModified.Month, lastModified.Day, lastModified.Hour, lastModified.Minute, lastModified.Second, lastModified.Kind);
+            Response.GetTypedHeaders().LastModified = lastModified;
             Response.Headers.CacheControl = "public,max-age=86400";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= narration.Result.UploadDate)
+                requestHeaders.IfModifiedSince.Value >= lastModified)
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }

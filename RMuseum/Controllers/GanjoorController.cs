@@ -323,6 +323,7 @@ namespace RMuseum.Controllers
                     return NotFound();
 
                 lastModified = img.Result.LastModified;
+                lastModified = new DateTime(lastModified.Year, lastModified.Month, lastModified.Day, lastModified.Hour, lastModified.Minute, lastModified.Second, lastModified.Kind);
 
 
 

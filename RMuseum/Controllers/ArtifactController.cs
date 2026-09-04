@@ -31,6 +31,17 @@ namespace RMuseum.Controllers
     public class ArtifactController : Controller
     {
         /// <summary>
+        /// HTTP dates only have one-second precision - truncate before using a value for
+        /// Last-Modified/If-Modified-Since comparisons, or a DB value with sub-second precision
+        /// would always fail the >= comparison against a client's necessarily-truncated header
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        private static DateTime TruncateToSeconds(DateTime dt)
+        {
+            return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, dt.Kind);
+        }
+        /// <summary>
         /// gets specified publish artifact item info (including images + attributes)
         /// </summary>
         /// <param name="artifactUrl"></param>
@@ -51,12 +62,12 @@ namespace RMuseum.Controllers
             if (itemInfo.Result == null)
                 return NotFound();
 
-            Response.GetTypedHeaders().LastModified = itemInfo.Result.Item.LastModified;
+            Response.GetTypedHeaders().LastModified = TruncateToSeconds(itemInfo.Result.Item.LastModified);
             Response.Headers.CacheControl = "public,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= itemInfo.Result.Item.LastModified)
+                requestHeaders.IfModifiedSince.Value >= TruncateToSeconds(itemInfo.Result.Item.LastModified))
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }
@@ -92,12 +103,12 @@ namespace RMuseum.Controllers
             if (itemsInfo.Result.Items.Count() > 0)
             {
                 DateTime lastModification = itemsInfo.Result.Items.Max(i => i.LastModified);
-                Response.GetTypedHeaders().LastModified = lastModification;
+                Response.GetTypedHeaders().LastModified = TruncateToSeconds(lastModification);
                 Response.Headers.CacheControl = "public,max-age=300";
 
                 var requestHeaders = Request.GetTypedHeaders();
                 if (requestHeaders.IfModifiedSince.HasValue &&
-                    requestHeaders.IfModifiedSince.Value >= lastModification)
+                    requestHeaders.IfModifiedSince.Value >= TruncateToSeconds(lastModification))
                 {
                     return StatusCode(StatusCodes.Status304NotModified);
                 }
@@ -185,12 +196,12 @@ namespace RMuseum.Controllers
             if (itemsInfo.Result.Items.Count() > 0)
             {
                 DateTime lastModification = itemsInfo.Result.Items.Max(i => i.LastModified);
-                Response.GetTypedHeaders().LastModified = lastModification;
+                Response.GetTypedHeaders().LastModified = TruncateToSeconds(lastModification);
                 Response.Headers.CacheControl = "private,max-age=300";
 
                 var requestHeaders = Request.GetTypedHeaders();
                 if (requestHeaders.IfModifiedSince.HasValue &&
-                    requestHeaders.IfModifiedSince.Value >= lastModification)
+                    requestHeaders.IfModifiedSince.Value >= TruncateToSeconds(lastModification))
                 {
                     return StatusCode(StatusCodes.Status304NotModified);
                 }
@@ -217,12 +228,12 @@ namespace RMuseum.Controllers
             if (itemsInfo.Result.Length > 0)
             {
                 DateTime lastModification = itemsInfo.Result.Max(i => i.LastModified);
-                Response.GetTypedHeaders().LastModified = lastModification;
+                Response.GetTypedHeaders().LastModified = TruncateToSeconds(lastModification);
                 Response.Headers.CacheControl = "public,max-age=300";
 
                 var requestHeaders = Request.GetTypedHeaders();
                 if (requestHeaders.IfModifiedSince.HasValue &&
-                    requestHeaders.IfModifiedSince.Value >= lastModification)
+                    requestHeaders.IfModifiedSince.Value >= TruncateToSeconds(lastModification))
                 {
                     return StatusCode(StatusCodes.Status304NotModified);
                 }
@@ -259,12 +270,12 @@ namespace RMuseum.Controllers
             }
 
 
-            Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
+            Response.GetTypedHeaders().LastModified = TruncateToSeconds(itemInfo.Result.LastModified);
             Response.Headers.CacheControl = "public,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= itemInfo.Result.LastModified)
+                requestHeaders.IfModifiedSince.Value >= TruncateToSeconds(itemInfo.Result.LastModified))
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }
@@ -300,12 +311,12 @@ namespace RMuseum.Controllers
             }
 
 
-            Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
+            Response.GetTypedHeaders().LastModified = TruncateToSeconds(itemInfo.Result.LastModified);
             Response.Headers.CacheControl = "public,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= itemInfo.Result.LastModified)
+                requestHeaders.IfModifiedSince.Value >= TruncateToSeconds(itemInfo.Result.LastModified))
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }
@@ -402,12 +413,12 @@ namespace RMuseum.Controllers
                 _memoryCache.Set(cacheKey, itemInfo, TimeSpan.FromHours(1));
             }
 
-            Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
+            Response.GetTypedHeaders().LastModified = TruncateToSeconds(itemInfo.Result.LastModified);
             Response.Headers.CacheControl = "public,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= itemInfo.Result.LastModified)
+                requestHeaders.IfModifiedSince.Value >= TruncateToSeconds(itemInfo.Result.LastModified))
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }
@@ -464,12 +475,12 @@ namespace RMuseum.Controllers
             if (itemInfo.Result == null)
                 return NotFound();
 
-            Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
+            Response.GetTypedHeaders().LastModified = TruncateToSeconds(itemInfo.Result.LastModified);
             Response.Headers.CacheControl = "private,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= itemInfo.Result.LastModified)
+                requestHeaders.IfModifiedSince.Value >= TruncateToSeconds(itemInfo.Result.LastModified))
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }
@@ -528,12 +539,12 @@ namespace RMuseum.Controllers
             if (itemInfo.Result == null)
                 return NotFound();
 
-            Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
+            Response.GetTypedHeaders().LastModified = TruncateToSeconds(itemInfo.Result.LastModified);
             Response.Headers.CacheControl = "private,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= itemInfo.Result.LastModified)
+                requestHeaders.IfModifiedSince.Value >= TruncateToSeconds(itemInfo.Result.LastModified))
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }
@@ -592,12 +603,12 @@ namespace RMuseum.Controllers
             if (itemInfo.Result == null)
                 return NotFound();
 
-            Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
+            Response.GetTypedHeaders().LastModified = TruncateToSeconds(itemInfo.Result.LastModified);
             Response.Headers.CacheControl = "private,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= itemInfo.Result.LastModified)
+                requestHeaders.IfModifiedSince.Value >= TruncateToSeconds(itemInfo.Result.LastModified))
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }
@@ -723,12 +734,12 @@ namespace RMuseum.Controllers
             }
 
             DateTime lastModification = lastModified.Result;
-            Response.GetTypedHeaders().LastModified = lastModification;
+            Response.GetTypedHeaders().LastModified = TruncateToSeconds(lastModification);
             Response.Headers.CacheControl = "public,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= lastModification)
+                requestHeaders.IfModifiedSince.Value >= TruncateToSeconds(lastModification))
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }
@@ -1161,12 +1172,12 @@ namespace RMuseum.Controllers
             if (itemInfo.Result == null)
                 return NotFound();
 
-            Response.GetTypedHeaders().LastModified = itemInfo.Result.Item.LastModified;
+            Response.GetTypedHeaders().LastModified = TruncateToSeconds(itemInfo.Result.Item.LastModified);
             Response.Headers.CacheControl = "private,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
-                requestHeaders.IfModifiedSince.Value >= itemInfo.Result.Item.LastModified)
+                requestHeaders.IfModifiedSince.Value >= TruncateToSeconds(itemInfo.Result.Item.LastModified))
             {
                 return StatusCode(StatusCodes.Status304NotModified);
             }

@@ -41,6 +41,15 @@
             <param name="imageFileService"></param>
             <param name="captchaService"></param>
         </member>
+        <member name="M:RMuseum.Controllers.ArtifactController.TruncateToSeconds(System.DateTime)">
+            <summary>
+            HTTP dates only have one-second precision - truncate before using a value for
+            Last-Modified/If-Modified-Since comparisons, or a DB value with sub-second precision
+            would always fail the >= comparison against a client's necessarily-truncated header
+            </summary>
+            <param name="dt"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.ArtifactController.GetArtifactItemByFrienlyUrl(System.String,System.String)">
             <summary>
             gets specified publish artifact item info (including images + attributes)
@@ -20761,11 +20770,25 @@
             <param name="options"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.PreparePlainText(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse})">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExtractSearchableTitlePart(System.String)">
+            <summary>
+            extracts the searchable part of a poem title, discarding pure boilerplate like
+            "غزل شمارهٔ ۱" or "بخش ۴۷" which carries no information beyond the ordinal number,
+            while keeping either the whole title (if it has no number at all, e.g. "طهمورث")
+            or just the descriptive part after the number (e.g. "بخش ۴۷ - تشبیه کردن قرآن..."
+            keeps "تشبیه کردن قرآن...") - returns "" when there is nothing worth indexing
+            </summary>
+            <param name="title"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.PreparePlainText(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse},System.String)">
             <summary>
             make plain text
             </summary>
             <param name="verses"></param>
+            <param name="title">poem/section title - its searchable part (if any) is included so
+            titles like "بخش ۴۷ - تشبیه کردن ..." are findable through search, while pure
+            boilerplate like "غزل شمارهٔ ۱" is silently skipped</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.RegerneratePoemsPlainText(System.Int32)">
