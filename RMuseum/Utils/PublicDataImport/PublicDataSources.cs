@@ -42,7 +42,7 @@ namespace RMuseum.Utils.PublicDataImport
     }
 
     /// <summary>
-    /// Fetches over HTTP — point <paramref name="baseUrl"/> at either the jsDelivr CDN URL
+    /// Fetches over HTTP — point <c>baseUrl</c> at either the jsDelivr CDN URL
     /// (https://cdn.jsdelivr.net/gh/ORG/REPO@main/) or raw.githubusercontent.com. A missing file
     /// (404) is treated the same as "doesn't exist", not an error.
     /// </summary>
