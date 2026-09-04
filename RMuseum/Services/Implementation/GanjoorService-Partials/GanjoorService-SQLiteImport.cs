@@ -437,7 +437,7 @@ namespace RMuseum.Services.Implementation
                         continue;
                     }
 
-                    dbPoem.PlainText = PreparePlainText(poemVerses);
+                    dbPoem.PlainText = PreparePlainText(poemVerses, dbPoem.Title);
                     dbPoem.HtmlText = PrepareHtmlText(poemVerses);
 
                     context.GanjoorPoems.Add(dbPoem);

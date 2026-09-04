@@ -527,7 +527,7 @@ namespace RMuseum.Services.Implementation
                                                             context.GanjoorVerses.UpdateRange(poemVerses);
                                                         }
 
-                                                        dbPoem.PlainText = PreparePlainText(poemVerses);
+                                                        dbPoem.PlainText = PreparePlainText(poemVerses, dbPoem.Title);
                                                         dbPoem.HtmlText = PrepareHtmlText(poemVerses);
                                                         dbPage.HtmlText = dbPoem.HtmlText;
                                                         dbPage.Title = dbPoem.Title;

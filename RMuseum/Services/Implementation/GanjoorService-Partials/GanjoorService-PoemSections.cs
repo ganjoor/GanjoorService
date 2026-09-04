@@ -944,7 +944,7 @@ namespace RMuseum.Services.Implementation
                     var dbPoem = await _context.GanjoorPoems.Include(p => p.GanjoorMetre).Where(p => p.Id == poemId).SingleAsync();
                     var dbPage = await _context.GanjoorPages.Where(p => p.Id == poemId).SingleAsync();
                     dbPoem.HtmlText = PrepareHtmlText(poemVerses);
-                    dbPoem.PlainText = PreparePlainText(poemVerses);
+                    dbPoem.PlainText = PreparePlainText(poemVerses, dbPoem.Title);
                     dbPage.HtmlText = dbPoem.HtmlText;
                     _context.Update(dbPoem);
                     _context.Update(dbPage);

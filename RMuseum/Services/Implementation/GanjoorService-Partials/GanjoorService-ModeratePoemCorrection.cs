@@ -185,7 +185,7 @@ namespace RMuseum.Services.Implementation
                 {
                     _context.UpdateRange(modifiedVerses);
                     dbPoem.HtmlText = PrepareHtmlText(poemVerses);
-                    dbPoem.PlainText = PreparePlainText(poemVerses);
+                    dbPoem.PlainText = PreparePlainText(poemVerses, dbPoem.Title);
                     dbPage.HtmlText = dbPoem.HtmlText;
                     updatePoem = true;
                 }
@@ -313,7 +313,7 @@ namespace RMuseum.Services.Implementation
                     }
                     _context.UpdateRange(undeletedPoemVerss);
                     dbPoem.HtmlText = PrepareHtmlText(undeletedPoemVerss);
-                    dbPoem.PlainText = PreparePlainText(undeletedPoemVerss);
+                    dbPoem.PlainText = PreparePlainText(undeletedPoemVerss, dbPoem.Title);
                     dbPage.HtmlText = dbPoem.HtmlText;
                     updatePoem = true;
                     poemVerses = undeletedPoemVerss;

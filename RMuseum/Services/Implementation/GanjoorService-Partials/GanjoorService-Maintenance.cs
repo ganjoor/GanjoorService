@@ -188,14 +188,46 @@ namespace RMuseum.Services.Implementation
         }
 
 
+        private static readonly Regex _titleNumberRegex = new Regex(@"[۰-۹٠-٩0-9]+", RegexOptions.Compiled);
+        private static readonly char[] _titleTrimChars = new[] { ' ', '\t', '\r', '\n', '\u200c', '\u200f', '\u200e', '-', '–', '—', ':', '،', ',', '.', '(', ')', '[', ']', '"', '\'', '«', '»' };
+
+        /// <summary>
+        /// extracts the searchable part of a poem title, discarding pure boilerplate like
+        /// "غزل شمارهٔ ۱" or "بخش ۴۷" which carries no information beyond the ordinal number,
+        /// while keeping either the whole title (if it has no number at all, e.g. "طهمورث")
+        /// or just the descriptive part after the number (e.g. "بخش ۴۷ - تشبیه کردن قرآن..."
+        /// keeps "تشبیه کردن قرآن...") - returns "" when there is nothing worth indexing
+        /// </summary>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        private static string ExtractSearchableTitlePart(string title)
+        {
+            if (string.IsNullOrWhiteSpace(title))
+                return "";
+
+            Match m = _titleNumberRegex.Match(title);
+            if (!m.Success)
+                return title.Trim(_titleTrimChars);
+
+            return title.Substring(m.Index + m.Length).Trim(_titleTrimChars);
+        }
+
         /// <summary>
         /// make plain text
         /// </summary>
         /// <param name="verses"></param>
+        /// <param name="title">poem/section title - its searchable part (if any) is included so
+        /// titles like "بخش ۴۷ - تشبیه کردن ..." are findable through search, while pure
+        /// boilerplate like "غزل شمارهٔ ۱" is silently skipped</param>
         /// <returns></returns>
-        private static string PreparePlainText(List<GanjoorVerse> verses)
+        private static string PreparePlainText(List<GanjoorVerse> verses, string title = null)
         {
             string plainText = "";
+            string searchableTitle = ExtractSearchableTitlePart(title);
+            if (!string.IsNullOrEmpty(searchableTitle))
+            {
+                plainText += $"{LanguageUtils.MakeTextSearchable(searchableTitle)}{Environment.NewLine}";
+            }
             foreach (GanjoorVerse verse in verses)
             {
                 plainText += $"{LanguageUtils.MakeTextSearchable(verse.Text)}{Environment.NewLine}";//replace zwnj with space
@@ -238,7 +270,7 @@ namespace RMuseum.Services.Implementation
 
                             var verses = await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync();
 
-                            poem.PlainText = PreparePlainText(verses);
+                            poem.PlainText = PreparePlainText(verses, poem.Title);
                             poem.HtmlText = PrepareHtmlText(verses);
                         }
 
