@@ -52,6 +52,7 @@ namespace RMuseum.Controllers
                 return NotFound();
 
             Response.GetTypedHeaders().LastModified = itemInfo.Result.Item.LastModified;
+            Response.Headers.CacheControl = "public,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
@@ -92,6 +93,7 @@ namespace RMuseum.Controllers
             {
                 DateTime lastModification = itemsInfo.Result.Items.Max(i => i.LastModified);
                 Response.GetTypedHeaders().LastModified = lastModification;
+                Response.Headers.CacheControl = "public,max-age=300";
 
                 var requestHeaders = Request.GetTypedHeaders();
                 if (requestHeaders.IfModifiedSince.HasValue &&
@@ -184,6 +186,7 @@ namespace RMuseum.Controllers
             {
                 DateTime lastModification = itemsInfo.Result.Items.Max(i => i.LastModified);
                 Response.GetTypedHeaders().LastModified = lastModification;
+                Response.Headers.CacheControl = "private,max-age=300";
 
                 var requestHeaders = Request.GetTypedHeaders();
                 if (requestHeaders.IfModifiedSince.HasValue &&
@@ -215,6 +218,7 @@ namespace RMuseum.Controllers
             {
                 DateTime lastModification = itemsInfo.Result.Max(i => i.LastModified);
                 Response.GetTypedHeaders().LastModified = lastModification;
+                Response.Headers.CacheControl = "public,max-age=300";
 
                 var requestHeaders = Request.GetTypedHeaders();
                 if (requestHeaders.IfModifiedSince.HasValue &&
@@ -256,6 +260,7 @@ namespace RMuseum.Controllers
 
 
             Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
+            Response.Headers.CacheControl = "public,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
@@ -296,6 +301,7 @@ namespace RMuseum.Controllers
 
 
             Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
+            Response.Headers.CacheControl = "public,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
@@ -397,6 +403,7 @@ namespace RMuseum.Controllers
             }
 
             Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
+            Response.Headers.CacheControl = "public,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
@@ -458,6 +465,7 @@ namespace RMuseum.Controllers
                 return NotFound();
 
             Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
+            Response.Headers.CacheControl = "private,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
@@ -521,6 +529,7 @@ namespace RMuseum.Controllers
                 return NotFound();
 
             Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
+            Response.Headers.CacheControl = "private,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
@@ -584,6 +593,7 @@ namespace RMuseum.Controllers
                 return NotFound();
 
             Response.GetTypedHeaders().LastModified = itemInfo.Result.LastModified;
+            Response.Headers.CacheControl = "private,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
@@ -714,6 +724,7 @@ namespace RMuseum.Controllers
 
             DateTime lastModification = lastModified.Result;
             Response.GetTypedHeaders().LastModified = lastModification;
+            Response.Headers.CacheControl = "public,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
@@ -1151,6 +1162,7 @@ namespace RMuseum.Controllers
                 return NotFound();
 
             Response.GetTypedHeaders().LastModified = itemInfo.Result.Item.LastModified;
+            Response.Headers.CacheControl = "private,max-age=300";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&

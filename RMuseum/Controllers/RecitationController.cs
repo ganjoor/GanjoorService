@@ -180,6 +180,7 @@ namespace RMuseum.Controllers
                 return NotFound();
 
             Response.GetTypedHeaders().LastModified = narration.Result.UploadDate;//TODO: Add a FileLastUpdated field to narrations to indicate the last time the mp3/xml files have been updated
+            Response.Headers.CacheControl = "public,max-age=86400";
             
 
             var requestHeaders = Request.GetTypedHeaders();
@@ -222,6 +223,7 @@ namespace RMuseum.Controllers
                 return NotFound();
 
             Response.GetTypedHeaders().LastModified = narration.Result.UploadDate;//TODO: Add a FileLastUpdated field to narrations to indicate the last time the mp3/xml files have been updated
+            Response.Headers.CacheControl = "public,max-age=86400";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
@@ -258,6 +260,7 @@ namespace RMuseum.Controllers
                 return NotFound();
 
             Response.GetTypedHeaders().LastModified = narration.Result.UploadDate;//TODO: Add a FileLastUpdated field to narrations to indicate the last time the mp3/xml files have been updated
+            Response.Headers.CacheControl = "public,max-age=86400";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
