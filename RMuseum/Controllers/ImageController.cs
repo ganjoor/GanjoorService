@@ -52,6 +52,7 @@ namespace RMuseum.Controllers
                 
 
             Response.GetTypedHeaders().LastModified = img.Result.LastModified;
+            Response.Headers.CacheControl = "public,max-age=86400";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&

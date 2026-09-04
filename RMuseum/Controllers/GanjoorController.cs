@@ -339,6 +339,7 @@ namespace RMuseum.Controllers
             }
 
             Response.GetTypedHeaders().LastModified = lastModified;
+            Response.Headers.CacheControl = nocache ? "no-cache" : "public,max-age=86400";
 
             var requestHeaders = Request.GetTypedHeaders();
             if (requestHeaders.IfModifiedSince.HasValue &&
@@ -386,10 +387,15 @@ namespace RMuseum.Controllers
 
                 if (res.Result)
                 {
-                    var cacheKey = $"poet/image/{poet.Result.Cat.UrlSlug}.png";
+                    var cacheKey = $"poet/image/{poet.Result.Cat.UrlSlug}.gif";
+                    var cacheKeyForLastModified = $"{cacheKey}/lastModified";
                     if (_memoryCache.TryGetValue(cacheKey, out string imagePath))
                     {
                         _memoryCache.Remove(cacheKey);
+                    }
+                    if (_memoryCache.TryGetValue(cacheKeyForLastModified, out DateTime cachedLastModified))
+                    {
+                        _memoryCache.Remove(cacheKeyForLastModified);
                     }
                 }
 
