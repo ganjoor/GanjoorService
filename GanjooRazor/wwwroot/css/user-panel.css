@@ -841,3 +841,11 @@ body.up-modal-open {
     margin-top: var(--up-space-1);
     padding-right: var(--up-space-3);
 }
+
+/* ---------- marked-for-delete verse text (Editor.cshtml) ---------- */
+
+.up-editable--marked-for-delete {
+    text-decoration: line-through;
+    color: var(--up-danger-dark);
+    opacity: 0.75;
+}

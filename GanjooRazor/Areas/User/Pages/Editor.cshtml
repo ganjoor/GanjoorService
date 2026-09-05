@@ -63,6 +63,43 @@
         upToast('انجام شد.');
     }
 
+    function tarkib7VersePositions(verseCount) {
+        var index = 1;
+        for (var i = 1; i <= verseCount; i++) {
+            var newVersePosition = 'versepostion-' + i.toString();
+            document.getElementById(newVersePosition).value = index == 1 || index == 3 || index == 5 ? 'Right' : index == 2 || index == 4 || index == 6 ? 'Left' : 'CenteredVerse1';
+            index++;
+            if(index == 8){
+                index = 1;
+            }
+        }
+        upToast('انجام شد.');
+    }
+
+    function tarkib8VersePositions(verseCount) {
+        var index = 1;
+        for (var i = 1; i <= verseCount; i++) {
+            var newVersePosition = 'versepostion-' + i.toString();
+            document.getElementById(newVersePosition).value = index == 1 || index == 3 || index == 5 ? 'Right' : index == 2 || index == 4 || index == 6 ? 'Left' : index == 7 ? 'CenteredVerse1' : 'CenteredVerse2';
+            index++;
+            if(index == 9){
+                index = 1;
+            }
+        }
+        upToast('انجام شد.');
+    }
+
+    function toggleMarkedForDelete(vOrder) {
+        var checkbox = document.getElementById('marked-for-delete-' + vOrder.toString());
+        var verseText = document.getElementById('id-' + vOrder.toString());
+        if (!checkbox || !verseText) return;
+        if (checkbox.checked) {
+            verseText.classList.add('up-editable--marked-for-delete');
+        } else {
+            verseText.classList.remove('up-editable--marked-for-delete');
+        }
+    }
+
 
 
 
@@ -773,7 +810,7 @@ else
     <div class="up-btn-group">
         @if (Model.CanAssignRhythms)
         {
-            <a role="button" href="#rhythms-section" class="up-btn up-btn--sm up-btn--ghost">🎵 بخش وزن</a>
+            <a role="button" href="#rhythms-section" class="up-btn up-btn--sm up-btn--ghost">🎵 بخش وزن، قافیه و قالب شعری</a>
         }
         else
         {
@@ -971,14 +1008,19 @@ else
                 <div class="up-check-row">
                     @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && v.MarkForDelete).Any())
                     {
-                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" checked />
+                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" onchange="toggleMarkedForDelete(@verse.VOrder)" checked />
                     }
                     else
                     {
-                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" />
+                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" onchange="toggleMarkedForDelete(@verse.VOrder)" />
                     }
                     <label for="marked-for-delete-@verse.VOrder">باید حذف شود</label>
                 </div>
+                <script>
+                    $(document).ready(function () {
+                        toggleMarkedForDelete(@verse.VOrder);
+                    });
+                </script>
 
                 <div class="up-btn-group">
                     <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">⬇ رفتن به ذخیره</a>
@@ -1392,6 +1434,8 @@ else
         <a role="button" onclick="tarkib4VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">4️⃣ مربعی</a>
         <a role="button" onclick="tarkib5VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">5️⃣ مخمسی</a>
         <a role="button" onclick="tarkib6VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">6️⃣ مسدسی</a>
+        <a role="button" onclick="tarkib7VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">7️⃣ مسبعی</a>
+        <a role="button" onclick="tarkib8VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">8️⃣ مثمنی</a>
     </div>
 
     <p class="up-btn-group-label">پیمایش</p>
