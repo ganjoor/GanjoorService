@@ -63,43 +63,6 @@
         upToast('انجام شد.');
     }
 
-    function tarkib7VersePositions(verseCount) {
-        var index = 1;
-        for (var i = 1; i <= verseCount; i++) {
-            var newVersePosition = 'versepostion-' + i.toString();
-            document.getElementById(newVersePosition).value = index == 1 || index == 3 || index == 5 ? 'Right' : index == 2 || index == 4 || index == 6 ? 'Left' : 'CenteredVerse1';
-            index++;
-            if(index == 8){
-                index = 1;
-            }
-        }
-        upToast('انجام شد.');
-    }
-
-    function tarkib8VersePositions(verseCount) {
-        var index = 1;
-        for (var i = 1; i <= verseCount; i++) {
-            var newVersePosition = 'versepostion-' + i.toString();
-            document.getElementById(newVersePosition).value = index == 1 || index == 3 || index == 5 ? 'Right' : index == 2 || index == 4 || index == 6 ? 'Left' : index == 7 ? 'CenteredVerse1' : 'CenteredVerse2';
-            index++;
-            if(index == 9){
-                index = 1;
-            }
-        }
-        upToast('انجام شد.');
-    }
-
-    function toggleMarkedForDelete(vOrder) {
-        var checkbox = document.getElementById('marked-for-delete-' + vOrder.toString());
-        var verseText = document.getElementById('id-' + vOrder.toString());
-        if (!checkbox || !verseText) return;
-        if (checkbox.checked) {
-            verseText.classList.add('up-editable--marked-for-delete');
-        } else {
-            verseText.classList.remove('up-editable--marked-for-delete');
-        }
-    }
-
 
 
 
@@ -493,8 +456,19 @@ else
 {
 
     <div class="up-alert up-alert--info">
-        <p>لطفاً در ویرایش متن به <a href="https://blog.ganjoor.net/1400/05/23/notes-for-suggesting-corrections/" target="_blank">این نکات</a> توجه فرمایید.</p>
-        <p class="up-mt-0"><span class="red-color">جدید:</span> در مورد رسم‌الخط پیشنهادی گنجور <a href="https://blog.ganjoor.net/1402/12/11/dastoor-e-khat/" target="_blank">اینجا</a> را ببینید.</p>
+        <p><strong>نکات مهم در ویرایش متن</strong></p>
+        <ul>
+            <li><strong>ملاک، سندیت است</strong>: تصحیحات باید با منبع کاغذی گنجور برای آن شاعر مطابقت داشته باشد، نه با آنچه معروف‌تر، خوش‌آهنگ‌تر یا منطقی‌تر به نظر می‌رسد.</li>
+            <li><strong>یای کوتاه روی هٔ ناملفوظ</strong> (مثل «نامهٔ»): با میان‌بر Shift+N به‌صورت «هٔ» تایپ شود؛ نه «ه‌ی» و نه «ۀ». (استثنا: اگر یای روی «ه» واقعاً ساکن تلفظ می‌شود، به‌صورت یای کامل با سکون نوشته شود.)</li>
+            <li><strong>های مکسور</strong> (مثل «خانهٔ»): همین‌طور «خانهٔ» تایپ شود، نه «خانه‌ی».</li>
+            <li><strong>سرهم/جدا‌نویسی</strong>: اول به عرف رایج نگاه کنید؛ اگر معنای ترکیب با معنای دو کلمهٔ جدا فرق دارد، سرهم بنویسید. سرهم‌نویسی نادرست جستجوپذیری متن را خراب می‌کند.</li>
+            <li><strong>«که» چسبیده به «آن/این»</strong>: «کآن» و «کاین» بنویسید (نه «که‌آن»/«که‌این»، نه «کان»/«کین»). برای «و»: «وآن»/«وین» درست است، «واین» نه. مگر زمانی که به تناسب وزن واقعاً «که این»، «که آن» و ... خوانده می‌شوند.</li>
+            <li><strong>رسم‌الخط‌های کهن یا مختص یک نسخه</strong> (مثل «کی» به‌جای «که»، «سد» به‌جای «صد»): در صورت قطعیت کلمهٔ متداول، به شکل رایج امروزی برگردانده شود.</li>
+            <li><strong>علائم سجاوندی را کم به‌کار ببرید</strong>: به‌ویژه در شعر؛ نگذارید علامت‌گذاری یک خوانش را به خوانش‌های دیگرِ محتمل ترجیح دهد.</li>
+            <li><strong>فاصله‌گذاری علائم</strong>: قبل از علامت فاصله نگذارید، بعد از آن فاصله بگذارید («کدام دل؟» نه «کدام دل ؟»).</li>
+            <li><strong>جایگاه قافیه استثناست</strong>: اگر رعایت رسم‌الخط در قافیه به یکدستی قوافی شعر لطمه بزند، از آن صرف‌نظر کنید.</li>
+            <li><strong>کلمات فارسی را بی‌دلیل حرکت‌گذاری نکنید</strong>: تنها کلماتی را حرکت‌گذاری کنید که ممکن است اشتباه خوانده شوند.</li>
+        </ul>
     </div>
     <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="up-btn up-btn--ghost">🔗 @Model.PageInformation.FullTitle</a></p>
 
@@ -799,7 +773,7 @@ else
     <div class="up-btn-group">
         @if (Model.CanAssignRhythms)
         {
-            <a role="button" href="#rhythms-section" class="up-btn up-btn--sm up-btn--ghost">🎵 بخش وزن، قافیه و قالب شعری</a>
+            <a role="button" href="#rhythms-section" class="up-btn up-btn--sm up-btn--ghost">🎵 بخش وزن</a>
         }
         else
         {
@@ -997,19 +971,14 @@ else
                 <div class="up-check-row">
                     @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == verse.VOrder && v.MarkForDelete).Any())
                     {
-                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" onchange="toggleMarkedForDelete(@verse.VOrder)" checked />
+                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" checked />
                     }
                     else
                     {
-                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" onchange="toggleMarkedForDelete(@verse.VOrder)" />
+                        <input type="checkbox" name="marked-for-delete-@verse.VOrder" id="marked-for-delete-@verse.VOrder" />
                     }
                     <label for="marked-for-delete-@verse.VOrder">باید حذف شود</label>
                 </div>
-                <script>
-                    $(document).ready(function () {
-                        toggleMarkedForDelete(@verse.VOrder);
-                    });
-                </script>
 
                 <div class="up-btn-group">
                     <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost">⬇ رفتن به ذخیره</a>
@@ -1423,8 +1392,6 @@ else
         <a role="button" onclick="tarkib4VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">4️⃣ مربعی</a>
         <a role="button" onclick="tarkib5VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">5️⃣ مخمسی</a>
         <a role="button" onclick="tarkib6VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">6️⃣ مسدسی</a>
-        <a role="button" onclick="tarkib7VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">7️⃣ مسبعی</a>
-        <a role="button" onclick="tarkib8VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">8️⃣ مثمنی</a>
     </div>
 
     <p class="up-btn-group-label">پیمایش</p>

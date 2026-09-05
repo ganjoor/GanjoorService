@@ -1,4 +1,4 @@
-/*
+﻿/*
     User area (پیشخان کاربر) design foundation.
     Scoped, additive layer on top of p8.css/site.css — nothing here overrides
     the public site's look. Tokens are pulled from p8.css's existing palette
@@ -840,12 +840,4 @@ body.up-modal-open {
     gap: var(--up-space-3);
     margin-top: var(--up-space-1);
     padding-right: var(--up-space-3);
-}
-
-/* ---------- marked-for-delete verse text (Editor.cshtml) ---------- */
-
-.up-editable--marked-for-delete {
-    text-decoration: line-through;
-    color: var(--up-danger-dark);
-    opacity: 0.75;
 }
