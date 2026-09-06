@@ -24,6 +24,19 @@
         upToast('انجام شد.');
     }
 
+    function tarkib3VersePositions(verseCount) {
+        var index = 1;
+        for (var i = 1; i <= verseCount; i++) {
+            var newVersePosition = 'versepostion-' + i.toString();
+            document.getElementById(newVersePosition).value = index == 1 ? 'Right' : index == 2 ? 'Left' : 'CenteredVerse1';
+            index++;
+            if(index == 4){
+                index = 1;
+            }
+        }
+        upToast('انجام شد.');
+    }
+
     function tarkib4VersePositions(verseCount) {
         var index = 1;
         for (var i = 1; i <= verseCount; i++) {
@@ -1431,6 +1444,7 @@ else
     <p class="up-btn-group-label">چینش مصرع‌ها</p>
     <div class="up-btn-group">
         <a role="button" onclick="resetVersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">🔄 پیش‌فرض</a>
+        <a role="button" onclick="tarkib3VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">3️⃣ مثلثی</a>
         <a role="button" onclick="tarkib4VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">4️⃣ مربعی</a>
         <a role="button" onclick="tarkib5VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">5️⃣ مخمسی</a>
         <a role="button" onclick="tarkib6VersePositions(@Model.PageInformation.Poem.Verses.Length)" class="up-btn up-btn--ghost">6️⃣ مسدسی</a>
