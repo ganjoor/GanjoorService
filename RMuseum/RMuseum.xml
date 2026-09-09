@@ -2644,11 +2644,6 @@
             <param name="correction"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.SemanticSearch(RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchRequestDto)">
-            <summary>
-            semantic ("find a poem about...") search
-            </summary>
-        </member>
         <member name="P:RMuseum.Controllers.GanjoorController.ReadOnlyMode">
             <summary>
             readonly mode
@@ -2689,7 +2684,7 @@
             Configuration
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.#ctor(RMuseum.Services.IGanjoorService,RSecurityBackend.Services.IAppUserService,Microsoft.AspNetCore.Http.IHttpContextAccessor,RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.Implementation.ISemanticSearchService)">
+        <member name="M:RMuseum.Controllers.GanjoorController.#ctor(RMuseum.Services.IGanjoorService,RSecurityBackend.Services.IAppUserService,Microsoft.AspNetCore.Http.IHttpContextAccessor,RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             constructor
             </summary>
@@ -2699,7 +2694,6 @@
             <param name="imageFileService"></param>
             <param name="memoryCache"></param>
             <param name="configuration"></param>
-            <param name="semanticSearchService"></param>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.GetPoetSuggestedPhotosAsync(System.Int32)">
             <summary>
@@ -3435,6 +3429,24 @@
             constructor
             </summary>
             <param name="roleService"></param>
+        </member>
+        <member name="T:RMuseum.Controllers.SemanticSearchController">
+            <summary>
+            Semantic ("find a poem about...") search — deliberately its own controller, not a method
+            on GanjoorController, after a production incident: GanjoorController's constructor took
+            ISemanticSearchService (indirectly requiring EmbeddingIndex/QueryEmbedder to load
+            successfully), so a resource-loading failure prevented the ENTIRE controller from being
+            constructed — a 503 on every endpoint under /api/ganjoor, not just this feature. Same
+            route prefix as before (api/ganjoor), so the endpoint's URL is unchanged
+            (POST /api/ganjoor/search/semantic) — only which controller class hosts it changed.
+            A future failure in this feature's own dependencies can now only ever affect this one
+            controller/endpoint, never GanjoorController or anything else.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.SemanticSearchController.SemanticSearch(RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchRequestDto)">
+            <summary>
+            semantic ("find a poem about...") search
+            </summary>
         </member>
         <member name="M:RMuseum.Controllers.SiteBannersController.AddSiteBanner">
             <summary>
@@ -23077,15 +23089,22 @@
             <param name="roleManager"></param>       
         </member>
         <member name="T:RMuseum.Services.Implementation.SemanticSearchService">
-            <summary>
-            Deliberately NOT a GanjoorService partial, unlike everything else in this project.
-            EmbeddingIndex (~530MB in memory) and QueryEmbedder (a loaded ONNX model) both need to be
-            true singletons — constructed once at startup, never per-request — while GanjoorService
-            and RMuseumDbContext are scoped per-request throughout this codebase. Injecting a
-            singleton's dependencies into a per-request class (or vice versa) is a real DI lifetime
-            bug, not just an inconsistency, so this stays a separate service registered as a
-            singleton itself (see INTEGRATION.md for the exact registration).
-            </summary>
+             <summary>
+             Deliberately NOT a GanjoorService partial, unlike everything else in this project.
+             EmbeddingIndex (~530MB in memory) and QueryEmbedder (a loaded ONNX model) both need to be
+             true singletons — constructed once at startup, never per-request — while GanjoorService
+             and RMuseumDbContext are scoped per-request throughout this codebase. Injecting a
+             singleton's dependencies into a per-request class (or vice versa) is a real DI lifetime
+             bug, not just an inconsistency, so this stays a separate service registered as a
+             singleton itself (see INTEGRATION.md for the exact registration).
+            
+             Depends on LazySemanticSearchResources rather than EmbeddingIndex/QueryEmbedder directly —
+             deliberately, after a production incident where eager, throwing DI factories for those two
+             meant a load failure (wrong/missing file paths) prevented GanjoorController itself from
+             being constructed, taking down every endpoint under /api/ganjoor with a 503, not just
+             semantic search. This class must never let a resource-loading failure become an unhandled
+             exception that propagates past SearchAsync — see the catch below.
+             </summary>
         </member>
         <member name="T:RMuseum.Services.Implementation.SiteBannersService">
             <summary>
@@ -24449,6 +24468,46 @@
             similarity. queryVector must already be the SAME dimension as this index and, for the
             score to mean what it claims (a true cosine similarity), should already be
             L2-normalized the same way the indexed vectors are — see QueryEmbedder.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Utils.SemanticSearch.LazySemanticSearchResources">
+             <summary>
+             Wraps EmbeddingIndex + QueryEmbedder loading so a failure (missing files, wrong paths,
+             corrupt data) can NEVER take down anything else in the app.
+            
+             The original design registered EmbeddingIndex/QueryEmbedder as singletons whose DI
+             factories called EmbeddingIndex.Load(...)/`new QueryEmbedder(...)` directly — both of
+             which throw on failure. Because GanjoorController's constructor (indirectly, through
+             ISemanticSearchService) depended on them, a load failure meant the controller itself
+             couldn't be constructed — taking down EVERY endpoint under /api/ganjoor, not just semantic
+             search, with a 503. That's exactly what happened in production. This class exists so that
+             can't happen again: the actual load is deferred to first real use (not app/controller
+             construction), attempted at most once, and a failure is caught, logged, and remembered —
+             SearchAsync() then reports "search unavailable" as an ordinary result, not an exception
+             that propagates into breaking anything else.
+            
+             Also worth knowing if this server runs multiple IIS worker processes for the same app
+             pool: each process gets its own instance of this (and everything it loads) — "singleton"
+             only means one instance per process, not per server. See the migration notes for the
+             memory math this implies at scale.
+             </summary>
+        </member>
+        <member name="M:RMuseum.Utils.SemanticSearch.LazySemanticSearchResources.TryGetResources(RMuseum.Utils.SemanticSearch.EmbeddingIndex@,RMuseum.Utils.SemanticSearch.QueryEmbedder@,System.String@)">
+            <summary>
+            Attempts to load the resources on first call (subsequent calls reuse the same result,
+            success or failure — this never retries automatically; a fresh app start is required
+            to try again after a config/file fix, which is the expected deploy-and-restart flow
+            anyway). Returns true and populates both out parameters if available; returns false
+            and populates <paramref name="error"/> otherwise. NEVER THROWS — that guarantee is the
+            entire point of this class.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Utils.SemanticSearch.SemanticSearchUnavailableException">
+            <summary>
+            Thrown by SemanticSearchService when the underlying resources aren't available — the
+            controller catches this specifically and returns HTTP 503 with the message, distinct from
+            a plain 400/500, so a client (or a person checking logs) can tell "this feature isn't
+            configured/loaded right now" apart from "the query itself was bad" or "something crashed".
             </summary>
         </member>
         <member name="T:RMuseum.Utils.SemanticSearch.QueryEmbedder">

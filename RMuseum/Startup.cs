@@ -327,23 +327,14 @@ namespace RMuseum
 
             services.AddOpenAIService();
 
-            services.AddSingleton<EmbeddingIndex>(sp =>
-            {
-                var config = sp.GetRequiredService<IConfiguration>();
-                string dir = config["SemanticSearch:EmbeddingsDirectory"];
-                return EmbeddingIndex.Load(dir);
-            });
-
-            services.AddSingleton<QueryEmbedder>(sp =>
-            {
-                var config = sp.GetRequiredService<IConfiguration>();
-                int dimension = int.Parse(config["SemanticSearch:Dimension"] ?? "1024");
-                return new QueryEmbedder(
-                    config["SemanticSearch:ModelPath"],
-                    config["SemanticSearch:VocabPath"],
-                    config["SemanticSearch:MergesPath"],
-                    dimension);
-            });
+            // See LazySemanticSearchResources.cs: this is deliberately NOT
+            // services.AddSingleton<EmbeddingIndex>(sp => EmbeddingIndex.Load(...)) anymore. That
+            // eager, throwing factory is what caused a production 503 on the whole /api/ganjoor
+            // surface when the configured paths were wrong — GanjoorController's constructor
+            // (via ISemanticSearchService) couldn't be built, so nothing under that route could
+            // run. LazySemanticSearchResources defers the actual load to first real use and
+            // never throws; a failure there disables semantic search only.
+            services.AddSingleton<LazySemanticSearchResources>();
 
             services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
 

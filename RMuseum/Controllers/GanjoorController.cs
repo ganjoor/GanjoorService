@@ -9,7 +9,6 @@ using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Auth.ViewModel;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.PublicExport;
-using RMuseum.Models.Ganjoor.SemanticSearch;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.GanjoorAudio.ViewModels;
 using RMuseum.Models.GanjoorIntegration;
@@ -5023,30 +5022,6 @@ namespace RMuseum.Controllers
         }
 
 
-        /// <summary>
-        /// semantic ("find a poem about...") search
-        /// </summary>
-        [HttpPost("search/semantic")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> SemanticSearch([FromBody] SemanticSearchRequestDto request)
-        {
-            try
-            {
-                var result = await _semanticSearchService.SearchAsync(request.Query, request.TopK);
-                return Ok(result);
-            }
-            catch (ArgumentException exp)
-            {
-                return BadRequest(exp.Message);
-            }
-            catch (Exception exp)
-            {
-                return BadRequest(exp.ToString());
-            }
-        }
-
-
 
 
         /// <summary>
@@ -5117,8 +5092,6 @@ namespace RMuseum.Controllers
         protected IConfiguration Configuration { get; }
 
 
-        protected ISemanticSearchService _semanticSearchService;
-
         /// <summary>
         /// constructor
         /// </summary>
@@ -5128,15 +5101,13 @@ namespace RMuseum.Controllers
         /// <param name="imageFileService"></param>
         /// <param name="memoryCache"></param>
         /// <param name="configuration"></param>
-        /// <param name="semanticSearchService"></param>
         public GanjoorController(
             IGanjoorService ganjoorService,
             IAppUserService appUserService,
             IHttpContextAccessor httpContextAccessor,
             IImageFileService imageFileService,
             IMemoryCache memoryCache,
-            IConfiguration configuration,
-            ISemanticSearchService semanticSearchService
+            IConfiguration configuration
             )
         {
             _ganjoorService = ganjoorService;
@@ -5145,7 +5116,6 @@ namespace RMuseum.Controllers
             _imageFileService = imageFileService;
             _memoryCache = memoryCache;
             Configuration = configuration;
-            _semanticSearchService = semanticSearchService;
         }
     }
 }
