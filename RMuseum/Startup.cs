@@ -21,6 +21,7 @@ using RMuseum.Models.Auth.Memory;
 using RMuseum.Services;
 using RMuseum.Services.Implementation;
 using RMuseum.Services.Implementationa;
+using RMuseum.Utils.SemanticSearch;
 using RSecurityBackend.Authorization;
 using RSecurityBackend.DbContext;
 using RSecurityBackend.Models.Auth.Db;
@@ -325,6 +326,27 @@ namespace RMuseum
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
             services.AddOpenAIService();
+
+            services.AddSingleton<EmbeddingIndex>(sp =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+                string dir = config["SemanticSearch:EmbeddingsDirectory"];
+                return EmbeddingIndex.Load(dir);
+            });
+
+            services.AddSingleton<QueryEmbedder>(sp =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+                int dimension = int.Parse(config["SemanticSearch:Dimension"] ?? "1024");
+                return new QueryEmbedder(
+                    config["SemanticSearch:ModelPath"],
+                    config["SemanticSearch:VocabPath"],
+                    config["SemanticSearch:MergesPath"],
+                    dimension);
+            });
+
+            services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
+
 
         }
 
