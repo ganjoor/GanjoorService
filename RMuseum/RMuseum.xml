@@ -11349,6 +11349,22 @@
             stores nothing but the transliterated text and its order.
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchRequestDto">
+            <summary>
+            "find a poem about..." request
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchRequestDto.TopK">
+            <summary>
+            how many results to return; a sane default is applied server-side if omitted/invalid
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchResultDto.Score">
+            <summary>
+            cosine similarity, 0..1 for these normalized vectors (in practice results cluster in
+            a narrower band - this is a relative ranking signal, not a calibrated probability)
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.UpdatingRelSectsLog">
             <summary>
             Updating related sections logs
@@ -23054,6 +23070,17 @@
             </summary>
             <param name="roleManager"></param>       
         </member>
+        <member name="T:RMuseum.Services.Implementation.SemanticSearchService">
+            <summary>
+            Deliberately NOT a GanjoorService partial, unlike everything else in this project.
+            EmbeddingIndex (~530MB in memory) and QueryEmbedder (a loaded ONNX model) both need to be
+            true singletons — constructed once at startup, never per-request — while GanjoorService
+            and RMuseumDbContext are scoped per-request throughout this codebase. Injecting a
+            singleton's dependencies into a per-request class (or vice versa) is a real DI lifetime
+            bug, not just an inconsistency, so this stays a separate service registered as a
+            singleton itself (see INTEGRATION.md for the exact registration).
+            </summary>
+        </member>
         <member name="T:RMuseum.Services.Implementation.SiteBannersService">
             <summary>
             ganjoor.net banners service
@@ -24384,6 +24411,84 @@
             Fetches over HTTP — point <c>baseUrl</c> at either the jsDelivr CDN URL
             (https://cdn.jsdelivr.net/gh/ORG/REPO@main/) or raw.githubusercontent.com. A missing file
             (404) is treated the same as "doesn't exist", not an error.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Utils.SemanticSearch.EmbeddingIndex">
+             <summary>
+             Loads the published embeddings.f32 (raw N x D float32, row-major, sorted by poem id
+             ascending per the export's own writer) + embeddings-index.json into memory once, and does
+             brute-force cosine similarity search against them.
+            
+             Brute force, not a vector database, is a deliberate choice at this scale — ~130k poems x
+             1024 dimensions is ~530MB, comfortably held in RAM, and a full linear scan per query is
+             fast enough (low tens of milliseconds) that a dedicated vector index/database would be
+             solving a problem this corpus doesn't actually have. Revisit only if the corpus grows by
+             an order of magnitude or query volume becomes very high.
+            
+             Thread-safety: immutable after Load() — every field is only ever written once, during
+             loading, before this instance is published to any other thread (e.g. via DI singleton
+             registration). Safe for concurrent reads (searches) from multiple requests afterward.
+             </summary>
+        </member>
+        <member name="M:RMuseum.Utils.SemanticSearch.EmbeddingIndex.Load(System.String)">
+            <summary>
+            Loads embeddings.f32 + embeddings-index.json from the given directory. Intended to be
+            called once at startup (e.g. from a DI factory) — this reads and holds ~530MB in
+            memory, not something to redo per-request.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.SemanticSearch.EmbeddingIndex.FindTopSimilar(System.ReadOnlySpan{System.Single},System.Int32)">
+            <summary>
+            Returns the topK poem ids most similar to queryVector, ranked descending by cosine
+            similarity. queryVector must already be the SAME dimension as this index and, for the
+            score to mean what it claims (a true cosine similarity), should already be
+            L2-normalized the same way the indexed vectors are — see QueryEmbedder.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Utils.SemanticSearch.QueryEmbedder">
+             <summary>
+             Embeds a single user-typed search query using the SAME ONNX model + tokenizer as
+             scripts/generate_embeddings.py (the Python side that indexed the poem corpus) — this is
+             non-negotiable: a query embedded in a different space than the documents it's being
+             compared against produces meaningless similarity scores, silently (no error, just bad
+             results), not something that shows up as a crash.
+            
+             UNTESTED — flagging this more strongly than usual, because this file stacks two risks
+             that weren't present anywhere else in this project:
+               1. This environment has no .NET SDK and no network access to onnxruntime/the model, so
+                  none of this has actually been compiled or run.
+               2. Even once it compiles, BpeTokenizer.Create(vocab, merges) builds a plain BPE
+                  tokenizer from vocab.json + merges.txt — it may not capture every detail of Qwen's
+                  full tokenizer.json spec (custom pre-tokenizer regex, added/special tokens). A
+                  mismatch here wouldn't error either — it would silently tokenize text differently
+                  than the Python `tokenizers` library did at index time, degrading search quality
+                  without any visible failure.
+             See VERIFICATION.md for a paired Python/C# test to run BEFORE trusting search results —
+             do this before anything else in this phase.
+            
+             Query-time embedding is always exactly one query per call (a person typing into a search
+             box), never a batch — unlike the Python indexing script, which batched many poems
+             together and needed padding logic. That simplifies this class: no padding, no
+             batch-dimension complexity, last-token pooling reduces to simply the final sequence
+             position (no attention-mask lookup needed, since there's no padding to skip past).
+             </summary>
+        </member>
+        <member name="F:RMuseum.Utils.SemanticSearch.QueryEmbedder.InstructionTemplate">
+            <summary>
+            Per Qwen3-Embedding's documented convention, QUERIES (unlike documents) benefit from
+            an instruction prefix. generate_embeddings.py deliberately does NOT add one to
+            documents (poem summaries) — this asymmetry is the model's own documented design, not
+            an inconsistency. If this template ever changes, or if it's ever added to/removed
+            from the document side, both sides must be updated together, or queries and documents
+            drift into subtly different embedding spaces. This exact wording hasn't been
+            benchmarked for Persian poetry specifically — reasonable to A/B test once the basic
+            pipeline is confirmed working (see VERIFICATION.md), not something to treat as final.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.SemanticSearch.QueryEmbedder.EmbedQuery(System.String)">
+            <summary>
+            Returns an L2-normalized embedding for queryText, comparable via dot product against
+            EmbeddingIndex's vectors (which are normalized the same way).
             </summary>
         </member>
         <member name="P:RMuseum.WebServiceUrl.Url">
