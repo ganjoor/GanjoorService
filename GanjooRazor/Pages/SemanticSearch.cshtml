@@ -1,0 +1,140 @@
+﻿@page
+@model GanjooRazor.Pages.SemanticSearchModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "جست‌وجوی معنایی";
+}
+@section Head {
+    <meta name="description" content="یک شعر را با توصیف معنای آن پیدا کنید — نه با جست‌وجوی کلمه‌به‌کلمه." />
+}
+
+<div id="semantic-search-page" dir="rtl" style="max-width: 760px; margin: 0 auto; padding: 24px 16px 60px;">
+
+    <h1 style="text-align:center; color: var(--brand); -webkit-text-fill-color: var(--brand);">جست‌وجوی معنایی</h1>
+    <p style="text-align:center; color: var(--text-muted); margin-bottom: 24px;">
+        به‌جای جست‌وجوی کلمه‌به‌کلمه، توصیف کنید دنبال چه مضمونی هستید — مثلاً «شعری دربارهٔ بی‌وفایی دنیا».
+        <br />
+        <span style="font-size:0.85rem;">اگر نام یک سخنور یا یک بخش/کتاب خاص را هم در جمله بیاورید (مثلاً «در کدام شعر حافظ» یا «در کدام بخش شاهنامه»)، جست‌وجو فقط در همان محدوده انجام می‌شود.</span>
+    </p>
+
+    <form id="semantic-search-form" style="display:flex; gap:8px; margin-bottom: 24px;">
+        <input
+            type="text"
+            id="semantic-query"
+            name="query"
+            placeholder="مثلاً: شعری در مورد بی‌وفایی دنیا"
+            autocomplete="off"
+            style="flex:1; padding:10px 14px; border-radius:8px; border:1px solid var(--border-gold); background: var(--bg-page); color: inherit; font-size:1rem;"
+        />
+        <input type="submit" value="جست‌وجو" />
+    </form>
+
+    <div id="semantic-search-status" style="text-align:center; color: var(--text-muted); display:none; margin-bottom: 16px;"></div>
+
+    <div id="semantic-search-results"></div>
+
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            "use strict";
+
+            var form = document.getElementById("semantic-search-form");
+            var input = document.getElementById("semantic-query");
+            var status = document.getElementById("semantic-search-status");
+            var results = document.getElementById("semantic-search-results");
+
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+                var query = input.value.trim();
+                if (!query) return;
+                runSearch(query);
+            });
+
+            function runSearch(query) {
+                results.innerHTML = "";
+                status.style.display = "block";
+                status.textContent = "در حال جست‌وجو...";
+
+                $.ajax({
+                    type: "POST",
+                    url: "?handler=Search",
+                    data: { query: query },
+                    success: function (response) {
+                        status.style.display = "none";
+                        renderResults(response);
+                    },
+                    error: function (xhr) {
+                        status.style.display = "block";
+                        status.textContent = xhr.status === 503
+                            ? "در حال حاضر جست‌وجوی معنایی در دسترس نیست. لطفاً کمی بعد دوباره امتحان کنید."
+                            : "خطایی رخ داد. لطفاً دوباره تلاش کنید.";
+                    }
+                });
+            }
+
+            function renderResults(response) {
+                if (!response || !response.results || response.results.length === 0) {
+                    status.style.display = "block";
+                    status.textContent = "نتیجه‌ای پیدا نشد.";
+                    return;
+                }
+
+                var scopeNote = "";
+                if (response.detectedPoetName || response.detectedCategoryName) {
+                    var scopeText = [response.detectedPoetName, response.detectedCategoryName].filter(Boolean).join(" » ");
+                    scopeNote = '<p style="text-align:center; color: var(--gold, var(--text-muted)); font-size:0.88rem; margin-bottom:16px;">نتایج محدود به: ' + escapeHtml(scopeText) + '</p>';
+                }
+
+                var html = scopeNote;
+                response.results.forEach(function (item) {
+                    html += '<div class="sitem poem-excerpt" style="margin-bottom:16px; padding:14px 16px; border:1px solid var(--border-gold); border-radius:10px;">';
+                    html += '<a href="' + escapeAttr(item.fullUrl) + '" style="font-weight:600; font-size:1.05rem;">' + escapeHtml(item.fullTitle || item.title) + '</a>';
+                    html += renderVerses(item.verses);
+                    html += '</div>';
+                });
+                results.innerHTML = html;
+            }
+
+            // Same hemistich-pairing logic as mini-ganjoor's renderVerses (see
+            // https://ganjoor.github.io/mini/) - right/left couplet pairs render side by side,
+            // everything else (Comment, Paragraph, etc.) renders as a plain line. Reused as-is
+            // rather than reinvented, since it's already proven correct there.
+            function renderVerses(verses) {
+                if (!verses || verses.length === 0) return "";
+
+                var out = [];
+                var i = 0;
+                while (i < verses.length) {
+                    var v = verses[i];
+                    var pos = v.position;
+                    if (pos === "Right" && verses[i + 1] && verses[i + 1].position === "Left") {
+                        out.push(
+                            '<div style="display:flex; justify-content:space-between; gap:16px; padding:4px 0;">' +
+                            '<div style="flex:1;">' + escapeHtml(v.text) + '</div>' +
+                            '<div style="flex:1;">' + escapeHtml(verses[i + 1].text) + '</div>' +
+                            '</div>'
+                        );
+                        i += 2;
+                    } else {
+                        out.push('<div style="padding:4px 0;">' + escapeHtml(v.text) + '</div>');
+                        i += 1;
+                    }
+                }
+                return '<div style="margin-top:10px; color: var(--text-muted); font-size:0.95rem; line-height:2;">' + out.join("") + '</div>';
+            }
+
+            function escapeHtml(s) {
+                if (s == null) return "";
+                return String(s).replace(/[&<>"']/g, function (c) {
+                    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+                });
+            }
+
+            function escapeAttr(s) {
+                return escapeHtml(s);
+            }
+        })();
+    </script>
+}

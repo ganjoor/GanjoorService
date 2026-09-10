@@ -42,7 +42,7 @@ namespace RMuseum.Controllers
         {
             try
             {
-                var result = await _semanticSearchService.SearchAsync(request.Query, request.TopK);
+                var result = await _semanticSearchService.SearchAsync(request);
                 return Ok(result);
             }
             catch (SemanticSearchUnavailableException exp)

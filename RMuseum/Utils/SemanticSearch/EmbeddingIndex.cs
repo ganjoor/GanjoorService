@@ -105,8 +105,14 @@ namespace RMuseum.Utils.SemanticSearch
         /// similarity. queryVector must already be the SAME dimension as this index and, for the
         /// score to mean what it claims (a true cosine similarity), should already be
         /// L2-normalized the same way the indexed vectors are — see QueryEmbedder.
+        ///
+        /// If allowedPoemIds is provided (non-null), only poems in that set are eligible —
+        /// everything else is scored as excluded and can never appear in the results, however
+        /// similar it might be. Used for scoped search ("در کدام شعر حافظ" -> restrict to
+        /// Hafez's poems) — still a full scan either way, just with cheap early-outs for
+        /// excluded rows, since this corpus is small enough that a full scan is fast regardless.
         /// </summary>
-        public List<(int PoemId, float Score)> FindTopSimilar(ReadOnlySpan<float> queryVector, int topK)
+        public List<(int PoemId, float Score)> FindTopSimilar(ReadOnlySpan<float> queryVector, int topK, ISet<int> allowedPoemIds = null)
         {
             if (queryVector.Length != Metadata.Dimension)
                 throw new ArgumentException(
@@ -121,6 +127,12 @@ namespace RMuseum.Utils.SemanticSearch
             // this is genuinely computing cosine similarity, not just a raw dot product
             for (int i = 0; i < count; i++)
             {
+                if (allowedPoemIds != null && !allowedPoemIds.Contains(_poemIds[i]))
+                {
+                    scores[i] = float.NegativeInfinity; // excluded from this search - will never sort into the results
+                    continue;
+                }
+
                 float dot = 0f;
                 int baseIdx = i * Metadata.Dimension;
                 for (int d = 0; d < Metadata.Dimension; d++)
@@ -135,10 +147,13 @@ namespace RMuseum.Utils.SemanticSearch
             // ~130k floats is already comfortably fast (low tens of ms) and simpler to trust
             Array.Sort(indices, (a, b) => scores[b].CompareTo(scores[a]));
 
-            var results = new List<(int, float)>(Math.Min(topK, count));
-            for (int i = 0; i < Math.Min(topK, count); i++)
+            var results = new List<(int, float)>();
+            for (int i = 0; i < count && results.Count < topK; i++)
             {
-                results.Add((_poemIds[indices[i]], scores[indices[i]]));
+                int idx = indices[i];
+                if (float.IsNegativeInfinity(scores[idx]))
+                    break; // sorted descending - everything from here on is also excluded
+                results.Add((_poemIds[idx], scores[idx]));
             }
             return results;
         }

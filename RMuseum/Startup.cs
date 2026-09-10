@@ -336,6 +336,11 @@ namespace RMuseum
             // never throws; a failure there disables semantic search only.
             services.AddSingleton<LazySemanticSearchResources>();
 
+            // Separate lazy singleton from LazySemanticSearchResources - poet/category name
+            // detection ("در کدام شعر حافظ") is an independent concern with its own independent
+            // failure mode; a bug in one must not be able to disable the other.
+            services.AddSingleton<LazyQueryScopeIndex>();
+
             services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
 
 
