@@ -23142,6 +23142,36 @@
              one must not be able to disable the other.
              </summary>
         </member>
+        <member name="F:RMuseum.Services.Implementation.SemanticSearchService.PersianStopWords">
+            <summary>
+            Common Persian function words stripped out before keyword-matching a query against
+            verse text (see SelectPreviewVerses) — the kind of words that appear in nearly every
+            query regardless of topic ("شعری در مورد ... پیدا کن") and would otherwise match
+            almost any couplet in almost any poem, defeating the whole point of looking for a
+            RELEVANT couplet rather than an arbitrary one. Not remotely exhaustive Persian
+            stopword coverage — just the words that actually show up in how people phrase this
+            kind of query, extended as real queries reveal gaps.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.SemanticSearchService.ExtractKeywords(System.String)">
+            <summary>
+            Splits the query on whitespace (deliberately NOT on ZWNJ — "بی‌وفایی" should survive
+            as one token, not fracture into "بی" + "وفایی", where "بی" alone is a common enough
+            prefix to false-positive-match all over the place), strips surrounding punctuation,
+            drops stopwords and anything too short to be a meaningful keyword on its own.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.SemanticSearchService.SelectPreviewVerses(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse},System.Collections.Generic.List{System.String},System.Int32)">
+            <summary>
+            Looks for the couplet (Right/Left verse pair) whose combined text contains the most
+            query keywords, and returns it (plus, if there's room within previewVerseCount, the
+            couplet immediately following it, for a little reading continuity rather than a
+            single isolated pair). Falls back to the poem's opening verses — the previous,
+            always-the-same-lines behavior — if no keyword appears anywhere in the scanned
+            verses, or if there were no real keywords to search for at all (a query that was
+            entirely stopwords, or empty after stripping them).
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.SemanticSearchService.GetDescendantCategoryIdsAsync(RMuseum.DbContext.RMuseumDbContext,System.Int32)">
             <summary>
             Walks the whole category subtree rooted at rootCatId (breadth-first, level by level)
