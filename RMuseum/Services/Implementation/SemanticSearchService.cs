@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
+using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.SemanticSearch;
 using RMuseum.Utils.SemanticSearch;
 using System;
@@ -40,6 +41,7 @@ namespace RMuseum.Services.Implementation
         private const int DefaultTopK = 10;
         private const int MaxTopK = 50;
         private const int PreviewVerseCount = 4; // ~2 couplets - enough for a result-card preview, not the whole poem
+        private const int MaxVersesToScanForRelevance = 200; // bounded prefix to search for a relevant couplet within
 
         private readonly LazySemanticSearchResources _resources;
         private readonly LazyQueryScopeIndex _queryScopeIndex;
@@ -133,6 +135,10 @@ namespace RMuseum.Services.Implementation
                                         .Where(p => poemIds.Contains(p.Id))
                                         .ToDictionaryAsync(p => p.Id);
 
+                // computed once for the whole request, not per result - the query doesn't change
+                // between results
+                var queryKeywords = ExtractKeywords(request.Query);
+
                 foreach (var match in topMatches)
                 {
                     // a poem id present in the embedding index but missing from the live DB
@@ -141,15 +147,20 @@ namespace RMuseum.Services.Implementation
                     if (!poemsById.TryGetValue(match.PoemId, out var poem))
                         continue;
 
-                    // one small, bounded query per result (topK is capped at 50) rather than
-                    // loading every verse of every matched poem just to keep the first few - a
-                    // poem can have hundreds of verses, no reason to pull all of them over a
-                    // preview snippet
-                    var verses = await context.GanjoorVerses.AsNoTracking()
+                    // Fetch a bounded prefix of the poem's verses (not just the first
+                    // PreviewVerseCount) so SelectPreviewVerses has real material to search
+                    // through for a couplet that actually relates to the query, rather than
+                    // always showing the poem's opening lines regardless of relevance. Capped at
+                    // MaxVersesToScanForRelevance rather than the whole poem - covers the vast
+                    // majority of ghazals/qasides/robaiyat in full, and still a reasonable bound
+                    // for longer forms without pulling an unbounded number of rows per result.
+                    var candidateVerses = await context.GanjoorVerses.AsNoTracking()
                                         .Where(v => v.PoemId == poem.Id)
                                         .OrderBy(v => v.VOrder)
-                                        .Take(PreviewVerseCount)
+                                        .Take(MaxVersesToScanForRelevance)
                                         .ToListAsync();
+
+                    var verses = SelectPreviewVerses(candidateVerses, queryKeywords, PreviewVerseCount);
 
                     response.Results.Add(new SemanticSearchResultDto
                     {
@@ -170,6 +181,94 @@ namespace RMuseum.Services.Implementation
             }
 
             return response;
+        }
+
+        /// <summary>
+        /// Common Persian function words stripped out before keyword-matching a query against
+        /// verse text (see SelectPreviewVerses) — the kind of words that appear in nearly every
+        /// query regardless of topic ("شعری در مورد ... پیدا کن") and would otherwise match
+        /// almost any couplet in almost any poem, defeating the whole point of looking for a
+        /// RELEVANT couplet rather than an arbitrary one. Not remotely exhaustive Persian
+        /// stopword coverage — just the words that actually show up in how people phrase this
+        /// kind of query, extended as real queries reveal gaps.
+        /// </summary>
+        private static readonly HashSet<string> PersianStopWords = new HashSet<string>
+        {
+            "شعر", "شعری", "شعرهای", "غزل", "غزلی", "قصیده", "رباعی", "مثنوی",
+            "در", "مورد", "به", "از", "با", "برای", "را", "که", "یک", "این", "آن",
+            "پیدا", "کن", "کنید", "کنم", "می‌خواهم", "میخواهم", "می‌خوام", "میخوام",
+            "هست", "است", "بود", "تا", "یا", "و", "چه", "چگونه", "کدام", "چطور",
+            "درباره", "دربارهٔ", "دربارۀ", "راجع", "بر", "روی", "های", "ها", "می",
+            "خوب", "چیزی", "بگو", "بده", "نشان", "لطفا", "لطفاً",
+        };
+
+        /// <summary>
+        /// Splits the query on whitespace (deliberately NOT on ZWNJ — "بی‌وفایی" should survive
+        /// as one token, not fracture into "بی" + "وفایی", where "بی" alone is a common enough
+        /// prefix to false-positive-match all over the place), strips surrounding punctuation,
+        /// drops stopwords and anything too short to be a meaningful keyword on its own.
+        /// </summary>
+        private static List<string> ExtractKeywords(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return new List<string>();
+
+            char[] punctuation = { '؟', '?', '.', '،', ',', '!', ':', ';', '«', '»', '"', '\'' };
+
+            return query
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(w => w.Trim(punctuation))
+                .Where(w => w.Length >= 2 && !PersianStopWords.Contains(w))
+                .Distinct()
+                .ToList();
+        }
+
+        /// <summary>
+        /// Looks for the couplet (Right/Left verse pair) whose combined text contains the most
+        /// query keywords, and returns it (plus, if there's room within previewVerseCount, the
+        /// couplet immediately following it, for a little reading continuity rather than a
+        /// single isolated pair). Falls back to the poem's opening verses — the previous,
+        /// always-the-same-lines behavior — if no keyword appears anywhere in the scanned
+        /// verses, or if there were no real keywords to search for at all (a query that was
+        /// entirely stopwords, or empty after stripping them).
+        /// </summary>
+        private static List<GanjoorVerse> SelectPreviewVerses(List<GanjoorVerse> allVerses, List<string> keywords, int previewVerseCount)
+        {
+            if (keywords.Count > 0)
+            {
+                int bestScore = 0;
+                int bestIndex = -1;
+
+                for (int i = 0; i < allVerses.Count - 1; i++)
+                {
+                    if (allVerses[i].VersePosition.ToString() != "Right" || allVerses[i + 1].VersePosition.ToString() != "Left")
+                        continue;
+
+                    string coupletText = allVerses[i].Text + " " + allVerses[i + 1].Text;
+                    int score = keywords.Count(k => coupletText.Contains(k));
+
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        bestIndex = i;
+                    }
+                }
+
+                if (bestIndex >= 0)
+                {
+                    var result = new List<GanjoorVerse> { allVerses[bestIndex], allVerses[bestIndex + 1] };
+                    int next = bestIndex + 2;
+                    while (result.Count < previewVerseCount && next < allVerses.Count)
+                    {
+                        result.Add(allVerses[next]);
+                        next++;
+                    }
+                    return result;
+                }
+            }
+
+            // fallback: the poem's opening verses, same as the original behavior
+            return allVerses.Take(previewVerseCount).ToList();
         }
 
         /// <summary>
