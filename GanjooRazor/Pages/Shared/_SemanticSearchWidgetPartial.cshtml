@@ -1,0 +1,315 @@
+﻿@{
+    // Global floating "find a poem about..." widget — included once from _Layout.cshtml, so it
+    // appears on every page that opts into that shared layout, same guarantee the theme toggle
+    // has. Self-contained CSS (scoped under #ss-widget* ids) rather than added to p8.css
+    // deliberately - avoids needing a cache-busting version bump on that large shared file for
+    // every iteration of a still-settling feature, at the cost of not being in the "official"
+    // stylesheet yet. Reuses real site CSS variables (--card-inner, --border-gold, --brand,
+    // --text-muted, --bg-page) throughout for visual consistency regardless.
+    //
+    // Calls APIRoot.SemanticSearchUrl DIRECTLY from browser JS (not a server-side proxy) - see
+    // the comment on SemanticSearchUrl in APIRoot.cs for why it's a separate, currently-isolated
+    // domain. CORS is already wide open on that backend (Startup.cs: SetIsOriginAllowed(_ =>
+    // true)), confirmed before choosing this approach rather than guessed.
+}
+<style>
+    #ss-widget-launcher {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 999;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: var(--card-inner);
+        border: 1.5px solid var(--border-gold);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+
+    #ss-widget-launcher:hover {
+        background: var(--card-nested);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    #ss-widget-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        z-index: 998;
+    }
+
+    #ss-widget-panel {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        width: 360px;
+        max-width: calc(100vw - 40px);
+        max-height: 70vh;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-page);
+        border: 1.5px solid var(--border-gold);
+        border-radius: 14px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+    }
+
+    #ss-widget-panel.ss-widget-maximized {
+        top: 5vh;
+        bottom: 5vh;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: min(760px, 92vw);
+        max-height: none;
+    }
+
+    #ss-widget-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--border-gold);
+        font-weight: 600;
+        color: var(--brand);
+        -webkit-text-fill-color: var(--brand);
+        flex-shrink: 0;
+    }
+
+    #ss-widget-header .ss-widget-actions a {
+        color: var(--text-muted);
+        margin-inline-start: 12px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 1.15rem;
+    }
+
+    #ss-widget-form {
+        display: flex;
+        gap: 8px;
+        padding: 10px 14px;
+        flex-shrink: 0;
+    }
+
+    #ss-widget-query {
+        flex: 1;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid var(--border-gold);
+        background: var(--card-inner);
+        color: inherit;
+        font-size: 0.95rem;
+    }
+
+    #ss-widget-status {
+        padding: 0 14px 10px;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        display: none;
+        flex-shrink: 0;
+    }
+
+    #ss-widget-results {
+        overflow-y: auto;
+        padding: 0 14px 14px;
+        flex: 1;
+    }
+
+    .ss-widget-result {
+        margin-bottom: 12px;
+        padding: 10px 12px;
+        border: 1px solid var(--border-gold);
+        border-radius: 10px;
+    }
+
+    .ss-widget-result a.ss-widget-result-title {
+        font-weight: 600;
+        font-size: 0.98rem;
+        color: var(--brand);
+        -webkit-text-fill-color: var(--brand);
+    }
+
+    .ss-widget-verses {
+        margin-top: 6px;
+        color: var(--text-muted);
+        font-size: 0.88rem;
+        line-height: 1.9;
+    }
+
+    .ss-widget-couplet {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 2px 0;
+    }
+
+    .ss-widget-scope-note {
+        text-align: center;
+        color: var(--gold, var(--text-muted));
+        font-size: 0.85rem;
+        margin-bottom: 10px;
+    }
+</style>
+
+<a href="javascript:void(0);" id="ss-widget-launcher" title="جست‌وجوی معنایی — پیدا کردن شعر با توصیف معنای آن" onclick="ssWidgetOpen()">
+    <svg height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--gold, currentColor)">
+        <path d="M240-400h480v-80H240v80Zm0-120h480v-80H240v80Zm0-120h480v-80H240v80ZM80-80v-720q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240L80-80Zm126-240h594v-480H160v525l46-45Zm-46 0v-480 480Z" />
+    </svg>
+</a>
+
+<div id="ss-widget-backdrop" style="display:none;" onclick="ssWidgetUnmaximize()"></div>
+
+<div id="ss-widget-panel" style="display:none;">
+    <div id="ss-widget-header">
+        <span>جست‌وجوی معنایی</span>
+        <div class="ss-widget-actions">
+            <a href="javascript:void(0);" id="ss-widget-maximize-btn" onclick="ssWidgetToggleMaximize()" title="بزرگ‌نمایی">⤢</a>
+            <a href="javascript:void(0);" onclick="ssWidgetClose()" title="بستن">×</a>
+        </div>
+    </div>
+    <form id="ss-widget-form" onsubmit="return ssWidgetSubmit(event);">
+        <input type="text" id="ss-widget-query" placeholder="مثلاً: شعری در مورد بی‌وفایی دنیا" autocomplete="off" />
+        <input type="submit" value="جست‌وجو" />
+    </form>
+    <div id="ss-widget-status"></div>
+    <div id="ss-widget-results"></div>
+</div>
+
+<script>
+    var ssWidgetApiRoot = "@APIRoot.SemanticSearchUrl";
+    var ssWidgetMaximized = false;
+
+    function ssWidgetOpen() {
+        document.getElementById("ss-widget-launcher").style.display = "none";
+        document.getElementById("ss-widget-panel").style.display = "flex";
+        document.getElementById("ss-widget-query").focus();
+    }
+
+    function ssWidgetClose() {
+        document.getElementById("ss-widget-launcher").style.display = "inline-flex";
+        document.getElementById("ss-widget-panel").style.display = "none";
+        ssWidgetUnmaximize();
+    }
+
+    function ssWidgetToggleMaximize() {
+        if (ssWidgetMaximized) {
+            ssWidgetUnmaximize();
+        } else {
+            ssWidgetMaximized = true;
+            document.getElementById("ss-widget-panel").classList.add("ss-widget-maximized");
+            document.getElementById("ss-widget-backdrop").style.display = "block";
+            document.getElementById("ss-widget-maximize-btn").textContent = "⤡";
+            document.getElementById("ss-widget-maximize-btn").title = "بازگشت به حالت کوچک";
+        }
+    }
+
+    function ssWidgetUnmaximize() {
+        ssWidgetMaximized = false;
+        document.getElementById("ss-widget-panel").classList.remove("ss-widget-maximized");
+        document.getElementById("ss-widget-backdrop").style.display = "none";
+        document.getElementById("ss-widget-maximize-btn").textContent = "⤢";
+        document.getElementById("ss-widget-maximize-btn").title = "بزرگ‌نمایی";
+    }
+
+    function ssWidgetSubmit(e) {
+        e.preventDefault();
+        var query = document.getElementById("ss-widget-query").value.trim();
+        if (!query) return false;
+        ssWidgetRunSearch(query);
+        return false;
+    }
+
+    function ssWidgetRunSearch(query) {
+        var resultsEl = document.getElementById("ss-widget-results");
+        var statusEl = document.getElementById("ss-widget-status");
+        resultsEl.innerHTML = "";
+        statusEl.style.display = "block";
+        statusEl.textContent = "در حال جست‌وجو...";
+
+        $.ajax({
+            type: "POST",
+            url: ssWidgetApiRoot + "/api/ganjoor/search/semantic",
+            contentType: "application/json",
+            data: JSON.stringify({ query: query, topK: 10 }),
+            success: function (response) {
+                statusEl.style.display = "none";
+                ssWidgetRenderResults(response);
+            },
+            error: function (xhr) {
+                statusEl.style.display = "block";
+                if (xhr.status === 503) {
+                    statusEl.textContent = "در حال حاضر جست‌وجوی معنایی در دسترس نیست. لطفاً کمی بعد دوباره امتحان کنید.";
+                } else if (xhr.responseText) {
+                    statusEl.textContent = "خطا: " + xhr.responseText;
+                } else {
+                    statusEl.textContent = "خطایی رخ داد (کد " + xhr.status + "). لطفاً دوباره تلاش کنید.";
+                }
+            }
+        });
+    }
+
+    function ssWidgetRenderResults(response) {
+        var resultsEl = document.getElementById("ss-widget-results");
+        var statusEl = document.getElementById("ss-widget-status");
+
+        if (!response || !response.results || response.results.length === 0) {
+            statusEl.style.display = "block";
+            statusEl.textContent = "نتیجه‌ای پیدا نشد.";
+            return;
+        }
+
+        var html = "";
+        if (response.detectedPoetName || response.detectedCategoryName) {
+            var scopeText = [response.detectedPoetName, response.detectedCategoryName].filter(Boolean).join(" » ");
+            html += '<p class="ss-widget-scope-note">نتایج محدود به: ' + ssWidgetEscapeHtml(scopeText) + '</p>';
+        }
+
+        response.results.forEach(function (item) {
+            html += '<div class="ss-widget-result">';
+            html += '<a class="ss-widget-result-title" href="' + ssWidgetEscapeHtml(item.fullUrl) + '">' + ssWidgetEscapeHtml(item.fullTitle || item.title) + '</a>';
+            html += ssWidgetRenderVerses(item.verses);
+            html += '</div>';
+        });
+
+        resultsEl.innerHTML = html;
+    }
+
+    // Same hemistich-pairing logic as mini-ganjoor's renderVerses (https://ganjoor.github.io/mini/)
+    // and SemanticSearch.cshtml - reused as-is rather than reinvented a third time.
+    function ssWidgetRenderVerses(verses) {
+        if (!verses || verses.length === 0) return "";
+
+        var out = [];
+        var i = 0;
+        while (i < verses.length) {
+            var v = verses[i];
+            if (v.position === "Right" && verses[i + 1] && verses[i + 1].position === "Left") {
+                out.push(
+                    '<div class="ss-widget-couplet">' +
+                    '<div style="flex:1;">' + ssWidgetEscapeHtml(v.text) + '</div>' +
+                    '<div style="flex:1;">' + ssWidgetEscapeHtml(verses[i + 1].text) + '</div>' +
+                    '</div>'
+                );
+                i += 2;
+            } else {
+                out.push('<div style="padding:2px 0;">' + ssWidgetEscapeHtml(v.text) + '</div>');
+                i += 1;
+            }
+        }
+        return '<div class="ss-widget-verses">' + out.join("") + '</div>';
+    }
+
+    function ssWidgetEscapeHtml(s) {
+        if (s == null) return "";
+        return String(s).replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+    }
+</script>
