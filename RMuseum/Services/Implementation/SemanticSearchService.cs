@@ -103,8 +103,15 @@ namespace RMuseum.Services.Implementation
                 HashSet<int> allowedPoemIds = null;
                 if (scopeCatId.HasValue)
                 {
+                    // A detected category like شاهنامه isn't where poems live directly — it's a
+                    // book broken into many nested subcategories (individual kings/stories), with
+                    // the actual poems several levels deeper. Matching only p.CatId ==
+                    // scopeCatId.Value (the original version of this code) found essentially
+                    // nothing for exactly that reason — it needs every descendant category, not
+                    // just the one that was named.
+                    var descendantCatIds = await GetDescendantCategoryIdsAsync(context, scopeCatId.Value);
                     var ids = await context.GanjoorPoems.AsNoTracking()
-                                        .Where(p => p.CatId == scopeCatId.Value)
+                                        .Where(p => descendantCatIds.Contains(p.CatId))
                                         .Select(p => p.Id)
                                         .ToListAsync();
                     allowedPoemIds = new HashSet<int>(ids);
@@ -163,6 +170,38 @@ namespace RMuseum.Services.Implementation
             }
 
             return response;
+        }
+
+        /// <summary>
+        /// Walks the whole category subtree rooted at rootCatId (breadth-first, level by level)
+        /// and returns every category id in it, including rootCatId itself. Needed because a
+        /// detected "book" category (شاهنامه, غزلیات, ...) is rarely where poems live directly —
+        /// it's typically broken into many nested subcategories, with the actual poems several
+        /// levels deeper. One query per depth level, not per node — a large book with many
+        /// subcategories still only costs as many round-trips as the tree is deep, not how many
+        /// nodes it has.
+        /// </summary>
+        private static async Task<HashSet<int>> GetDescendantCategoryIdsAsync(RMuseumDbContext context, int rootCatId)
+        {
+            var allCatIds = new HashSet<int> { rootCatId };
+            var frontier = new List<int> { rootCatId };
+
+            while (frontier.Count > 0)
+            {
+                var children = await context.GanjoorCategories.AsNoTracking()
+                                    .Where(c => c.ParentId.HasValue && frontier.Contains(c.ParentId.Value))
+                                    .Select(c => c.Id)
+                                    .ToListAsync();
+
+                var newIds = children.Where(id => !allCatIds.Contains(id)).ToList();
+                foreach (var id in newIds)
+                {
+                    allCatIds.Add(id);
+                }
+                frontier = newIds;
+            }
+
+            return allCatIds;
         }
     }
 }

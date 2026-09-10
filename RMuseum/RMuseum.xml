@@ -11377,10 +11377,41 @@
             how many results to return; a sane default is applied server-side if omitted/invalid
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchRequestDto.PoetId">
+            <summary>
+            Optional explicit scope, for a future UI (e.g. a poet picker) that wants to restrict
+            search without relying on auto-detection from the query text. Auto-detection (see
+            SemanticSearchService.DetectQueryScope) still runs even when these are set — an
+            explicit PoetId/CatId narrows further, it doesn't replace detection.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchVerseDto.Position">
+            <summary>
+            matches GanjoorVerse.VersePosition.ToString() (e.g. "Right"/"Left") - same convention
+            already used by the main ganjoor-data export, so any existing hemistich-pairing
+            frontend code (see mini-ganjoor's renderVerses) can be reused as-is.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchResultDto.Verses">
+            <summary>
+            A short preview from the poem's actual text - the first couple of couplets, in
+            original verse order. Not the whole poem; just enough for a result card.
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchResultDto.Score">
             <summary>
             cosine similarity, 0..1 for these normalized vectors (in practice results cluster in
             a narrower band - this is a relative ranking signal, not a calibrated probability)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchResponseDto.DetectedPoetName">
+            <summary>
+            If the query text was recognized as referring to a specific poet and/or
+            category/book (e.g. "در کدام شعر حافظ" -> حافظ, "در کدام بخش شاهنامه" -> شاهنامه),
+            search was restricted to that scope and these are populated so the UI can show the
+            user what was detected ("نتایج محدود به: حافظ") rather than silently filtering.
+            Null/null if nothing was detected (or an explicit PoetId/CatId narrowed things
+            without any name being recognized in the free text).
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.UpdatingRelSectsLog">
@@ -23104,7 +23135,23 @@
              being constructed, taking down every endpoint under /api/ganjoor with a 503, not just
              semantic search. This class must never let a resource-loading failure become an unhandled
              exception that propagates past SearchAsync — see the catch below.
+            
+             LazyQueryScopeIndex is a SEPARATE lazy singleton from LazySemanticSearchResources on
+             purpose — poet/category name detection ("در کدام شعر حافظ") is a genuinely independent
+             concern from the embedding/model loading, with its own independent failure mode; a bug in
+             one must not be able to disable the other.
              </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.SemanticSearchService.GetDescendantCategoryIdsAsync(RMuseum.DbContext.RMuseumDbContext,System.Int32)">
+            <summary>
+            Walks the whole category subtree rooted at rootCatId (breadth-first, level by level)
+            and returns every category id in it, including rootCatId itself. Needed because a
+            detected "book" category (شاهنامه, غزلیات, ...) is rarely where poems live directly —
+            it's typically broken into many nested subcategories, with the actual poems several
+            levels deeper. One query per depth level, not per node — a large book with many
+            subcategories still only costs as many round-trips as the tree is deep, not how many
+            nodes it has.
+            </summary>
         </member>
         <member name="T:RMuseum.Services.Implementation.SiteBannersService">
             <summary>
@@ -24462,12 +24509,39 @@
             memory, not something to redo per-request.
             </summary>
         </member>
-        <member name="M:RMuseum.Utils.SemanticSearch.EmbeddingIndex.FindTopSimilar(System.ReadOnlySpan{System.Single},System.Int32)">
+        <member name="M:RMuseum.Utils.SemanticSearch.EmbeddingIndex.FindTopSimilar(System.ReadOnlySpan{System.Single},System.Int32,System.Collections.Generic.ISet{System.Int32})">
+             <summary>
+             Returns the topK poem ids most similar to queryVector, ranked descending by cosine
+             similarity. queryVector must already be the SAME dimension as this index and, for the
+             score to mean what it claims (a true cosine similarity), should already be
+             L2-normalized the same way the indexed vectors are — see QueryEmbedder.
+            
+             If allowedPoemIds is provided (non-null), only poems in that set are eligible —
+             everything else is scored as excluded and can never appear in the results, however
+             similar it might be. Used for scoped search ("در کدام شعر حافظ" -> restrict to
+             Hafez's poems) — still a full scan either way, just with cheap early-outs for
+             excluded rows, since this corpus is small enough that a full scan is fast regardless.
+             </summary>
+        </member>
+        <member name="T:RMuseum.Utils.SemanticSearch.LazyQueryScopeIndex">
+             <summary>
+             Same "load once, never throw" pattern as LazySemanticSearchResources, but deliberately a
+             SEPARATE singleton with its own independent failure domain: if the poet/category name
+             lookup fails to load for any reason, that must only disable scope auto-detection
+             ("در کدام شعر حافظ" -> unscoped, searches everything) — it must never affect the embedding
+             index/model loading or plain (unscoped) search, which are a completely different concern.
+            
+             Uses a SemaphoreSlim rather than a plain `lock`, since the actual load is async (DB
+             queries) and you can't `await` inside a `lock` block.
+             </summary>
+        </member>
+        <member name="M:RMuseum.Utils.SemanticSearch.LazyQueryScopeIndex.TryGetIndexAsync(RMuseum.DbContext.RMuseumDbContext)">
             <summary>
-            Returns the topK poem ids most similar to queryVector, ranked descending by cosine
-            similarity. queryVector must already be the SAME dimension as this index and, for the
-            score to mean what it claims (a true cosine similarity), should already be
-            L2-normalized the same way the indexed vectors are — see QueryEmbedder.
+            Loads (once) and returns the scope index, or null if loading failed or hasn't
+            succeeded yet — NEVER throws. The passed-in context is only actually used on the
+            first call that does real work; a context created by the caller for its own
+            SearchAsync call is reused here rather than this class creating its own, since it's
+            only needed for the one-time load.
             </summary>
         </member>
         <member name="T:RMuseum.Utils.SemanticSearch.LazySemanticSearchResources">
@@ -24558,6 +24632,20 @@
             Returns an L2-normalized embedding for queryText, comparable via dot product against
             EmbeddingIndex's vectors (which are normalized the same way).
             </summary>
+        </member>
+        <member name="T:RMuseum.Utils.SemanticSearch.QueryScopeIndex">
+             <summary>
+             Detects when a free-text query names a specific poet and/or book/collection (e.g.
+             "در کدام شعر حافظ" -> حافظ, "در کدام بخش شاهنامه" -> شاهنامه) so search can be scoped to
+             just that poet/category instead of the whole corpus.
+            
+             Deliberately simple substring matching, not real NLP/NER — good enough for the common,
+             unambiguous case (a poet's distinctive nickname, or a book title effectively unique to one
+             poet, like شاهنامه), and safely conservative for the ambiguous case: a generic category
+             title shared by many poets (غزلیات appears for most of them) is only used as a scope if a
+             specific poet was ALSO named in the same query, narrowing which one is meant — otherwise
+             it's dropped rather than guessing which poet's غزلیات the person meant.
+             </summary>
         </member>
         <member name="P:RMuseum.WebServiceUrl.Url">
             <summary>

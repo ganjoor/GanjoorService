@@ -67,9 +67,16 @@
                     },
                     error: function (xhr) {
                         status.style.display = "block";
-                        status.textContent = xhr.status === 503
-                            ? "در حال حاضر جست‌وجوی معنایی در دسترس نیست. لطفاً کمی بعد دوباره امتحان کنید."
-                            : "خطایی رخ داد. لطفاً دوباره تلاش کنید.";
+                        if (xhr.status === 503) {
+                            status.textContent = "در حال حاضر جست‌وجوی معنایی در دسترس نیست. لطفاً کمی بعد دوباره امتحان کنید.";
+                        } else if (xhr.responseText) {
+                            // show the real server error text rather than a generic message -
+                            // whatever RMuseum actually said, so a real failure is diagnosable
+                            // from what's on screen instead of needing another round-trip
+                            status.textContent = "خطا: " + xhr.responseText;
+                        } else {
+                            status.textContent = "خطایی رخ داد (کد " + xhr.status + "). لطفاً دوباره تلاش کنید.";
+                        }
                     }
                 });
             }
