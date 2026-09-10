@@ -79,27 +79,35 @@ namespace RMuseum.Services.Implementation
                 // detection failure here is swallowed on top of LazyQueryScopeIndex's own
                 // try/catch, as a second safety net - this is a nice-to-have, never worth
                 // failing the whole search over.
+                //
+                // request.DisableScopeDetection skips this block entirely - the "search globally
+                // instead" escape hatch for when detection guessed wrong (e.g. "شمع و پروانه" as
+                // a theme, not the specific book of that name by a different poet). An explicit
+                // PoetId/CatId still applies even here, since that's a deliberate ask, not a guess.
                 int? scopePoetId = request.PoetId;
                 int? scopeCatId = request.CatId;
-                try
+                if (!request.DisableScopeDetection)
                 {
-                    var scopeIndex = await _queryScopeIndex.TryGetIndexAsync(context);
-                    if (scopeIndex != null)
+                    try
                     {
-                        var detected = scopeIndex.DetectScope(request.Query);
-                        if (detected.HasAny)
+                        var scopeIndex = await _queryScopeIndex.TryGetIndexAsync(context);
+                        if (scopeIndex != null)
                         {
-                            scopePoetId = scopePoetId ?? detected.PoetId;
-                            scopeCatId = scopeCatId ?? detected.CatId;
-                            response.DetectedPoetName = detected.PoetName;
-                            response.DetectedCategoryName = detected.CategoryName;
+                            var detected = scopeIndex.DetectScope(request.Query);
+                            if (detected.HasAny)
+                            {
+                                scopePoetId = scopePoetId ?? detected.PoetId;
+                                scopeCatId = scopeCatId ?? detected.CatId;
+                                response.DetectedPoetName = detected.PoetName;
+                                response.DetectedCategoryName = detected.CategoryName;
+                            }
                         }
                     }
-                }
-                catch (Exception)
-                {
-                    // scope detection is best-effort only - fall through with no scope rather
-                    // than fail the search
+                    catch (Exception)
+                    {
+                        // scope detection is best-effort only - fall through with no scope rather
+                        // than fail the search
+                    }
                 }
 
                 HashSet<int> allowedPoemIds = null;

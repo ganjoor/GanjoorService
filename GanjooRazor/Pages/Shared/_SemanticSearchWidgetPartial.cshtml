@@ -15,14 +15,14 @@
 <style>
     #ss-widget-launcher {
         position: fixed;
-        bottom: 20px;
-        right: 20px;
+        bottom: 74px; /* stacked above the theme toggle (bottom:20px, 44px tall) with a real gap - */
+        left: 20px;   /* not touching, so they read as two distinct controls, not one fused blob */
         z-index: 999;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 52px;
-        height: 52px;
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
         background: var(--card-inner);
         border: 1.5px solid var(--border-gold);
@@ -47,7 +47,8 @@
     #ss-widget-panel {
         position: fixed;
         bottom: 20px;
-        right: 20px;
+        left: 20px; /* anchored on the same side as the launcher, so the panel feels connected to
+                       where you clicked rather than popping up across the screen */
         z-index: 1000;
         width: 360px;
         max-width: calc(100vw - 40px);
@@ -177,6 +178,13 @@
         font-size: 0.85rem;
         margin-bottom: 10px;
     }
+
+    .ss-widget-scope-clear {
+        color: var(--brand);
+        -webkit-text-fill-color: var(--brand);
+        text-decoration: underline dotted;
+        cursor: pointer;
+    }
 </style>
 
 <a href="javascript:void(0);" id="ss-widget-launcher" title="جستجوی معنایی — پیدا کردن شعر با توصیف معنای آن" onclick="ssWidgetOpen()">
@@ -206,6 +214,7 @@
 <script>
     var ssWidgetApiRoot = "@APIRoot.SemanticSearchUrl";
     var ssWidgetMaximized = false;
+    var ssWidgetLastQuery = ""; // the last SUBMITTED query, for the "search globally instead" link
 
     function ssWidgetOpen() {
         document.getElementById("ss-widget-launcher").style.display = "none";
@@ -243,11 +252,20 @@
         e.preventDefault();
         var query = document.getElementById("ss-widget-query").value.trim();
         if (!query) return false;
-        ssWidgetRunSearch(query);
+        ssWidgetLastQuery = query;
+        ssWidgetRunSearch(query, false);
         return false;
     }
 
-    function ssWidgetRunSearch(query) {
+    // "search globally instead" - the escape hatch for when auto-detection guesses wrong.
+    // Reuses the last SUBMITTED query, not whatever's currently sitting in the input box
+    // (which the user may have started editing without resubmitting).
+    function ssWidgetSearchGlobally() {
+        if (!ssWidgetLastQuery) return;
+        ssWidgetRunSearch(ssWidgetLastQuery, true);
+    }
+
+    function ssWidgetRunSearch(query, disableScopeDetection) {
         var resultsEl = document.getElementById("ss-widget-results");
         var statusEl = document.getElementById("ss-widget-status");
         resultsEl.innerHTML = "";
@@ -258,7 +276,7 @@
             type: "POST",
             url: ssWidgetApiRoot + "/api/ganjoor/search/semantic",
             contentType: "application/json",
-            data: JSON.stringify({ query: query, topK: 10 }),
+            data: JSON.stringify({ query: query, topK: 10, disableScopeDetection: !!disableScopeDetection }),
             success: function (response) {
                 statusEl.style.display = "none";
                 ssWidgetRenderResults(response);
@@ -289,7 +307,8 @@
         var html = "";
         if (response.detectedPoetName || response.detectedCategoryName) {
             var scopeText = [response.detectedPoetName, response.detectedCategoryName].filter(Boolean).join(" » ");
-            html += '<p class="ss-widget-scope-note">نتایج محدود به: ' + ssWidgetEscapeHtml(scopeText) + '</p>';
+            html += '<p class="ss-widget-scope-note">نتایج محدود به: ' + ssWidgetEscapeHtml(scopeText) +
+                ' <a href="javascript:void(0);" onclick="ssWidgetSearchGlobally()" class="ss-widget-scope-clear">(جستجوی سراسری)</a></p>';
         }
 
         response.results.forEach(function (item) {

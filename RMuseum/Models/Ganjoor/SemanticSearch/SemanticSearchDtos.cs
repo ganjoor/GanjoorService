@@ -22,6 +22,16 @@ namespace RMuseum.Models.Ganjoor.SemanticSearch
         /// </summary>
         public int? PoetId { get; set; }
         public int? CatId { get; set; }
+
+        /// <summary>
+        /// Skips auto-detection entirely for this request — the "search globally instead"
+        /// escape hatch. Needed because substring-based detection is genuinely ambiguous
+        /// sometimes: "شمع و پروانه" is both a common poetic theme AND the literal title of a
+        /// book by a specific poet, so a query using it as a theme could get silently locked to
+        /// that one book with no way out otherwise. An explicit PoetId/CatId still applies even
+        /// with this set — that's a deliberate scope the caller asked for, not something guessed.
+        /// </summary>
+        public bool DisableScopeDetection { get; set; }
     }
 
     public class SemanticSearchVerseDto
