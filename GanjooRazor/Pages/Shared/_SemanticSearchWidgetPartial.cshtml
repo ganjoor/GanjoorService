@@ -98,14 +98,35 @@
         flex-shrink: 0;
     }
 
-    #ss-widget-query {
-        flex: 1;
-        padding: 8px 12px;
+    #ss-widget-form input[type="text"],
+    #ss-widget-form input[type="submit"] {
+        box-sizing: border-box;
+        height: 38px;
+        font-size: 0.95rem;
         border-radius: 8px;
         border: 1px solid var(--border-gold);
+    }
+
+    #ss-widget-query {
+        flex: 1;
+        padding: 0 12px;
         background: var(--card-inner);
         color: inherit;
-        font-size: 0.95rem;
+    }
+
+    #ss-widget-form input[type="submit"] {
+        padding: 0 16px;
+        background: var(--card-inner);
+        color: var(--brand);
+        -webkit-text-fill-color: var(--brand);
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    #ss-widget-form input[type="submit"]:hover {
+        background: var(--card-nested);
     }
 
     #ss-widget-status {
@@ -158,7 +179,7 @@
     }
 </style>
 
-<a href="javascript:void(0);" id="ss-widget-launcher" title="جست‌وجوی معنایی — پیدا کردن شعر با توصیف معنای آن" onclick="ssWidgetOpen()">
+<a href="javascript:void(0);" id="ss-widget-launcher" title="جستجوی معنایی — پیدا کردن شعر با توصیف معنای آن" onclick="ssWidgetOpen()">
     <svg height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--gold, currentColor)">
         <path d="M240-400h480v-80H240v80Zm0-120h480v-80H240v80Zm0-120h480v-80H240v80ZM80-80v-720q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240L80-80Zm126-240h594v-480H160v525l46-45Zm-46 0v-480 480Z" />
     </svg>
@@ -168,7 +189,7 @@
 
 <div id="ss-widget-panel" style="display:none;">
     <div id="ss-widget-header">
-        <span>جست‌وجوی معنایی</span>
+        <span>جستجوی معنایی</span>
         <div class="ss-widget-actions">
             <a href="javascript:void(0);" id="ss-widget-maximize-btn" onclick="ssWidgetToggleMaximize()" title="بزرگ‌نمایی">⤢</a>
             <a href="javascript:void(0);" onclick="ssWidgetClose()" title="بستن">×</a>
@@ -176,7 +197,7 @@
     </div>
     <form id="ss-widget-form" onsubmit="return ssWidgetSubmit(event);">
         <input type="text" id="ss-widget-query" placeholder="مثلاً: شعری در مورد بی‌وفایی دنیا" autocomplete="off" />
-        <input type="submit" value="جست‌وجو" />
+        <input type="submit" value="جستجو" />
     </form>
     <div id="ss-widget-status"></div>
     <div id="ss-widget-results"></div>
@@ -231,7 +252,7 @@
         var statusEl = document.getElementById("ss-widget-status");
         resultsEl.innerHTML = "";
         statusEl.style.display = "block";
-        statusEl.textContent = "در حال جست‌وجو...";
+        statusEl.textContent = "در حال جستجو...";
 
         $.ajax({
             type: "POST",
@@ -245,7 +266,7 @@
             error: function (xhr) {
                 statusEl.style.display = "block";
                 if (xhr.status === 503) {
-                    statusEl.textContent = "در حال حاضر جست‌وجوی معنایی در دسترس نیست. لطفاً کمی بعد دوباره امتحان کنید.";
+                    statusEl.textContent = "در حال حاضر جستجوی معنایی در دسترس نیست. لطفاً کمی بعد دوباره امتحان کنید.";
                 } else if (xhr.responseText) {
                     statusEl.textContent = "خطا: " + xhr.responseText;
                 } else {

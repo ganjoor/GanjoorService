@@ -24564,17 +24564,29 @@
              pool: each process gets its own instance of this (and everything it loads) — "singleton"
              only means one instance per process, not per server. See the migration notes for the
              memory math this implies at scale.
+            
+             SemanticSearch:Enabled gates ALL of the above, checked before anything else runs — this
+             is what actually keeps a disabled instance (e.g. api.ganjoor.net, where third-party apps
+             shouldn't get this feature) from ever loading the ~530MB embeddings file or the ONNX model
+             into memory at all, not just from serving requests. Defaults to disabled (fail-closed) if
+             the key is missing entirely — deliberately, since the whole point of this flag is
+             preventing resource loading on instances that shouldn't have it; an instance that's
+             SUPPOSED to have it (ganjgah.ir) needs the key explicitly set to "True", not left implicit.
              </summary>
         </member>
         <member name="M:RMuseum.Utils.SemanticSearch.LazySemanticSearchResources.TryGetResources(RMuseum.Utils.SemanticSearch.EmbeddingIndex@,RMuseum.Utils.SemanticSearch.QueryEmbedder@,System.String@)">
-            <summary>
-            Attempts to load the resources on first call (subsequent calls reuse the same result,
-            success or failure — this never retries automatically; a fresh app start is required
-            to try again after a config/file fix, which is the expected deploy-and-restart flow
-            anyway). Returns true and populates both out parameters if available; returns false
-            and populates <paramref name="error"/> otherwise. NEVER THROWS — that guarantee is the
-            entire point of this class.
-            </summary>
+             <summary>
+             Attempts to load the resources on first call (subsequent calls reuse the same result,
+             success or failure — this never retries automatically; a fresh app start is required
+             to try again after a config/file fix, which is the expected deploy-and-restart flow
+             anyway). Returns true and populates both out parameters if available; returns false
+             and populates <paramref name="error"/> otherwise. NEVER THROWS — that guarantee is the
+             entire point of this class.
+            
+             If SemanticSearch:Enabled isn't "True", this returns false immediately, every call,
+             without ever touching EmbeddingIndex.Load/QueryEmbedder's constructor — the actual
+             mechanism that keeps a disabled instance from loading anything into memory at all.
+             </summary>
         </member>
         <member name="T:RMuseum.Utils.SemanticSearch.SemanticSearchUnavailableException">
             <summary>
