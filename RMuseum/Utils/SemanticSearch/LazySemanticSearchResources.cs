@@ -23,6 +23,14 @@ namespace RMuseum.Utils.SemanticSearch
     /// pool: each process gets its own instance of this (and everything it loads) — "singleton"
     /// only means one instance per process, not per server. See the migration notes for the
     /// memory math this implies at scale.
+    ///
+    /// SemanticSearch:Enabled gates ALL of the above, checked before anything else runs — this
+    /// is what actually keeps a disabled instance (e.g. api.ganjoor.net, where third-party apps
+    /// shouldn't get this feature) from ever loading the ~530MB embeddings file or the ONNX model
+    /// into memory at all, not just from serving requests. Defaults to disabled (fail-closed) if
+    /// the key is missing entirely — deliberately, since the whole point of this flag is
+    /// preventing resource loading on instances that shouldn't have it; an instance that's
+    /// SUPPOSED to have it (ganjgah.ir) needs the key explicitly set to "True", not left implicit.
     /// </summary>
     public class LazySemanticSearchResources
     {
@@ -32,6 +40,7 @@ namespace RMuseum.Utils.SemanticSearch
         private string _loadError;
         private bool _attempted;
 
+        private readonly bool _enabled;
         private readonly string _embeddingsDirectory;
         private readonly string _modelPath;
         private readonly string _vocabPath;
@@ -41,12 +50,18 @@ namespace RMuseum.Utils.SemanticSearch
 
         public LazySemanticSearchResources(IConfiguration configuration, ILogger<LazySemanticSearchResources> logger)
         {
+            _enabled = string.Equals(configuration["SemanticSearch:Enabled"], "true", StringComparison.OrdinalIgnoreCase);
             _embeddingsDirectory = configuration["SemanticSearch:EmbeddingsDirectory"];
             _modelPath = configuration["SemanticSearch:ModelPath"];
             _vocabPath = configuration["SemanticSearch:VocabPath"];
             _mergesPath = configuration["SemanticSearch:MergesPath"];
             _dimension = int.TryParse(configuration["SemanticSearch:Dimension"], out var d) ? d : 1024;
             _logger = logger;
+
+            if (!_enabled)
+            {
+                _logger.LogInformation("Semantic search is disabled on this instance (SemanticSearch:Enabled is not \"True\") — resources will never be loaded.");
+            }
         }
 
         /// <summary>
@@ -56,9 +71,21 @@ namespace RMuseum.Utils.SemanticSearch
         /// anyway). Returns true and populates both out parameters if available; returns false
         /// and populates <paramref name="error"/> otherwise. NEVER THROWS — that guarantee is the
         /// entire point of this class.
+        ///
+        /// If SemanticSearch:Enabled isn't "True", this returns false immediately, every call,
+        /// without ever touching EmbeddingIndex.Load/QueryEmbedder's constructor — the actual
+        /// mechanism that keeps a disabled instance from loading anything into memory at all.
         /// </summary>
         public bool TryGetResources(out EmbeddingIndex embeddingIndex, out QueryEmbedder queryEmbedder, out string error)
         {
+            if (!_enabled)
+            {
+                embeddingIndex = null;
+                queryEmbedder = null;
+                error = "Semantic search is disabled on this instance.";
+                return false;
+            }
+
             if (!_attempted)
             {
                 lock (_lock)
