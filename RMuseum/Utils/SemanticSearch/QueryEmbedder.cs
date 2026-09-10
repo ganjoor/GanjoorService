@@ -15,18 +15,21 @@ namespace RMuseum.Utils.SemanticSearch
     /// compared against produces meaningless similarity scores, silently (no error, just bad
     /// results), not something that shows up as a crash.
     ///
-    /// UNTESTED — flagging this more strongly than usual, because this file stacks two risks
-    /// that weren't present anywhere else in this project:
-    ///   1. This environment has no .NET SDK and no network access to onnxruntime/the model, so
-    ///      none of this has actually been compiled or run.
-    ///   2. Even once it compiles, BpeTokenizer.Create(vocab, merges) builds a plain BPE
-    ///      tokenizer from vocab.json + merges.txt — it may not capture every detail of Qwen's
-    ///      full tokenizer.json spec (custom pre-tokenizer regex, added/special tokens). A
-    ///      mismatch here wouldn't error either — it would silently tokenize text differently
-    ///      than the Python `tokenizers` library did at index time, degrading search quality
-    ///      without any visible failure.
-    /// See VERIFICATION.md for a paired Python/C# test to run BEFORE trusting search results —
-    /// do this before anything else in this phase.
+    /// Tokenizer construction status: confirmed via reflection against the actual installed
+    /// Microsoft.ML.Tokenizers package that BpeOptions.ByteLevel is the correct mechanism for
+    /// non-Latin scripts (two earlier attempts that only changed the pre-tokenizer, not this
+    /// flag, both ran without error but still silently tokenized Persian to zero tokens). Still
+    /// needs a real local-harness run to confirm this specific configuration works end-to-end —
+    /// "confirmed the right property exists" isn't the same as "confirmed this combination is
+    /// exactly right" — but this is grounded in the real API now, not a documentation guess.
+    ///
+    /// Separately, a local console-app test (same code, real model files, run on a Mac) already
+    /// confirmed the ONNX inference call itself (building the KV-cache tensors below and calling
+    /// session.Run) does NOT crash on that hardware — good evidence the tensor construction is
+    /// basically sound, though it doesn't rule out an environment-specific crash on the actual
+    /// production OS/hardware, which hasn't been re-tested since the tokenizer fix.
+    /// See VERIFICATION.md for the paired Python/C# tokenizer comparison — do this before
+    /// trusting actual search *results*, separate from "does it run without crashing."
     ///
     /// Query-time embedding is always exactly one query per call (a person typing into a search
     /// box), never a batch — unlike the Python indexing script, which batched many poems
@@ -69,11 +72,22 @@ namespace RMuseum.Utils.SemanticSearch
         {
             _session = new InferenceSession(modelPath);
 
-            using (var vocabStream = File.OpenRead(vocabPath))
-            using (var mergesStream = File.OpenRead(mergesPath))
+            // Attempt 3 — the confirmed fix. Attempts 1 and 2 changed how text gets SPLIT into
+            // words (the pre-tokenizer regex); both ran without error but still produced zero
+            // tokens for Persian, because the actual failure was one step later: how each split
+            // piece gets MATCHED against the vocabulary. Confirmed via reflection against the
+            // real installed package (not documentation, which kept being stale/incomplete for
+            // this version): BpeOptions has a `ByteLevel` property — exactly the flag documented
+            // for enabling correct handling of non-Latin scripts (the same DeepSeek/Chinese case
+            // Persian falls into). This is the first attempt grounded in the actual reflected
+            // API rather than a documentation guess — still verify with the local harness before
+            // trusting it, but with real confidence this time, not just hope.
+            var bpeOptions = new BpeOptions(vocabPath, mergesPath)
             {
-                _tokenizer = BpeTokenizer.Create(vocabStream, mergesStream);
-            }
+                ByteLevel = true,
+                PreTokenizer = RobertaPreTokenizer.Instance,
+            };
+            _tokenizer = BpeTokenizer.Create(bpeOptions);
 
             _dimension = dimension;
         }
@@ -87,16 +101,33 @@ namespace RMuseum.Utils.SemanticSearch
             string instructedText = string.Format(InstructionTemplate, queryText);
 
             IReadOnlyList<int> tokenIds = _tokenizer.EncodeToIds(instructedText);
-            int seqLen = tokenIds.Count;
-            if (seqLen == 0)
+            if (tokenIds.Count == 0)
                 throw new ArgumentException("query tokenized to zero tokens — empty or whitespace-only query?", nameof(queryText));
+
+            // Confirmed via a direct side-by-side comparison against Python's
+            // Tokenizer.from_file(tokenizer.json) — the same tokenizer generate_embeddings.py
+            // used to index the whole corpus — on three different real query strings: every
+            // single token matches exactly, except Python's output always ends with one extra
+            // token, id 151643, appended after the real content, identical regardless of what
+            // the text was. That's a fixed special token (almost certainly Qwen's
+            // end-of-sequence marker) added by tokenizer.json's post-processing step, which the
+            // BpeOptions-based construction here has no knowledge of (that step isn't derivable
+            // from vocab.json/merges.txt alone). This isn't cosmetic: EmbedQuery pools the LAST
+            // token's hidden state, so every document embedding was pooled WITH this token
+            // present — a query embedded without it would be pooling a different effective
+            // position, even given otherwise word-for-word identical tokenization. Hardcoded
+            // like NumLayers/NumKvHeads/HeadDim above — re-confirm the same way (compare against
+            // real Python output) if the model is ever swapped.
+            const int EndOfSequenceTokenId = 151643;
+            var fullTokenIds = new List<int>(tokenIds) { EndOfSequenceTokenId };
+            int seqLen = fullTokenIds.Count;
 
             var inputIds = new DenseTensor<long>(new[] { 1, seqLen });
             var attentionMask = new DenseTensor<long>(new[] { 1, seqLen });
             var positionIds = new DenseTensor<long>(new[] { 1, seqLen });
             for (int i = 0; i < seqLen; i++)
             {
-                inputIds[0, i] = tokenIds[i];
+                inputIds[0, i] = fullTokenIds[i];
                 attentionMask[0, i] = 1;
                 positionIds[0, i] = i;
             }

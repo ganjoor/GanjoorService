@@ -24518,18 +24518,21 @@
              compared against produces meaningless similarity scores, silently (no error, just bad
              results), not something that shows up as a crash.
             
-             UNTESTED — flagging this more strongly than usual, because this file stacks two risks
-             that weren't present anywhere else in this project:
-               1. This environment has no .NET SDK and no network access to onnxruntime/the model, so
-                  none of this has actually been compiled or run.
-               2. Even once it compiles, BpeTokenizer.Create(vocab, merges) builds a plain BPE
-                  tokenizer from vocab.json + merges.txt — it may not capture every detail of Qwen's
-                  full tokenizer.json spec (custom pre-tokenizer regex, added/special tokens). A
-                  mismatch here wouldn't error either — it would silently tokenize text differently
-                  than the Python `tokenizers` library did at index time, degrading search quality
-                  without any visible failure.
-             See VERIFICATION.md for a paired Python/C# test to run BEFORE trusting search results —
-             do this before anything else in this phase.
+             Tokenizer construction status: confirmed via reflection against the actual installed
+             Microsoft.ML.Tokenizers package that BpeOptions.ByteLevel is the correct mechanism for
+             non-Latin scripts (two earlier attempts that only changed the pre-tokenizer, not this
+             flag, both ran without error but still silently tokenized Persian to zero tokens). Still
+             needs a real local-harness run to confirm this specific configuration works end-to-end —
+             "confirmed the right property exists" isn't the same as "confirmed this combination is
+             exactly right" — but this is grounded in the real API now, not a documentation guess.
+            
+             Separately, a local console-app test (same code, real model files, run on a Mac) already
+             confirmed the ONNX inference call itself (building the KV-cache tensors below and calling
+             session.Run) does NOT crash on that hardware — good evidence the tensor construction is
+             basically sound, though it doesn't rule out an environment-specific crash on the actual
+             production OS/hardware, which hasn't been re-tested since the tokenizer fix.
+             See VERIFICATION.md for the paired Python/C# tokenizer comparison — do this before
+             trusting actual search *results*, separate from "does it run without crashing."
             
              Query-time embedding is always exactly one query per call (a person typing into a search
              box), never a batch — unlike the Python indexing script, which batched many poems
