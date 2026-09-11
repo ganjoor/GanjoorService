@@ -365,6 +365,19 @@ function fillnarrations(coupletIndex) {
     for (var i = 0; i < narrators.length; i++) {
         $(comboId).append(new Option(narrators[i].replace(/<\/?[^>]+(>|$)/g, "").replace('به خوانش ', '').replace('می‌خواهید شما بخوانید؟ اینجا را ببینید.', '').replace('(دریافت)', ''), i));
     }
+
+    // default the combobox to whichever recitation is currently playing at the
+    // page level (currentAudio is set/updated by _AudioPlayerPartial.cshtml's
+    // 'play' listener, which fires for both page-level play buttons and
+    // playCouplet()'s own audioControl.play() call, so this stays in sync
+    // both ways without any extra wiring)
+    if (typeof currentAudio !== "undefined" && currentAudio != null) {
+        var currentAudioId = parseInt(currentAudio.id.replace('audio-', ''));
+        var currentIndex = recitaionIds.indexOf(currentAudioId);
+        if (currentIndex != -1) {
+            $(comboId).val(currentIndex);
+        }
+    }
 }
 
 function getVerseIndexFromCoupleIndex(coupletIndex) {
