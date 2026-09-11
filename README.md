@@ -20,3 +20,11 @@ local install can pull real content from there via **Admin → مالی و سا�
 (also reachable automatically the first time you run the site against an empty database) instead
 of starting from nothing.
 
+## Semantic search
+
+The "find a poem about..." feature has its own setup guide, separate from the main one above —
+it needs a downloaded ONNX model and published embeddings data on top of the usual database setup:
+**[SEMANTIC_SEARCH_SETUP.md](SEMANTIC_SEARCH_SETUP.md)**. Also has a real troubleshooting section
+covering the actual problems hit building this feature, not a generic checklist — worth reading
+before assuming something new is broken.
+
