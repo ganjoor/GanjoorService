@@ -281,6 +281,16 @@ namespace RMuseum.Services.Implementation
         /// always-the-same-lines behavior — if no keyword appears anywhere in the scanned
         /// verses, or if there were no real keywords to search for at all (a query that was
         /// entirely stopwords, or empty after stripping them).
+        ///
+        /// Matches against CoupletSummary (when present) as well as the raw verse text — the
+        /// summary is clean, modern-language prose, while the verses themselves are archaic and
+        /// metaphorical and often won't literally contain a query's keywords even when the
+        /// couplet is genuinely on-topic. CoupletSummary is only ever read from the FIRST verse
+        /// of the pair (the "Right"/anchor position) — ganjoor-data stores it once per couplet
+        /// there, never on the second ("Left") verse; a small number of "Left" rows do carry a
+        /// stray value (a data anomaly, not a second legitimate copy), and this deliberately
+        /// never reads it from that position, matching how the data is actually meant to be laid
+        /// out rather than how a few rows happen to look.
         /// </summary>
         private static List<GanjoorVerse> SelectPreviewVerses(List<GanjoorVerse> allVerses, List<string> keywords, int previewVerseCount)
         {
@@ -295,6 +305,10 @@ namespace RMuseum.Services.Implementation
                         continue;
 
                     string coupletText = allVerses[i].Text + " " + allVerses[i + 1].Text;
+                    if (!string.IsNullOrEmpty(allVerses[i].CoupletSummary))
+                    {
+                        coupletText += " " + allVerses[i].CoupletSummary;
+                    }
                     int score = keywords.Count(k => coupletText.Contains(k));
 
                     if (score > bestScore)
