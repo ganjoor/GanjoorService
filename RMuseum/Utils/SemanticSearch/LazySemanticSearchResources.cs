@@ -48,6 +48,20 @@ namespace RMuseum.Utils.SemanticSearch
         private readonly int _dimension;
         private readonly ILogger<LazySemanticSearchResources> _logger;
 
+        /// <summary>
+        /// A gentle re-ranking multiplier applied to results whose PoemSummary is still
+        /// AI-generated and un-reviewed (detected by the "هوش مصنوعی:" prefix ganjoor-data's own
+        /// editing workflow requires removing once a human has reviewed/edited a summary — see
+        /// SemanticSearchService for how this is actually applied). A soft nudge, not a filter:
+        /// ~95% of summaries currently carry this prefix, so excluding them outright would gut
+        /// coverage for most queries. Configurable (SemanticSearch:AiSummaryScorePenalty) rather
+        /// than hardcoded, since the right effect size here is a judgment call worth tuning
+        /// without a redeploy. Read here (not directly in SemanticSearchService) purely to reuse
+        /// the config-reading this class already does — this value has nothing to do with the
+        /// lazy-loaded embeddings/model themselves and is available even when Enabled is false.
+        /// </summary>
+        public float AiSummaryScorePenalty { get; }
+
         public LazySemanticSearchResources(IConfiguration configuration, ILogger<LazySemanticSearchResources> logger)
         {
             _enabled = string.Equals(configuration["SemanticSearch:Enabled"], "true", StringComparison.OrdinalIgnoreCase);
@@ -56,6 +70,7 @@ namespace RMuseum.Utils.SemanticSearch
             _vocabPath = configuration["SemanticSearch:VocabPath"];
             _mergesPath = configuration["SemanticSearch:MergesPath"];
             _dimension = int.TryParse(configuration["SemanticSearch:Dimension"], out var d) ? d : 1024;
+            AiSummaryScorePenalty = float.TryParse(configuration["SemanticSearch:AiSummaryScorePenalty"], out var p) ? p : 0.97f;
             _logger = logger;
 
             if (!_enabled)

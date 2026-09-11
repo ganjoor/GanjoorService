@@ -42,6 +42,8 @@ namespace RMuseum.Services.Implementation
         private const int MaxTopK = 50;
         private const int PreviewVerseCount = 4; // ~2 couplets - enough for a result-card preview, not the whole poem
         private const int MaxVersesToScanForRelevance = 200; // bounded prefix to search for a relevant couplet within
+        private const int CandidatePoolMultiplier = 3; // how much larger than k the pre-re-rank candidate pool is
+        private const string AiGeneratedSummaryPrefix = "هوش مصنوعی:";
 
         private readonly LazySemanticSearchResources _resources;
         private readonly LazyQueryScopeIndex _queryScopeIndex;
@@ -136,12 +138,40 @@ namespace RMuseum.Services.Implementation
                 }
 
                 float[] queryVector = queryEmbedder.EmbedQuery(request.Query);
-                List<(int PoemId, float Score)> topMatches = embeddingIndex.FindTopSimilar(queryVector, k, allowedPoemIds);
 
-                var poemIds = topMatches.Select(m => m.PoemId).ToList();
+                // Fetch a larger candidate pool than the final k, so there's room for the
+                // AI-summary re-ranking below to actually change the outcome — re-ranking a pool
+                // that's already exactly k results wide can only reorder them, never let a
+                // human-reviewed poem that was originally ranked k+1 overtake one that made the
+                // cut only because its (unreviewed) summary happened to score marginally higher.
+                int candidatePoolSize = Math.Min(k * CandidatePoolMultiplier, MaxTopK * CandidatePoolMultiplier);
+                List<(int PoemId, float Score)> candidates = embeddingIndex.FindTopSimilar(queryVector, candidatePoolSize, allowedPoemIds);
+
+                var candidateIds = candidates.Select(c => c.PoemId).ToList();
                 var poemsById = await context.GanjoorPoems.AsNoTracking()
-                                        .Where(p => poemIds.Contains(p.Id))
+                                        .Where(p => candidateIds.Contains(p.Id))
                                         .ToDictionaryAsync(p => p.Id);
+
+                // Gentle re-rank: a poem whose summary is still AI-generated and un-reviewed
+                // (still carries ganjoor-data's own "هوش مصنوعی:" prefix - removing it is part of
+                // that project's human-review/edit workflow) gets a small score penalty before
+                // final sorting. The DISPLAYED score stays the true, unpenalized cosine
+                // similarity (Score below uses c.Score, not AdjustedScore) - the penalty is
+                // purely an internal ordering nudge, not something that should make the shown
+                // similarity number stop meaning what it says.
+                float aiPenalty = _resources.AiSummaryScorePenalty;
+                List<(int PoemId, float Score)> topMatches = candidates
+                    .Where(c => poemsById.ContainsKey(c.PoemId))
+                    .Select(c => new
+                    {
+                        c.PoemId,
+                        c.Score,
+                        AdjustedScore = IsAiGeneratedSummary(poemsById[c.PoemId].PoemSummary) ? c.Score * aiPenalty : c.Score,
+                    })
+                    .OrderByDescending(x => x.AdjustedScore)
+                    .Take(k)
+                    .Select(x => (x.PoemId, x.Score))
+                    .ToList();
 
                 // computed once for the whole request, not per result - the query doesn't change
                 // between results
@@ -189,6 +219,18 @@ namespace RMuseum.Services.Implementation
             }
 
             return response;
+        }
+
+        /// <summary>
+        /// ganjoor-data's own editing workflow requires this exact prefix be removed once a
+        /// human has reviewed/edited a poem's summary — its continued presence is a direct,
+        /// already-existing signal for "not yet human-reviewed," not something this project
+        /// invented or has to infer.
+        /// </summary>
+        private static bool IsAiGeneratedSummary(string poemSummary)
+        {
+            return !string.IsNullOrEmpty(poemSummary) &&
+                   poemSummary.StartsWith(AiGeneratedSummaryPrefix, StringComparison.Ordinal);
         }
 
         /// <summary>
