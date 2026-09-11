@@ -13,6 +13,12 @@ namespace RMuseum.Services.Implementation
     public interface ISemanticSearchService
     {
         Task<SemanticSearchResponseDto> SearchAsync(SemanticSearchRequestDto request);
+
+        /// <summary>
+        /// Best-effort — see the implementation for why this should never throw in a way the
+        /// caller needs to handle.
+        /// </summary>
+        Task ReportClickAsync(SemanticSearchClickDto click);
     }
 
     /// <summary>
@@ -216,9 +222,64 @@ namespace RMuseum.Services.Implementation
                         }).ToList(),
                     });
                 }
+
+                // Best-effort logging, using the same context already open for this request - a
+                // logging failure must never fail a real search, so any exception here is
+                // swallowed and response.LogId simply stays null (ReportClickAsync already
+                // no-ops safely if it's ever called with a null/0 LogId from a search that
+                // couldn't be logged).
+                try
+                {
+                    var log = new SemanticSearchQueryLog
+                    {
+                        Query = request.Query,
+                        DateTimeUtc = DateTime.UtcNow,
+                        RequestedTopK = k,
+                        ResultCount = response.Results.Count,
+                        TopResultScore = response.Results.Count > 0 ? (float?)response.Results[0].Score : null,
+                        ScopeDetected = !string.IsNullOrEmpty(response.DetectedPoetName) || !string.IsNullOrEmpty(response.DetectedCategoryName),
+                        DetectedPoetName = response.DetectedPoetName,
+                        DetectedCategoryName = response.DetectedCategoryName,
+                        ScopeDetectionDisabled = request.DisableScopeDetection,
+                    };
+                    context.SemanticSearchQueryLogs.Add(log);
+                    await context.SaveChangesAsync();
+                    response.LogId = log.Id;
+                }
+                catch (Exception)
+                {
+                    // logging is best-effort only - never worth failing a real search over
+                }
             }
 
             return response;
+        }
+
+        public async Task ReportClickAsync(SemanticSearchClickDto click)
+        {
+            if (click == null || click.LogId <= 0)
+                return;
+
+            try
+            {
+                using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
+                {
+                    var log = await context.SemanticSearchQueryLogs.FindAsync(click.LogId);
+                    if (log != null)
+                    {
+                        log.ClickedPoemId = click.PoemId;
+                        log.ClickedResultRank = click.Rank;
+                        log.ClickedAtUtc = DateTime.UtcNow;
+                        await context.SaveChangesAsync();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // click reporting is best-effort only - the click/navigation has already
+                // happened regardless of whether this write succeeds, never worth surfacing an
+                // error to the (fire-and-forget) caller for this
+            }
         }
 
         /// <summary>

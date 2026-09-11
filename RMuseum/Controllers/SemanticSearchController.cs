@@ -61,5 +61,21 @@ namespace RMuseum.Controllers
                 return BadRequest(exp.ToString());
             }
         }
+
+        /// <summary>
+        /// Fire-and-forget click reporting — called via navigator.sendBeacon (or a keepalive
+        /// fetch as fallback) right as a result link is clicked, so it can complete even as the
+        /// browser navigates away. ReportClickAsync itself is fully best-effort (never throws in
+        /// a way that matters here), so this always returns 200 regardless of whether the
+        /// underlying write actually succeeded — the caller isn't listening for the response
+        /// either way.
+        /// </summary>
+        [HttpPost("search/semantic/click")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public async Task<IActionResult> SemanticSearchClick([FromBody] SemanticSearchClickDto click)
+        {
+            await _semanticSearchService.ReportClickAsync(click);
+            return Ok();
+        }
     }
 }

@@ -83,6 +83,27 @@ namespace RMuseum.Models.Ganjoor.SemanticSearch
         /// </summary>
         public string DetectedPoetName { get; set; }
         public string DetectedCategoryName { get; set; }
+
+        /// <summary>
+        /// Id of the SemanticSearchQueryLog row written for this request, or null if logging
+        /// itself failed (best-effort — see SemanticSearchService.SearchAsync — a logging
+        /// failure must never fail the search itself). The UI passes this back with
+        /// POST search/semantic/click if/when a result gets clicked, so the click can be
+        /// correlated to the search that produced it.
+        /// </summary>
+        public int? LogId { get; set; }
+    }
+
+    /// <summary>
+    /// Reported by the UI, fire-and-forget, if and when a person actually clicks through to one
+    /// of the results — see SemanticSearchQueryLog for what this updates.
+    /// </summary>
+    public class SemanticSearchClickDto
+    {
+        public int LogId { get; set; }
+        public int PoemId { get; set; }
+
+        /// <summary>1-based position of the clicked result in the list that was returned</summary>
+        public int Rank { get; set; }
     }
 }
-

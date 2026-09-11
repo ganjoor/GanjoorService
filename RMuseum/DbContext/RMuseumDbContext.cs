@@ -10,6 +10,7 @@ using RSecurityBackend.DbContext;
 using RSecurityBackend.Models.Auth.Db;
 using System;
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Ganjoor.SemanticSearch;
 using RMuseum.Models.MusicCatalogue;
 using RMuseum.Models.Accounting;
 using Microsoft.Extensions.Configuration;
@@ -352,6 +353,12 @@ namespace RMuseum.DbContext
         /// Ganjoor Poems
         /// </summary>
         public DbSet<GanjoorPoem> GanjoorPoems { get; set; }
+
+        /// <summary>
+        /// Semantic search query log — see SemanticSearchQueryLog for what is (and deliberately
+        /// isn't) recorded
+        /// </summary>
+        public DbSet<SemanticSearchQueryLog> SemanticSearchQueryLogs { get; set; }
 
         /// <summary>
         /// Ganjoor Verses

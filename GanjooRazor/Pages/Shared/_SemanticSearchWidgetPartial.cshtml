@@ -311,14 +311,40 @@
                 ' <a href="javascript:void(0);" onclick="ssWidgetSearchGlobally()" class="ss-widget-scope-clear">(جستجوی سراسری)</a></p>';
         }
 
-        response.results.forEach(function (item) {
+        response.results.forEach(function (item, index) {
+            var rank = index + 1;
             html += '<div class="ss-widget-result">';
-            html += '<a class="ss-widget-result-title" href="' + ssWidgetEscapeHtml(item.fullUrl) + '">' + ssWidgetEscapeHtml(item.fullTitle || item.title) + '</a>';
+            html += '<a class="ss-widget-result-title" href="' + ssWidgetEscapeHtml(item.fullUrl) + '" onclick="ssWidgetReportClick(' +
+                JSON.stringify(response.logId) + ',' + JSON.stringify(item.poemId) + ',' + rank + ')">' +
+                ssWidgetEscapeHtml(item.fullTitle || item.title) + '</a>';
             html += ssWidgetRenderVerses(item.verses);
             html += '</div>';
         });
 
         resultsEl.innerHTML = html;
+    }
+
+    // Fire-and-forget - does not preventDefault or delay navigation in any way, just queues the
+    // click report in the background while the browser proceeds to the poem page normally.
+    // sendBeacon is specifically designed for "report something right as the page is about to
+    // unload" - a plain fetch can get cancelled mid-flight by the navigation; sendBeacon (or a
+    // keepalive fetch as fallback for older browsers) doesn't have that problem.
+    function ssWidgetReportClick(logId, poemId, rank) {
+        if (!logId) return; // the search itself failed to log - nothing to correlate a click to
+
+        var payload = JSON.stringify({ logId: logId, poemId: poemId, rank: rank });
+        var url = ssWidgetApiRoot + "/api/ganjoor/search/semantic/click";
+
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon(url, new Blob([payload], { type: "application/json" }));
+        } else {
+            fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: payload,
+                keepalive: true
+            }).catch(function () { });
+        }
     }
 
     // Same hemistich-pairing logic as mini-ganjoor's renderVerses (https://ganjoor.github.io/mini/)

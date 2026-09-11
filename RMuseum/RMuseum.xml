@@ -3448,6 +3448,16 @@
             semantic ("find a poem about...") search
             </summary>
         </member>
+        <member name="M:RMuseum.Controllers.SemanticSearchController.SemanticSearchClick(RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchClickDto)">
+            <summary>
+            Fire-and-forget click reporting — called via navigator.sendBeacon (or a keepalive
+            fetch as fallback) right as a result link is clicked, so it can complete even as the
+            browser navigates away. ReportClickAsync itself is fully best-effort (never throws in
+            a way that matters here), so this always returns 200 regardless of whether the
+            underlying write actually succeeded — the caller isn't listening for the response
+            either way.
+            </summary>
+        </member>
         <member name="M:RMuseum.Controllers.SiteBannersController.AddSiteBanner">
             <summary>
             add site banner (send form) with these fields: alt, url and an image attachment
@@ -3679,6 +3689,12 @@
         <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPoems">
             <summary>
             Ganjoor Poems
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.SemanticSearchQueryLogs">
+            <summary>
+            Semantic search query log — see SemanticSearchQueryLog for what is (and deliberately
+            isn't) recorded
             </summary>
         </member>
         <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorVerses">
@@ -4693,6 +4709,18 @@
             <inheritdoc />
         </member>
         <member name="M:RMuseum.Migrations.RSecNewFields.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.AddSemanticSearchQueryLog">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddSemanticSearchQueryLog.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddSemanticSearchQueryLog.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddSemanticSearchQueryLog.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -11385,6 +11413,16 @@
             explicit PoetId/CatId narrows further, it doesn't replace detection.
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchRequestDto.DisableScopeDetection">
+            <summary>
+            Skips auto-detection entirely for this request — the "search globally instead"
+            escape hatch. Needed because substring-based detection is genuinely ambiguous
+            sometimes: "شمع و پروانه" is both a common poetic theme AND the literal title of a
+            book by a specific poet, so a query using it as a theme could get silently locked to
+            that one book with no way out otherwise. An explicit PoetId/CatId still applies even
+            with this set — that's a deliberate scope the caller asked for, not something guessed.
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchVerseDto.Position">
             <summary>
             matches GanjoorVerse.VersePosition.ToString() (e.g. "Right"/"Left") - same convention
@@ -11412,6 +11450,33 @@
             user what was detected ("نتایج محدود به: حافظ") rather than silently filtering.
             Null/null if nothing was detected (or an explicit PoetId/CatId narrowed things
             without any name being recognized in the free text).
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchResponseDto.LogId">
+            <summary>
+            Id of the SemanticSearchQueryLog row written for this request, or null if logging
+            itself failed (best-effort — see SemanticSearchService.SearchAsync — a logging
+            failure must never fail the search itself). The UI passes this back with
+            POST search/semantic/click if/when a result gets clicked, so the click can be
+            correlated to the search that produced it.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchClickDto">
+            <summary>
+            Reported by the UI, fire-and-forget, if and when a person actually clicks through to one
+            of the results — see SemanticSearchQueryLog for what this updates.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchClickDto.Rank">
+            <summary>1-based position of the clicked result in the list that was returned</summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchQueryLog">
+            <summary>
+            A lightweight, privacy-conscious log of semantic search usage — query text and result
+            metadata only. Deliberately NO user identifiers: no IP address, no user agent, no
+            session/user id. Exists so ranking decisions (the AI-summary down-ranking, a future
+            couplet-level search, anything else) can be evaluated against real usage instead of a
+            handful of manually spot-checked queries.
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.UpdatingRelSectsLog">
@@ -23119,6 +23184,12 @@
             </summary>
             <param name="roleManager"></param>       
         </member>
+        <member name="M:RMuseum.Services.Implementation.ISemanticSearchService.ReportClickAsync(RMuseum.Models.Ganjoor.SemanticSearch.SemanticSearchClickDto)">
+            <summary>
+            Best-effort — see the implementation for why this should never throw in a way the
+            caller needs to handle.
+            </summary>
+        </member>
         <member name="T:RMuseum.Services.Implementation.SemanticSearchService">
              <summary>
              Deliberately NOT a GanjoorService partial, unlike everything else in this project.
@@ -23142,6 +23213,14 @@
              one must not be able to disable the other.
              </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.SemanticSearchService.IsAiGeneratedSummary(System.String)">
+            <summary>
+            ganjoor-data's own editing workflow requires this exact prefix be removed once a
+            human has reviewed/edited a poem's summary — its continued presence is a direct,
+            already-existing signal for "not yet human-reviewed," not something this project
+            invented or has to infer.
+            </summary>
+        </member>
         <member name="F:RMuseum.Services.Implementation.SemanticSearchService.PersianStopWords">
             <summary>
             Common Persian function words stripped out before keyword-matching a query against
@@ -23162,15 +23241,25 @@
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.SemanticSearchService.SelectPreviewVerses(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse},System.Collections.Generic.List{System.String},System.Int32)">
-            <summary>
-            Looks for the couplet (Right/Left verse pair) whose combined text contains the most
-            query keywords, and returns it (plus, if there's room within previewVerseCount, the
-            couplet immediately following it, for a little reading continuity rather than a
-            single isolated pair). Falls back to the poem's opening verses — the previous,
-            always-the-same-lines behavior — if no keyword appears anywhere in the scanned
-            verses, or if there were no real keywords to search for at all (a query that was
-            entirely stopwords, or empty after stripping them).
-            </summary>
+             <summary>
+             Looks for the couplet (Right/Left verse pair) whose combined text contains the most
+             query keywords, and returns it (plus, if there's room within previewVerseCount, the
+             couplet immediately following it, for a little reading continuity rather than a
+             single isolated pair). Falls back to the poem's opening verses — the previous,
+             always-the-same-lines behavior — if no keyword appears anywhere in the scanned
+             verses, or if there were no real keywords to search for at all (a query that was
+             entirely stopwords, or empty after stripping them).
+            
+             Matches against CoupletSummary (when present) as well as the raw verse text — the
+             summary is clean, modern-language prose, while the verses themselves are archaic and
+             metaphorical and often won't literally contain a query's keywords even when the
+             couplet is genuinely on-topic. CoupletSummary is only ever read from the FIRST verse
+             of the pair (the "Right"/anchor position) — ganjoor-data stores it once per couplet
+             there, never on the second ("Left") verse; a small number of "Left" rows do carry a
+             stray value (a data anomaly, not a second legitimate copy), and this deliberately
+             never reads it from that position, matching how the data is actually meant to be laid
+             out rather than how a few rows happen to look.
+             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.SemanticSearchService.GetDescendantCategoryIdsAsync(RMuseum.DbContext.RMuseumDbContext,System.Int32)">
             <summary>
@@ -24603,6 +24692,20 @@
              preventing resource loading on instances that shouldn't have it; an instance that's
              SUPPOSED to have it (ganjgah.ir) needs the key explicitly set to "True", not left implicit.
              </summary>
+        </member>
+        <member name="P:RMuseum.Utils.SemanticSearch.LazySemanticSearchResources.AiSummaryScorePenalty">
+            <summary>
+            A gentle re-ranking multiplier applied to results whose PoemSummary is still
+            AI-generated and un-reviewed (detected by the "هوش مصنوعی:" prefix ganjoor-data's own
+            editing workflow requires removing once a human has reviewed/edited a summary — see
+            SemanticSearchService for how this is actually applied). A soft nudge, not a filter:
+            ~95% of summaries currently carry this prefix, so excluding them outright would gut
+            coverage for most queries. Configurable (SemanticSearch:AiSummaryScorePenalty) rather
+            than hardcoded, since the right effect size here is a judgment call worth tuning
+            without a redeploy. Read here (not directly in SemanticSearchService) purely to reuse
+            the config-reading this class already does — this value has nothing to do with the
+            lazy-loaded embeddings/model themselves and is available even when Enabled is false.
+            </summary>
         </member>
         <member name="M:RMuseum.Utils.SemanticSearch.LazySemanticSearchResources.TryGetResources(RMuseum.Utils.SemanticSearch.EmbeddingIndex@,RMuseum.Utils.SemanticSearch.QueryEmbedder@,System.String@)">
              <summary>
