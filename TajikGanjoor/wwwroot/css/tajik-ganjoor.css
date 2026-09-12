@@ -803,3 +803,57 @@ html, body {
     border-radius: 4px;
     transition: background-color 0.2s ease;
 }
+
+/* ---------- sticky mini audio-player (recitation seek controls stay
+   reachable while scrolling the poem text) ---------- */
+
+.tg-sticky-player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    background: var(--tg-paper-edge);
+    border-top: 1px solid var(--tg-rule);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.tg-sticky-player-narrator {
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--tg-ink);
+    flex-shrink: 0;
+}
+
+.tg-sticky-player-audio-slot {
+    flex: 1;
+    min-width: 0;
+}
+
+.tg-sticky-player-audio-slot audio {
+    width: 100%;
+    display: block;
+}
+
+.tg-sticky-player-btn {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    color: var(--tg-ink);
+    padding: 4px 6px;
+    flex-shrink: 0;
+}
+
+.tg-sticky-player-btn:hover {
+    color: var(--tg-accent);
+}
+
+@media (max-width: 600px) {
+    .tg-sticky-player-narrator {
+        display: none;
+    }
+}
