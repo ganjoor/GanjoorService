@@ -3,6 +3,7 @@ using GanjooRazor.Utils;
 using KontorService.Models.Reporting.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -30,6 +31,7 @@ namespace GanjooRazor.Pages
     /// (Index.cshtml keeps its own automatic "/" route unchanged, so home is unaffected).
     /// </summary>
     [IgnoreAntiforgeryToken(Order = 1001)]
+    [OutputCache(PolicyName = "GanjoorPublicPage")]
     public partial class GanjoorPageModel : LoginPartialEnabledPageModel
     {
         /// <summary>
@@ -476,7 +478,7 @@ namespace GanjooRazor.Pages
 
         private async Task<bool> preparePoets()
         {
-            var (success, poets, error) = await _poetCache.GetPoetsAsync(AggressiveCacheEnabled);
+            var (success, poets, error) = await _poetCache.GetPoetsAsync(EditorCacheBypass);
             if (!success)
             {
                 LastError = error;
@@ -492,7 +494,7 @@ namespace GanjooRazor.Pages
             {
                 return new OkObjectResult(null);
             }
-            var (success, poet, error) = await _poetCache.GetPoetAsync(id, AggressiveCacheEnabled);
+            var (success, poet, error) = await _poetCache.GetPoetAsync(id, EditorCacheBypass);
             if (!success)
             {
                 return BadRequest(error);

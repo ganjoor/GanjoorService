@@ -1,5 +1,6 @@
 ﻿using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,6 +19,7 @@ namespace GanjooRazor.Pages
     /// unaffected by that change.
     /// </summary>
     [IgnoreAntiforgeryToken(Order = 1001)]
+    [OutputCache(PolicyName = "GanjoorPublicPage")]
     public class IndexModel : LoginPartialEnabledPageModel
     {
         private readonly PoetCacheService _poetCache;
@@ -63,7 +65,7 @@ namespace GanjooRazor.Pages
 
         private async Task<bool> preparePoets()
         {
-            var (success, poets, error) = await _poetCache.GetPoetsAsync(AggressiveCacheEnabled);
+            var (success, poets, error) = await _poetCache.GetPoetsAsync(EditorCacheBypass);
             if (!success)
             {
                 LastError = error;
@@ -173,7 +175,7 @@ namespace GanjooRazor.Pages
             {
                 return new OkObjectResult(null);
             }
-            var (success, poet, error) = await _poetCache.GetPoetAsync(id, AggressiveCacheEnabled);
+            var (success, poet, error) = await _poetCache.GetPoetAsync(id, EditorCacheBypass);
             if (!success)
             {
                 return BadRequest(error);

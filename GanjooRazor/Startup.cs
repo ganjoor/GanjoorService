@@ -1,12 +1,15 @@
+using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
@@ -28,6 +31,39 @@ namespace GanjooRazor
             services.AddMemoryCache();
 
             services.AddScoped<GanjooRazor.Utils.PoetCacheService>();
+
+            // Compresses the HTML/JSON responses themselves (independent of the output cache
+            // below - this runs on every response, cached or not). Persian poem text compresses
+            // very well, so this cuts outbound bandwidth with no effect on freshness at all.
+            services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true;
+                options.Providers.Add<BrotliCompressionProvider>();
+                options.Providers.Add<GzipCompressionProvider>();
+            });
+            services.Configure<BrotliCompressionProviderOptions>(options =>
+            {
+                options.Level = CompressionLevel.Fastest;
+            });
+            services.Configure<GzipCompressionProviderOptions>(options =>
+            {
+                options.Level = CompressionLevel.Fastest;
+            });
+
+            // Server-side output cache for the public content pages. Only ever serves a cached
+            // response to requests that carry none of the personalization cookies - see
+            // AnonymousPageOutputCachePolicy for why that's the safe boundary. This is what
+            // actually avoids re-hitting the Ganjoor API on every repeat/bot visit to the same
+            // poem/poet/category URL.
+            //
+            // Registered via the (string, IOutputCachePolicy) overload directly - the
+            // OutputCachePolicyBuilder.AddPolicy(IOutputCachePolicy) overload used to attach a
+            // custom policy from inside a builder lambda is internal to ASP.NET Core, not public
+            // (see dotnet/aspnetcore#55809), so it can't be called from application code.
+            services.AddOutputCache(options =>
+            {
+                options.AddPolicy("GanjoorPublicPage", AnonymousPageOutputCachePolicy.Instance);
+            });
 
             services.AddSingleton(
                    HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.BasicLatin,
@@ -86,6 +122,9 @@ namespace GanjooRazor
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         { 
 
+            // Must run before anything writes to the response body.
+            app.UseResponseCompression();
+
             app.UseCors("GanjoorCorsPolicy");
 
             app.UseExceptionHandler("/Error");
@@ -127,7 +166,9 @@ namespace GanjooRazor
 
             app.UseAuthorization();
 
-
+            // Must run after routing/authorization (so it knows which endpoint/policy applies)
+            // and before endpoint execution (so a cache hit can short-circuit it).
+            app.UseOutputCache();
 
             app.UseEndpoints(endpoints =>
             {

@@ -1,5 +1,6 @@
 ﻿using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 namespace GanjooRazor.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
+    [OutputCache(PolicyName = "GanjoorPublicPage")]
     public class FAQModel : LoginPartialEnabledPageModel
     {
         private readonly PoetCacheService _poetCache;
@@ -35,7 +37,7 @@ namespace GanjooRazor.Pages
             ViewData["Title"] = $"گنجور » پرسش‌های متداول";
             InitializeCommonPageState();
 
-            var (poetsOk, poets, poetsError) = await _poetCache.GetPoetsAsync(AggressiveCacheEnabled);
+            var (poetsOk, poets, poetsError) = await _poetCache.GetPoetsAsync(EditorCacheBypass);
             if (!poetsOk)
             {
                 LastError = poetsError;

@@ -33,11 +33,17 @@ namespace GanjooRazor.Utils
         /// Gets the full poet list. Returns (true, poets, null) on success, or (false, null, error)
         /// on failure - callers decide what to do with the error (set LastError and return Page(),
         /// return BadRequest(error), etc.) since that varies per caller.
+        ///
+        /// Caching is on by default (poet metadata changes rarely and isn't personalized, so this
+        /// never makes an ordinary visitor - logged in or not - see stale content). Pass
+        /// <paramref name="bypassCache"/> = true (callers pass their page's EditorCacheBypass,
+        /// i.e. the CanEdit cookie) so an editor sees their own just-made poet edits immediately
+        /// instead of waiting out the cache TTL.
         /// </summary>
-        public async Task<(bool success, List<GanjoorPoetViewModel> poets, string error)> GetPoetsAsync(bool cacheResult)
+        public async Task<(bool success, List<GanjoorPoetViewModel> poets, string error)> GetPoetsAsync(bool bypassCache = false)
         {
             const string cacheKey = "/api/ganjoor/poets";
-            if (_memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
+            if (!bypassCache && _memoryCache.TryGetValue(cacheKey, out List<GanjoorPoetViewModel> poets))
             {
                 return (true, poets, null);
             }
@@ -49,7 +55,7 @@ namespace GanjooRazor.Utils
             }
 
             poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
-            if (cacheResult)
+            if (!bypassCache)
             {
                 _memoryCache.Set(cacheKey, poets, TimeSpan.FromHours(1));
             }
@@ -58,12 +64,13 @@ namespace GanjooRazor.Utils
 
         /// <summary>
         /// Gets a single poet's full details by id. Returns (true, poet, null) on success, or
-        /// (false, null, error) on failure.
+        /// (false, null, error) on failure. See <see cref="GetPoetsAsync"/> for the caching/bypass
+        /// rules - identical here.
         /// </summary>
-        public async Task<(bool success, GanjoorPoetCompleteViewModel poet, string error)> GetPoetAsync(int poetId, bool cacheResult)
+        public async Task<(bool success, GanjoorPoetCompleteViewModel poet, string error)> GetPoetAsync(int poetId, bool bypassCache = false)
         {
             var cacheKey = $"/api/ganjoor/poet/{poetId}";
-            if (_memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
+            if (!bypassCache && _memoryCache.TryGetValue(cacheKey, out GanjoorPoetCompleteViewModel poet))
             {
                 return (true, poet, null);
             }
@@ -75,7 +82,7 @@ namespace GanjooRazor.Utils
             }
 
             poet = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
-            if (cacheResult)
+            if (!bypassCache)
             {
                 _memoryCache.Set(cacheKey, poet, TimeSpan.FromHours(1));
             }

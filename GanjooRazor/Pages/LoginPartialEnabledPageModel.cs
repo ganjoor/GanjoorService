@@ -41,10 +41,14 @@ namespace GanjooRazor.Pages
         }
 
         /// <summary>
-        /// aggressive cache flag. Every page model that had this property defined it identically -
-        /// same try/catch-wrapped bool.Parse now handled once by GetConfigFlag.
+        /// True for editors (visitors carrying the CanEdit cookie). Used to bypass PoetCacheService's
+        /// cache so an editor sees their own just-made poet edits immediately, rather than for a
+        /// site-wide on/off config flag - caching poet data is low-risk enough (it's global
+        /// reference data, not personalized) to just always be on for everyone else. Replaces the
+        /// former AggressiveCacheEnabled config flag, which gated this caching behind a setting that
+        /// defaulted to (and in production, stayed) off.
         /// </summary>
-        protected bool AggressiveCacheEnabled => GetConfigFlag("AggressiveCacheEnabled");
+        protected bool EditorCacheBypass => Request.Cookies["CanEdit"] == "True";
 
         /// <summary>
         /// Returns a 503 result if the site is in maintenance mode, or null otherwise. Was previously

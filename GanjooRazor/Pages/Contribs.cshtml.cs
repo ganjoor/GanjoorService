@@ -1,5 +1,6 @@
 ﻿using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 namespace GanjooRazor.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
+    [OutputCache(PolicyName = "GanjoorPublicPage")]
     public class ContribsModel : LoginPartialEnabledPageModel
     {
         private readonly PoetCacheService _poetCache;
@@ -34,7 +36,7 @@ namespace GanjooRazor.Pages
             InitializeCommonPageState();
             PoetId = string.IsNullOrEmpty(Request.Query["a"]) ? 0 : int.Parse(Request.Query["a"]);
 
-            var (poetsOk, poets, poetsError) = await _poetCache.GetPoetsAsync(AggressiveCacheEnabled);
+            var (poetsOk, poets, poetsError) = await _poetCache.GetPoetsAsync(EditorCacheBypass);
             if (!poetsOk)
             {
                 LastError = poetsError;
@@ -44,7 +46,7 @@ namespace GanjooRazor.Pages
 
             if (PoetId != 0)
             {
-                var (poetOk, poet, poetError) = await _poetCache.GetPoetAsync(PoetId, AggressiveCacheEnabled);
+                var (poetOk, poet, poetError) = await _poetCache.GetPoetAsync(PoetId, EditorCacheBypass);
                 if (!poetOk)
                 {
                     LastError = poetError;
@@ -62,7 +64,7 @@ namespace GanjooRazor.Pages
             {
                 return new OkObjectResult(null);
             }
-            var (success, poet, error) = await _poetCache.GetPoetAsync(id, AggressiveCacheEnabled);
+            var (success, poet, error) = await _poetCache.GetPoetAsync(id, EditorCacheBypass);
             if (!success)
             {
                 return BadRequest(error);

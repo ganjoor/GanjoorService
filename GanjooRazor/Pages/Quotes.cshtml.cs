@@ -1,5 +1,6 @@
 ﻿using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor.ViewModels;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 namespace GanjooRazor.Pages
 {
     [IgnoreAntiforgeryToken(Order = 1001)]
+    [OutputCache(PolicyName = "GanjoorPublicPage")]
     public class QuotesModel : LoginPartialEnabledPageModel
     {
         private readonly PoetCacheService _poetCache;
@@ -35,7 +37,7 @@ namespace GanjooRazor.Pages
 
             InitializeCommonPageState();
 
-            var (poetsOk, poets, poetsError) = await _poetCache.GetPoetsAsync(AggressiveCacheEnabled);
+            var (poetsOk, poets, poetsError) = await _poetCache.GetPoetsAsync(EditorCacheBypass);
             if (!poetsOk)
             {
                 LastError = poetsError;
