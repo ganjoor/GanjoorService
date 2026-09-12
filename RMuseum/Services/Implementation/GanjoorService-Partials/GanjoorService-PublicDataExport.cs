@@ -401,6 +401,7 @@ namespace RMuseum.Services.Implementation
                     SectionIndex2 = v.SectionIndex2,
                     SectionIndex3 = v.SectionIndex3,
                     SectionIndex4 = v.SectionIndex4,
+                    CoupletSummary = v.CoupletSummary,
                 }).ToList(),
             };
 

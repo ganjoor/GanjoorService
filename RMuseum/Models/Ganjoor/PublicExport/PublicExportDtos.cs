@@ -167,6 +167,17 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         public int? SectionIndex2 { get; set; }
         public int? SectionIndex3 { get; set; }
         public int? SectionIndex4 { get; set; }
+
+        /// <summary>
+        /// AI-generated (prefixed "هوش مصنوعی:", matching PoemSummary's own convention) until a
+        /// human reviews/edits it, at which point the prefix is removed — that prefix's
+        /// presence/absence is itself the provenance signal, same as for PoemSummary, nothing
+        /// new needed here to track it. Published specifically so a human editor's curatorial
+        /// work on a couplet's interpretation — genuinely irreplaceable if the live database
+        /// were ever lost, unlike the poem text itself, which exists in many other sources —
+        /// isn't only ever stored in one place.
+        /// </summary>
+        public string CoupletSummary { get; set; }
     }
 
     /// <summary>
