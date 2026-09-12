@@ -84,6 +84,7 @@
                         });
 
                         _setXml('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitaion.Id}.xml")');
+                        showStickyPlayer(currentAudio, '@Html.Raw(recitaion.AudioArtist)', @recitaion.Id);
                     });
 
                     document.getElementById('audio-@recitaion.Id').addEventListener('timeupdate', () => {

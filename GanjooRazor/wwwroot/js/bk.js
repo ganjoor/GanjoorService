@@ -349,6 +349,71 @@ function hilightverse(vnum, clr, sc, forceScroll) {
     return false;
 }
 
+// ---------- sticky mini audio-player ----------
+// Re-parents the actual playing <audio> element into a fixed bottom bar so its
+// native seek/play/pause controls stay reachable while the user scrolls the
+// poem text, instead of needing to scroll back to the recitation list. Moving
+// an <audio> element via appendChild does not interrupt playback in modern
+// browsers, so this is safe to do mid-play.
+var stickyPlayerOriginalParent = null;
+var stickyPlayerOriginalNextSibling = null;
+var stickyPlayerDismissed = false;
+var stickyPlayerLastRecitationId = null;
+
+function showStickyPlayer(audioElement, narratorName, recitationId) {
+    if (recitationId !== stickyPlayerLastRecitationId) {
+        // a different recitation started - a manual dismissal of a previous
+        // track should not suppress the bar for a newly chosen one
+        stickyPlayerDismissed = false;
+        stickyPlayerLastRecitationId = recitationId;
+    }
+    if (stickyPlayerDismissed) return;
+
+    var bar = document.getElementById('sticky-audio-player');
+    var slot = document.getElementById('sticky-audio-slot');
+    if (!bar || !slot) return;
+
+    if (audioElement.parentElement !== slot) {
+        // if a DIFFERENT audio element is already sitting in the slot (e.g. the
+        // page-level recitation was playing and a couplet-level one just
+        // started), put it back where it came from first so the slot never
+        // ends up holding two <audio> elements at once
+        var existing = slot.firstElementChild;
+        if (existing && existing !== audioElement && stickyPlayerOriginalParent) {
+            if (stickyPlayerOriginalNextSibling) {
+                stickyPlayerOriginalParent.insertBefore(existing, stickyPlayerOriginalNextSibling);
+            } else {
+                stickyPlayerOriginalParent.appendChild(existing);
+            }
+        }
+
+        stickyPlayerOriginalParent = audioElement.parentElement;
+        stickyPlayerOriginalNextSibling = audioElement.nextSibling;
+        slot.appendChild(audioElement);
+    }
+
+    document.getElementById('sticky-audio-narrator').textContent = narratorName;
+    bar.style.display = 'flex';
+}
+
+function closeStickyPlayer() {
+    var slot = document.getElementById('sticky-audio-slot');
+    var bar = document.getElementById('sticky-audio-player');
+    if (!slot || !bar) return;
+
+    var audioElement = slot.firstElementChild;
+    if (audioElement && stickyPlayerOriginalParent) {
+        if (stickyPlayerOriginalNextSibling) {
+            stickyPlayerOriginalParent.insertBefore(audioElement, stickyPlayerOriginalNextSibling);
+        } else {
+            stickyPlayerOriginalParent.appendChild(audioElement);
+        }
+    }
+
+    bar.style.display = 'none';
+    stickyPlayerDismissed = true;
+}
+
 function fillnarrations(coupletIndex) {
     if (typeof (narrators) == "undefined") {
         var blockid = '#play-block-' + coupletIndex;
