@@ -183,9 +183,9 @@ function switchPlayerScrollLock() {
         $('#scroll-lock').text('🔓');
     }
 
-    var stickyLockIcon = document.getElementById('sticky-scroll-lock');
+    var stickyLockIcon = document.getElementById('sticky-scroll-lock-icon');
     if (stickyLockIcon) {
-        stickyLockIcon.textContent = playerScrollLock ? '🔒' : '🔓';
+        stickyLockIcon.textContent = playerScrollLock ? 'lock' : 'lock_open';
     }
 
     if (playerScrollLock) {
@@ -398,9 +398,9 @@ function showStickyPlayer(audioElement, narratorName, recitationId) {
     }
 
     document.getElementById('sticky-audio-narrator').textContent = narratorName;
-    var lockIcon = document.getElementById('sticky-scroll-lock');
+    var lockIcon = document.getElementById('sticky-scroll-lock-icon');
     if (lockIcon) {
-        lockIcon.textContent = playerScrollLock ? '🔒' : '🔓';
+        lockIcon.textContent = playerScrollLock ? 'lock' : 'lock_open';
     }
     bar.style.display = 'flex';
 }
