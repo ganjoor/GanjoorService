@@ -27,8 +27,10 @@
         document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
     }
 
-    // default: on, matching the previously-unconditional auto-scroll behavior
-    var scrollLock = getCookie('tgScrollLock') !== 'false';
+    // default: off - the previously-unconditional auto-scroll was reported
+    // as confusing (users didn't know how to turn it off), so now it starts
+    // disabled and only turns on if a user explicitly enables it
+    var scrollLock = getCookie('tgScrollLock') === 'true';
 
     function updateLockIcon() {
         var icon = document.getElementById('tg-sticky-lock-icon');
