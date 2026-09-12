@@ -183,6 +183,11 @@ function switchPlayerScrollLock() {
         $('#scroll-lock').text('🔓');
     }
 
+    var stickyLockIcon = document.getElementById('sticky-scroll-lock');
+    if (stickyLockIcon) {
+        stickyLockIcon.textContent = playerScrollLock ? '🔒' : '🔓';
+    }
+
     if (playerScrollLock) {
         const lockButtons = document.querySelectorAll('.recitation-scrollunlock');
         lockButtons.forEach(function (lockButton) {
@@ -393,6 +398,10 @@ function showStickyPlayer(audioElement, narratorName, recitationId) {
     }
 
     document.getElementById('sticky-audio-narrator').textContent = narratorName;
+    var lockIcon = document.getElementById('sticky-scroll-lock');
+    if (lockIcon) {
+        lockIcon.textContent = playerScrollLock ? '🔒' : '🔓';
+    }
     bar.style.display = 'flex';
 }
 
