@@ -414,6 +414,19 @@ function closeStickyPlayer() {
     stickyPlayerDismissed = true;
 }
 
+// Jumps to whichever verse currently matches the audio position, reusing the
+// #InlinePauseButton marker that hilightverse() already keeps positioned at
+// the currently-playing verse (recreated there every time the highlighted
+// verse changes) - no need to independently track playback position.
+function scrollToCurrentVerse() {
+    var marker = document.getElementById('InlinePauseButton');
+    if (!marker) return;
+    var verseElement = marker.closest('.m1, .m2, .n, .l, .b2');
+    if (verseElement && verseElement.scrollIntoView) {
+        scrollToTargetAdjusted(verseElement);
+    }
+}
+
 function fillnarrations(coupletIndex) {
     if (typeof (narrators) == "undefined") {
         var blockid = '#play-block-' + coupletIndex;

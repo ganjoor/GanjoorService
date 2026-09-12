@@ -3071,6 +3071,19 @@ mark {
     display: block;
 }
 
+.up-sticky-player__jump {
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: var(--lapis);
+    padding: 4px 8px;
+    flex-shrink: 0;
+}
+
+.up-sticky-player__jump:hover {
+    color: var(--brand);
+}
+
 .up-sticky-player__close {
     cursor: pointer;
     font-size: 1.1rem;
