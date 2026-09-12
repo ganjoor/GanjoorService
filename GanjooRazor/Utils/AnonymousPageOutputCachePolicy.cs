@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Linq;
 using System.Threading;
@@ -63,7 +65,31 @@ namespace GanjooRazor.Utils
         ValueTask IOutputCachePolicy.ServeFromCacheAsync(OutputCacheContext context, CancellationToken cancellationToken)
             => ValueTask.CompletedTask;
 
+        /// <summary>
+        /// Runs after the response has actually been generated, right before the middleware would
+        /// store it. Registering this policy directly (via
+        /// <c>options.AddPolicy(name, IOutputCachePolicy)</c> in Startup.cs) means it's used
+        /// standalone instead of chained onto ASP.NET Core's built-in DefaultPolicy - so none of
+        /// DefaultPolicy's own storage safety checks run unless reproduced here. Without this
+        /// method, EVERY response was eligible for storage, including 302 redirects (GanjoorPage
+        /// and Index both have legitimate redirect paths - legacy URL redirects, the "?p=" lookup,
+        /// 404-to-redirecturl fallback) - one of those got cached and was then replayed to every
+        /// anonymous visitor of that URL until the TTL expired. This restores the same three
+        /// checks DefaultPolicy applies: only store 200 responses, never store a response that set
+        /// a cookie, never store for an authenticated request.
+        /// </summary>
         ValueTask IOutputCachePolicy.ServeResponseAsync(OutputCacheContext context, CancellationToken cancellationToken)
-            => ValueTask.CompletedTask;
+        {
+            var response = context.HttpContext.Response;
+
+            if (!StringValues.IsNullOrEmpty(response.Headers[HeaderNames.SetCookie]) ||
+                context.HttpContext.User?.Identity?.IsAuthenticated == true ||
+                response.StatusCode != StatusCodes.Status200OK)
+            {
+                context.AllowCacheStorage = false;
+            }
+
+            return ValueTask.CompletedTask;
+        }
     }
 }
