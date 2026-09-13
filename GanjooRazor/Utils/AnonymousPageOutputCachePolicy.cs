@@ -54,6 +54,16 @@ namespace GanjooRazor.Utils
             context.AllowCacheStorage = !isPersonalized;
             context.Tags.Add("ganjoor-public-page");
 
+            // Vary the cache entry by every query string key. Without this, the cache key is
+            // just the bare path - so /Search and /Simi (which read the actual search/rhythm
+            // term, poet, category, page number etc. entirely from the query string, not the
+            // path) would collapse every distinct search onto ONE shared cache entry, and every
+            // visitor would get back whichever stranger's search happened to be cached. This is
+            // the same "vary by any query by default" line ASP.NET Core's own DefaultPolicy sets
+            // - it's not automatic for a standalone custom policy like this one, it has to be set
+            // explicitly.
+            context.CacheVaryByRules.QueryKeys = "*";
+
             // Short TTL: a poem/poet/category edit needs to reach anonymous visitors within
             // minutes, not be pinned for the site's whole lifetime. Tune per page type later if
             // needed (e.g. shorter for recently-active pages, longer for old archived poets).
