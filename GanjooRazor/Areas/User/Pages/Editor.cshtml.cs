@@ -412,7 +412,12 @@ namespace GanjooRazor.Areas.User.Pages
                             {
                                 if (vOrderTexts.Where(t => t.VORder == vOrder).Any())
                                 {
-                                    vOrderTexts.First(t => t.VORder == vOrder).CoupletSummary = vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک");
+                                    var existingEntryCoupletSummary = vParts.Length > 1 ? vParts[1].Replace("ۀ", "هٔ").Replace("ك", "ک") : "";
+                                    if (existingEntryCoupletSummary.Contains("هوش مصنوعی"))
+                                    {
+                                        return new BadRequestObjectResult("لطفاً در صورت ویرایش خروجی‌های هوش مصنوعی عبارت هوش مصنوعی را از متن برگردان یا خلاصه حذف کنید.");
+                                    }
+                                    vOrderTexts.First(t => t.VORder == vOrder).CoupletSummary = existingEntryCoupletSummary;
                                 }
                                 else
                                 {

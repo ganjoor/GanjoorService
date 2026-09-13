@@ -23,5 +23,6 @@
         RejectedParaphraseBecauseItIsWordMeaningOrIncomplete = 15,
         RejectedBecauseOfAbusingPunctuations = 16,
         RejectedBecauseOfNonStandardCharcaters = 17,
+        RejectedParaphraseBecauseFakeAttribution = 18,
     }
 }

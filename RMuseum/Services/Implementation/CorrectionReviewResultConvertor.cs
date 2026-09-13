@@ -50,6 +50,8 @@ namespace RMuseum.Services.Implementation
                     return "از علائم سجاوندی به طور نامناسب استفاده شده است.";
                 case CorrectionReviewResult.RejectedBecauseOfNonStandardCharcaters:
                     return "برای هٔ چسبان یا نویسه‌های دیگر از دستور خط فرهنگستان تبعیت نشده است.";
+                case CorrectionReviewResult.RejectedParaphraseBecauseFakeAttribution:
+                    return "به جای عبارت «هوش مصنوعی:» یا در ابتدای خلاصهٔ نوشته شده توسط کاربر، نام شخص یا برچسب دیگری آورده شده است.";
             }
             return "هنوز بررسی نشده";
         }
