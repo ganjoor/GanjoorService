@@ -170,7 +170,9 @@ namespace GanjooRazor.Pages
 
             if (!response.IsSuccessStatusCode)
             {
-                return Redirect($"/login?redirect={Request.Path}&error={JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync())}");
+                // the API's error text is Persian and Location headers must be ASCII, so it is encoded
+                string loginError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                return Redirect($"/login?redirect={Uri.EscapeDataString(Request.Path)}&error={Uri.EscapeDataString(loginError ?? "")}");
             }
 
             LoggedOnUserModelEx loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await response.Content.ReadAsStringAsync());
