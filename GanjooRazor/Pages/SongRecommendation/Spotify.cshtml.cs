@@ -117,7 +117,7 @@ namespace GanjooRazor.Pages
             }
         }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
             PostSuccess = false;
             LastError = "";
@@ -133,9 +133,16 @@ namespace GanjooRazor.Pages
                 PoemMusicTrackViewModel.PoemId = 0;
             }
 
-            await _GetSuggestedSongs();
-        }
+            // the search flow stays in place for the day the Spotify API works again
+            if (!SpotifyWorking)
+            {
+                return Redirect($"/musiclink/?p={PoemId}");
+            }
 
+            await _GetSuggestedSongs();
+
+            return Page();
+        }
         public async Task<IActionResult> OnPostAsync()
         {
             PostSuccess = false;

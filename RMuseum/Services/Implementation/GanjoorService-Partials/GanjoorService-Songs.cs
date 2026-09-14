@@ -2,6 +2,7 @@
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Models.MusicCatalogue;
+using RMuseum.Utils;
 using RSecurityBackend.Models.Generic;
 using System;
 using System.Data;
@@ -105,6 +106,38 @@ namespace RMuseum.Services.Implementation
 
 
         /// <summary>
+        /// checks a user supplied track and rewrites its url to canonical form, returns null when it is acceptable
+        /// </summary>
+        /// <param name="song"></param>
+        /// <returns></returns>
+        private static string _PrepareTrackUrl(PoemMusicTrackViewModel song)
+        {
+            if (string.IsNullOrWhiteSpace(song.TrackUrl))
+                return "نشانی آهنگ خالی است.";
+
+            if (song.TrackType != PoemMusicTrackType.MusicUrl)
+                return null;
+
+            if (string.IsNullOrWhiteSpace(song.ArtistName))
+                return "نام خواننده را وارد کنید.";
+
+            if (string.IsNullOrWhiteSpace(song.TrackName))
+                return "عنوان آهنگ را وارد کنید.";
+
+            if (!MusicUrlValidator.TryNormalize(song.TrackUrl, out string normalizedUrl, out _, out string error))
+                return error;
+
+            song.TrackUrl = normalizedUrl;
+            song.ArtistName = song.ArtistName.Trim();
+            song.TrackName = song.TrackName.Trim();
+            song.AlbumName = string.IsNullOrWhiteSpace(song.AlbumName) ? "" : song.AlbumName.Trim();
+            song.ArtistUrl = "";
+            song.AlbumUrl = "";
+
+            return null;
+        }
+
+        /// <summary>
         /// suggest song
         /// </summary>
         /// <param name="userId"></param>
@@ -138,7 +171,14 @@ namespace RMuseum.Services.Implementation
             }
             else
             {
-                var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.AsNoTracking().Where(t => t.PoemId == song.PoemId && t.TrackType == song.TrackType && (t.TrackUrl == song.TrackUrl || t.TrackUrl == song.TrackUrl.Replace("https", "http")) && (t.Approved || (!t.Approved && !t.Rejected))).FirstOrDefaultAsync();
+                string validationError = _PrepareTrackUrl(song);
+                if (validationError != null)
+                {
+                    return new RServiceResult<PoemMusicTrackViewModel>(null, validationError);
+                }
+
+                string insecureTrackUrl = song.TrackUrl.Replace("https://", "http://");
+                var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.AsNoTracking().Where(t => t.PoemId == song.PoemId && (t.TrackUrl == song.TrackUrl || t.TrackUrl == insecureTrackUrl) && (t.Approved || (!t.Approved && !t.Rejected))).FirstOrDefaultAsync();
                 if (alreadySuggestedSong != null)
                 {
                     return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر پیشنهاد داده شده است.");
@@ -164,7 +204,7 @@ namespace RMuseum.Services.Implementation
                     RejectionCause = ""
                 };
 
-            GanjoorSinger singer = await _context.GanjoorSingers.Where(s => s.Url == song.ArtistUrl).FirstOrDefaultAsync();
+            GanjoorSinger singer = string.IsNullOrEmpty(song.ArtistUrl) ? null : await _context.GanjoorSingers.Where(s => s.Url == song.ArtistUrl).FirstOrDefaultAsync();
             if (singer != null)
             {
                 sug.SingerId = singer.Id;
@@ -280,6 +320,7 @@ namespace RMuseum.Services.Implementation
             if (song.Approved && song.Rejected)
                 return new RServiceResult<PoemMusicTrackViewModel>(null, "song.Approved && song.Rejected");
 
+            // rejecting stays possible whatever the url is, otherwise a bad entry could never be cleared
             if (song.Approved)
             {
                 if (song.TrackType == PoemMusicTrackType.Golha)
@@ -292,7 +333,14 @@ namespace RMuseum.Services.Implementation
                 }
                 else
                 {
-                    var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.AsNoTracking().Where(t => t.PoemId == song.PoemId && t.TrackType == song.TrackType && (t.TrackUrl == song.TrackUrl || t.TrackUrl == song.TrackUrl.Replace("https", "http")) && t.Approved).FirstOrDefaultAsync();
+                    string validationError = _PrepareTrackUrl(song);
+                    if (validationError != null)
+                    {
+                        return new RServiceResult<PoemMusicTrackViewModel>(null, validationError);
+                    }
+
+                    string insecureTrackUrl = song.TrackUrl.Replace("https://", "http://");
+                    var alreadySuggestedSong = await _context.GanjoorPoemMusicTracks.AsNoTracking().Where(t => t.Id != song.Id && t.PoemId == song.PoemId && (t.TrackUrl == song.TrackUrl || t.TrackUrl == insecureTrackUrl) && t.Approved).FirstOrDefaultAsync();
                     if (alreadySuggestedSong != null)
                     {
                         return new RServiceResult<PoemMusicTrackViewModel>(null, "این آهنگ پیشتر برای این شعر تأیید شده است.");
@@ -324,7 +372,7 @@ namespace RMuseum.Services.Implementation
             }
 
 
-            GanjoorSinger singer = await _context.GanjoorSingers.AsNoTracking().Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
+            GanjoorSinger singer = string.IsNullOrEmpty(track.ArtistUrl) ? null : await _context.GanjoorSingers.AsNoTracking().Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
             if (singer != null)
             {
                 track.SingerId = singer.Id;
@@ -383,20 +431,24 @@ namespace RMuseum.Services.Implementation
                 (
                 string.IsNullOrEmpty(song.ArtistName)
                 ||
-                string.IsNullOrEmpty(song.ArtistUrl)
-                ||
                 string.IsNullOrEmpty(song.AlbumName)
-                ||
-                string.IsNullOrEmpty(song.AlbumUrl)
                 ||
                 string.IsNullOrEmpty(song.TrackName)
                 ||
                 string.IsNullOrEmpty(song.TrackUrl)
                 ||
-                song.TrackType != PoemMusicTrackType.BeepTunesOrKhosousi
+                (song.TrackType != PoemMusicTrackType.BeepTunesOrKhosousi && song.TrackType != PoemMusicTrackType.MusicUrl)
+                ||
+                (song.TrackType == PoemMusicTrackType.BeepTunesOrKhosousi && (string.IsNullOrEmpty(song.ArtistUrl) || string.IsNullOrEmpty(song.AlbumUrl)))
                 )
             {
                 return new RServiceResult<PoemMusicTrackViewModel>(null, "data validation err");
+            }
+
+            string trackUrlValidationError = _PrepareTrackUrl(song);
+            if (trackUrlValidationError != null)
+            {
+                return new RServiceResult<PoemMusicTrackViewModel>(null, trackUrlValidationError);
             }
 
             var duplicated = await _context.GanjoorPoemMusicTracks.Where(m => m.PoemId == song.PoemId && m.TrackUrl == song.TrackUrl).FirstOrDefaultAsync();
@@ -421,7 +473,7 @@ namespace RMuseum.Services.Implementation
             track.Rejected = false;
             track.BrokenLink = song.BrokenLink;
 
-            GanjoorSinger singer = await _context.GanjoorSingers.Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
+            GanjoorSinger singer = string.IsNullOrEmpty(track.ArtistUrl) ? null : await _context.GanjoorSingers.Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
             if (singer != null)
             {
                 track.SingerId = singer.Id;
@@ -492,6 +544,14 @@ namespace RMuseum.Services.Implementation
             if (!song.Approved)
                 return new RServiceResult<PoemMusicTrackViewModel>(null, "!song.Approved ");
 
+            if (song.TrackType != PoemMusicTrackType.Golha)
+            {
+                string validationError = _PrepareTrackUrl(song);
+                if (validationError != null)
+                {
+                    return new RServiceResult<PoemMusicTrackViewModel>(null, validationError);
+                }
+            }
 
             var track = await _context.GanjoorPoemMusicTracks.Where(t => t.Id == song.Id).SingleOrDefaultAsync();
 
@@ -504,7 +564,7 @@ namespace RMuseum.Services.Implementation
             track.TrackUrl = song.TrackUrl;
             track.BrokenLink = song.BrokenLink;
 
-            GanjoorSinger singer = await _context.GanjoorSingers.AsNoTracking().Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
+            GanjoorSinger singer = string.IsNullOrEmpty(track.ArtistUrl) ? null : await _context.GanjoorSingers.AsNoTracking().Where(s => s.Url == track.ArtistUrl).FirstOrDefaultAsync();
             if (singer != null)
             {
                 track.SingerId = singer.Id;

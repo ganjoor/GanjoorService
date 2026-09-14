@@ -24,6 +24,10 @@
         /// <summary>
         /// https://open.spotify.com/
         /// </summary>
-        Spotify = 3
+        Spotify = 3,
+        /// <summary>
+        /// user supplied link to any platform accepted by RMuseum.Utils.MusicUrlValidator
+        /// </summary>
+        MusicUrl = 4
     }
 }

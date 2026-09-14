@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace RMuseum.Models.Ganjoor.ViewModels
 {
@@ -98,7 +99,12 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// <returns></returns>
         public override string ToString()
         {
-            return TrackType == PoemMusicTrackType.Golha ? $"{AlbumName} » {TrackName}" : $"{ArtistName} » {AlbumName} » {TrackName}";
+            // album is optional for user supplied links, so empty parts are dropped rather than
+            // rendered as an empty » » segment
+            var parts = TrackType == PoemMusicTrackType.Golha
+                ? new[] { AlbumName, TrackName }
+                : new[] { ArtistName, AlbumName, TrackName };
+            return string.Join(" » ", parts.Where(p => !string.IsNullOrWhiteSpace(p)));
         }
     }
 }

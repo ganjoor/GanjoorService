@@ -59,19 +59,19 @@ else
                 @if (!string.IsNullOrEmpty(suggestedSong.ArtistName))
                 {
                     <p>
-                        خواننده: <a href="@Html.Raw(suggestedSong.ArtistUrl)" target="_blank">@suggestedSong.ArtistName</a>
+                        خواننده: <a href="@suggestedSong.ArtistUrl" target="_blank">@suggestedSong.ArtistName</a>
                     </p>
                 }
 
                 @if (!string.IsNullOrEmpty(suggestedSong.AlbumName))
                 {
                     <p>
-                        آلبوم: <a href="@Html.Raw(suggestedSong.AlbumUrl)" target="_blank">@suggestedSong.AlbumName</a>
+                        آلبوم: <a href="@suggestedSong.AlbumUrl" target="_blank">@suggestedSong.AlbumName</a>
                     </p>
                 }
 
                 <p>
-                    آهنگ: <a href="@Html.Raw(suggestedSong.TrackUrl)" target="_blank">@suggestedSong.TrackName</a>
+                    آهنگ: <a href="@suggestedSong.TrackUrl" target="_blank">@suggestedSong.TrackName</a>
                 </p>
 
                 @if (!string.IsNullOrEmpty(suggestedSong.Description))

@@ -59,6 +59,7 @@ else
 
             <div>
                 @{
+                    var platform = RMuseum.Utils.MusicUrlValidator.Detect(Model.PoemMusicTrackViewModel.TrackUrl);
                     switch (Model.PoemMusicTrackViewModel.TrackType)
                     {
                         case RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify:
@@ -66,6 +67,20 @@ else
                             break;
                         case RMuseum.Models.Ganjoor.PoemMusicTrackType.Golha:
                             <img src="/image/golha.png" alt="گلها" height="32" />
+                            break;
+                        case RMuseum.Models.Ganjoor.PoemMusicTrackType.MusicUrl:
+                            @if (platform == null)
+                            {
+                                <span class="up-badge up-badge--danger">نشانی خارج از فهرست سرویس‌های مجاز</span>
+                            }
+                            else
+                            {
+                                @if (!string.IsNullOrEmpty(platform.LargeIconUrl))
+                                {
+                                    <img src="@platform.LargeIconUrl" alt="@platform.Name" height="32" />
+                                }
+                                <span class="up-badge">@platform.Name</span>
+                            }
                             break;
                         default:
                             <img src="/image/beeptunes.png" alt="بیپ‌تونز" height="32" />
@@ -79,7 +94,7 @@ else
                 <input asp-for="PoemMusicTrackViewModel.ArtistName" />
             </div>
             <div class="up-field up-field--ltr">
-                <label><a target="_blank" href="@Html.Raw(Model.PoemMusicTrackViewModel.ArtistUrl)">نشانی خواننده</a></label>
+                <label><a target="_blank" rel="noopener nofollow" href="@Model.PoemMusicTrackViewModel.ArtistUrl">نشانی خواننده</a></label>
                 <input asp-for="PoemMusicTrackViewModel.ArtistUrl" />
             </div>
 
@@ -88,7 +103,7 @@ else
                 <input asp-for="PoemMusicTrackViewModel.AlbumName" />
             </div>
             <div class="up-field up-field--ltr">
-                <label><a target="_blank" href="@Html.Raw(Model.PoemMusicTrackViewModel.AlbumUrl)">نشانی آلبوم</a></label>
+                <label><a target="_blank" rel="noopener nofollow" href="@Model.PoemMusicTrackViewModel.AlbumUrl">نشانی آلبوم</a></label>
                 <input asp-for="PoemMusicTrackViewModel.AlbumUrl" />
             </div>
 
@@ -97,7 +112,7 @@ else
                 <input asp-for="PoemMusicTrackViewModel.TrackName" />
             </div>
             <div class="up-field up-field--ltr">
-                <label><a target="_blank" href="@Html.Raw(Model.PoemMusicTrackViewModel.TrackUrl)">نشانی آهنگ</a></label>
+                <label><a target="_blank" rel="noopener nofollow" href="@Model.PoemMusicTrackViewModel.TrackUrl">نشانی آهنگ</a></label>
                 <input asp-for="PoemMusicTrackViewModel.TrackUrl" />
             </div>
 
