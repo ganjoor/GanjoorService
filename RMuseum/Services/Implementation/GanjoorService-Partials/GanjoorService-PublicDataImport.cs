@@ -8,6 +8,7 @@ using RSecurityBackend.Services.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -55,6 +56,9 @@ namespace RMuseum.Services.Implementation
                 (
                     async token =>
                     {
+                        // the injected _httpClient is request-scoped and already disposed by the
+                        // time this queued work item runs, so the job owns its own client
+                        using HttpClient importHttpClient = new HttpClient() { Timeout = TimeSpan.FromMinutes(5) };
                         using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                         {
                             LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
@@ -63,7 +67,7 @@ namespace RMuseum.Services.Implementation
                             try
                             {
                                 IPublicDataSource source = useHttp
-                                    ? new HttpPublicDataSource(_httpClient, location)
+                                    ? new HttpPublicDataSource(importHttpClient, location)
                                     : new LocalFileSystemPublicDataSource(location);
 
                                 string manifestJson = await source.ReadTextAsync("manifest.json");
