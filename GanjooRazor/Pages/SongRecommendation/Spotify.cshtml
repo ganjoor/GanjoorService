@@ -116,14 +116,14 @@
                             @if (suggestedSong.Id == Model.InsertedSongId)
                             {
                                 <text>
-                                    <a target="_blank" href="@Html.Raw(suggestedSong.ArtistUrl)" style="color:green">@suggestedSong.ArtistName</a> » <a target="_blank" href="@Html.Raw(suggestedSong.AlbumUrl)" style="color:green">@suggestedSong.AlbumName</a> » <a target="_blank" href="@Html.Raw(suggestedSong.TrackUrl)" style="color:green">@suggestedSong.TrackName</a>
+                                    <a target="_blank" href="@suggestedSong.ArtistUrl" style="color:green">@suggestedSong.ArtistName</a> » <a target="_blank" href="@suggestedSong.AlbumUrl" style="color:green">@suggestedSong.AlbumName</a> » <a target="_blank" href="@suggestedSong.TrackUrl" style="color:green">@suggestedSong.TrackName</a>
                                 </text>
 
                             }
                             else
                             {
                                 <text>
-                                    <a target="_blank" href="@Html.Raw(suggestedSong.ArtistUrl)">@suggestedSong.ArtistName</a> » <a target="_blank" href="@Html.Raw(suggestedSong.AlbumUrl)">@suggestedSong.AlbumName</a> » <a target="_blank" href="@Html.Raw(suggestedSong.TrackUrl)">@suggestedSong.TrackName</a>
+                                    <a target="_blank" href="@suggestedSong.ArtistUrl">@suggestedSong.ArtistName</a> » <a target="_blank" href="@suggestedSong.AlbumUrl">@suggestedSong.AlbumName</a> » <a target="_blank" href="@suggestedSong.TrackUrl">@suggestedSong.TrackName</a>
                                 </text>
                             }
 

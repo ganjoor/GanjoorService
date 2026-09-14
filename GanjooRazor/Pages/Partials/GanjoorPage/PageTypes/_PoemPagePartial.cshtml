@@ -794,7 +794,7 @@
             {
                 <div class="poemtabcontent">
                     <p>
-                        <a href="@Html.Raw($"/golha?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
+                        <a href="@Html.Raw($"/musiclink?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
                             معرفی ترانه‌هایی که در متن آنها از این شعر استفاده شده است<i class="notranslate info-buttons music_note"></i>
                         </a>
                     </p>
@@ -805,11 +805,12 @@
                 <div class="poemtabcontent" id="songs">
                     @foreach (var song in Model.GanjoorPage.Poem.Songs)
                     {
+                        var songPlatform = RMuseum.Utils.MusicUrlValidator.Detect(song.TrackUrl);
                         <div class="related-song">
-                            <i class="notranslate info-buttons queue_music"></i><a target="_blank" href="@Html.Raw(song.TrackUrl)">@Html.Raw($"{song}")</a>
-                            @if (song.TrackType == RMuseum.Models.Ganjoor.PoemMusicTrackType.Spotify)
+                            <i class="notranslate info-buttons queue_music"></i><a target="_blank" rel="noopener nofollow" href="@song.TrackUrl">@song.ToString()</a>
+                            @if (songPlatform != null && !string.IsNullOrEmpty(songPlatform.IconUrl))
                             {
-                                <a target="_blank" href="@Html.Raw(song.TrackUrl)"><img class="spotify-track-icon" src="/image/sp16.png" alt="اسپاتیفای" height="16"></a>
+                                <a target="_blank" rel="noopener nofollow" href="@song.TrackUrl"><img class="spotify-track-icon" src="@songPlatform.IconUrl" alt="@songPlatform.Name" title="@songPlatform.Name" height="16"></a>
                             }
                             @if (Model.CanEdit)
                             {
@@ -818,7 +819,7 @@
                         </div>
                     }
                     <p>
-                        <a href="@Html.Raw($"/golha?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
+                        <a href="@Html.Raw($"/musiclink?p={Model.GanjoorPage.Id}")" onclick="wpopen(this.href); return false" class="pagebutton comments-link">
                             معرفی ترانه‌های دیگر<i class="notranslate info-buttons music_note"></i>
                         </a>
                     </p>

@@ -1,0 +1,155 @@
+@page
+@model GanjooRazor.Pages.MusicLinkModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <title>پیشنهاد پیوند قطعهٔ موسیقی مرتبط با شعر</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
+    <link href="/css/p8.css?version=89" rel="stylesheet" type="text/css" />
+    <link href="/css/spotify.css" rel="stylesheet" type="text/css" />
+
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/musiclink.js?version=1"></script>
+</head>
+<body>
+    <div id="fa">
+        <div class="poem">
+            @if (Model.ReadOnlyMode)
+            {
+                <div class="width-100per">
+                    <div class="width-100per text-align-center">
+                        <p class="alert-text">
+                            امکان پیشنهاد قطعه موقتا به دلیل تغییرات سایت و یا انتقال سرور وجود ندارد. لطفاً ساعاتی دیگر مجدداً تلاش کنید.
+                        </p>
+                    </div>
+                </div>
+            }
+            else
+            @if (Model.PoemId == 0)
+            {
+                <div class="width-100per">
+                    <div class="width-100per text-align-center">
+                        <p class="alert-text">
+                            خطا: شعری انتخاب نشده است.
+                        </p>
+                    </div>
+                </div>
+            }
+            else
+            if (!Model.LoggedIn)
+            {
+                <div class="width-100per">
+                    <div class="width-100per text-align-center">
+                        <p class="alert-text">
+                            برای پیشنهاد آهنگهای مرتبط با اشعار لازم است ابتدا با نام کاربری خود وارد گنجور شوید.
+                        </p>
+                        <p class="text-align-center">
+                            <a href=@Html.Raw($"/login/?redirect=/musiclink/?p={Model.PoemId}")>ورود به گنجور</a>
+                        </p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                @if (!string.IsNullOrEmpty(Model.LastError))
+                {
+                    <div class="width-100per">
+                        <div class="width-100per text-align-center">
+                            <p class="alert-text">
+                                @Model.LastError
+                            </p>
+                        </div>
+                    </div>
+                }
+
+                <div class="width-100per">
+                    <div class="width-100per text-align-center">
+                        <h3><strong>انتخاب منبع:</strong></h3>
+                    </div>
+                    <div style="width:100%;text-align:center">
+                        <input type="radio" id="golha" name="source" value="گلها">
+                        <label for="golha"><a href="@($"/golha/?p={Model.PoemId}")"><img src="/image/golha.png" alt="گلها" height="32" /></a></label>
+                        <input type="radio" id="beeptunes" name="source" value="بیپ‌تونز">
+                        <label for="beeptunes"><a href="@($"/bp/?p={Model.PoemId}")"><img src="/image/beeptunes.png" alt="بیپ‌تونز" height="32" /></a></label>
+                        <input type="radio" id="musiclink" name="source" value="پیوند آهنگ" checked>
+                        <label for="musiclink"><a href="@($"/musiclink/?p={Model.PoemId}")"><img src="/image/note.png" alt="پیوند آهنگ" height="32" /></a></label>
+                    </div>
+                </div>
+                <p>
+                    با استفاده از این صفحه می‌توانید آهنگهایی را که در متن آنها از شعر جاری استفاده شده است معرفی کنید. نشانی صفحهٔ آهنگ را از سرویس پخش یا فروش موسیقی کپی کرده و در جعبهٔ «نشانی آهنگ» بچسبانید. نام خواننده و عنوان آهنگ در صورت امکان به صورت خودکار پر می‌شود و می‌توانید آن را اصلاح کنید. پس از «پیشنهاد قطعه» آهنگ پیشنهادی در صف بررسی قرار می‌گیرد و پس از بازبینی و تأیید به صفحهٔ اصلی شعر اضافه می‌شود. از این که کمک می‌کنید که گنجور به نمایه‌ای برای موسیقی ایرانی بدل شود سپاسگزاریم.
+                </p>
+                <p>
+                    <span style="color:red">تنها نشانی از این سرویس‌ها پذیرفته می‌شود:</span> @RMuseum.Utils.MusicUrlValidator.PlatformNames. نشانی فایلهای صوتی تکثیر شده و سایتهای دانلود غیرقانونی پذیرفته نمی‌شود.
+                </p>
+                <p>
+                    <span style="color:red">تذکر مهم:</span> فقط مواردی تأیید می‌شود که <span style="color:red">در آهنگ متناظر همین شعر خوانده شود</span>. تعیین نام خواننده به تنهایی کارایی ندارد و لطفا جهت کاهش زمان مورد نیاز برای بررسی موارد پیشنهادی از اعلام موارد اینچنینی خودداری فرمایید. فهرست کامل آهنگهای مرتبط در <a href="https://ganjoor.net/mundex/" target="_blank">این صفحه</a> در دسترس است.
+                </p>
+
+                @if (Model.SuggestedSongs.Length > 0)
+                {
+                    <p>موارد زیر شامل قطعه‌هایی هستند که پیشتر توسط دوستان دیگر پیشنهاد شده و در صف بررسی قرار دارند:</p>
+
+                    @foreach (var suggestedSong in Model.SuggestedSongs)
+                    {
+                        <p style="@(suggestedSong.Id == Model.InsertedSongId ? "color:green" : "")">
+                            @if (!string.IsNullOrEmpty(suggestedSong.ArtistName))
+                            {
+                                <text>@suggestedSong.ArtistName » </text>
+                            }
+                            @if (!string.IsNullOrEmpty(suggestedSong.AlbumName))
+                            {
+                                <text>@suggestedSong.AlbumName » </text>
+                            }
+                            <a target="_blank" rel="noopener nofollow" href="@suggestedSong.TrackUrl">@suggestedSong.TrackName</a>
+                        </p>
+                    }
+                }
+
+                @if (Model.PostSuccess)
+                {
+                    <div class="width-100per">
+                        <div class="width-100per text-align-center">
+                            <p style="color:green">
+                                با سپاس! پیشنهاد شما به فهرست اضافه شد.
+                            </p>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        @if (Model.PoemId != 0 && Model.LoggedIn && !Model.ReadOnlyMode)
+        {
+            <div class="content">
+                <form method="post">
+                    <span class="inputlabel">نشانی آهنگ: </span>
+                    <input type="url" dir="ltr" class="albumtrack" id="trackurl" placeholder="https://" required asp-for="PoemMusicTrackViewModel.TrackUrl" />
+                    <div id="fetching-metadata" style="display:none"><img src="/image/loading.gif" alt="در حال دریافت مشخصات" /></div>
+                    <br />
+                    <span class="inputlabel">خواننده: </span>
+                    <input type="text" class="albumtrack" placeholder="خواننده" required asp-for="PoemMusicTrackViewModel.ArtistName" />
+                    <br />
+                    <span class="inputlabel">آلبوم: </span>
+                    <input type="text" class="albumtrack" placeholder="آلبوم (اختیاری)" asp-for="PoemMusicTrackViewModel.AlbumName" />
+                    <br />
+                    <span class="inputlabel">عنوان آهنگ: </span>
+                    <input type="text" class="albumtrack" placeholder="عنوان آهنگ" required asp-for="PoemMusicTrackViewModel.TrackName" />
+                    <br />
+                    <span class="inputlabel">توضیح: </span>
+                    <input type="text" class="albumtrack" placeholder="توضیح" asp-for="PoemMusicTrackViewModel.Description" />
+                    <br />
+                    <input type="submit" name="submit" id="submit" value="پیشنهاد قطعه" />
+                </form>
+            </div>
+        }
+    </div>
+</body>
+</html>

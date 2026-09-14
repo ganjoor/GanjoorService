@@ -17,8 +17,8 @@
     <script src="~/js/golha.js"></script>
     <script>
         $(function () {
-            $('#spotify').on('click', function() {
-                window.location.href = "@Html.Raw($"/spotify/?p={Model.PoemId}")";
+            $('#musiclink').on('click', function() {
+                window.location.href = "@Html.Raw($"/musiclink/?p={Model.PoemId}")";
             });
 
             $('#golha').on('click', function () {
@@ -87,8 +87,8 @@
                         <label for="golha"><a href="@Html.Raw($"/golha/?p={Model.PoemId}")"><img src="/image/golha.png" alt="گلها" height="32" /></a></label>
                         <input type="radio" id="beeptunes" name="beeptunes" value="بیپ‌تونز">
                         <label for="beeptunes"><a href="@Html.Raw($"/bp/?p={Model.PoemId}")"><img src="/image/beeptunes.png" alt="بیپ‌تونز" height="32" /></a></label>
-                        <input type="radio" id="spotify" name="spotify" value="اسپاتیفای">
-                        <label for="spotify"><a href="@Html.Raw($"/spotify/?p={Model.PoemId}")"><img src="/image/spotify.png" alt="اسپاتیفای" height="32" /></a></label>
+                        <input type="radio" id="musiclink" name="musiclink" value="پیوند آهنگ">
+                        <label for="musiclink"><a href="@Html.Raw($"/musiclink/?p={Model.PoemId}")"><img src="/image/note.png" alt="پیوند آهنگ" height="32" /></a></label>
                     </div>
                 </div>
 
@@ -109,14 +109,14 @@
                             @if (suggestedSong.Id == Model.InsertedSongId)
                             {
                                 <text>
-                                    <a target="_blank" href="@Html.Raw(suggestedSong.TrackUrl)" style="color:green">@suggestedSong.AlbumName</a> » <a target="_blank" href="@Html.Raw(suggestedSong.TrackUrl)" style="color:green">@suggestedSong.TrackName</a>
+                                    <a target="_blank" href="@suggestedSong.TrackUrl" style="color:green">@suggestedSong.AlbumName</a> » <a target="_blank" href="@suggestedSong.TrackUrl" style="color:green">@suggestedSong.TrackName</a>
                                 </text>
 
                             }
                             else
                             {
                                 <text>
-                                    <a target="_blank" href="@Html.Raw(suggestedSong.TrackUrl)">@suggestedSong.AlbumName</a> » <a target="_blank" href="@Html.Raw(suggestedSong.TrackUrl)">@suggestedSong.TrackName</a>
+                                    <a target="_blank" href="@suggestedSong.TrackUrl">@suggestedSong.AlbumName</a> » <a target="_blank" href="@suggestedSong.TrackUrl">@suggestedSong.TrackName</a>
                                 </text>
                             }
 
