@@ -11237,6 +11237,11 @@
             https://open.spotify.com/
             </summary>
         </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemMusicTrackType.MusicUrl">
+            <summary>
+            user supplied link to any platform accepted by RMuseum.Utils.MusicUrlValidator
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.PoemSectionType">
             <summary>
             poem section type
@@ -11339,6 +11344,17 @@
             {poem-slug}.json — the poem text itself. GanjoorPoem/GanjoorVerse/GanjoorPoemSection carry
             no user/account reference in the source schema, so this is a straight field allowlist,
             not a redaction pass.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.VersePublicDto.CoupletSummary">
+            <summary>
+            AI-generated (prefixed "هوش مصنوعی:", matching PoemSummary's own convention) until a
+            human reviews/edits it, at which point the prefix is removed — that prefix's
+            presence/absence is itself the provenance signal, same as for PoemSummary, nothing
+            new needed here to track it. Published specifically so a human editor's curatorial
+            work on a couplet's interpretation — genuinely irreplaceable if the live database
+            were ever lost, unlike the poem text itself, which exists in many other sources —
+            isn't only ever stored in one place.
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PublicExport.MetrePublicDto">
@@ -21694,6 +21710,13 @@
             <param name="paging"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._PrepareTrackUrl(RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
+            <summary>
+            checks a user supplied track and rewrites its url to canonical form, returns null when it is acceptable
+            </summary>
+            <param name="song"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestSong(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel)">
             <summary>
             suggest song
@@ -24381,6 +24404,99 @@
             get an excerpt for the poem
             </summary>
             <param name="poemHtml"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RMuseum.Utils.MusicPlatform">
+            <summary>
+            a legal music streaming/store platform accepted for poem music track links
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.MusicPlatform.Key">
+            <summary>
+            stable identifier
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.MusicPlatform.Name">
+            <summary>
+            display name (Persian)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.MusicPlatform.IconUrl">
+            <summary>
+            16px icon path, null when no artwork is available yet
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.MusicPlatform.LargeIconUrl">
+            <summary>
+            32px icon path, null when no artwork is available yet
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.MusicPlatform.OEmbedEndpoint">
+            <summary>
+            oEmbed endpoint accepting a ?url= parameter, null when the platform has none
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.MusicPlatform.Hosts">
+            <summary>
+            accepted hosts, each matching itself and its subdomains
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.MusicPlatform.HostPattern">
+            <summary>
+            accepted host pattern, used where the host varies by country
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.MusicPlatform.MatchesHost(System.String)">
+            <summary>
+            does the given lowercased host belong to this platform?
+            </summary>
+            <param name="host"></param>
+            <returns></returns>
+        </member>
+        <member name="T:RMuseum.Utils.MusicUrlValidator">
+            <summary>
+            validates user supplied music links against an allow-list of legal music platforms
+            </summary>
+        </member>
+        <member name="F:RMuseum.Utils.MusicUrlValidator.MaxUrlLength">
+            <summary>
+            maximum accepted url length
+            </summary>
+        </member>
+        <member name="F:RMuseum.Utils.MusicUrlValidator.Platforms">
+            <summary>
+            accepted platforms, ordered so that more specific hosts win (YouTube Music before YouTube)
+            </summary>
+            <remarks>
+            IconUrl/LargeIconUrl are only set for platforms whose artwork already exists under
+            GanjooRazor/wwwroot/image; drop a {Key}16.png/{Key}.png pair in image/music and fill them in.
+            </remarks>
+        </member>
+        <member name="F:RMuseum.Utils.MusicUrlValidator._trackingParameters">
+            <summary>
+            query parameters dropped during normalization so that the same track always yields the same url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.MusicUrlValidator.PlatformNames">
+            <summary>
+            comma separated platform names, for user facing messages
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.MusicUrlValidator.TryNormalize(System.String,System.String@,RMuseum.Utils.MusicPlatform@,System.String@)">
+            <summary>
+            validate a user supplied music url and rewrite it to its canonical form
+            </summary>
+            <param name="url"></param>
+            <param name="normalizedUrl"></param>
+            <param name="platform"></param>
+            <param name="error">Persian error message when validation fails</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Utils.MusicUrlValidator.Detect(System.String)">
+            <summary>
+            platform of an already stored url, null when it belongs to none of the accepted platforms
+            </summary>
+            <param name="url"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Utils.PublicDataExport.DeterministicJsonWriter">

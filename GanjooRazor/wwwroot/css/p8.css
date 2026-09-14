@@ -1,4 +1,4 @@
-﻿@font-face {
+@font-face {
     font-family: 'Vazirmatn';
     src: url('/fonts/Vazirmatn-Regular.woff2') format('woff2');
     font-weight: 400;
@@ -676,7 +676,6 @@ div.n, div.l {
 
 .m1 p, .m2 p, .b2 p, .n p {
     color: inherit;
-    text-shadow: 0.3px 0.3px grey;
 }
 
 @media (max-width: 950px) {
@@ -3034,84 +3033,4 @@ mark {
    pinned too, just a bit of extra breathing room above the content */
 #after-bio {
     scroll-margin-top: 50px;
-}
-
-/* ---------- sticky mini audio-player (recitation seek controls stay
-   reachable while scrolling the poem text) ---------- */
-
-.up-sticky-player {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 14px;
-    background: var(--card-inner);
-    border-top: 1px solid var(--border-gold);
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
-}
-
-.up-sticky-player__narrator {
-    font-weight: 600;
-    white-space: nowrap;
-    color: var(--lapis);
-    flex-shrink: 0;
-}
-
-.up-sticky-player__audio-slot {
-    flex: 1;
-    min-width: 0;
-}
-
-.up-sticky-player__audio-slot audio {
-    width: 100%;
-    display: block;
-}
-
-.up-sticky-player__lock {
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
-    color: var(--lapis);
-    padding: 4px 6px;
-    flex-shrink: 0;
-}
-
-.up-sticky-player__lock:hover {
-    color: var(--brand);
-}
-
-.up-sticky-player__jump {
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
-    color: var(--lapis);
-    padding: 4px 6px;
-    flex-shrink: 0;
-}
-
-.up-sticky-player__jump:hover {
-    color: var(--brand);
-}
-
-.up-sticky-player__close {
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
-    color: var(--lapis);
-    padding: 4px 6px;
-    flex-shrink: 0;
-}
-
-.up-sticky-player__close:hover {
-    color: var(--brand);
-}
-
-@media (max-width: 600px) {
-    .up-sticky-player__narrator {
-        display: none;
-    }
 }
