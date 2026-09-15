@@ -87,7 +87,6 @@ namespace GanjooRazor
                 options.Conventions.AddPageRoute("/SongRecommendation/Bp", "/Bp");
                 options.Conventions.AddPageRoute("/SongRecommendation/Golha", "/Golha");
                 options.Conventions.AddPageRoute("/SongRecommendation/Spotify", "/Spotify");
-                options.Conventions.AddPageRoute("/SongRecommendation/MusicLink", "/MusicLink");
 
                 options.Conventions.AddPageRoute("/ImageRecommendation/Pin", "/Pin");
 

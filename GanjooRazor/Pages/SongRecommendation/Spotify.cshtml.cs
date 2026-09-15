@@ -1,4 +1,4 @@
-using GanjooRazor.Utils;
+﻿using GanjooRazor.Utils;
 using GSpotifyProxy.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -136,7 +136,7 @@ namespace GanjooRazor.Pages
             // the search flow stays in place for the day the Spotify API works again
             if (!SpotifyWorking)
             {
-                return Redirect($"/musiclink/?p={PoemId}");
+                LastError = "جست‌وجوی خودکار قطعات اسپاتیفای موقتاً در دسترس نیست. لطفاً بعداً دوباره تلاش کنید.";
             }
 
             await _GetSuggestedSongs();
