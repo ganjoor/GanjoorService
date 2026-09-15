@@ -145,18 +145,35 @@ namespace GanjooRazor
                     var isVendorPath = path.StartsWith("/lib/", StringComparison.OrdinalIgnoreCase) ||
                                         path.StartsWith("/dist/", StringComparison.OrdinalIgnoreCase);
 
+                    // Web font files (.woff/.woff2/.ttf/.otf/.eot) are effectively immutable in
+                    // practice: swapping a live font's glyphs without renaming the file is rare
+                    // enough (and disruptive enough to layout if it did happen) that treating every
+                    // font as long-cacheable regardless of which folder it happens to sit in
+                    // (/fonts, /css, wherever) is safe - this is what was missing for
+                    // IranNastaliq-Web.woff2, the Vazirmatn set, and Material-Icons.woff2, which
+                    // were stuck on the 6-hour tier purely because they live outside /lib and /dist.
+                    var isFont = path.EndsWith(".woff2", StringComparison.OrdinalIgnoreCase) ||
+                                 path.EndsWith(".woff", StringComparison.OrdinalIgnoreCase) ||
+                                 path.EndsWith(".ttf", StringComparison.OrdinalIgnoreCase) ||
+                                 path.EndsWith(".otf", StringComparison.OrdinalIgnoreCase) ||
+                                 path.EndsWith(".eot", StringComparison.OrdinalIgnoreCase);
+
+                    // A handful of specific third-party libraries that ended up directly under /js
+                    // instead of /lib (so the path-prefix rule above doesn't catch them) but are
+                    // just as static as anything that did. Add future drop-in vendor files here, or
+                    // better, put them under /lib or /dist so they're covered automatically.
+                    var isKnownVendorFile = path.Equals("/js/chart.js", StringComparison.OrdinalIgnoreCase) ||
+                                             path.Equals("/js/jquery.mark.min.js", StringComparison.OrdinalIgnoreCase);
+
                     var headers = ctx.Context.Response.GetTypedHeaders();
                     headers.CacheControl = new CacheControlHeaderValue
                     {
                         Public = true,
-                        // Versioned (?version=N / ?v=N) and vendor assets: the URL itself changes
-                        // whenever the content does, so a year-long cache is safe and is what should
-                        // eliminate most of the repeated p8.css/bk.js/user-panel.css/js downloads seen
-                        // in the IIS logs.
-                        // Everything else: no version query to rely on, so a conservative 6-hour cache
-                        // still cuts a lot of redundant requests without risking long-lived staleness
-                        // if someone edits chart.js/r2.js/etc. without remembering to bump a version.
-                        MaxAge = (isExplicitlyVersioned || isVendorPath)
+                        // Versioned (?version=N / ?v=N), vendor, font, and known-vendor-in-the-
+                        // wrong-folder assets: safe for a year-long cache. Everything else (the
+                        // app's own hand-edited CSS/JS without a version query) stays on the
+                        // conservative 6-hour cache so an un-versioned edit doesn't stay stale long.
+                        MaxAge = (isExplicitlyVersioned || isVendorPath || isFont || isKnownVendorFile)
                             ? TimeSpan.FromDays(365)
                             : TimeSpan.FromHours(6)
                     };
