@@ -3139,6 +3139,19 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.RecitationController.ReplaceRecitationSyncXmlFile(System.Int32)">
+            <summary>
+            Replace the synchronization (xml) file of an already approved recitation belonging to the
+            logged on user, without touching its mp3 file. Send the new xml as the single file in the
+            request's form-data. The uploaded xml is only accepted if its embedded PoemId and audio
+            checksum match the target recitation exactly (i.e. it must be a resync of the very same mp3
+            already on record) - this endpoint never accepts a new mp3. On acceptance, the xml is queued
+            for re-publishing to the external FTP server(s) in the background and you receive a
+            notification with the final result (success or failure).
+            </summary>
+            <param name="id">recitation id</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.RecitationController.GetUploads(RSecurityBackend.Models.Generic.PagingParameterModel,System.Boolean)">
             <summary>
             Get User Uploads
@@ -23481,6 +23494,22 @@
             <param name="userId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementationa.RecitationService.ReplaceRecitationSyncXmlFile(System.Guid,System.Int32,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Replace only the synchronization (xml) file of an existing, approved recitation owned by the user.
+            The recitation's mp3 file is left untouched. The uploaded xml's embedded PoemId and audio file
+            checksum must match the target recitation's GanjoorPostId and Mp3FileCheckSum respectively (i.e.
+            it must be a resync of the very same, already uploaded, mp3 file) or the request is rejected -
+            this method never accepts a new mp3, only a corrected/retimed xml for the existing one.
+            On success the updated xml (and the unchanged mp3) are re-published to the external/backup FTP
+            servers in the background and the user is notified of the final result (success or failure),
+            reusing the exact same publishing/notification pipeline used for normal recitation uploads.
+            </summary>
+            <param name="userId">must be the recitation owner</param>
+            <param name="recitationId"></param>
+            <param name="xmlFile"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.Implementationa.RecitationService.GetPoemNarrationVerseSyncArray(System.Int32)">
             <summary>
             Gets Verse Sync Range Information
@@ -24062,6 +24091,19 @@
             </summary>
             <param name="id"></param>
             <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IRecitationService.ReplaceRecitationSyncXmlFile(System.Guid,System.Int32,Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Replace only the synchronization (xml) file of an existing, approved recitation owned by the
+            user. The recitation's mp3 file is left untouched; the uploaded xml's embedded PoemId and audio
+            checksum must match the target recitation or the request is rejected. On success, the updated
+            xml is re-published to the external/backup FTP servers in the background and the user is
+            notified of the final result (success or failure).
+            </summary>
+            <param name="userId">must be the recitation owner</param>
+            <param name="recitationId"></param>
+            <param name="xmlFile"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IRecitationService.GetPoemNarrationVerseSyncArray(System.Int32)">

@@ -488,6 +488,45 @@ namespace RMuseum.Controllers
             return Ok(res.Result);
         }
 
+        /// <summary>
+        /// Replace the synchronization (xml) file of an already approved recitation belonging to the
+        /// logged on user, without touching its mp3 file. Send the new xml as the single file in the
+        /// request's form-data. The uploaded xml is only accepted if its embedded PoemId and audio
+        /// checksum match the target recitation exactly (i.e. it must be a resync of the very same mp3
+        /// already on record) - this endpoint never accepts a new mp3. On acceptance, the xml is queued
+        /// for re-publishing to the external FTP server(s) in the background and you receive a
+        /// notification with the final result (success or failure).
+        /// </summary>
+        /// <param name="id">recitation id</param>
+        /// <returns></returns>
+        [HttpPost("{id}/xml")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(bool))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+        public async Task<IActionResult> ReplaceRecitationSyncXmlFile(int id)
+        {
+            try
+            {
+                if (!_audioService.UploadEnabled)
+                    return BadRequest("این قابلیت به دلیل تغییرات فنی سایت موقتاً غیرفعال است.");
+
+                Guid loggedOnUserId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+                IFormFile xmlFile = Request.Form.Files.FirstOrDefault();
+                RServiceResult<bool> resReplace = await _audioService.ReplaceRecitationSyncXmlFile(loggedOnUserId, id, xmlFile);
+                if (!string.IsNullOrEmpty(resReplace.ExceptionString))
+                {
+                    if (resReplace.ExceptionString == "404")
+                        return NotFound();
+                    return BadRequest(resReplace.ExceptionString);
+                }
+                return Ok(resReplace.Result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
 
 
         /// <summary>

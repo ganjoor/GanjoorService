@@ -74,6 +74,19 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> Delete(int id, Guid userId);
 
         /// <summary>
+        /// Replace only the synchronization (xml) file of an existing, approved recitation owned by the
+        /// user. The recitation's mp3 file is left untouched; the uploaded xml's embedded PoemId and audio
+        /// checksum must match the target recitation or the request is rejected. On success, the updated
+        /// xml is re-published to the external/backup FTP servers in the background and the user is
+        /// notified of the final result (success or failure).
+        /// </summary>
+        /// <param name="userId">must be the recitation owner</param>
+        /// <param name="recitationId"></param>
+        /// <param name="xmlFile"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> ReplaceRecitationSyncXmlFile(Guid userId, int recitationId, IFormFile xmlFile);
+
+        /// <summary>
         /// Gets Verse Sync Range Information
         /// </summary>
         /// <param name="id">narration id</param>

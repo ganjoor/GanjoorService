@@ -496,6 +496,161 @@ namespace RMuseum.Services.Implementationa
             return new RServiceResult<bool>(true);
         }
 
+        /// <summary>
+        /// Replace only the synchronization (xml) file of an existing, approved recitation owned by the user.
+        /// The recitation's mp3 file is left untouched. The uploaded xml's embedded PoemId and audio file
+        /// checksum must match the target recitation's GanjoorPostId and Mp3FileCheckSum respectively (i.e.
+        /// it must be a resync of the very same, already uploaded, mp3 file) or the request is rejected -
+        /// this method never accepts a new mp3, only a corrected/retimed xml for the existing one.
+        /// On success the updated xml (and the unchanged mp3) are re-published to the external/backup FTP
+        /// servers in the background and the user is notified of the final result (success or failure),
+        /// reusing the exact same publishing/notification pipeline used for normal recitation uploads.
+        /// </summary>
+        /// <param name="userId">must be the recitation owner</param>
+        /// <param name="recitationId"></param>
+        /// <param name="xmlFile"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<bool>> ReplaceRecitationSyncXmlFile(Guid userId, int recitationId, IFormFile xmlFile)
+        {
+            if (xmlFile == null || xmlFile.Length == 0)
+            {
+                return new RServiceResult<bool>(false, "فایل xml ارسال نشده است.");
+            }
+            if (Path.GetExtension(xmlFile.FileName).ToLower() != ".xml")
+            {
+                return new RServiceResult<bool>(false, "تنها فایل با پسوند xml قابل پذیرش است.");
+            }
+
+            Recitation recitation = await _context.Recitations.Where(r => r.Id == recitationId && r.OwnerId == userId).FirstOrDefaultAsync();
+            if (recitation == null)
+            {
+                return new RServiceResult<bool>(false, "404");
+            }
+            if (recitation.ReviewStatus != AudioReviewStatus.Approved)
+            {
+                await _notificationService.PushNotification
+                (
+                    userId,
+                    "خطا در جایگزینی فایل xml",
+                    $"جایگزینی فایل xml تنها برای خوانش‌های تأیید شده امکان‌پذیر است.{Environment.NewLine}" +
+                    $"{recitation.AudioTitle}"
+                    , NotificationType.Error
+                );
+                return new RServiceResult<bool>(false, "تنها امکان جایگزینی فایل xml برای خوانش‌های تأیید شده وجود دارد.");
+            }
+
+            RServiceResult<UploadSessionFile> savedFile = await SaveUploadedFile(xmlFile);
+            if (!string.IsNullOrEmpty(savedFile.ExceptionString))
+            {
+                return new RServiceResult<bool>(false, savedFile.ExceptionString);
+            }
+            string tempXmlFilePath = savedFile.Result.FilePath;
+
+            List<PoemAudio> parsedAudioList;
+            try
+            {
+                parsedAudioList = PoemAudioListProcessor.Load(tempXmlFilePath);
+            }
+            catch (Exception exp)
+            {
+                if (File.Exists(tempXmlFilePath))
+                {
+                    File.Delete(tempXmlFilePath);
+                }
+                await _notificationService.PushNotification
+                (
+                    userId,
+                    "خطا در جایگزینی فایل xml",
+                    $"خطا در خواندن فایل xml ارسالی برای {recitation.AudioTitle}: {exp.Message}"
+                    , NotificationType.Error
+                );
+                return new RServiceResult<bool>(false, $"خطا در خواندن فایل xml: {exp.Message}");
+            }
+
+            PoemAudio audio = parsedAudioList.FirstOrDefault();
+            if (audio == null)
+            {
+                if (File.Exists(tempXmlFilePath))
+                {
+                    File.Delete(tempXmlFilePath);
+                }
+                await _notificationService.PushNotification
+                (
+                    userId,
+                    "خطا در جایگزینی فایل xml",
+                    $"فایل xml ارسالی برای {recitation.AudioTitle} اطلاعات معتبری ندارد."
+                    , NotificationType.Error
+                );
+                return new RServiceResult<bool>(false, "فایل xml اطلاعات معتبری ندارد.");
+            }
+
+            if (audio.PoemId != recitation.GanjoorPostId)
+            {
+                if (File.Exists(tempXmlFilePath))
+                {
+                    File.Delete(tempXmlFilePath);
+                }
+                string msg = $"شناسهٔ شعر درج شده در فایل xml ({audio.PoemId}) با شناسهٔ شعر خوانش انتخابی ({recitation.GanjoorPostId} - {recitation.AudioTitle}) همخوانی ندارد.";
+                await _notificationService.PushNotification
+                (
+                    userId,
+                    "خطا در جایگزینی فایل xml",
+                    msg
+                    , NotificationType.Error
+                );
+                return new RServiceResult<bool>(false, msg);
+            }
+
+            if (audio.FileCheckSum != recitation.Mp3FileCheckSum)
+            {
+                if (File.Exists(tempXmlFilePath))
+                {
+                    File.Delete(tempXmlFilePath);
+                }
+                string msg = "این فایل xml برای فایل mp3 دیگری همگام‌سازی شده و با فایل صوتی خوانش انتخابی مطابقت ندارد." +
+                    $"{Environment.NewLine}این قابلیت تنها برای جایگزینی فایل xml مربوط به همان فایل mp3 موجود است؛ " +
+                    "برای تغییر خود فایل mp3 از روش معمول ارسال خوانش (با گزینهٔ جایگزینی) استفاده کنید.";
+                await _notificationService.PushNotification
+                (
+                    userId,
+                    "خطا در جایگزینی فایل xml",
+                    $"{recitation.AudioTitle}{Environment.NewLine}{msg}"
+                    , NotificationType.Error
+                );
+                return new RServiceResult<bool>(false, msg);
+            }
+
+            File.Move(tempXmlFilePath, recitation.LocalXmlFilePath, true);
+
+            recitation.FileLastUpdated = DateTime.Now;
+            recitation.AudioSyncStatus = AudioSyncStatus.SoundOrXMLFilesChanged;
+            _context.Recitations.Update(recitation);
+            await _context.SaveChangesAsync();
+
+            _backgroundTaskQueue.QueueBackgroundWorkItem
+                (
+                async token =>
+                {
+                    using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
+                    {
+                        RecitationPublishingTracker tracker = new RecitationPublishingTracker()
+                        {
+                            PoemNarrationId = recitation.Id,
+                            StartDate = DateTime.Now,
+                            XmlFileCopied = false,
+                            Mp3FileCopied = false,
+                            FirstDbUpdated = false,
+                            SecondDbUpdated = false,
+                        };
+                        context.RecitationPublishingTrackers.Add(tracker);
+                        await context.SaveChangesAsync();
+
+                        await _PublishNarration(recitation, tracker, context);
+                    }
+                });
+
+            return new RServiceResult<bool>(true);
+        }
 
         /// <summary>
         /// Gets Verse Sync Range Information
