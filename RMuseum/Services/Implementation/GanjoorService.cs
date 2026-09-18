@@ -2093,11 +2093,28 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
-            var preCorrections = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText)
+            var preCorrections = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Include(c => c.GeoDateTags)
                 .Where(c => c.UserId == correction.UserId && c.PoemId == correction.PoemId && c.Reviewed == false)
                 .ToListAsync();
 
             var poem = (await GetPoemById(correction.PoemId, false, false, true, false, false, false, false, true, false)).Result;
+
+            if (correction.GeoDateTags != null)
+            {
+                foreach (var geoDateTag in correction.GeoDateTags)
+                {
+                    if (!geoDateTag.MarkForDelete)
+                    {
+                        bool hasLocation = geoDateTag.LocationId != null ||
+                            (!string.IsNullOrWhiteSpace(geoDateTag.SuggestedLocationName) && geoDateTag.SuggestedLatitude != null && geoDateTag.SuggestedLongitude != null);
+                        bool hasDate = geoDateTag.LunarYear != null;
+                        if (!hasLocation && !hasDate)
+                        {
+                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "برچسب جغرافیایی/تاریخی باید حداقل شامل مکان یا تاریخ باشد.");
+                        }
+                    }
+                }
+            }
 
             foreach (var verse in correction.VerseOrderText)
             {
@@ -2133,6 +2150,7 @@ namespace RMuseum.Services.Implementation
                 //Language = correction.Language, not used
                 PoemSummary = correction.PoemSummary,
                 HideMyName = correction.HideMyName,
+                GeoDateTags = correction.GeoDateTags,
 
             };
             _context.GanjoorPoemCorrections.Add(dbCorrection);
@@ -2144,6 +2162,7 @@ namespace RMuseum.Services.Implementation
                 foreach (var preCorrection in preCorrections)
                 {
                     preCorrection.VerseOrderText.Clear();
+                    preCorrection.GeoDateTags?.Clear();
                 }
                 _context.GanjoorPoemCorrections.RemoveRange(preCorrections);
                 await _context.SaveChangesAsync();

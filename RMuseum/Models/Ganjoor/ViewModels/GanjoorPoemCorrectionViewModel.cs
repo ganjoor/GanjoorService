@@ -23,6 +23,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public GanjoorVerseVOrderText[] VerseOrderText { get; set; }
 
         /// <summary>
+        /// suggested geo/date tags
+        /// </summary>
+        public GanjoorPoemGeoDateTagCorrection[] GeoDateTags { get; set; }
+
+        /// <summary>
         /// title
         /// </summary>
         public string Title { get; set; }

@@ -9247,6 +9247,11 @@
             modified verses
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.GeoDateTags">
+            <summary>
+            suggested geo/date tags
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Title">
             <summary>
             title
@@ -9570,6 +9575,105 @@
         <member name="F:RMuseum.Models.Ganjoor.GanjoorPoemFormat.BahreTavil">
             <summary>
             بحر طویل
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection">
+            <summary>
+            suggested geo/date tag for a poem, pending moderation as part of a GanjoorPoemCorrection
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.Id">
+            <summary>
+            record id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.CoupletIndex">
+            <summary>
+            couplet index (matches PoemGeoDateTag.CoupletIndex)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.LocationId">
+            <summary>
+            an existing, already approved location - set this OR the Suggested* fields below, not both
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.Location">
+            <summary>
+            existing location (navigation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.SuggestedLocationName">
+            <summary>
+            name for a brand new, not yet approved location suggestion
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.SuggestedLatitude">
+            <summary>
+            latitude for a brand new, not yet approved location suggestion
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.SuggestedLongitude">
+            <summary>
+            longitude for a brand new, not yet approved location suggestion
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.LunarYear">
+            <summary>
+            lunar year (Hijri)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.LunarMonth">
+            <summary>
+            lunar month (Hijri)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.LunarDay">
+            <summary>
+            lunar day (Hijri)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.PersonId">
+            <summary>
+            related person id (existing, approved GanjoorRelatedPerson only - no suggestion path for new people yet)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.Person">
+            <summary>
+            related person (navigation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.IgnoreInCategory">
+            <summary>
+            if true, this tag is excluded from category/poet-level map aggregation (e.g. a place mentioned only
+            for comparison, not actually visited/relevant to the poet's own path) - default false, matching
+            PoemGeoDateTag.IgnoreInCategory
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.SuggestionNote">
+            <summary>
+            contributor's own reasoning for this tag - especially important for indirect date references
+            (e.g. an abjad-encoded year, or an allusion to a known historical event) where the connection
+            to the suggested location/date isn't self-evident from the tag alone
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.MarkForDelete">
+            <summary>
+            true if this suggestion is for removing an existing PoemGeoDateTag rather than adding a new one
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.ExistingTagId">
+            <summary>
+            id of the existing PoemGeoDateTag this suggestion would remove, when MarkForDelete is true
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.Result">
+            <summary>
+            review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.ReviewNote">
+            <summary>
+            reviewer's note
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemProbableMetre">
@@ -12629,6 +12733,11 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.VerseOrderText">
             <summary>
             modified verses
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.GeoDateTags">
+            <summary>
+            suggested geo/date tags
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Title">

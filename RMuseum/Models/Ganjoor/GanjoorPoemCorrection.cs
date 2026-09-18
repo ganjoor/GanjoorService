@@ -30,6 +30,11 @@ namespace RMuseum.Models.Ganjoor
         public ICollection<GanjoorVerseVOrderText> VerseOrderText { get; set; }
 
         /// <summary>
+        /// suggested geo/date tags
+        /// </summary>
+        public ICollection<GanjoorPoemGeoDateTagCorrection> GeoDateTags { get; set; }
+
+        /// <summary>
         /// title
         /// </summary>
         public string Title { get; set; }
