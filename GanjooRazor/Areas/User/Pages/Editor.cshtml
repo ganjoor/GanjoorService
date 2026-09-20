@@ -116,6 +116,115 @@
 
 
 
+    // ---------- geo/date tag suggestions ----------
+    // staged client-side until the main save; each item matches
+    // GanjoorPoemGeoDateTagCorrection's shape so it can be sent as-is
+    var geoDateTagSuggestions = [];
+    var geoDateTagMap = null;
+    var geoDateTagMarker = null;
+
+    function toggleNewLocationMap() {
+        var widget = document.getElementById('new-location-widget');
+        var isHidden = widget.style.display === 'none' || widget.style.display === '';
+        widget.style.display = isHidden ? 'block' : 'none';
+        if (isHidden && geoDateTagMap == null) {
+            geoDateTagMap = L.map('geotag-map').setView([32.4279, 53.6880], 5); // Iran-centered default
+            L.tileLayer.provider('OpenStreetMap').addTo(geoDateTagMap);
+            geoDateTagMap.on('click', function (e) {
+                if (geoDateTagMarker != null) {
+                    geoDateTagMap.removeLayer(geoDateTagMarker);
+                }
+                geoDateTagMarker = L.marker(e.latlng).addTo(geoDateTagMap);
+                document.getElementById('geotag-new-location-lat').value = e.latlng.lat;
+                document.getElementById('geotag-new-location-lng').value = e.latlng.lng;
+            });
+        }
+        if (isHidden && geoDateTagMap != null) {
+            setTimeout(function () { geoDateTagMap.invalidateSize(); }, 100);
+        }
+    }
+
+    function renderPendingGeoDateTags() {
+        var container = document.getElementById('pending-geotag-suggestions');
+        if (geoDateTagSuggestions.length == 0) {
+            container.innerHTML = '';
+            return;
+        }
+        var html = '<table><tr><th>وضعیت</th><th>مکان</th><th>سال</th><th>ماه</th><th>روز</th><th>#</th></tr>';
+        for (var i = 0; i < geoDateTagSuggestions.length; i++) {
+            var s = geoDateTagSuggestions[i];
+            var status = s.markForDelete ? '🗑️ درخواست حذف' : '➕ پیشنهاد جدید';
+            var locationText = s.markForDelete ? '' : (s.locationId ? $('#geotag-location-select option[value="' + s.locationId + '"]').text() : (s.suggestedLocationName || ''));
+            html += '<tr><td>' + status + '</td><td>' + locationText + '</td><td>' + (s.lunarYear || '') + '</td><td>' + (s.lunarMonth || '') + '</td><td>' + (s.lunarDay || '') + '</td>' +
+                '<td><a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="removeGeoDateTagSuggestion(' + i + ')">✕ حذف از فهرست</a></td></tr>';
+        }
+        html += '</table>';
+        container.innerHTML = html;
+    }
+
+    function removeGeoDateTagSuggestion(index) {
+        geoDateTagSuggestions.splice(index, 1);
+        renderPendingGeoDateTags();
+    }
+
+    function requestDeleteExistingGeoDateTag(existingTagId, el) {
+        geoDateTagSuggestions.push({
+            markForDelete: true,
+            existingTagId: existingTagId
+        });
+        $(el).closest('tr').hide();
+        renderPendingGeoDateTags();
+    }
+
+    function addGeoDateTagSuggestion() {
+        var locationId = $('#geotag-location-select').val();
+        var newLocationName = $('#geotag-new-location-name').val();
+        var newLocationLat = $('#geotag-new-location-lat').val();
+        var newLocationLng = $('#geotag-new-location-lng').val();
+        var year = $('#geotag-year').val();
+        var month = $('#geotag-month').val();
+        var day = $('#geotag-day').val();
+
+        var hasLocation = (locationId && locationId != '') || (newLocationName && newLocationLat && newLocationLng);
+        var hasDate = year && year != '';
+
+        if (!hasLocation && !hasDate) {
+            upToast('لطفاً حداقل یک مکان یا سال وارد کنید.', 'error');
+            return;
+        }
+
+        geoDateTagSuggestions.push({
+            markForDelete: false,
+            locationId: (locationId && locationId != '') ? parseInt(locationId) : null,
+            suggestedLocationName: (!locationId || locationId == '') ? (newLocationName || null) : null,
+            suggestedLatitude: (!locationId || locationId == '') && newLocationLat ? parseFloat(newLocationLat) : null,
+            suggestedLongitude: (!locationId || locationId == '') && newLocationLng ? parseFloat(newLocationLng) : null,
+            lunarYear: year ? parseInt(year) : null,
+            lunarMonth: month ? parseInt(month) : null,
+            lunarDay: day ? parseInt(day) : null,
+            ignoreInCategory: $('#geotag-ignore-in-category').is(':checked'),
+            suggestionNote: $('#geotag-note').val() || null
+        });
+
+        // reset the form for the next entry
+        $('#geotag-location-select').val('');
+        $('#geotag-new-location-name').val('');
+        $('#geotag-new-location-lat').val('');
+        $('#geotag-new-location-lng').val('');
+        $('#geotag-year').val('');
+        $('#geotag-month').val('');
+        $('#geotag-day').val('');
+        $('#geotag-ignore-in-category').prop('checked', false);
+        $('#geotag-note').val('');
+        if (geoDateTagMarker != null && geoDateTagMap != null) {
+            geoDateTagMap.removeLayer(geoDateTagMarker);
+            geoDateTagMarker = null;
+        }
+
+        renderPendingGeoDateTags();
+        upToast('به فهرست پیشنهادها افزوده شد. برای ثبت نهایی، دکمهٔ «ذخیره» را بزنید.');
+    }
+
     function savePoemCorrections(id, verseCount) {
         var verseOrderText = [];
         var verseOrderMarkedForDelete = [];
@@ -173,7 +282,7 @@
             section_format = null;
         }
 
-        if (verseOrderText.length == 0 && verseOrderSummaries.length == 0) {
+        if (verseOrderText.length == 0 && verseOrderSummaries.length == 0 && geoDateTagSuggestions.length == 0) {
             if (rhythm_new == null && rhythm_new2 == null && rhyme_letters == null && section_format == null) {
                 upToast('شما هیچ تغییری در اطلاعات نداده‌اید!', 'error');
                 return;
@@ -196,6 +305,7 @@
         pcs.verseLanguages = verseLanguages;
         pcs.note = $('#note').val();
         pcs.hideMyName = $('#hide-my-name').is(":checked");
+        pcs.geoDateTags = geoDateTagSuggestions;
 
         var url = '?handler=SendPoemCorrections';
 
@@ -1524,6 +1634,156 @@ else
             <a role="button" id="savecorrections" class="up-btn up-btn--success up-btn--block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">💾 ذخیره</a>
         </div>
         <p id="saving" class="up-hint">&nbsp;</p>
+    </div>
+
+    <div class="up-card">
+        <h2 class="up-card__title">🗺️ برچسب‌های زمان و مکان (پیشنهادی)</h2>
+        <p class="up-hint">می‌توانید پیشنهاد دهید که این شعر به مکان یا تاریخ خاصی اشاره دارد. پیشنهادهای شما پس از بررسی ناظران اعمال خواهد شد. با دکمهٔ «ذخیره» بالا همراه با بقیهٔ تغییرات ثبت می‌شود.</p>
+
+        @if (Model.PoemGeoDateTags != null && Model.PoemGeoDateTags.Any())
+        {
+            <table>
+                <tr>
+                    <th>مکان</th>
+                    <th>سال</th>
+                    <th>ماه</th>
+                    <th>روز</th>
+                    <th>#</th>
+                </tr>
+                @foreach (var tag in Model.PoemGeoDateTags)
+                {
+                    <tr id="existing-geotag-@tag.Id">
+                        <td>@($"{(tag.Location == null ? "" : tag.Location.Name)}")</td>
+                        <td>@tag.LunarYear</td>
+                        <td>
+                            @{
+                                switch (tag.LunarMonth)
+                                {
+                                    case 1:
+                                        @("محرم")
+                                        ;
+                                        break;
+                                    case 2:
+                                        @("صفر")
+                                        ;
+                                        break;
+                                    case 3:
+                                        @("ربیع‌الاول")
+                                        ;
+                                        break;
+                                    case 4:
+                                        @("ربیع‌الثانی")
+                                        ;
+                                        break;
+                                    case 5:
+                                        @("جمادی‌الاول")
+                                        ;
+                                        break;
+                                    case 6:
+                                        @("جمادی‌الثانی")
+                                        ;
+                                        break;
+                                    case 7:
+                                        @("رجب")
+                                        ;
+                                        break;
+                                    case 8:
+                                        @("شعبان")
+                                        ;
+                                        break;
+                                    case 9:
+                                        @("رمضان")
+                                        ;
+                                        break;
+                                    case 10:
+                                        @("شوال")
+                                        ;
+                                        break;
+                                    case 11:
+                                        @("ذیقعده")
+                                        ;
+                                        break;
+                                    case 12:
+                                        @("ذیحجه")
+                                        ;
+                                        break;
+                                }
+                            }
+                        </td>
+                        <td>@tag.LunarDay</td>
+                        <td>
+                            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="requestDeleteExistingGeoDateTag(@tag.Id, this)">🗑️ درخواست حذف</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+
+        <div id="pending-geotag-suggestions"></div>
+
+        <div class="up-field">
+            <label for="geotag-location-select">مکان</label>
+            <select id="geotag-location-select">
+                <option value="">— انتخاب نشده —</option>
+                @foreach (var location in Model.Locations)
+                {
+                    <option value="@location.Id">@location.Name</option>
+                }
+            </select>
+            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="toggleNewLocationMap()">📍 مکان جدید پیشنهاد بده</a>
+        </div>
+
+        <div id="new-location-widget" style="display:none;">
+            <div class="up-field">
+                <label for="geotag-new-location-name">نام مکان پیشنهادی</label>
+                <input type="text" id="geotag-new-location-name" />
+            </div>
+            <div id="geotag-map" style="height:300px;"></div>
+            <p class="up-hint">برای تعیین مختصات، روی نقشه کلیک کنید.</p>
+            <input type="hidden" id="geotag-new-location-lat" />
+            <input type="hidden" id="geotag-new-location-lng" />
+        </div>
+
+        <div class="up-field-row">
+            <div class="up-field">
+                <label for="geotag-year">سال (قمری)</label>
+                <input type="text" id="geotag-year" />
+            </div>
+            <div class="up-field">
+                <label for="geotag-month">ماه</label>
+                <select id="geotag-month">
+                    <option value="">هیچکدام</option>
+                    <option value="1">محرم</option>
+                    <option value="2">صفر</option>
+                    <option value="3">ربیع‌الاول</option>
+                    <option value="4">ربیع‌الثانی</option>
+                    <option value="5">جمادی‌الاول</option>
+                    <option value="6">جمادی‌الثانی</option>
+                    <option value="7">رجب</option>
+                    <option value="8">شعبان</option>
+                    <option value="9">رمضان</option>
+                    <option value="10">شوال</option>
+                    <option value="11">ذیقعده</option>
+                    <option value="12">ذیحجه</option>
+                </select>
+            </div>
+            <div class="up-field">
+                <label for="geotag-day">روز</label>
+                <input type="text" id="geotag-day" />
+            </div>
+        </div>
+
+        <div class="up-check-row">
+            <input type="checkbox" id="geotag-ignore-in-category" />
+            <label for="geotag-ignore-in-category">در نقشهٔ کلی مجموعه نادیده گرفته شود (مثلاً مکانی که فقط برای مقایسه ذکر شده)</label>
+        </div>
+
+        <div class="up-field">
+            <label for="geotag-note">دلیل این برچسب (اختیاری، به‌ویژه برای اشاره‌های غیرمستقیم مثل ابجد یا تلمیح به رویدادی شناخته‌شده)</label>
+            <textarea id="geotag-note" rows="2"></textarea>
+        </div>
+
+        <a role="button" class="up-btn up-btn--ghost" onclick="addGeoDateTagSuggestion()">➕ افزودن به فهرست پیشنهادها</a>
     </div>
 
     @if (Model.ShowAdminOps)

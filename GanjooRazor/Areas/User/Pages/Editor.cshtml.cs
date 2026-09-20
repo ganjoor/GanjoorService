@@ -314,6 +314,7 @@ namespace GanjooRazor.Areas.User.Pages
             public string[] verseLanguages { get; set; }
             public string note { get; set; }
             public bool hideMyName { get; set; }
+            public RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection[] geoDateTags { get; set; }
         }
 
         public async Task<IActionResult> OnPostSendPoemCorrectionsAsync([FromBody] PoemCorrectionStructure pcs)
@@ -470,7 +471,8 @@ namespace GanjooRazor.Areas.User.Pages
                             PoemFormat = string.IsNullOrEmpty(pcs.format) ? (GanjoorPoemFormat?)null : (GanjoorPoemFormat)Enum.Parse(typeof(GanjoorPoemFormat), pcs.format),
                             PoemSummary = poemSummary,
                             Note = pcs.note,
-                            HideMyName = pcs.hideMyName
+                            HideMyName = pcs.hideMyName,
+                            GeoDateTags = pcs.geoDateTags
                         };
 
                         HttpResponseMessage response = await secureClient.PostAsync(
