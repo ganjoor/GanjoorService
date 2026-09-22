@@ -237,39 +237,39 @@ namespace GanjooRazor.Areas.User.Pages
 
                     await ReadLanguagesAsync(secureClient);
 
-                    if (ShowAdminOps)
+                    // Locations and PoemGeoDateTags are needed by both the admin direct-edit
+                    // table (still gated by ShowAdminOps in the .cshtml) and the regular
+                    // contributor-facing suggestion UI, so this fetch is no longer admin-only
+                    var responseLocations = await secureClient.GetAsync($"{APIRoot.Url}/api/locations");
+                    if (!responseLocations.IsSuccessStatusCode)
                     {
-                        var responseLocations = await secureClient.GetAsync($"{APIRoot.Url}/api/locations");
-                        if (!responseLocations.IsSuccessStatusCode)
-                        {
-                            FatalError = JsonConvert.DeserializeObject<string>(await responseLocations.Content.ReadAsStringAsync());
-                            return Page();
-                        }
-
-                        Locations = new List<GanjoorGeoLocation>();
-                        Locations.Add
-                            (
-                            new GanjoorGeoLocation()
-                            {
-                                Id = 0,
-                                Latitude = 0,
-                                Longitude = 0,
-                                Name = ""
-                            }
-                            );
-
-                        Locations.AddRange(JsonConvert.DeserializeObject<GanjoorGeoLocation[]>(await responseLocations.Content.ReadAsStringAsync()));
-
-
-                        var tagsResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{PageInformation.Id}/geotag");
-                        if (!tagsResponse.IsSuccessStatusCode)
-                        {
-                            FatalError = JsonConvert.DeserializeObject<string>(await tagsResponse.Content.ReadAsStringAsync());
-                            return Page();
-                        }
-
-                        PoemGeoDateTags = JsonConvert.DeserializeObject<PoemGeoDateTag[]>(await tagsResponse.Content.ReadAsStringAsync());
+                        FatalError = JsonConvert.DeserializeObject<string>(await responseLocations.Content.ReadAsStringAsync());
+                        return Page();
                     }
+
+                    Locations = new List<GanjoorGeoLocation>();
+                    Locations.Add
+                        (
+                        new GanjoorGeoLocation()
+                        {
+                            Id = 0,
+                            Latitude = 0,
+                            Longitude = 0,
+                            Name = ""
+                        }
+                        );
+
+                    Locations.AddRange(JsonConvert.DeserializeObject<GanjoorGeoLocation[]>(await responseLocations.Content.ReadAsStringAsync()));
+
+
+                    var tagsResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{PageInformation.Id}/geotag");
+                    if (!tagsResponse.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await tagsResponse.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+
+                    PoemGeoDateTags = JsonConvert.DeserializeObject<PoemGeoDateTag[]>(await tagsResponse.Content.ReadAsStringAsync());
                 }
                 else
                 {
