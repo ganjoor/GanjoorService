@@ -119,7 +119,10 @@
     // ---------- geo/date tag suggestions ----------
     // staged client-side until the main save; each item matches
     // GanjoorPoemGeoDateTagCorrection's shape so it can be sent as-is
-    var geoDateTagSuggestions = [];
+    var geoDateTagSuggestions = @Html.Raw(Model.MyLastEdit != null && Model.MyLastEdit.GeoDateTags != null ? Newtonsoft.Json.JsonConvert.SerializeObject(Model.MyLastEdit.GeoDateTags, new Newtonsoft.Json.JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }) : "[]");
+    $(document).ready(function () {
+        renderPendingGeoDateTags();
+    });
     var geoDateTagMap = null;
     var geoDateTagMarker = null;
 
@@ -176,7 +179,11 @@
         renderPendingGeoDateTags();
     }
 
-    function addGeoDateTagSuggestion() {
+    // Reads the "add a new tag" form. Returns a tag object if it has
+    // meaningful content, or null if the form is empty (with an optional
+    // error toast for the case where the user explicitly asked to add an
+    // empty entry vs. silently having nothing to pick up on save).
+    function readGeoDateTagFromForm(showErrorIfEmpty) {
         var locationId = $('#geotag-location-select').val();
         var newLocationName = $('#geotag-new-location-name').val();
         var newLocationLat = $('#geotag-new-location-lat').val();
@@ -189,11 +196,13 @@
         var hasDate = year && year != '';
 
         if (!hasLocation && !hasDate) {
-            upToast('لطفاً حداقل یک مکان یا سال وارد کنید.', 'error');
-            return;
+            if (showErrorIfEmpty) {
+                upToast('لطفاً حداقل یک مکان یا سال وارد کنید.', 'error');
+            }
+            return null;
         }
 
-        geoDateTagSuggestions.push({
+        return {
             markForDelete: false,
             locationId: (locationId && locationId != '') ? parseInt(locationId) : null,
             suggestedLocationName: (!locationId || locationId == '') ? (newLocationName || null) : null,
@@ -204,9 +213,10 @@
             lunarDay: day ? parseInt(day) : null,
             ignoreInCategory: $('#geotag-ignore-in-category').is(':checked'),
             suggestionNote: $('#geotag-note').val() || null
-        });
+        };
+    }
 
-        // reset the form for the next entry
+    function resetGeoDateTagForm() {
         $('#geotag-location-select').val('');
         $('#geotag-new-location-name').val('');
         $('#geotag-new-location-lat').val('');
@@ -220,6 +230,14 @@
             geoDateTagMap.removeLayer(geoDateTagMarker);
             geoDateTagMarker = null;
         }
+    }
+
+    function addGeoDateTagSuggestion() {
+        var tag = readGeoDateTagFromForm(true);
+        if (tag == null) return;
+
+        geoDateTagSuggestions.push(tag);
+        resetGeoDateTagForm();
 
         renderPendingGeoDateTags();
         upToast('به فهرست پیشنهادها افزوده شد. برای ثبت نهایی، دکمهٔ «ذخیره» را بزنید.');
@@ -280,6 +298,16 @@
         var section_format = $('#poemformat').val();
         if (section_format == $('#poemformat-old').text()) {
             section_format = null;
+        }
+
+        // pick up anything still sitting in the "add a new tag" form that the
+        // user didn't explicitly click "add to list" for - the explicit add
+        // button is only needed to stage more than one tag before saving
+        var unstagedGeoDateTag = readGeoDateTagFromForm(false);
+        if (unstagedGeoDateTag != null) {
+            geoDateTagSuggestions.push(unstagedGeoDateTag);
+            resetGeoDateTagForm();
+            renderPendingGeoDateTags();
         }
 
         if (verseOrderText.length == 0 && verseOrderSummaries.length == 0 && geoDateTagSuggestions.length == 0) {
@@ -940,6 +968,7 @@ else
             <a role="button" href="#poem-sections" class="up-btn up-btn--sm up-btn--ghost">🧩 بخش قطعات</a>
         }
         <a role="button" href="#summaries" class="up-btn up-btn--sm up-btn--ghost">💬 بخش معنی</a>
+        <a role="button" href="#geo-date-section" class="up-btn up-btn--sm up-btn--ghost">🗺️ بخش زمان و مکان</a>
         <a role="button" href="#footer" class="up-btn up-btn--sm up-btn--ghost">⬇ پایین صفحه</a>
     </div>
 
@@ -1617,26 +1646,7 @@ else
         <p class="up-hint">برای حذف شعر از قسمت مدیریت بخش اقدام کنید.</p>
     }
 
-    <div class="up-card">
-        <div class="up-check-row">
-            @if (Model.MyLastEdit != null && Model.MyLastEdit.HideMyName)
-            {
-                <input type="checkbox" name="hide-my-name" id="hide-my-name" checked />
-            }
-            else
-            {
-                <input type="checkbox" name="hide-my-name" id="hide-my-name" />
-            }
-            <label for="hide-my-name">مشخصات من در تاریخچهٔ ویرایش‌های این شعر نمایش داده نشود</label>
-        </div>
-
-        <div class="up-form-actions">
-            <a role="button" id="savecorrections" class="up-btn up-btn--success up-btn--block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">💾 ذخیره</a>
-        </div>
-        <p id="saving" class="up-hint">&nbsp;</p>
-    </div>
-
-    <div class="up-card">
+    <div class="up-card" id="geo-date-section">
         <h2 class="up-card__title">🗺️ برچسب‌های زمان و مکان (پیشنهادی)</h2>
         <p class="up-hint">می‌توانید پیشنهاد دهید که این شعر به مکان یا تاریخ خاصی اشاره دارد. پیشنهادهای شما پس از بررسی ناظران اعمال خواهد شد. با دکمهٔ «ذخیره» بالا همراه با بقیهٔ تغییرات ثبت می‌شود.</p>
 
@@ -1784,6 +1794,25 @@ else
         </div>
 
         <a role="button" class="up-btn up-btn--ghost" onclick="addGeoDateTagSuggestion()">➕ افزودن به فهرست پیشنهادها</a>
+    </div>
+
+    <div class="up-card">
+        <div class="up-check-row">
+            @if (Model.MyLastEdit != null && Model.MyLastEdit.HideMyName)
+            {
+                <input type="checkbox" name="hide-my-name" id="hide-my-name" checked />
+            }
+            else
+            {
+                <input type="checkbox" name="hide-my-name" id="hide-my-name" />
+            }
+            <label for="hide-my-name">مشخصات من در تاریخچهٔ ویرایش‌های این شعر نمایش داده نشود</label>
+        </div>
+
+        <div class="up-form-actions">
+            <a role="button" id="savecorrections" class="up-btn up-btn--success up-btn--block" onclick="savePoemCorrections(@Model.PageInformation.Poem.Id, @Model.PageInformation.Poem.Verses.Length)">💾 ذخیره</a>
+        </div>
+        <p id="saving" class="up-hint">&nbsp;</p>
     </div>
 
     @if (Model.ShowAdminOps)

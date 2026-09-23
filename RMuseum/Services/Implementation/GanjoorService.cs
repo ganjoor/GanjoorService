@@ -2179,7 +2179,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetLastUnreviewedUserCorrectionForPoem(Guid userId, int poemId)
         {
-            var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.User)
+            var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.GeoDateTags).ThenInclude(g => g.Location).Include(c => c.User)
                 .Where(c => c.UserId == userId && c.PoemId == poemId && c.Reviewed == false)
                 .OrderByDescending(c => c.Id)
                 .FirstOrDefaultAsync();
@@ -2219,6 +2219,7 @@ namespace RMuseum.Services.Implementation
                     OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
                     PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
                     HideMyName = dbCorrection.HideMyName,
+                    GeoDateTags = dbCorrection.GeoDateTags == null ? null : dbCorrection.GeoDateTags.ToArray(),
                 }
                 );
         }
@@ -2232,7 +2233,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCorrectionViewModel[] Items)>> GetUserCorrections(Guid userId, PagingParameterModel paging)
         {
             var source = from dbCorrection in
-                             _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.User)
+                             _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.GeoDateTags).ThenInclude(g => g.Location).Include(c => c.User)
                          where userId == Guid.Empty || dbCorrection.UserId == userId
                          orderby dbCorrection.Id descending
                          select
@@ -2277,6 +2278,7 @@ namespace RMuseum.Services.Implementation
                     OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
                     PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
                     HideMyName = dbCorrection.HideMyName,
+                    GeoDateTags = dbCorrection.GeoDateTags == null ? null : dbCorrection.GeoDateTags.ToArray(),
                 }
                 );
             }
