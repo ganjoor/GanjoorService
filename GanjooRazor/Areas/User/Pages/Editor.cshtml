@@ -910,6 +910,108 @@ else
 
                 }
             }
+            @if (Model.MyLastEdit.GeoDateTags != null && Model.MyLastEdit.GeoDateTags.Length > 0)
+            {
+                <tr>
+                    <td colspan="2">
+                        برچسب‌های زمان و مکان پیشنهادی
+                    </td>
+                </tr>
+                @foreach (var geoDateTag in Model.MyLastEdit.GeoDateTags)
+                {
+                    <tr>
+                        <td colspan="2">
+                            @if (geoDateTag.MarkForDelete)
+                            {
+                                <p class="red-color">درخواست حذف برچسب موجود (#@geoDateTag.ExistingTagId)</p>
+                            }
+                            else
+                            {
+                                <p class="green-color">
+                                    @if (geoDateTag.LocationId != null)
+                                    {
+                                        @(Model.Locations.Where(l => l.Id == geoDateTag.LocationId).Select(l => l.Name).FirstOrDefault())
+                                    }
+                                    else if (!string.IsNullOrEmpty(geoDateTag.SuggestedLocationName))
+                                    {
+                                        @($"{geoDateTag.SuggestedLocationName} (مکان جدید پیشنهادی)")
+                                    }
+                                    @if (geoDateTag.LunarYear != null)
+                                    {
+                                        @(" - سال " + geoDateTag.LunarYear)
+                                    }
+                                    @if (geoDateTag.LunarMonth != null)
+                                    {
+                                        switch (geoDateTag.LunarMonth)
+                                        {
+                                            case 1:
+                                                @(" محرم")
+                                                ;
+                                                break;
+                                            case 2:
+                                                @(" صفر")
+                                                ;
+                                                break;
+                                            case 3:
+                                                @(" ربیع‌الاول")
+                                                ;
+                                                break;
+                                            case 4:
+                                                @(" ربیع‌الثانی")
+                                                ;
+                                                break;
+                                            case 5:
+                                                @(" جمادی‌الاول")
+                                                ;
+                                                break;
+                                            case 6:
+                                                @(" جمادی‌الثانی")
+                                                ;
+                                                break;
+                                            case 7:
+                                                @(" رجب")
+                                                ;
+                                                break;
+                                            case 8:
+                                                @(" شعبان")
+                                                ;
+                                                break;
+                                            case 9:
+                                                @(" رمضان")
+                                                ;
+                                                break;
+                                            case 10:
+                                                @(" شوال")
+                                                ;
+                                                break;
+                                            case 11:
+                                                @(" ذیقعده")
+                                                ;
+                                                break;
+                                            case 12:
+                                                @(" ذیحجه")
+                                                ;
+                                                break;
+                                        }
+                                    }
+                                    @if (geoDateTag.LunarDay != null)
+                                    {
+                                        @(" روز " + geoDateTag.LunarDay)
+                                    }
+                                    @if (geoDateTag.IgnoreInCategory)
+                                    {
+                                        <text> (در نقشهٔ کلی مجموعه نادیده گرفته می‌شود)</text>
+                                    }
+                                </p>
+                                @if (!string.IsNullOrEmpty(geoDateTag.SuggestionNote))
+                                {
+                                    <p class="up-hint">یادداشت: @geoDateTag.SuggestionNote</p>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            }
             @if (!string.IsNullOrEmpty(Model.MyLastEdit.Note))
             {
                 <tr>
