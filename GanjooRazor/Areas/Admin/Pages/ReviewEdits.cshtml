@@ -264,14 +264,46 @@ else
             <td colspan="2">
                 @if (Model.Correction.VerseOrderText.Any(v => v.OriginalText != v.Text))
                 {
-                    <span class="up-badge up-badge--success">ویرایش متن</span>
+                    <span class="up-badge up-badge--success">ویرایش متن دارد</span>
                 }
                 else
                 {
                     <text>ویرایش متن ندارد</text>
                 }
             </td>
-            
+
+        </tr>
+        <tr>
+            <td colspan="2">
+                @if (Model.Correction.Title != null)
+                {
+                    <span class="up-badge up-badge--primary">تغییر عنوان دارد</span>
+                }
+                @if (Model.Correction.PoemSummary != null)
+                {
+                    <span class="up-badge up-badge--primary">تغییر خلاصه دارد</span>
+                }
+                @if (Model.Correction.Rhythm != null)
+                {
+                    <span class="up-badge up-badge--primary">تغییر وزن دارد</span>
+                }
+                @if (Model.Correction.Rhythm2 != null)
+                {
+                    <span class="up-badge up-badge--primary">تغییر وزن دوم دارد</span>
+                }
+                @if (Model.Correction.RhymeLetters != null)
+                {
+                    <span class="up-badge up-badge--primary">تغییر قافیه و ردیف دارد</span>
+                }
+                @if (Model.Correction.PoemFormat != null)
+                {
+                    <span class="up-badge up-badge--primary">تغییر قالب شعری دارد</span>
+                }
+                @if (Model.Correction.GeoDateTags != null && Model.Correction.GeoDateTags.Length > 0)
+                {
+                    <span class="up-badge up-badge--primary">برچسب جغرافیایی/تاریخی دارد (@Model.Correction.GeoDateTags.Length.ToPersianNumbers())</span>
+                }
+            </td>
         </tr>
         <tr>
             <td>

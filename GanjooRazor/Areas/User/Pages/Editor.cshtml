@@ -276,6 +276,16 @@
         container.innerHTML = html;
     }
 
+    // the pending-suggestions table sits above the "add a new tag" card, so after adding/removing
+    // a row from it the change happens off-screen if the user is scrolled down to the form - jump
+    // them to the table so they can see what just happened
+    function scrollToPendingGeoDateTags() {
+        var container = document.getElementById('pending-geotag-suggestions');
+        if (container && container.innerHTML.trim() != '') {
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
     function removeGeoDateTagSuggestion(index) {
         geoDateTagSuggestions.splice(index, 1);
         renderPendingGeoDateTags();
@@ -288,6 +298,7 @@
         });
         $(el).closest('tr').hide();
         renderPendingGeoDateTags();
+        scrollToPendingGeoDateTags();
     }
 
     // Reads the "add a new tag" form. Returns a tag object if it has
@@ -368,6 +379,7 @@
         resetGeoDateTagForm();
 
         renderPendingGeoDateTags();
+        scrollToPendingGeoDateTags();
         upToast('به فهرست پیشنهادها افزوده شد. برای ثبت نهایی، دکمهٔ «ذخیره» را بزنید.');
     }
 
@@ -442,6 +454,7 @@
             geoDateTagSuggestions.push(unstagedGeoDateTag);
             resetGeoDateTagForm();
             renderPendingGeoDateTags();
+            scrollToPendingGeoDateTags();
         }
 
         if (verseOrderText.length == 0 && verseOrderSummaries.length == 0 && geoDateTagSuggestions.length == 0) {
