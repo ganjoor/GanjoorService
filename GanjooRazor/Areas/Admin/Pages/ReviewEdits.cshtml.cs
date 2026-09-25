@@ -56,6 +56,62 @@ namespace GanjooRazor.Areas.Admin.Pages
 
         public bool ApproveVersePositionChanges { get; set; }
 
+        /// <summary>
+        /// couplets of the poem, used to show which couplet a suggested geo/date tag belongs to
+        /// </summary>
+        public Tuple<int, string>[] Couplets { get; set; }
+
+        /// <summary>
+        /// groups verses into couplets - same logic as SuggestQuoted.cshtml.cs's/Editor.cshtml.cs's GetCouplets,
+        /// duplicated here rather than shared, so this page doesn't take on a cross-file dependency on those
+        /// </summary>
+        /// <param name="verses"></param>
+        /// <returns></returns>
+        private Tuple<int, string>[] GetCouplets(GanjoorVerseViewModel[] verses)
+        {
+            int coupetIndex = -1;
+            string coupletText = "";
+            var couplets = new System.Collections.Generic.List<Tuple<int, string>>();
+            int verseIndex = 0;
+            while (verseIndex < verses.Length)
+            {
+                switch (verses[verseIndex].VersePosition)
+                {
+                    case VersePosition.Comment:
+                        break;
+                    case VersePosition.Paragraph:
+                    case VersePosition.Single:
+                        if (!string.IsNullOrEmpty(coupletText))
+                        {
+                            couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
+                            coupletText = "";
+                        }
+                        coupetIndex++;
+                        couplets.Add(new Tuple<int, string>(coupetIndex, verses[verseIndex].Text));
+                        break;
+                    case VersePosition.Right:
+                    case VersePosition.CenteredVerse1:
+                        if (!string.IsNullOrEmpty(coupletText))
+                        {
+                            couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
+                        }
+                        coupetIndex++;
+                        coupletText = verses[verseIndex].Text;
+                        break;
+                    case VersePosition.Left:
+                    case VersePosition.CenteredVerse2:
+                        coupletText += $" - {verses[verseIndex].Text}";
+                        break;
+                }
+                verseIndex++;
+            }
+            if (!string.IsNullOrEmpty(coupletText))
+            {
+                couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
+            }
+            return couplets.ToArray();
+        }
+
         private async Task ReadLanguagesAsync(HttpClient secureClient)
         {
             HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
@@ -116,6 +172,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                             return Page();
                         }
                         PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+
+                        Couplets = GetCouplets(PageInformation.Poem.Verses);
 
                         if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && !string.IsNullOrEmpty(s.RhymeLetters)).Any())
                         {
@@ -315,6 +373,26 @@ namespace GanjooRazor.Areas.Admin.Pages
                         {
                             Correction.PoemFormatReviewResult = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.poemformatReviewResult);
                             Correction.ReviewNote = pms.poemformatReviewNote;
+                        }
+                    }
+
+                    if (Correction.GeoDateTags != null && Correction.GeoDateTags.Length > 0)
+                    {
+                        if (pms.geoTagReviewResult == null || pms.geoTagReviewResult.Length != Correction.GeoDateTags.Length)
+                        {
+                            return new BadRequestObjectResult("لطفاً تکلیف بررسی تمام برچسب‌های جغرافیایی/تاریخی پیشنهادی را مشخص کنید.");
+                        }
+                        else
+                        {
+                            for (int i = 0; i < Correction.GeoDateTags.Length; i++)
+                            {
+                                if (pms.geoTagReviewResult[i] == null)
+                                {
+                                    return new BadRequestObjectResult("لطفاً تکلیف بررسی تمام برچسب‌های جغرافیایی/تاریخی پیشنهادی را مشخص کنید.");
+                                }
+                                Correction.GeoDateTags[i].Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.geoTagReviewResult[i]);
+                                Correction.GeoDateTags[i].ReviewNote = (pms.geoTagReviewNotes != null && i < pms.geoTagReviewNotes.Length) ? pms.geoTagReviewNotes[i] : null;
+                            }
                         }
                     }
 

@@ -16,5 +16,7 @@
         public string[] verseReviewNotes { get; set; }
         public string poemformatReviewResult { get; set; }
         public string poemformatReviewNote { get; set; }
+        public string[] geoTagReviewResult { get; set; }
+        public string[] geoTagReviewNotes { get; set; }
     }
 }
