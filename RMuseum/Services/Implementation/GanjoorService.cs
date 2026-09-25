@@ -2102,6 +2102,11 @@ namespace RMuseum.Services.Implementation
 
             if (correction.GeoDateTags != null)
             {
+                // already-approved tags for this poem, used below to reject suggestions that just
+                // repeat what's already tagged on the same couplet - no extra service call needed,
+                // GetPoemById above always loads this
+                var approvedGeoDateTags = poem.GeoDateTags ?? Array.Empty<PoemGeoDateTag>();
+
                 foreach (var geoDateTag in correction.GeoDateTags)
                 {
                     if (!geoDateTag.MarkForDelete)
@@ -2112,6 +2117,34 @@ namespace RMuseum.Services.Implementation
                         if (!hasLocation && !hasDate)
                         {
                             return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "برچسب جغرافیایی/تاریخی باید حداقل شامل مکان یا تاریخ باشد.");
+                        }
+
+                        // PoemGeoDateTag.CoupletIndex uses 0 for "whole poem", matching a null CoupletIndex here
+                        int effectiveCoupletIndex = geoDateTag.CoupletIndex ?? 0;
+                        var approvedForCouplet = approvedGeoDateTags.Where(t => t.CoupletIndex == effectiveCoupletIndex);
+
+                        if (hasLocation)
+                        {
+                            bool locationAlreadyTagged = geoDateTag.LocationId != null
+                                ? approvedForCouplet.Any(t => t.LocationId == geoDateTag.LocationId)
+                                : approvedForCouplet.Any(t => t.Location != null &&
+                                    string.Equals(t.Location.Name?.Trim(), geoDateTag.SuggestedLocationName.Trim(), StringComparison.OrdinalIgnoreCase));
+                            if (locationAlreadyTagged)
+                            {
+                                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "این مکان از قبل برای همین بیت ثبت شده است.");
+                            }
+                        }
+
+                        if (hasDate)
+                        {
+                            bool dateAlreadyTagged = approvedForCouplet.Any(t =>
+                                t.LunarYear == geoDateTag.LunarYear &&
+                                t.LunarMonth == geoDateTag.LunarMonth &&
+                                t.LunarDay == geoDateTag.LunarDay);
+                            if (dateAlreadyTagged)
+                            {
+                                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "این تاریخ از قبل برای همین بیت ثبت شده است.");
+                            }
                         }
                     }
                 }
