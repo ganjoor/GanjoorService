@@ -274,7 +274,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                         ModifyModel.HtmlText = await htmlRes.Content.ReadAsStringAsync();
 
-                        LastMessage = $"متن تولیدی دریافت شد. لطفا آن را کپی کنید و سپس <a href=\"/Admin/ModifyPage?id={Request.Query["id"]}\">اینجا</a> کلیک کنید و آن را درج نمایید.";
+                        LastMessage = $"متن تولیدی دریافت شد. لطفا آن را کپی کنید و سپس <a href=\"/Admin/ModifyPage?id={System.Net.WebUtility.HtmlEncode(Request.Query["id"])}\">اینجا</a> کلیک کنید و آن را درج نمایید.";
 
 
                     }

@@ -77,7 +77,12 @@ else
                     @if (Model.StatsAtTop && Model.QueryIsSingleWord)
                     {
                         <div class="sitem">
-                            <a href="javascript:loadWordCountsByCat('@Model.Query', @Model.PoetId, @Model.CatId, false)" id="load-word-counts" class="pagebutton comments-link">
+                            @* Model.Query is the untrusted "s" search-query string. It must never be
+                               interpolated into a javascript: href/onclick - HTML-encoding alone does
+                               not stop it breaking out of the JS string literal there, because the
+                               browser HTML-decodes the attribute before handing it to the JS engine.
+                               Passing it through a data-* attribute keeps it as inert text. *@
+                            <a href="javascript:void(0)" data-search-query="@Model.Query" data-poet-id="@Model.PoetId" data-cat-id="@Model.CatId" onclick="loadWordCountsByCat(this.dataset.searchQuery, this.dataset.poetId, this.dataset.catId, false); return false;" id="load-word-counts" class="pagebutton comments-link">
                                 مشاهدهٔ بسامد واژگان «@Model.QueryDin» به تفکیک بخش
                             </a>
 
@@ -135,7 +140,8 @@ else
                 @if (!Model.StatsAtTop && Model.QueryIsSingleWord)
                 {
                     <div class="sitem">
-                        <a href="javascript:loadWordCountsByCat('@Model.Query', @Model.PoetId, @Model.CatId, false)" id="load-word-counts" class="pagebutton comments-link">
+                        @* See the matching comment above for why this is a data-* attribute, not a javascript: href. *@
+                        <a href="javascript:void(0)" data-search-query="@Model.Query" data-poet-id="@Model.PoetId" data-cat-id="@Model.CatId" onclick="loadWordCountsByCat(this.dataset.searchQuery, this.dataset.poetId, this.dataset.catId, false); return false;" id="load-word-counts" class="pagebutton comments-link">
                             مشاهدهٔ بسامد واژگان «@Model.QueryDin» به تفکیک بخش
                         </a>
 
