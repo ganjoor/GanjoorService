@@ -127,10 +127,33 @@
     var geoDateTagMap = null;
     var geoDateTagMarker = null;
 
-    function toggleNewLocationMap() {
+    function toggleNewLocationWidget() {
         var widget = document.getElementById('new-location-widget');
         var isHidden = widget.style.display === 'none' || widget.style.display === '';
         widget.style.display = isHidden ? 'block' : 'none';
+    }
+
+    // opens the entered lat/lng in Google Maps (viewLocation() comes from bk.js) so the user can
+    // check they typed the right numbers before adding the suggestion - this is the main way we
+    // expect people to fix a suggested location, since clicking a spot on an embedded map is hard
+    // to get right for a place you don't already know the exact location of
+    function viewNewLocationOnMap() {
+        var lat = document.getElementById('geotag-new-location-lat').value;
+        var lng = document.getElementById('geotag-new-location-lng').value;
+        if (!lat || !lng) {
+            upToast('ابتدا عرض و طول جغرافیایی را وارد کنید.', 'error');
+            return;
+        }
+        viewLocation(lat, lng);
+    }
+
+    // optional fallback for when the user does know roughly where to click (a big, easily
+    // recognizable place) - most of the time typing coordinates copied from Wikipedia/GeoHack
+    // (see the hint text) is faster and far more precise than clicking a small embedded map
+    function toggleGeoDateTagMapPicker() {
+        var mapContainer = document.getElementById('geotag-map-container');
+        var isHidden = mapContainer.style.display === 'none' || mapContainer.style.display === '';
+        mapContainer.style.display = isHidden ? 'block' : 'none';
         if (isHidden && geoDateTagMap == null) {
             geoDateTagMap = L.map('geotag-map').setView([32.4279, 53.6880], 5); // Iran-centered default
             L.tileLayer.provider('OpenStreetMap').addTo(geoDateTagMap);
@@ -203,6 +226,17 @@
                 upToast('لطفاً حداقل یک مکان یا سال وارد کنید.', 'error');
             }
             return null;
+        }
+
+        // coordinates are typed in by hand now (copied from Wikipedia/GeoHack), so a stray typo
+        // is more likely than when they came from a map click - catch obviously-wrong values here
+        if ((!locationId || locationId == '') && newLocationName) {
+            var latNum = parseFloat(newLocationLat);
+            var lngNum = parseFloat(newLocationLng);
+            if (isNaN(latNum) || isNaN(lngNum) || latNum < -90 || latNum > 90 || lngNum < -180 || lngNum > 180) {
+                upToast('عرض جغرافیایی باید بین ۹۰- تا ۹۰ و طول جغرافیایی باید بین ۱۸۰- تا ۱۸۰ باشد. مقدار وارد شده را با «مشاهده روی نقشه» بررسی کنید.', 'error');
+                return null;
+            }
         }
 
         return {
@@ -1862,7 +1896,7 @@ else
                     <option value="@location.Id">@location.Name</option>
                 }
             </select>
-            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="toggleNewLocationMap()">📍 مکان جدید پیشنهاد بده</a>
+            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="toggleNewLocationWidget()">📍 مکان جدید پیشنهاد بده</a>
         </div>
 
         <div id="new-location-widget" style="display:none;">
@@ -1870,10 +1904,29 @@ else
                 <label for="geotag-new-location-name">نام مکان پیشنهادی</label>
                 <input type="text" id="geotag-new-location-name" />
             </div>
-            <div id="geotag-map" style="height:300px;"></div>
-            <p class="up-hint">برای تعیین مختصات، روی نقشه کلیک کنید.</p>
-            <input type="hidden" id="geotag-new-location-lat" />
-            <input type="hidden" id="geotag-new-location-lng" />
+            <div class="up-field-row">
+                <div class="up-field">
+                    <label for="geotag-new-location-lat">عرض جغرافیایی (Latitude)</label>
+                    <input type="text" id="geotag-new-location-lat" placeholder="مثلاً 32.6546" />
+                </div>
+                <div class="up-field">
+                    <label for="geotag-new-location-lng">طول جغرافیایی (Longitude)</label>
+                    <input type="text" id="geotag-new-location-lng" placeholder="مثلاً 51.6680" />
+                </div>
+                <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="viewNewLocationOnMap()">🗺️ مشاهده روی نقشه</a>
+            </div>
+            <p class="up-hint">
+                برای پیدا کردن مختصات دقیق یک مکان، به‌خصوص مکان‌های کمتر شناخته‌شده، لازم نیست حدس بزنید یا روی نقشه کلیک کنید:
+                صفحهٔ آن مکان را در ویکی‌پدیا باز کنید؛ نزدیک عنوان صفحه یا در بخش اطلاعات (Infobox) لینکی به مختصات جغرافیایی وجود دارد
+                (معمولاً به سایت <a href="https://geohack.toolforge.org" target="_blank" rel="noopener">geohack.toolforge.org</a> می‌رود).
+                عرض جغرافیایی (Latitude / N) و طول جغرافیایی (Longitude / E) را از همان صفحه کپی کنید و در دو فیلد بالا وارد کنید،
+                سپس با «🗺️ مشاهده روی نقشه» درست بودن نقطه را بررسی کنید.
+                اگر ترجیح می‌دهید <a role="button" onclick="toggleGeoDateTagMapPicker()">می‌توانید به‌جای این کار روی نقشه هم کلیک کنید</a>،
+                اما برای مکان‌های کم‌شناخته‌شده روش بالا معمولاً دقیق‌تر و سریع‌تر است.
+            </p>
+            <div id="geotag-map-container" style="display:none;">
+                <div id="geotag-map" style="height:300px;"></div>
+            </div>
         </div>
 
         <div class="up-field-row">
