@@ -2330,7 +2330,7 @@ namespace RMuseum.Services.Implementation
         public async Task<RServiceResult<(PaginationMetadata PagingMeta, GanjoorPoemCorrectionViewModel[] Items)>> GetPoemEffectiveCorrections(int poemId, PagingParameterModel paging)
         {
             var source = from dbCorrection in
-                             _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText)
+                             _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.GeoDateTags)
                          where
                          dbCorrection.PoemId == poemId
                          &&
@@ -2357,6 +2357,8 @@ namespace RMuseum.Services.Implementation
                                 ||
                                 v.LanguageReviewResult == CorrectionReviewResult.Approved
                                 )
+                         ||
+                         dbCorrection.GeoDateTags.Any(g => g.Result == CorrectionReviewResult.Approved)
                          )
                          orderby dbCorrection.Id descending
                          select
@@ -2399,6 +2401,7 @@ namespace RMuseum.Services.Implementation
                     PoemFormat = dbCorrection.PoemFormat,
                     OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
                     PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
+                    GeoDateTags = dbCorrection.GeoDateTags == null ? null : dbCorrection.GeoDateTags.ToArray(),
                 }
                 );
             }
@@ -2414,7 +2417,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> GetCorrectionById(int id)
         {
-            var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.User)
+            var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.GeoDateTags).Include(c => c.User)
                 .Where(c => c.Id == id)
                 .FirstOrDefaultAsync();
 
@@ -2454,6 +2457,7 @@ namespace RMuseum.Services.Implementation
                     OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
                     PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
                     HideMyName = dbCorrection.HideMyName,
+                    GeoDateTags = dbCorrection.GeoDateTags == null ? null : dbCorrection.GeoDateTags.ToArray(),
                 }
                 );
         }
@@ -2470,7 +2474,7 @@ namespace RMuseum.Services.Implementation
             var systemUser = await _appUserService.FindUserByEmail(systemEmail);
             var systemUserId = systemUser.Result == null ? Guid.Empty : (Guid)systemUser.Result.Id;
 
-            var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.User)
+            var dbCorrection = await _context.GanjoorPoemCorrections.AsNoTracking().Include(c => c.VerseOrderText).Include(c => c.GeoDateTags).Include(c => c.User)
                 .Where(c => c.Reviewed == false && (onlyUserCorrections == false || c.UserId != systemUserId))
                 .OrderBy(c => c.Id)
                 .Skip(skip)
@@ -2512,6 +2516,7 @@ namespace RMuseum.Services.Implementation
                     OriginalPoemFormat = dbCorrection.OriginalPoemFormat,
                     PoemFormatReviewResult = dbCorrection.PoemFormatReviewResult,
                     HideMyName = dbCorrection.HideMyName,
+                    GeoDateTags = dbCorrection.GeoDateTags == null ? null : dbCorrection.GeoDateTags.ToArray(),
                 }
                 );
         }

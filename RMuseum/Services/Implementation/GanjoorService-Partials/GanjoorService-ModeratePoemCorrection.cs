@@ -31,7 +31,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var dbCorrection = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Include(c => c.User)
+                var dbCorrection = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Include(c => c.GeoDateTags).Include(c => c.User)
                 .Where(c => c.Id == moderation.Id)
                 .FirstOrDefaultAsync();
 
@@ -658,6 +658,74 @@ namespace RMuseum.Services.Implementation
                         mainSection.PoemFormat = dbCorrection.PoemFormat;
 
                         mainSection.Modified = true;
+                    }
+                }
+
+                if (dbCorrection.GeoDateTags != null && dbCorrection.GeoDateTags.Any())
+                {
+                    foreach (var dbGeoDateTag in dbCorrection.GeoDateTags)
+                    {
+                        var moderatedTag = moderation.GeoDateTags?.FirstOrDefault(g => g.Id == dbGeoDateTag.Id);
+                        if (moderatedTag == null || moderatedTag.Result == CorrectionReviewResult.NotReviewed)
+                        {
+                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "همهٔ برچسب‌های جغرافیایی/تاریخی پیشنهادی باید بررسی شوند.");
+                        }
+
+                        dbGeoDateTag.Result = moderatedTag.Result;
+                        dbGeoDateTag.ReviewNote = moderatedTag.ReviewNote;
+
+                        if (moderatedTag.Result == CorrectionReviewResult.Approved)
+                        {
+                            dbCorrection.AffectedThePoem = true;
+
+                            if (dbGeoDateTag.MarkForDelete)
+                            {
+                                // approving a delete-suggestion removes the existing, already-approved tag it targets
+                                if (dbGeoDateTag.ExistingTagId != null)
+                                {
+                                    var existingTag = await _context.PoemGeoDateTags.Where(t => t.Id == dbGeoDateTag.ExistingTagId).SingleOrDefaultAsync();
+                                    if (existingTag != null)
+                                    {
+                                        _context.PoemGeoDateTags.Remove(existingTag);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                int? approvedLocationId = dbGeoDateTag.LocationId;
+                                if (approvedLocationId == null && !string.IsNullOrWhiteSpace(dbGeoDateTag.SuggestedLocationName)
+                                    && dbGeoDateTag.SuggestedLatitude != null && dbGeoDateTag.SuggestedLongitude != null)
+                                {
+                                    // a brand new, not-yet-catalogued location - create it so the new PoemGeoDateTag can reference it
+                                    var newLocation = new GanjoorGeoLocation()
+                                    {
+                                        Name = dbGeoDateTag.SuggestedLocationName.Trim(),
+                                        Latitude = (double)dbGeoDateTag.SuggestedLatitude,
+                                        Longitude = (double)dbGeoDateTag.SuggestedLongitude,
+                                    };
+                                    _context.GanjoorGeoLocations.Add(newLocation);
+                                    await _context.SaveChangesAsync(); // need its Id below
+                                    approvedLocationId = newLocation.Id;
+                                }
+
+                                var newTag = new PoemGeoDateTag()
+                                {
+                                    PoemId = dbCorrection.PoemId,
+                                    // PoemGeoDateTag.CoupletIndex uses 0 for "whole poem", matching a null CoupletIndex here
+                                    CoupletIndex = dbGeoDateTag.CoupletIndex ?? 0,
+                                    LocationId = approvedLocationId,
+                                    LunarYear = dbGeoDateTag.LunarYear,
+                                    LunarMonth = dbGeoDateTag.LunarMonth,
+                                    LunarDay = dbGeoDateTag.LunarDay,
+                                    PersonId = dbGeoDateTag.PersonId,
+                                    IgnoreInCategory = dbGeoDateTag.IgnoreInCategory,
+                                    VerifiedDate = false,
+                                    MachineGenerated = false,
+                                };
+                                newTag.LunarDateTotalNumber = _PrepareLunarDateTotalNumber(newTag);
+                                _context.PoemGeoDateTags.Add(newTag);
+                            }
+                        }
                     }
                 }
 
