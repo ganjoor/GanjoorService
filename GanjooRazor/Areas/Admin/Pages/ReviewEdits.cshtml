@@ -2,6 +2,7 @@
 @model GanjooRazor.Areas.Admin.Pages.ReviewEditsModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using DNTPersianUtils.Core
+@using RMuseum.Models.Ganjoor
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "بازبینی ویرایش‌ها";
@@ -36,6 +37,13 @@
         for (var i = 0; i < allNotCorrect.length; i++) {
             allNotCorrect[i].checked = true;
         }
+    }
+
+    function toggleGeoTagNewLocationFields(geoIndex) {
+        var select = document.getElementById('geotag' + geoIndex + '_location_select');
+        var fields = document.getElementById('geotag' + geoIndex + '_new_location_fields');
+        if (!select || !fields) return;
+        fields.style.display = (select.value === '0') ? '' : 'none';
     }
 
     function moderatePoemCorrections(verseCount, correctionId, geoTagCount) {
@@ -135,12 +143,22 @@
 
         var geoTagReviewResult = [];
         var geoTagReviewNotes = [];
+        var geoTagLocationId = [];
+        var geoTagLocationName = [];
+        var geoTagLatitude = [];
+        var geoTagLongitude = [];
         for (var g = 0; g < (geoTagCount || 0); g++) {
             var geoElementId = '#geotag' + (g + 1).toString() + '_review_result_Approved';
             if ($(geoElementId).length > 0) {
                 var geoElementName = 'geotag' + (g + 1).toString() + '_review_result';
                 geoTagReviewResult.push($('input[name=' + geoElementName + ']:checked').val())
                 geoTagReviewNotes.push($('#geotag' + (g + 1).toString() + '_review_note').val())
+
+                var geoLocationSelect = $('#geotag' + (g + 1).toString() + '_location_select');
+                geoTagLocationId.push(geoLocationSelect.length > 0 ? geoLocationSelect.val() : '0');
+                geoTagLocationName.push($('#geotag' + (g + 1).toString() + '_location_name').val() || null);
+                geoTagLatitude.push($('#geotag' + (g + 1).toString() + '_latitude').val() || null);
+                geoTagLongitude.push($('#geotag' + (g + 1).toString() + '_longitude').val() || null);
             }
         }
 
@@ -164,6 +182,10 @@
         pms.poemformatReviewNote= $('#poemformat_review_note') == null ? null : $('#poemformat_review_note').val();
         pms.geoTagReviewResult= geoTagReviewResult;
         pms.geoTagReviewNotes= geoTagReviewNotes;
+        pms.geoTagLocationId= geoTagLocationId;
+        pms.geoTagLocationName= geoTagLocationName;
+        pms.geoTagLatitude= geoTagLatitude;
+        pms.geoTagLongitude= geoTagLongitude;
 
         $.ajax({
             type: "POST",
@@ -849,6 +871,41 @@ else
                             @if (!string.IsNullOrEmpty(geoTag.SuggestionNote))
                             {
                                 <p><small>یادداشت پیشنهاد دهنده: @geoTag.SuggestionNote</small></p>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <p class="up-hint">
+                                اگر کاربر در نام مکان یا مختصات آن اشتباه کرده اما پیشنهادش در اصل ارزش تأیید دارد، به‌جای رد کردن می‌توانید همین‌جا آن را اصلاح کنید:
+                            </p>
+                            <label for="geotag@(geoIndex)_location_select">اتصال به مکان موجود در فهرست (در صورت وجود اشتباه در تشخیص مکان):</label>
+                            <select id="geotag@(geoIndex)_location_select" name="geotag@(geoIndex)_location_select" onchange="toggleGeoTagNewLocationFields(@geoIndex)">
+                                <option value="0">-- بدون تغییر / پیشنهاد به‌عنوان مکان جدید --</option>
+                                @foreach (var loc in (Model.Locations ?? new List<GanjoorGeoLocation>()))
+                                {
+                                    if (loc.Id == 0) continue;
+                                    if (geoTag.LocationId == loc.Id)
+                                    {
+                                        <option value="@loc.Id" selected="selected">@loc.Name (@loc.Latitude, @loc.Longitude)</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@loc.Id">@loc.Name (@loc.Latitude, @loc.Longitude)</option>
+                                    }
+                                }
+                            </select>
+                            @if (geoTag.LocationId == null)
+                            {
+                                <div id="geotag@(geoIndex)_new_location_fields">
+                                    <br>
+                                    <label for="geotag@(geoIndex)_location_name">نام اصلاح‌شدهٔ مکان:</label>
+                                    <input type="text" id="geotag@(geoIndex)_location_name" name="geotag@(geoIndex)_location_name" value="@geoTag.SuggestedLocationName" size="30" />
+                                    <label for="geotag@(geoIndex)_latitude">عرض جغرافیایی اصلاح‌شده:</label>
+                                    <input type="text" id="geotag@(geoIndex)_latitude" name="geotag@(geoIndex)_latitude" value="@geoTag.SuggestedLatitude" size="12" />
+                                    <label for="geotag@(geoIndex)_longitude">طول جغرافیایی اصلاح‌شده:</label>
+                                    <input type="text" id="geotag@(geoIndex)_longitude" name="geotag@(geoIndex)_longitude" value="@geoTag.SuggestedLongitude" size="12" />
+                                </div>
                             }
                         </td>
                     </tr>

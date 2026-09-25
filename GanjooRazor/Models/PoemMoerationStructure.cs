@@ -18,5 +18,19 @@
         public string poemformatReviewNote { get; set; }
         public string[] geoTagReviewResult { get; set; }
         public string[] geoTagReviewNotes { get; set; }
+        /// <summary>
+        /// moderator's corrected location for each geo tag, if they picked an existing catalog location
+        /// instead of what the user suggested (empty/"0" means no change to LocationId)
+        /// </summary>
+        public string[] geoTagLocationId { get; set; }
+        /// <summary>
+        /// moderator's corrected new-location name (fixes a typo in the user's suggestion), if any
+        /// </summary>
+        public string[] geoTagLocationName { get; set; }
+        /// <summary>
+        /// moderator's corrected new-location latitude/longitude (fixes wrong coordinates), if any
+        /// </summary>
+        public string[] geoTagLatitude { get; set; }
+        public string[] geoTagLongitude { get; set; }
     }
 }

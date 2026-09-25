@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -60,6 +62,12 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// couplets of the poem, used to show which couplet a suggested geo/date tag belongs to
         /// </summary>
         public Tuple<int, string>[] Couplets { get; set; }
+
+        /// <summary>
+        /// full location catalog, offered as an alternative to a user's new-location suggestion so the
+        /// moderator can correct a mistyped/duplicate name by linking it to the existing entry instead
+        /// </summary>
+        public List<GanjoorGeoLocation> Locations { get; set; }
 
         /// <summary>
         /// groups verses into couplets - same logic as SuggestQuoted.cshtml.cs's/Editor.cshtml.cs's GetCouplets,
@@ -174,6 +182,19 @@ namespace GanjooRazor.Areas.Admin.Pages
                         PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
                         Couplets = GetCouplets(PageInformation.Poem.Verses);
+
+                        if (Correction.GeoDateTags != null && Correction.GeoDateTags.Any())
+                        {
+                            var responseLocations = await secureClient.GetAsync($"{APIRoot.Url}/api/locations");
+                            if (!responseLocations.IsSuccessStatusCode)
+                            {
+                                FatalError = JsonConvert.DeserializeObject<string>(await responseLocations.Content.ReadAsStringAsync());
+                                return Page();
+                            }
+                            Locations = new List<GanjoorGeoLocation>();
+                            Locations.Add(new GanjoorGeoLocation() { Id = 0, Latitude = 0, Longitude = 0, Name = "" });
+                            Locations.AddRange(JsonConvert.DeserializeObject<GanjoorGeoLocation[]>(await responseLocations.Content.ReadAsStringAsync()));
+                        }
 
                         if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && !string.IsNullOrEmpty(s.RhymeLetters)).Any())
                         {
@@ -390,6 +411,43 @@ namespace GanjooRazor.Areas.Admin.Pages
                                 {
                                     return new BadRequestObjectResult("لطفاً تکلیف بررسی تمام برچسب‌های جغرافیایی/تاریخی پیشنهادی را مشخص کنید.");
                                 }
+
+                                if (!Correction.GeoDateTags[i].MarkForDelete)
+                                {
+                                    // let the moderator fix a mistyped location name / wrong coordinates, or link to an
+                                    // existing catalog location, before the tag is approved - rather than only being able
+                                    // to approve the user's suggestion as-is or reject it outright
+                                    string correctedLocationIdText = (pms.geoTagLocationId != null && i < pms.geoTagLocationId.Length) ? pms.geoTagLocationId[i] : null;
+                                    if (!string.IsNullOrWhiteSpace(correctedLocationIdText) && int.TryParse(correctedLocationIdText, out int correctedLocationId) && correctedLocationId > 0)
+                                    {
+                                        Correction.GeoDateTags[i].LocationId = correctedLocationId;
+                                        Correction.GeoDateTags[i].SuggestedLocationName = null;
+                                        Correction.GeoDateTags[i].SuggestedLatitude = null;
+                                        Correction.GeoDateTags[i].SuggestedLongitude = null;
+                                    }
+                                    else if (Correction.GeoDateTags[i].LocationId == null)
+                                    {
+                                        string correctedName = (pms.geoTagLocationName != null && i < pms.geoTagLocationName.Length) ? pms.geoTagLocationName[i] : null;
+                                        string correctedLatText = (pms.geoTagLatitude != null && i < pms.geoTagLatitude.Length) ? pms.geoTagLatitude[i] : null;
+                                        string correctedLngText = (pms.geoTagLongitude != null && i < pms.geoTagLongitude.Length) ? pms.geoTagLongitude[i] : null;
+                                        if (!string.IsNullOrWhiteSpace(correctedName))
+                                        {
+                                            Correction.GeoDateTags[i].SuggestedLocationName = correctedName.Trim();
+                                        }
+                                        if (!string.IsNullOrWhiteSpace(correctedLatText) && !string.IsNullOrWhiteSpace(correctedLngText))
+                                        {
+                                            if (!double.TryParse(correctedLatText, NumberStyles.Float, CultureInfo.InvariantCulture, out double correctedLat)
+                                                || !double.TryParse(correctedLngText, NumberStyles.Float, CultureInfo.InvariantCulture, out double correctedLng)
+                                                || correctedLat < -90 || correctedLat > 90 || correctedLng < -180 || correctedLng > 180)
+                                            {
+                                                return new BadRequestObjectResult("مقدار اصلاح‌شدهٔ عرض/طول جغرافیایی نامعتبر است.");
+                                            }
+                                            Correction.GeoDateTags[i].SuggestedLatitude = correctedLat;
+                                            Correction.GeoDateTags[i].SuggestedLongitude = correctedLng;
+                                        }
+                                    }
+                                }
+
                                 Correction.GeoDateTags[i].Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.geoTagReviewResult[i]);
                                 Correction.GeoDateTags[i].ReviewNote = (pms.geoTagReviewNotes != null && i < pms.geoTagReviewNotes.Length) ? pms.geoTagReviewNotes[i] : null;
                             }
