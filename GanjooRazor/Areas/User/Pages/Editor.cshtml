@@ -119,7 +119,7 @@
     // ---------- geo/date tag suggestions ----------
     // staged client-side until the main save; each item matches
     // GanjoorPoemGeoDateTagCorrection's shape so it can be sent as-is
-    var geoDateTagSuggestions = @Html.Raw(Model.MyLastEdit != null && Model.MyLastEdit.GeoDateTags != null ? Newtonsoft.Json.JsonConvert.SerializeObject(Model.MyLastEdit.GeoDateTags, new Newtonsoft.Json.JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }) : "[]");
+    var geoDateTagSuggestions = @Html.Raw(Model.MyLastEditGeoDateTagsJson);
     var geoDateTagCoupletTexts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Couplets.ToDictionary(c => c.Item1.ToString(), c => c.Item2)));
     $(document).ready(function () {
         renderPendingGeoDateTags();

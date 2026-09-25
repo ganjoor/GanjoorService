@@ -23,6 +23,18 @@ namespace GanjooRazor.Areas.User.Pages
         public GanjoorPoemCorrectionViewModel MyLastEdit { get; set; }
 
         /// <summary>
+        /// camelCase JSON of MyLastEdit.GeoDateTags, pre-serialized here (rather than inline in the .cshtml
+        /// script block) so the Razor page doesn't embed a C# object-initializer (with its own braces) inside
+        /// a JS statement - that combination was tripping the editor's JS/TS syntax check (TS1109) even though
+        /// it compiled and ran fine.
+        /// </summary>
+        public string MyLastEditGeoDateTagsJson =>
+            JsonConvert.SerializeObject(
+                MyLastEdit?.GeoDateTags ?? Array.Empty<GanjoorPoemGeoDateTagCorrection>(),
+                new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }
+            );
+
+        /// <summary>
         /// page
         /// </summary>
         public GanjoorPageCompleteViewModel PageInformation { get; set; }
