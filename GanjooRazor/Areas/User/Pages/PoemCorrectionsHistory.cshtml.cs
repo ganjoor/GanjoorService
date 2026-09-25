@@ -243,6 +243,48 @@ namespace GanjooRazor.Areas.User.Pages
                     correction.PoemSummary = currentCorrection.SummaryReviewResult == CorrectionReviewResult.Approved && currentCorrection.PoemSummary != null ? currentCorrection.OriginalPoemSummary ?? "" : null;
                     correction.OriginalPoemSummary = currentCorrection.SummaryReviewResult == CorrectionReviewResult.Approved && currentCorrection.PoemSummary != null ? currentCorrection.PoemSummary : null;
 
+                    if (currentCorrection.GeoDateTags != null)
+                    {
+                        var geoDateTagsRollback = new List<GanjoorPoemGeoDateTagCorrection>();
+                        foreach (var geoTag in currentCorrection.GeoDateTags.Where(g => g.Result == CorrectionReviewResult.Approved))
+                        {
+                            if (geoTag.MarkForDelete)
+                            {
+                                // the original request deleted an existing tag - undo that by re-adding a tag with
+                                // the same data, which was snapshotted onto this same record when it was approved
+                                // (LocationId/LunarYear/etc. are otherwise unused for a pure delete-request)
+                                geoDateTagsRollback.Add(new GanjoorPoemGeoDateTagCorrection()
+                                {
+                                    CoupletIndex = geoTag.CoupletIndex,
+                                    MarkForDelete = false,
+                                    LocationId = geoTag.LocationId,
+                                    LunarYear = geoTag.LunarYear,
+                                    LunarMonth = geoTag.LunarMonth,
+                                    LunarDay = geoTag.LunarDay,
+                                    PersonId = geoTag.PersonId,
+                                    IgnoreInCategory = geoTag.IgnoreInCategory,
+                                    SuggestionNote = $"برگشت حذف برچسب جغرافیایی/تاریخی با کد {correctionId}"
+                                });
+                            }
+                            else if (geoTag.ExistingTagId != null)
+                            {
+                                // the original request added a new tag - undo that by requesting deletion of the
+                                // live tag it produced (its id was recorded onto ExistingTagId when approved)
+                                geoDateTagsRollback.Add(new GanjoorPoemGeoDateTagCorrection()
+                                {
+                                    CoupletIndex = geoTag.CoupletIndex,
+                                    MarkForDelete = true,
+                                    ExistingTagId = geoTag.ExistingTagId,
+                                    SuggestionNote = $"برگشت افزودن برچسب جغرافیایی/تاریخی با کد {correctionId}"
+                                });
+                            }
+                        }
+                        if (geoDateTagsRollback.Count > 0)
+                        {
+                            correction.GeoDateTags = geoDateTagsRollback.ToArray();
+                        }
+                    }
+
                     correction.Note = $"برگشت تصحیح با کد {correctionId}";
                     if (!string.IsNullOrEmpty(currentCorrection.Note))
                     {

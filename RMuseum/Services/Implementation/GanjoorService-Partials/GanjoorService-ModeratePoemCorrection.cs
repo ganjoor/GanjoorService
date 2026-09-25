@@ -680,12 +680,23 @@ namespace RMuseum.Services.Implementation
 
                             if (dbGeoDateTag.MarkForDelete)
                             {
-                                // approving a delete-suggestion removes the existing, already-approved tag it targets
+                                // approving a delete-suggestion removes the existing, already-approved tag it targets.
+                                // before removing it, snapshot its data onto this correction row itself (reusing the
+                                // already-existing LocationId/LunarYear/etc. columns, which are otherwise unused for a
+                                // pure delete-request) - this is what lets a later "undo this correction" roll the
+                                // deletion back, since the live PoemGeoDateTag row won't exist to read from any more
                                 if (dbGeoDateTag.ExistingTagId != null)
                                 {
                                     var existingTag = await _context.PoemGeoDateTags.Where(t => t.Id == dbGeoDateTag.ExistingTagId).SingleOrDefaultAsync();
                                     if (existingTag != null)
                                     {
+                                        dbGeoDateTag.LocationId = existingTag.LocationId;
+                                        dbGeoDateTag.LunarYear = existingTag.LunarYear;
+                                        dbGeoDateTag.LunarMonth = existingTag.LunarMonth;
+                                        dbGeoDateTag.LunarDay = existingTag.LunarDay;
+                                        dbGeoDateTag.PersonId = existingTag.PersonId;
+                                        dbGeoDateTag.IgnoreInCategory = existingTag.IgnoreInCategory;
+
                                         _context.PoemGeoDateTags.Remove(existingTag);
                                     }
                                 }
@@ -724,6 +735,12 @@ namespace RMuseum.Services.Implementation
                                 };
                                 newTag.LunarDateTotalNumber = _PrepareLunarDateTotalNumber(newTag);
                                 _context.PoemGeoDateTags.Add(newTag);
+                                await _context.SaveChangesAsync(); // need its Id below
+
+                                // record which live tag this correction produced - repurposing ExistingTagId (normally
+                                // only meaningful for a delete-request) so that "undo this correction" can later find
+                                // and remove this exact tag, the same way it removes a newly-added verse or a title change
+                                dbGeoDateTag.ExistingTagId = newTag.Id;
                             }
                         }
                     }
