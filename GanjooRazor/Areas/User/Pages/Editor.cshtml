@@ -131,6 +131,26 @@
         var widget = document.getElementById('new-location-widget');
         var isHidden = widget.style.display === 'none' || widget.style.display === '';
         widget.style.display = isHidden ? 'block' : 'none';
+        // the map is a secondary way to set the coordinates (typing them in from Wikipedia/GeoHack,
+        // per the hint text, is the primary one) but it's shown right away, not behind another
+        // click, since a hidden-behind-a-link map is easy to miss entirely
+        if (isHidden && geoDateTagMap == null) {
+            geoDateTagMap = L.map('geotag-map').setView([32.4279, 53.6880], 5); // Iran-centered default
+            L.tileLayer.provider('OpenStreetMap').addTo(geoDateTagMap);
+            geoDateTagMap.on('click', function (e) {
+                if (geoDateTagMarker != null) {
+                    geoDateTagMap.removeLayer(geoDateTagMarker);
+                }
+                geoDateTagMarker = L.marker(e.latlng).addTo(geoDateTagMap);
+                document.getElementById('geotag-new-location-lat').value = e.latlng.lat;
+                document.getElementById('geotag-new-location-lng').value = e.latlng.lng;
+            });
+        }
+        if (isHidden && geoDateTagMap != null) {
+            // the map was created while its container was display:none (or is just being
+            // re-shown), so Leaflet needs a nudge to recalculate its size once it's visible
+            setTimeout(function () { geoDateTagMap.invalidateSize(); }, 100);
+        }
     }
 
     // opens the entered lat/lng in Google Maps (viewLocation() comes from bk.js) so the user can
@@ -145,30 +165,6 @@
             return;
         }
         viewLocation(lat, lng);
-    }
-
-    // optional fallback for when the user does know roughly where to click (a big, easily
-    // recognizable place) - most of the time typing coordinates copied from Wikipedia/GeoHack
-    // (see the hint text) is faster and far more precise than clicking a small embedded map
-    function toggleGeoDateTagMapPicker() {
-        var mapContainer = document.getElementById('geotag-map-container');
-        var isHidden = mapContainer.style.display === 'none' || mapContainer.style.display === '';
-        mapContainer.style.display = isHidden ? 'block' : 'none';
-        if (isHidden && geoDateTagMap == null) {
-            geoDateTagMap = L.map('geotag-map').setView([32.4279, 53.6880], 5); // Iran-centered default
-            L.tileLayer.provider('OpenStreetMap').addTo(geoDateTagMap);
-            geoDateTagMap.on('click', function (e) {
-                if (geoDateTagMarker != null) {
-                    geoDateTagMap.removeLayer(geoDateTagMarker);
-                }
-                geoDateTagMarker = L.marker(e.latlng).addTo(geoDateTagMap);
-                document.getElementById('geotag-new-location-lat').value = e.latlng.lat;
-                document.getElementById('geotag-new-location-lng').value = e.latlng.lng;
-            });
-        }
-        if (isHidden && geoDateTagMap != null) {
-            setTimeout(function () { geoDateTagMap.invalidateSize(); }, 100);
-        }
     }
 
     function renderPendingGeoDateTags() {
@@ -1916,17 +1912,15 @@ else
                 <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="viewNewLocationOnMap()">🗺️ مشاهده روی نقشه</a>
             </div>
             <p class="up-hint">
-                برای پیدا کردن مختصات دقیق یک مکان، به‌خصوص مکان‌های کمتر شناخته‌شده، لازم نیست حدس بزنید یا روی نقشه کلیک کنید:
+                برای پیدا کردن مختصات دقیق یک مکان، به‌خصوص مکان‌های کمتر شناخته‌شده، لازم نیست حدس بزنید یا روی نقشهٔ زیر کلیک کنید:
                 صفحهٔ آن مکان را در ویکی‌پدیا باز کنید؛ نزدیک عنوان صفحه یا در بخش اطلاعات (Infobox) لینکی به مختصات جغرافیایی وجود دارد
                 (معمولاً به سایت <a href="https://geohack.toolforge.org" target="_blank" rel="noopener">geohack.toolforge.org</a> می‌رود).
                 عرض جغرافیایی (Latitude / N) و طول جغرافیایی (Longitude / E) را از همان صفحه کپی کنید و در دو فیلد بالا وارد کنید،
                 سپس با «🗺️ مشاهده روی نقشه» درست بودن نقطه را بررسی کنید.
-                اگر ترجیح می‌دهید <a role="button" onclick="toggleGeoDateTagMapPicker()">می‌توانید به‌جای این کار روی نقشه هم کلیک کنید</a>،
+                برای مکان‌های شناخته‌شده‌تر، به‌جای این کار می‌توانید مستقیماً روی نقشهٔ زیر هم کلیک کنید تا مختصات همان‌جا پر شود؛
                 اما برای مکان‌های کم‌شناخته‌شده روش بالا معمولاً دقیق‌تر و سریع‌تر است.
             </p>
-            <div id="geotag-map-container" style="display:none;">
-                <div id="geotag-map" style="height:300px;"></div>
-            </div>
+            <div id="geotag-map" style="height:300px;"></div>
         </div>
 
         <div class="up-field-row">
