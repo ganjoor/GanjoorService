@@ -153,18 +153,48 @@
         }
     }
 
-    // opens the entered lat/lng in Google Maps (viewLocation() comes from bk.js) so the user can
-    // check they typed the right numbers before adding the suggestion - this is the main way we
-    // expect people to fix a suggested location, since clicking a spot on an embedded map is hard
-    // to get right for a place you don't already know the exact location of
+    // moves the embedded map (and its marker) to the typed-in lat/lng, so the user can check they
+    // copied the right numbers before adding the suggestion, without leaving the page - this used
+    // to open Google Maps in a new tab, but that made the two ways of setting a location (typing
+    // coordinates vs. clicking the map) feel disconnected: clicking the map updated the fields, but
+    // typing into the fields never showed up on the map. now both directions go through the same map.
     function viewNewLocationOnMap() {
-        var lat = document.getElementById('geotag-new-location-lat').value;
-        var lng = document.getElementById('geotag-new-location-lng').value;
-        if (!lat || !lng) {
+        var latStr = document.getElementById('geotag-new-location-lat').value;
+        var lngStr = document.getElementById('geotag-new-location-lng').value;
+        if (!latStr || !lngStr) {
             upToast('ابتدا عرض و طول جغرافیایی را وارد کنید.', 'error');
             return;
         }
-        viewLocation(lat, lng);
+        var lat = parseFloat(latStr);
+        var lng = parseFloat(lngStr);
+        if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+            upToast('عرض جغرافیایی باید بین ۹۰- تا ۹۰ و طول جغرافیایی باید بین ۱۸۰- تا ۱۸۰ باشد.', 'error');
+            return;
+        }
+
+        // the map is normally created when the "new location" widget is opened, but guard here
+        // too in case this ever gets wired to a control outside that widget
+        if (geoDateTagMap == null) {
+            geoDateTagMap = L.map('geotag-map').setView([lat, lng], 5);
+            L.tileLayer.provider('OpenStreetMap').addTo(geoDateTagMap);
+            geoDateTagMap.on('click', function (e) {
+                if (geoDateTagMarker != null) {
+                    geoDateTagMap.removeLayer(geoDateTagMarker);
+                }
+                geoDateTagMarker = L.marker(e.latlng).addTo(geoDateTagMap);
+                document.getElementById('geotag-new-location-lat').value = e.latlng.lat;
+                document.getElementById('geotag-new-location-lng').value = e.latlng.lng;
+            });
+        }
+        else {
+            geoDateTagMap.invalidateSize();
+        }
+
+        if (geoDateTagMarker != null) {
+            geoDateTagMap.removeLayer(geoDateTagMarker);
+        }
+        geoDateTagMarker = L.marker([lat, lng]).addTo(geoDateTagMap);
+        geoDateTagMap.setView([lat, lng], 12);
     }
 
     function renderPendingGeoDateTags() {
