@@ -28,6 +28,11 @@ namespace GanjooRazor.Areas.User.Pages
         public GanjoorPageCompleteViewModel PageInformation { get; set; }
 
         /// <summary>
+        /// couplets (for the geo/date tag suggestion couplet-selection dropdown), same shape as SuggestQuoted's
+        /// </summary>
+        public Tuple<int, string>[] Couplets { get; set; }
+
+        /// <summary>
         /// rhythms alphabetically
         /// </summary>
         public GanjoorMetre[] RhythmsAlphabetically { get; set; }
@@ -123,6 +128,62 @@ namespace GanjooRazor.Areas.User.Pages
         }
 
         /// <summary>
+        /// groups verses into couplets - same logic as SuggestQuoted.cshtml.cs's GetCouplets, duplicated here
+        /// rather than shared, so this page doesn't take on a cross-file dependency on that one
+        /// </summary>
+        /// <param name="verses"></param>
+        /// <returns></returns>
+        private Tuple<int, string>[] GetCouplets(GanjoorVerseViewModel[] verses)
+        {
+            int coupetIndex = -1;
+            string coupletText = "";
+            List<Tuple<int, string>> couplets = new List<Tuple<int, string>>();
+            int verseIndex = 0;
+            bool incompleteCouplet = false;
+            while (verseIndex < verses.Length)
+            {
+                switch (verses[verseIndex].VersePosition)
+                {
+                    case VersePosition.Comment:
+                        incompleteCouplet = false;
+                        break;
+                    case VersePosition.Paragraph:
+                    case VersePosition.Single:
+                        incompleteCouplet = false;
+                        if (!string.IsNullOrEmpty(coupletText))
+                        {
+                            couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
+                            coupletText = "";
+                        }
+                        coupetIndex++;
+                        couplets.Add(new Tuple<int, string>(coupetIndex, verses[verseIndex].Text));
+                        break;
+                    case VersePosition.Right:
+                    case VersePosition.CenteredVerse1:
+                        incompleteCouplet = false;
+                        if (!string.IsNullOrEmpty(coupletText))
+                        {
+                            couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
+                        }
+                        coupetIndex++;
+                        coupletText = verses[verseIndex].Text;
+                        break;
+                    case VersePosition.Left:
+                    case VersePosition.CenteredVerse2:
+                        incompleteCouplet = true;
+                        coupletText += $" - {verses[verseIndex].Text}";
+                        break;
+                }
+                verseIndex++;
+            }
+
+            if (incompleteCouplet && !string.IsNullOrEmpty(coupletText))
+                couplets.Add(new Tuple<int, string>(coupetIndex, coupletText));
+
+            return couplets.ToArray();
+        }
+
+        /// <summary>
         /// get
         /// </summary>
         /// <returns></returns>
@@ -189,6 +250,7 @@ namespace GanjooRazor.Areas.User.Pages
                         return Page();
                     }
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
+                    Couplets = GetCouplets(PageInformation.Poem.Verses);
 
 
                     if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && !string.IsNullOrEmpty(s.RhymeLetters)).Any())
@@ -443,7 +505,7 @@ namespace GanjooRazor.Areas.User.Pages
                             }
                         }
 
-                        if (title == null && poemSummary == null && vOrderTexts.Count == 0 && pcs.rhythm == null && pcs.rhythm2 == null && pcs.rhyme == null && pcs.format == null && (pcs.geoDateTags == null || pcs.geoDateTags.Length == 0))
+                        if (title == null && poemSummary == null && vOrderTexts.Count == 0 && pcs.rhythm == null && pcs.rhythm2 == null && pcs.rhyme == null && pcs.format == null)
                             return new BadRequestObjectResult("شما هیچ تغییری در اطلاعات نداده‌اید!");
 
                         if (pcs.rhythm == "null")

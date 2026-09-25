@@ -120,6 +120,7 @@
     // staged client-side until the main save; each item matches
     // GanjoorPoemGeoDateTagCorrection's shape so it can be sent as-is
     var geoDateTagSuggestions = @Html.Raw(Model.MyLastEdit != null && Model.MyLastEdit.GeoDateTags != null ? Newtonsoft.Json.JsonConvert.SerializeObject(Model.MyLastEdit.GeoDateTags, new Newtonsoft.Json.JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }) : "[]");
+    var geoDateTagCoupletTexts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Couplets.ToDictionary(c => c.Item1.ToString(), c => c.Item2)));
     $(document).ready(function () {
         renderPendingGeoDateTags();
     });
@@ -153,12 +154,13 @@
             container.innerHTML = '';
             return;
         }
-        var html = '<table><tr><th>وضعیت</th><th>مکان</th><th>سال</th><th>ماه</th><th>روز</th><th>#</th></tr>';
+        var html = '<table><tr><th>وضعیت</th><th>بیت</th><th>مکان</th><th>سال</th><th>ماه</th><th>روز</th><th>#</th></tr>';
         for (var i = 0; i < geoDateTagSuggestions.length; i++) {
             var s = geoDateTagSuggestions[i];
             var status = s.markForDelete ? '🗑️ درخواست حذف' : '➕ پیشنهاد جدید';
+            var coupletText = (s.coupletIndex != null && geoDateTagCoupletTexts[s.coupletIndex]) ? geoDateTagCoupletTexts[s.coupletIndex] : '— کل شعر —';
             var locationText = s.markForDelete ? '' : (s.locationId ? $('#geotag-location-select option[value="' + s.locationId + '"]').text() : (s.suggestedLocationName || ''));
-            html += '<tr><td>' + status + '</td><td>' + locationText + '</td><td>' + (s.lunarYear || '') + '</td><td>' + (s.lunarMonth || '') + '</td><td>' + (s.lunarDay || '') + '</td>' +
+            html += '<tr><td>' + status + '</td><td>' + coupletText + '</td><td>' + locationText + '</td><td>' + (s.lunarYear || '') + '</td><td>' + (s.lunarMonth || '') + '</td><td>' + (s.lunarDay || '') + '</td>' +
                 '<td><a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="removeGeoDateTagSuggestion(' + i + ')">✕ حذف از فهرست</a></td></tr>';
         }
         html += '</table>';
@@ -184,6 +186,7 @@
     // error toast for the case where the user explicitly asked to add an
     // empty entry vs. silently having nothing to pick up on save).
     function readGeoDateTagFromForm(showErrorIfEmpty) {
+        var coupletIndex = $('#geotag-couplet-select').val();
         var locationId = $('#geotag-location-select').val();
         var newLocationName = $('#geotag-new-location-name').val();
         var newLocationLat = $('#geotag-new-location-lat').val();
@@ -204,6 +207,7 @@
 
         return {
             markForDelete: false,
+            coupletIndex: (coupletIndex && coupletIndex != '') ? parseInt(coupletIndex) : null,
             locationId: (locationId && locationId != '') ? parseInt(locationId) : null,
             suggestedLocationName: (!locationId || locationId == '') ? (newLocationName || null) : null,
             suggestedLatitude: (!locationId || locationId == '') && newLocationLat ? parseFloat(newLocationLat) : null,
@@ -217,6 +221,7 @@
     }
 
     function resetGeoDateTagForm() {
+        $('#geotag-couplet-select').val('');
         $('#geotag-location-select').val('');
         $('#geotag-new-location-name').val('');
         $('#geotag-new-location-lat').val('');
@@ -921,6 +926,7 @@ else
                 {
                     <tr>
                         <td colspan="2">
+                            <p class="up-hint">بیت: @(geoDateTag.CoupletIndex != null ? (Model.Couplets.Where(c => c.Item1 == geoDateTag.CoupletIndex).Select(c => c.Item2).FirstOrDefault() ?? "— کل شعر —") : "— کل شعر —")</p>
                             @if (geoDateTag.MarkForDelete)
                             {
                                 <p class="red-color">درخواست حذف برچسب موجود (#@geoDateTag.ExistingTagId)</p>
@@ -1756,6 +1762,7 @@ else
         {
             <table>
                 <tr>
+                    <th>بیت</th>
                     <th>مکان</th>
                     <th>سال</th>
                     <th>ماه</th>
@@ -1765,6 +1772,7 @@ else
                 @foreach (var tag in Model.PoemGeoDateTags)
                 {
                     <tr id="existing-geotag-@tag.Id">
+                        <td>@(Model.Couplets.Where(c => c.Item1 == tag.CoupletIndex).Select(c => c.Item2).FirstOrDefault() ?? "— کل شعر —")</td>
                         <td>@($"{(tag.Location == null ? "" : tag.Location.Name)}")</td>
                         <td>@tag.LunarYear</td>
                         <td>
@@ -1832,6 +1840,18 @@ else
         }
 
         <div id="pending-geotag-suggestions"></div>
+
+        <div class="up-field">
+            <label for="geotag-couplet-select">بیت</label>
+            <select id="geotag-couplet-select">
+                <option value="">— کل شعر —</option>
+                @foreach (var couplet in Model.Couplets)
+                {
+                    <option value="@couplet.Item1">@($"{(couplet.Item1 + 1).ToPersianNumbers()} - {couplet.Item2}")</option>
+                }
+            </select>
+            <p class="up-hint">اگر این برچسب به یک بیت مشخص اشاره دارد، آن را انتخاب کنید تا دیگران بتوانند شاهد آن را در متن پیدا کنند.</p>
+        </div>
 
         <div class="up-field">
             <label for="geotag-location-select">مکان</label>
