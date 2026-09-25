@@ -88,9 +88,16 @@ namespace GanjooRazor.Utils
 
                 LoggedOnUserModelEx loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await reLoginResponse.Content.ReadAsStringAsync());
 
+                // Authentication-related cookies are never read by client-side JavaScript
+                // (only server-side C# reads Request.Cookies[...]), so they can safely be
+                // marked HttpOnly to stop them being exfiltrated via document.cookie in the
+                // event of an XSS bug. Secure/SameSite=Lax provide additional defense-in-depth.
                 var cookieOption = new CookieOptions()
                 {
                     Expires = DateTime.Now.AddDays(365),
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Lax,
                 };
 
                 response.Cookies.Append("UserId", loggedOnUser.User.Id.ToString(), cookieOption);

@@ -105,7 +105,10 @@ namespace GanjooRazor.Areas.User.Pages
                     {
                         var cookieOption = new CookieOptions()
                         {
-                            Expires = DateTime.Now.AddDays(-1)
+                            Expires = DateTime.Now.AddDays(-1),
+                            HttpOnly = true,
+                            Secure = true,
+                            SameSite = SameSiteMode.Lax,
                         };
                         foreach (var cookieName in new string[] { "UserId", "SessionId", "Token", "Username", "Name", "NickName", "CanEdit", "KeepHistory" })
                         {

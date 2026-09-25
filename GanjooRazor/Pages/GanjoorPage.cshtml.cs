@@ -1128,6 +1128,9 @@ namespace GanjooRazor.Pages
                     var cookieOption = new CookieOptions()
                     {
                         Expires = DateTime.Now.AddDays(365),
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Lax,
                     };
                     Response.Cookies.Append("KeepHistory", $"{false}", cookieOption);
                 }

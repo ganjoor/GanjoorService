@@ -165,11 +165,18 @@ else if (Model.ReadOnlyMode)
 @{
     if (!string.IsNullOrEmpty(Model.PinterestUrl))
     {
+        // PinterestUrl comes straight from the untrusted "pinterest_url" query string
+        // (see GanjoorPage.cshtml.cs). It must never be emitted with @Html.Raw into a
+        // <script> block - that allowed a reflected XSS via payloads such as
+        // "</script><script>alert(document.cookie)</script>". Instead it is serialized
+        // as a JSON string literal (which escapes '<', '>', '&', quotes, etc.) and then
+        // URL-encoded again before being appended to href values.
         <script>
             $(function() {
+                var pinterestUrl = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.PinterestUrl));
                 $("a").attr('href', function(i, h) {
                     if (h != null) {
-                        return h + (h.indexOf('?') != -1 ? "&pinterest_url=@Html.Raw(Model.PinterestUrl)" : "?pinterest_url=@Html.Raw(Model.PinterestUrl)");
+                        return h + (h.indexOf('?') != -1 ? "&pinterest_url=" + encodeURIComponent(pinterestUrl) : "?pinterest_url=" + encodeURIComponent(pinterestUrl));
                     }
                     return h;
                 });
