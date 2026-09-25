@@ -363,7 +363,21 @@ namespace GanjooRazor.Areas.User.Pages
                         $"{APIRoot.Url}/api/ganjoor/poem/correction/{poemid}");
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        string rawError = await response.Content.ReadAsStringAsync();
+                        string errorMessage;
+                        try
+                        {
+                            // normal case: API returns the error as a JSON-encoded string
+                            errorMessage = JsonConvert.DeserializeObject<string>(rawError);
+                        }
+                        catch (JsonException)
+                        {
+                            // API (or a proxy in front of it) returned something that isn't a
+                            // JSON string - e.g. an HTML error page - so don't let that throw
+                            // an unhandled exception here; fall back to a generic message.
+                            errorMessage = "خطایی در سرور رخ داد. لطفاً بعداً دوباره تلاش کنید.";
+                        }
+                        return BadRequest(errorMessage);
                     }
                     return new OkObjectResult(true);
                 }

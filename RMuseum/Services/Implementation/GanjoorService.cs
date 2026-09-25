@@ -2043,7 +2043,7 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<bool>> DeletePoemCorrections(Guid userId, int poemId)
         {
-            var preCorrections = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText)
+            var preCorrections = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Include(c => c.GeoDateTags)
                 .Where(c => c.UserId == userId && c.PoemId == poemId && c.Reviewed == false)
                 .ToListAsync();
             if (preCorrections.Count > 0)
@@ -2051,6 +2051,7 @@ namespace RMuseum.Services.Implementation
                 foreach (var preCorrection in preCorrections)
                 {
                     preCorrection.VerseOrderText.Clear();
+                    preCorrection.GeoDateTags?.Clear();
                 }
                 _context.GanjoorPoemCorrections.RemoveRange(preCorrections);
                 await _context.SaveChangesAsync();
