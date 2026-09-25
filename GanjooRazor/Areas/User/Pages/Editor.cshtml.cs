@@ -517,7 +517,7 @@ namespace GanjooRazor.Areas.User.Pages
                             }
                         }
 
-                        if (title == null && poemSummary == null && vOrderTexts.Count == 0 && pcs.rhythm == null && pcs.rhythm2 == null && pcs.rhyme == null && pcs.format == null)
+                        if (title == null && poemSummary == null && vOrderTexts.Count == 0 && pcs.rhythm == null && pcs.rhythm2 == null && pcs.rhyme == null && pcs.format == null && (pcs.geoDateTags == null || pcs.geoDateTags.Length == 0))
                             return new BadRequestObjectResult("شما هیچ تغییری در اطلاعات نداده‌اید!");
 
                         if (pcs.rhythm == "null")
