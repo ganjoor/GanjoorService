@@ -1,5 +1,6 @@
 ﻿@page
 @model GanjooRazor.Areas.User.Pages.EditsModel
+@using DNTPersianUtils.Core
 @using RMuseum.Models.Ganjoor
 @using RMuseum.Services.Implementation
 @{
@@ -274,6 +275,89 @@ else
                     <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                 }
 
+                @if (correction.GeoDateTags != null && correction.GeoDateTags.Length > 0)
+                    @foreach (var geoTag in correction.GeoDateTags)
+                    {
+                        <tr>
+                            <td colspan="3">
+                                برچسب جغرافیایی/تاریخی -
+                                @if (geoTag.CoupletIndex == null)
+                                {
+                                    <text>کل شعر</text>
+                                }
+                                else
+                                {
+                                    <a href="/?p=@correction.PoemId#bn@(geoTag.CoupletIndex+1)" target="_blank">بیت @((geoTag.CoupletIndex + 1).ToPersianNumbers())</a>
+                                }
+                            </td>
+                        </tr>
+                        @if (geoTag.MarkForDelete)
+                        {
+                            <tr>
+                                <td>
+                                    <p style="color:red">درخواست حذف برچسب موجود</p>
+                                </td>
+                                <td>
+                                    <p style="color:green">حذف شود</p>
+                                </td>
+                                <td>
+                                    <partial name="_ReviewResultBadge" model="geoTag.Result" />
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>
+                                    <p style="color:red">-</p>
+                                </td>
+                                <td>
+                                    <p style="color:green">
+                                        @if (geoTag.LocationId != null)
+                                        {
+                                            @(geoTag.Location != null ? geoTag.Location.Name : $"مکان #{geoTag.LocationId}")
+                                        }
+                                        else if (!string.IsNullOrEmpty(geoTag.SuggestedLocationName))
+                                        {
+                                            @($"{geoTag.SuggestedLocationName} ({geoTag.SuggestedLatitude}, {geoTag.SuggestedLongitude})")
+                                        }
+                                        @if (geoTag.LunarYear != null)
+                                        {
+                                            <text> - سال @geoTag.LunarYear</text>
+                                            if (geoTag.LunarMonth != null)
+                                            {
+                                                <text>/@geoTag.LunarMonth</text>
+                                                if (geoTag.LunarDay != null)
+                                                {
+                                                    <text>/@geoTag.LunarDay</text>
+                                                }
+                                            }
+                                        }
+                                    </p>
+                                </td>
+                                <td>
+                                    <partial name="_ReviewResultBadge" model="geoTag.Result" />
+                                </td>
+                            </tr>
+                        }
+                        @if (!string.IsNullOrEmpty(geoTag.SuggestionNote))
+                        {
+                            <tr>
+                                <td colspan="3">
+                                    <p>یادداشت من: @geoTag.SuggestionNote</p>
+                                </td>
+                            </tr>
+                        }
+                        @if (!string.IsNullOrEmpty(geoTag.ReviewNote))
+                        {
+                            <tr>
+                                <td colspan="3">
+                                    <p>@geoTag.ReviewNote</p>
+                                </td>
+                            </tr>
+                        }
+                        <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
+                    }
 
                 @if (correction.VerseOrderText != null && correction.VerseOrderText.Length > 0)
                     @foreach (var verse in correction.VerseOrderText)

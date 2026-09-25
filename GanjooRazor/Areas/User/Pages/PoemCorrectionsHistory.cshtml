@@ -168,6 +168,66 @@ else
                         </tr>
 
                     }
+                    @if (correction.GeoDateTags != null)
+                        @foreach (var geoTag in correction.GeoDateTags.Where(g => g.Result == CorrectionReviewResult.Approved))
+                        {
+                            <tr>
+                                <td colspan="2">
+                                    برچسب جغرافیایی/تاریخی -
+                                    @if (geoTag.CoupletIndex == null)
+                                    {
+                                        <text>کل شعر</text>
+                                    }
+                                    else
+                                    {
+                                        <a href="/?p=@correction.PoemId#bn@(geoTag.CoupletIndex+1)" target="_blank">بیت @((geoTag.CoupletIndex + 1).ToPersianNumbers())</a>
+                                    }
+                                </td>
+                            </tr>
+                            @if (geoTag.MarkForDelete)
+                            {
+                                <tr>
+                                    <td>
+                                        <p class="red-color">برچسب موجود</p>
+                                    </td>
+                                    <td>
+                                        <p class="red-color">حذف شد</p>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>
+                                        <p class="red-color">-</p>
+                                    </td>
+                                    <td>
+                                        <p class="green-color">
+                                            @if (geoTag.LocationId != null)
+                                            {
+                                                @(geoTag.Location != null ? geoTag.Location.Name : $"مکان #{geoTag.LocationId}")
+                                            }
+                                            else if (!string.IsNullOrEmpty(geoTag.SuggestedLocationName))
+                                            {
+                                                @($"{geoTag.SuggestedLocationName} ({geoTag.SuggestedLatitude}, {geoTag.SuggestedLongitude})")
+                                            }
+                                            @if (geoTag.LunarYear != null)
+                                            {
+                                                <text> - سال @geoTag.LunarYear</text>
+                                                if (geoTag.LunarMonth != null)
+                                                {
+                                                    <text>/@geoTag.LunarMonth</text>
+                                                    if (geoTag.LunarDay != null)
+                                                    {
+                                                        <text>/@geoTag.LunarDay</text>
+                                                    }
+                                                }
+                                            }
+                                        </p>
+                                    </td>
+                                </tr>
+                            }
+                        }
                     @if (correction.VerseOrderText != null)
                         @foreach (var verse in correction.VerseOrderText)
                         {
