@@ -2107,6 +2107,11 @@ namespace RMuseum.Services.Implementation
                 // GetPoemById above always loads this
                 var approvedGeoDateTags = poem.GeoDateTags ?? Array.Empty<PoemGeoDateTag>();
 
+                // lazily loaded only if a tag actually suggests a brand new location - most
+                // submissions either pick an existing location or only carry a date, so this
+                // extra query is skipped entirely in the common case
+                GanjoorGeoLocation[] allLocations = null;
+
                 foreach (var geoDateTag in correction.GeoDateTags)
                 {
                     if (!geoDateTag.MarkForDelete)
@@ -2117,6 +2122,29 @@ namespace RMuseum.Services.Implementation
                         if (!hasLocation && !hasDate)
                         {
                             return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "برچسب جغرافیایی/تاریخی باید حداقل شامل مکان یا تاریخ باشد.");
+                        }
+
+                        if (geoDateTag.LocationId == null && !string.IsNullOrWhiteSpace(geoDateTag.SuggestedLocationName)
+                            && geoDateTag.SuggestedLatitude != null && geoDateTag.SuggestedLongitude != null)
+                        {
+                            // catches "this is already a catalogued place" regardless of which couplet/poem
+                            // it was previously tagged on - a hard reject, since coordinates a few kilometers
+                            // apart are effectively certainly the same real place, not a judgment call
+                            const double nearDuplicateKm = 5.0;
+                            if (allLocations == null)
+                            {
+                                allLocations = await _context.GanjoorGeoLocations.AsNoTracking().ToArrayAsync();
+                            }
+                            var nearExistingLocation = allLocations.FirstOrDefault(l =>
+                                _GeoDistanceKm((double)geoDateTag.SuggestedLatitude, (double)geoDateTag.SuggestedLongitude, l.Latitude, l.Longitude) <= nearDuplicateKm);
+                            if (nearExistingLocation != null)
+                            {
+                                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null,
+                                    $"مکانی با نام «{nearExistingLocation.Name}» با مختصات بسیار نزدیک از قبل در فهرست مکان‌ها ثبت شده است. لطفاً به‌جای پیشنهاد مکان جدید، همان را از فهرست «مکان» انتخاب کنید.");
+                            }
+                            // a same-name-but-far-away match is deliberately NOT rejected here - it can
+                            // legitimately be a different real place sharing a name, and the editor's
+                            // client-side check already asks the user to confirm that before it gets here
                         }
 
                         // PoemGeoDateTag.CoupletIndex uses 0 for "whole poem", matching a null CoupletIndex here

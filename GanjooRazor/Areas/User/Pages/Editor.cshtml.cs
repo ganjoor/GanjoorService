@@ -119,6 +119,19 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public List<GanjoorGeoLocation> Locations { get; set; }
 
+        /// <summary>
+        /// camelCase JSON of Locations (id/name/latitude/longitude only), used client-side to warn
+        /// about a new-location suggestion that's actually already in the catalog (same/near
+        /// coordinates) or shares a name with a different, already-catalogued place. Pre-serialized
+        /// here rather than inline in the .cshtml script block for the same reason as
+        /// MyLastEditGeoDateTagsJson - avoids embedding a C# object initializer inside a JS statement.
+        /// </summary>
+        public string AllLocationsJson =>
+            JsonConvert.SerializeObject(
+                (Locations ?? new List<GanjoorGeoLocation>()).Select(l => new { l.Id, l.Name, l.Latitude, l.Longitude }),
+                new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }
+            );
+
 
         /// <summary>
         /// poem geo date tags

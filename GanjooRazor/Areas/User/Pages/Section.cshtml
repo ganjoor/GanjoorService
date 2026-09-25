@@ -237,12 +237,12 @@ else
         <h2 class="up-card__title">قافیه</h2>
 
         <div class="up-field">
-            <label><span class="up-field-icon" aria-hidden="true">🔤</span> حروف قافیهٔ فعلی</label>
+            <label><span class="up-field-icon" aria-hidden="true">🔤</span> حروف قافیه و ردیفِ فعلی</label>
             <p id="rhyme-letters-old" class="up-field-static">@Model.PoemSection.RhymeLetters</p>
         </div>
 
         <div class="up-field">
-            <label for="rhyme-letters"><span class="up-field-icon" aria-hidden="true">🔤</span> حروف قافیهٔ پیشنهادی من (بدون فاصله و حرکات)</label>
+            <label for="rhyme-letters"><span class="up-field-icon" aria-hidden="true">🔤</span> حروف قافیه و ردیفِ پیشنهادی من (بدون فاصله و حرکات)</label>
             <div class="up-btn-group up-mt-0">
                 @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.RhymeLetters))
                 {
@@ -254,6 +254,11 @@ else
                 }
                 <a role="button" onclick="computeSectionRhyme(@Model.PoemSection.Id, '#rhyme-letters')" class="up-btn up-btn--ghost">🧮 محاسبه</a>
             </div>
+            <p class="up-hint">
+                این فیلد قافیه و ردیف را با هم و بدون فاصله می‌خواهد، نه فقط قافیه. اگر بعد از حروف قافیه کلمه یا کلماتی عیناً در همهٔ ابیات تکرار شده باشند (ردیف)، آن‌ها هم باید در انتها بیایند.
+                برای نمونه در بیت «... اگر تو <b>یله کنی</b>» / «... اگر تو <b>گله کنی</b>» چون «کنی» عیناً در هر دو مصرع تکرار شده و ردیف شعر است، حروف قافیه و ردیف باید «<b>لهکنی</b>» نوشته شود؛ نه «له» (با نادیده گرفتن ردیف) و نه «ه کنی» (با فاصلهٔ اشتباه).
+                همچنین از حرکات (فتحه، ضمه، کسره) یا هر نشانهٔ اضافهٔ دیگر در این فیلد استفاده نشود.
+            </p>
         </div>
     </div>
 

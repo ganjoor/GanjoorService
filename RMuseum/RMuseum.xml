@@ -21394,6 +21394,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._GeoDistanceKm(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            great-circle distance between two points, in kilometers - used only for catching
+            obviously-duplicate new-location suggestions (someone retyping a place that's already
+            in the catalog under slightly different coordinates), so this doesn't need to be
+            geodesy-grade precise, just good enough at the few-kilometers scale
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.AddPoemGeoDateTagAsync(RMuseum.Models.Ganjoor.PoemGeoDateTag)">
             <summary>
             add poem geo tag

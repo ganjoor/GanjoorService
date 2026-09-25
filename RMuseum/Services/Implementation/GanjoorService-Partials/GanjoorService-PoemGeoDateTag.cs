@@ -15,6 +15,23 @@ namespace RMuseum.Services.Implementation
     public partial class GanjoorService : IGanjoorService
     {
 
+        /// <summary>
+        /// great-circle distance between two points, in kilometers - used only for catching
+        /// obviously-duplicate new-location suggestions (someone retyping a place that's already
+        /// in the catalog under slightly different coordinates), so this doesn't need to be
+        /// geodesy-grade precise, just good enough at the few-kilometers scale
+        /// </summary>
+        private double _GeoDistanceKm(double lat1, double lng1, double lat2, double lng2)
+        {
+            const double earthRadiusKm = 6371.0;
+            double dLat = (lat2 - lat1) * Math.PI / 180.0;
+            double dLng = (lng2 - lng1) * Math.PI / 180.0;
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                       Math.Cos(lat1 * Math.PI / 180.0) * Math.Cos(lat2 * Math.PI / 180.0) *
+                       Math.Sin(dLng / 2) * Math.Sin(dLng / 2);
+            return earthRadiusKm * 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        }
+
         private int? _PrepareLunarDateTotalNumber(PoemGeoDateTag tag)
         {
             if (tag.LunarYear == null)

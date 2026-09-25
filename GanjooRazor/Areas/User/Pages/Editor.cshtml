@@ -121,6 +121,9 @@
     // GanjoorPoemGeoDateTagCorrection's shape so it can be sent as-is
     var geoDateTagSuggestions = @Html.Raw(Model.MyLastEditGeoDateTagsJson);
     var geoDateTagCoupletTexts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Couplets.ToDictionary(c => c.Item1.ToString(), c => c.Item2)));
+    // full existing-location catalog ({id, name, latitude, longitude}[]), used to warn about a
+    // new-location suggestion that's actually already catalogued - see _confirmNewLocationSuggestion
+    var allGeoLocations = @Html.Raw(Model.AllLocationsJson);
     $(document).ready(function () {
         renderPendingGeoDateTags();
     });
@@ -195,6 +198,63 @@
         }
         geoDateTagMarker = L.marker([lat, lng]).addTo(geoDateTagMap);
         geoDateTagMap.setView([lat, lng], 12);
+    }
+
+    // great-circle distance in km - just for catching obviously-duplicate locations, not
+    // geodesy-grade precision
+    function _geoDistanceKm(lat1, lng1, lat2, lng2) {
+        var R = 6371;
+        var dLat = (lat2 - lat1) * Math.PI / 180;
+        var dLng = (lng2 - lng1) * Math.PI / 180;
+        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    // For a brand-new location suggestion, checks it against the full existing-location catalog
+    // (allGeoLocations) before it's staged. Two cases:
+    //  - near-identical coordinates to an existing location: almost certainly the same real place,
+    //    typed in again instead of picked from the dropdown - blocked outright, no point asking.
+    //  - same name as an existing location but meaningfully different coordinates: could be a real
+    //    second place that happens to share a name, or could be a coordinate mistake - asks the
+    //    user to explicitly confirm rather than guessing either way.
+    // Returns true if the tag should be added as-is.
+    async function _confirmNewLocationSuggestion(tag) {
+        if (!tag || tag.locationId != null || !tag.suggestedLocationName) {
+            return true; // an existing/selected location, or no location at all - nothing to check
+        }
+
+        var NEAR_DUPLICATE_KM = 5; // close enough that it's almost certainly the same real place
+        var trimmedName = tag.suggestedLocationName.trim();
+
+        for (var i = 0; i < allGeoLocations.length; i++) {
+            var existing = allGeoLocations[i];
+            var distanceKm = _geoDistanceKm(tag.suggestedLatitude, tag.suggestedLongitude, existing.latitude, existing.longitude);
+            if (distanceKm <= NEAR_DUPLICATE_KM) {
+                upToast('این مکان با نام «' + existing.name + '» و مختصات بسیار نزدیک از قبل ثبت شده است. لطفاً به‌جای پیشنهاد مکان جدید، همان را از فهرست «مکان» انتخاب کنید.', 'error');
+                return false;
+            }
+        }
+
+        var sameNameOtherPlaces = allGeoLocations.filter(function (existing) {
+            return existing.name && existing.name.trim().toLowerCase() === trimmedName.toLowerCase();
+        });
+        if (sameNameOtherPlaces.length > 0) {
+            var distances = sameNameOtherPlaces.map(function (existing) {
+                return Math.round(_geoDistanceKm(tag.suggestedLatitude, tag.suggestedLongitude, existing.latitude, existing.longitude));
+            });
+            var ok = await upConfirm(
+                'مکانی با نام «' + trimmedName + '» از قبل با مختصات دیگری در فهرست ثبت شده است (فاصله حدود ' + distances.join('، ') + ' کیلومتر). ' +
+                'آیا مطمئنید این مکان دیگری با همین نام است و اشتباهی در مختصات پیش نیامده؟',
+                { okText: 'بله، مکان دیگری است', cancelText: 'انصراف' }
+            );
+            if (!ok) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     function renderPendingGeoDateTags() {
@@ -297,9 +357,12 @@
         }
     }
 
-    function addGeoDateTagSuggestion() {
+    async function addGeoDateTagSuggestion() {
         var tag = readGeoDateTagFromForm(true);
         if (tag == null) return;
+
+        var proceed = await _confirmNewLocationSuggestion(tag);
+        if (!proceed) return;
 
         geoDateTagSuggestions.push(tag);
         resetGeoDateTagForm();
@@ -308,7 +371,7 @@
         upToast('به فهرست پیشنهادها افزوده شد. برای ثبت نهایی، دکمهٔ «ذخیره» را بزنید.');
     }
 
-    function savePoemCorrections(id, verseCount) {
+    async function savePoemCorrections(id, verseCount) {
         var verseOrderText = [];
         var verseOrderMarkedForDelete = [];
         var versePositions = [];
@@ -370,6 +433,12 @@
         // button is only needed to stage more than one tag before saving
         var unstagedGeoDateTag = readGeoDateTagFromForm(false);
         if (unstagedGeoDateTag != null) {
+            var proceedWithUnstaged = await _confirmNewLocationSuggestion(unstagedGeoDateTag);
+            if (!proceedWithUnstaged) {
+                // let them fix or clear the "add a new tag" form instead of silently dropping
+                // it or saving everything else without it
+                return;
+            }
             geoDateTagSuggestions.push(unstagedGeoDateTag);
             resetGeoDateTagForm();
             renderPendingGeoDateTags();
@@ -1441,12 +1510,12 @@ else
             </div>
 
             <div class="up-field">
-                <label>حروف قافیهٔ فعلی</label>
+                <label>حروف قافیه و ردیفِ فعلی</label>
                 <p id="rhyme-letters-old" class="up-field-static">@Model.RhymeLetters</p>
             </div>
 
             <div class="up-field">
-                <label for="rhyme-letters"><span class="up-field-icon" aria-hidden="true">🔤</span> حروف قافیهٔ ویراستهٔ من (بدون فاصله و حرکات)</label>
+                <label for="rhyme-letters"><span class="up-field-icon" aria-hidden="true">🔤</span> حروف قافیه و ردیفِ ویراستهٔ من (بدون فاصله و حرکات)</label>
                 <div class="up-btn-group up-mt-0">
                     @if (Model.MyLastEdit != null && !string.IsNullOrEmpty(Model.MyLastEdit.RhymeLetters))
                     {
@@ -1458,6 +1527,11 @@ else
                     }
                     <a role="button" onclick="computePoemRhyme(@Model.PageInformation.Id, '#rhyme-letters')" class="up-btn up-btn--ghost">🧮 محاسبه</a>
                 </div>
+                <p class="up-hint">
+                    این فیلد قافیه و ردیف را با هم و بدون فاصله می‌خواهد، نه فقط قافیه. اگر بعد از حروف قافیه کلمه یا کلماتی عیناً در همهٔ ابیات تکرار شده باشند (ردیف)، آن‌ها هم باید در انتها بیایند.
+                    برای نمونه در بیت «... اگر تو <b>یله کنی</b>» / «... اگر تو <b>گله کنی</b>» چون «کنی» عیناً در هر دو مصرع تکرار شده و ردیف شعر است، حروف قافیه و ردیف باید «<b>لهکنی</b>» نوشته شود؛ نه «له» (با نادیده گرفتن ردیف) و نه «ه کنی» (با فاصلهٔ اشتباه).
+                    همچنین از حرکات (فتحه، ضمه، کسره) یا هر نشانهٔ اضافهٔ دیگر در این فیلد استفاده نشود.
+                </p>
             </div>
 
             <div id="secondr-btn">
