@@ -220,7 +220,7 @@ namespace RMuseum.Services.Implementation
                     var processedNote = await _ProcessCommentHtml(note, _context);
                     if (processedNote.TextWasDropped)
                     {
-                        return new RServiceResult<bool>(false, "بخشی از متن یادداشت شما به دلیل داشتن نشانه‌های HTML نامعتبر یا ناقص (مثلاً علامت‌های «کوچکتر از» یا «بزرگتر از» به‌تنهایی، یا برچسبی که بسته نشده) هنگام پاک‌سازی حذف شد. لطفاً متن را بررسی و اصلاح کنید و دوباره ثبت نمایید.");
+                        return new RServiceResult<bool>(false, _BuildSanitizerDroppedTextError(processedNote.RemainingPlainText));
                     }
                     note = processedNote.Html;
                 }

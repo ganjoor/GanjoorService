@@ -6,9 +6,9 @@
 
 @if (Model.Comment == null)
 {
-    <div class="item" id="comment-error">
+    <div class="item" id="comment-error" data-sanitizer-remaining-text="@Model.SanitizerRemainingText">
         <p style="color:red">خطا</p>
-        @Html.Raw(Model.Error)
+        @Model.Error
     </div>
 }
 else

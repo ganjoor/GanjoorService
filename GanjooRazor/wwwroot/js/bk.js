@@ -1,4 +1,160 @@
-﻿// From David Flanagan's "JavaScript: The Definitive Guide" 5th Ed,
+﻿// --- Sanitizer "text was dropped" feedback ----------------------------------------------
+// Shared by every place a TinyMCE-edited field (a comment, a bookmark note, a suggested
+// poet spec-line, ...) gets rejected because the server's HTML sanitizer had to drop real
+// text (see GanjoorService._BuildSanitizerDroppedTextError on the API side). Instead of just
+// showing a generic error, this shows the user - highlighted, using the same diffChars utility
+// already used elsewhere in this file for comparing correction blocks - exactly which part of
+// what they typed would be dropped and why. That's almost always because they pasted the text
+// in from somewhere else (Word, a chat app, a web page) that silently carried invalid/broken
+// formatting along with it, so the message says that rather than talking about "tags" or the
+// "<"/">" characters ordinary users don't recognize and have usually never typed themselves.
+
+function _htmlToPlainText(html) {
+    var tmp = document.createElement('div');
+    tmp.innerHTML = html || '';
+    return (tmp.textContent || tmp.innerText || '').replace(/\s+/g, ' ').trim();
+}
+
+function _ensureJsDiffLoaded(callback) {
+    if (window.JsDiff) {
+        callback();
+        return;
+    }
+    var script = document.createElement('script');
+    script.src = '/lib/diff.js';
+    script.onload = callback;
+    document.head.appendChild(script);
+}
+
+function showSanitizerTextDroppedPopup(message, originalHtml, remainingPlainText) {
+    _ensureJsDiffLoaded(function () {
+        var originalPlainText = _htmlToPlainText(originalHtml);
+        var diff = JsDiff.diffChars(originalPlainText, remainingPlainText || '');
+        var fragment = document.createDocumentFragment();
+        for (var i = 0; i < diff.length; i++) {
+            if (diff[i].added) {
+                continue; // sanitizing only removes content, nothing to highlight as "added"
+            }
+            var node;
+            if (diff[i].removed) {
+                node = document.createElement('del');
+                node.style.color = 'red';
+                node.appendChild(document.createTextNode(diff[i].value));
+            } else {
+                node = document.createTextNode(diff[i].value);
+            }
+            fragment.appendChild(node);
+        }
+
+        var existing = document.getElementById('sanitizer-warning-modal');
+        if (existing) {
+            existing.parentNode.removeChild(existing);
+        }
+
+        var isDark = (window.matchMedia("(prefers-color-scheme: dark)").matches && localStorage.getItem("scheme") != "light") || localStorage.getItem("scheme") == "dark";
+
+        var overlay = document.createElement('div');
+        overlay.id = 'sanitizer-warning-modal';
+        overlay.style.cssText = 'display:block;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:rgba(0,0,0,0.5);';
+        overlay.onclick = function (e) {
+            if (e.target === overlay) {
+                overlay.parentNode.removeChild(overlay);
+            }
+        };
+
+        var box = document.createElement('div');
+        box.style.cssText = 'margin:8% auto;padding:20px;max-width:600px;border-radius:8px;direction:rtl;text-align:right;' +
+            (isDark ? 'background-color:#222;color:#eee;' : 'background-color:#fff;color:#000;');
+
+        var messageP = document.createElement('p');
+        messageP.textContent = message;
+        box.appendChild(messageP);
+
+        if (fragment.childNodes.length > 0) {
+            var diffTitle = document.createElement('p');
+            var strong = document.createElement('strong');
+            strong.textContent = 'بخشی که حذف خواهد شد با رنگ قرمز و خط‌خورده مشخص شده است:';
+            diffTitle.appendChild(strong);
+            box.appendChild(diffTitle);
+
+            var diffBox = document.createElement('div');
+            diffBox.style.cssText = 'border:1px solid #999;padding:10px;border-radius:4px;margin-bottom:12px;white-space:pre-wrap;';
+            diffBox.appendChild(fragment);
+            box.appendChild(diffBox);
+        }
+
+        var closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.textContent = 'بستن';
+        closeBtn.onclick = function () {
+            overlay.parentNode.removeChild(overlay);
+        };
+        box.appendChild(closeBtn);
+
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+    });
+}
+
+// Parses a raw error payload (jQuery's xhr.responseText, or the text of a server-rendered
+// error block) looking for the sanitizer-text-dropped shape. Returns the parsed
+// {message, remainingText} or null for any ordinary error (including plain, non-JSON text,
+// which is the common case).
+function _parseSanitizerDroppedTextError(raw) {
+    if (typeof raw !== 'string' || raw.length === 0) return null;
+    try {
+        var obj = JSON.parse(raw);
+        if (obj && typeof obj === 'object' && obj.sanitizerTextDropped === true) {
+            return obj;
+        }
+    } catch (e) {
+        // not JSON - an ordinary plain-text error, nothing to do here
+    }
+    return null;
+}
+
+// For AJAX (BadRequestObjectResult) handlers: xhr is jQuery's jqXHR from an error callback.
+// originalHtml is the HTML the user actually submitted (for the diff). Returns true if it
+// showed the popup (nothing else to do), or false for an ordinary error (caller's normal
+// error handling, if any, still applies).
+function tryShowSanitizerErrorFromXhr(xhr, originalHtml) {
+    var parsed = _parseSanitizerDroppedTextError(xhr && xhr.responseText);
+    if (parsed == null) return false;
+    showSanitizerTextDroppedPopup(parsed.message, originalHtml, parsed.remainingText);
+    return true;
+}
+
+// For server-rendered-partial handlers (postComment, postReplyComment, suggestNote): call this
+// on the just-received (not yet necessarily inserted, though it's fine either way) root
+// element of the rendered partial. If it carries the sanitizer-drop marker, this removes that
+// error block from it (the popup below covers it, so leaving the same message sitting inline
+// in the page too would just be clutter) and shows the popup. originalHtml is the HTML the user
+// actually submitted (for the diff). Returns true if it handled a sanitizer-drop error.
+// $rendered is the jQuery-wrapped set from $(data) for a just-received server-rendered
+// partial (postComment, postReplyComment, suggestNote) - using jQuery's own filter/find here
+// rather than indexing into the raw DOM nodes is what makes this robust to Razor's rendered
+// HTML having a leading/trailing whitespace text node ahead of the actual element, which is
+// common and would otherwise make a plain "first DOM node" check miss the real element.
+// Returns true when the error div IS the partial's root element (true for every partial that
+// currently marks it this way) - callers should skip inserting $rendered into the page at all
+// in that case, since the popup this shows already covers the same message plus the diff.
+function checkAppendedHtmlForSanitizerError($rendered, originalHtml) {
+    var $rootMatch = $rendered.filter('[data-sanitizer-remaining-text]');
+    var $errorDiv = $rootMatch.length > 0 ? $rootMatch : $rendered.find('[data-sanitizer-remaining-text]');
+    if ($errorDiv.length === 0) return false;
+
+    var remainingText = $errorDiv.attr('data-sanitizer-remaining-text');
+    if (!remainingText) return false;
+
+    var message = $errorDiv.text().trim();
+    if ($rootMatch.length === 0) {
+        $errorDiv.remove();
+    }
+    showSanitizerTextDroppedPopup(message, originalHtml, remainingText);
+    return true;
+}
+
+// From David Flanagan's "JavaScript: The Definitive Guide" 5th Ed,
 //   http://www.davidflanagan.com/javascript5/display.php?n=15-4&f=15/04.js
 //modified 4 ganjoor a little bit
 
@@ -812,13 +968,17 @@ function savePrivateNote() {
         var url = '?handler=BookmarkNote';
 
         var bookmarkId = $("#editbookmarkId").val();
+        var originalHtml = $("textarea#editNoteText").val();
 
         $.ajax({
             type: "PUT",
             url: url,
             data: {
                 id: bookmarkId,
-                note: $("textarea#editNoteText").val()
+                note: originalHtml
+            },
+            error: function (xhr) {
+                tryShowSanitizerErrorFromXhr(xhr, originalHtml);
             },
             success: function () {
                 document.getElementById('bookmark-note-dialog').style.display = 'none';
@@ -997,6 +1157,8 @@ function postComment(coupletIndex, buttonSelector) {
         var form = $(this);
         var url = form.attr('action');
 
+        var originalHtml = form.find('textarea').val();
+
         $.ajax({
             type: "POST",
             url: url,
@@ -1006,12 +1168,20 @@ function postComment(coupletIndex, buttonSelector) {
                 $(buttonSelector).prop("disabled", false);
             },
             success: function (data) {
-                $(data).appendTo(parent1);
-                if (parent2 != null)
-                    $(data).appendTo(parent2);
+                var $rendered = $(data);
+                var hadAnyError = $rendered.is('#comment-error');
+                var hadSanitizerError = checkAppendedHtmlForSanitizerError($rendered, originalHtml);
+
+                if (!hadSanitizerError) {
+                    $rendered.appendTo(parent1);
+                    if (parent2 != null)
+                        $rendered.clone(true).appendTo(parent2);
+                }
                 $(buttonSelector).text('درج حاشیه');
                 $(buttonSelector).prop("disabled", false);
-                form[0].reset();
+                if (!hadAnyError) {
+                    form[0].reset();
+                }
             },
         });
 
@@ -1043,6 +1213,7 @@ function postReplyComment() {
 
         var form = $(this);
         var url = form.attr('action');
+        var originalHtml = form.find('textarea').val();
 
         $.ajax({
             type: "POST",
@@ -1053,10 +1224,18 @@ function postReplyComment() {
                 $('#replycomment').prop("disabled", false);
             },
             success: function (data) {
-                document.getElementById('id03').style.display = 'none';
-                $(data).appendTo(parent);
+                var $rendered = $(data);
+                var hadAnyError = $rendered.is('#comment-error');
+                var hadSanitizerError = checkAppendedHtmlForSanitizerError($rendered, originalHtml);
+
+                if (!hadAnyError) {
+                    document.getElementById('id03').style.display = 'none';
+                    $("#replycommentform")[0].reset();
+                }
+                if (!hadSanitizerError) {
+                    $rendered.appendTo(parent);
+                }
                 $('#replycomment').prop("disabled", false);
-                $("#replycommentform")[0].reset();
             },
         });
 
@@ -1157,14 +1336,17 @@ function editComment() {
         var coupletIndex = $("#editCommentCoupletIndex").val();
 
 
+        var originalHtml = $("textarea#editCommentText").val();
+
         $.ajax({
             type: "PUT",
             url: url,
             data: {
                 id: commentId,
-                comment: $("textarea#editCommentText").val()
+                comment: originalHtml
             },
-            error: function () {
+            error: function (xhr) {
+                tryShowSanitizerErrorFromXhr(xhr, originalHtml);
                 $('#editcomment').text('ویرایش حاشیه');
                 $('#editcomment').prop("disabled", false);
             },

@@ -1044,7 +1044,7 @@ namespace RMuseum.Services.Implementation
             var processedComment = await _ProcessCommentHtml(content, _context);
             if (processedComment.TextWasDropped)
             {
-                return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "بخشی از متن حاشیهٔ شما به دلیل داشتن نشانه‌های HTML نامعتبر یا ناقص (مثلاً علامت‌های «کوچکتر از» یا «بزرگتر از» به‌تنهایی، یا برچسبی که بسته نشده) هنگام پاک‌سازی حذف شد. لطفاً متن حاشیه را بررسی و اصلاح کنید و دوباره ارسال نمایید.");
+                return new RServiceResult<GanjoorCommentSummaryViewModel>(null, _BuildSanitizerDroppedTextError(processedComment.RemainingPlainText));
             }
             content = processedComment.Html;
 
@@ -1189,7 +1189,7 @@ namespace RMuseum.Services.Implementation
             var processedComment = await _ProcessCommentHtml(htmlComment, _context);
             if (processedComment.TextWasDropped)
             {
-                return new RServiceResult<bool>(false, "بخشی از متن حاشیهٔ شما به دلیل داشتن نشانه‌های HTML نامعتبر یا ناقص (مثلاً علامت‌های «کوچکتر از» یا «بزرگتر از» به‌تنهایی، یا برچسبی که بسته نشده) هنگام پاک‌سازی حذف شد. لطفاً متن حاشیه را بررسی و اصلاح کنید و دوباره ارسال نمایید.");
+                return new RServiceResult<bool>(false, _BuildSanitizerDroppedTextError(processedComment.RemainingPlainText));
             }
             htmlComment = processedComment.Html;
 

@@ -50,6 +50,41 @@ namespace GanjooRazor.Pages
         }
 
         /// <summary>
+        /// Shape of the special error string the API sends (still just a plain string, see
+        /// GanjoorService._BuildSanitizerDroppedTextError on the RMuseum side) when a comment/note/
+        /// suggestion was rejected because sanitizing it had to drop real text. Message is the
+        /// human-readable explanation; RemainingText is the plain text that would have remained,
+        /// so the client can diff it against what the user actually typed and show exactly what
+        /// would have been dropped.
+        /// </summary>
+        protected class SanitizerTextDroppedInfo
+        {
+            public bool SanitizerTextDropped { get; set; }
+            public string Message { get; set; }
+            public string RemainingText { get; set; }
+        }
+
+        /// <summary>
+        /// Returns the parsed <see cref="SanitizerTextDroppedInfo"/> if rawErrorMessage is that
+        /// special shape, or null for any ordinary plain-text error (including when rawErrorMessage
+        /// isn't JSON at all, which is the common case).
+        /// </summary>
+        protected static SanitizerTextDroppedInfo TryParseSanitizerTextDroppedError(string rawErrorMessage)
+        {
+            if (string.IsNullOrWhiteSpace(rawErrorMessage) || rawErrorMessage.TrimStart()[0] != '{')
+                return null;
+            try
+            {
+                var info = JsonConvert.DeserializeObject<SanitizerTextDroppedInfo>(rawErrorMessage);
+                return (info != null && info.SanitizerTextDropped) ? info : null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Runs <paramref name="operation"/> against an HttpClient authenticated from the current
         /// session cookies (via <see cref="GanjoorSessionChecker.PrepareClient"/>). If the session
         /// can't be prepared (missing/expired cookies), returns <paramref name="unauthorizedResult"/>
@@ -61,6 +96,29 @@ namespace GanjooRazor.Pages
         /// (rather than a bare 400) should keep their own using/PrepareClient block instead - wrapping
         /// those here would silently change what the browser shows on a real (non-AJAX) form submit.
         /// </summary>
+        /// <summary>
+        /// Builds the BadRequest to return for an AJAX handler from a failed API response: the
+        /// plain error string as before for an ordinary error, or - when it's the "sanitizing had
+        /// to drop real text" case - a small JSON object ({ sanitizerTextDropped, message,
+        /// remainingText }) so the client's error callback can show the user what got dropped
+        /// instead of just displaying raw text.
+        /// </summary>
+        protected static async Task<IActionResult> BadRequestFromApiErrorAsync(HttpResponseMessage response)
+        {
+            string rawError = await ReadErrorMessageAsync(response);
+            var sanitizerInfo = TryParseSanitizerTextDroppedError(rawError);
+            if (sanitizerInfo != null)
+            {
+                return new BadRequestObjectResult(new
+                {
+                    sanitizerTextDropped = true,
+                    message = sanitizerInfo.Message,
+                    remainingText = sanitizerInfo.RemainingText
+                });
+            }
+            return new BadRequestObjectResult(rawError);
+        }
+
         protected async Task<IActionResult> WithSecureClientAsync(
             Func<HttpClient, Task<IActionResult>> operation,
             IActionResult unauthorizedResult = null)

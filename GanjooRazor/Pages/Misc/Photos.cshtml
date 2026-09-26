@@ -61,6 +61,7 @@
 
                     var form = $(this);
                     var url = form.attr('action');
+                    var originalHtml = form.find('textarea').val();
 
                     $.ajax({
                         type: "POST",
@@ -72,10 +73,18 @@
                             $(buttonSelector).prop("disabled", false);
                         },
                         success: function(data) {
-                            $(data).appendTo(parent1);
+                            var $rendered = $(data);
+                            var hadAnyError = $rendered.is('#comment-error');
+                            var hadSanitizerError = checkAppendedHtmlForSanitizerError($rendered, originalHtml);
+
+                            if (!hadSanitizerError) {
+                                $rendered.appendTo(parent1);
+                            }
                             $(buttonSelector).text('پیشنهاد');
                             $(buttonSelector).prop("disabled", false);
-                            form[0].reset();
+                            if (!hadAnyError) {
+                                form[0].reset();
+                            }
                         },
                     });
 

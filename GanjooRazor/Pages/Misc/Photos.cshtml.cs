@@ -113,7 +113,7 @@ namespace GanjooRazor.Pages
             return Page();
         }
 
-        private IActionResult SpecLineErrorPartial(string error)
+        private IActionResult SpecLineErrorPartial(string error, string remainingText = null)
         {
             return Partial("_PoetSpecLinePartial", new _PoetSpecLinePartialModel()
             {
@@ -121,7 +121,8 @@ namespace GanjooRazor.Pages
                 {
                     Id = 0,
                     Contents = error
-                }
+                },
+                SanitizerRemainingText = remainingText
             });
         }
 
@@ -155,7 +156,9 @@ namespace GanjooRazor.Pages
                     });
                 }
 
-                return SpecLineErrorPartial(await ReadErrorMessageAsync(response));
+                string rawError = await ReadErrorMessageAsync(response);
+                var sanitizerInfo = TryParseSanitizerTextDroppedError(rawError);
+                return SpecLineErrorPartial(sanitizerInfo != null ? sanitizerInfo.Message : rawError, sanitizerInfo?.RemainingText);
             }, SpecLineErrorPartial(NotLoggedInMessage));
         }
 

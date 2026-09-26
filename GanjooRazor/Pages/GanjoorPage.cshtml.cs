@@ -239,10 +239,14 @@ namespace GanjooRazor.Pages
                     });
                 }
 
+                string rawError = await ReadErrorMessageAsync(response);
+                var sanitizerInfo = TryParseSanitizerTextDroppedError(rawError);
+
                 return Partial("~/Pages/Partials/GanjoorPage/_CommentPartial.cshtml", new _CommentPartialModel()
                 {
                     Comment = null,
-                    Error = await ReadErrorMessageAsync(response),
+                    Error = sanitizerInfo != null ? sanitizerInfo.Message : rawError,
+                    SanitizerRemainingText = sanitizerInfo?.RemainingText,
                     InReplyTo = null,
                     LoggedIn = !string.IsNullOrEmpty(Request.Cookies["Token"]),
                     PoemId = poemId,
@@ -270,7 +274,7 @@ namespace GanjooRazor.Pages
                 var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/comment/{id}", new StringContent(JsonConvert.SerializeObject(comment), Encoding.UTF8, "application/json"));
                 if (!response.IsSuccessStatusCode)
                 {
-                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
+                    return await BadRequestFromApiErrorAsync(response);
                 }
                 return new JsonResult(true);
             });
@@ -1145,7 +1149,7 @@ namespace GanjooRazor.Pages
                 var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/bookmark/{id}", new StringContent(JsonConvert.SerializeObject(note), Encoding.UTF8, "application/json"));
                 if (!response.IsSuccessStatusCode)
                 {
-                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
+                    return await BadRequestFromApiErrorAsync(response);
                 }
                 return new JsonResult(true);
             });

@@ -21113,12 +21113,31 @@
             or an actually-disallowed tag such as script/style whose whole subtree is removed)
             </summary>
         </member>
+        <member name="F:RMuseum.Services.Implementation.GanjoorService._sanitizerTextDroppedMessage">
+            <summary>
+            shown to the user (via _BuildSanitizerDroppedTextError) when sanitizing had to drop
+            real text. Deliberately says nothing about "tags", "&lt;" or "&gt;" - ordinary users
+            don't know what those are and have usually never typed one themselves; almost always
+            this happens because they pasted the text in from somewhere else (Word, a chat app, a
+            web page) that silently carried invalid/broken formatting along with it.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._BuildSanitizerDroppedTextError(System.String)">
+            <summary>
+            builds the error string returned to the client when sanitizing dropped real text.
+            This is a JSON object encoded as a string (not a status-code/contract change) so it
+            still flows through every existing "the API error is just a display string" code path
+            unchanged, while GanjooRazor can additionally recognize and unpack it to show the
+            user exactly what got dropped (see SanitizerTextDroppedInfo on the GanjooRazor side)
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._ProcessCommentHtml(System.String,RMuseum.DbContext.RMuseumDbContext)">
             <summary>
             sanitizes comment HTML; TextWasDropped is true when the sanitizing process removed
             a meaningful chunk of the user's actual text (see _CommentSanitizationDroppedText) -
             callers should not silently save Html in that case, but ask the user to fix their
-            markup instead
+            markup instead (RemainingPlainText/_BuildSanitizerDroppedTextError let them show what
+            was dropped)
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.FindAndFixLongUrlsInComments">

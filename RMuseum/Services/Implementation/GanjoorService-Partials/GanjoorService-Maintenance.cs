@@ -1,6 +1,7 @@
 ﻿using AngleSharp.Html.Parser;
 using Ganss.Xss;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
 using RSecurityBackend.Models.Generic;
@@ -445,12 +446,40 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// shown to the user (via _BuildSanitizerDroppedTextError) when sanitizing had to drop
+        /// real text. Deliberately says nothing about "tags", "&lt;" or "&gt;" - ordinary users
+        /// don't know what those are and have usually never typed one themselves; almost always
+        /// this happens because they pasted the text in from somewhere else (Word, a chat app, a
+        /// web page) that silently carried invalid/broken formatting along with it.
+        /// </summary>
+        private const string _sanitizerTextDroppedMessage =
+            "به‌نظر می‌رسد متنی که ارسال کرده‌اید از جای دیگری (مثلاً Word یا یک صفحهٔ وب) کپی و در اینجا پیست شده و قالب‌بندی پنهان و نامعتبری را با خود آورده است. به همین دلیل بخشی از متن هنگام پاک‌سازی حذف شد؛ بخش حذف‌شده در ادامه با رنگ قرمز و خط‌خورده به شما نشان داده می‌شود. لطفاً متن را در یک ویرایشگر متن ساده (مثل Notepad) پاک‌سازی کنید یا از نو تایپ کنید و سپس دوباره ارسال نمایید.";
+
+        /// <summary>
+        /// builds the error string returned to the client when sanitizing dropped real text.
+        /// This is a JSON object encoded as a string (not a status-code/contract change) so it
+        /// still flows through every existing "the API error is just a display string" code path
+        /// unchanged, while GanjooRazor can additionally recognize and unpack it to show the
+        /// user exactly what got dropped (see SanitizerTextDroppedInfo on the GanjooRazor side)
+        /// </summary>
+        private static string _BuildSanitizerDroppedTextError(string remainingPlainText)
+        {
+            return JsonConvert.SerializeObject(new
+            {
+                sanitizerTextDropped = true,
+                message = _sanitizerTextDroppedMessage,
+                remainingText = remainingPlainText ?? ""
+            });
+        }
+
+        /// <summary>
         /// sanitizes comment HTML; TextWasDropped is true when the sanitizing process removed
         /// a meaningful chunk of the user's actual text (see _CommentSanitizationDroppedText) -
         /// callers should not silently save Html in that case, but ask the user to fix their
-        /// markup instead
+        /// markup instead (RemainingPlainText/_BuildSanitizerDroppedTextError let them show what
+        /// was dropped)
         /// </summary>
-        private async Task<(string Html, bool TextWasDropped)> _ProcessCommentHtml(string commentText, RMuseumDbContext context)
+        private async Task<(string Html, bool TextWasDropped, string RemainingPlainText)> _ProcessCommentHtml(string commentText, RMuseumDbContext context)
         {
             string originalPlainText = _ExtractPlainText(commentText);
 
@@ -496,12 +525,13 @@ namespace RMuseum.Services.Implementation
             // removed, before Linkify/internal-link processing below can itself change the
             // visible text (e.g. replacing a bare URL's text with a page title) in a way that
             // is not a loss.
-            bool textWasDropped = _CommentSanitizationDroppedText(originalPlainText, _ExtractPlainText(sanitizedHtml));
+            string sanitizedPlainText = _ExtractPlainText(sanitizedHtml);
+            bool textWasDropped = _CommentSanitizationDroppedText(originalPlainText, sanitizedPlainText);
 
             // Process URLs (Linkify) and internal Ganjoor links
             sanitizedHtml = await _ProcessUrls(sanitizedHtml, context);
 
-            return (sanitizedHtml, textWasDropped);
+            return (sanitizedHtml, textWasDropped, sanitizedPlainText);
         }
 
         private async Task<string> _ProcessUrls(string html, RMuseumDbContext context)

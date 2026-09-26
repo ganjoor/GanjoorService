@@ -167,7 +167,7 @@ namespace RMuseum.Services.Implementation
                 var processedContents = await _ProcessCommentHtml(model.Contents, _context);
                 if (processedContents.TextWasDropped)
                 {
-                    return new RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>(null, "بخشی از متن پیشنهادی شما به دلیل داشتن نشانه‌های HTML نامعتبر یا ناقص (مثلاً علامت‌های «کوچکتر از» یا «بزرگتر از» به‌تنهایی، یا برچسبی که بسته نشده) هنگام پاک‌سازی حذف شد. لطفاً متن را بررسی و اصلاح کنید و دوباره ارسال نمایید.");
+                    return new RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>(null, _BuildSanitizerDroppedTextError(processedContents.RemainingPlainText));
                 }
                 model.Contents = processedContents.Html;
 
@@ -223,7 +223,7 @@ namespace RMuseum.Services.Implementation
                 var processedContents = await _ProcessCommentHtml(model.Contents, _context);
                 if (processedContents.TextWasDropped)
                 {
-                    return new RServiceResult<bool>(false, "بخشی از متن به دلیل داشتن نشانه‌های HTML نامعتبر یا ناقص (مثلاً علامت‌های «کوچکتر از» یا «بزرگتر از» به‌تنهایی، یا برچسبی که بسته نشده) هنگام پاک‌سازی حذف شد. لطفاً متن را بررسی و اصلاح کنید و دوباره ثبت نمایید.");
+                    return new RServiceResult<bool>(false, _BuildSanitizerDroppedTextError(processedContents.RemainingPlainText));
                 }
                 model.Contents = processedContents.Html;
 

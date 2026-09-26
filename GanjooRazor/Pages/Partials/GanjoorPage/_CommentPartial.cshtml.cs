@@ -7,6 +7,13 @@ namespace GanjooRazor.Pages
     {
         public GanjoorCommentSummaryViewModel Comment { get; set; }
         public string Error { get; set; }
+
+        /// <summary>
+        /// set (alongside Error) when Error is the "sanitizing had to drop real text" case -
+        /// the plain text that would remain, so client JS can diff it against what the user
+        /// actually typed and show them exactly what got dropped. Null/empty for any other error.
+        /// </summary>
+        public string SanitizerRemainingText { get; set; }
         public GanjoorCommentSummaryViewModel InReplyTo { get; set; }
         public bool LoggedIn { get; set; }
         public string DivSuffix { get; set; }
@@ -15,7 +22,7 @@ namespace GanjooRazor.Pages
         {
             get
             {
-                return InReplyTo == null ? "äæÔÊå" : "ÇÓÎ ÏÇÏå";
+                return InReplyTo == null ? "Ù†ÙˆØ´ØªÙ‡" : "Ù¾Ø§Ø³Ø® Ø¯Ø§Ø¯Ù‡";
             }
         }
         public bool Bookmarked { get; set; }

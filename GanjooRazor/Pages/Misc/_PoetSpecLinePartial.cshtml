@@ -3,8 +3,15 @@
     Layout = null;
 }
 
-<div class="ganjoor-comment" id="@(Model.Line.Id == 0 ? "comment-error" : $"line-{Model.Line.Id}")">
-    @Html.Raw(Model.Line.Contents)
+<div class="ganjoor-comment" id="@(Model.Line.Id == 0 ? "comment-error" : $"line-{Model.Line.Id}")" data-sanitizer-remaining-text="@(Model.Line.Id == 0 ? Model.SanitizerRemainingText : null)">
+    @if (Model.Line.Id == 0)
+    {
+        @Model.Line.Contents
+    }
+    else
+    {
+        @Html.Raw(Model.Line.Contents)
+    }
 </div>
 
 @if (Model.Line.Id != 0 && !Model.Line.Published)
