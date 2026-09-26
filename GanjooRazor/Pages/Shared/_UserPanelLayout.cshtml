@@ -9,7 +9,7 @@
     </title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
-    <link href="/css/p8.css?version=95" rel="stylesheet" type="text/css" />
+    <link href="~/css/p8.css" asp-append-version="true" rel="stylesheet" type="text/css" />
     <link href="/css/user-panel.css?version=3" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="/css/leaflet.css?version=2">
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
@@ -36,7 +36,7 @@
         });
     </script>
     <script src="/lib/diff.js"></script>
-    <script src="/js/bk.js?version=95"></script>
+    <script src="~/js/bk.js" asp-append-version="true"></script>
     <script>
         function compareCorrectionBlocks(originalElemenyId, editedElementId, resultElementId) {
             var a = document.getElementById(originalElemenyId);

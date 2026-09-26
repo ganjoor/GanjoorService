@@ -812,6 +812,18 @@ nav#nav {
     -webkit-text-fill-color: var(--lapis);
 }
 
+.comments-link {
+    color: var(--brand);
+    -webkit-text-fill-color: var(--brand);
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.comments-link:hover {
+    color: var(--lapis);
+    -webkit-text-fill-color: var(--lapis);
+}
+
 .comment-author small {
     color: var(--text-muted);
     -webkit-text-fill-color: var(--text-muted);
