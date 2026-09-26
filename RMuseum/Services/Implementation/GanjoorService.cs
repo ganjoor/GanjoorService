@@ -1041,7 +1041,12 @@ namespace RMuseum.Services.Implementation
 
             content = content.ApplyCorrectYeKe();
 
-            content = await _ProcessCommentHtml(content, _context);
+            var processedComment = await _ProcessCommentHtml(content, _context);
+            if (processedComment.TextWasDropped)
+            {
+                return new RServiceResult<GanjoorCommentSummaryViewModel>(null, "بخشی از متن حاشیهٔ شما به دلیل داشتن نشانه‌های HTML نامعتبر یا ناقص (مثلاً علامت‌های «کوچکتر از» یا «بزرگتر از» به‌تنهایی، یا برچسبی که بسته نشده) هنگام پاک‌سازی حذف شد. لطفاً متن حاشیه را بررسی و اصلاح کنید و دوباره ارسال نمایید.");
+            }
+            content = processedComment.Html;
 
             string commentText = System.Net.WebUtility.HtmlDecode(Regex.Replace(content, "<.*?>", string.Empty));
 
@@ -1181,7 +1186,12 @@ namespace RMuseum.Services.Implementation
 
             htmlComment = htmlComment.ApplyCorrectYeKe();
 
-            htmlComment = await _ProcessCommentHtml(htmlComment, _context);
+            var processedComment = await _ProcessCommentHtml(htmlComment, _context);
+            if (processedComment.TextWasDropped)
+            {
+                return new RServiceResult<bool>(false, "بخشی از متن حاشیهٔ شما به دلیل داشتن نشانه‌های HTML نامعتبر یا ناقص (مثلاً علامت‌های «کوچکتر از» یا «بزرگتر از» به‌تنهایی، یا برچسبی که بسته نشده) هنگام پاک‌سازی حذف شد. لطفاً متن حاشیه را بررسی و اصلاح کنید و دوباره ارسال نمایید.");
+            }
+            htmlComment = processedComment.Html;
 
             string commentText = System.Net.WebUtility.HtmlDecode(Regex.Replace(htmlComment, "<.*?>", string.Empty));
 

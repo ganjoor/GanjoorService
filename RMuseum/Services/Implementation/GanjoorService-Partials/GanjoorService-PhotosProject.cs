@@ -160,6 +160,17 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                // this is typed in the same TinyMCE editor used for comments, and once
+                // published it is shown to anonymous visitors on the poet's page, so it needs
+                // the same sanitizing (and the same guard against silently keeping a half-baked
+                // suggestion when sanitizing had to drop real text because of invalid markup)
+                var processedContents = await _ProcessCommentHtml(model.Contents, _context);
+                if (processedContents.TextWasDropped)
+                {
+                    return new RServiceResult<GanjoorPoetSuggestedSpecLineViewModel>(null, "بخشی از متن پیشنهادی شما به دلیل داشتن نشانه‌های HTML نامعتبر یا ناقص (مثلاً علامت‌های «کوچکتر از» یا «بزرگتر از» به‌تنهایی، یا برچسبی که بسته نشده) هنگام پاک‌سازی حذف شد. لطفاً متن را بررسی و اصلاح کنید و دوباره ارسال نمایید.");
+                }
+                model.Contents = processedContents.Html;
+
                 var dbModel = new GanjoorPoetSuggestedSpecLine()
                 {
                     PoetId = model.PoetId,
@@ -208,6 +219,14 @@ namespace RMuseum.Services.Implementation
             {
 
                 var dbModel = await _context.GanjoorPoetSuggestedSpecLines.Where(s => s.Id == model.Id).SingleAsync();
+
+                var processedContents = await _ProcessCommentHtml(model.Contents, _context);
+                if (processedContents.TextWasDropped)
+                {
+                    return new RServiceResult<bool>(false, "بخشی از متن به دلیل داشتن نشانه‌های HTML نامعتبر یا ناقص (مثلاً علامت‌های «کوچکتر از» یا «بزرگتر از» به‌تنهایی، یا برچسبی که بسته نشده) هنگام پاک‌سازی حذف شد. لطفاً متن را بررسی و اصلاح کنید و دوباره ثبت نمایید.");
+                }
+                model.Contents = processedContents.Html;
+
                 bool publishIsChanged = model.Published != dbModel.Published;
                 if (publishIsChanged)
                 {

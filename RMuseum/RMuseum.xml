@@ -21096,6 +21096,31 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._ExtractPlainText(System.String)">
+            <summary>
+            extracts normalized plain text from (possibly malformed) HTML the same way a
+            spec-compliant parser (and so also the sanitizer's own parser) sees it, so it can
+            be compared before/after sanitizing to detect whether sanitizing dropped real text
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._CommentSanitizationDroppedText(System.String,System.String)">
+            <summary>
+            true if sanitizing the comment dropped a meaningful chunk of the user's actual
+            text - not just markup/attributes, and not a harmless space lost when an inline
+            tag gets unwrapped. This happens when invalid/unclosed markup causes real comment
+            text to end up nested inside a tag the sanitizer correctly removes entirely
+            (e.g. a stray/unclosed tag that swallows the rest of the comment as its "content",
+            or an actually-disallowed tag such as script/style whose whole subtree is removed)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._ProcessCommentHtml(System.String,RMuseum.DbContext.RMuseumDbContext)">
+            <summary>
+            sanitizes comment HTML; TextWasDropped is true when the sanitizing process removed
+            a meaningful chunk of the user's actual text (see _CommentSanitizationDroppedText) -
+            callers should not silently save Html in that case, but ask the user to fix their
+            markup instead
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.FindAndFixLongUrlsInComments">
             <summary>
             examine comments for long links

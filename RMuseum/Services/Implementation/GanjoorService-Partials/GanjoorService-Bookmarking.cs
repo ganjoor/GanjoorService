@@ -211,6 +211,20 @@ namespace RMuseum.Services.Implementation
                 {
                     return new RServiceResult<bool>(false, "bookmark not found");
                 }
+
+                // this note is typed in the same TinyMCE editor used for comments, so it needs
+                // the same HTML sanitizing (and the same guard against silently posting a
+                // half-baked note when sanitizing had to drop real text because of invalid markup)
+                if (!string.IsNullOrEmpty(note))
+                {
+                    var processedNote = await _ProcessCommentHtml(note, _context);
+                    if (processedNote.TextWasDropped)
+                    {
+                        return new RServiceResult<bool>(false, "بخشی از متن یادداشت شما به دلیل داشتن نشانه‌های HTML نامعتبر یا ناقص (مثلاً علامت‌های «کوچکتر از» یا «بزرگتر از» به‌تنهایی، یا برچسبی که بسته نشده) هنگام پاک‌سازی حذف شد. لطفاً متن را بررسی و اصلاح کنید و دوباره ثبت نمایید.");
+                    }
+                    note = processedNote.Html;
+                }
+
                 bookmark.PrivateNote = note;
                 _context.Update(bookmark);
                 await _context.SaveChangesAsync();

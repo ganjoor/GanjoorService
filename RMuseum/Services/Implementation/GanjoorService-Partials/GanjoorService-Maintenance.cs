@@ -1,4 +1,5 @@
-﻿using Ganss.Xss;
+﻿using AngleSharp.Html.Parser;
+using Ganss.Xss;
 using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Ganjoor;
@@ -402,8 +403,57 @@ namespace RMuseum.Services.Implementation
             return new RServiceResult<bool>(true);
         }
 
-        private async Task<string> _ProcessCommentHtml(string commentText, RMuseumDbContext context)
+        /// <summary>
+        /// extracts normalized plain text from (possibly malformed) HTML the same way a
+        /// spec-compliant parser (and so also the sanitizer's own parser) sees it, so it can
+        /// be compared before/after sanitizing to detect whether sanitizing dropped real text
+        /// </summary>
+        private static string _ExtractPlainText(string html)
         {
+            if (string.IsNullOrWhiteSpace(html))
+                return "";
+
+            var parser = new HtmlParser();
+            using var document = parser.ParseDocument($"<body>{html}</body>");
+            string text = document.Body?.TextContent ?? "";
+            return Regex.Replace(text, @"\s+", " ").Trim();
+        }
+
+        /// <summary>
+        /// true if sanitizing the comment dropped a meaningful chunk of the user's actual
+        /// text - not just markup/attributes, and not a harmless space lost when an inline
+        /// tag gets unwrapped. This happens when invalid/unclosed markup causes real comment
+        /// text to end up nested inside a tag the sanitizer correctly removes entirely
+        /// (e.g. a stray/unclosed tag that swallows the rest of the comment as its "content",
+        /// or an actually-disallowed tag such as script/style whose whole subtree is removed)
+        /// </summary>
+        private static bool _CommentSanitizationDroppedText(string originalPlainText, string sanitizedPlainText)
+        {
+            originalPlainText = (originalPlainText ?? "").Trim();
+            sanitizedPlainText = (sanitizedPlainText ?? "").Trim();
+
+            if (originalPlainText.Length == 0)
+                return false; // nothing to lose
+
+            if (sanitizedPlainText.Length == 0)
+                return true; // the whole comment text vanished
+
+            if (originalPlainText.Length - sanitizedPlainText.Length <= 2)
+                return false; // negligible, e.g. a boundary space lost when unwrapping a tag
+
+            return sanitizedPlainText.Length < originalPlainText.Length * 0.95;
+        }
+
+        /// <summary>
+        /// sanitizes comment HTML; TextWasDropped is true when the sanitizing process removed
+        /// a meaningful chunk of the user's actual text (see _CommentSanitizationDroppedText) -
+        /// callers should not silently save Html in that case, but ask the user to fix their
+        /// markup instead
+        /// </summary>
+        private async Task<(string Html, bool TextWasDropped)> _ProcessCommentHtml(string commentText, RMuseumDbContext context)
+        {
+            string originalPlainText = _ExtractPlainText(commentText);
+
             // Use a proper HTML sanitizer
             var sanitizer = new HtmlSanitizer();
 
@@ -442,10 +492,16 @@ namespace RMuseum.Services.Implementation
             // Sanitize the HTML
             string sanitizedHtml = sanitizer.Sanitize(commentText);
 
+            // Detect whether sanitizing took real text down along with the invalid markup it
+            // removed, before Linkify/internal-link processing below can itself change the
+            // visible text (e.g. replacing a bare URL's text with a page title) in a way that
+            // is not a loss.
+            bool textWasDropped = _CommentSanitizationDroppedText(originalPlainText, _ExtractPlainText(sanitizedHtml));
+
             // Process URLs (Linkify) and internal Ganjoor links
             sanitizedHtml = await _ProcessUrls(sanitizedHtml, context);
 
-            return sanitizedHtml;
+            return (sanitizedHtml, textWasDropped);
         }
 
         private async Task<string> _ProcessUrls(string html, RMuseumDbContext context)
@@ -630,11 +686,20 @@ namespace RMuseum.Services.Implementation
 
                             var comment = comments[i];
 
-                            string commentText = await _ProcessCommentHtml(comment.HtmlComment, context);
+                            var processedComment = await _ProcessCommentHtml(comment.HtmlComment, context);
 
-                            if (commentText != comment.HtmlComment)
+                            if (processedComment.TextWasDropped)
                             {
-                                comment.HtmlComment = commentText;
+                                // this is an unattended batch job re-sanitizing old comments,
+                                // there is no user here to ask to fix their markup - leave the
+                                // comment untouched rather than silently overwriting it with a
+                                // mutilated version
+                                continue;
+                            }
+
+                            if (processedComment.Html != comment.HtmlComment)
+                            {
+                                comment.HtmlComment = processedComment.Html;
                                 context.Update(comment);
                                 await context.SaveChangesAsync();
                             }
