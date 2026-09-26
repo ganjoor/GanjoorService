@@ -1,0 +1,84 @@
+@page
+@model GanjooRazor.Areas.User.Pages.MySessionsModel
+@using DNTPersianUtils.Core
+@{
+    Layout = "_UserPanelLayout";
+    ViewData["Title"] = "نشست‌های من";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+}
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+    <div class="up-page-subtitle">دستگاه‌ها و مرورگرهایی که هم‌اکنون با حساب کاربری شما وارد گنجور شده‌اند. اگر دستگاهی را نمی‌شناسید یا دیگر از آن استفاده نمی‌کنید، آن را از این فهرست خارج کنید.</div>
+</div>
+@if (Model.LastError != "")
+{
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
+}
+else
+{
+    <script>
+        async function deleteSession(sessionId, isCurrent) {
+            var message = isCurrent
+                ? 'این همان نشستی است که هم‌اکنون با آن وارد شده‌اید. با حذف آن از این دستگاه هم خارج خواهید شد. آیا ادامه می‌دهید؟'
+                : 'آیا از خروج این دستگاه از حساب کاربری خود اطمینان دارید؟';
+            var ok = await upConfirm(message);
+            if (!ok) return;
+
+            $.ajax({
+                type: "DELETE",
+                url: '?handler=Session',
+                data: { id: sessionId },
+                success: function (res) {
+                    if (res && res.loggedOutSelf) {
+                        upToast('از این دستگاه خارج شدید.', 'success');
+                        location.href = '/';
+                        return;
+                    }
+                    $('#session-' + sessionId).remove();
+                    upToast('نشست حذف شد.', 'success');
+                },
+                error: function (e) {
+                    upToast(e.responseText || 'حذف نشست با خطا مواجه شد.', 'error');
+                }
+            });
+        }
+    </script>
+
+    @if (Model.Sessions.Count == 0)
+    {
+        <partial name="_EmptyState" model="@("هیچ نشست فعالی یافت نشد.")" />
+    }
+    else
+    {
+        <div class="up-list">
+            @foreach (var session in Model.Sessions)
+            {
+                bool isCurrent = session.Id == Model.CurrentSessionId;
+                <div class="up-list-item" id="session-@session.Id">
+                    <div>
+                        <strong>@(string.IsNullOrEmpty(session.ClientAppName) ? "برنامهٔ نامشخص" : session.ClientAppName)</strong>
+                        @if (isCurrent)
+                        {
+                            <span class="up-badge up-badge--primary">این دستگاه</span>
+                        }
+                        <div class="up-list-item__meta up-field--ltr" style="direction: ltr; text-align: right; unicode-bidi: plaintext;">
+                            @session.ClientIPAddress
+                        </div>
+                        <div class="up-list-item__meta">
+                            ورود: @session.LoginTime.ToLongPersianDateTimeString()
+                            &nbsp;·&nbsp;
+                            آخرین تمدید: @session.LastRenewal.ToLongPersianDateTimeString()
+                            &nbsp;·&nbsp;
+                            معتبر تا: @session.ValidUntil.ToLongPersianDateTimeString()
+                        </div>
+                    </div>
+                    <div class="up-list-item__actions">
+                        <a role="button" onclick="deleteSession('@session.Id', @(isCurrent ? "true" : "false"))" class="up-icon-btn" title="خروج این دستگاه" aria-label="خروج این دستگاه از حساب کاربری">
+                            <i class="noindent-info-button delete-icon"></i>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
