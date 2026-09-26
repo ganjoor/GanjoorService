@@ -302,10 +302,17 @@ namespace RMuseum.Services.Implementation
                                 "COMMIT;";
                     await sqliteConnection.ExecuteAsync(q);
                     await sqliteConnection.ExecuteAsync("BEGIN;");
-                    string bio = poet.Description;
-                    if(bio == null) { bio = ""; }
-                    bio = bio.Replace("\"", "").Replace("'", "");
-                    await sqliteConnection.ExecuteAsync($"INSERT INTO poet (id, name, cat_id, description) VALUES ({poet.Id}, '{poet.Nickname}', {catPoet.Id}, '{(ignoreBio ? "" : bio)}');");
+                    // Parameterized instead of string-interpolated: poet.Description (bio) is
+                    // free-form user-editable text, so splicing it into the SQL text directly let a
+                    // bio containing a "'" escape the string literal. The old code worked around that
+                    // by stripping quote characters out of the bio before export (silently corrupting
+                    // any bio that legitimately used one) rather than fixing the actual cause; Dapper's
+                    // parameter binding here makes that stripping unnecessary.
+                    string bio = poet.Description ?? "";
+                    await sqliteConnection.ExecuteAsync(
+                        "INSERT INTO poet (id, name, cat_id, description) VALUES (@Id, @Name, @CatId, @Description);",
+                        new { Id = poet.Id, Name = poet.Nickname, CatId = catPoet.Id, Description = ignoreBio ? "" : bio }
+                        );
                     await ExportCatToSqlite(context, sqliteConnection, catPoet);
                     await sqliteConnection.ExecuteAsync("COMMIT;");
                 }
@@ -322,14 +329,27 @@ namespace RMuseum.Services.Implementation
         private async Task ExportCatToSqlite(RMuseumDbContext context, SqliteConnection sqliteConnection, GanjoorCat cat)
         {
             int parentId = cat.ParentId == null ? 0 : (int)cat.ParentId;
-            await sqliteConnection.ExecuteAsync($"INSERT INTO cat (id, poet_id, text, parent_id, url) VALUES ({cat.Id}, {cat.PoetId}, '{cat.Title}', {parentId}, 'https://ganjoor.net{cat.FullUrl}');");
-            
+            // Parameterized instead of string-interpolated (see the matching note in
+            // _ExportToSqlite): cat.Title, poem.Title and verse.Text are all free-form user-editable
+            // text, so splicing them into the SQL text directly let a "'" in any of them escape the
+            // string literal - unlike the bio field above, nothing here even worked around that.
+            await sqliteConnection.ExecuteAsync(
+                "INSERT INTO cat (id, poet_id, text, parent_id, url) VALUES (@Id, @PoetId, @Text, @ParentId, @Url);",
+                new { Id = cat.Id, PoetId = cat.PoetId, Text = cat.Title, ParentId = parentId, Url = $"https://ganjoor.net{cat.FullUrl}" }
+                );
+
             var poems = await context.GanjoorPoems.AsNoTracking().Where(p => p.CatId == cat.Id).ToListAsync();
             foreach(var poem in poems)
             {
-                await sqliteConnection.ExecuteAsync($"INSERT INTO poem (id, cat_id, title, url) VALUES ({poem.Id}, {poem.CatId}, '{poem.Title}', 'https://ganjoor.net{poem.FullUrl}');");
+                await sqliteConnection.ExecuteAsync(
+                    "INSERT INTO poem (id, cat_id, title, url) VALUES (@Id, @CatId, @Title, @Url);",
+                    new { Id = poem.Id, CatId = poem.CatId, Title = poem.Title, Url = $"https://ganjoor.net{poem.FullUrl}" }
+                    );
                 foreach (var verse in await context.GanjoorVerses.AsNoTracking().Where(v => v.PoemId == poem.Id).OrderBy(v => v.VOrder).ToListAsync())
-                    await sqliteConnection.ExecuteAsync($"INSERT INTO verse (poem_id, vorder, position, text) VALUES ({poem.Id}, {verse.VOrder}, {(int)verse.VersePosition}, '{verse.Text}');");
+                    await sqliteConnection.ExecuteAsync(
+                        "INSERT INTO verse (poem_id, vorder, position, text) VALUES (@PoemId, @VOrder, @Position, @Text);",
+                        new { PoemId = poem.Id, VOrder = verse.VOrder, Position = (int)verse.VersePosition, Text = verse.Text }
+                        );
             }
 
             foreach (var child in await context.GanjoorCategories.AsNoTracking().Where(c => c.ParentId == cat.Id).ToListAsync())
