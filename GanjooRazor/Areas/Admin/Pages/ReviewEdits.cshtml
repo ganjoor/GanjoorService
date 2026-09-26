@@ -937,6 +937,7 @@ else
                                     <input type="text" id="geotag@(geoIndex)_latitude" name="geotag@(geoIndex)_latitude" value="@geoTag.SuggestedLatitude" size="12" />
                                     <label for="geotag@(geoIndex)_longitude">طول جغرافیایی اصلاح‌شده:</label>
                                     <input type="text" id="geotag@(geoIndex)_longitude" name="geotag@(geoIndex)_longitude" value="@geoTag.SuggestedLongitude" size="12" />
+                                    <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="viewLocation($('#geotag@(geoIndex)_latitude').val(), $('#geotag@(geoIndex)_longitude').val())">🗺️ مشاهده در نقشه</a>
                                 </div>
                             }
                         </td>
@@ -945,7 +946,7 @@ else
                 <tr>
                     <td colspan="2">
                         <div class="up-radio-option">
-<input type="radio" id="geotag@(geoIndex)_review_result_Approved" name="geotag@(geoIndex)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved">
+<input type="radio" id="geotag@(geoIndex)_review_result_Approved" name="geotag@(geoIndex)_review_result" class="radio-approved" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved" checked="checked">
 <label for="geotag@(geoIndex)_review_result_Approved">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Approved)</label>
 </div>
                         <div class="up-radio-option">
@@ -957,7 +958,7 @@ else
 <label for="geotag@(geoIndex)_review_result_RejectedBecauseUnnecessaryChange">تغییر سلیقه‌ای یا بی دلیل است</label>
 </div>
                         <div class="up-radio-option">
-<input type="radio" id="geotag@(geoIndex)_review_result_Rejected" name="geotag@(geoIndex)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected" checked="checked">
+<input type="radio" id="geotag@(geoIndex)_review_result_Rejected" name="geotag@(geoIndex)_review_result" class="radio-rejected" value="@RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected">
 <label for="geotag@(geoIndex)_review_result_Rejected">@RMuseum.Services.Implementation.CorrectionReviewResultConvertor.GetString(RMuseum.Models.Ganjoor.CorrectionReviewResult.Rejected)</label>
 </div>
                         <input type="text" id="geotag@(geoIndex)_review_note" name="geotag@(geoIndex)_review_note" value="" size="50" />
