@@ -30,7 +30,6 @@ namespace GanjooRazor.Pages
     /// Startup.cs's AddPageRoute("/GanjoorPage", "{*url}") which now owns the site's catch-all route
     /// (Index.cshtml keeps its own automatic "/" route unchanged, so home is unaffected).
     /// </summary>
-    [IgnoreAntiforgeryToken(Order = 1001)]
     [OutputCache(PolicyName = "GanjoorPublicPage")]
     public partial class GanjoorPageModel : LoginPartialEnabledPageModel
     {

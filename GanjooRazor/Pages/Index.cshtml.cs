@@ -18,7 +18,6 @@ namespace GanjooRazor.Pages
     /// owns the site's catch-all route (see Startup.cs). This page keeps its own automatic "/" route,
     /// unaffected by that change.
     /// </summary>
-    [IgnoreAntiforgeryToken(Order = 1001)]
     [OutputCache(PolicyName = "GanjoorPublicPage")]
     public class IndexModel : LoginPartialEnabledPageModel
     {

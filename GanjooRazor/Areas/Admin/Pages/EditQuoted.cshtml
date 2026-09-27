@@ -230,6 +230,7 @@
     </script>
     <div class="up-card">
         <form method="post" class="up-form">
+            @Html.AntiForgeryToken()
             <p>
                 بیت مرجع از <a href="/?p=@Model.GanjoorQuotedPoem.PoemId">شعر</a>:
                 <input type="hidden" asp-for="GanjoorQuotedPoem.Id" />

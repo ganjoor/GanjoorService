@@ -28,6 +28,7 @@ else
         <tr>
             <td>
                 <form method="post" action="/Admin/CatDel?id=@Model.Cat.Cat.Id">
+                    @Html.AntiForgeryToken()
                     <input type="submit" value="بله" />
                 </form>
             </td>

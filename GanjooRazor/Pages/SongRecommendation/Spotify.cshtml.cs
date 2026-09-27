@@ -19,7 +19,6 @@ using System.Threading.Tasks;
 
 namespace GanjooRazor.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class SpotifyModel : PageModel
     {
         /// <summary>

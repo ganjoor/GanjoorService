@@ -74,6 +74,7 @@
                </p>
 
                 <form method="post" action="/pin/?final=1">
+                    @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="RelatedImageSuggestionModel.GanjoorTitle">
                     <input type="hidden" asp-for="RelatedImageSuggestionModel.PoemId">
                     <input type="hidden" asp-for="RelatedImageSuggestionModel.GanjoorUrl">

@@ -14,7 +14,6 @@ using System.Linq;
 
 namespace GanjooRazor.Areas.User.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class CatEditsModel : PageModel
     {
         /// <summary>

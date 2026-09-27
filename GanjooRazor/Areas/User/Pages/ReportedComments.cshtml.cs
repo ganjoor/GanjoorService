@@ -16,7 +16,6 @@ using System.Text;
 
 namespace GanjooRazor.Areas.User.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class ReportedCommentsModel : PageModel
     {
         /// <summary>

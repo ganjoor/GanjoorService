@@ -17,7 +17,6 @@ using RSecurityBackend.Models.Generic;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class ReviewEditsModel : PageModel
     {
         /// <summary>

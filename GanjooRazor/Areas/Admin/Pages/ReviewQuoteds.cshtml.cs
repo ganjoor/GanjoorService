@@ -16,7 +16,6 @@ using RMuseum.Models.Auth.ViewModel;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class ReviewQuotedsModel : PageModel
     {
         /// <summary>

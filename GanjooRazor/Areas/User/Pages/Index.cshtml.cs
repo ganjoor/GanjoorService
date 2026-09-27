@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace GanjooRazor.Areas.Panel.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class IndexModel : PageModel
     {
         /// <summary>

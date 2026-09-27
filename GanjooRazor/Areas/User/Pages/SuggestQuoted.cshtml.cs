@@ -15,7 +15,6 @@ using System.Net;
 
 namespace GanjooRazor.Areas.User.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class SuggestQuotedModel : PageModel
     {
         public string LastMessage { get; set; }

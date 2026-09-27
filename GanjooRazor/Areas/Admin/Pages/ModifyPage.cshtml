@@ -41,6 +41,7 @@
 
     <div class="up-card">
         <form method="post" class="up-form">
+            @Html.AntiForgeryToken()
             <div class="up-field">
                 <label>شناسهٔ صفحه</label>
                 <div class="up-field-static"><a href="/?p=@Request.Query["id"]">@Request.Query["id"]</a></div>
@@ -181,6 +182,7 @@
 
     <div class="up-card">
         <form action="?Handler=GenerateCatPage&id=@Model.PageInformation.Id" method="post" class="up-form">
+            @Html.AntiForgeryToken()
             <div class="up-field">
                 <label asp-for="GanjoorTOC">تولید فهرست</label>
                 <select asp-for="GanjoorTOC">

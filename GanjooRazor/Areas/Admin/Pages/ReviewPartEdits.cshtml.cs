@@ -15,7 +15,6 @@ using System.Collections.Generic;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class ReviewPartEditsModel : PageModel
     {
         /// <summary>

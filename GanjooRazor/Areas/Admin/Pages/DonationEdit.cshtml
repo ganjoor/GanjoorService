@@ -15,6 +15,7 @@
 @if (Model.Donation != null)
 {
     <form method="post">
+        @Html.AntiForgeryToken()
 
         <table>
             <tr>

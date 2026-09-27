@@ -17,6 +17,7 @@
 else
 {
     <form method="post" action="/Admin/Poet/?Handler=EditPoet&id=@Model.Poet.Id">
+        @Html.AntiForgeryToken()
 
         <table>
             <tr>
@@ -111,6 +112,7 @@ else
             <td>تصویر جدید:</td>
             <td>
                 <form method="post" enctype="multipart/form-data" action="/Admin/Poet/?Handler=UploadImage&id=@Model.Poet.Id">
+                    @Html.AntiForgeryToken()
                     <input type="file" asp-for="Image" />
                     <input type="submit" value="بارگذاری" />
                 </form>
@@ -132,6 +134,7 @@ else
             <td>بارگذاری پایگاه داده‌ها:</td>
             <td>
                 <form method="post" enctype="multipart/form-data" action="/Admin/Poet/?Handler=UploadDb&id=@Model.Poet.Id">
+                    @Html.AntiForgeryToken()
                     <input type="file" asp-for="SQLiteDb" />
                     <input type="submit" value="بارگذاری" />
                 </form>
@@ -144,6 +147,7 @@ else
             <td>تصحیح از طریق پایگاه داده‌ها:</td>
             <td>
                 <form method="post" enctype="multipart/form-data" action="/Admin/Poet/?Handler=UploadCorrectionDb&id=@Model.Poet.Id">
+                    @Html.AntiForgeryToken()
                     <input type="file" asp-for="CorrecionDbModel.Db" />
                     <input asp-for="CorrecionDbModel.Note" size="50" />
                     <input type="submit" value="بارگذاری" />

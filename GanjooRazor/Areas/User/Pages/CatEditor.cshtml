@@ -93,6 +93,7 @@
 
 <div class="up-card">
     <form method="post" class="up-form">
+        @Html.AntiForgeryToken()
         @if (Model.PageInformation != null)
         {
             <p><a role="button" target="_blank" href="@Model.PageInformation.FullUrl" class="up-btn up-btn--ghost">@Model.PageInformation.FullTitle</a></p>

@@ -13,7 +13,6 @@ namespace GanjooRazor.Areas.Admin.Pages
     /// (e.g. jsDelivr) — mainly meant to make setting up a fork or local dev copy easier than the
     /// old per-poet SQLite import.
     /// </summary>
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class PublicDataImportModel : PageModel
     {
         /// <summary>

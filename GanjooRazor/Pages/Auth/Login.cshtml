@@ -24,6 +24,7 @@
             @if (Model.LoggedIn)
             {
                 <form method="post" action="?handler=Logout">
+                    @Html.AntiForgeryToken()
                     <table>
                         <tr>
                             <td>
@@ -45,6 +46,7 @@
             else
             {
                 <form method="post" action="@("?handler=Login&redirect=" + Model.RedirectUrlEncoded)">
+                    @Html.AntiForgeryToken()
                     <table>
                         <tr>
                             <td>

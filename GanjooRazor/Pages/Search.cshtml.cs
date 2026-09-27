@@ -18,7 +18,6 @@ using RSecurityBackend.Models.Generic;
 
 namespace GanjooRazor.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     [OutputCache(PolicyName = "GanjoorPublicPage")]
     public class SearchModel : LoginPartialEnabledPageModel
     {

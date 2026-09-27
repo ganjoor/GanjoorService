@@ -153,6 +153,7 @@
                 <span class="inputlabel">شمارهٔ برنامه: </span><select name="program" id="program" disabled="disabled" class="albumtrack"></select>&nbsp;<span style="visibility:hidden" id="l2"><a id="programlink" href="#" target="_blank">صفحهٔ برنامه</a></span><br />
                 <span class="inputlabel">قطعه: </span><select name="track" id="track" disabled="disabled" class="albumtrack"></select>&nbsp;<span style="visibility:hidden" id="l3"></span><br />
                 <form method="post">
+                    @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="PoemMusicTrackViewModel.GolhaTrackId" />
                     <span class="inputlabel">توضیح: </span><input type="text" class="albumtrack" placeholder="توضیح" asp-for="PoemMusicTrackViewModel.Description" />
                     <br />

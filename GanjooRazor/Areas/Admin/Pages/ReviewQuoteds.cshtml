@@ -28,6 +28,7 @@ else
         </div>
 
         <form method="post" class="up-form">
+            @Html.AntiForgeryToken()
             <input type="hidden" asp-for="ModerationModel.Id" />
             <div class="up-field">
                 <label asp-for="ModerationModel.Approved">تأیید می‌شود؟</label>

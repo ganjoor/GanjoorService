@@ -12,7 +12,6 @@ using RMuseum.Utils;
 
 namespace GanjooRazor.Areas.User.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class CatEditorModel : PageModel
     {
         /// <summary>

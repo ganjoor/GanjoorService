@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class BannersModel : PageModel
     {
         /// <summary>

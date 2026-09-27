@@ -164,6 +164,7 @@
                             <div id="resultq"></div>
                             <div id="searching-songs" style="display:none"><img src="/image/loading.gif" /></div>
                             <form method="post">
+                                @Html.AntiForgeryToken()
                                 <input type="hidden" asp-for="PoemMusicTrackViewModel.ArtistName" />
                                 <input type="hidden" asp-for="PoemMusicTrackViewModel.ArtistUrl" />
                                 <input type="hidden" asp-for="PoemMusicTrackViewModel.AlbumName" />

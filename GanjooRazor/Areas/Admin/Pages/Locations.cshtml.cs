@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 namespace GanjooRazor.Areas.Admin.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class LocationsModel : PageModel
     {
         public string LastMessage { get; set; }

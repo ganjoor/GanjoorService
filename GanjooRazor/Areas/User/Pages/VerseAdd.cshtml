@@ -48,6 +48,7 @@
 
                 <div class="up-card">
                     <form method="post" class="up-form">
+                        @Html.AntiForgeryToken()
                         <div class="up-field">
                             <label asp-for="NewVerses.VOrder">مصرع‌ها قبل از کدام مصرع می‌بایست درج شوند</label>
                             <select asp-for="NewVerses.VOrder">

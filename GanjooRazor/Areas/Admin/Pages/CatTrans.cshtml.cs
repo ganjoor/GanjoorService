@@ -15,7 +15,6 @@ using RMuseum.Models.Ganjoor.ViewModels;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class CatTransModel : PageModel
     {
         /// <summary>

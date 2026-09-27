@@ -1,4 +1,24 @@
-﻿// --- Sanitizer "text was dropped" feedback ----------------------------------------------
+﻿// --- CSRF (antiforgery) token for AJAX calls --------------------------------------------
+// Every POST/PUT/DELETE handler in the app validates an antiforgery token by default. A real
+// <form> submission gets that token for free (the asp-* form tag helper / @Html.AntiForgeryToken()
+// injects a hidden field automatically), but the many $.ajax(...) calls in this file talk to
+// those same handlers directly with no <form> involved, so they need to attach the token
+// themselves. The token value is rendered once per page as <meta name="csrf-token" ...> (see
+// _Layout.cshtml / _UserPanelLayout.cshtml / _AdminLayout.cshtml and the couple of standalone
+// pages that make their own $.ajax calls), and this reads it once and attaches it to every
+// jQuery AJAX request as a header from here on - so individual $.ajax(...) calls below don't
+// need to be touched one by one. A page that doesn't render the meta tag (i.e. has nothing that
+// needs it) simply sends no header, which is harmless.
+(function () {
+    var token = $('meta[name="csrf-token"]').attr('content');
+    if (token) {
+        $.ajaxSetup({
+            headers: { 'X-CSRF-TOKEN': token }
+        });
+    }
+})();
+
+// --- Sanitizer "text was dropped" feedback ----------------------------------------------
 // Shared by every place a TinyMCE-edited field (a comment, a bookmark note, a suggested
 // poet spec-line, ...) gets rejected because the server's HTML sanitizer had to drop real
 // text (see GanjoorService._BuildSanitizerDroppedTextError on the API side). Instead of just

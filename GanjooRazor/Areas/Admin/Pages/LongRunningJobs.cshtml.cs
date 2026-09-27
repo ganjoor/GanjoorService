@@ -9,7 +9,6 @@ using RSecurityBackend.Models.Generic.Db;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class LongRunningJobsModel : PageModel
     {
         public RLongRunningJobStatus[] Jobs { get; set; }

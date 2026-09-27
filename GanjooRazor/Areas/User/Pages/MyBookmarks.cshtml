@@ -129,6 +129,7 @@ else
         <span onclick="document.getElementById('bookmark-note-dialog').style.display='none'"
           class="close" title="بستن">&times;</span>
         <form class="modal-content animate" method="post" id="editnoteform">
+            @Html.AntiForgeryToken()
             <table class="max-width-100per width-100per">
                 <tr>
                     <td>

@@ -12,6 +12,7 @@
 @if (Model.Expense != null)
 {
     <form method="post">
+        @Html.AntiForgeryToken()
 
         <table>
             <tr>

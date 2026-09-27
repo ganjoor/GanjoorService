@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace GanjooRazor.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     [OutputCache(PolicyName = "GanjoorPublicPage")]
     public class QuotesModel : LoginPartialEnabledPageModel
     {

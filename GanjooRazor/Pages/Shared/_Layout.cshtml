@@ -1,4 +1,5 @@
-﻿@{
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
     // Shared layout for public-site pages (Pages/ folder). NOT used by Areas/Admin or Areas/User,
     // which have their own separate _AdminLayout / _UserPanelLayout under their own Areas/*/Pages/Shared
     // folders - see Areas/Admin/Pages/_ViewStart.cshtml and Areas/User/Pages/_ViewStart.cshtml.
@@ -29,6 +30,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
     <title>@Html.Raw(ViewData["Title"])</title>
     <link href="~/css/p8.css" asp-append-version="true" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />

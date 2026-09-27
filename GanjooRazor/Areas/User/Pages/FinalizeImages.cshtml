@@ -39,6 +39,7 @@ else
         </div>
 
         <form method="post" class="up-form">
+            @Html.AntiForgeryToken()
             <input type="hidden" asp-for="ImageLinkFinalizeModel.Id" />
             <div class="up-field">
                 <label asp-for="ImageLinkFinalizeModel.DisplayOnPage"></label>

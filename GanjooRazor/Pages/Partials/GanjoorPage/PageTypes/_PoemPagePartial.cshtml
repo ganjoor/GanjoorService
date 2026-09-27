@@ -115,6 +115,7 @@
             {
                 <div class="width-100per display-block">
                     <form method="post" action="/pin">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" id="RelatedImageSuggestionModel_PoemId" name="RelatedImageSuggestionModel.PoemId" value="@Model.GanjoorPage.Id">
                         <input type="hidden" id="RelatedImageSuggestionModel_GanjoorUrl" name="RelatedImageSuggestionModel.GanjoorUrl" value="@Model.GanjoorPage.FullUrl">
                         <input type="hidden" id="RelatedImageSuggestionModel_GanjoorTitle" name="RelatedImageSuggestionModel.GanjoorTitle" value="@Model.GanjoorPage.FullTitle">

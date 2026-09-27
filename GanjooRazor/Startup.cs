@@ -100,6 +100,16 @@ namespace GanjooRazor
                 options.Conventions.AddPageRoute("/Misc/t6e", "/t6e");
             });
 
+            // The antiforgery token bk.js's $.ajax POST/PUT/DELETE calls carry, as a request
+            // header rather than a form field (there's no <form> around most of these calls).
+            // The token value itself is rendered into each page as a <meta name="csrf-token">
+            // tag (see _Layout.cshtml / _UserPanelLayout.cshtml / _AdminLayout.cshtml), and
+            // bk.js reads it once and attaches it to every AJAX request via $.ajaxSetup.
+            services.AddAntiforgery(options =>
+            {
+                options.HeaderName = "X-CSRF-TOKEN";
+            });
+
             services.AddCors(options =>
             {
                 options.AddPolicy(name: "GanjoorCorsPolicy",

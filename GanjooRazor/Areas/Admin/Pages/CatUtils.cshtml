@@ -484,6 +484,7 @@
 }
 
 <form method="post">
+    @Html.AntiForgeryToken()
     <table>
         <tr>
             <td>
@@ -643,6 +644,7 @@
 </table>
 
 <form method="post" action="?Handler=Numbering&url=@Model.Cat.Cat.FullUrl">
+    @Html.AntiForgeryToken()
     <table>
         <tr>
             <td>
@@ -678,6 +680,7 @@
 
 <h2>ابرداده‌های دیگر بخش</h2>
 <form method="post" action="?Handler=UpdateCatMeta&url=@Model.Cat.Cat.FullUrl">
+    @Html.AntiForgeryToken()
     <table>
         <tr>
             <td>
@@ -725,6 +728,7 @@
         <td>بارگذاری پایگاه داده‌ها شامل یک دسته‌بندی از اشعار:</td>
         <td>
             <form method="post" enctype="multipart/form-data" action="/Admin/CatUtils?Handler=UploadDb&url=@Model.Cat.Cat.FullUrl">
+                @Html.AntiForgeryToken()
                 <input type="file" asp-for="SQLiteDb" />
                 <input type="submit" value="بارگذاری" class="up-btn up-btn--success" />
             </form>

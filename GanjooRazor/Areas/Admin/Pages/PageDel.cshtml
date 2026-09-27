@@ -28,6 +28,7 @@ else
         <tr>
             <td>
                 <form method="post" action="/Admin/PageDel?id=@Model.PageInformation.Id">
+                    @Html.AntiForgeryToken()
                     <input type="submit" value="بله" />
                 </form>
             </td>

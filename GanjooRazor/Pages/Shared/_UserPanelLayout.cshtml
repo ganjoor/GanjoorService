@@ -1,9 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+<!DOCTYPE html>
 <html lang="fa-IR" dir="rtl">
 <head>
     <meta charset="utf-8" />
     <meta name="robots" content="noindex, nofollow" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
     <title>
         @Html.Raw(ViewData["Title"])
     </title>
@@ -180,6 +182,7 @@
 
                         <li class="nav-item">
                             <form method="post" action="/login?handler=Logout">
+                                @Html.AntiForgeryToken()
                                 <button type="submit" class="nav-link text-dark" title="خروج از حساب کاربری">خروج</button>
                             </form>
                         </li>

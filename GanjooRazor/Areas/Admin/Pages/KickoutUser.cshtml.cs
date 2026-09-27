@@ -10,7 +10,6 @@ using RSecurityBackend.Models.Auth.ViewModels;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class KickoutUserModel : PageModel
     {
         public PublicRAppUser UserInfo { get; set; }

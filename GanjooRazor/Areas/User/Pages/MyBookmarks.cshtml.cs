@@ -17,7 +17,6 @@ using RSecurityBackend.Models.Generic;
 
 namespace GanjooRazor.Areas.User.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class MyBookmarksModel : PageModel
     {
         /// <summary>

@@ -12,7 +12,6 @@ using RMuseum.Models.MusicCatalogue.ViewModels;
 
 namespace GanjooRazor.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class GolhaModel : PageModel
     {
 

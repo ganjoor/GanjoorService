@@ -17,7 +17,6 @@ using GanjooRazor.Models;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class ReviewCatEditsModel : PageModel
     {
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿@page
 @model GanjooRazor.Pages.ReportRecitationModel
 @using DNTPersianUtils.Core
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 @{
     Layout = null;
 }
@@ -11,6 +12,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
+    <meta name="csrf-token" content="@Antiforgery.GetAndStoreTokens(HttpContext).RequestToken" />
     <title>گنجور » گزارش خطا در خوانش</title>
     <script src="/lib/jquery/dist/jquery.min.js"></script>
     <link href="~/css/p8.css" asp-append-version="true" rel="stylesheet" type="text/css" />
@@ -89,6 +91,7 @@
 
                 <div class="content">
                     <form method="post">
+                        @Html.AntiForgeryToken()
                         <table class="width-100per">
                             <tr>
                                 <td>

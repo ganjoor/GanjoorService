@@ -30,6 +30,7 @@
             if (Model.SignupPhase1)
             {
                 <form method="post" action="/signup?Handler=Phase1">
+                    @Html.AntiForgeryToken()
                     <table class="font-size-1em">
 
                         <tr class="nobackground">
@@ -110,6 +111,7 @@
             if (Model.SignupVerifyEmailPhase)
             {
                 <form method="post" action="/signup?Handler=Phase2">
+                    @Html.AntiForgeryToken()
                     <table class="font-size-1em">
 
                         <tr class="nobackground">
@@ -144,6 +146,7 @@
             else
             {
                 <form method="post" action="/signup?Handler=Phase3">
+                    @Html.AntiForgeryToken()
                     <table class="font-size-1em">
 
                         <tr class="nobackground">

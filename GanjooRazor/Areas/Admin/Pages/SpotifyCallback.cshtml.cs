@@ -12,7 +12,6 @@ using Newtonsoft.Json.Linq;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class SpotifyCallbackModel : PageModel
     {
         public SpotifyCallbackModel(IHttpClientFactory clientFactory, IConfiguration configuration)

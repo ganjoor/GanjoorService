@@ -518,6 +518,7 @@ else
         <div class="up-form-actions">
             <a role="button" id="moderatecorrections" class="up-btn up-btn--success" onclick="moderateSectionCorrections(@Model.Correction.Id, @Model.Verses.Count)">بررسی</a>
             <form method="post">
+                @Html.AntiForgeryToken()
                 <button type="submit" name="next" id="next" class="up-btn up-btn--ghost">بعدی</button>
             </form>
         </div>

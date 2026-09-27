@@ -16,7 +16,6 @@ using RSecurityBackend.Models.Notification.ViewModels;
 
 namespace GanjooRazor.Areas.User.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class NotificationsModel : PageModel
     {
         /// <summary>

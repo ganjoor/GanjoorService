@@ -161,6 +161,7 @@
                 <div id="resultq"></div>
 
                 <form method="post">
+                    @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="PoemMusicTrackViewModel.ArtistName" />
                     <input type="hidden" asp-for="PoemMusicTrackViewModel.ArtistUrl" />
                     <input type="hidden" asp-for="PoemMusicTrackViewModel.AlbumName" />

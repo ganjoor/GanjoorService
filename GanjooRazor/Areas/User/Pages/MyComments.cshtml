@@ -101,6 +101,7 @@ else
         <span onclick="document.getElementById('id02').style.display='none'"
           class="close" title="بستن">&times;</span>
         <form class="modal-content animate" method="post" id="editcommentform" action="?handler=EditComment">
+            @Html.AntiForgeryToken()
             <table style="max-width:100%; width:100%; margin:0">
                 <tr>
                     <td>

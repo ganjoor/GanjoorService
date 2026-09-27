@@ -27,6 +27,7 @@
     <div class="up-card">
         <h2 class="up-card__title">کمک مالی جدید</h2>
         <form method="post" class="up-form">
+            @Html.AntiForgeryToken()
             <div class="up-field">
                 <label asp-for="Donation.RecordDate">تاریخ</label>
                 <input type="date" asp-for="Donation.RecordDate" />

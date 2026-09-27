@@ -123,6 +123,7 @@ else
 
         <!-- Modal Content -->
         <form class="modal-content animate" method="post" action="?handler=Login">
+            @Html.AntiForgeryToken()
             <div class="imgcontainer">
                 <img src="/image/login.png" alt="گنجور" class="avatar">
             </div>

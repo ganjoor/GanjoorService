@@ -15,7 +15,6 @@ using RMuseum.Services.Implementation.ImportedFromDesktopGanjoor;
 
 namespace GanjooRazor.Areas.Admin.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class PoetModel : PageModel
     {
         /// <summary>

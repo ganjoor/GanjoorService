@@ -93,6 +93,7 @@ else
         <div class="up-field">
             <label for="DestCatId">مشابه‌یابی در بخش</label>
             <form method="post" action="/Admin/CatTrans?Handler=FindDuplicates&id=@Model.CatId" class="up-form-actions">
+                @Html.AntiForgeryToken()
                 <input asp-for="DestCatId" style="flex:1;" />
                 <input type="submit" value="شروع مشابه‌یابی" class="up-btn up-btn--ghost" />
             </form>
@@ -103,6 +104,7 @@ else
         <div class="up-field">
             <label for="DestCatId">نهایی‌سازی انتقال به بخش</label>
             <form method="post" action="/Admin/CatTrans?Handler=Finalize&id=@Model.CatId" class="up-form-actions">
+                @Html.AntiForgeryToken()
                 <input asp-for="DestCatId" style="flex:1;" />
                 <input type="submit" value="نهایی سازی" class="up-btn up-btn--success" />
             </form>

@@ -19,6 +19,7 @@
 <div class="up-card">
     <h2 class="up-card__title">آگاهی جدید</h2>
     <form method="post" enctype="multipart/form-data" class="up-form">
+        @Html.AntiForgeryToken()
         <div class="up-field">
             <label for="Upload_Image">تصویر</label>
             <input type="file" asp-for="Upload.Image" />

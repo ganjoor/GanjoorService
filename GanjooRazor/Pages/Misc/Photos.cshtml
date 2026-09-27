@@ -1,5 +1,6 @@
 ﻿@page
 @model GanjooRazor.Pages.PhotosModel
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 @{
     Layout = null;
 }
@@ -8,6 +9,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="@Antiforgery.GetAndStoreTokens(HttpContext).RequestToken" />
     <title>
         @Html.Raw(ViewData["Title"])
     </title>
@@ -229,6 +231,7 @@
                                 @if (Model.LoggedIn)
                                 {
                                     <form method="post" id="commentform" action="?handler=Suggest">
+                                        @Html.AntiForgeryToken()
                                         <fieldset>
                                             <legend>💬 شما نکتهٔ تازه‌ای پیشنهاد کنید ...</legend>
                                             <table class="comment-table">
@@ -384,6 +387,7 @@
                                     @if (string.IsNullOrEmpty(Model.LastError) && Model.UploadedPhoto == null)
                                     {
                                         <form method="post" enctype="multipart/form-data">
+                                            @Html.AntiForgeryToken()
                                             <fieldset>
                                                 <legend>💬 شما تصویر تازه‌ای پیشنهاد کنید ...</legend>
                                                 <table class="comment-table">

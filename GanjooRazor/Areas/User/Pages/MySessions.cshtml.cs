@@ -20,7 +20,6 @@ namespace GanjooRazor.Areas.User.Pages
     /// this list and kill a session they don't recognize (a lost/stolen device, a shared computer
     /// they forgot to log out of, ...) whenever they suspect something.
     /// </summary>
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class MySessionsModel : GanjoorPageModelBase
     {
         /// <summary>

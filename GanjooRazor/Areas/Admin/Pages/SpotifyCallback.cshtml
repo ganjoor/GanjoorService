@@ -10,6 +10,7 @@
 @if (ViewData.ContainsKey("ganjoor-songrevu"))
 {
     <form method="post">
+        @Html.AntiForgeryToken()
         <input asp-for="@Model.Code" type="hidden" />
 
 

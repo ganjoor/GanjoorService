@@ -10,7 +10,6 @@ using RMuseum.Models.Ganjoor;
 
 namespace GanjooRazor.Areas.User.Pages
 {
-    [IgnoreAntiforgeryToken(Order = 1001)]
     public class LanguageEditModel : PageModel
     {
         [BindProperty]

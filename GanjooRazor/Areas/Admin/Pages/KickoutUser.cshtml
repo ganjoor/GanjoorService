@@ -33,6 +33,7 @@ else
         <tr>
             <td>
                 <form method="post">
+                    @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="UserCauseViewModel.UserId" />
                     <table>
                         <tr>

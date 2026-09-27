@@ -19,6 +19,7 @@ else
     <div class="up-card">
         <h2 class="up-card__title">زبان جدید</h2>
         <form method="post" class="up-form">
+            @Html.AntiForgeryToken()
             <div class="up-field">
                 <label for="Language_Name">نام</label>
                 <input asp-for="Language.Name" />
