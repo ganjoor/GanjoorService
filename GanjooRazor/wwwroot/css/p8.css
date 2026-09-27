@@ -816,7 +816,6 @@ nav#nav {
     color: var(--brand);
     -webkit-text-fill-color: var(--brand);
     font-weight: 700;
-    text-decoration: underline;
 }
 
 .comments-link:hover {
@@ -893,6 +892,68 @@ nav#nav {
     -webkit-text-fill-color: var(--lapis);
     text-decoration: underline;
     font-weight: 600;
+}
+
+/* --- Poem-page comment thread only (_CommentPartial.cshtml) ---
+   The rules above are shared by every page that reuses the plain ".ganjoor-comment" class
+   for layout (FAQ answers, bookmark private notes, photo captions, etc.) and are left exactly
+   as they were so none of those pages change. The two classes below are new and are applied
+   only inside _CommentPartial.cshtml, so they can't affect anything else even by accident:
+     - ".comment-actions" on the action-icon <p> (reply/edit/delete/like/...): unchanged from
+       before, just given its own name instead of relying on the generic "p a" match.
+     - ".comment-body" on the <blockquote> that holds a commenter's own sanitized HTML: the
+       sanitizer allows <p> in comment content, so a link a commenter pasted inside their own
+       <p> was ALSO matching ".ganjoor-comment p a" above and coming out as a boxed icon-button
+       instead of plain text - that's the bug being fixed here. Both selectors below combine
+       two classes on the same element (.ganjoor-comment plus the new class), which makes them
+       more specific than the shared single-class rules above, so they win only where the new
+       class is actually present. */
+.ganjoor-comment .comment-actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    margin: 0 1px;
+    border-radius: 6px;
+    background-color: var(--card-inner);
+    border: 1px solid var(--border-gold);
+    color: var(--lapis);
+    -webkit-text-fill-color: var(--lapis);
+    transition: all 0.2s ease;
+}
+
+.ganjoor-comment .comment-actions a:hover {
+    background-color: var(--brand);
+    border-color: var(--brand);
+    color: var(--card-paper) !important;
+    -webkit-text-fill-color: var(--card-paper) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.ganjoor-comment .comment-actions a .pageicons {
+    font-size: 16px;
+    color: var(--lapis);
+    -webkit-text-fill-color: var(--lapis);
+    transition: all 0.2s ease;
+}
+
+.ganjoor-comment .comment-actions a:hover .pageicons {
+    color: var(--card-paper);
+    -webkit-text-fill-color: var(--card-paper);
+}
+
+/* Links a commenter typed/pasted into their own comment text: plain text, no box, no
+   underline, no font-size/weight change - just a color that reads as "clickable", same
+   convention as .comments-link/.comment-author a. */
+.ganjoor-comment .comment-body a {
+    color: var(--brand);
+    -webkit-text-fill-color: var(--brand);
+}
+
+.ganjoor-comment .comment-body a:hover {
+    color: var(--lapis);
+    -webkit-text-fill-color: var(--lapis);
 }
 
 .sit {

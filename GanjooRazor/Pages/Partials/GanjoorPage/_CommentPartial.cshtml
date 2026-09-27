@@ -33,10 +33,10 @@ else
             <div class="commentquote">دربارهٔ <a href="@($"#bn{Model.Comment.CoupletIndex + 1}")">@Model.Comment.CoupletSummary</a></div>
         }
 
-        <blockquote id="comment-text-@Model.Comment.Id@Model.DivSuffix">
+        <blockquote id="comment-text-@Model.Comment.Id@Model.DivSuffix" class="comment-body">
             @Html.Raw(Model.Comment.HtmlComment)
         </blockquote>
-        <p>
+        <p class="comment-actions">
             @if (Model.Comment.MyComment)
             {
                 <a role="button" title="حذف حاشیه" onclick="deleteMyComment(@Model.Comment.Id, '@Model.Comment.CoupletIndex')"><i class="notranslate pageicons">delete</i></a>
