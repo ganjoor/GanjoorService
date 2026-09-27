@@ -69,6 +69,17 @@ namespace GanjooRazor.Areas.Admin.Pages
         public List<GanjoorGeoLocation> Locations { get; set; }
 
         /// <summary>
+        /// camelCase JSON of Locations (id/name/latitude/longitude only), used client-side for the
+        /// search-as-you-type location picker on each geo tag (see setupLocationAutocomplete in bk.js) -
+        /// same shape/purpose as Editor.cshtml.cs's AllLocationsJson
+        /// </summary>
+        public string AllLocationsJson =>
+            JsonConvert.SerializeObject(
+                (Locations ?? new List<GanjoorGeoLocation>()).Select(l => new { l.Id, l.Name, l.Latitude, l.Longitude }),
+                new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }
+            );
+
+        /// <summary>
         /// groups verses into couplets - same logic as SuggestQuoted.cshtml.cs's/Editor.cshtml.cs's GetCouplets,
         /// duplicated here rather than shared, so this page doesn't take on a cross-file dependency on those
         /// </summary>

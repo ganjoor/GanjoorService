@@ -218,6 +218,11 @@ namespace GanjooRazor.Areas.User.Pages
 
             FatalError = "";
             CanEdit = Request.Cookies["CanEdit"] == "True";
+            // set before any of the early "API call failed" returns below, so the view - which
+            // reads Model.Couplets unconditionally near the top of its script block, before the
+            // FatalError check further down - never sees a null and throws ArgumentNullException
+            // out of Couplets.ToDictionary(...) on a failed request
+            Couplets = Array.Empty<Tuple<int, string>>();
 
             ShowAdminOps = CanEdit && Request.Query["admin"] == "1";
             using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))

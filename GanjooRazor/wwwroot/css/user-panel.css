@@ -612,6 +612,51 @@ body.up-modal-open {
     box-shadow: 0 0 0 3px rgba(51, 0, 0, 0.12);
 }
 
+/* ---------- location search-as-you-type (see setupLocationAutocomplete in bk.js) ---------- */
+
+.up-autocomplete-wrap {
+    position: relative;
+}
+
+.up-autocomplete-results {
+    position: absolute;
+    z-index: 50;
+    top: calc(100% + 2px);
+    right: 0;
+    left: 0;
+    max-height: 260px;
+    overflow-y: auto;
+    background: var(--up-surface);
+    border: 1px solid var(--up-border);
+    border-radius: var(--up-radius-sm);
+    box-shadow: var(--up-shadow-sm);
+}
+
+.up-autocomplete-item {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--up-border);
+}
+
+.up-autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.up-autocomplete-item:hover {
+    background: var(--up-bg);
+}
+
+.up-autocomplete-item--empty,
+.up-autocomplete-item--more {
+    color: var(--up-text-muted);
+    cursor: default;
+}
+
+.up-autocomplete-item--empty {
+    cursor: pointer;
+}
+
 /* ---------- editable surfaces (contenteditable divs standing in for inputs) ----------
    Needs a strong, unmistakable affordance since it isn't a native form control -
    nothing else on the page should look like this. */

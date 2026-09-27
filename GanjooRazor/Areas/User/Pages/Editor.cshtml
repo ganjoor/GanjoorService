@@ -126,6 +126,42 @@
     var allGeoLocations = @Html.Raw(Model.AllLocationsJson);
     $(document).ready(function () {
         renderPendingGeoDateTags();
+        setupLocationAutocomplete(
+            document.getElementById('geotag-location-search'),
+            document.getElementById('geotag-location-select'),
+            document.getElementById('geotag-location-results'),
+            allGeoLocations,
+            function (loc) {
+                // picking an existing location (or clearing the field) means whatever was
+                // typed into the "new location" panel no longer applies to this suggestion
+                var widget = document.getElementById('new-location-widget');
+                if (loc != null && widget.style.display !== 'none') {
+                    toggleNewLocationWidget();
+                }
+            },
+            function (typedText) {
+                var widget = document.getElementById('new-location-widget');
+                if (widget.style.display === 'none' || widget.style.display === '') {
+                    toggleNewLocationWidget();
+                }
+                document.getElementById('geotag-new-location-name').value = typedText;
+            }
+        );
+        var directAddLocationSearch = document.getElementById('location-search');
+        if (directAddLocationSearch != null) {
+            // admin-only direct-add row (bypasses the suggestion/moderation flow entirely) -
+            // no "new location" concept here, so an unmatched search just has nothing to pick
+            setupLocationAutocomplete(
+                directAddLocationSearch,
+                document.getElementById('location'),
+                document.getElementById('location-results'),
+                allGeoLocations,
+                null,
+                function (typedText) {
+                    upToast('این مکان در فهرست نیست. برای افزودن مکان جدید از «مکان‌ها» در پایین این جدول استفاده کنید.', 'error');
+                }
+            );
+        }
     });
     var geoDateTagMap = null;
     var geoDateTagMarker = null;
@@ -268,7 +304,7 @@
             var s = geoDateTagSuggestions[i];
             var status = s.markForDelete ? '🗑️ درخواست حذف' : '➕ پیشنهاد جدید';
             var coupletText = (s.coupletIndex != null && geoDateTagCoupletTexts[s.coupletIndex]) ? geoDateTagCoupletTexts[s.coupletIndex] : '— کل شعر —';
-            var locationText = s.markForDelete ? '' : (s.locationId ? $('#geotag-location-select option[value="' + s.locationId + '"]').text() : (s.suggestedLocationName || ''));
+            var locationText = s.markForDelete ? '' : (s.locationId ? ((allGeoLocations.filter(function (l) { return l.id === s.locationId; })[0] || {}).name || ('مکان #' + s.locationId)) : (s.suggestedLocationName || ''));
             html += '<tr><td>' + status + '</td><td>' + coupletText + '</td><td>' + locationText + '</td><td>' + (s.lunarYear || '') + '</td><td>' + (s.lunarMonth || '') + '</td><td>' + (s.lunarDay || '') + '</td>' +
                 '<td><a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="removeGeoDateTagSuggestion(' + i + ')">✕ حذف از فهرست</a></td></tr>';
         }
@@ -354,6 +390,8 @@
     function resetGeoDateTagForm() {
         $('#geotag-couplet-select').val('');
         $('#geotag-location-select').val('');
+        $('#geotag-location-search').val('');
+        $('#geotag-location-results').hide().empty();
         $('#geotag-new-location-name').val('');
         $('#geotag-new-location-lat').val('');
         $('#geotag-new-location-lng').val('');
@@ -2001,14 +2039,13 @@ else
         </div>
 
         <div class="up-field">
-            <label for="geotag-location-select">مکان</label>
-            <select id="geotag-location-select">
-                <option value="">— انتخاب نشده —</option>
-                @foreach (var location in Model.Locations)
-                {
-                    <option value="@location.Id">@location.Name</option>
-                }
-            </select>
+            <label for="geotag-location-search">مکان</label>
+            <div class="up-autocomplete-wrap">
+                <input type="text" id="geotag-location-search" autocomplete="off" placeholder="نام مکان را تایپ کنید..." />
+                <input type="hidden" id="geotag-location-select" />
+                <div id="geotag-location-results" class="up-autocomplete-results" style="display:none;"></div>
+            </div>
+            <p class="up-hint">شروع به تایپ کنید تا فهرست مکان‌های موجود بر اساس نام فیلتر شود؛ اگر مکان مورد نظر پیدا نشد، گزینهٔ تعریف آن به‌عنوان مکان جدید نمایش داده می‌شود.</p>
             <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="toggleNewLocationWidget()">📍 مکان جدید پیشنهاد بده</a>
         </div>
 
@@ -2203,14 +2240,11 @@ else
                 }
                 <tr>
                     <td>
-                        <select id="location">
-                            @{
-                                foreach (var location in Model.Locations)
-                                {
-                                    <option value="@location.Id">@location.Name</option>
-                                }
-                            }
-                        </select>
+                        <div class="up-autocomplete-wrap">
+                            <input type="text" id="location-search" autocomplete="off" placeholder="نام مکان را تایپ کنید..." />
+                            <input type="hidden" id="location" />
+                            <div id="location-results" class="up-autocomplete-results" style="display:none;"></div>
+                        </div>
                     </td>
                     <td>
                         <input type="text" id="year" />

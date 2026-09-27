@@ -2499,3 +2499,103 @@ function load7DaysVisits(url) {
         },
     });
 }
+// Turns a plain text <input> into a "search as you type" picker over a small
+// in-memory location catalog ({id, name, latitude, longitude}[]), instead of a
+// long <select> the user has to scroll/search through by hand. If nothing in
+// the catalog matches what's typed, the dropdown offers to define it as a new
+// location instead - see onNotFound.
+//   searchInput  - the visible text <input> the user types a location name into
+//   hiddenInput  - an existing/hidden <input> that ends up holding the selected
+//                  location's Id as a string (cleared, i.e. '', whenever the
+//                  text doesn't currently match a selected location) - callers
+//                  that used to read a <select>'s .val() can keep doing so
+//                  unchanged as long as this element keeps the same id
+//   resultsBox   - an empty container element (positioned by .up-autocomplete-results)
+//                  right after searchInput, used to render the dropdown
+//   locations    - array of {id, name, latitude, longitude}
+//   onSelect(loc)   - called with the chosen location object, or null when the
+//                      field is cleared/typed into (so any "selected" state a
+//                      caller is tracking elsewhere - like a new-location panel
+//                      that should hide - can be kept in sync)
+//   onNotFound(text) - called with the trimmed typed text when it matches no
+//                       location in the catalog and the user clicks the "define
+//                       as new location" row
+function setupLocationAutocomplete(searchInput, hiddenInput, resultsBox, locations, onSelect, onNotFound) {
+    var MAX_RESULTS = 12;
+
+    function hide() {
+        resultsBox.style.display = 'none';
+        resultsBox.innerHTML = '';
+    }
+
+    function selectLocation(loc) {
+        searchInput.value = loc.name;
+        hiddenInput.value = String(loc.id);
+        hide();
+        if (onSelect) onSelect(loc);
+    }
+
+    function render(typedText) {
+        var typedLower = typedText.toLowerCase();
+        var matches = (locations || []).filter(function (l) {
+            return l.name && l.name.toLowerCase().indexOf(typedLower) !== -1;
+        });
+
+        if (matches.length == 0) {
+            var emptyRow = document.createElement('div');
+            emptyRow.className = 'up-autocomplete-item up-autocomplete-item--empty';
+            emptyRow.textContent = '➕ «' + typedText + '» در فهرست پیدا نشد؛ به‌عنوان مکان جدید تعریف شود';
+            emptyRow.addEventListener('click', function () {
+                hide();
+                if (onNotFound) onNotFound(typedText);
+            });
+            resultsBox.innerHTML = '';
+            resultsBox.appendChild(emptyRow);
+            resultsBox.style.display = 'block';
+            return;
+        }
+
+        resultsBox.innerHTML = '';
+        for (var i = 0; i < Math.min(matches.length, MAX_RESULTS); i++) {
+            var loc = matches[i];
+            var row = document.createElement('div');
+            row.className = 'up-autocomplete-item';
+            row.textContent = loc.name + ' (' + loc.latitude + ', ' + loc.longitude + ')';
+            row.addEventListener('click', function (l) {
+                return function () { selectLocation(l); };
+            }(loc));
+            resultsBox.appendChild(row);
+        }
+        if (matches.length > MAX_RESULTS) {
+            var moreRow = document.createElement('div');
+            moreRow.className = 'up-autocomplete-item up-autocomplete-item--more';
+            moreRow.textContent = '… و ' + (matches.length - MAX_RESULTS) + ' مورد دیگر (برای محدودکردن نتایج بیشتر تایپ کنید)';
+            resultsBox.appendChild(moreRow);
+        }
+        resultsBox.style.display = 'block';
+    }
+
+    searchInput.addEventListener('input', function () {
+        hiddenInput.value = ''; // typing invalidates whatever was previously selected
+        var typed = searchInput.value.trim();
+        if (typed == '') {
+            hide();
+            if (onSelect) onSelect(null);
+            return;
+        }
+        render(typed);
+    });
+
+    searchInput.addEventListener('focus', function () {
+        var typed = searchInput.value.trim();
+        if (typed != '' && hiddenInput.value == '') {
+            render(typed); // re-show suggestions for text that hasn't resolved to a pick yet
+        }
+    });
+
+    document.addEventListener('click', function (e) {
+        if (e.target !== searchInput && !resultsBox.contains(e.target)) {
+            hide();
+        }
+    });
+}
