@@ -121,5 +121,33 @@ namespace GanjooRazor.Areas.User.Pages
 
             return new JsonResult(new { loggedOutSelf });
         }
+
+        /// <summary>
+        /// Logs the user out of every session but this one (a critical-account cleanup shortcut
+        /// for someone logged in on several computers, instead of removing each session one at a
+        /// time). This browser's own session is always the one preserved - it never removes the
+        /// session the request itself is authenticated with, so unlike OnDeleteSessionAsync there
+        /// is no "logged out myself" case to special-case here.
+        /// </summary>
+        public async Task<IActionResult> OnDeleteLogoutOthersAsync()
+        {
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/users/delothersessions?userId={Request.Cookies["UserId"]}");
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
+                    }
+                    int removedCount = int.Parse(await response.Content.ReadAsStringAsync());
+                    return new JsonResult(new { removedCount });
+                }
+                else
+                {
+                    return new BadRequestObjectResult(NotLoggedInMessage);
+                }
+            }
+        }
     }
 }

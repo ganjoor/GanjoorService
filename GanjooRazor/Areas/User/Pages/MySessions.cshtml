@@ -1,6 +1,7 @@
 @page
 @model GanjooRazor.Areas.User.Pages.MySessionsModel
 @using DNTPersianUtils.Core
+@using System.Linq
 @{
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "نشست‌های من";
@@ -10,6 +11,14 @@
     <h1>@ViewData["Title"]</h1>
     <div class="up-page-subtitle">دستگاه‌ها و مرورگرهایی که هم‌اکنون با حساب کاربری شما وارد گنجور شده‌اند. اگر دستگاهی را نمی‌شناسید یا دیگر از آن استفاده نمی‌کنید، آن را از این فهرست خارج کنید.</div>
 </div>
+@if (Model.LastError == "" && Model.Sessions != null && Model.Sessions.Count(s => s.Id != Model.CurrentSessionId) > 0)
+{
+    <div style="margin-bottom: var(--up-space-3);">
+        <a role="button" onclick="logoutOtherSessions()" class="up-btn up-btn--danger" id="logout-others-btn">
+            خروج از سایر دستگاه‌ها
+        </a>
+    </div>
+}
 @if (Model.LastError != "")
 {
     <div class="up-alert up-alert--danger">@Model.LastError</div>
@@ -39,6 +48,29 @@ else
                 },
                 error: function (e) {
                     upToast(e.responseText || 'حذف نشست با خطا مواجه شد.', 'error');
+                }
+            });
+        }
+
+        async function logoutOtherSessions() {
+            var ok = await upConfirm('با این کار از حساب کاربری خود در تمام دستگاه‌ها و مرورگرهای دیگر (به‌جز همین یکی) خارج خواهید شد. آیا ادامه می‌دهید؟');
+            if (!ok) return;
+
+            $.ajax({
+                type: "DELETE",
+                url: '?handler=LogoutOthers',
+                success: function (res) {
+                    var removedCount = (res && res.removedCount) || 0;
+                    $('.up-list-item').each(function () {
+                        if (this.id !== 'session-@Model.CurrentSessionId') {
+                            $(this).remove();
+                        }
+                    });
+                    $('#logout-others-btn').closest('div').remove();
+                    upToast(removedCount > 0 ? 'از ' + removedCount.toLocaleString('fa-IR') + ' دستگاه دیگر خارج شدید.' : 'دستگاه دیگری برای خروج یافت نشد.', 'success');
+                },
+                error: function (e) {
+                    upToast(e.responseText || 'خروج از سایر دستگاه‌ها با خطا مواجه شد.', 'error');
                 }
             });
         }
