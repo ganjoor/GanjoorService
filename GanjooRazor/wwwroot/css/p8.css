@@ -1440,6 +1440,59 @@ ol {
         cursor: pointer;
     }
 
+/* Changelog modal */
+.changelog-modal-content {
+    max-width: 640px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.changelog-title {
+    color: var(--accent-text);
+    margin: 4px 0 10px 0;
+    font-size: 1.1em;
+    border-bottom: 1px dashed var(--border-gold);
+    padding-bottom: 8px;
+}
+
+.changelog-list {
+    overflow-y: auto;
+    font-size: 0.75em;
+}
+
+.changelog-loading {
+    text-align: center;
+    color: var(--accent-text);
+    padding: 20px 0;
+}
+
+.changelog-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 4px;
+    border-bottom: 1px dashed var(--border-gold);
+}
+
+    .changelog-item:last-child {
+        border-bottom: none;
+    }
+
+.changelog-date {
+    flex: 0 0 auto;
+    color: var(--lapis);
+    font-weight: bold;
+    white-space: nowrap;
+    direction: ltr;
+}
+
+.changelog-desc {
+    flex: 1 1 auto;
+    color: var(--accent-text);
+    line-height: 1.7;
+}
+
 /* Add Zoom Animation */
 .animate {
     -webkit-animation: animatezoom 0.6s;

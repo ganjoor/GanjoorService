@@ -28,3 +28,9 @@ it needs a downloaded ONNX model and published embeddings data on top of the usu
 covering the actual problems hit building this feature, not a generic checklist — worth reading
 before assuming something new is broken.
 
+## Changelog
+
+The user-facing changelog shown in the site's footer ("تازه‌های نرم‌افزار") is generated and
+maintained from git history. See **[docs/CHANGELOG_PROCESS.md](docs/CHANGELOG_PROCESS.md)** for
+the JSON format and the process for adding new entries.
+
