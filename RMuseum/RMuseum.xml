@@ -3925,6 +3925,16 @@
             People tags
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPersonRelations">
+            <summary>
+            approved kinship edges between people (family tree) - see GanjoorPersonRelation
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPersonAffiliations">
+            <summary>
+            approved non-family ties between people (e.g. minister-to-king) - see GanjoorPersonAffiliation
+            </summary>
+        </member>
         <member name="P:RMuseum.DbContext.RMuseumDbContext.Books">
             <summary>
             Books (PDF Library)
@@ -4746,6 +4756,18 @@
             <inheritdoc />
         </member>
         <member name="M:RMuseum.Migrations.AddPoemGeoSuggestion.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.FamilyTreeModels">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.FamilyTreeModels.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.FamilyTreeModels.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.FamilyTreeModels.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -9119,6 +9141,105 @@
             Prosody and Statistics
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPersonAffiliation">
+            <summary>
+            an approved non-family tie between two people (GanjoorRelatedPerson rows) - e.g. a minister
+            serving a king. Kept separate from GanjoorPersonRelation (kinship) rather than folded into
+            it: this is what lets two unrelated family trees show up as adjacent to each other (e.g.
+            browsing the Barmakid tree surfaces a link out to the Abbasid tree via a shared minister)
+            without treating "family tree" as its own entity to be linked - the tie is between the two
+            people, and the tree-to-tree adjacency is just what falls out of rendering it that way.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliation.Id">
+            <summary>
+            record id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliation.Person1Id">
+            <summary>
+            first person in the tie - for a directional type (Minister, Advisor, Courtier, Patron)
+            this is the one in the subordinate/serving role; for a symmetric one (Ally, Rival) order
+            doesn't matter
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliation.Person1">
+            <summary>
+            first person (navigation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliation.Person2Id">
+            <summary>
+            second person in the tie - for a directional type this is the one being served
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliation.Person2">
+            <summary>
+            second person (navigation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliation.AffiliationType">
+            <summary>
+            the kind of tie between Person1 and Person2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliation.Note">
+            <summary>
+            free-text note (e.g. sourcing/reasoning, or what the tie actually is when AffiliationType is Other)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPersonRelation">
+            <summary>
+            an approved kinship edge between two people (GanjoorRelatedPerson rows) - the live/materialized
+            counterpart of a pending suggestion, which travels as JSON on GanjoorPoemGeoDateTagCorrection's
+            SuggestedPersonGraphJson until it's approved and turned into rows here. The graph as a whole
+            (all rows in this table) is a general kinship graph, not a strict tree - see PersonRelationType.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelation.Id">
+            <summary>
+            record id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelation.Person1Id">
+            <summary>
+            first person in the relation - for a directional relation type (Parent, Ancestor) this is
+            the parent/ancestor side; for a symmetric one (Sibling, Spouse) order doesn't matter
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelation.Person1">
+            <summary>
+            first person (navigation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelation.Person2Id">
+            <summary>
+            second person in the relation - for a directional relation type (Parent, Ancestor) this is
+            the child/descendant side
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelation.Person2">
+            <summary>
+            second person (navigation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelation.RelationType">
+            <summary>
+            the kind of relation between Person1 and Person2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelation.DegreeHint">
+            <summary>
+            for RelationType == Ancestor, an optional known exact degree (e.g. 2 for "grandparent",
+            3 for "great-grandparent") - left null when only the relative order is known, not the
+            exact number of generations in between. Not used for other relation types.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelation.Note">
+            <summary>
+            free-text note (e.g. sourcing/reasoning for this relation)
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoem">
             <summary>
             Ganjoor Poem
@@ -9646,12 +9767,42 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.PersonId">
             <summary>
-            related person id (existing, approved GanjoorRelatedPerson only - no suggestion path for new people yet)
+            related person id - an existing, already approved GanjoorRelatedPerson. Set this OR
+            SuggestedPersonGraphJson below, not both (same pattern as LocationId/Suggested* above).
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.Person">
             <summary>
             related person (navigation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.SuggestedPersonGraphJson">
+            <summary>
+            a brand new, not yet approved person (and optionally that person's relatives/relations,
+            which may themselves be new people) - serialized JSON rather than its own set of
+            correction tables, because a single suggestion can introduce several interlinked new
+            people at once (e.g. "add this person, and their father, and the relation between them")
+            and a new person referencing another not-yet-existing new person has no real id to point
+            at until the whole graph is approved together. Expected shape (local keys are only used
+            to resolve relations within this same submission and never stored beyond approval time):
+            {
+              "person": { "localKey": "p1", "existingPersonId": null, "name": "...", "description": "...",
+                          "wikiUrl": "...", "birthYearInLHijri": null, "deathYearInLHijri": null,
+                          "validBirthDate": false, "validDeathDate": false,
+                          "birthLocationId": null, "deathLocationId": null,
+                          "familyTreeCaption": null },
+              "relatedPeople": [ { "localKey": "p2", "existingPersonId": 42, ... } ],
+              "relations": [ { "kind": "family", "person1": "p1", "person2": "p2", "relationType": "Parent",
+                                "degreeHint": null, "note": "..." },
+                              { "kind": "affiliation", "person1": "p2", "person2": "p3",
+                                "affiliationType": "Minister", "note": "..." } ]
+            }
+            "person" is the node that ends up assigned to PersonId once approved. Only set when
+            PersonId above is null. Each entry in "relations" carries a "kind" discriminator so one
+            submission can suggest both kinship edges (materialized as GanjoorPersonRelation,
+            "relationType" against PersonRelationType) and non-family ties (materialized as
+            GanjoorPersonAffiliation, "affiliationType" against PersonAffiliationType) at once - e.g.
+            introducing a person along with both their father and the king they served.
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.IgnoreInCategory">
@@ -10631,6 +10782,15 @@
             AI generated
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.FamilyTreeCaption">
+            <summary>
+            optional caption for the family tree this person is treated as the root of (e.g.
+            "ساسانیان", "آل برمک") - purely a display label for whoever a tree is being browsed
+            from; nothing enforces that this person actually has no recorded ancestors themselves,
+            and most people will leave this null (only whichever person a tree is "named after"
+            needs one set).
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorSiteBanner">
             <summary>
             ganjoor.net site banner
@@ -11121,6 +11281,83 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorVerseVOrderText.SummaryReviewResult">
             <summary>
             summary review result
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PersonAffiliationType">
+            <summary>
+            the kind of non-family tie a GanjoorPersonAffiliation represents between two people - e.g.
+            a minister serving a king, an advisor, a patron. Unlike PersonRelationType this has nothing
+            to do with kinship; it's what lets two otherwise unrelated family trees show up as adjacent
+            (e.g. "some Barmakids served the Abbasid court") without merging them into one tree. New
+            values can be appended safely later (stored as int) as more cases come up.
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Minister">
+            <summary>
+            Person1 served as minister/vizier to Person2
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Advisor">
+            <summary>
+            Person1 was an advisor/counselor to Person2, without holding a formal ministerial post
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Courtier">
+            <summary>
+            Person1 was a courtier/attendant/servant of Person2 (a catch-all for court-affiliated
+            roles not covered by a more specific type)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Patron">
+            <summary>
+            Person1 was a patron/sponsor of Person2 (e.g. a king patronizing a poet)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Ally">
+            <summary>
+            Person1 and Person2 were allies (symmetric - order doesn't matter)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Rival">
+            <summary>
+            Person1 and Person2 were rivals/enemies (symmetric - order doesn't matter)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Other">
+            <summary>
+            doesn't fit any of the above - rely on Note for what the tie actually is
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PersonRelationType">
+            <summary>
+            the kind of kinship edge a GanjoorPersonRelation represents between two GanjoorRelatedPerson
+            rows. The graph is not a strict tree - siblings can be known without their parents, an
+            ancestor can be known without the exact number of generations in between, etc. - so this is
+            a small, deliberately open set rather than a rigid parent/child-only model.
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonRelationType.Parent">
+            <summary>
+            Person1 is a parent of Person2 (directional - the mirror "child" relation is implied,
+            not stored as a second row)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonRelationType.Sibling">
+            <summary>
+            Person1 and Person2 are siblings (symmetric - order doesn't matter). Doesn't require
+            either parent to be known/recorded.
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonRelationType.Spouse">
+            <summary>
+            Person1 and Person2 are spouses (symmetric - order doesn't matter)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonRelationType.Ancestor">
+            <summary>
+            Person1 is a known ancestor of Person2 (directional) but the exact number of generations
+            between them is not known/recorded - see GanjoorPersonRelation.DegreeHint for the case
+            where the exact degree (e.g. "grandparent") IS known
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PoemGeoDateTag">
