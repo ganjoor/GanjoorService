@@ -719,6 +719,20 @@ namespace RMuseum.Services.Implementation
                                     approvedLocationId = newLocation.Id;
                                 }
 
+                                int? approvedPersonId = dbGeoDateTag.PersonId;
+                                if (approvedPersonId == null && !string.IsNullOrWhiteSpace(dbGeoDateTag.SuggestedPersonGraphJson))
+                                {
+                                    // a brand new person (and possibly their relatives/relations, some of which may
+                                    // also be brand new) - resolve/create everything the JSON describes and use
+                                    // whichever person node it designates as the one actually being tagged here
+                                    var personGraphResult = await _MaterializePersonGraphAsync(dbGeoDateTag.SuggestedPersonGraphJson);
+                                    if (!string.IsNullOrEmpty(personGraphResult.Item2))
+                                    {
+                                        return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, personGraphResult.Item2);
+                                    }
+                                    approvedPersonId = personGraphResult.Item1;
+                                }
+
                                 var newTag = new PoemGeoDateTag()
                                 {
                                     PoemId = dbCorrection.PoemId,
@@ -728,7 +742,7 @@ namespace RMuseum.Services.Implementation
                                     LunarYear = dbGeoDateTag.LunarYear,
                                     LunarMonth = dbGeoDateTag.LunarMonth,
                                     LunarDay = dbGeoDateTag.LunarDay,
-                                    PersonId = dbGeoDateTag.PersonId,
+                                    PersonId = approvedPersonId,
                                     IgnoreInCategory = dbGeoDateTag.IgnoreInCategory,
                                     VerifiedDate = false,
                                     MachineGenerated = false,
@@ -821,6 +835,135 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, exp.ToString());
             }
+        }
+
+        /// <summary>
+        /// materializes a GanjoorPoemGeoDateTagCorrection.SuggestedPersonGraphJson payload: creates
+        /// any brand new person nodes it describes (or reuses an existing one when a node names
+        /// ExistingPersonId), then creates the kinship (GanjoorPersonRelation) and/or non-family
+        /// (GanjoorPersonAffiliation) edges between them. Returns the resolved id of the "person"
+        /// node (the one that ends up assigned to the tag's PersonId), or an error message.
+        /// </summary>
+        /// <param name="json">SuggestedPersonGraphJson value - see its doc comment for the expected shape</param>
+        private async Task<Tuple<int, string>> _MaterializePersonGraphAsync(string json)
+        {
+            PersonGraphSuggestion graph;
+            try
+            {
+                graph = Newtonsoft.Json.JsonConvert.DeserializeObject<PersonGraphSuggestion>(json);
+            }
+            catch (Exception exp)
+            {
+                return new Tuple<int, string>(0, $"برچسب فرد پیشنهادی قابل تفسیر نیست: {exp.Message}");
+            }
+
+            if (graph?.Person == null || string.IsNullOrWhiteSpace(graph.Person.LocalKey))
+            {
+                return new Tuple<int, string>(0, "برچسب فرد پیشنهادی ناقص است.");
+            }
+
+            // first pass: resolve/create every node (the tagged person plus anyone else referenced),
+            // building a localKey -> real database id map for the relations pass below. A node
+            // referencing another not-yet-existing node has no real id to point at until this pass
+            // finishes, which is exactly why this travels as one JSON blob instead of separate rows.
+            var allNodes = new List<PersonGraphNode>() { graph.Person };
+            if (graph.RelatedPeople != null)
+            {
+                allNodes.AddRange(graph.RelatedPeople);
+            }
+
+            var localKeyToPersonId = new Dictionary<string, int>();
+            foreach (var node in allNodes)
+            {
+                if (string.IsNullOrWhiteSpace(node.LocalKey))
+                {
+                    return new Tuple<int, string>(0, "یکی از افراد برچسب پیشنهادی بدون کلید محلی است.");
+                }
+                if (localKeyToPersonId.ContainsKey(node.LocalKey))
+                {
+                    continue; // same local key reused (e.g. Person also listed in RelatedPeople) - already resolved
+                }
+
+                if (node.ExistingPersonId != null)
+                {
+                    var existingPerson = await _context.GanjoorRelatedPersons.Where(p => p.Id == node.ExistingPersonId).AnyAsync();
+                    if (!existingPerson)
+                    {
+                        return new Tuple<int, string>(0, $"فرد موجود با کد {node.ExistingPersonId} پیدا نشد.");
+                    }
+                    localKeyToPersonId[node.LocalKey] = node.ExistingPersonId.Value;
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(node.Name))
+                {
+                    return new Tuple<int, string>(0, "نام یکی از افراد پیشنهادی وارد نشده است.");
+                }
+
+                var newPerson = new GanjoorRelatedPerson()
+                {
+                    Name = node.Name.Trim(),
+                    Description = node.Description,
+                    WikiUrl = node.WikiUrl,
+                    BirthYearInLHijri = node.BirthYearInLHijri,
+                    DeathYearInLHijri = node.DeathYearInLHijri,
+                    ValidBirthDate = node.ValidBirthDate,
+                    ValidDeathDate = node.ValidDeathDate,
+                    BirthLocationId = node.BirthLocationId,
+                    DeathLocationId = node.DeathLocationId,
+                    FamilyTreeCaption = string.IsNullOrWhiteSpace(node.FamilyTreeCaption) ? null : node.FamilyTreeCaption.Trim(),
+                    MachineGenerated = false,
+                };
+                _context.GanjoorRelatedPersons.Add(newPerson);
+                await _context.SaveChangesAsync(); // need its Id below, other nodes/relations may reference it
+                localKeyToPersonId[node.LocalKey] = newPerson.Id;
+            }
+
+            // second pass: now that every node has a real id, create the edges between them
+            if (graph.Relations != null)
+            {
+                foreach (var relation in graph.Relations)
+                {
+                    if (!localKeyToPersonId.TryGetValue(relation.Person1 ?? "", out int person1Id) ||
+                        !localKeyToPersonId.TryGetValue(relation.Person2 ?? "", out int person2Id))
+                    {
+                        return new Tuple<int, string>(0, "یکی از روابط پیشنهادی به فردی خارج از این پیشنهاد اشاره می‌کند.");
+                    }
+
+                    if (string.Equals(relation.Kind, "affiliation", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (!Enum.TryParse<PersonAffiliationType>(relation.AffiliationType, out var affiliationType))
+                        {
+                            return new Tuple<int, string>(0, $"نوع رابطهٔ غیرخویشاوندی «{relation.AffiliationType}» نامعتبر است.");
+                        }
+                        _context.GanjoorPersonAffiliations.Add(new GanjoorPersonAffiliation()
+                        {
+                            Person1Id = person1Id,
+                            Person2Id = person2Id,
+                            AffiliationType = affiliationType,
+                            Note = relation.Note,
+                        });
+                    }
+                    else
+                    {
+                        if (!Enum.TryParse<PersonRelationType>(relation.RelationType, out var relationType))
+                        {
+                            return new Tuple<int, string>(0, $"نوع رابطهٔ خویشاوندی «{relation.RelationType}» نامعتبر است.");
+                        }
+                        _context.GanjoorPersonRelations.Add(new GanjoorPersonRelation()
+                        {
+                            Person1Id = person1Id,
+                            Person2Id = person2Id,
+                            RelationType = relationType,
+                            DegreeHint = relation.DegreeHint,
+                            Note = relation.Note,
+                        });
+                    }
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            return new Tuple<int, string>(localKeyToPersonId[graph.Person.LocalKey], null);
         }
     }
 }
