@@ -1,0 +1,135 @@
+﻿@page "{id:int}"
+@model GanjooRazor.Pages.PersonModel
+@using DNTPersianUtils.Core
+@{
+    Layout = "_Layout";
+}
+@section Head {
+    <meta name="robots" content="noindex, nofollow" />
+}
+@if (!string.IsNullOrEmpty(Model.LastError))
+{
+    @Model.LastError
+}
+else
+{
+    <!-- #hdr2 -->
+
+    <div id="fa">
+
+        <div id="maincnt">
+
+            <partial name="_InlineLoginPartial" model="Model" />
+
+            <div class="spacer">&nbsp;</div>
+
+            <div class="poem">
+                <h1>@Model.Person.Name</h1>
+
+                @if (!string.IsNullOrEmpty(Model.Person.FamilyTreeCaption))
+                {
+                    <p><strong>شجره‌نامه: @Model.Person.FamilyTreeCaption</strong></p>
+                }
+
+                @if (Model.Person.BirthYearInLHijri != 0 || Model.Person.DeathYearInLHijri != 0)
+                {
+                    <p>
+                        @if (Model.Person.BirthYearInLHijri != 0)
+                        {
+                            <text>تولد: @Model.Person.BirthYearInLHijri.ToPersianNumbers() (قمری) @(Model.Person.ValidBirthDate ? "" : "- تخمینی")</text>
+                        }
+                        @if (Model.Person.DeathYearInLHijri != 0)
+                        {
+                            <text> — وفات: @Model.Person.DeathYearInLHijri.ToPersianNumbers() (قمری) @(Model.Person.ValidDeathDate ? "" : "- تخمینی")</text>
+                        }
+                    </p>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Person.Description))
+                {
+                    <p>@Model.Person.Description</p>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Person.WikiUrl))
+                {
+                    <p><a href="@Model.Person.WikiUrl" target="_blank" rel="noopener">صفحهٔ ویکی‌پدیا</a></p>
+                }
+            </div>
+
+            @if (Model.RelationRows.Count > 0)
+            {
+                <div class="spacer">&nbsp;</div>
+                <div class="poem">
+                    <h2>خویشاوندان</h2>
+                    <ul>
+                        @foreach (var row in Model.RelationRows)
+                        {
+                            <li>
+                                @row.Label — <a href="/person/@row.OtherPersonId">@row.OtherPersonName</a>
+                                @if (!string.IsNullOrEmpty(row.Note))
+                                {
+                                    <text> (@row.Note)</text>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            @if (Model.AffiliationRows.Count > 0)
+            {
+                <div class="spacer">&nbsp;</div>
+                <div class="poem">
+                    <h2>وابستگی‌های غیرخویشاوندی</h2>
+                    <ul>
+                        @foreach (var row in Model.AffiliationRows)
+                        {
+                            <li>
+                                @row.SentenceBeforeOtherName<a href="/person/@row.OtherPersonId">@row.OtherPersonName</a>@row.SentenceAfterOtherName
+                                @if (!string.IsNullOrEmpty(row.Note))
+                                {
+                                    <text> (@row.Note)</text>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            @if (Model.Poems != null && Model.Poems.Length > 0)
+            {
+                <div class="spacer">&nbsp;</div>
+                <div class="poem">
+                    <h2>اشعار برچسب‌خورده با این فرد</h2>
+                    <ul>
+                        @foreach (var tag in Model.Poems)
+                        {
+                            if (tag.Poem != null)
+                            {
+                                <li><a href="@tag.Poem.FullUrl">@tag.Poem.FullTitle</a></li>
+                            }
+                        }
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <div class="spacer">&nbsp;</div>
+                <div class="poem">
+                    <p><small>هنوز شعری با این فرد برچسب‌گذاری نشده است.</small></p>
+                </div>
+            }
+
+            <div class="spacer">&nbsp;</div>
+
+        </div>
+
+        <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true}) />
+
+    </div>
+
+    @if (ViewData["TrackingScript"] != null && !string.IsNullOrEmpty(ViewData["TrackingScript"].ToString()))
+    {
+        @Html.Raw(ViewData["TrackingScript"])
+    }
+}

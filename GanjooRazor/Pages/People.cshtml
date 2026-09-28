@@ -1,0 +1,57 @@
+﻿@page
+@model GanjooRazor.Pages.PeopleModel
+@{
+    Layout = "_Layout";
+}
+@section Head {
+    <meta name="robots" content="noindex, nofollow" />
+}
+@if (!string.IsNullOrEmpty(Model.LastError))
+{
+    @Model.LastError
+}
+else
+{
+    <!-- #hdr2 -->
+
+    <div id="fa">
+
+        <div id="maincnt">
+
+            <partial name="_InlineLoginPartial" model="Model" />
+
+            <div class="spacer">&nbsp;</div>
+
+            <div class="poem">
+                <h1>شجره‌نامه‌ها</h1>
+                @if (Model.FamilyTreeRoots == null || Model.FamilyTreeRoots.Count == 0)
+                {
+                    <p><small>هنوز شجره‌نامه‌ای ثبت نشده است.</small></p>
+                }
+                else
+                {
+                    <ul>
+                        @foreach (var root in Model.FamilyTreeRoots)
+                        {
+                            <li>
+                                <a href="/person/@root.Id">@root.FamilyTreeCaption</a>
+                                <small>(@root.Name)</small>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+
+            <div class="spacer">&nbsp;</div>
+
+        </div>
+
+        <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true}) />
+
+    </div>
+
+    @if (ViewData["TrackingScript"] != null && !string.IsNullOrEmpty(ViewData["TrackingScript"].ToString()))
+    {
+        @Html.Raw(ViewData["TrackingScript"])
+    }
+}

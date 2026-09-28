@@ -1,4 +1,5 @@
 using RMuseum.Models.Ganjoor;
+using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System.Threading.Tasks;
 
@@ -23,5 +24,28 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorRelatedPerson>> GetPersonAsync(int id);
+
+        /// <summary>
+        /// get people who caption a family tree (GanjoorRelatedPerson.FamilyTreeCaption not empty) -
+        /// used as the entry points for browsing family trees
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorRelatedPerson[]>> GetFamilyTreeRootsAsync();
+
+        /// <summary>
+        /// get a person along with all their kinship/affiliation edges (resolved with the other
+        /// side's name), for the read-only person/family-tree browsing page
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPersonRelationsViewModel>> GetPersonRelationsAsync(int id);
+
+        /// <summary>
+        /// get the (approved, materialized) poem geo/date tags that name this person, each carrying
+        /// enough of its Poem to link to it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PoemGeoDateTag[]>> GetPoemsByPersonAsync(int id);
     }
 }

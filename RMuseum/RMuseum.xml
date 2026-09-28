@@ -2827,9 +2827,32 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetFamilyTreeRootsAsync">
+            <summary>
+            get people who caption a family tree - the entry points for browsing family trees.
+            Registered before the "{id}" route below (and constrained to int there) so this literal
+            segment isn't swallowed as an id.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetPersonAsync(System.Int32)">
             <summary>
             get person by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetPersonRelationsAsync(System.Int32)">
+            <summary>
+            get a person along with all their kinship/affiliation edges, for the read-only
+            person/family-tree browsing page
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetPoemsByPersonAsync(System.Int32)">
+            <summary>
+            get the poems tagged with this person
             </summary>
             <param name="id"></param>
             <returns></returns>
@@ -12843,6 +12866,95 @@
             FullUrl
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationsViewModel">
+            <summary>
+            a person plus their kinship/affiliation edges, resolved with the other side's name - the
+            read-only counterpart of the pending-suggestion PersonGraphSuggestion (see
+            GanjoorPoemGeoDateTagCorrection.SuggestedPersonGraphJson), served by GET api/people/{id}/relations
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationsViewModel.Person">
+            <summary>
+            the subject person
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationsViewModel.Relations">
+            <summary>
+            kinship edges touching Person (either side)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationsViewModel.Affiliations">
+            <summary>
+            non-family ties touching Person (either side)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo">
+            <summary>
+            one GanjoorPersonRelation row, resolved from Person's point of view
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo.OtherPersonId">
+            <summary>
+            the other person in this relation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo.OtherPersonName">
+            <summary>
+            the other person's name (denormalized here so the client doesn't need a second lookup)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo.RelationType">
+            <summary>
+            the kind of kinship edge
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo.DegreeHint">
+            <summary>
+            see GanjoorPersonRelation.DegreeHint
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo.Note">
+            <summary>
+            free-text note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo.SubjectIsPerson1">
+            <summary>
+            true if the subject person is Person1 in the underlying GanjoorPersonRelation row -
+            needed by the client to render directional types (Parent, Ancestor) correctly
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonAffiliationInfo">
+            <summary>
+            one GanjoorPersonAffiliation row, resolved from Person's point of view - same shape/purpose
+            as GanjoorPersonRelationInfo above, but for a non-family tie
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonAffiliationInfo.OtherPersonId">
+            <summary>
+            the other person in this tie
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonAffiliationInfo.OtherPersonName">
+            <summary>
+            the other person's name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonAffiliationInfo.AffiliationType">
+            <summary>
+            the kind of non-family tie
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonAffiliationInfo.Note">
+            <summary>
+            free-text note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonAffiliationInfo.SubjectIsPerson1">
+            <summary>
+            true if the subject person is Person1 in the underlying GanjoorPersonAffiliation row
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel">
             <summary>
             a more complete GanjoorPoem View Model
@@ -17587,6 +17699,29 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetFamilyTreeRootsAsync">
+            <summary>
+            get people who caption a family tree (GanjoorRelatedPerson.FamilyTreeCaption not empty) -
+            used as the entry points for browsing family trees
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetPersonRelationsAsync(System.Int32)">
+            <summary>
+            get a person along with all their kinship/affiliation edges (resolved with the other
+            side's name), for the read-only person/family-tree browsing page
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetPoemsByPersonAsync(System.Int32)">
+            <summary>
+            get the (approved, materialized) poem geo/date tags that name this person, each carrying
+            enough of its Poem to link to it
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorService">
             <summary>
             Ganjoor Poems Content Privider Service
@@ -21032,6 +21167,26 @@
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetPersonAsync(System.Int32)">
             <summary>
             get person by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetFamilyTreeRootsAsync">
+            <summary>
+            get people who caption a family tree
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetPersonRelationsAsync(System.Int32)">
+            <summary>
+            get a person along with all their kinship/affiliation edges
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetPoemsByPersonAsync(System.Int32)">
+            <summary>
+            get the (approved, materialized) poem geo/date tags that name this person
             </summary>
             <param name="id"></param>
             <returns></returns>
