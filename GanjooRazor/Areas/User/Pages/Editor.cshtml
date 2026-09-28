@@ -116,9 +116,17 @@
 
 
 
-    // ---------- geo/date tag suggestions ----------
-    // staged client-side until the main save; each item matches
-    // GanjoorPoemGeoDateTagCorrection's shape so it can be sent as-is
+    // ---------- geo/date tag AND person (شخصیت) tag suggestions ----------
+    // Both kinds are staged client-side (until the main save) in this ONE combined array, and both
+    // are sent to the server as one flat GanjoorPoemGeoDateTagCorrection[] (pcs.geoDateTags) - that
+    // part of the data model is shared, on purpose (see the doc comment on
+    // GanjoorPoemGeoDateTagCorrection.SuggestedPersonGraphJson). But a geo/date tag and a person tag
+    // mean unrelated things to a reader ("this couplet refers to this place/time" vs "this couplet
+    // refers to this person"), so the UI never mixes them in one row: every staged/loaded item here
+    // carries a client-only "_uiKind" field ('geo' or 'person', added by _getSuggestionUiKind for
+    // anything that doesn't already have it - e.g. a draft loaded from the server) that the two
+    // render functions (renderPendingGeoDateTags / renderPendingPersonTags) filter on, and the two
+    // "add a tag" cards each read/write only their own half of the form.
     var geoDateTagSuggestions = @Html.Raw(Model.MyLastEditGeoDateTagsJson);
     var geoDateTagCoupletTexts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Couplets.ToDictionary(c => c.Item1.ToString(), c => c.Item2)));
     // full existing-location catalog ({id, name, latitude, longitude}[]), used to warn about a
@@ -127,8 +135,28 @@
     // full existing-people catalog ({id, name, birthYearInLHijri, deathYearInLHijri}[]), used both
     // to pick an existing person for a tag and as the "other side" of a new person's relatives
     var allGeoPeople = @Html.Raw(Model.AllPeopleJson);
+    // {id, personId}[] for this poem's already-approved geo/date/person tags - used only to work out
+    // the _uiKind of a "delete this existing tag" suggestion loaded from a saved-but-unsubmitted
+    // draft, which otherwise carries nothing but the id being deleted
+    var allExistingGeoDateTags = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+        (Model.PoemGeoDateTags ?? Array.Empty<RMuseum.Models.Ganjoor.PoemGeoDateTag>()).Select(t => new { id = t.Id, personId = t.PersonId })));
+
+    // Works out whether a staged/loaded suggestion is a geo/date tag or a person (شخصیت) tag, for the
+    // two render functions to filter on. New items always set _uiKind themselves when pushed; this
+    // is only needed for items loaded from Model.MyLastEditGeoDateTagsJson (an unsubmitted draft
+    // from a previous visit), which predate the split and never carry it.
+    function _getSuggestionUiKind(s) {
+        if (s._uiKind) return s._uiKind;
+        if (s.markForDelete) {
+            var existing = allExistingGeoDateTags.filter(function (t) { return t.id === s.existingTagId; })[0];
+            return (existing && existing.personId) ? 'person' : 'geo';
+        }
+        return (s.personId != null || s.suggestedPersonGraphJson) ? 'person' : 'geo';
+    }
+
     $(document).ready(function () {
         renderPendingGeoDateTags();
+        renderPendingPersonTags();
         setupLocationAutocomplete(
             document.getElementById('geotag-location-search'),
             document.getElementById('geotag-location-select'),
@@ -269,16 +297,16 @@
                 '<div class="up-field">' +
                     '<label>جهت رابطه</label>' +
                     '<select id="person-relative-direction-' + idx + '">' +
-                        '<option value="newFirst">این فرد جدید، طرف اول رابطه است (مثلاً پدر/وزیر طرف دوم)</option>' +
-                        '<option value="otherFirst">فرد دیگر، طرف اول رابطه است (مثلاً پدر/وزیر این فرد جدید)</option>' +
+                        '<option value="newFirst">این شخصیت جدید، طرف اول رابطه است (مثلاً پدر/وزیر طرف دوم)</option>' +
+                        '<option value="otherFirst">شخصیت دیگر، طرف اول رابطه است (مثلاً پدر/وزیر این شخصیت جدید)</option>' +
                     '</select>' +
                 '</div>' +
             '</div>' +
             '<div class="up-field-row">' +
                 '<div class="up-field">' +
-                    '<label>فرد دیگر (باید از قبل در فهرست موجود باشد)</label>' +
+                    '<label>شخصیت دیگر (باید از قبل در فهرست موجود باشد)</label>' +
                     '<div class="up-autocomplete-wrap">' +
-                        '<input type="text" id="person-relative-person-search-' + idx + '" autocomplete="off" placeholder="نام فرد را تایپ کنید..." />' +
+                        '<input type="text" id="person-relative-person-search-' + idx + '" autocomplete="off" placeholder="نام شخصیت را تایپ کنید..." />' +
                         '<input type="hidden" id="person-relative-person-id-' + idx + '" />' +
                         '<div id="person-relative-person-results-' + idx + '" class="up-autocomplete-results" style="display:none;"></div>' +
                     '</div>' +
@@ -298,7 +326,7 @@
             allGeoPeople,
             null,
             function (typedText) {
-                upToast('این فرد در فهرست نیست. طرف دیگر یک رابطه باید از قبل تعریف‌شده باشد؛ برای دو فرد تازه، ابتدا این فرم را برای یکی از آن‌ها به‌صورت جدا تکمیل و ثبت کنید.', 'error');
+                upToast('این شخصیت در فهرست نیست. طرف دیگر یک رابطه باید از قبل تعریف‌شده باشد؛ برای دو شخصیت تازه، ابتدا این فرم را برای یکی از آن‌ها به‌صورت جدا تکمیل و ثبت کنید.', 'error');
             }
         );
     }
@@ -456,7 +484,7 @@
     function buildPersonGraphJson() {
         var name = ($('#geotag-new-person-name').val() || '').trim();
         if (name == '') {
-            upToast('لطفاً نام فرد جدید را وارد کنید.', 'error');
+            upToast('لطفاً نام شخصیت جدید را وارد کنید.', 'error');
             return null;
         }
 
@@ -487,7 +515,7 @@
             var idx = rows[r].id.replace('person-relative-row-', '');
             var otherPersonId = $('#person-relative-person-id-' + idx).val();
             if (!otherPersonId) {
-                upToast('برای یکی از روابط افزوده‌شده، فرد دیگر انتخاب نشده است.', 'error');
+                upToast('برای یکی از روابط افزوده‌شده، شخصیت دیگر انتخاب نشده است.', 'error');
                 return null;
             }
             otherPersonId = parseInt(otherPersonId);
@@ -532,30 +560,61 @@
 
     function renderPendingGeoDateTags() {
         var container = document.getElementById('pending-geotag-suggestions');
-        if (geoDateTagSuggestions.length == 0) {
+        var rows = [];
+        for (var i = 0; i < geoDateTagSuggestions.length; i++) {
+            if (_getSuggestionUiKind(geoDateTagSuggestions[i]) === 'geo') rows.push(i);
+        }
+        if (rows.length == 0) {
             container.innerHTML = '';
             return;
         }
-        var html = '<table><tr><th>وضعیت</th><th>بیت</th><th>مکان</th><th>فرد</th><th>سال</th><th>ماه</th><th>روز</th><th>#</th></tr>';
-        for (var i = 0; i < geoDateTagSuggestions.length; i++) {
+        var html = '<table><tr><th>وضعیت</th><th>بیت</th><th>مکان</th><th>سال</th><th>ماه</th><th>روز</th><th>#</th></tr>';
+        for (var r = 0; r < rows.length; r++) {
+            var i = rows[r];
             var s = geoDateTagSuggestions[i];
             var status = s.markForDelete ? '🗑️ درخواست حذف' : '➕ پیشنهاد جدید';
             var coupletText = (s.coupletIndex != null && geoDateTagCoupletTexts[s.coupletIndex]) ? geoDateTagCoupletTexts[s.coupletIndex] : '— کل شعر —';
             var locationText = s.markForDelete ? '' : (s.locationId ? ((allGeoLocations.filter(function (l) { return l.id === s.locationId; })[0] || {}).name || ('مکان #' + s.locationId)) : (s.suggestedLocationName || ''));
+            html += '<tr><td>' + status + '</td><td>' + coupletText + '</td><td>' + locationText + '</td><td>' + (s.lunarYear || '') + '</td><td>' + (s.lunarMonth || '') + '</td><td>' + (s.lunarDay || '') + '</td>' +
+                '<td><a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="removeGeoDateTagSuggestion(' + i + ')">✕ حذف از فهرست</a></td></tr>';
+        }
+        html += '</table>';
+        container.innerHTML = html;
+    }
+
+    // same purpose/shape as renderPendingGeoDateTags above, but for the person(شخصیت) tag section -
+    // kept as a fully separate function (rather than one function with a "kind" switch inside) so
+    // each half of the split UI is easy to read/change on its own
+    function renderPendingPersonTags() {
+        var container = document.getElementById('pending-persontag-suggestions');
+        var rows = [];
+        for (var i = 0; i < geoDateTagSuggestions.length; i++) {
+            if (_getSuggestionUiKind(geoDateTagSuggestions[i]) === 'person') rows.push(i);
+        }
+        if (rows.length == 0) {
+            container.innerHTML = '';
+            return;
+        }
+        var html = '<table><tr><th>وضعیت</th><th>بیت</th><th>شخصیت</th><th>#</th></tr>';
+        for (var r = 0; r < rows.length; r++) {
+            var i = rows[r];
+            var s = geoDateTagSuggestions[i];
+            var status = s.markForDelete ? '🗑️ درخواست حذف' : '➕ پیشنهاد جدید';
+            var coupletText = (s.coupletIndex != null && geoDateTagCoupletTexts[s.coupletIndex]) ? geoDateTagCoupletTexts[s.coupletIndex] : '— کل شعر —';
             var personText = '';
             if (!s.markForDelete) {
                 if (s.personId) {
-                    personText = (allGeoPeople.filter(function (p) { return p.id === s.personId; })[0] || {}).name || ('فرد #' + s.personId);
+                    personText = (allGeoPeople.filter(function (p) { return p.id === s.personId; })[0] || {}).name || ('شخصیت #' + s.personId);
                 } else if (s.suggestedPersonGraphJson) {
                     try {
                         var parsedGraph = JSON.parse(s.suggestedPersonGraphJson);
-                        personText = 'فرد جدید: ' + (parsedGraph.person ? parsedGraph.person.name : '');
+                        personText = 'شخصیت جدید: ' + (parsedGraph.person ? parsedGraph.person.name : '');
                     } catch (e) {
-                        personText = 'فرد جدید';
+                        personText = 'شخصیت جدید';
                     }
                 }
             }
-            html += '<tr><td>' + status + '</td><td>' + coupletText + '</td><td>' + locationText + '</td><td>' + personText + '</td><td>' + (s.lunarYear || '') + '</td><td>' + (s.lunarMonth || '') + '</td><td>' + (s.lunarDay || '') + '</td>' +
+            html += '<tr><td>' + status + '</td><td>' + coupletText + '</td><td>' + personText + '</td>' +
                 '<td><a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="removeGeoDateTagSuggestion(' + i + ')">✕ حذف از فهرست</a></td></tr>';
         }
         html += '</table>';
@@ -572,25 +631,49 @@
         }
     }
 
+    function scrollToPendingPersonTags() {
+        var container = document.getElementById('pending-persontag-suggestions');
+        if (container && container.innerHTML.trim() != '') {
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    // shared by both sections - the two pending suggestions live in one combined array (see the
+    // comment above geoDateTagSuggestions), so removing by index and re-rendering both tables is
+    // simpler and just as cheap as tracking which table a given index belongs to
     function removeGeoDateTagSuggestion(index) {
         geoDateTagSuggestions.splice(index, 1);
         renderPendingGeoDateTags();
+        renderPendingPersonTags();
     }
 
     function requestDeleteExistingGeoDateTag(existingTagId, el) {
         geoDateTagSuggestions.push({
             markForDelete: true,
-            existingTagId: existingTagId
+            existingTagId: existingTagId,
+            _uiKind: 'geo'
         });
         $(el).closest('tr').hide();
         renderPendingGeoDateTags();
         scrollToPendingGeoDateTags();
     }
 
-    // Reads the "add a new tag" form. Returns a tag object if it has
-    // meaningful content, or null if the form is empty (with an optional
-    // error toast for the case where the user explicitly asked to add an
-    // empty entry vs. silently having nothing to pick up on save).
+    // person-tag counterpart of requestDeleteExistingGeoDateTag above
+    function requestDeleteExistingPersonTag(existingTagId, el) {
+        geoDateTagSuggestions.push({
+            markForDelete: true,
+            existingTagId: existingTagId,
+            _uiKind: 'person'
+        });
+        $(el).closest('tr').hide();
+        renderPendingPersonTags();
+        scrollToPendingPersonTags();
+    }
+
+    // Reads the "add a new geo/date tag" form (location + date only - see readPersonTagFromForm
+    // below for the separate شخصیت form). Returns a tag object if it has meaningful content, or
+    // null if the form is empty (with an optional error toast for the case where the user
+    // explicitly asked to add an empty entry vs. silently having nothing to pick up on save).
     function readGeoDateTagFromForm(showErrorIfEmpty) {
         var coupletIndex = $('#geotag-couplet-select').val();
         var locationId = $('#geotag-location-select').val();
@@ -600,16 +683,13 @@
         var year = $('#geotag-year').val();
         var month = $('#geotag-month').val();
         var day = $('#geotag-day').val();
-        var personId = $('#geotag-person-select').val();
-        var newPersonName = $('#geotag-new-person-name').val();
 
         var hasLocation = (locationId && locationId != '') || (newLocationName && newLocationLat && newLocationLng);
         var hasDate = year && year != '';
-        var hasPerson = (personId && personId != '') || (newPersonName && newPersonName.trim() != '');
 
-        if (!hasLocation && !hasDate && !hasPerson) {
+        if (!hasLocation && !hasDate) {
             if (showErrorIfEmpty) {
-                upToast('لطفاً حداقل یک مکان، تاریخ یا فرد وارد کنید.', 'error');
+                upToast('لطفاً حداقل یک مکان یا تاریخ وارد کنید.', 'error');
             }
             return null;
         }
@@ -625,6 +705,41 @@
             }
         }
 
+        return {
+            markForDelete: false,
+            coupletIndex: (coupletIndex && coupletIndex != '') ? parseInt(coupletIndex) : null,
+            locationId: (locationId && locationId != '') ? parseInt(locationId) : null,
+            suggestedLocationName: (!locationId || locationId == '') ? (newLocationName || null) : null,
+            suggestedLatitude: (!locationId || locationId == '') && newLocationLat ? parseFloat(newLocationLat) : null,
+            suggestedLongitude: (!locationId || locationId == '') && newLocationLng ? parseFloat(newLocationLng) : null,
+            lunarYear: year ? parseInt(year) : null,
+            lunarMonth: month ? parseInt(month) : null,
+            lunarDay: day ? parseInt(day) : null,
+            personId: null,
+            suggestedPersonGraphJson: null,
+            ignoreInCategory: $('#geotag-ignore-in-category').is(':checked'),
+            suggestionNote: $('#geotag-note').val() || null,
+            _uiKind: 'geo'
+        };
+    }
+
+    // شخصیت-tag counterpart of readGeoDateTagFromForm above - deliberately never sets
+    // locationId/suggestedLocationName/lunarYear/etc., so a person tag can never end up mixed with
+    // a geo/date tag in one row (see the comment above geoDateTagSuggestions for why that matters)
+    function readPersonTagFromForm(showErrorIfEmpty) {
+        var coupletIndex = $('#persontag-couplet-select').val();
+        var personId = $('#geotag-person-select').val();
+        var newPersonName = $('#geotag-new-person-name').val();
+
+        var hasPerson = (personId && personId != '') || (newPersonName && newPersonName.trim() != '');
+
+        if (!hasPerson) {
+            if (showErrorIfEmpty) {
+                upToast('لطفاً یک شخصیت موجود را انتخاب کنید یا شخصیت جدیدی تعریف کنید.', 'error');
+            }
+            return null;
+        }
+
         var suggestedPersonGraphJson = null;
         if ((!personId || personId == '') && newPersonName && newPersonName.trim() != '') {
             suggestedPersonGraphJson = buildPersonGraphJson();
@@ -636,17 +751,18 @@
         return {
             markForDelete: false,
             coupletIndex: (coupletIndex && coupletIndex != '') ? parseInt(coupletIndex) : null,
-            locationId: (locationId && locationId != '') ? parseInt(locationId) : null,
-            suggestedLocationName: (!locationId || locationId == '') ? (newLocationName || null) : null,
-            suggestedLatitude: (!locationId || locationId == '') && newLocationLat ? parseFloat(newLocationLat) : null,
-            suggestedLongitude: (!locationId || locationId == '') && newLocationLng ? parseFloat(newLocationLng) : null,
-            lunarYear: year ? parseInt(year) : null,
-            lunarMonth: month ? parseInt(month) : null,
-            lunarDay: day ? parseInt(day) : null,
+            locationId: null,
+            suggestedLocationName: null,
+            suggestedLatitude: null,
+            suggestedLongitude: null,
+            lunarYear: null,
+            lunarMonth: null,
+            lunarDay: null,
             personId: (personId && personId != '') ? parseInt(personId) : null,
             suggestedPersonGraphJson: suggestedPersonGraphJson,
-            ignoreInCategory: $('#geotag-ignore-in-category').is(':checked'),
-            suggestionNote: $('#geotag-note').val() || null
+            ignoreInCategory: false, // category-map aggregation is a geo/date-tag concept only
+            suggestionNote: $('#persontag-note').val() || null,
+            _uiKind: 'person'
         };
     }
 
@@ -661,6 +777,17 @@
         $('#geotag-year').val('');
         $('#geotag-month').val('');
         $('#geotag-day').val('');
+        $('#geotag-ignore-in-category').prop('checked', false);
+        $('#geotag-note').val('');
+        if (geoDateTagMarker != null && geoDateTagMap != null) {
+            geoDateTagMap.removeLayer(geoDateTagMarker);
+            geoDateTagMarker = null;
+        }
+    }
+
+    // شخصیت-tag counterpart of resetGeoDateTagForm above
+    function resetPersonTagForm() {
+        $('#persontag-couplet-select').val('');
         $('#geotag-person-select').val('');
         $('#geotag-person-search').val('');
         $('#geotag-person-results').hide().empty();
@@ -682,12 +809,7 @@
         if (document.getElementById('new-person-widget').style.display !== 'none') {
             toggleNewPersonWidget();
         }
-        $('#geotag-ignore-in-category').prop('checked', false);
-        $('#geotag-note').val('');
-        if (geoDateTagMarker != null && geoDateTagMap != null) {
-            geoDateTagMap.removeLayer(geoDateTagMarker);
-            geoDateTagMarker = null;
-        }
+        $('#persontag-note').val('');
     }
 
     async function addGeoDateTagSuggestion() {
@@ -702,6 +824,20 @@
 
         renderPendingGeoDateTags();
         scrollToPendingGeoDateTags();
+        upToast('به فهرست پیشنهادها افزوده شد. برای ثبت نهایی، دکمهٔ «ذخیره» را بزنید.');
+    }
+
+    // شخصیت-tag counterpart of addGeoDateTagSuggestion above - no location-duplicate confirmation
+    // needed here, that's a geo-tag-only concern
+    function addPersonTagSuggestion() {
+        var tag = readPersonTagFromForm(true);
+        if (tag == null) return;
+
+        geoDateTagSuggestions.push(tag);
+        resetPersonTagForm();
+
+        renderPendingPersonTags();
+        scrollToPendingPersonTags();
         upToast('به فهرست پیشنهادها افزوده شد. برای ثبت نهایی، دکمهٔ «ذخیره» را بزنید.');
     }
 
@@ -762,9 +898,9 @@
             section_format = null;
         }
 
-        // pick up anything still sitting in the "add a new tag" form that the
-        // user didn't explicitly click "add to list" for - the explicit add
-        // button is only needed to stage more than one tag before saving
+        // pick up anything still sitting in either "add a new tag" form (geo/date, and شخصیت) that
+        // the user didn't explicitly click "add to list" for - the explicit add button is only
+        // needed to stage more than one tag of the same kind before saving
         var unstagedGeoDateTag = readGeoDateTagFromForm(false);
         if (unstagedGeoDateTag != null) {
             var proceedWithUnstaged = await _confirmNewLocationSuggestion(unstagedGeoDateTag);
@@ -777,6 +913,14 @@
             resetGeoDateTagForm();
             renderPendingGeoDateTags();
             scrollToPendingGeoDateTags();
+        }
+
+        var unstagedPersonTag = readPersonTagFromForm(false);
+        if (unstagedPersonTag != null) {
+            geoDateTagSuggestions.push(unstagedPersonTag);
+            resetPersonTagForm();
+            renderPendingPersonTags();
+            scrollToPendingPersonTags();
         }
 
         if (verseOrderText.length == 0 && verseOrderSummaries.length == 0 && geoDateTagSuggestions.length == 0) {
@@ -1541,6 +1685,7 @@ else
         }
         <a role="button" href="#summaries" class="up-btn up-btn--sm up-btn--ghost">💬 بخش معنی</a>
         <a role="button" href="#geo-date-section" class="up-btn up-btn--sm up-btn--ghost">🗺️ بخش زمان و مکان</a>
+        <a role="button" href="#person-tag-section" class="up-btn up-btn--sm up-btn--ghost">🧑‍🎓 بخش شخصیت‌ها</a>
         <a role="button" href="#footer" class="up-btn up-btn--sm up-btn--ghost">⬇ پایین صفحه</a>
     </div>
 
@@ -2227,7 +2372,7 @@ else
         <h2 class="up-card__title">🗺️ برچسب‌های زمان و مکان (پیشنهادی)</h2>
         <p class="up-hint">می‌توانید پیشنهاد دهید که این شعر به مکان یا تاریخ خاصی اشاره دارد. پیشنهادهای شما پس از بررسی ناظران اعمال خواهد شد. با دکمهٔ «ذخیره» بالا همراه با بقیهٔ تغییرات ثبت می‌شود.</p>
 
-        @if (Model.PoemGeoDateTags != null && Model.PoemGeoDateTags.Any())
+        @if (Model.PoemGeoDateTags != null && Model.PoemGeoDateTags.Any(t => t.PersonId == null))
         {
             <table>
                 <tr>
@@ -2238,7 +2383,8 @@ else
                     <th>روز</th>
                     <th>#</th>
                 </tr>
-                @foreach (var tag in Model.PoemGeoDateTags)
+                @* شخصیت tags are shown in their own section below, not mixed in with geo/date tags here - see #person-tag-section *@
+                @foreach (var tag in Model.PoemGeoDateTags.Where(t => t.PersonId == null))
                 {
                     <tr id="existing-geotag-@tag.Id">
                         <td>@(Model.Couplets.Where(c => c.Item1 == tag.CoupletIndex).Select(c => c.Item2).FirstOrDefault() ?? "— کل شعر —")</td>
@@ -2390,15 +2536,72 @@ else
             </div>
         </div>
 
+        <div class="up-check-row">
+            <input type="checkbox" id="geotag-ignore-in-category" />
+            <label for="geotag-ignore-in-category">در نقشهٔ کلی مجموعه نادیده گرفته شود (مثلاً مکانی که فقط برای مقایسه ذکر شده)</label>
+        </div>
+
         <div class="up-field">
-            <label for="geotag-person-search">فرد</label>
+            <label for="geotag-note">دلیل این برچسب (اختیاری، به‌ویژه برای اشاره‌های غیرمستقیم مثل ابجد یا تلمیح به رویدادی شناخته‌شده)</label>
+            <textarea id="geotag-note" rows="2"></textarea>
+        </div>
+
+        <a role="button" class="up-btn up-btn--ghost" onclick="addGeoDateTagSuggestion()">➕ افزودن به فهرست پیشنهادها</a>
+    </div>
+
+    @* شخصیت (person) tags use the same GanjoorPoemGeoDateTagCorrection structure as the geo/date
+       tags above (see the JS comment above geoDateTagSuggestions), but a couplet referring to a
+       place/time and a couplet referring to a person are unrelated claims, so this is its own card
+       with its own "existing tags" table, its own pending list, and its own add button - a
+       suggestion coming out of this card never carries a location or a date. *@
+    <div class="up-card" id="person-tag-section">
+        <h2 class="up-card__title">🧑‍🎓 برچسب‌های شخصیت (پیشنهادی)</h2>
+        <p class="up-hint">می‌توانید پیشنهاد دهید که این شعر به یک شخصیت (تاریخی یا داستانی) اشاره دارد. پیشنهادهای شما پس از بررسی ناظران اعمال خواهد شد. با دکمهٔ «ذخیره» بالا همراه با بقیهٔ تغییرات ثبت می‌شود.</p>
+
+        @if (Model.PoemGeoDateTags != null && Model.PoemGeoDateTags.Any(t => t.PersonId != null))
+        {
+            <table>
+                <tr>
+                    <th>بیت</th>
+                    <th>شخصیت</th>
+                    <th>#</th>
+                </tr>
+                @foreach (var tag in Model.PoemGeoDateTags.Where(t => t.PersonId != null))
+                {
+                    <tr id="existing-geotag-@tag.Id">
+                        <td>@(Model.Couplets.Where(c => c.Item1 == tag.CoupletIndex).Select(c => c.Item2).FirstOrDefault() ?? "— کل شعر —")</td>
+                        <td>@(tag.Person != null ? tag.Person.Name : $"شخصیت #{tag.PersonId}")</td>
+                        <td>
+                            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="requestDeleteExistingPersonTag(@tag.Id, this)">🗑️ درخواست حذف</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+
+        <div id="pending-persontag-suggestions"></div>
+
+        <div class="up-field">
+            <label for="persontag-couplet-select">بیت</label>
+            <select id="persontag-couplet-select">
+                <option value="">— کل شعر —</option>
+                @foreach (var couplet in Model.Couplets)
+                {
+                    <option value="@couplet.Item1">@($"{(couplet.Item1 + 1).ToPersianNumbers()} - {couplet.Item2}")</option>
+                }
+            </select>
+            <p class="up-hint">اگر این برچسب به یک بیت مشخص اشاره دارد، آن را انتخاب کنید تا دیگران بتوانند شاهد آن را در متن پیدا کنند.</p>
+        </div>
+
+        <div class="up-field">
+            <label for="geotag-person-search">شخصیت</label>
             <div class="up-autocomplete-wrap">
-                <input type="text" id="geotag-person-search" autocomplete="off" placeholder="نام فرد را تایپ کنید..." />
+                <input type="text" id="geotag-person-search" autocomplete="off" placeholder="نام شخصیت را تایپ کنید..." />
                 <input type="hidden" id="geotag-person-select" />
                 <div id="geotag-person-results" class="up-autocomplete-results" style="display:none;"></div>
             </div>
-            <p class="up-hint">شروع به تایپ کنید تا فهرست افراد بر اساس نام فیلتر شود؛ اگر فرد مورد نظر پیدا نشد، گزینهٔ تعریف او به‌عنوان فرد جدید نمایش داده می‌شود.</p>
-            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="toggleNewPersonWidget()">👤 فرد جدید پیشنهاد بده</a>
+            <p class="up-hint">شروع به تایپ کنید تا فهرست شخصیت‌ها بر اساس نام فیلتر شود؛ اگر شخصیت مورد نظر پیدا نشد، گزینهٔ تعریف او به‌عنوان شخصیت جدید نمایش داده می‌شود.</p>
+            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="toggleNewPersonWidget()">👤 شخصیت جدید پیشنهاد بده</a>
         </div>
 
         <div id="new-person-widget" style="display:none;">
@@ -2445,29 +2648,24 @@ else
                 </div>
             </div>
             <div class="up-field">
-                <label for="geotag-new-person-familytreecaption">عنوان شجره‌نامه (اختیاری، فقط اگر این فرد ریشهٔ یک خانواده/سلسله شناخته‌شده است - مثلاً «ساسانیان»)</label>
+                <label for="geotag-new-person-familytreecaption">عنوان شجره‌نامه (اختیاری، فقط اگر این شخصیت ریشهٔ یک خانواده/سلسله شناخته‌شده است - مثلاً «ساسانیان»)</label>
                 <input type="text" id="geotag-new-person-familytreecaption" />
             </div>
 
             <p class="up-hint">
-                اگر خویشاوندی یا وابستگی این فرد با فردی دیگر را می‌دانید، می‌توانید همین‌جا اضافه کنید (فرد دیگر باید از قبل در فهرست موجود باشد؛
-                برای فردی که او هم تازه است، ابتدا این فرم را برای او هم به‌صورت جدا تکمیل و ثبت کنید، سپس این رابطه را اضافه کنید).
+                اگر خویشاوندی یا وابستگی این شخصیت با شخصیتی دیگر را می‌دانید، می‌توانید همین‌جا اضافه کنید (شخصیت دیگر باید از قبل در فهرست موجود باشد؛
+                برای شخصیتی که او هم تازه است، ابتدا این فرم را برای او هم به‌صورت جدا تکمیل و ثبت کنید، سپس این رابطه را اضافه کنید).
             </p>
             <div id="geotag-person-relatives-list"></div>
             <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="addPersonRelativeRow()">➕ افزودن خویشاوند یا وابستگی</a>
         </div>
 
-        <div class="up-check-row">
-            <input type="checkbox" id="geotag-ignore-in-category" />
-            <label for="geotag-ignore-in-category">در نقشهٔ کلی مجموعه نادیده گرفته شود (مثلاً مکانی که فقط برای مقایسه ذکر شده)</label>
-        </div>
-
         <div class="up-field">
-            <label for="geotag-note">دلیل این برچسب (اختیاری، به‌ویژه برای اشاره‌های غیرمستقیم مثل ابجد یا تلمیح به رویدادی شناخته‌شده)</label>
-            <textarea id="geotag-note" rows="2"></textarea>
+            <label for="persontag-note">دلیل این برچسب (اختیاری، به‌ویژه برای اشاره‌های غیرمستقیم به این شخصیت)</label>
+            <textarea id="persontag-note" rows="2"></textarea>
         </div>
 
-        <a role="button" class="up-btn up-btn--ghost" onclick="addGeoDateTagSuggestion()">➕ افزودن به فهرست پیشنهادها</a>
+        <a role="button" class="up-btn up-btn--ghost" onclick="addPersonTagSuggestion()">➕ افزودن به فهرست پیشنهادها</a>
     </div>
 
     <div class="up-card">

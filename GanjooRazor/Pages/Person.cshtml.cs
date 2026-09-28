@@ -113,7 +113,7 @@ namespace GanjooRazor.Pages
             Person = JsonConvert.DeserializeObject<GanjoorRelatedPerson>(await personResponse.Content.ReadAsStringAsync());
             if (Person == null)
             {
-                LastError = "فردی با این کد پیدا نشد.";
+                LastError = "شخصیتی با این کد پیدا نشد.";
                 return Page();
             }
 
@@ -144,8 +144,8 @@ namespace GanjooRazor.Pages
                 bool subjectServes = a.SubjectIsPerson1 || IsSymmetricAffiliation(a.AffiliationType);
                 AffiliationRows.Add(new PersonAffiliationDisplayRow()
                 {
-                    SentenceBeforeOtherName = subjectServes ? $"این فرد {roleWord} " : "",
-                    SentenceAfterOtherName = subjectServes ? " بود" : $" {roleWord} این فرد بود",
+                    SentenceBeforeOtherName = subjectServes ? $"این شخصیت {roleWord} " : "",
+                    SentenceAfterOtherName = subjectServes ? " بود" : $" {roleWord} این شخصیت بود",
                     OtherPersonId = a.OtherPersonId,
                     OtherPersonName = a.OtherPersonName,
                     Note = a.Note,

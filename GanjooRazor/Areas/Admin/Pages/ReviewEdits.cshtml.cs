@@ -511,7 +511,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                                             }
                                             catch (Exception)
                                             {
-                                                return new BadRequestObjectResult("برچسب فرد پیشنهادی قابل تفسیر نیست.");
+                                                return new BadRequestObjectResult("برچسب شخصیت پیشنهادی قابل تفسیر نیست.");
                                             }
                                         }
                                     }

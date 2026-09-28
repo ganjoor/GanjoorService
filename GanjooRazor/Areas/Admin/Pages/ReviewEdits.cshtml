@@ -941,11 +941,11 @@ else
                                 }
                                 @if (geoTag.PersonId != null)
                                 {
-                                    <text> - فرد: @(geoTag.Person != null ? geoTag.Person.Name : $"فرد #{geoTag.PersonId}")</text>
+                                    <text> - شخصیت: @(geoTag.Person != null ? geoTag.Person.Name : $"شخصیت #{geoTag.PersonId}")</text>
                                 }
                                 else if (personGraph?.Person != null)
                                 {
-                                    <text> - فرد جدید: @personGraph.Person.Name</text>
+                                    <text> - شخصیت جدید: @personGraph.Person.Name</text>
                                     if (personGraph.Relations != null && personGraph.Relations.Count > 0)
                                     {
                                         <text> (@personGraph.Relations.Count.ToPersianNumbers() رابطهٔ همراه)</text>
@@ -1031,17 +1031,17 @@ else
                         <tr>
                             <td colspan="2">
                                 <p class="up-hint">
-                                    اگر کاربر فرد را اشتباه تشخیص داده (مثلاً فردی که از قبل در فهرست است را به‌عنوان فرد جدید پیشنهاد کرده)، به‌جای رد کردن می‌توانید آن را به فرد موجود متصل کنید؛
-                                    برای فرد تازه فقط نام قابل اصلاح است - اصلاح روابط/تاریخ‌ها نیازمند رد کردن و ارسال دوبارهٔ پیشنهاد توسط کاربر است:
+                                    اگر کاربر شخصیت را اشتباه تشخیص داده (مثلاً شخصیتی که از قبل در فهرست است را به‌عنوان شخصیت جدید پیشنهاد کرده)، به‌جای رد کردن می‌توانید آن را به شخصیت موجود متصل کنید؛
+                                    برای شخصیت تازه فقط نام قابل اصلاح است - اصلاح روابط/تاریخ‌ها نیازمند رد کردن و ارسال دوبارهٔ پیشنهاد توسط کاربر است:
                                 </p>
-                                <label for="geotag@(geoIndex)_person_search">اتصال به فرد موجود در فهرست (در صورت وجود اشتباه در تشخیص فرد):</label>
+                                <label for="geotag@(geoIndex)_person_search">اتصال به شخصیت موجود در فهرست (در صورت وجود اشتباه در تشخیص شخصیت):</label>
                                 <div class="up-autocomplete-wrap">
-                                    <input type="text" id="geotag@(geoIndex)_person_search" autocomplete="off" placeholder="نام فرد را تایپ کنید..."
+                                    <input type="text" id="geotag@(geoIndex)_person_search" autocomplete="off" placeholder="نام شخصیت را تایپ کنید..."
                                            value="@(geoTag.PersonId != null ? (Model.People ?? new List<GanjoorRelatedPerson>()).Where(p => p.Id == geoTag.PersonId).Select(p => p.Name).FirstOrDefault() : null)" />
                                     <input type="hidden" id="geotag@(geoIndex)_person_select" name="geotag@(geoIndex)_person_select" value="@(geoTag.PersonId ?? 0)" />
                                     <div id="geotag@(geoIndex)_person_results" class="up-autocomplete-results" style="display:none;"></div>
                                 </div>
-                                <p class="up-hint">برای اتصال به یک فرد موجود، نام او را تایپ کنید و از فهرست انتخاب کنید؛ برای رها کردن اتصال و پیشنهاد به‌عنوان فرد جدید، این فیلد را خالی کنید.</p>
+                                <p class="up-hint">برای اتصال به یک شخصیت موجود، نام او را تایپ کنید و از فهرست انتخاب کنید؛ برای رها کردن اتصال و پیشنهاد به‌عنوان شخصیت جدید، این فیلد را خالی کنید.</p>
                                 <script>
                                     setupPersonAutocomplete(
                                         document.getElementById('geotag@(geoIndex)_person_search'),
@@ -1056,7 +1056,7 @@ else
                                 {
                                     <div id="geotag@(geoIndex)_new_person_fields">
                                         <br>
-                                        <label for="geotag@(geoIndex)_person_name">نام اصلاح‌شدهٔ فرد:</label>
+                                        <label for="geotag@(geoIndex)_person_name">نام اصلاح‌شدهٔ شخصیت:</label>
                                         <input type="text" id="geotag@(geoIndex)_person_name" name="geotag@(geoIndex)_person_name" size="30" />
                                     </div>
                                 }

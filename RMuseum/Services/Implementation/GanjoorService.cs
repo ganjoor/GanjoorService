@@ -2132,7 +2132,7 @@ namespace RMuseum.Services.Implementation
                         bool hasPerson = geoDateTag.PersonId != null || !string.IsNullOrWhiteSpace(geoDateTag.SuggestedPersonGraphJson);
                         if (!hasLocation && !hasDate && !hasPerson)
                         {
-                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "برچسب جغرافیایی/تاریخی/فردی باید حداقل شامل مکان، تاریخ یا فرد باشد.");
+                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "برچسب جغرافیایی/تاریخی/شخصیتی باید حداقل شامل مکان، تاریخ یا شخصیت باشد.");
                         }
 
                         if (geoDateTag.LocationId == null && !string.IsNullOrWhiteSpace(geoDateTag.SuggestedLocationName)

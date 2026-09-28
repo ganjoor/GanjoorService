@@ -2640,7 +2640,7 @@ function setupPersonAutocomplete(searchInput, hiddenInput, resultsBox, people, o
         if (matches.length == 0) {
             var emptyRow = document.createElement('div');
             emptyRow.className = 'up-autocomplete-item up-autocomplete-item--empty';
-            emptyRow.textContent = '➕ «' + typedText + '» در فهرست پیدا نشد؛ به‌عنوان فرد جدید تعریف شود';
+            emptyRow.textContent = '➕ «' + typedText + '» در فهرست پیدا نشد؛ به‌عنوان شخصیت جدید تعریف شود';
             emptyRow.addEventListener('click', function () {
                 hide();
                 if (onNotFound) onNotFound(typedText);

@@ -854,12 +854,12 @@ namespace RMuseum.Services.Implementation
             }
             catch (Exception exp)
             {
-                return new Tuple<int, string>(0, $"برچسب فرد پیشنهادی قابل تفسیر نیست: {exp.Message}");
+                return new Tuple<int, string>(0, $"برچسب شخصیت پیشنهادی قابل تفسیر نیست: {exp.Message}");
             }
 
             if (graph?.Person == null || string.IsNullOrWhiteSpace(graph.Person.LocalKey))
             {
-                return new Tuple<int, string>(0, "برچسب فرد پیشنهادی ناقص است.");
+                return new Tuple<int, string>(0, "برچسب شخصیت پیشنهادی ناقص است.");
             }
 
             // first pass: resolve/create every node (the tagged person plus anyone else referenced),
@@ -889,7 +889,7 @@ namespace RMuseum.Services.Implementation
                     var existingPerson = await _context.GanjoorRelatedPersons.Where(p => p.Id == node.ExistingPersonId).AnyAsync();
                     if (!existingPerson)
                     {
-                        return new Tuple<int, string>(0, $"فرد موجود با کد {node.ExistingPersonId} پیدا نشد.");
+                        return new Tuple<int, string>(0, $"شخصیت موجود با کد {node.ExistingPersonId} پیدا نشد.");
                     }
                     localKeyToPersonId[node.LocalKey] = node.ExistingPersonId.Value;
                     continue;
@@ -927,7 +927,7 @@ namespace RMuseum.Services.Implementation
                     if (!localKeyToPersonId.TryGetValue(relation.Person1 ?? "", out int person1Id) ||
                         !localKeyToPersonId.TryGetValue(relation.Person2 ?? "", out int person2Id))
                     {
-                        return new Tuple<int, string>(0, "یکی از روابط پیشنهادی به فردی خارج از این پیشنهاد اشاره می‌کند.");
+                        return new Tuple<int, string>(0, "یکی از روابط پیشنهادی به شخصیتی خارج از این پیشنهاد اشاره می‌کند.");
                     }
 
                     if (string.Equals(relation.Kind, "affiliation", StringComparison.OrdinalIgnoreCase))

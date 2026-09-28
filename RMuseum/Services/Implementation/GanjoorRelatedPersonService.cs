@@ -91,7 +91,7 @@ namespace RMuseum.Services.Implementation
                 var person = await _context.GanjoorRelatedPersons.Where(p => p.Id == id).SingleOrDefaultAsync();
                 if (person == null)
                 {
-                    return new RServiceResult<GanjoorPersonRelationsViewModel>(null, "فرد پیدا نشد.");
+                    return new RServiceResult<GanjoorPersonRelationsViewModel>(null, "شخصیت پیدا نشد.");
                 }
 
                 var relationRows = await _context.GanjoorPersonRelations
