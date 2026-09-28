@@ -856,9 +856,10 @@ else
             {
                 var geoTag = Model.Correction.GeoDateTags[gi];
                 var geoIndex = gi + 1;
+                var isPersonTag = geoTag.PersonId != null || !string.IsNullOrEmpty(geoTag.SuggestedPersonGraphJson);
                 <tr>
                     <td colspan="2">
-                        برچسب جغرافیایی/تاریخی
+                        @(isPersonTag ? "برچسب شخصیت" : "برچسب جغرافیایی/تاریخی")
                         @{
                             var geoCouplet = geoTag.CoupletIndex == null ? null : (Model.Couplets ?? Array.Empty<Tuple<int, string>>()).Where(c => c.Item1 == geoTag.CoupletIndex).Select(c => c.Item2).FirstOrDefault();
                         }
@@ -889,10 +890,133 @@ else
                                 درخواست حذف برچسب:
                                 @if (existingTag != null)
                                 {
-                                    @(existingTag.Location != null ? existingTag.Location.Name : "")
-                                    @(existingTag.LunarYear != null ? $" - سال {existingTag.LunarYear}" : "")
+                                    @if (isPersonTag)
+                                    {
+                                        @(existingTag.Person != null ? existingTag.Person.Name : "")
+                                    }
+                                    else
+                                    {
+                                        @(existingTag.Location != null ? existingTag.Location.Name : "")
+                                        @(existingTag.LunarYear != null ? $" - سال {existingTag.LunarYear}" : "")
+                                    }
                                 }
                             </p>
+                        </td>
+                    </tr>
+                }
+                else if (isPersonTag)
+                {
+                    RMuseum.Models.Ganjoor.ViewModels.PersonGraphSuggestion personGraph = null;
+                    string personGraphError = null;
+                    if (geoTag.PersonId == null && !string.IsNullOrEmpty(geoTag.SuggestedPersonGraphJson))
+                    {
+                        try
+                        {
+                            personGraph = Newtonsoft.Json.JsonConvert.DeserializeObject<RMuseum.Models.Ganjoor.ViewModels.PersonGraphSuggestion>(geoTag.SuggestedPersonGraphJson);
+                        }
+                        catch (Exception ex)
+                        {
+                            personGraphError = ex.Message;
+                        }
+                    }
+                    <tr>
+                        <td>متن اولیه</td>
+                        <td>پیشنهاد</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="red-color">-</p>
+                        </td>
+                        <td>
+                            <p class="green-color">
+                                @if (geoTag.PersonId != null)
+                                {
+                                    <text>شخصیت: @(geoTag.Person != null ? geoTag.Person.Name : $"شخصیت #{geoTag.PersonId}")</text>
+                                }
+                                else if (personGraph?.Person != null)
+                                {
+                                    <text>شخصیت جدید: @personGraph.Person.Name</text>
+                                    if (personGraph.Relations != null && personGraph.Relations.Count > 0)
+                                    {
+                                        <text> (@personGraph.Relations.Count.ToPersianNumbers() رابطهٔ همراه)</text>
+                                    }
+                                }
+                                else if (personGraphError != null)
+                                {
+                                    <span class="red-color">خطا در تفسیر اطلاعات شخصیت پیشنهادی: @personGraphError</span>
+                                }
+                            </p>
+                            @if (!string.IsNullOrEmpty(geoTag.SuggestionNote))
+                            {
+                                <p><small>یادداشت پیشنهاد دهنده: @geoTag.SuggestionNote</small></p>
+                            }
+                            @if (personGraph?.Person != null)
+                            {
+                                <div class="up-hint">
+                                    <p>
+                                        <small>
+                                            @if (!string.IsNullOrEmpty(personGraph.Person.Description)) { <text>توضیحات: @personGraph.Person.Description<br /></text> }
+                                            @if (personGraph.Person.BirthYearInLHijri != null) { <text>تولد: @personGraph.Person.BirthYearInLHijri @(personGraph.Person.ValidBirthDate ? "(قطعی)" : "(تخمینی)")<br /></text> }
+                                            @if (personGraph.Person.DeathYearInLHijri != null) { <text>وفات: @personGraph.Person.DeathYearInLHijri @(personGraph.Person.ValidDeathDate ? "(قطعی)" : "(تخمینی)")<br /></text> }
+                                            @if (!string.IsNullOrEmpty(personGraph.Person.FamilyTreeCaption)) { <text>عنوان شجره‌نامه: @personGraph.Person.FamilyTreeCaption<br /></text> }
+                                        </small>
+                                    </p>
+                                    @if (personGraph.RelatedPeople != null && personGraph.RelatedPeople.Count > 0)
+                                    {
+                                        <p><small>خویشاوندان/وابستگان همراه این پیشنهاد:</small></p>
+                                        <ul>
+                                            @foreach (var relation in personGraph.Relations ?? new List<RMuseum.Models.Ganjoor.ViewModels.PersonGraphRelationEntry>())
+                                            {
+                                                var otherNode = personGraph.RelatedPeople.Where(p => p.LocalKey == (relation.Person1 == personGraph.Person.LocalKey ? relation.Person2 : relation.Person1)).FirstOrDefault();
+                                                var otherName = otherNode != null
+                                                    ? (otherNode.ExistingPersonId != null ? (Model.People ?? new List<GanjoorRelatedPerson>()).Where(p => p.Id == otherNode.ExistingPersonId).Select(p => p.Name).FirstOrDefault() : otherNode.Name)
+                                                    : null;
+                                                <li>
+                                                    <small>
+                                                        @(relation.Kind == "affiliation" ? relation.AffiliationType : relation.RelationType)
+                                                        — @otherName
+                                                        @if (!string.IsNullOrEmpty(relation.Note)) { <text>(@relation.Note)</text> }
+                                                    </small>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <p class="up-hint">
+                                اگر کاربر شخصیت را اشتباه تشخیص داده (مثلاً شخصیتی که از قبل در فهرست است را به‌عنوان شخصیت جدید پیشنهاد کرده)، به‌جای رد کردن می‌توانید آن را به شخصیت موجود متصل کنید؛
+                                برای شخصیت تازه فقط نام قابل اصلاح است - اصلاح روابط/تاریخ‌ها نیازمند رد کردن و ارسال دوبارهٔ پیشنهاد توسط کاربر است:
+                            </p>
+                            <label for="geotag@(geoIndex)_person_search">اتصال به شخصیت موجود در فهرست (در صورت وجود اشتباه در تشخیص شخصیت):</label>
+                            <div class="up-autocomplete-wrap">
+                                <input type="text" id="geotag@(geoIndex)_person_search" autocomplete="off" placeholder="نام شخصیت را تایپ کنید..."
+                                       value="@(geoTag.PersonId != null ? (Model.People ?? new List<GanjoorRelatedPerson>()).Where(p => p.Id == geoTag.PersonId).Select(p => p.Name).FirstOrDefault() : null)" />
+                                <input type="hidden" id="geotag@(geoIndex)_person_select" name="geotag@(geoIndex)_person_select" value="@(geoTag.PersonId ?? 0)" />
+                                <div id="geotag@(geoIndex)_person_results" class="up-autocomplete-results" style="display:none;"></div>
+                            </div>
+                            <p class="up-hint">برای اتصال به یک شخصیت موجود، نام او را تایپ کنید و از فهرست انتخاب کنید؛ برای رها کردن اتصال و پیشنهاد به‌عنوان شخصیت جدید، این فیلد را خالی کنید.</p>
+                            <script>
+                                setupPersonAutocomplete(
+                                    document.getElementById('geotag@(geoIndex)_person_search'),
+                                    document.getElementById('geotag@(geoIndex)_person_select'),
+                                    document.getElementById('geotag@(geoIndex)_person_results'),
+                                    allGeoPeople,
+                                    function (person) { toggleGeoTagNewPersonFields(@geoIndex); },
+                                    function (typedText) { toggleGeoTagNewPersonFields(@geoIndex); }
+                                );
+                            </script>
+                            @if (geoTag.PersonId == null)
+                            {
+                                <div id="geotag@(geoIndex)_new_person_fields">
+                                    <br>
+                                    <label for="geotag@(geoIndex)_person_name">نام اصلاح‌شدهٔ شخصیت:</label>
+                                    <input type="text" id="geotag@(geoIndex)_person_name" name="geotag@(geoIndex)_person_name" size="30" />
+                                </div>
+                            }
                         </td>
                     </tr>
                 }
@@ -928,64 +1052,10 @@ else
                                         }
                                     }
                                 }
-                                @{
-                                    RMuseum.Models.Ganjoor.ViewModels.PersonGraphSuggestion personGraph = null;
-                                    if (geoTag.PersonId == null && !string.IsNullOrEmpty(geoTag.SuggestedPersonGraphJson))
-                                    {
-                                        try
-                                        {
-                                            personGraph = Newtonsoft.Json.JsonConvert.DeserializeObject<RMuseum.Models.Ganjoor.ViewModels.PersonGraphSuggestion>(geoTag.SuggestedPersonGraphJson);
-                                        }
-                                        catch (Exception) { }
-                                    }
-                                }
-                                @if (geoTag.PersonId != null)
-                                {
-                                    <text> - شخصیت: @(geoTag.Person != null ? geoTag.Person.Name : $"شخصیت #{geoTag.PersonId}")</text>
-                                }
-                                else if (personGraph?.Person != null)
-                                {
-                                    <text> - شخصیت جدید: @personGraph.Person.Name</text>
-                                    if (personGraph.Relations != null && personGraph.Relations.Count > 0)
-                                    {
-                                        <text> (@personGraph.Relations.Count.ToPersianNumbers() رابطهٔ همراه)</text>
-                                    }
-                                }
                             </p>
                             @if (!string.IsNullOrEmpty(geoTag.SuggestionNote))
                             {
                                 <p><small>یادداشت پیشنهاد دهنده: @geoTag.SuggestionNote</small></p>
-                            }
-                            @if (personGraph?.Person != null)
-                            {
-                                <p class="up-hint">
-                                    <small>
-                                        @if (!string.IsNullOrEmpty(personGraph.Person.Description)) { <text>توضیحات: @personGraph.Person.Description<br /></text> }
-                                        @if (personGraph.Person.BirthYearInLHijri != 0) { <text>تولد: @personGraph.Person.BirthYearInLHijri @(personGraph.Person.ValidBirthDate ? "(قطعی)" : "(تخمینی)")<br /></text> }
-                                        @if (personGraph.Person.DeathYearInLHijri != 0) { <text>وفات: @personGraph.Person.DeathYearInLHijri @(personGraph.Person.ValidDeathDate ? "(قطعی)" : "(تخمینی)")<br /></text> }
-                                        @if (!string.IsNullOrEmpty(personGraph.Person.FamilyTreeCaption)) { <text>عنوان شجره‌نامه: @personGraph.Person.FamilyTreeCaption<br /></text> }
-                                        @if (personGraph.RelatedPeople != null && personGraph.RelatedPeople.Count > 0)
-                                        {
-                                            <text>
-                                                خویشاوندان/وابستگان همراه این پیشنهاد:
-                                                <ul>
-                                                    @foreach (var relation in personGraph.Relations ?? new List<RMuseum.Models.Ganjoor.ViewModels.PersonGraphRelationEntry>())
-                                                    {
-                                                        var otherNode = personGraph.RelatedPeople.Where(p => p.LocalKey == (relation.Person1 == personGraph.Person.LocalKey ? relation.Person2 : relation.Person1)).FirstOrDefault();
-                                                        var otherName = otherNode != null
-                                                            ? (otherNode.ExistingPersonId != null ? (Model.People ?? new List<GanjoorRelatedPerson>()).Where(p => p.Id == otherNode.ExistingPersonId).Select(p => p.Name).FirstOrDefault() : otherNode.Name)
-                                                            : null;
-                                                        <li>
-                                                            @(relation.Kind == "affiliation" ? relation.AffiliationType : relation.RelationType)
-                                                            — @otherName
-                                                            @if (!string.IsNullOrEmpty(relation.Note)) { <text>(@relation.Note)</text> }
-                                                        </li>
-                                                    }
-                                                </ul>
-                                            </text>
-                                        }
-                                    </small>
-                                </p>
                             }
                         </td>
                     </tr>
@@ -1026,43 +1096,6 @@ else
                             }
                         </td>
                     </tr>
-                    @if (geoTag.PersonId != null || !string.IsNullOrEmpty(geoTag.SuggestedPersonGraphJson))
-                    {
-                        <tr>
-                            <td colspan="2">
-                                <p class="up-hint">
-                                    اگر کاربر شخصیت را اشتباه تشخیص داده (مثلاً شخصیتی که از قبل در فهرست است را به‌عنوان شخصیت جدید پیشنهاد کرده)، به‌جای رد کردن می‌توانید آن را به شخصیت موجود متصل کنید؛
-                                    برای شخصیت تازه فقط نام قابل اصلاح است - اصلاح روابط/تاریخ‌ها نیازمند رد کردن و ارسال دوبارهٔ پیشنهاد توسط کاربر است:
-                                </p>
-                                <label for="geotag@(geoIndex)_person_search">اتصال به شخصیت موجود در فهرست (در صورت وجود اشتباه در تشخیص شخصیت):</label>
-                                <div class="up-autocomplete-wrap">
-                                    <input type="text" id="geotag@(geoIndex)_person_search" autocomplete="off" placeholder="نام شخصیت را تایپ کنید..."
-                                           value="@(geoTag.PersonId != null ? (Model.People ?? new List<GanjoorRelatedPerson>()).Where(p => p.Id == geoTag.PersonId).Select(p => p.Name).FirstOrDefault() : null)" />
-                                    <input type="hidden" id="geotag@(geoIndex)_person_select" name="geotag@(geoIndex)_person_select" value="@(geoTag.PersonId ?? 0)" />
-                                    <div id="geotag@(geoIndex)_person_results" class="up-autocomplete-results" style="display:none;"></div>
-                                </div>
-                                <p class="up-hint">برای اتصال به یک شخصیت موجود، نام او را تایپ کنید و از فهرست انتخاب کنید؛ برای رها کردن اتصال و پیشنهاد به‌عنوان شخصیت جدید، این فیلد را خالی کنید.</p>
-                                <script>
-                                    setupPersonAutocomplete(
-                                        document.getElementById('geotag@(geoIndex)_person_search'),
-                                        document.getElementById('geotag@(geoIndex)_person_select'),
-                                        document.getElementById('geotag@(geoIndex)_person_results'),
-                                        allGeoPeople,
-                                        function (person) { toggleGeoTagNewPersonFields(@geoIndex); },
-                                        function (typedText) { toggleGeoTagNewPersonFields(@geoIndex); }
-                                    );
-                                </script>
-                                @if (geoTag.PersonId == null)
-                                {
-                                    <div id="geotag@(geoIndex)_new_person_fields">
-                                        <br>
-                                        <label for="geotag@(geoIndex)_person_name">نام اصلاح‌شدهٔ شخصیت:</label>
-                                        <input type="text" id="geotag@(geoIndex)_person_name" name="geotag@(geoIndex)_person_name" size="30" />
-                                    </div>
-                                }
-                            </td>
-                        </tr>
-                    }
                 }
                 <tr>
                     <td colspan="2">

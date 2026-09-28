@@ -48,8 +48,8 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public string Name { get; set; }
         public string Description { get; set; }
         public string WikiUrl { get; set; }
-        public int BirthYearInLHijri { get; set; }
-        public int DeathYearInLHijri { get; set; }
+        public int? BirthYearInLHijri { get; set; }
+        public int? DeathYearInLHijri { get; set; }
         public bool ValidBirthDate { get; set; }
         public bool ValidDeathDate { get; set; }
         public int? BirthLocationId { get; set; }
