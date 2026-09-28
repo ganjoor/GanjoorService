@@ -328,9 +328,31 @@ else
                 {
                     <span class="up-badge up-badge--primary">تغییر قالب شعری دارد</span>
                 }
-                @if (Model.Correction.GeoDateTags != null && Model.Correction.GeoDateTags.Length > 0)
+                @{
+                    // a GeoDateTags row can be a geo/date tag OR a person tag (see the per-tag isPersonTag
+                    // check further below) - split this summary badge the same way instead of always
+                    // labeling every row as "geo/date", regardless of what it actually contains
+                    var summaryGeoDateCount = 0;
+                    var summaryPersonCount = 0;
+                    if (Model.Correction.GeoDateTags != null)
+                    {
+                        foreach (var summaryTag in Model.Correction.GeoDateTags)
+                        {
+                            var summaryExistingTag = summaryTag.MarkForDelete && summaryTag.ExistingTagId != null && Model.PageInformation.Poem.GeoDateTags != null
+                                ? Model.PageInformation.Poem.GeoDateTags.Where(t => t.Id == summaryTag.ExistingTagId).FirstOrDefault()
+                                : null;
+                            var summaryIsPersonTag = summaryTag.PersonId != null || !string.IsNullOrEmpty(summaryTag.SuggestedPersonGraphJson) || (summaryExistingTag != null && summaryExistingTag.PersonId != null);
+                            if (summaryIsPersonTag) { summaryPersonCount++; } else { summaryGeoDateCount++; }
+                        }
+                    }
+                }
+                @if (summaryGeoDateCount > 0)
                 {
-                    <span class="up-badge up-badge--primary">برچسب جغرافیایی/تاریخی دارد (@Model.Correction.GeoDateTags.Length.ToPersianNumbers())</span>
+                    <span class="up-badge up-badge--primary">برچسب جغرافیایی/تاریخی دارد (@summaryGeoDateCount.ToPersianNumbers())</span>
+                }
+                @if (summaryPersonCount > 0)
+                {
+                    <span class="up-badge up-badge--primary">برچسب شخصیت دارد (@summaryPersonCount.ToPersianNumbers())</span>
                 }
             </td>
         </tr>
@@ -856,7 +878,13 @@ else
             {
                 var geoTag = Model.Correction.GeoDateTags[gi];
                 var geoIndex = gi + 1;
-                var isPersonTag = geoTag.PersonId != null || !string.IsNullOrEmpty(geoTag.SuggestedPersonGraphJson);
+                // for a delete-request row, PersonId/SuggestedPersonGraphJson are always null (the row
+                // only carries ExistingTagId) - so the tag's kind has to be resolved from the existing
+                // tag being deleted instead, or a person-tag deletion would be mislabeled as geo/date
+                var existingTagForKindCheck = geoTag.MarkForDelete && geoTag.ExistingTagId != null && Model.PageInformation.Poem.GeoDateTags != null
+                    ? Model.PageInformation.Poem.GeoDateTags.Where(t => t.Id == geoTag.ExistingTagId).FirstOrDefault()
+                    : null;
+                var isPersonTag = geoTag.PersonId != null || !string.IsNullOrEmpty(geoTag.SuggestedPersonGraphJson) || (existingTagForKindCheck != null && existingTagForKindCheck.PersonId != null);
                 <tr>
                     <td colspan="2">
                         @(isPersonTag ? "برچسب شخصیت" : "برچسب جغرافیایی/تاریخی")
@@ -881,9 +909,7 @@ else
                 }
                 @if (geoTag.MarkForDelete)
                 {
-                    var existingTag = geoTag.ExistingTagId == null || Model.PageInformation.Poem.GeoDateTags == null
-                        ? null
-                        : Model.PageInformation.Poem.GeoDateTags.Where(t => t.Id == geoTag.ExistingTagId).FirstOrDefault();
+                    var existingTag = existingTagForKindCheck;
                     <tr>
                         <td colspan="2">
                             <p class="red-color">
