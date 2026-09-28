@@ -2816,6 +2816,35 @@
             </summary>
             <param name="ganjoorService"></param>
         </member>
+        <member name="T:RMuseum.Controllers.GanjoorRelatedPersonController">
+            <summary>
+            related people (family tree / person tagging) - read-only for now, see IGanjoorRelatedPersonService
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetPeopleAsync">
+            <summary>
+            get all people
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetPersonAsync(System.Int32)">
+            <summary>
+            get person by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Controllers.GanjoorRelatedPersonController._personService">
+            <summary>
+            person service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.#ctor(RMuseum.Services.IGanjoorRelatedPersonService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="personService"></param>
+        </member>
         <member name="M:RMuseum.Controllers.GeoLocationController.GetLocationsAsync">
             <summary>
             get all locations
@@ -14135,6 +14164,84 @@
             model (not an EF entity), so no [NotMapped] or migration concerns here.
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.PersonGraphSuggestion">
+            <summary>
+            deserialized shape of GanjoorPoemGeoDateTagCorrection.SuggestedPersonGraphJson - a brand new
+            person (optionally linked to other people, new or existing) suggested in one go alongside a
+            poem's geo/date/person tag. See that field's doc comment for the full JSON shape.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphSuggestion.Person">
+            <summary>
+            the node that ends up assigned to the tag's PersonId once approved
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphSuggestion.RelatedPeople">
+            <summary>
+            other people this submission also introduces or links to, referenced from Relations by
+            their LocalKey
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphSuggestion.Relations">
+            <summary>
+            kinship and/or non-family edges between any of Person/RelatedPeople's local keys
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.PersonGraphNode">
+            <summary>
+            one person node in a PersonGraphSuggestion - either a link to an existing, already approved
+            GanjoorRelatedPerson (ExistingPersonId set, the rest ignored) or a brand new person to create
+            (ExistingPersonId null, the rest describing them)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphNode.LocalKey">
+            <summary>
+            key used only to resolve Relations entries within this same submission - never stored
+            beyond approval time
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphNode.ExistingPersonId">
+            <summary>
+            set to link to an existing, already approved person instead of creating a new one - when
+            set, every other field on this node is ignored
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphNode.FamilyTreeCaption">
+            <summary>
+            see GanjoorRelatedPerson.FamilyTreeCaption - only meaningful for whichever node is meant
+            to be a tree's named root
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.PersonGraphRelationEntry">
+            <summary>
+            one edge in a PersonGraphSuggestion, between two nodes referenced by their LocalKey (Person1/
+            Person2 - matching PersonGraphNode.LocalKey, not a real database id yet). Kind picks which
+            enum RelationType/AffiliationType is parsed against and which live table the edge is
+            materialized into on approval.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphRelationEntry.Kind">
+            <summary>
+            "family" (default, materialized as GanjoorPersonRelation - RelationType against
+            PersonRelationType) or "affiliation" (materialized as GanjoorPersonAffiliation -
+            AffiliationType against PersonAffiliationType)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphRelationEntry.RelationType">
+            <summary>
+            parsed against PersonRelationType when Kind is "family"
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphRelationEntry.AffiliationType">
+            <summary>
+            parsed against PersonAffiliationType when Kind is "affiliation"
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphRelationEntry.DegreeHint">
+            <summary>
+            only meaningful for a family relation of type Ancestor - see GanjoorPersonRelation.DegreeHint
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel">
             <summary>
             Ganjoor Poem related music track model
@@ -17458,6 +17565,26 @@
             <summary>
             generate missing default numberings and start counting
             </summary>
+            <returns></returns>
+        </member>
+        <member name="T:RMuseum.Services.IGanjoorRelatedPersonService">
+            <summary>
+            related people (family tree / person tagging) service - read-only for now: the only way a
+            new person is created is via the geo/date/person tag correction's SuggestedPersonGraphJson,
+            materialized on moderator approval (see GanjoorService-ModeratePoemCorrection.cs)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetPeopleAsync">
+            <summary>
+            get all people (for the search-as-you-type person picker)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetPersonAsync(System.Int32)">
+            <summary>
+            get person by id
+            </summary>
+            <param name="id"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorService">
@@ -20891,6 +21018,35 @@
             <param name="format"></param>
             <returns></returns>
         </member>
+        <member name="T:RMuseum.Services.Implementation.GanjoorRelatedPersonService">
+            <summary>
+            related people service implementation
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetPeopleAsync">
+            <summary>
+            get all people
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetPersonAsync(System.Int32)">
+            <summary>
+            get person by id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.GanjoorRelatedPersonService._context">
+            <summary>
+            Database Context
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.#ctor(RMuseum.DbContext.RMuseumDbContext)">
+            <summary>
+            constructor
+            </summary>
+            <param name="context"></param>
+        </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorService">
             <summary>
             IGanjoorService implementation
@@ -21437,6 +21593,16 @@
             <param name="userId"></param>
             <param name="moderation"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._MaterializePersonGraphAsync(System.String)">
+            <summary>
+            materializes a GanjoorPoemGeoDateTagCorrection.SuggestedPersonGraphJson payload: creates
+            any brand new person nodes it describes (or reuses an existing one when a node names
+            ExistingPersonId), then creates the kinship (GanjoorPersonRelation) and/or non-family
+            (GanjoorPersonAffiliation) edges between them. Returns the resolved id of the "person"
+            node (the one that ends up assigned to the tag's PersonId), or an error message.
+            </summary>
+            <param name="json">SuggestedPersonGraphJson value - see its doc comment for the expected shape</param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ModeratePoemSectionCorrection(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel)">
             <summary>

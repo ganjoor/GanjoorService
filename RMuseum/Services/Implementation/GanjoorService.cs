@@ -2129,9 +2129,10 @@ namespace RMuseum.Services.Implementation
                         bool hasLocation = geoDateTag.LocationId != null ||
                             (!string.IsNullOrWhiteSpace(geoDateTag.SuggestedLocationName) && geoDateTag.SuggestedLatitude != null && geoDateTag.SuggestedLongitude != null);
                         bool hasDate = geoDateTag.LunarYear != null;
-                        if (!hasLocation && !hasDate)
+                        bool hasPerson = geoDateTag.PersonId != null || !string.IsNullOrWhiteSpace(geoDateTag.SuggestedPersonGraphJson);
+                        if (!hasLocation && !hasDate && !hasPerson)
                         {
-                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "برچسب جغرافیایی/تاریخی باید حداقل شامل مکان یا تاریخ باشد.");
+                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "برچسب جغرافیایی/تاریخی/فردی باید حداقل شامل مکان، تاریخ یا فرد باشد.");
                         }
 
                         if (geoDateTag.LocationId == null && !string.IsNullOrWhiteSpace(geoDateTag.SuggestedLocationName)
