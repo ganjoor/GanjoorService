@@ -15,6 +15,9 @@
     // full existing-location catalog ({id, name, latitude, longitude}[]), used by the
     // search-as-you-type location picker on each geo tag - see setupLocationAutocomplete in bk.js
     var allGeoLocations = @Html.Raw(Model.AllLocationsJson);
+    // full existing-people catalog, used by the search-as-you-type person picker on each geo tag -
+    // see setupPersonAutocomplete in bk.js
+    var allGeoPeople = @Html.Raw(Model.AllPeopleJson);
 
     async function checkAllNotCorrect() {
         var ok = await upConfirm('همه نادرست؟');
@@ -49,6 +52,16 @@
         if (!hidden || !fields) return;
         // '' (nothing picked yet / cleared while typing) and '0' (the old select's "no change /
         // suggest as new location" option) both mean "not linked to an existing location"
+        var linkedToExisting = hidden.value && hidden.value !== '0';
+        fields.style.display = linkedToExisting ? 'none' : '';
+    }
+
+    // same purpose as toggleGeoTagNewLocationFields above, but for a suggested person instead of a
+    // suggested location
+    function toggleGeoTagNewPersonFields(geoIndex) {
+        var hidden = document.getElementById('geotag' + geoIndex + '_person_select');
+        var fields = document.getElementById('geotag' + geoIndex + '_new_person_fields');
+        if (!hidden || !fields) return;
         var linkedToExisting = hidden.value && hidden.value !== '0';
         fields.style.display = linkedToExisting ? 'none' : '';
     }
@@ -154,6 +167,8 @@
         var geoTagLocationName = [];
         var geoTagLatitude = [];
         var geoTagLongitude = [];
+        var geoTagPersonId = [];
+        var geoTagPersonName = [];
         for (var g = 0; g < (geoTagCount || 0); g++) {
             var geoElementId = '#geotag' + (g + 1).toString() + '_review_result_Approved';
             if ($(geoElementId).length > 0) {
@@ -166,6 +181,10 @@
                 geoTagLocationName.push($('#geotag' + (g + 1).toString() + '_location_name').val() || null);
                 geoTagLatitude.push($('#geotag' + (g + 1).toString() + '_latitude').val() || null);
                 geoTagLongitude.push($('#geotag' + (g + 1).toString() + '_longitude').val() || null);
+
+                var geoPersonSelect = $('#geotag' + (g + 1).toString() + '_person_select');
+                geoTagPersonId.push(geoPersonSelect.length > 0 ? geoPersonSelect.val() : '0');
+                geoTagPersonName.push($('#geotag' + (g + 1).toString() + '_person_name').val() || null);
             }
         }
 
@@ -193,6 +212,8 @@
         pms.geoTagLocationName= geoTagLocationName;
         pms.geoTagLatitude= geoTagLatitude;
         pms.geoTagLongitude= geoTagLongitude;
+        pms.geoTagPersonId= geoTagPersonId;
+        pms.geoTagPersonName= geoTagPersonName;
 
         $.ajax({
             type: "POST",
@@ -907,10 +928,64 @@ else
                                         }
                                     }
                                 }
+                                @{
+                                    RMuseum.Models.Ganjoor.ViewModels.PersonGraphSuggestion personGraph = null;
+                                    if (geoTag.PersonId == null && !string.IsNullOrEmpty(geoTag.SuggestedPersonGraphJson))
+                                    {
+                                        try
+                                        {
+                                            personGraph = Newtonsoft.Json.JsonConvert.DeserializeObject<RMuseum.Models.Ganjoor.ViewModels.PersonGraphSuggestion>(geoTag.SuggestedPersonGraphJson);
+                                        }
+                                        catch (Exception) { }
+                                    }
+                                }
+                                @if (geoTag.PersonId != null)
+                                {
+                                    <text> - فرد: @(geoTag.Person != null ? geoTag.Person.Name : $"فرد #{geoTag.PersonId}")</text>
+                                }
+                                else if (personGraph?.Person != null)
+                                {
+                                    <text> - فرد جدید: @personGraph.Person.Name</text>
+                                    if (personGraph.Relations != null && personGraph.Relations.Count > 0)
+                                    {
+                                        <text> (@personGraph.Relations.Count.ToPersianNumbers() رابطهٔ همراه)</text>
+                                    }
+                                }
                             </p>
                             @if (!string.IsNullOrEmpty(geoTag.SuggestionNote))
                             {
                                 <p><small>یادداشت پیشنهاد دهنده: @geoTag.SuggestionNote</small></p>
+                            }
+                            @if (personGraph?.Person != null)
+                            {
+                                <p class="up-hint">
+                                    <small>
+                                        @if (!string.IsNullOrEmpty(personGraph.Person.Description)) { <text>توضیحات: @personGraph.Person.Description<br /></text> }
+                                        @if (personGraph.Person.BirthYearInLHijri != 0) { <text>تولد: @personGraph.Person.BirthYearInLHijri @(personGraph.Person.ValidBirthDate ? "(قطعی)" : "(تخمینی)")<br /></text> }
+                                        @if (personGraph.Person.DeathYearInLHijri != 0) { <text>وفات: @personGraph.Person.DeathYearInLHijri @(personGraph.Person.ValidDeathDate ? "(قطعی)" : "(تخمینی)")<br /></text> }
+                                        @if (!string.IsNullOrEmpty(personGraph.Person.FamilyTreeCaption)) { <text>عنوان شجره‌نامه: @personGraph.Person.FamilyTreeCaption<br /></text> }
+                                        @if (personGraph.RelatedPeople != null && personGraph.RelatedPeople.Count > 0)
+                                        {
+                                            <text>
+                                                خویشاوندان/وابستگان همراه این پیشنهاد:
+                                                <ul>
+                                                    @foreach (var relation in personGraph.Relations ?? new List<RMuseum.Models.Ganjoor.ViewModels.PersonGraphRelationEntry>())
+                                                    {
+                                                        var otherNode = personGraph.RelatedPeople.Where(p => p.LocalKey == (relation.Person1 == personGraph.Person.LocalKey ? relation.Person2 : relation.Person1)).FirstOrDefault();
+                                                        var otherName = otherNode != null
+                                                            ? (otherNode.ExistingPersonId != null ? (Model.People ?? new List<GanjoorRelatedPerson>()).Where(p => p.Id == otherNode.ExistingPersonId).Select(p => p.Name).FirstOrDefault() : otherNode.Name)
+                                                            : null;
+                                                        <li>
+                                                            @(relation.Kind == "affiliation" ? relation.AffiliationType : relation.RelationType)
+                                                            — @otherName
+                                                            @if (!string.IsNullOrEmpty(relation.Note)) { <text>(@relation.Note)</text> }
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </text>
+                                        }
+                                    </small>
+                                </p>
                             }
                         </td>
                     </tr>
@@ -951,6 +1026,43 @@ else
                             }
                         </td>
                     </tr>
+                    @if (geoTag.PersonId != null || !string.IsNullOrEmpty(geoTag.SuggestedPersonGraphJson))
+                    {
+                        <tr>
+                            <td colspan="2">
+                                <p class="up-hint">
+                                    اگر کاربر فرد را اشتباه تشخیص داده (مثلاً فردی که از قبل در فهرست است را به‌عنوان فرد جدید پیشنهاد کرده)، به‌جای رد کردن می‌توانید آن را به فرد موجود متصل کنید؛
+                                    برای فرد تازه فقط نام قابل اصلاح است - اصلاح روابط/تاریخ‌ها نیازمند رد کردن و ارسال دوبارهٔ پیشنهاد توسط کاربر است:
+                                </p>
+                                <label for="geotag@(geoIndex)_person_search">اتصال به فرد موجود در فهرست (در صورت وجود اشتباه در تشخیص فرد):</label>
+                                <div class="up-autocomplete-wrap">
+                                    <input type="text" id="geotag@(geoIndex)_person_search" autocomplete="off" placeholder="نام فرد را تایپ کنید..."
+                                           value="@(geoTag.PersonId != null ? (Model.People ?? new List<GanjoorRelatedPerson>()).Where(p => p.Id == geoTag.PersonId).Select(p => p.Name).FirstOrDefault() : null)" />
+                                    <input type="hidden" id="geotag@(geoIndex)_person_select" name="geotag@(geoIndex)_person_select" value="@(geoTag.PersonId ?? 0)" />
+                                    <div id="geotag@(geoIndex)_person_results" class="up-autocomplete-results" style="display:none;"></div>
+                                </div>
+                                <p class="up-hint">برای اتصال به یک فرد موجود، نام او را تایپ کنید و از فهرست انتخاب کنید؛ برای رها کردن اتصال و پیشنهاد به‌عنوان فرد جدید، این فیلد را خالی کنید.</p>
+                                <script>
+                                    setupPersonAutocomplete(
+                                        document.getElementById('geotag@(geoIndex)_person_search'),
+                                        document.getElementById('geotag@(geoIndex)_person_select'),
+                                        document.getElementById('geotag@(geoIndex)_person_results'),
+                                        allGeoPeople,
+                                        function (person) { toggleGeoTagNewPersonFields(@geoIndex); },
+                                        function (typedText) { toggleGeoTagNewPersonFields(@geoIndex); }
+                                    );
+                                </script>
+                                @if (geoTag.PersonId == null)
+                                {
+                                    <div id="geotag@(geoIndex)_new_person_fields">
+                                        <br>
+                                        <label for="geotag@(geoIndex)_person_name">نام اصلاح‌شدهٔ فرد:</label>
+                                        <input type="text" id="geotag@(geoIndex)_person_name" name="geotag@(geoIndex)_person_name" size="30" />
+                                    </div>
+                                }
+                            </td>
+                        </tr>
+                    }
                 }
                 <tr>
                     <td colspan="2">

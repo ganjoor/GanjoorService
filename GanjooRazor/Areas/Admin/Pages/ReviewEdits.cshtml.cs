@@ -80,6 +80,24 @@ namespace GanjooRazor.Areas.Admin.Pages
             );
 
         /// <summary>
+        /// full people catalog, offered as an alternative to a user's new-person suggestion so the
+        /// moderator can correct a duplicate/misidentified suggestion by linking it to the existing
+        /// entry instead - same purpose as Locations above
+        /// </summary>
+        public List<GanjoorRelatedPerson> People { get; set; }
+
+        /// <summary>
+        /// camelCase JSON of People (id/name/birthYearInLHijri/deathYearInLHijri only), used
+        /// client-side for the search-as-you-type person picker on each geo tag (see
+        /// setupPersonAutocomplete in bk.js) - same shape/purpose as Editor.cshtml.cs's AllPeopleJson
+        /// </summary>
+        public string AllPeopleJson =>
+            JsonConvert.SerializeObject(
+                (People ?? new List<GanjoorRelatedPerson>()).Select(p => new { p.Id, p.Name, p.BirthYearInLHijri, p.DeathYearInLHijri }),
+                new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }
+            );
+
+        /// <summary>
         /// groups verses into couplets - same logic as SuggestQuoted.cshtml.cs's/Editor.cshtml.cs's GetCouplets,
         /// duplicated here rather than shared, so this page doesn't take on a cross-file dependency on those
         /// </summary>
@@ -204,6 +222,16 @@ namespace GanjooRazor.Areas.Admin.Pages
                             Locations = new List<GanjoorGeoLocation>();
                             Locations.Add(new GanjoorGeoLocation() { Id = 0, Latitude = 0, Longitude = 0, Name = "" });
                             Locations.AddRange(JsonConvert.DeserializeObject<GanjoorGeoLocation[]>(await responseLocations.Content.ReadAsStringAsync()));
+
+                            var responsePeople = await secureClient.GetAsync($"{APIRoot.Url}/api/people");
+                            if (!responsePeople.IsSuccessStatusCode)
+                            {
+                                FatalError = JsonConvert.DeserializeObject<string>(await responsePeople.Content.ReadAsStringAsync());
+                                return Page();
+                            }
+                            People = new List<GanjoorRelatedPerson>();
+                            People.Add(new GanjoorRelatedPerson() { Id = 0, Name = "" });
+                            People.AddRange(JsonConvert.DeserializeObject<GanjoorRelatedPerson[]>(await responsePeople.Content.ReadAsStringAsync()));
                         }
 
                         if (PageInformation.Poem.Sections.Where(s => s.SectionType == PoemSectionType.WholePoem && !string.IsNullOrEmpty(s.RhymeLetters)).Any())
@@ -454,6 +482,37 @@ namespace GanjooRazor.Areas.Admin.Pages
                                             }
                                             Correction.GeoDateTags[i].SuggestedLatitude = correctedLat;
                                             Correction.GeoDateTags[i].SuggestedLongitude = correctedLng;
+                                        }
+                                    }
+
+                                    // same pattern as the location correction above, but for a suggested person
+                                    // instead of a suggested location - let the moderator link a suggestion to an
+                                    // existing catalog person (e.g. the contributor didn't find them in the search),
+                                    // or just fix a typo in a brand new person's name, before approving
+                                    string correctedPersonIdText = (pms.geoTagPersonId != null && i < pms.geoTagPersonId.Length) ? pms.geoTagPersonId[i] : null;
+                                    if (!string.IsNullOrWhiteSpace(correctedPersonIdText) && int.TryParse(correctedPersonIdText, out int correctedPersonId) && correctedPersonId > 0)
+                                    {
+                                        Correction.GeoDateTags[i].PersonId = correctedPersonId;
+                                        Correction.GeoDateTags[i].SuggestedPersonGraphJson = null;
+                                    }
+                                    else if (Correction.GeoDateTags[i].PersonId == null && !string.IsNullOrWhiteSpace(Correction.GeoDateTags[i].SuggestedPersonGraphJson))
+                                    {
+                                        string correctedPersonName = (pms.geoTagPersonName != null && i < pms.geoTagPersonName.Length) ? pms.geoTagPersonName[i] : null;
+                                        if (!string.IsNullOrWhiteSpace(correctedPersonName))
+                                        {
+                                            try
+                                            {
+                                                var personGraph = JObject.Parse(Correction.GeoDateTags[i].SuggestedPersonGraphJson);
+                                                if (personGraph["person"] != null)
+                                                {
+                                                    personGraph["person"]["name"] = correctedPersonName.Trim();
+                                                    Correction.GeoDateTags[i].SuggestedPersonGraphJson = personGraph.ToString(Newtonsoft.Json.Formatting.None);
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                return new BadRequestObjectResult("برچسب فرد پیشنهادی قابل تفسیر نیست.");
+                                            }
                                         }
                                     }
                                 }

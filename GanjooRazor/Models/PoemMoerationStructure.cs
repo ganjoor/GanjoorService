@@ -32,5 +32,17 @@
         /// </summary>
         public string[] geoTagLatitude { get; set; }
         public string[] geoTagLongitude { get; set; }
+        /// <summary>
+        /// moderator's corrected person for each geo tag, if they picked an existing catalog person
+        /// instead of what the user suggested (empty/"0" means no change to PersonId) - same
+        /// purpose as geoTagLocationId above
+        /// </summary>
+        public string[] geoTagPersonId { get; set; }
+        /// <summary>
+        /// moderator's corrected name for a brand new person suggestion (fixes a typo in the user's
+        /// suggestion), if any - only the name can be corrected this way; deeper fixes (relations,
+        /// dates, etc.) require rejecting and asking the contributor to resubmit
+        /// </summary>
+        public string[] geoTagPersonName { get; set; }
     }
 }
