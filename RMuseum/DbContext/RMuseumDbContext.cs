@@ -123,6 +123,37 @@ namespace RMuseum.DbContext
                 .HasIndex(m => m.Name)
                 .IsUnique();
 
+            // GanjoorPersonRelation has two required FKs to the same table (GanjoorRelatedPerson) -
+            // left at their EF Core default (Cascade, since both are required/non-nullable), SQL
+            // Server refuses to create the second FK with "may cause cycles or multiple cascade
+            // paths". Restricting one side (Person2) is enough to break the ambiguity; deleting a
+            // person that's still referenced by a relation should be prevented at the application
+            // level anyway (via a "still has family tree entries" check), not silently cascaded.
+            builder.Entity<GanjoorPersonRelation>()
+                .HasOne(r => r.Person1)
+                .WithMany()
+                .HasForeignKey(r => r.Person1Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<GanjoorPersonRelation>()
+                .HasOne(r => r.Person2)
+                .WithMany()
+                .HasForeignKey(r => r.Person2Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // same two-required-FKs-to-the-same-table situation as GanjoorPersonRelation above
+            builder.Entity<GanjoorPersonAffiliation>()
+                .HasOne(a => a.Person1)
+                .WithMany()
+                .HasForeignKey(a => a.Person1Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<GanjoorPersonAffiliation>()
+                .HasOne(a => a.Person2)
+                .WithMany()
+                .HasForeignKey(a => a.Person2Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Entity<GanjoorUserBookmark>()
                 .HasIndex(b => new { b.UserId, b.PoemId, b.CoupletIndex });
 
@@ -577,6 +608,16 @@ namespace RMuseum.DbContext
         /// People tags
         /// </summary>
         public DbSet<GanjoorRelatedPerson> GanjoorRelatedPersons { get; set; }
+
+        /// <summary>
+        /// approved kinship edges between people (family tree) - see GanjoorPersonRelation
+        /// </summary>
+        public DbSet<GanjoorPersonRelation> GanjoorPersonRelations { get; set; }
+
+        /// <summary>
+        /// approved non-family ties between people (e.g. minister-to-king) - see GanjoorPersonAffiliation
+        /// </summary>
+        public DbSet<GanjoorPersonAffiliation> GanjoorPersonAffiliations { get; set; }
 
         /// <summary>
         /// Books (PDF Library)

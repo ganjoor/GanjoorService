@@ -56,7 +56,8 @@
         public int? LunarDay { get; set; }
 
         /// <summary>
-        /// related person id (existing, approved GanjoorRelatedPerson only - no suggestion path for new people yet)
+        /// related person id - an existing, already approved GanjoorRelatedPerson. Set this OR
+        /// SuggestedPersonGraphJson below, not both (same pattern as LocationId/Suggested* above).
         /// </summary>
         public int? PersonId { get; set; }
 
@@ -64,6 +65,35 @@
         /// related person (navigation)
         /// </summary>
         public virtual GanjoorRelatedPerson Person { get; set; }
+
+        /// <summary>
+        /// a brand new, not yet approved person (and optionally that person's relatives/relations,
+        /// which may themselves be new people) - serialized JSON rather than its own set of
+        /// correction tables, because a single suggestion can introduce several interlinked new
+        /// people at once (e.g. "add this person, and their father, and the relation between them")
+        /// and a new person referencing another not-yet-existing new person has no real id to point
+        /// at until the whole graph is approved together. Expected shape (local keys are only used
+        /// to resolve relations within this same submission and never stored beyond approval time):
+        /// {
+        ///   "person": { "localKey": "p1", "existingPersonId": null, "name": "...", "description": "...",
+        ///               "wikiUrl": "...", "birthYearInLHijri": null, "deathYearInLHijri": null,
+        ///               "validBirthDate": false, "validDeathDate": false,
+        ///               "birthLocationId": null, "deathLocationId": null,
+        ///               "familyTreeCaption": null },
+        ///   "relatedPeople": [ { "localKey": "p2", "existingPersonId": 42, ... } ],
+        ///   "relations": [ { "kind": "family", "person1": "p1", "person2": "p2", "relationType": "Parent",
+        ///                     "degreeHint": null, "note": "..." },
+        ///                   { "kind": "affiliation", "person1": "p2", "person2": "p3",
+        ///                     "affiliationType": "Minister", "note": "..." } ]
+        /// }
+        /// "person" is the node that ends up assigned to PersonId once approved. Only set when
+        /// PersonId above is null. Each entry in "relations" carries a "kind" discriminator so one
+        /// submission can suggest both kinship edges (materialized as GanjoorPersonRelation,
+        /// "relationType" against PersonRelationType) and non-family ties (materialized as
+        /// GanjoorPersonAffiliation, "affiliationType" against PersonAffiliationType) at once - e.g.
+        /// introducing a person along with both their father and the king they served.
+        /// </summary>
+        public string SuggestedPersonGraphJson { get; set; }
 
         /// <summary>
         /// if true, this tag is excluded from category/poet-level map aggregation (e.g. a place mentioned only

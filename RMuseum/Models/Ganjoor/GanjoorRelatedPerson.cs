@@ -69,5 +69,14 @@
         /// AI generated
         /// </summary>
         public bool MachineGenerated { get; set; }
+
+        /// <summary>
+        /// optional caption for the family tree this person is treated as the root of (e.g.
+        /// "ساسانیان", "آل برمک") - purely a display label for whoever a tree is being browsed
+        /// from; nothing enforces that this person actually has no recorded ancestors themselves,
+        /// and most people will leave this null (only whichever person a tree is "named after"
+        /// needs one set).
+        /// </summary>
+        public string FamilyTreeCaption { get; set; }
     }
 }
