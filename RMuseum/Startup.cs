@@ -300,6 +300,9 @@ namespace RMuseum
             //geo location service
             services.AddTransient<IGeoLocationService, GeoLocationService>();
 
+            //related people (family tree / person tagging) service
+            services.AddTransient<IGanjoorRelatedPersonService, GanjoorRelatedPersonService>();
+
             //tracking service
             services.AddTransient<IUserVisitsTrackingService, UserVisitsTrackingService>();
 

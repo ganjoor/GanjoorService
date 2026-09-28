@@ -2599,3 +2599,100 @@ function setupLocationAutocomplete(searchInput, hiddenInput, resultsBox, locatio
         }
     });
 }
+
+// same search-as-you-type / "not found -> define new" pattern as setupLocationAutocomplete above,
+// but for picking a GanjoorRelatedPerson (people don't have coordinates, so the result rows and the
+// "not found" wording differ enough that sharing one function would need special-casing throughout)
+function setupPersonAutocomplete(searchInput, hiddenInput, resultsBox, people, onSelect, onNotFound) {
+    var MAX_RESULTS = 12;
+
+    function hide() {
+        resultsBox.style.display = 'none';
+        resultsBox.innerHTML = '';
+    }
+
+    function personSubtitle(p) {
+        if (p.birthYearInLHijri && p.deathYearInLHijri) {
+            return p.birthYearInLHijri + ' - ' + p.deathYearInLHijri;
+        }
+        if (p.birthYearInLHijri) {
+            return 'تولد ' + p.birthYearInLHijri;
+        }
+        if (p.deathYearInLHijri) {
+            return 'وفات ' + p.deathYearInLHijri;
+        }
+        return '';
+    }
+
+    function selectPerson(p) {
+        searchInput.value = p.name;
+        hiddenInput.value = String(p.id);
+        hide();
+        if (onSelect) onSelect(p);
+    }
+
+    function render(typedText) {
+        var typedLower = typedText.toLowerCase();
+        var matches = (people || []).filter(function (p) {
+            return p.name && p.name.toLowerCase().indexOf(typedLower) !== -1;
+        });
+
+        if (matches.length == 0) {
+            var emptyRow = document.createElement('div');
+            emptyRow.className = 'up-autocomplete-item up-autocomplete-item--empty';
+            emptyRow.textContent = '➕ «' + typedText + '» در فهرست پیدا نشد؛ به‌عنوان فرد جدید تعریف شود';
+            emptyRow.addEventListener('click', function () {
+                hide();
+                if (onNotFound) onNotFound(typedText);
+            });
+            resultsBox.innerHTML = '';
+            resultsBox.appendChild(emptyRow);
+            resultsBox.style.display = 'block';
+            return;
+        }
+
+        resultsBox.innerHTML = '';
+        for (var i = 0; i < Math.min(matches.length, MAX_RESULTS); i++) {
+            var p = matches[i];
+            var subtitle = personSubtitle(p);
+            var row = document.createElement('div');
+            row.className = 'up-autocomplete-item';
+            row.textContent = subtitle ? (p.name + ' (' + subtitle + ')') : p.name;
+            row.addEventListener('click', function (person) {
+                return function () { selectPerson(person); };
+            }(p));
+            resultsBox.appendChild(row);
+        }
+        if (matches.length > MAX_RESULTS) {
+            var moreRow = document.createElement('div');
+            moreRow.className = 'up-autocomplete-item up-autocomplete-item--more';
+            moreRow.textContent = '… و ' + (matches.length - MAX_RESULTS) + ' مورد دیگر (برای محدودکردن نتایج بیشتر تایپ کنید)';
+            resultsBox.appendChild(moreRow);
+        }
+        resultsBox.style.display = 'block';
+    }
+
+    searchInput.addEventListener('input', function () {
+        hiddenInput.value = ''; // typing invalidates whatever was previously selected
+        var typed = searchInput.value.trim();
+        if (typed == '') {
+            hide();
+            if (onSelect) onSelect(null);
+            return;
+        }
+        render(typed);
+    });
+
+    searchInput.addEventListener('focus', function () {
+        var typed = searchInput.value.trim();
+        if (typed != '' && hiddenInput.value == '') {
+            render(typed); // re-show suggestions for text that hasn't resolved to a pick yet
+        }
+    });
+
+    document.addEventListener('click', function (e) {
+        if (e.target !== searchInput && !resultsBox.contains(e.target)) {
+            hide();
+        }
+    });
+}

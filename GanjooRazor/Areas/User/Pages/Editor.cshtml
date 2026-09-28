@@ -124,6 +124,9 @@
     // full existing-location catalog ({id, name, latitude, longitude}[]), used to warn about a
     // new-location suggestion that's actually already catalogued - see _confirmNewLocationSuggestion
     var allGeoLocations = @Html.Raw(Model.AllLocationsJson);
+    // full existing-people catalog ({id, name, birthYearInLHijri, deathYearInLHijri}[]), used both
+    // to pick an existing person for a tag and as the "other side" of a new person's relatives
+    var allGeoPeople = @Html.Raw(Model.AllPeopleJson);
     $(document).ready(function () {
         renderPendingGeoDateTags();
         setupLocationAutocomplete(
@@ -162,9 +165,162 @@
                 }
             );
         }
+        setupPersonAutocomplete(
+            document.getElementById('geotag-person-search'),
+            document.getElementById('geotag-person-select'),
+            document.getElementById('geotag-person-results'),
+            allGeoPeople,
+            function (person) {
+                // picking an existing person (or clearing the field) means whatever was
+                // typed into the "new person" panel no longer applies to this suggestion
+                var widget = document.getElementById('new-person-widget');
+                if (person != null && widget.style.display !== 'none') {
+                    toggleNewPersonWidget();
+                }
+            },
+            function (typedText) {
+                var widget = document.getElementById('new-person-widget');
+                if (widget.style.display === 'none' || widget.style.display === '') {
+                    toggleNewPersonWidget();
+                }
+                document.getElementById('geotag-new-person-name').value = typedText;
+            }
+        );
+        // birth/death location pickers inside the "new person" panel - these only ever pick an
+        // existing location (a brand-new-location-within-a-brand-new-person is one indirection too
+        // many for this form), so an unmatched search has nothing to offer
+        setupLocationAutocomplete(
+            document.getElementById('geotag-new-person-birthlocation-search'),
+            document.getElementById('geotag-new-person-birthlocation-id'),
+            document.getElementById('geotag-new-person-birthlocation-results'),
+            allGeoLocations,
+            null,
+            function (typedText) {
+                upToast('این مکان در فهرست نیست. ابتدا آن را جدا (در بخش «مکان» بالا) به‌عنوان مکان جدید پیشنهاد دهید.', 'error');
+            }
+        );
+        setupLocationAutocomplete(
+            document.getElementById('geotag-new-person-deathlocation-search'),
+            document.getElementById('geotag-new-person-deathlocation-id'),
+            document.getElementById('geotag-new-person-deathlocation-results'),
+            allGeoLocations,
+            null,
+            function (typedText) {
+                upToast('این مکان در فهرست نیست. ابتدا آن را جدا (در بخش «مکان» بالا) به‌عنوان مکان جدید پیشنهاد دهید.', 'error');
+            }
+        );
     });
     var geoDateTagMap = null;
     var geoDateTagMarker = null;
+    var personRelativeRowCounter = 0; // ever-increasing, so removed rows never clash with new ones
+
+    function toggleNewPersonWidget() {
+        var widget = document.getElementById('new-person-widget');
+        var isHidden = widget.style.display === 'none' || widget.style.display === '';
+        widget.style.display = isHidden ? 'block' : 'none';
+    }
+
+    // adds one "relative or affiliation" row to the new-person panel. The other side of the
+    // relation must already exist (see the hint text above the button) - nesting another
+    // brand-new person inside this one's relatives is a rare-enough case that it's left for a
+    // later pass; the backend already supports it via relatedPeople, just not from this form yet.
+    function addPersonRelativeRow() {
+        var idx = personRelativeRowCounter++;
+        var row = document.createElement('div');
+        row.id = 'person-relative-row-' + idx;
+        row.className = 'up-card';
+        row.style.marginTop = '8px';
+        row.innerHTML =
+            '<div class="up-field-row">' +
+                '<div class="up-field">' +
+                    '<label>نوع رابطه</label>' +
+                    '<select id="person-relative-kind-' + idx + '" onchange="togglePersonRelativeKind(' + idx + ')">' +
+                        '<option value="family">خویشاوندی</option>' +
+                        '<option value="affiliation">غیرخویشاوندی (مثل وزارت، مشاورت)</option>' +
+                    '</select>' +
+                '</div>' +
+                '<div class="up-field" id="person-relative-familytype-wrap-' + idx + '">' +
+                    '<label>نوع خویشاوندی</label>' +
+                    '<select id="person-relative-familytype-' + idx + '" onchange="togglePersonRelativeDegreeHint(' + idx + ')">' +
+                        '<option value="Parent">پدر/مادر ↔ فرزند</option>' +
+                        '<option value="Sibling">خواهر/برادر</option>' +
+                        '<option value="Spouse">همسر</option>' +
+                        '<option value="Ancestor">نیا ↔ نواده (با فاصلهٔ نسل نامعلوم یا مشخص)</option>' +
+                    '</select>' +
+                '</div>' +
+                '<div class="up-field" id="person-relative-affiliationtype-wrap-' + idx + '" style="display:none;">' +
+                    '<label>نوع وابستگی</label>' +
+                    '<select id="person-relative-affiliationtype-' + idx + '">' +
+                        '<option value="Minister">وزیر</option>' +
+                        '<option value="Advisor">مشاور</option>' +
+                        '<option value="Courtier">درباری</option>' +
+                        '<option value="Patron">حامی</option>' +
+                        '<option value="Ally">متحد</option>' +
+                        '<option value="Rival">رقیب</option>' +
+                        '<option value="Other">سایر</option>' +
+                    '</select>' +
+                '</div>' +
+                '<div class="up-field" id="person-relative-degreehint-wrap-' + idx + '" style="display:none;">' +
+                    '<label>تعداد نسل (اختیاری، فقط اگر دقیقاً معلوم است)</label>' +
+                    '<input type="text" id="person-relative-degreehint-' + idx + '" placeholder="مثلاً ۲ برای پدربزرگ/مادربزرگ" />' +
+                '</div>' +
+            '</div>' +
+            '<div class="up-field-row" id="person-relative-direction-wrap-' + idx + '">' +
+                '<div class="up-field">' +
+                    '<label>جهت رابطه</label>' +
+                    '<select id="person-relative-direction-' + idx + '">' +
+                        '<option value="newFirst">این فرد جدید، طرف اول رابطه است (مثلاً پدر/وزیر طرف دوم)</option>' +
+                        '<option value="otherFirst">فرد دیگر، طرف اول رابطه است (مثلاً پدر/وزیر این فرد جدید)</option>' +
+                    '</select>' +
+                '</div>' +
+            '</div>' +
+            '<div class="up-field-row">' +
+                '<div class="up-field">' +
+                    '<label>فرد دیگر (باید از قبل در فهرست موجود باشد)</label>' +
+                    '<div class="up-autocomplete-wrap">' +
+                        '<input type="text" id="person-relative-person-search-' + idx + '" autocomplete="off" placeholder="نام فرد را تایپ کنید..." />' +
+                        '<input type="hidden" id="person-relative-person-id-' + idx + '" />' +
+                        '<div id="person-relative-person-results-' + idx + '" class="up-autocomplete-results" style="display:none;"></div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="up-field">' +
+                    '<label>یادداشت (اختیاری)</label>' +
+                    '<input type="text" id="person-relative-note-' + idx + '" />' +
+                '</div>' +
+                '<a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="removePersonRelativeRow(' + idx + ')">✕ حذف این رابطه</a>' +
+            '</div>';
+        document.getElementById('geotag-person-relatives-list').appendChild(row);
+
+        setupPersonAutocomplete(
+            document.getElementById('person-relative-person-search-' + idx),
+            document.getElementById('person-relative-person-id-' + idx),
+            document.getElementById('person-relative-person-results-' + idx),
+            allGeoPeople,
+            null,
+            function (typedText) {
+                upToast('این فرد در فهرست نیست. طرف دیگر یک رابطه باید از قبل تعریف‌شده باشد؛ برای دو فرد تازه، ابتدا این فرم را برای یکی از آن‌ها به‌صورت جدا تکمیل و ثبت کنید.', 'error');
+            }
+        );
+    }
+
+    function removePersonRelativeRow(idx) {
+        var row = document.getElementById('person-relative-row-' + idx);
+        if (row) row.remove();
+    }
+
+    function togglePersonRelativeKind(idx) {
+        var kind = $('#person-relative-kind-' + idx).val();
+        var isFamily = kind === 'family';
+        $('#person-relative-familytype-wrap-' + idx).toggle(isFamily);
+        $('#person-relative-affiliationtype-wrap-' + idx).toggle(!isFamily);
+        togglePersonRelativeDegreeHint(idx);
+    }
+
+    function togglePersonRelativeDegreeHint(idx) {
+        var kind = $('#person-relative-kind-' + idx).val();
+        var isAncestor = kind === 'family' && $('#person-relative-familytype-' + idx).val() === 'Ancestor';
+        $('#person-relative-degreehint-wrap-' + idx).toggle(isAncestor);
+    }
 
     function toggleNewLocationWidget() {
         var widget = document.getElementById('new-location-widget');
@@ -293,19 +449,113 @@
         return true;
     }
 
+    // Builds the SuggestedPersonGraphJson payload (see GanjoorPoemGeoDateTagCorrection's doc
+    // comment for the exact shape) from the "new person" panel and its relatives-list rows.
+    // Returns null (with an error toast) if the panel is open but something required is missing;
+    // the caller is expected to have already checked the panel is actually meant to be used.
+    function buildPersonGraphJson() {
+        var name = ($('#geotag-new-person-name').val() || '').trim();
+        if (name == '') {
+            upToast('لطفاً نام فرد جدید را وارد کنید.', 'error');
+            return null;
+        }
+
+        var birthLocationId = $('#geotag-new-person-birthlocation-id').val();
+        var deathLocationId = $('#geotag-new-person-deathlocation-id').val();
+
+        var person = {
+            localKey: 'new',
+            existingPersonId: null,
+            name: name,
+            description: $('#geotag-new-person-description').val() || null,
+            wikiUrl: $('#geotag-new-person-wikiurl').val() || null,
+            birthYearInLHijri: $('#geotag-new-person-birthyear').val() ? parseInt($('#geotag-new-person-birthyear').val()) : null,
+            deathYearInLHijri: $('#geotag-new-person-deathyear').val() ? parseInt($('#geotag-new-person-deathyear').val()) : null,
+            validBirthDate: $('#geotag-new-person-validbirth').is(':checked'),
+            validDeathDate: $('#geotag-new-person-validdeath').is(':checked'),
+            birthLocationId: birthLocationId ? parseInt(birthLocationId) : null,
+            deathLocationId: deathLocationId ? parseInt(deathLocationId) : null,
+            familyTreeCaption: $('#geotag-new-person-familytreecaption').val() || null
+        };
+
+        var relatedPeople = [];
+        var relatedPeopleByPersonId = {}; // existingPersonId -> localKey, so a person picked in two rows isn't duplicated
+        var relations = [];
+
+        var rows = $('#geotag-person-relatives-list > div');
+        for (var r = 0; r < rows.length; r++) {
+            var idx = rows[r].id.replace('person-relative-row-', '');
+            var otherPersonId = $('#person-relative-person-id-' + idx).val();
+            if (!otherPersonId) {
+                upToast('برای یکی از روابط افزوده‌شده، فرد دیگر انتخاب نشده است.', 'error');
+                return null;
+            }
+            otherPersonId = parseInt(otherPersonId);
+
+            var otherLocalKey = relatedPeopleByPersonId[otherPersonId];
+            if (!otherLocalKey) {
+                otherLocalKey = 'existing_' + otherPersonId;
+                relatedPeopleByPersonId[otherPersonId] = otherLocalKey;
+                relatedPeople.push({ localKey: otherLocalKey, existingPersonId: otherPersonId });
+            }
+
+            var kind = $('#person-relative-kind-' + idx).val();
+            var direction = $('#person-relative-direction-' + idx).val();
+            var person1 = direction === 'otherFirst' ? otherLocalKey : 'new';
+            var person2 = direction === 'otherFirst' ? 'new' : otherLocalKey;
+            var note = $('#person-relative-note-' + idx).val() || null;
+
+            if (kind === 'affiliation') {
+                relations.push({
+                    kind: 'affiliation',
+                    person1: person1,
+                    person2: person2,
+                    affiliationType: $('#person-relative-affiliationtype-' + idx).val(),
+                    note: note
+                });
+            } else {
+                var relationType = $('#person-relative-familytype-' + idx).val();
+                var degreeHintStr = $('#person-relative-degreehint-' + idx).val();
+                relations.push({
+                    kind: 'family',
+                    person1: person1,
+                    person2: person2,
+                    relationType: relationType,
+                    degreeHint: (relationType === 'Ancestor' && degreeHintStr) ? parseInt(degreeHintStr) : null,
+                    note: note
+                });
+            }
+        }
+
+        return JSON.stringify({ person: person, relatedPeople: relatedPeople, relations: relations });
+    }
+
     function renderPendingGeoDateTags() {
         var container = document.getElementById('pending-geotag-suggestions');
         if (geoDateTagSuggestions.length == 0) {
             container.innerHTML = '';
             return;
         }
-        var html = '<table><tr><th>وضعیت</th><th>بیت</th><th>مکان</th><th>سال</th><th>ماه</th><th>روز</th><th>#</th></tr>';
+        var html = '<table><tr><th>وضعیت</th><th>بیت</th><th>مکان</th><th>فرد</th><th>سال</th><th>ماه</th><th>روز</th><th>#</th></tr>';
         for (var i = 0; i < geoDateTagSuggestions.length; i++) {
             var s = geoDateTagSuggestions[i];
             var status = s.markForDelete ? '🗑️ درخواست حذف' : '➕ پیشنهاد جدید';
             var coupletText = (s.coupletIndex != null && geoDateTagCoupletTexts[s.coupletIndex]) ? geoDateTagCoupletTexts[s.coupletIndex] : '— کل شعر —';
             var locationText = s.markForDelete ? '' : (s.locationId ? ((allGeoLocations.filter(function (l) { return l.id === s.locationId; })[0] || {}).name || ('مکان #' + s.locationId)) : (s.suggestedLocationName || ''));
-            html += '<tr><td>' + status + '</td><td>' + coupletText + '</td><td>' + locationText + '</td><td>' + (s.lunarYear || '') + '</td><td>' + (s.lunarMonth || '') + '</td><td>' + (s.lunarDay || '') + '</td>' +
+            var personText = '';
+            if (!s.markForDelete) {
+                if (s.personId) {
+                    personText = (allGeoPeople.filter(function (p) { return p.id === s.personId; })[0] || {}).name || ('فرد #' + s.personId);
+                } else if (s.suggestedPersonGraphJson) {
+                    try {
+                        var parsedGraph = JSON.parse(s.suggestedPersonGraphJson);
+                        personText = 'فرد جدید: ' + (parsedGraph.person ? parsedGraph.person.name : '');
+                    } catch (e) {
+                        personText = 'فرد جدید';
+                    }
+                }
+            }
+            html += '<tr><td>' + status + '</td><td>' + coupletText + '</td><td>' + locationText + '</td><td>' + personText + '</td><td>' + (s.lunarYear || '') + '</td><td>' + (s.lunarMonth || '') + '</td><td>' + (s.lunarDay || '') + '</td>' +
                 '<td><a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="removeGeoDateTagSuggestion(' + i + ')">✕ حذف از فهرست</a></td></tr>';
         }
         html += '</table>';
@@ -350,13 +600,16 @@
         var year = $('#geotag-year').val();
         var month = $('#geotag-month').val();
         var day = $('#geotag-day').val();
+        var personId = $('#geotag-person-select').val();
+        var newPersonName = $('#geotag-new-person-name').val();
 
         var hasLocation = (locationId && locationId != '') || (newLocationName && newLocationLat && newLocationLng);
         var hasDate = year && year != '';
+        var hasPerson = (personId && personId != '') || (newPersonName && newPersonName.trim() != '');
 
-        if (!hasLocation && !hasDate) {
+        if (!hasLocation && !hasDate && !hasPerson) {
             if (showErrorIfEmpty) {
-                upToast('لطفاً حداقل یک مکان یا سال وارد کنید.', 'error');
+                upToast('لطفاً حداقل یک مکان، تاریخ یا فرد وارد کنید.', 'error');
             }
             return null;
         }
@@ -372,6 +625,14 @@
             }
         }
 
+        var suggestedPersonGraphJson = null;
+        if ((!personId || personId == '') && newPersonName && newPersonName.trim() != '') {
+            suggestedPersonGraphJson = buildPersonGraphJson();
+            if (suggestedPersonGraphJson == null) {
+                return null; // buildPersonGraphJson already showed the relevant error toast
+            }
+        }
+
         return {
             markForDelete: false,
             coupletIndex: (coupletIndex && coupletIndex != '') ? parseInt(coupletIndex) : null,
@@ -382,6 +643,8 @@
             lunarYear: year ? parseInt(year) : null,
             lunarMonth: month ? parseInt(month) : null,
             lunarDay: day ? parseInt(day) : null,
+            personId: (personId && personId != '') ? parseInt(personId) : null,
+            suggestedPersonGraphJson: suggestedPersonGraphJson,
             ignoreInCategory: $('#geotag-ignore-in-category').is(':checked'),
             suggestionNote: $('#geotag-note').val() || null
         };
@@ -398,6 +661,27 @@
         $('#geotag-year').val('');
         $('#geotag-month').val('');
         $('#geotag-day').val('');
+        $('#geotag-person-select').val('');
+        $('#geotag-person-search').val('');
+        $('#geotag-person-results').hide().empty();
+        $('#geotag-new-person-name').val('');
+        $('#geotag-new-person-description').val('');
+        $('#geotag-new-person-wikiurl').val('');
+        $('#geotag-new-person-birthyear').val('');
+        $('#geotag-new-person-deathyear').val('');
+        $('#geotag-new-person-validbirth').prop('checked', false);
+        $('#geotag-new-person-validdeath').prop('checked', false);
+        $('#geotag-new-person-birthlocation-id').val('');
+        $('#geotag-new-person-birthlocation-search').val('');
+        $('#geotag-new-person-birthlocation-results').hide().empty();
+        $('#geotag-new-person-deathlocation-id').val('');
+        $('#geotag-new-person-deathlocation-search').val('');
+        $('#geotag-new-person-deathlocation-results').hide().empty();
+        $('#geotag-new-person-familytreecaption').val('');
+        $('#geotag-person-relatives-list').empty();
+        if (document.getElementById('new-person-widget').style.display !== 'none') {
+            toggleNewPersonWidget();
+        }
         $('#geotag-ignore-in-category').prop('checked', false);
         $('#geotag-note').val('');
         if (geoDateTagMarker != null && geoDateTagMap != null) {
@@ -2104,6 +2388,73 @@ else
                 <label for="geotag-day">روز</label>
                 <input type="text" id="geotag-day" />
             </div>
+        </div>
+
+        <div class="up-field">
+            <label for="geotag-person-search">فرد</label>
+            <div class="up-autocomplete-wrap">
+                <input type="text" id="geotag-person-search" autocomplete="off" placeholder="نام فرد را تایپ کنید..." />
+                <input type="hidden" id="geotag-person-select" />
+                <div id="geotag-person-results" class="up-autocomplete-results" style="display:none;"></div>
+            </div>
+            <p class="up-hint">شروع به تایپ کنید تا فهرست افراد بر اساس نام فیلتر شود؛ اگر فرد مورد نظر پیدا نشد، گزینهٔ تعریف او به‌عنوان فرد جدید نمایش داده می‌شود.</p>
+            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="toggleNewPersonWidget()">👤 فرد جدید پیشنهاد بده</a>
+        </div>
+
+        <div id="new-person-widget" style="display:none;">
+            <div class="up-field">
+                <label for="geotag-new-person-name">نام</label>
+                <input type="text" id="geotag-new-person-name" />
+            </div>
+            <div class="up-field">
+                <label for="geotag-new-person-description">توضیحات (اختیاری)</label>
+                <textarea id="geotag-new-person-description" rows="2"></textarea>
+            </div>
+            <div class="up-field">
+                <label for="geotag-new-person-wikiurl">لینک ویکی‌پدیا (اختیاری)</label>
+                <input type="text" id="geotag-new-person-wikiurl" />
+            </div>
+            <div class="up-field-row">
+                <div class="up-field">
+                    <label for="geotag-new-person-birthyear">سال تولد (قمری)</label>
+                    <input type="text" id="geotag-new-person-birthyear" />
+                    <span class="up-check-row"><input type="checkbox" id="geotag-new-person-validbirth" /><label for="geotag-new-person-validbirth">تاریخ تولد قطعی است</label></span>
+                </div>
+                <div class="up-field">
+                    <label for="geotag-new-person-deathyear">سال وفات (قمری)</label>
+                    <input type="text" id="geotag-new-person-deathyear" />
+                    <span class="up-check-row"><input type="checkbox" id="geotag-new-person-validdeath" /><label for="geotag-new-person-validdeath">تاریخ وفات قطعی است</label></span>
+                </div>
+            </div>
+            <div class="up-field-row">
+                <div class="up-field">
+                    <label for="geotag-new-person-birthlocation-search">محل تولد (اختیاری، فقط از مکان‌های موجود در فهرست)</label>
+                    <div class="up-autocomplete-wrap">
+                        <input type="text" id="geotag-new-person-birthlocation-search" autocomplete="off" placeholder="نام مکان را تایپ کنید..." />
+                        <input type="hidden" id="geotag-new-person-birthlocation-id" />
+                        <div id="geotag-new-person-birthlocation-results" class="up-autocomplete-results" style="display:none;"></div>
+                    </div>
+                </div>
+                <div class="up-field">
+                    <label for="geotag-new-person-deathlocation-search">محل وفات (اختیاری، فقط از مکان‌های موجود در فهرست)</label>
+                    <div class="up-autocomplete-wrap">
+                        <input type="text" id="geotag-new-person-deathlocation-search" autocomplete="off" placeholder="نام مکان را تایپ کنید..." />
+                        <input type="hidden" id="geotag-new-person-deathlocation-id" />
+                        <div id="geotag-new-person-deathlocation-results" class="up-autocomplete-results" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="up-field">
+                <label for="geotag-new-person-familytreecaption">عنوان شجره‌نامه (اختیاری، فقط اگر این فرد ریشهٔ یک خانواده/سلسله شناخته‌شده است - مثلاً «ساسانیان»)</label>
+                <input type="text" id="geotag-new-person-familytreecaption" />
+            </div>
+
+            <p class="up-hint">
+                اگر خویشاوندی یا وابستگی این فرد با فردی دیگر را می‌دانید، می‌توانید همین‌جا اضافه کنید (فرد دیگر باید از قبل در فهرست موجود باشد؛
+                برای فردی که او هم تازه است، ابتدا این فرم را برای او هم به‌صورت جدا تکمیل و ثبت کنید، سپس این رابطه را اضافه کنید).
+            </p>
+            <div id="geotag-person-relatives-list"></div>
+            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="addPersonRelativeRow()">➕ افزودن خویشاوند یا وابستگی</a>
         </div>
 
         <div class="up-check-row">

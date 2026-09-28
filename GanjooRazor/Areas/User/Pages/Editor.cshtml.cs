@@ -131,6 +131,22 @@ namespace GanjooRazor.Areas.User.Pages
                 new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }
             );
 
+        /// <summary>
+        /// people (for the geo/date/person tag's person picker)
+        /// </summary>
+        public List<GanjoorRelatedPerson> People { get; set; }
+
+        /// <summary>
+        /// camelCase JSON of People (id/name/birthYearInLHijri/deathYearInLHijri only - enough to
+        /// tell two same-named people apart in the picker), same pre-serialization rationale as
+        /// AllLocationsJson
+        /// </summary>
+        public string AllPeopleJson =>
+            JsonConvert.SerializeObject(
+                (People ?? new List<GanjoorRelatedPerson>()).Select(p => new { p.Id, p.Name, p.BirthYearInLHijri, p.DeathYearInLHijri }),
+                new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }
+            );
+
 
         /// <summary>
         /// poem geo date tags
@@ -351,6 +367,15 @@ namespace GanjooRazor.Areas.User.Pages
                         );
 
                     Locations.AddRange(JsonConvert.DeserializeObject<GanjoorGeoLocation[]>(await responseLocations.Content.ReadAsStringAsync()));
+
+                    var responsePeople = await secureClient.GetAsync($"{APIRoot.Url}/api/people");
+                    if (!responsePeople.IsSuccessStatusCode)
+                    {
+                        FatalError = JsonConvert.DeserializeObject<string>(await responsePeople.Content.ReadAsStringAsync());
+                        return Page();
+                    }
+
+                    People = JsonConvert.DeserializeObject<List<GanjoorRelatedPerson>>(await responsePeople.Content.ReadAsStringAsync());
 
 
                     var tagsResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{PageInformation.Id}/geotag");
