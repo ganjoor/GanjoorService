@@ -2894,6 +2894,39 @@
             <param name="moderation"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetRelationByIdAsync(System.Int32)">
+            <summary>
+            get a single kinship edge by its own id, with both sides' names resolved - used by
+            /SuggestPersonRelationEdit/{relationId} to show what it's about
+            </summary>
+            <param name="relationId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.SuggestPersonRelationEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion)">
+            <summary>
+            suggest an addition, change or removal of a kinship edge - any logged-in user, same as
+            suggesting a person edit. Goes into the pending queue; does not change anything.
+            </summary>
+            <param name="suggestion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetNextUnreviewedPersonRelationEditSuggestionAsync(System.Int32)">
+            <summary>
+            get the next unreviewed relation-edit suggestion, for the moderator queue - same
+            permission as reviewing a person edit
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.ModeratePersonRelationEditSuggestionAsync(System.Int32,RMuseum.Models.Ganjoor.ViewModels.PersonEditSuggestionModerationViewModel)">
+            <summary>
+            apply a moderator's decision to a pending relation-edit suggestion - same permission as
+            moderating a person edit
+            </summary>
+            <param name="id"></param>
+            <param name="moderation"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.GanjoorRelatedPersonController._personService">
             <summary>
             person service
@@ -4030,6 +4063,12 @@
             see GanjoorPersonEditSuggestion
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPersonRelationEditSuggestions">
+            <summary>
+            pending/reviewed suggested additions, changes or removals of a kinship edge between two
+            already-approved people - see GanjoorPersonRelationEditSuggestion
+            </summary>
+        </member>
         <member name="P:RMuseum.DbContext.RMuseumDbContext.Books">
             <summary>
             Books (PDF Library)
@@ -4875,6 +4914,18 @@
             <inheritdoc />
         </member>
         <member name="M:RMuseum.Migrations.AddGanjoorPersonEditSuggestion.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.AddGanjoorPersonRelationEditSuggestion">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddGanjoorPersonRelationEditSuggestion.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddGanjoorPersonRelationEditSuggestion.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddGanjoorPersonRelationEditSuggestion.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -9396,6 +9447,16 @@
             suggested family tree caption
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedForDeletion">
+            <summary>
+            true if this suggestion is actually a request to delete the person outright, not to
+            change their fields - when true, every Suggested* field above is ignored on approval
+            (they still carry whatever the contributor's pre-filled form happened to hold) and
+            ModeratePersonEditSuggestionAsync removes the person and every relation/affiliation/tag
+            reference to them instead. Kept on this same entity rather than a separate one so the
+            existing suggest/review UI and permissions are reused as-is.
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestionNote">
             <summary>
             suggester's note to the moderator
@@ -9481,6 +9542,128 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelation.Note">
             <summary>
             free-text note (e.g. sourcing/reasoning for this relation)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion">
+            <summary>
+            a contributor's suggestion to add a brand new kinship edge between two already-approved
+            people, change an existing edge's type/degree/note, or remove an existing edge outright -
+            the moderated counterpart of GanjoorPersonEditSuggestion, but for the edges between people
+            rather than one person's own fields. Reviewed the same way (see
+            GanjoorRelatedPersonService.ModeratePersonRelationEditSuggestionAsync).
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.Id">
+            <summary>
+            suggestion id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.Action">
+            <summary>
+            what this suggestion proposes doing
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.ExistingRelationId">
+            <summary>
+            for Modify/Remove: the existing GanjoorPersonRelation row this suggestion targets. Null
+            for Add, where there's nothing existing yet.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.ExistingRelation">
+            <summary>
+            the existing relation being modified/removed (for showing a before/after diff to the
+            moderator) - null for Add
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.Person1Id">
+            <summary>
+            the pair this suggestion is about. For Add, this and Person2Id define the new relation.
+            For Modify/Remove, these are copied from ExistingRelation at submission time, so the
+            suggestion always accurately reflects what it targets even if the underlying relation
+            changes again before this is reviewed.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.Person1">
+            <summary>
+            first person (navigation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.Person2Id">
+            <summary>
+            second person id, see Person1Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.Person2">
+            <summary>
+            second person (navigation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.SuggestedRelationType">
+            <summary>
+            for Add/Modify: the relation type to create/change to. For Remove: a snapshot of the
+            existing relation's type at submission time, purely for display (removing doesn't use it).
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.SuggestedDegreeHint">
+            <summary>
+            see GanjoorPersonRelation.DegreeHint - same for/Add/Modify/Remove-display purpose as
+            SuggestedRelationType above
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.SuggestedNote">
+            <summary>
+            see GanjoorPersonRelation.Note - same Add/Modify/Remove-display purpose as
+            SuggestedRelationType above
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.SuggestionNote">
+            <summary>
+            suggester's note to the moderator (e.g. why an existing relation is wrong)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.Date">
+            <summary>
+            date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.UserId">
+            <summary>
+            suggester's user id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.User">
+            <summary>
+            suggester
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.Reviewed">
+            <summary>
+            reviewed
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.Result">
+            <summary>
+            review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.ReviewDate">
+            <summary>
+            review date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.ReviewNote">
+            <summary>
+            review note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.ReviewerUserId">
+            <summary>
+            reviewer's user id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.ReviewerUser">
+            <summary>
+            reviewer
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoem">
@@ -11571,6 +11754,26 @@
             doesn't fit any of the above - rely on Note for what the tie actually is
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.PersonRelationSuggestionAction">
+            <summary>
+            what a GanjoorPersonRelationEditSuggestion proposes doing to the kinship graph
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonRelationSuggestionAction.Add">
+            <summary>
+            create a brand new GanjoorPersonRelation between Person1Id and Person2Id
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonRelationSuggestionAction.Modify">
+            <summary>
+            change the RelationType/DegreeHint/Note of the existing relation ExistingRelationId points to
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonRelationSuggestionAction.Remove">
+            <summary>
+            remove the existing relation ExistingRelationId points to outright
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.PersonRelationType">
             <summary>
             the kind of kinship edge a GanjoorPersonRelation represents between two GanjoorRelatedPerson
@@ -13114,6 +13317,12 @@
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo">
             <summary>
             one GanjoorPersonRelation row, resolved from Person's point of view
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo.Id">
+            <summary>
+            the underlying GanjoorPersonRelation row's own id - needed by the client to link to
+            /SuggestPersonRelationEdit/{id} for suggesting a change/removal of this specific edge
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo.OtherPersonId">
@@ -18008,6 +18217,48 @@
             <param name="reviewNote"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetRelationByIdAsync(System.Int32)">
+            <summary>
+            get a single kinship edge by its own id, with both sides' names resolved - used by
+            /SuggestPersonRelationEdit/{relationId} to show what it's about
+            </summary>
+            <param name="relationId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.SuggestPersonRelationEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion)">
+            <summary>
+            submit a suggested addition, change or removal of a kinship edge - goes into the
+            pending queue, does not change anything until a moderator approves it
+            </summary>
+            <param name="suggestion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetNextUnreviewedPersonRelationEditSuggestionAsync(System.Int32)">
+            <summary>
+            get the next unreviewed relation-edit suggestion (for the moderator queue)
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetUnreviewedPersonRelationEditSuggestionCountAsync">
+            <summary>
+            unreviewed relation-edit suggestion count
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.ModeratePersonRelationEditSuggestionAsync(System.Guid,System.Int32,RMuseum.Models.Ganjoor.CorrectionReviewResult,System.String)">
+            <summary>
+            apply a moderator's decision to a pending relation-edit suggestion. On Approved: Add
+            creates a new GanjoorPersonRelation, Modify updates the existing one ExistingRelationId
+            points to, Remove deletes it (and auto-rejects any other still-pending suggestion that
+            also targeted that same now-gone relation, so it doesn't dangle).
+            </summary>
+            <param name="moderatorUserId"></param>
+            <param name="suggestionId"></param>
+            <param name="result"></param>
+            <param name="reviewNote"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorService">
             <summary>
             Ganjoor Poems Content Privider Service
@@ -21514,16 +21765,82 @@
             <param name="reviewNote"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.DeletePersonAndReferencesAsync(RMuseum.Models.Ganjoor.GanjoorRelatedPerson)">
+            <summary>
+            removes a person and every row that would otherwise block that deletion at the database
+            level (kinship edges, affiliations, and other pending relation-edit suggestions touching
+            them - all Restrict-on-delete FKs, see RMuseumDbContext.OnModelCreating), plus detaches
+            (but does not delete) any approved poem geo/date tag that named them, since the tag
+            itself may still carry a real location/date worth keeping.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetRelationByIdAsync(System.Int32)">
+            <summary>
+            get a single kinship edge by its own id, with both sides' names resolved
+            </summary>
+            <param name="relationId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.SuggestPersonRelationEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion)">
+            <summary>
+            submit a suggested addition, change or removal of a kinship edge
+            </summary>
+            <param name="suggestion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetNextUnreviewedPersonRelationEditSuggestionAsync(System.Int32)">
+            <summary>
+            get the next unreviewed relation-edit suggestion for the moderator queue
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetUnreviewedPersonRelationEditSuggestionCountAsync">
+            <summary>
+            unreviewed relation-edit suggestion count
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.ModeratePersonRelationEditSuggestionAsync(System.Guid,System.Int32,RMuseum.Models.Ganjoor.CorrectionReviewResult,System.String)">
+            <summary>
+            apply a moderator's decision to a pending relation-edit suggestion
+            </summary>
+            <param name="moderatorUserId"></param>
+            <param name="suggestionId"></param>
+            <param name="result"></param>
+            <param name="reviewNote"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorRelatedPersonService._context">
             <summary>
             Database Context
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.#ctor(RMuseum.DbContext.RMuseumDbContext)">
+        <member name="F:RMuseum.Services.Implementation.GanjoorRelatedPersonService._appUserService">
+            <summary>
+            used to find every user holding the Ganjoor:Modify permission, to notify them when a new
+            suggestion needs review - same permission the moderation endpoints themselves require
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.GanjoorRelatedPersonService._notificationService">
+            <summary>
+            used to notify moderators of a new pending suggestion, and submitters of its outcome -
+            same service/pattern GanjoorService uses for poem corrections and song suggestions
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.#ctor(RMuseum.DbContext.RMuseumDbContext,RSecurityBackend.Services.IAppUserService,RSecurityBackend.Services.IRNotificationService)">
             <summary>
             constructor
             </summary>
             <param name="context"></param>
+            <param name="appUserService"></param>
+            <param name="notificationService"></param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.NotifyModeratorsOfPendingSuggestionAsync(System.String,System.String)">
+            <summary>
+            notify every user holding the Ganjoor:Modify permission that a new suggestion of the
+            given kind is pending review at reviewPageUrl - shared by both suggestion types below
+            </summary>
         </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorService">
             <summary>

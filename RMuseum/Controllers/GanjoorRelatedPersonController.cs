@@ -208,6 +208,100 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get a single kinship edge by its own id, with both sides' names resolved - used by
+        /// /SuggestPersonRelationEdit/{relationId} to show what it's about
+        /// </summary>
+        /// <param name="relationId"></param>
+        /// <returns></returns>
+        [HttpGet("relations/{relationId:int}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPersonRelation))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetRelationByIdAsync(int relationId)
+        {
+            var res = await _personService.GetRelationByIdAsync(relationId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// suggest an addition, change or removal of a kinship edge - any logged-in user, same as
+        /// suggesting a person edit. Goes into the pending queue; does not change anything.
+        /// </summary>
+        /// <param name="suggestion"></param>
+        /// <returns></returns>
+        [HttpPost("relationeditsuggestion")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPersonRelationEditSuggestion))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> SuggestPersonRelationEditAsync([FromBody] GanjoorPersonRelationEditSuggestion suggestion)
+        {
+            suggestion.UserId = new Guid(User.Claims.First(c => c.Type == "UserId").Value);
+            var res = await _personService.SuggestPersonRelationEditAsync(suggestion);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// get the next unreviewed relation-edit suggestion, for the moderator queue - same
+        /// permission as reviewing a person edit
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        [HttpGet("relationeditsuggestions/next")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPersonRelationEditSuggestion))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetNextUnreviewedPersonRelationEditSuggestionAsync(int skip = 0)
+        {
+            var res = await _personService.GetNextUnreviewedPersonRelationEditSuggestionAsync(skip);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            var resCount = await _personService.GetUnreviewedPersonRelationEditSuggestionCountAsync();
+            if (!string.IsNullOrEmpty(resCount.ExceptionString))
+                return BadRequest(resCount.ExceptionString);
+
+            // Paging Header - same shape ReviewEdits.cshtml.cs already knows how to read for poem corrections
+            HttpContext.Response.Headers.Append("paging-headers",
+                JsonConvert.SerializeObject(
+                    new PaginationMetadata()
+                    {
+                        totalCount = resCount.Result,
+                        pageSize = -1,
+                        currentPage = -1,
+                        hasNextPage = false,
+                        hasPreviousPage = false,
+                        totalPages = -1
+                    })
+                );
+
+            return Ok(res.Result);//might be null
+        }
+
+        /// <summary>
+        /// apply a moderator's decision to a pending relation-edit suggestion - same permission as
+        /// moderating a person edit
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="moderation"></param>
+        /// <returns></returns>
+        [HttpPost("relationeditsuggestions/{id:int}/moderate")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPersonRelationEditSuggestion))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> ModeratePersonRelationEditSuggestionAsync(int id, [FromBody] PersonEditSuggestionModerationViewModel moderation)
+        {
+            Guid userId = new Guid(User.Claims.First(c => c.Type == "UserId").Value);
+            var res = await _personService.ModeratePersonRelationEditSuggestionAsync(userId, id, moderation.Result, moderation.ReviewNote);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// person service
         /// </summary>
         private readonly IGanjoorRelatedPersonService _personService;

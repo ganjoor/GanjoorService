@@ -1,8 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
+using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
+using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Models.Notification;
+using RSecurityBackend.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -102,6 +106,7 @@ namespace RMuseum.Services.Implementation
 
                 var relations = relationRows.Select(r => new GanjoorPersonRelationInfo()
                 {
+                    Id = r.Id,
                     OtherPersonId = r.Person1Id == id ? r.Person2Id : r.Person1Id,
                     OtherPersonName = r.Person1Id == id ? r.Person2.Name : r.Person1.Name,
                     RelationType = r.RelationType,
@@ -268,20 +273,20 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                if (suggestion == null || string.IsNullOrWhiteSpace(suggestion.SuggestedName))
+                if (suggestion == null || (!suggestion.SuggestedForDeletion && string.IsNullOrWhiteSpace(suggestion.SuggestedName)))
                 {
                     return new RServiceResult<GanjoorPersonEditSuggestion>(null, "نام شخصیت نمی‌تواند خالی باشد.");
                 }
 
-                var personExists = await _context.GanjoorRelatedPersons.Where(p => p.Id == suggestion.PersonId).AnyAsync();
-                if (!personExists)
+                var person = await _context.GanjoorRelatedPersons.Where(p => p.Id == suggestion.PersonId).SingleOrDefaultAsync();
+                if (person == null)
                 {
                     return new RServiceResult<GanjoorPersonEditSuggestion>(null, "شخصیت پیدا نشد.");
                 }
 
                 suggestion.Id = 0;
                 suggestion.Date = DateTime.Now;
-                suggestion.SuggestedName = suggestion.SuggestedName.Trim();
+                suggestion.SuggestedName = suggestion.SuggestedName?.Trim();
                 suggestion.SuggestedDescription = string.IsNullOrWhiteSpace(suggestion.SuggestedDescription) ? null : suggestion.SuggestedDescription.Trim();
                 suggestion.SuggestedWikiUrl = string.IsNullOrWhiteSpace(suggestion.SuggestedWikiUrl) ? null : suggestion.SuggestedWikiUrl.Trim();
                 suggestion.SuggestedFamilyTreeCaption = string.IsNullOrWhiteSpace(suggestion.SuggestedFamilyTreeCaption) ? null : suggestion.SuggestedFamilyTreeCaption.Trim();
@@ -292,6 +297,14 @@ namespace RMuseum.Services.Implementation
 
                 _context.GanjoorPersonEditSuggestions.Add(suggestion);
                 await _context.SaveChangesAsync();
+
+                await NotifyModeratorsOfPendingSuggestionAsync(
+                    suggestion.SuggestedForDeletion ? "پیشنهاد حذف شخصیت" : "پیشنهاد ویرایش شخصیت",
+                    (suggestion.SuggestedForDeletion
+                        ? $"کاربری پیشنهاد حذف شخصیت «{person.Name}» را داده است."
+                        : $"کاربری ویرایش جدیدی برای شخصیت «{person.Name}» پیشنهاد داده است.") +
+                    $" لطفاً بخش <a href=\"https://ganjoor.net/Admin/ReviewPersonEdits\">ویرایش‌های پیشنهادی شخصیت‌ها</a> را بررسی فرمایید."
+                );
 
                 return new RServiceResult<GanjoorPersonEditSuggestion>(suggestion);
             }
@@ -367,25 +380,33 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<GanjoorPersonEditSuggestion>(null, "این پیشنهاد پیش‌تر بررسی شده است.");
                 }
 
+                var person = await _context.GanjoorRelatedPersons.Where(p => p.Id == suggestion.PersonId).SingleOrDefaultAsync();
+                if (person == null)
+                {
+                    return new RServiceResult<GanjoorPersonEditSuggestion>(null, "شخصیت مقصد این پیشنهاد پیدا نشد.");
+                }
+                var personName = person.Name; // snapshot before a possible deletion below, for the notification text
+
                 if (result == CorrectionReviewResult.Approved)
                 {
-                    var person = await _context.GanjoorRelatedPersons.Where(p => p.Id == suggestion.PersonId).SingleOrDefaultAsync();
-                    if (person == null)
+                    if (suggestion.SuggestedForDeletion)
                     {
-                        return new RServiceResult<GanjoorPersonEditSuggestion>(null, "شخصیت مقصد این پیشنهاد پیدا نشد.");
+                        await DeletePersonAndReferencesAsync(person);
                     }
-
-                    person.Name = suggestion.SuggestedName;
-                    person.Description = suggestion.SuggestedDescription;
-                    person.WikiUrl = suggestion.SuggestedWikiUrl;
-                    person.BirthYearInLHijri = suggestion.SuggestedBirthYearInLHijri;
-                    person.DeathYearInLHijri = suggestion.SuggestedDeathYearInLHijri;
-                    person.ValidBirthDate = suggestion.SuggestedValidBirthDate;
-                    person.ValidDeathDate = suggestion.SuggestedValidDeathDate;
-                    person.BirthLocationId = suggestion.SuggestedBirthLocationId;
-                    person.DeathLocationId = suggestion.SuggestedDeathLocationId;
-                    person.FamilyTreeCaption = suggestion.SuggestedFamilyTreeCaption;
-                    // Id and MachineGenerated on the person are intentionally left untouched
+                    else
+                    {
+                        person.Name = suggestion.SuggestedName;
+                        person.Description = suggestion.SuggestedDescription;
+                        person.WikiUrl = suggestion.SuggestedWikiUrl;
+                        person.BirthYearInLHijri = suggestion.SuggestedBirthYearInLHijri;
+                        person.DeathYearInLHijri = suggestion.SuggestedDeathYearInLHijri;
+                        person.ValidBirthDate = suggestion.SuggestedValidBirthDate;
+                        person.ValidDeathDate = suggestion.SuggestedValidDeathDate;
+                        person.BirthLocationId = suggestion.SuggestedBirthLocationId;
+                        person.DeathLocationId = suggestion.SuggestedDeathLocationId;
+                        person.FamilyTreeCaption = suggestion.SuggestedFamilyTreeCaption;
+                        // Id and MachineGenerated on the person are intentionally left untouched
+                    }
                 }
 
                 suggestion.Reviewed = true;
@@ -396,6 +417,29 @@ namespace RMuseum.Services.Implementation
 
                 await _context.SaveChangesAsync();
 
+                if (result == CorrectionReviewResult.Approved)
+                {
+                    await _notificationService.PushNotification(
+                        suggestion.UserId,
+                        suggestion.SuggestedForDeletion ? "تأیید حذف شخصیت پیشنهادی" : "تأیید ویرایش پیشنهادی شخصیت",
+                        suggestion.SuggestedForDeletion
+                            ? $"پیشنهاد شما برای حذف شخصیت «{personName}» تأیید و اعمال شد. از این که به تکمیل اطلاعات گنجور کمک کردید سپاسگزاریم."
+                            : $"ویرایش پیشنهادی شما برای شخصیت «{personName}» تأیید و اعمال شد. از این که به تکمیل اطلاعات گنجور کمک کردید سپاسگزاریم."
+                    );
+                }
+                else
+                {
+                    await _notificationService.PushNotification(
+                        suggestion.UserId,
+                        suggestion.SuggestedForDeletion ? "رد پیشنهاد حذف شخصیت" : "رد ویرایش پیشنهادی شخصیت",
+                        (suggestion.SuggestedForDeletion
+                            ? $"پیشنهاد شما برای حذف شخصیت «{personName}» تأیید نشد."
+                            : $"ویرایش پیشنهادی شما برای شخصیت «{personName}» تأیید نشد.") +
+                        (string.IsNullOrWhiteSpace(reviewNote) ? "" : $"{Environment.NewLine}یادداشت بازبین: «{reviewNote}»"),
+                        NotificationType.Warning
+                    );
+                }
+
                 return new RServiceResult<GanjoorPersonEditSuggestion>(suggestion);
             }
             catch (Exception exp)
@@ -405,17 +449,406 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// removes a person and every row that would otherwise block that deletion at the database
+        /// level (kinship edges, affiliations, and other pending relation-edit suggestions touching
+        /// them - all Restrict-on-delete FKs, see RMuseumDbContext.OnModelCreating), plus detaches
+        /// (but does not delete) any approved poem geo/date tag that named them, since the tag
+        /// itself may still carry a real location/date worth keeping.
+        /// </summary>
+        private async Task DeletePersonAndReferencesAsync(GanjoorRelatedPerson person)
+        {
+            var relations = await _context.GanjoorPersonRelations
+                .Where(r => r.Person1Id == person.Id || r.Person2Id == person.Id)
+                .ToListAsync();
+            var relationIds = relations.Select(r => r.Id).ToList();
+
+            var affiliations = await _context.GanjoorPersonAffiliations
+                .Where(a => a.Person1Id == person.Id || a.Person2Id == person.Id)
+                .ToListAsync();
+
+            // any other still-pending relation-edit suggestion that touches this person directly, or
+            // targets one of the relations we're about to remove, would otherwise dangle or violate
+            // the Restrict FK above - auto-reject those with an explanatory note rather than letting
+            // the delete fail or silently drop them
+            var conflictingRelationSuggestions = await _context.GanjoorPersonRelationEditSuggestions
+                .Where(s => !s.Reviewed && (
+                    s.Person1Id == person.Id ||
+                    s.Person2Id == person.Id ||
+                    (s.ExistingRelationId != null && relationIds.Contains(s.ExistingRelationId.Value))
+                ))
+                .ToListAsync();
+            foreach (var conflicting in conflictingRelationSuggestions)
+            {
+                conflicting.Reviewed = true;
+                conflicting.Result = CorrectionReviewResult.RejectedBecauseUnnecessaryChange;
+                conflicting.ReviewNote = "شخصیت یا نسبت مرتبط با این پیشنهاد حذف شد.";
+                conflicting.ReviewDate = DateTime.Now;
+            }
+
+            var geoDateTags = await _context.PoemGeoDateTags.Where(t => t.PersonId == person.Id).ToListAsync();
+            foreach (var tag in geoDateTags)
+            {
+                tag.PersonId = null;
+            }
+
+            // any other still-pending edit suggestion FOR this same person (not the one being
+            // approved right now, which the caller updates separately) is moot once the person is
+            // gone - same auto-reject treatment
+            var conflictingEditSuggestions = await _context.GanjoorPersonEditSuggestions
+                .Where(s => !s.Reviewed && s.PersonId == person.Id)
+                .ToListAsync();
+            foreach (var conflicting in conflictingEditSuggestions)
+            {
+                conflicting.Reviewed = true;
+                conflicting.Result = CorrectionReviewResult.RejectedBecauseUnnecessaryChange;
+                conflicting.ReviewNote = "این شخصیت حذف شد.";
+                conflicting.ReviewDate = DateTime.Now;
+            }
+
+            _context.GanjoorPersonRelations.RemoveRange(relations);
+            _context.GanjoorPersonAffiliations.RemoveRange(affiliations);
+            _context.GanjoorRelatedPersons.Remove(person);
+        }
+
+        /// <summary>
+        /// get a single kinship edge by its own id, with both sides' names resolved
+        /// </summary>
+        /// <param name="relationId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPersonRelation>> GetRelationByIdAsync(int relationId)
+        {
+            try
+            {
+                var relation = await _context.GanjoorPersonRelations
+                    .Include(r => r.Person1)
+                    .Include(r => r.Person2)
+                    .Where(r => r.Id == relationId)
+                    .SingleOrDefaultAsync();
+
+                if (relation == null)
+                {
+                    return new RServiceResult<GanjoorPersonRelation>(null, "نسبت پیدا نشد.");
+                }
+
+                return new RServiceResult<GanjoorPersonRelation>(relation);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPersonRelation>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// submit a suggested addition, change or removal of a kinship edge
+        /// </summary>
+        /// <param name="suggestion"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPersonRelationEditSuggestion>> SuggestPersonRelationEditAsync(GanjoorPersonRelationEditSuggestion suggestion)
+        {
+            try
+            {
+                if (suggestion == null)
+                {
+                    return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "اطلاعات پیشنهاد ناقص است.");
+                }
+
+                GanjoorPersonRelation existingRelation = null;
+                if (suggestion.Action == PersonRelationSuggestionAction.Modify || suggestion.Action == PersonRelationSuggestionAction.Remove)
+                {
+                    if (suggestion.ExistingRelationId == null)
+                    {
+                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "نسبت مورد نظر برای ویرایش یا حذف مشخص نشده است.");
+                    }
+
+                    existingRelation = await _context.GanjoorPersonRelations
+                        .Include(r => r.Person1)
+                        .Include(r => r.Person2)
+                        .Where(r => r.Id == suggestion.ExistingRelationId.Value)
+                        .SingleOrDefaultAsync();
+
+                    if (existingRelation == null)
+                    {
+                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "نسبت مورد نظر پیدا نشد.");
+                    }
+
+                    // always trust the existing relation's own Person1Id/Person2Id/type/etc over
+                    // whatever the client sent, so the suggestion is guaranteed self-consistent with
+                    // what it actually targets, even for a Remove-display
+                    suggestion.Person1Id = existingRelation.Person1Id;
+                    suggestion.Person2Id = existingRelation.Person2Id;
+                    if (suggestion.Action == PersonRelationSuggestionAction.Remove)
+                    {
+                        suggestion.SuggestedRelationType = existingRelation.RelationType;
+                        suggestion.SuggestedDegreeHint = existingRelation.DegreeHint;
+                        suggestion.SuggestedNote = existingRelation.Note;
+                    }
+                }
+                else // Add
+                {
+                    if (suggestion.Person1Id == suggestion.Person2Id)
+                    {
+                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "دو طرف یک نسبت نمی‌توانند یک نفر باشند.");
+                    }
+                }
+
+                var person1 = await _context.GanjoorRelatedPersons.Where(p => p.Id == suggestion.Person1Id).SingleOrDefaultAsync();
+                var person2 = await _context.GanjoorRelatedPersons.Where(p => p.Id == suggestion.Person2Id).SingleOrDefaultAsync();
+                if (person1 == null || person2 == null)
+                {
+                    return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "یکی از دو طرف نسبت پیدا نشد.");
+                }
+
+                suggestion.Id = 0;
+                suggestion.ExistingRelation = null;
+                suggestion.Person1 = null;
+                suggestion.Person2 = null;
+                suggestion.Date = DateTime.Now;
+                suggestion.SuggestedNote = string.IsNullOrWhiteSpace(suggestion.SuggestedNote) ? null : suggestion.SuggestedNote.Trim();
+                suggestion.SuggestionNote = string.IsNullOrWhiteSpace(suggestion.SuggestionNote) ? null : suggestion.SuggestionNote.Trim();
+                suggestion.Reviewed = false;
+                suggestion.Result = CorrectionReviewResult.NotReviewed;
+                suggestion.ReviewNote = null;
+                suggestion.ReviewerUserId = null;
+
+                _context.GanjoorPersonRelationEditSuggestions.Add(suggestion);
+                await _context.SaveChangesAsync();
+
+                string actionTitle = suggestion.Action switch
+                {
+                    PersonRelationSuggestionAction.Add => "پیشنهاد نسبت خویشاوندی جدید",
+                    PersonRelationSuggestionAction.Modify => "پیشنهاد ویرایش نسبت خویشاوندی",
+                    _ => "پیشنهاد حذف نسبت خویشاوندی",
+                };
+                string actionText = suggestion.Action switch
+                {
+                    PersonRelationSuggestionAction.Add => $"کاربری پیشنهاد افزودن نسبت خویشاوندی جدید بین «{person1.Name}» و «{person2.Name}» را داده است.",
+                    PersonRelationSuggestionAction.Modify => $"کاربری پیشنهاد ویرایش نسبت خویشاوندی بین «{person1.Name}» و «{person2.Name}» را داده است.",
+                    _ => $"کاربری پیشنهاد حذف نسبت خویشاوندی بین «{person1.Name}» و «{person2.Name}» را داده است.",
+                };
+
+                await NotifyModeratorsOfPendingSuggestionAsync(
+                    actionTitle,
+                    actionText + " لطفاً بخش <a href=\"https://ganjoor.net/Admin/ReviewPersonRelationEdits\">ویرایش‌های پیشنهادی نسبت‌های خویشاوندی</a> را بررسی فرمایید."
+                );
+
+                return new RServiceResult<GanjoorPersonRelationEditSuggestion>(suggestion);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get the next unreviewed relation-edit suggestion for the moderator queue
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPersonRelationEditSuggestion>> GetNextUnreviewedPersonRelationEditSuggestionAsync(int skip)
+        {
+            try
+            {
+                var suggestion = await _context.GanjoorPersonRelationEditSuggestions
+                    .Include(s => s.Person1)
+                    .Include(s => s.Person2)
+                    .Include(s => s.ExistingRelation)
+                    .Include(s => s.User)
+                    .Where(s => s.Reviewed == false)
+                    .OrderBy(s => s.Id)
+                    .Skip(skip)
+                    .FirstOrDefaultAsync();
+
+                return new RServiceResult<GanjoorPersonRelationEditSuggestion>(suggestion);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// unreviewed relation-edit suggestion count
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<int>> GetUnreviewedPersonRelationEditSuggestionCountAsync()
+        {
+            try
+            {
+                return new RServiceResult<int>(await _context.GanjoorPersonRelationEditSuggestions.Where(s => s.Reviewed == false).CountAsync());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<int>(0, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// apply a moderator's decision to a pending relation-edit suggestion
+        /// </summary>
+        /// <param name="moderatorUserId"></param>
+        /// <param name="suggestionId"></param>
+        /// <param name="result"></param>
+        /// <param name="reviewNote"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPersonRelationEditSuggestion>> ModeratePersonRelationEditSuggestionAsync(Guid moderatorUserId, int suggestionId, CorrectionReviewResult result, string reviewNote)
+        {
+            try
+            {
+                var suggestion = await _context.GanjoorPersonRelationEditSuggestions
+                    .Include(s => s.Person1)
+                    .Include(s => s.Person2)
+                    .Where(s => s.Id == suggestionId)
+                    .SingleOrDefaultAsync();
+
+                if (suggestion == null)
+                {
+                    return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "پیشنهاد پیدا نشد.");
+                }
+
+                if (suggestion.Reviewed)
+                {
+                    return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "این پیشنهاد پیش‌تر بررسی شده است.");
+                }
+
+                var person1Name = suggestion.Person1?.Name;
+                var person2Name = suggestion.Person2?.Name;
+
+                if (result == CorrectionReviewResult.Approved)
+                {
+                    switch (suggestion.Action)
+                    {
+                        case PersonRelationSuggestionAction.Add:
+                            _context.GanjoorPersonRelations.Add(new GanjoorPersonRelation()
+                            {
+                                Person1Id = suggestion.Person1Id,
+                                Person2Id = suggestion.Person2Id,
+                                RelationType = suggestion.SuggestedRelationType,
+                                DegreeHint = suggestion.SuggestedDegreeHint,
+                                Note = suggestion.SuggestedNote,
+                            });
+                            break;
+                        case PersonRelationSuggestionAction.Modify:
+                            {
+                                var existing = await _context.GanjoorPersonRelations.Where(r => r.Id == suggestion.ExistingRelationId.Value).SingleOrDefaultAsync();
+                                if (existing == null)
+                                {
+                                    return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "نسبت مورد نظر دیگر وجود ندارد.");
+                                }
+                                existing.RelationType = suggestion.SuggestedRelationType;
+                                existing.DegreeHint = suggestion.SuggestedDegreeHint;
+                                existing.Note = suggestion.SuggestedNote;
+                                break;
+                            }
+                        case PersonRelationSuggestionAction.Remove:
+                            {
+                                var existing = await _context.GanjoorPersonRelations.Where(r => r.Id == suggestion.ExistingRelationId.Value).SingleOrDefaultAsync();
+                                if (existing != null)
+                                {
+                                    // any other still-pending suggestion targeting this same relation
+                                    // would otherwise dangle once it's gone - auto-reject those too
+                                    var conflicting = await _context.GanjoorPersonRelationEditSuggestions
+                                        .Where(s => !s.Reviewed && s.Id != suggestion.Id && s.ExistingRelationId == existing.Id)
+                                        .ToListAsync();
+                                    foreach (var c in conflicting)
+                                    {
+                                        c.Reviewed = true;
+                                        c.Result = CorrectionReviewResult.RejectedBecauseUnnecessaryChange;
+                                        c.ReviewNote = "این نسبت پیش‌تر حذف شد.";
+                                        c.ReviewDate = DateTime.Now;
+                                    }
+                                    _context.GanjoorPersonRelations.Remove(existing);
+                                }
+                                break;
+                            }
+                    }
+                }
+
+                suggestion.Reviewed = true;
+                suggestion.Result = result;
+                suggestion.ReviewNote = reviewNote;
+                suggestion.ReviewDate = DateTime.Now;
+                suggestion.ReviewerUserId = moderatorUserId;
+
+                await _context.SaveChangesAsync();
+
+                string actionLabel = suggestion.Action switch
+                {
+                    PersonRelationSuggestionAction.Add => "افزودن نسبت خویشاوندی",
+                    PersonRelationSuggestionAction.Modify => "ویرایش نسبت خویشاوندی",
+                    _ => "حذف نسبت خویشاوندی",
+                };
+
+                if (result == CorrectionReviewResult.Approved)
+                {
+                    await _notificationService.PushNotification(
+                        suggestion.UserId,
+                        $"تأیید {actionLabel}",
+                        $"پیشنهاد شما برای {actionLabel} بین «{person1Name}» و «{person2Name}» تأیید و اعمال شد. از این که به تکمیل اطلاعات گنجور کمک کردید سپاسگزاریم."
+                    );
+                }
+                else
+                {
+                    await _notificationService.PushNotification(
+                        suggestion.UserId,
+                        $"رد {actionLabel}",
+                        $"پیشنهاد شما برای {actionLabel} بین «{person1Name}» و «{person2Name}» تأیید نشد." +
+                        (string.IsNullOrWhiteSpace(reviewNote) ? "" : $"{Environment.NewLine}یادداشت بازبین: «{reviewNote}»"),
+                        NotificationType.Warning
+                    );
+                }
+
+                return new RServiceResult<GanjoorPersonRelationEditSuggestion>(suggestion);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Database Context
         /// </summary>
         protected readonly RMuseumDbContext _context;
 
         /// <summary>
+        /// used to find every user holding the Ganjoor:Modify permission, to notify them when a new
+        /// suggestion needs review - same permission the moderation endpoints themselves require
+        /// </summary>
+        protected readonly IAppUserService _appUserService;
+
+        /// <summary>
+        /// used to notify moderators of a new pending suggestion, and submitters of its outcome -
+        /// same service/pattern GanjoorService uses for poem corrections and song suggestions
+        /// </summary>
+        protected readonly IRNotificationService _notificationService;
+
+        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="context"></param>
-        public GanjoorRelatedPersonService(RMuseumDbContext context)
+        /// <param name="appUserService"></param>
+        /// <param name="notificationService"></param>
+        public GanjoorRelatedPersonService(RMuseumDbContext context, IAppUserService appUserService, IRNotificationService notificationService)
         {
             _context = context;
+            _appUserService = appUserService;
+            _notificationService = notificationService;
+        }
+
+        /// <summary>
+        /// notify every user holding the Ganjoor:Modify permission that a new suggestion of the
+        /// given kind is pending review at reviewPageUrl - shared by both suggestion types below
+        /// </summary>
+        private async Task NotifyModeratorsOfPendingSuggestionAsync(string title, string htmlText)
+        {
+            var moderators = await _appUserService.GetUsersHavingPermission(RMuseumSecurableItem.GanjoorEntityShortName, SecurableItem.ModifyOperationShortName);
+            if (string.IsNullOrEmpty(moderators.ExceptionString))
+            {
+                foreach (var moderator in moderators.Result)
+                {
+                    await _notificationService.PushNotification((Guid)moderator.Id, title, htmlText, NotificationType.ActionRequired);
+                }
+            }
         }
     }
 }

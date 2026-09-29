@@ -96,5 +96,47 @@ namespace RMuseum.Services
         /// <param name="reviewNote"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorPersonEditSuggestion>> ModeratePersonEditSuggestionAsync(Guid moderatorUserId, int suggestionId, CorrectionReviewResult result, string reviewNote);
+
+        /// <summary>
+        /// get a single kinship edge by its own id, with both sides' names resolved - used by
+        /// /SuggestPersonRelationEdit/{relationId} to show what it's about
+        /// </summary>
+        /// <param name="relationId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPersonRelation>> GetRelationByIdAsync(int relationId);
+
+        /// <summary>
+        /// submit a suggested addition, change or removal of a kinship edge - goes into the
+        /// pending queue, does not change anything until a moderator approves it
+        /// </summary>
+        /// <param name="suggestion"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPersonRelationEditSuggestion>> SuggestPersonRelationEditAsync(GanjoorPersonRelationEditSuggestion suggestion);
+
+        /// <summary>
+        /// get the next unreviewed relation-edit suggestion (for the moderator queue)
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPersonRelationEditSuggestion>> GetNextUnreviewedPersonRelationEditSuggestionAsync(int skip);
+
+        /// <summary>
+        /// unreviewed relation-edit suggestion count
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<int>> GetUnreviewedPersonRelationEditSuggestionCountAsync();
+
+        /// <summary>
+        /// apply a moderator's decision to a pending relation-edit suggestion. On Approved: Add
+        /// creates a new GanjoorPersonRelation, Modify updates the existing one ExistingRelationId
+        /// points to, Remove deletes it (and auto-rejects any other still-pending suggestion that
+        /// also targeted that same now-gone relation, so it doesn't dangle).
+        /// </summary>
+        /// <param name="moderatorUserId"></param>
+        /// <param name="suggestionId"></param>
+        /// <param name="result"></param>
+        /// <param name="reviewNote"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPersonRelationEditSuggestion>> ModeratePersonRelationEditSuggestionAsync(Guid moderatorUserId, int suggestionId, CorrectionReviewResult result, string reviewNote);
     }
 }

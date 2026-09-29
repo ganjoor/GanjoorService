@@ -154,6 +154,29 @@ namespace RMuseum.DbContext
                 .HasForeignKey(a => a.Person2Id)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // same two-required-FKs-to-the-same-table situation as GanjoorPersonRelation above, plus
+            // a third optional FK to GanjoorPersonRelations itself (ExistingRelationId) - also
+            // restricted, since a relation that still has a pending suggestion against it should be
+            // resolved (or the suggestion rejected) before it can be deleted directly, not silently
+            // orphan the suggestion
+            builder.Entity<GanjoorPersonRelationEditSuggestion>()
+                .HasOne(s => s.Person1)
+                .WithMany()
+                .HasForeignKey(s => s.Person1Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<GanjoorPersonRelationEditSuggestion>()
+                .HasOne(s => s.Person2)
+                .WithMany()
+                .HasForeignKey(s => s.Person2Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<GanjoorPersonRelationEditSuggestion>()
+                .HasOne(s => s.ExistingRelation)
+                .WithMany()
+                .HasForeignKey(s => s.ExistingRelationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Entity<GanjoorUserBookmark>()
                 .HasIndex(b => new { b.UserId, b.PoemId, b.CoupletIndex });
 
@@ -624,6 +647,12 @@ namespace RMuseum.DbContext
         /// see GanjoorPersonEditSuggestion
         /// </summary>
         public DbSet<GanjoorPersonEditSuggestion> GanjoorPersonEditSuggestions { get; set; }
+
+        /// <summary>
+        /// pending/reviewed suggested additions, changes or removals of a kinship edge between two
+        /// already-approved people - see GanjoorPersonRelationEditSuggestion
+        /// </summary>
+        public DbSet<GanjoorPersonRelationEditSuggestion> GanjoorPersonRelationEditSuggestions { get; set; }
 
         /// <summary>
         /// Books (PDF Library)

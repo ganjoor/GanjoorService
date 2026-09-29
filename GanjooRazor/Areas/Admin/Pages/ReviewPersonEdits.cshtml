@@ -45,67 +45,77 @@ else
         }
     </table>
 
-    <table class="up-table">
-        <thead>
-            <tr>
-                <th>فیلد</th>
-                <th>مقدار فعلی</th>
-                <th>پیشنهاد</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>نام</td>
-                <td>@p.Name</td>
-                <td>@s.SuggestedName</td>
-            </tr>
-            <tr>
-                <td>نشانی ویکی‌پدیا</td>
-                <td>@p.WikiUrl</td>
-                <td>@s.SuggestedWikiUrl</td>
-            </tr>
-            <tr>
-                <td>سال تولد (قمری)</td>
-                <td>@(p.BirthYearInLHijri == 0 ? "" : p.BirthYearInLHijri.ToPersianNumbers())</td>
-                <td>@(s.SuggestedBirthYearInLHijri == 0 ? "" : s.SuggestedBirthYearInLHijri.ToPersianNumbers())</td>
-            </tr>
-            <tr>
-                <td>تاریخ تولد مستند است</td>
-                <td>@(p.ValidBirthDate ? "بله" : "خیر")</td>
-                <td>@(s.SuggestedValidBirthDate ? "بله" : "خیر")</td>
-            </tr>
-            <tr>
-                <td>زادگاه</td>
-                <td>@Model.LocationName(p.BirthLocationId)</td>
-                <td>@(s.SuggestedBirthLocation != null ? s.SuggestedBirthLocation.Name : "")</td>
-            </tr>
-            <tr>
-                <td>سال وفات (قمری)</td>
-                <td>@(p.DeathYearInLHijri == 0 ? "" : p.DeathYearInLHijri.ToPersianNumbers())</td>
-                <td>@(s.SuggestedDeathYearInLHijri == 0 ? "" : s.SuggestedDeathYearInLHijri.ToPersianNumbers())</td>
-            </tr>
-            <tr>
-                <td>تاریخ وفات مستند است</td>
-                <td>@(p.ValidDeathDate ? "بله" : "خیر")</td>
-                <td>@(s.SuggestedValidDeathDate ? "بله" : "خیر")</td>
-            </tr>
-            <tr>
-                <td>آرامگاه</td>
-                <td>@Model.LocationName(p.DeathLocationId)</td>
-                <td>@(s.SuggestedDeathLocation != null ? s.SuggestedDeathLocation.Name : "")</td>
-            </tr>
-            <tr>
-                <td>عنوان شجره‌نامه</td>
-                <td>@p.FamilyTreeCaption</td>
-                <td>@s.SuggestedFamilyTreeCaption</td>
-            </tr>
-            <tr>
-                <td>توضیحات</td>
-                <td><small>@p.Description</small></td>
-                <td><small>@s.SuggestedDescription</small></td>
-            </tr>
-        </tbody>
-    </table>
+    @if (s.SuggestedForDeletion)
+    {
+        <div class="up-alert up-alert--danger">
+            <strong>این پیشنهاد درخواست حذف کامل شخصیت «@p.Name» است.</strong>
+            در صورت تأیید، این شخصیت و همهٔ نسبت‌های خویشاوندی/وابستگی‌های آن حذف خواهد شد و هرگونه پیشنهاد در حال بررسی مرتبط با آن‌ها به طور خودکار رد می‌شود. فیلدهای زیر در این حالت نادیده گرفته می‌شوند.
+        </div>
+    }
+    else
+    {
+        <table class="up-table">
+            <thead>
+                <tr>
+                    <th>فیلد</th>
+                    <th>مقدار فعلی</th>
+                    <th>پیشنهاد</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>نام</td>
+                    <td>@p.Name</td>
+                    <td>@s.SuggestedName</td>
+                </tr>
+                <tr>
+                    <td>نشانی ویکی‌پدیا</td>
+                    <td>@p.WikiUrl</td>
+                    <td>@s.SuggestedWikiUrl</td>
+                </tr>
+                <tr>
+                    <td>سال تولد (قمری)</td>
+                    <td>@(p.BirthYearInLHijri == 0 ? "" : p.BirthYearInLHijri.ToPersianNumbers())</td>
+                    <td>@(s.SuggestedBirthYearInLHijri == 0 ? "" : s.SuggestedBirthYearInLHijri.ToPersianNumbers())</td>
+                </tr>
+                <tr>
+                    <td>تاریخ تولد مستند است</td>
+                    <td>@(p.ValidBirthDate ? "بله" : "خیر")</td>
+                    <td>@(s.SuggestedValidBirthDate ? "بله" : "خیر")</td>
+                </tr>
+                <tr>
+                    <td>زادگاه</td>
+                    <td>@Model.LocationName(p.BirthLocationId)</td>
+                    <td>@(s.SuggestedBirthLocation != null ? s.SuggestedBirthLocation.Name : "")</td>
+                </tr>
+                <tr>
+                    <td>سال وفات (قمری)</td>
+                    <td>@(p.DeathYearInLHijri == 0 ? "" : p.DeathYearInLHijri.ToPersianNumbers())</td>
+                    <td>@(s.SuggestedDeathYearInLHijri == 0 ? "" : s.SuggestedDeathYearInLHijri.ToPersianNumbers())</td>
+                </tr>
+                <tr>
+                    <td>تاریخ وفات مستند است</td>
+                    <td>@(p.ValidDeathDate ? "بله" : "خیر")</td>
+                    <td>@(s.SuggestedValidDeathDate ? "بله" : "خیر")</td>
+                </tr>
+                <tr>
+                    <td>آرامگاه</td>
+                    <td>@Model.LocationName(p.DeathLocationId)</td>
+                    <td>@(s.SuggestedDeathLocation != null ? s.SuggestedDeathLocation.Name : "")</td>
+                </tr>
+                <tr>
+                    <td>عنوان شجره‌نامه</td>
+                    <td>@p.FamilyTreeCaption</td>
+                    <td>@s.SuggestedFamilyTreeCaption</td>
+                </tr>
+                <tr>
+                    <td>توضیحات</td>
+                    <td><small>@p.Description</small></td>
+                    <td><small>@s.SuggestedDescription</small></td>
+                </tr>
+            </tbody>
+        </table>
+    }
 
     <div class="spacer">&nbsp;</div>
 

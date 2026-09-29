@@ -42,6 +42,12 @@ namespace GanjooRazor.Pages
         public class PersonRelationDisplayRow
         {
             /// <summary>
+            /// the underlying GanjoorPersonRelation row's own id - used to link to
+            /// /SuggestPersonRelationEdit/{RelationId} for suggesting a change/removal of this edge
+            /// </summary>
+            public int RelationId { get; set; }
+
+            /// <summary>
             /// the other person's role relative to the subject (e.g. "فرزند", "پدر/مادر", "نیا")
             /// </summary>
             public string Label { get; set; }
@@ -131,6 +137,7 @@ namespace GanjooRazor.Pages
             {
                 RelationRows.Add(new PersonRelationDisplayRow()
                 {
+                    RelationId = r.Id,
                     Label = RelationLabel(r),
                     OtherPersonId = r.OtherPersonId,
                     OtherPersonName = r.OtherPersonName,

@@ -1,0 +1,199 @@
+@page
+@model GanjooRazor.Areas.Admin.Pages.ReviewPersonRelationEditsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using DNTPersianUtils.Core
+@using RMuseum.Models.Ganjoor
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "بازبینی پیشنهادهای نسبت‌های خویشاوندی";
+
+    string RelationTypeName(PersonRelationType t)
+    {
+        switch (t)
+        {
+            case PersonRelationType.Parent: return "پدر/مادر و فرزند";
+            case PersonRelationType.Sibling: return "خواهر/برادر";
+            case PersonRelationType.Spouse: return "همسر";
+            case PersonRelationType.Ancestor: return "نیا و نواده";
+            default: return t.ToString();
+        }
+    }
+
+    string ActionName(PersonRelationSuggestionAction a)
+    {
+        switch (a)
+        {
+            case PersonRelationSuggestionAction.Add: return "افزودن نسبت جدید";
+            case PersonRelationSuggestionAction.Modify: return "ویرایش نسبت موجود";
+            case PersonRelationSuggestionAction.Remove: return "حذف نسبت موجود";
+            default: return a.ToString();
+        }
+    }
+}
+
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.FatalError))
+{
+    <div class="up-alert up-alert--danger">@Model.FatalError</div>
+}
+else if (Model.Suggestion == null)
+{
+    <partial name="_EmptyState" model="@("پیشنهاد ویرایشی وجود ندارد.")" />
+}
+else
+{
+    var s = Model.Suggestion;
+
+    <p>
+        <span class="up-badge">@ActionName(s.Action)</span>
+    </p>
+
+    <table>
+        <tr>
+            <td>پیشنهاد دهنده:</td>
+            <td>
+                <a href="/user/edits/?allusers=1&userid=@s.UserId" target="_blank">@(s.User != null ? s.User.NickName : s.UserId.ToString())</a>
+                — @s.Date.ToFriendlyPersianDateTextify()
+            </td>
+        </tr>
+        @if (!string.IsNullOrEmpty(s.SuggestionNote))
+        {
+            <tr>
+                <td>یادداشت پیشنهاددهنده:</td>
+                <td>@s.SuggestionNote</td>
+            </tr>
+        }
+    </table>
+
+    @if (s.Action == PersonRelationSuggestionAction.Remove)
+    {
+        <div class="up-alert up-alert--danger">
+            <strong>این پیشنهاد درخواست حذف نسبت زیر است:</strong>
+        </div>
+    }
+
+    <table class="up-table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>@(s.Action == PersonRelationSuggestionAction.Remove || s.Action == PersonRelationSuggestionAction.Modify ? "مقدار فعلی" : "پیشنهاد")</th>
+                @if (s.Action == PersonRelationSuggestionAction.Modify)
+                {
+                    <th>پیشنهاد</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>طرف اول</td>
+                <td>
+                    <a role="button" target="_blank" href="/person/@s.Person1Id" class="up-btn up-btn--ghost up-btn--sm">@(s.Person1 != null ? s.Person1.Name : s.Person1Id.ToString())</a>
+                </td>
+                @if (s.Action == PersonRelationSuggestionAction.Modify)
+                {
+                    <td>
+                        <a role="button" target="_blank" href="/person/@s.Person1Id" class="up-btn up-btn--ghost up-btn--sm">@(s.Person1 != null ? s.Person1.Name : s.Person1Id.ToString())</a>
+                    </td>
+                }
+            </tr>
+            <tr>
+                <td>طرف دوم</td>
+                <td>
+                    <a role="button" target="_blank" href="/person/@s.Person2Id" class="up-btn up-btn--ghost up-btn--sm">@(s.Person2 != null ? s.Person2.Name : s.Person2Id.ToString())</a>
+                </td>
+                @if (s.Action == PersonRelationSuggestionAction.Modify)
+                {
+                    <td>
+                        <a role="button" target="_blank" href="/person/@s.Person2Id" class="up-btn up-btn--ghost up-btn--sm">@(s.Person2 != null ? s.Person2.Name : s.Person2Id.ToString())</a>
+                    </td>
+                }
+            </tr>
+            <tr>
+                <td>نوع نسبت</td>
+                <td>@(s.Action == PersonRelationSuggestionAction.Modify && s.ExistingRelation != null ? RelationTypeName(s.ExistingRelation.RelationType) : RelationTypeName(s.SuggestedRelationType))</td>
+                @if (s.Action == PersonRelationSuggestionAction.Modify)
+                {
+                    <td>@RelationTypeName(s.SuggestedRelationType)</td>
+                }
+            </tr>
+            <tr>
+                <td>درجه (در نیا/نواده)</td>
+                <td>@((s.Action == PersonRelationSuggestionAction.Modify && s.ExistingRelation != null ? s.ExistingRelation.DegreeHint : s.SuggestedDegreeHint)?.ToString().ToPersianNumbers())</td>
+                @if (s.Action == PersonRelationSuggestionAction.Modify)
+                {
+                    <td>@s.SuggestedDegreeHint?.ToString().ToPersianNumbers()</td>
+                }
+            </tr>
+            <tr>
+                <td>یادداشت</td>
+                <td><small>@(s.Action == PersonRelationSuggestionAction.Modify && s.ExistingRelation != null ? s.ExistingRelation.Note : s.SuggestedNote)</small></td>
+                @if (s.Action == PersonRelationSuggestionAction.Modify)
+                {
+                    <td><small>@s.SuggestedNote</small></td>
+                }
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="spacer">&nbsp;</div>
+
+    <table>
+        <tr>
+            <td>
+                <label><input type="radio" name="review_result" id="review_result_Approved" value="Approved" checked="checked" /> تأیید</label>
+                &nbsp;
+                <label><input type="radio" name="review_result" id="review_result_Rejected" value="Rejected" /> رد</label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                یادداشت برای پیشنهاددهنده:<br />
+                <textarea id="review_note" rows="3" cols="60"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a role="button" id="moderatepersonrelationedit" class="up-btn up-btn--success up-btn--block" onclick="moderatePersonRelationEditSuggestion(@s.Id)">بررسی</a>
+            </td>
+            <td>
+                <form method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" name="next" id="next" class="up-btn up-btn--ghost up-btn--block">بعدی</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+
+    <p><small>@Model.Skip.ToPersianNumbers() از @Model.TotalCount.ToPersianNumbers()</small></p>
+
+    <script>
+        function moderatePersonRelationEditSuggestion(id) {
+            $('#moderatepersonrelationedit').hide();
+
+            var url = '?handler=Moderate';
+
+            var pms = {};
+            pms.id = id;
+            pms.result = $('input[name=review_result]:checked').val();
+            pms.reviewNote = $('#review_note').val();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: JSON.stringify(pms),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function () {
+                    location.reload(true);
+                },
+                error: function (e) {
+                    upToast(e.responseText || 'خطا رخ داد.', 'error');
+                    $('#moderatepersonrelationedit').show();
+                }
+            });
+        }
+    </script>
+}

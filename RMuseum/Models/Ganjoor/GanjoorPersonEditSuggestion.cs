@@ -109,6 +109,16 @@ namespace RMuseum.Models.Ganjoor
         public string SuggestedFamilyTreeCaption { get; set; }
 
         /// <summary>
+        /// true if this suggestion is actually a request to delete the person outright, not to
+        /// change their fields - when true, every Suggested* field above is ignored on approval
+        /// (they still carry whatever the contributor's pre-filled form happened to hold) and
+        /// ModeratePersonEditSuggestionAsync removes the person and every relation/affiliation/tag
+        /// reference to them instead. Kept on this same entity rather than a separate one so the
+        /// existing suggest/review UI and permissions are reused as-is.
+        /// </summary>
+        public bool SuggestedForDeletion { get; set; }
+
+        /// <summary>
         /// suggester's note to the moderator
         /// </summary>
         public string SuggestionNote { get; set; }

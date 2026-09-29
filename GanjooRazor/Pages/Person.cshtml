@@ -69,6 +69,10 @@ else
                     <h2>
                         خویشاوندان
                         <a href="/FamilyTree/@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">نمایش نمودار شجره‌نامه</a>
+                        @if (Model.LoggedIn)
+                        {
+                            <a href="/SuggestNewPersonRelation/@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">افزودن خویشاوند جدید</a>
+                        }
                     </h2>
                     <ul>
                         @foreach (var row in Model.RelationRows)
@@ -79,9 +83,23 @@ else
                                 {
                                     <text> (@row.Note)</text>
                                 }
+                                @if (Model.LoggedIn)
+                                {
+                                    <a href="/SuggestPersonRelationEdit/@row.RelationId" class="up-icon-btn" title="پیشنهاد ویرایش/حذف این نسبت" aria-label="پیشنهاد ویرایش/حذف این نسبت">✎</a>
+                                }
                             </li>
                         }
                     </ul>
+                </div>
+            }
+            else if (Model.LoggedIn)
+            {
+                <div class="spacer">&nbsp;</div>
+                <div class="poem">
+                    <h2>
+                        خویشاوندان
+                        <a href="/SuggestNewPersonRelation/@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">افزودن خویشاوند جدید</a>
+                    </h2>
                 </div>
             }
 
