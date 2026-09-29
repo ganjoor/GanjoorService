@@ -86,6 +86,14 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.min.js"></script>
         }
     }
+
+    @if (Model.IsCatPage || Model.IsPoetPage)
+    {
+        @* the on-demand "شخصیت‌ها" tab (_CatPagePartial.cshtml / _PoetPagePartial.cshtml) can be
+           clicked at any time on any cat/poet page, so this is loaded unconditionally here (unlike
+           the leaflet.js block above, which only loads when geo tags are already known to exist) *@
+        <script src="/js/peoplegraph.js"></script>
+    }
 }
 
 @if (Model.OfflineMode)

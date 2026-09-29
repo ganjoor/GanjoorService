@@ -1285,6 +1285,29 @@ namespace GanjooRazor.Pages
             });
         }
 
+        /// <summary>
+        /// on-demand "شخصیت‌ها" (characters) tab on a poet/category page - fetches the
+        /// category-scoped person/relation graph (see GanjoorRelatedPersonService.GetCatPersonGraphAsync)
+        /// and renders it with the same peoplegraph.js force-directed viewer used by /PeopleGraph
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> OnGetPersonGraphAsync(int catId)
+        {
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{catId}/persongraph");
+            if (!response.IsSuccessStatusCode)
+            {
+                return BadRequest(await ReadErrorMessageAsync(response));
+            }
+            var graph = JsonConvert.DeserializeObject<GanjoorPersonGraphViewModel>(await response.Content.ReadAsStringAsync());
+
+            return Partial("~/Pages/Partials/GanjoorPage/_PersonGraphPartial.cshtml", new _PersonGraphPartialModel()
+            {
+                CatId = catId,
+                Graph = graph,
+            });
+        }
+
         private async Task<_CategoryWordsCountPartialModel> _GetCategoryWordCountsAsync(int catId, int poetId, bool remStopWords = false)
         {
             var wordSumsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/wordsums/{catId}");

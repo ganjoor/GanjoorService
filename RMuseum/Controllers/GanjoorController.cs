@@ -3834,6 +3834,28 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get the network of people relevant to this category/work (every person tagged in a poem
+        /// under its subtree, plus their relatives/affiliates one hop out) - for the "شخصیت‌ها" tab
+        /// on a category/poet page
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("cat/{id}/persongraph")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPersonGraphViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetCatPersonGraphAsync(int id)
+        {
+            var res =
+                await _personService.GetCatPersonGraphAsync(id);
+
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// synchronize https:://naskban.ir links (logs in and then out to naskban.ir using auth info)
         /// </summary>
         /// <param name="loginViewModel"></param>
@@ -5091,6 +5113,12 @@ namespace RMuseum.Controllers
         /// </summary>
         protected IConfiguration Configuration { get; }
 
+        /// <summary>
+        /// related people (family tree / person tagging) service - used here only for the
+        /// category-scoped "cat/{id}/persongraph" endpoint; everything else about people lives in
+        /// GanjoorRelatedPersonController
+        /// </summary>
+        protected readonly IGanjoorRelatedPersonService _personService;
 
         /// <summary>
         /// constructor
@@ -5101,13 +5129,15 @@ namespace RMuseum.Controllers
         /// <param name="imageFileService"></param>
         /// <param name="memoryCache"></param>
         /// <param name="configuration"></param>
+        /// <param name="personService"></param>
         public GanjoorController(
             IGanjoorService ganjoorService,
             IAppUserService appUserService,
             IHttpContextAccessor httpContextAccessor,
             IImageFileService imageFileService,
             IMemoryCache memoryCache,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IGanjoorRelatedPersonService personService
             )
         {
             _ganjoorService = ganjoorService;
@@ -5116,6 +5146,7 @@ namespace RMuseum.Controllers
             _imageFileService = imageFileService;
             _memoryCache = memoryCache;
             Configuration = configuration;
+            _personService = personService;
         }
     }
 }

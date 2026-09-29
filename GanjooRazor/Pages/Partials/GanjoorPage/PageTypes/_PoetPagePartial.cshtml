@@ -54,6 +54,7 @@
         <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
         <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
         <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+        <div class="poemtablinks"><a href="#persongraph" onclick="javascript:loadPersonGraph(@Model.GanjoorPage.PoetOrCat.Cat.Id)">شخصیت‌ها</a></div>
         <div class="poemtablinks"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
     </div>
 
@@ -71,6 +72,7 @@
         <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
         <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
         <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+        <div class="poemtablinks"><a href="#persongraph" onclick="javascript:loadPersonGraph(@Model.GanjoorPage.PoetOrCat.Cat.Id)">شخصیت‌ها</a></div>
         <div class="poemtablinks"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
     </div>
     <div class="related-images-frame poemtabcontent">
@@ -86,6 +88,7 @@
         <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
         <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
         <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+        <div class="poemtablinks"><a href="#persongraph" onclick="javascript:loadPersonGraph(@Model.GanjoorPage.PoetOrCat.Cat.Id)">شخصیت‌ها</a></div>
         <div class="poemtablinks"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
     </div>
     <div class="related-images-frame poemtabcontent">
@@ -109,6 +112,7 @@
         <div class="poemtablinks active"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
         <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
         <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+        <div class="poemtablinks"><a href="#persongraph" onclick="javascript:loadPersonGraph(@Model.GanjoorPage.PoetOrCat.Cat.Id)">شخصیت‌ها</a></div>
         <div class="poemtablinks"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
     </div>
     <div class="related-images-frame poemtabcontent">
@@ -134,6 +138,7 @@
         <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
         <div class="poemtablinks active"><a href="#photos">تصاویر چهره</a></div>
         <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+        <div class="poemtablinks"><a href="#persongraph" onclick="javascript:loadPersonGraph(@Model.GanjoorPage.PoetOrCat.Cat.Id)">شخصیت‌ها</a></div>
         <div class="poemtablinks"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
     </div>
     <div class="poemtabcontent">
@@ -169,6 +174,7 @@
             <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
             <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
             <div class="poemtablinks active"><a href="#papersources">منابع کاغذی</a></div>
+            <div class="poemtablinks"><a href="#persongraph" onclick="javascript:loadPersonGraph(@Model.GanjoorPage.PoetOrCat.Cat.Id)">شخصیت‌ها</a></div>
             <div class="poemtablinks"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
         </div>
         <div class="poemtabcontent related-images-frame">
@@ -210,6 +216,7 @@
         <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
         <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
         <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+        <div class="poemtablinks"><a href="#persongraph" onclick="javascript:loadPersonGraph(@Model.GanjoorPage.PoetOrCat.Cat.Id)">شخصیت‌ها</a></div>
         <div class="poemtablinks active"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
     </div>
     <div class="related-images-frame poemtabcontent">
@@ -217,6 +224,25 @@
             بارگذاری آمار پربازدیدها
         </div>
         <div id="topvisits-placeholder"></div>
+    </div>
+
+    @* Person Graph ("characters in this work") Section *@
+    <div class="poempretab" id="persongraph"></div>
+    <div class="poemtab">
+        <div class="poemtablinks"><a href="#pretab">آمار</a></div>
+        <div class="poemtablinks"><a href="#quoteds">مشق شعر</a></div>
+        <div class="poemtablinks"><a href="#words" onclick="javascript:loadWordCounts(@Model.GanjoorPage.PoetOrCat.Cat.Id, @Model.GanjoorPage.PoetOrCat.Poet.Id, false)">واژگان</a></div>
+        <div class="poemtablinks"><a href="#recitations" onclick="javascript:loadCatRecitations(@Model.GanjoorPage.PoetOrCat.Cat.Id)">خوانش‌ها</a></div>
+        <div class="poemtablinks"><a href="#photos">تصاویر چهره</a></div>
+        <div class="poemtablinks"><a href="#papersources">منابع کاغذی</a></div>
+        <div class="poemtablinks active"><a href="#persongraph" onclick="javascript:loadPersonGraph(@Model.GanjoorPage.PoetOrCat.Cat.Id)">شخصیت‌ها</a></div>
+        <div class="poemtablinks"><a href="#topvisits" onclick="javascript:loadTopVisits('@Model.GanjoorPage.FullUrl')">پربازدیدها</a></div>
+    </div>
+    <div class="related-images-frame poemtabcontent">
+        <div class="century cursor-pointer" id="load-persongraph" onclick="loadPersonGraph(@Model.GanjoorPage.PoetOrCat.Cat.Id)">
+            بارگذاری شخصیت‌های این بخش
+        </div>
+        <div id="persongraph-placeholder"></div>
     </div>
 
     @* Map *@

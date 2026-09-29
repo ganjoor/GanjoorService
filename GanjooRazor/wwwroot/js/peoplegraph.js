@@ -3,13 +3,20 @@
 // hundred nodes/edges at most), drawn once and then lightly interacted with, and the project prefers
 // self-hosted, dependency-light front-end code over pulling in something like d3-force.
 //
-// Input (window.peopleGraphData, set inline by PeopleGraph.cshtml): the JSON of
-// RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphViewModel, camelCased -
-//   { nodes: [{id, name, hasFamilyTree}], edges: [{person1Id, person1Name, person2Id, person2Name,
-//     category, typeValue, degreeHint, note}] } where category is "Relation" (typeValue is
-//     PersonRelationType: 0=Parent,1=Sibling,2=Spouse,3=Ancestor) or "Affiliation" (typeValue is
-//     PersonAffiliationType: 0=Minister,1=Advisor,2=Courtier,3=Patron,4=Ally,5=Rival,6=Servant,
-//     7=Companion,8=Successor,99=Other).
+// Data shape (RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphViewModel, camelCased) -
+//   { nodes: [{id, name, hasFamilyTree, directlyTagged}], edges: [{person1Id, person1Name,
+//     person2Id, person2Name, category, typeValue, degreeHint, note}] } where category is
+//     "Relation" (typeValue is PersonRelationType: 0=Parent,1=Sibling,2=Spouse,3=Ancestor) or
+//     "Affiliation" (typeValue is PersonAffiliationType: 0=Minister,1=Advisor,2=Courtier,3=Patron,
+//     4=Ally,5=Rival,6=Servant,7=Companion,8=Successor,99=Other). directlyTagged is false only on
+// the category-scoped graph (GET api/ganjoor/cat/{id}/persongraph, the "characters in this work"
+// tab): such a node was pulled in as a one-hop relative/affiliate of someone actually named in the
+// work's verses, and is never false on the whole-site graph fed by PeopleGraph.cshtml.
+//
+// Called with an options object (see PeopleGraph.cshtml and _PersonGraphPartial.cshtml for two call
+// sites with different element-id prefixes and data payloads), so the same renderer serves both the
+// whole-site /PeopleGraph explorer and any number of category-scoped "شخصیت‌ها" tabs on cat/poet
+// pages.
 //
 // Unlike FamilyTree.cshtml (a strict tree layout for one connected component), this lays out the
 // WHOLE graph with a simple force simulation (mutual repulsion + spring edges + light centering,
@@ -77,6 +84,8 @@
         var nodes = data.nodes.map(function (n) {
             var node = {
                 id: n.id, name: n.name, hasFamilyTree: n.hasFamilyTree,
+                // absent on the whole-site graph payload (always directly tagged there) - default true
+                directlyTagged: n.directlyTagged !== false,
                 x: W / 2 + (Math.random() - 0.5) * W * 0.6,
                 y: H / 2 + (Math.random() - 0.5) * H * 0.6,
                 vx: 0, vy: 0, fx: null, fy: null, degree: 0
@@ -197,12 +206,19 @@
 
         var nodeEls = nodes.map(function (n) {
             var g = el('g', { 'class': 'pg-node', 'data-person-id': n.id, style: 'cursor:pointer' });
+            var circleClass = n.hasFamilyTree ? 'pg-circle pg-circle-tree' : 'pg-circle';
+            if (!n.directlyTagged) {
+                // context pulled in one hop out (a relative/affiliate never actually named in the
+                // work's verses) - draw dashed/dimmer so it reads as secondary, not part of the text
+                circleClass += ' pg-circle-secondary';
+            }
             var circle = el('circle', {
                 r: nodeRadius(n),
-                'class': n.hasFamilyTree ? 'pg-circle pg-circle-tree' : 'pg-circle'
+                'class': circleClass
             });
             var text = el('text', {
-                'text-anchor': 'middle', dy: -(nodeRadius(n) + 6), 'class': 'pg-label', direction: 'rtl'
+                'text-anchor': 'middle', dy: -(nodeRadius(n) + 6),
+                'class': n.directlyTagged ? 'pg-label' : 'pg-label pg-label-secondary', direction: 'rtl'
             });
             text.textContent = n.name;
             g.appendChild(circle);

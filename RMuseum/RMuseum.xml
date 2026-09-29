@@ -2241,6 +2241,15 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCatPersonGraphAsync(System.Int32)">
+            <summary>
+            get the network of people relevant to this category/work (every person tagged in a poem
+            under its subtree, plus their relatives/affiliates one hop out) - for the "شخصیت‌ها" tab
+            on a category/poet page
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.SynchronizeNaskbanLinks(RSecurityBackend.Models.Auth.ViewModels.LoginViewModel)">
             <summary>
             synchronize https:://naskban.ir links (logs in and then out to naskban.ir using auth info)
@@ -2684,7 +2693,14 @@
             Configuration
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.#ctor(RMuseum.Services.IGanjoorService,RSecurityBackend.Services.IAppUserService,Microsoft.AspNetCore.Http.IHttpContextAccessor,RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="F:RMuseum.Controllers.GanjoorController._personService">
+            <summary>
+            related people (family tree / person tagging) service - used here only for the
+            category-scoped "cat/{id}/persongraph" endpoint; everything else about people lives in
+            GanjoorRelatedPersonController
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.#ctor(RMuseum.Services.IGanjoorService,RSecurityBackend.Services.IAppUserService,Microsoft.AspNetCore.Http.IHttpContextAccessor,RSecurityBackend.Services.IImageFileService,Microsoft.Extensions.Caching.Memory.IMemoryCache,Microsoft.Extensions.Configuration.IConfiguration,RMuseum.Services.IGanjoorRelatedPersonService)">
             <summary>
             constructor
             </summary>
@@ -2694,6 +2710,7 @@
             <param name="imageFileService"></param>
             <param name="memoryCache"></param>
             <param name="configuration"></param>
+            <param name="personService"></param>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.GetPoetSuggestedPhotosAsync(System.Int32)">
             <summary>
@@ -13361,6 +13378,15 @@
             to their /FamilyTree/{id} strict-tree view
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphNode.DirectlyTagged">
+            <summary>
+            true unless this node was pulled in only because it's one hop away (a relative or
+            affiliate) from a person actually tagged in a work's verses - see
+            GetCatPersonGraphAsync. Always true for the whole-site graph (GetPersonGraphAsync),
+            where there's no "work" to be tagged within. Client-side, a false value draws the node
+            as secondary (e.g. dashed/dimmer) since it's context the reader wasn't shown directly.
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphEdge">
             <summary>
             one edge of the people graph - either a kinship edge or a non-family tie, flattened to a
@@ -18385,6 +18411,16 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetCatPersonGraphAsync(System.Int32)">
+            <summary>
+            get the network of people relevant to one work/category (a poet's whole corpus, one book
+            like the Shahnameh, or a narrower story within it) - every person tagged in a poem under
+            catId's subtree, plus their relatives/affiliates one hop out even if never tagged
+            themselves - see GanjoorPersonGraphNode.DirectlyTagged
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorService">
             <summary>
             Ganjoor Poems Content Privider Service
@@ -21942,6 +21978,43 @@
             get the whole known network of people, for the force-directed "ontology" explorer
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._GetCategorySubtreeIdsAsync(System.Int32)">
+            <summary>
+            get every category id in the subtree rooted at catId (catId itself plus every descendant,
+            walked breadth-first) - a lighter-weight, purpose-built counterpart of
+            GanjoorService._populateCategoryChildren (which builds full category objects via
+            _GetCatById); this only needs ids, so it queries them directly
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetCatPersonGraphAsync(System.Int32)">
+            <summary>
+            get the network of people relevant to one work/category (e.g. a poet's Shahnameh, or one
+            story within it like Nezami's Leyli o Majnoon) - the category-scoped counterpart of
+            GetPersonGraphAsync, for the "شخصیت‌ها" tab on a category/poet page. Starts from every
+            person directly tagged (PoemGeoDateTag.PersonId) in a poem under catId's subtree, then
+            adds their relatives/affiliates one hop out even when
+            those relatives are never tagged in the work themselves - so, say, a hero's father still
+            shows up if he's known but never named in a verse, which helps a reader unfamiliar with
+            the story rather than leaving the tree looking broken. Those one-hop additions are marked
+            DirectlyTagged = false so the client can draw them as secondary.
+            </summary>
+            <param name="catId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._BuildGraphNodes(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorRelatedPerson},System.Collections.Generic.HashSet{System.Int32})">
+            <summary>
+            shared node-list builder for GetPersonGraphAsync/GetCatPersonGraphAsync - directlyTaggedIds
+            null means "everyone counts as directly part of the graph" (the whole-site graph has no
+            notion of one-hop additions)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._BuildGraphEdges(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorPersonRelation},System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorPersonAffiliation},System.Collections.Generic.Dictionary{System.Int32,RMuseum.Models.Ganjoor.GanjoorRelatedPerson})">
+            <summary>
+            shared edge-list builder for GetPersonGraphAsync/GetCatPersonGraphAsync - flattens
+            GanjoorPersonRelation and GanjoorPersonAffiliation rows into the common
+            GanjoorPersonGraphEdge shape, resolving both sides' names from personById
+            </summary>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorRelatedPersonService._context">
             <summary>

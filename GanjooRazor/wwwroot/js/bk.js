@@ -1692,6 +1692,53 @@ function loadCatRecitations(catId) {
 
 }
 
+// on-demand "شخصیت‌ها" tab on a poet/category page - loads the category-scoped person/relation
+// graph (see _PersonGraphPartial.cshtml / OnGetPersonGraphAsync) and hands its JSON payload to the
+// same peoplegraph.js force-directed renderer used by /PeopleGraph, with element ids prefixed
+// "pg-cat-" so it doesn't collide with anything else on the page
+function loadPersonGraph(catId) {
+
+    var loadButton = document.getElementById("load-persongraph");
+    if (loadButton == null) {
+
+        return;
+    }
+    loadButton.remove();
+
+    var divParent = document.getElementById('persongraph-placeholder');
+    var imgElementId = 'loadingpersongraphimg';
+    divParent.innerHTML = divParent.innerHTML + '<div class="bnumdiv" id="remove-this-persongraph"><img id="' + imgElementId + '" src="/image/loading.gif" alt="بارگذاری"/></div>';
+    $.ajax({
+        type: "GET",
+        url: '?Handler=PersonGraph&catId=' + String(catId),
+        error: function () {
+            if (document.getElementById("remove-this-persongraph") != null) {
+                document.getElementById("remove-this-persongraph").remove();
+            }
+        },
+        success: function (data) {
+            if (document.getElementById("remove-this-persongraph") != null) {
+                document.getElementById("remove-this-persongraph").remove();
+            }
+            $(data).appendTo(divParent);
+            var dataElement = document.getElementById('pg-cat-data');
+            if (dataElement != null) {
+                var graphData = JSON.parse(dataElement.textContent);
+                GanjoorPeopleGraph.render({
+                    containerId: 'pg-cat-container',
+                    svgId: 'pg-cat-svg',
+                    tableBodyId: 'pg-cat-table-body',
+                    legendId: 'pg-cat-legend',
+                    searchInputId: 'pg-cat-search',
+                    resetButtonId: 'pg-cat-reset',
+                    data: graphData
+                });
+            }
+        },
+    });
+
+}
+
 // https://stackoverflow.com/questions/56300132/how-to-override-css-prefers-color-scheme-setting
 // Return the system level color scheme, but if something's in local storage, return that
 // Unless the system scheme matches the the stored scheme, in which case... remove from local storage

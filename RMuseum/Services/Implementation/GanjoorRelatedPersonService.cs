@@ -833,43 +833,10 @@ namespace RMuseum.Services.Implementation
                     .ToListAsync();
                 var personById = persons.ToDictionary(p => p.Id);
 
-                var nodes = persons.Select(p => new GanjoorPersonGraphNode()
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    HasFamilyTree = !string.IsNullOrEmpty(p.FamilyTreeCaption),
-                }).ToList();
-
-                var edges = new List<GanjoorPersonGraphEdge>();
-
-                foreach (var r in relations)
-                {
-                    edges.Add(new GanjoorPersonGraphEdge()
-                    {
-                        Person1Id = r.Person1Id,
-                        Person1Name = personById.TryGetValue(r.Person1Id, out var rp1) ? rp1.Name : "",
-                        Person2Id = r.Person2Id,
-                        Person2Name = personById.TryGetValue(r.Person2Id, out var rp2) ? rp2.Name : "",
-                        Category = "Relation",
-                        TypeValue = (int)r.RelationType,
-                        DegreeHint = r.DegreeHint,
-                        Note = r.Note,
-                    });
-                }
-
-                foreach (var a in affiliations)
-                {
-                    edges.Add(new GanjoorPersonGraphEdge()
-                    {
-                        Person1Id = a.Person1Id,
-                        Person1Name = personById.TryGetValue(a.Person1Id, out var ap1) ? ap1.Name : "",
-                        Person2Id = a.Person2Id,
-                        Person2Name = personById.TryGetValue(a.Person2Id, out var ap2) ? ap2.Name : "",
-                        Category = "Affiliation",
-                        TypeValue = (int)a.AffiliationType,
-                        Note = a.Note,
-                    });
-                }
+                // no "work" scope here, so every node is directly part of the graph - none of them
+                // are a one-hop addition the way GetCatPersonGraphAsync's are
+                var nodes = _BuildGraphNodes(persons, null);
+                var edges = _BuildGraphEdges(relations, affiliations, personById);
 
                 return new RServiceResult<GanjoorPersonGraphViewModel>(new GanjoorPersonGraphViewModel()
                 {
@@ -881,6 +848,181 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<GanjoorPersonGraphViewModel>(null, exp.ToString());
             }
+        }
+
+        /// <summary>
+        /// get every category id in the subtree rooted at catId (catId itself plus every descendant,
+        /// walked breadth-first) - a lighter-weight, purpose-built counterpart of
+        /// GanjoorService._populateCategoryChildren (which builds full category objects via
+        /// _GetCatById); this only needs ids, so it queries them directly
+        /// </summary>
+        private async Task<List<int>> _GetCategorySubtreeIdsAsync(int catId)
+        {
+            var result = new List<int> { catId };
+            var queue = new Queue<int>();
+            queue.Enqueue(catId);
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                var childIds = await _context.GanjoorCategories
+                    .Where(c => c.ParentId == current)
+                    .Select(c => c.Id)
+                    .ToListAsync();
+                foreach (var childId in childIds)
+                {
+                    result.Add(childId);
+                    queue.Enqueue(childId);
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// get the network of people relevant to one work/category (e.g. a poet's Shahnameh, or one
+        /// story within it like Nezami's Leyli o Majnoon) - the category-scoped counterpart of
+        /// GetPersonGraphAsync, for the "شخصیت‌ها" tab on a category/poet page. Starts from every
+        /// person directly tagged (PoemGeoDateTag.PersonId) in a poem under catId's subtree, then
+        /// adds their relatives/affiliates one hop out even when
+        /// those relatives are never tagged in the work themselves - so, say, a hero's father still
+        /// shows up if he's known but never named in a verse, which helps a reader unfamiliar with
+        /// the story rather than leaving the tree looking broken. Those one-hop additions are marked
+        /// DirectlyTagged = false so the client can draw them as secondary.
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPersonGraphViewModel>> GetCatPersonGraphAsync(int catId)
+        {
+            try
+            {
+                var catExists = await _context.GanjoorCategories.Where(c => c.Id == catId).AnyAsync();
+                if (!catExists)
+                {
+                    return new RServiceResult<GanjoorPersonGraphViewModel>(null, "بخش پیدا نشد.");
+                }
+
+                var catIds = await _GetCategorySubtreeIdsAsync(catId);
+
+                var directPersonIds = await _context.PoemGeoDateTags
+                    .Where(t => t.MachineGenerated == false && t.PersonId != null && catIds.Contains(t.Poem.CatId))
+                    .Select(t => t.PersonId.Value)
+                    .Distinct()
+                    .ToListAsync();
+
+                if (directPersonIds.Count == 0)
+                {
+                    return new RServiceResult<GanjoorPersonGraphViewModel>(new GanjoorPersonGraphViewModel()
+                    {
+                        Nodes = new List<GanjoorPersonGraphNode>(),
+                        Edges = new List<GanjoorPersonGraphEdge>(),
+                    });
+                }
+
+                var directIdSet = new HashSet<int>(directPersonIds);
+
+                var oneHopRelations = await _context.GanjoorPersonRelations
+                    .Where(r => directIdSet.Contains(r.Person1Id) || directIdSet.Contains(r.Person2Id))
+                    .ToListAsync();
+                var oneHopAffiliations = await _context.GanjoorPersonAffiliations
+                    .Where(a => directIdSet.Contains(a.Person1Id) || directIdSet.Contains(a.Person2Id))
+                    .ToListAsync();
+
+                var allIdSet = new HashSet<int>(directIdSet);
+                foreach (var r in oneHopRelations)
+                {
+                    allIdSet.Add(r.Person1Id);
+                    allIdSet.Add(r.Person2Id);
+                }
+                foreach (var a in oneHopAffiliations)
+                {
+                    allIdSet.Add(a.Person1Id);
+                    allIdSet.Add(a.Person2Id);
+                }
+
+                // re-query rather than reuse oneHopRelations/oneHopAffiliations, so an edge between
+                // two one-hop additions (not just their link back to a directly-tagged person) is
+                // also included, now that the final node set is known
+                var relations = await _context.GanjoorPersonRelations
+                    .Where(r => allIdSet.Contains(r.Person1Id) && allIdSet.Contains(r.Person2Id))
+                    .ToListAsync();
+                var affiliations = await _context.GanjoorPersonAffiliations
+                    .Where(a => allIdSet.Contains(a.Person1Id) && allIdSet.Contains(a.Person2Id))
+                    .ToListAsync();
+
+                var persons = await _context.GanjoorRelatedPersons
+                    .Where(p => allIdSet.Contains(p.Id))
+                    .ToListAsync();
+                var personById = persons.ToDictionary(p => p.Id);
+
+                var nodes = _BuildGraphNodes(persons, directIdSet);
+                var edges = _BuildGraphEdges(relations, affiliations, personById);
+
+                return new RServiceResult<GanjoorPersonGraphViewModel>(new GanjoorPersonGraphViewModel()
+                {
+                    Nodes = nodes,
+                    Edges = edges,
+                });
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPersonGraphViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// shared node-list builder for GetPersonGraphAsync/GetCatPersonGraphAsync - directlyTaggedIds
+        /// null means "everyone counts as directly part of the graph" (the whole-site graph has no
+        /// notion of one-hop additions)
+        /// </summary>
+        private static List<GanjoorPersonGraphNode> _BuildGraphNodes(List<GanjoorRelatedPerson> persons, HashSet<int> directlyTaggedIds)
+        {
+            return persons.Select(p => new GanjoorPersonGraphNode()
+            {
+                Id = p.Id,
+                Name = p.Name,
+                HasFamilyTree = !string.IsNullOrEmpty(p.FamilyTreeCaption),
+                DirectlyTagged = directlyTaggedIds == null || directlyTaggedIds.Contains(p.Id),
+            }).ToList();
+        }
+
+        /// <summary>
+        /// shared edge-list builder for GetPersonGraphAsync/GetCatPersonGraphAsync - flattens
+        /// GanjoorPersonRelation and GanjoorPersonAffiliation rows into the common
+        /// GanjoorPersonGraphEdge shape, resolving both sides' names from personById
+        /// </summary>
+        private static List<GanjoorPersonGraphEdge> _BuildGraphEdges(List<GanjoorPersonRelation> relations, List<GanjoorPersonAffiliation> affiliations, Dictionary<int, GanjoorRelatedPerson> personById)
+        {
+            var edges = new List<GanjoorPersonGraphEdge>();
+
+            foreach (var r in relations)
+            {
+                edges.Add(new GanjoorPersonGraphEdge()
+                {
+                    Person1Id = r.Person1Id,
+                    Person1Name = personById.TryGetValue(r.Person1Id, out var rp1) ? rp1.Name : "",
+                    Person2Id = r.Person2Id,
+                    Person2Name = personById.TryGetValue(r.Person2Id, out var rp2) ? rp2.Name : "",
+                    Category = "Relation",
+                    TypeValue = (int)r.RelationType,
+                    DegreeHint = r.DegreeHint,
+                    Note = r.Note,
+                });
+            }
+
+            foreach (var a in affiliations)
+            {
+                edges.Add(new GanjoorPersonGraphEdge()
+                {
+                    Person1Id = a.Person1Id,
+                    Person1Name = personById.TryGetValue(a.Person1Id, out var ap1) ? ap1.Name : "",
+                    Person2Id = a.Person2Id,
+                    Person2Name = personById.TryGetValue(a.Person2Id, out var ap2) ? ap2.Name : "",
+                    Category = "Affiliation",
+                    TypeValue = (int)a.AffiliationType,
+                    Note = a.Note,
+                });
+            }
+
+            return edges;
         }
 
         /// <summary>

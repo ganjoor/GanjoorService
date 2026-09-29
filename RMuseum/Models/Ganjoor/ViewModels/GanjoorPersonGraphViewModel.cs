@@ -44,6 +44,15 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// to their /FamilyTree/{id} strict-tree view
         /// </summary>
         public bool HasFamilyTree { get; set; }
+
+        /// <summary>
+        /// true unless this node was pulled in only because it's one hop away (a relative or
+        /// affiliate) from a person actually tagged in a work's verses - see
+        /// GetCatPersonGraphAsync. Always true for the whole-site graph (GetPersonGraphAsync),
+        /// where there's no "work" to be tagged within. Client-side, a false value draws the node
+        /// as secondary (e.g. dashed/dimmer) since it's context the reader wasn't shown directly.
+        /// </summary>
+        public bool DirectlyTagged { get; set; } = true;
     }
 
     /// <summary>

@@ -146,5 +146,15 @@ namespace RMuseum.Services
         /// </summary>
         /// <returns></returns>
         Task<RServiceResult<GanjoorPersonGraphViewModel>> GetPersonGraphAsync();
+
+        /// <summary>
+        /// get the network of people relevant to one work/category (a poet's whole corpus, one book
+        /// like the Shahnameh, or a narrower story within it) - every person tagged in a poem under
+        /// catId's subtree, plus their relatives/affiliates one hop out even if never tagged
+        /// themselves - see GanjoorPersonGraphNode.DirectlyTagged
+        /// </summary>
+        /// <param name="catId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPersonGraphViewModel>> GetCatPersonGraphAsync(int catId);
     }
 }
