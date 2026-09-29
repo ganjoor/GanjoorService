@@ -66,7 +66,10 @@ else
             {
                 <div class="spacer">&nbsp;</div>
                 <div class="poem">
-                    <h2>خویشاوندان</h2>
+                    <h2>
+                        خویشاوندان
+                        <a href="/FamilyTree/@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">نمایش نمودار شجره‌نامه</a>
+                    </h2>
                     <ul>
                         @foreach (var row in Model.RelationRows)
                         {

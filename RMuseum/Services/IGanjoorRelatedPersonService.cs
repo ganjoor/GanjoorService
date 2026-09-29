@@ -54,6 +54,15 @@ namespace RMuseum.Services
         Task<RServiceResult<PoemGeoDateTag[]>> GetPoemsByPersonAsync(int id);
 
         /// <summary>
+        /// get the whole connected kinship component reachable from this person (ancestors,
+        /// descendants, spouses, siblings - whichever edges connect to it, transitively), for the
+        /// interactive family-tree chart at /FamilyTree/{id}
+        /// </summary>
+        /// <param name="rootId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorFamilyTreeViewModel>> GetFamilyTreeAsync(int rootId);
+
+        /// <summary>
         /// submit a suggested edit to an already-approved person's own fields - goes into the
         /// pending queue, does not change the person itself until a moderator approves it
         /// </summary>

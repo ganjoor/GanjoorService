@@ -2860,6 +2860,14 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetFamilyTreeAsync(System.Int32)">
+            <summary>
+            get the whole connected kinship component reachable from this person (ancestors,
+            descendants, spouses, siblings), for the interactive family-tree chart
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.SuggestPersonEditAsync(System.Int32,RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion)">
             <summary>
             suggest an edit to an already-approved person's own fields - any logged-in user, same as
@@ -4855,6 +4863,18 @@
             <inheritdoc />
         </member>
         <member name="M:RMuseum.Migrations.FamilyTreeModels.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.AddGanjoorPersonEditSuggestion">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddGanjoorPersonEditSuggestion.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddGanjoorPersonEditSuggestion.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddGanjoorPersonEditSuggestion.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -12797,6 +12817,38 @@
             destination poem first verse
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeViewModel">
+            <summary>
+            the whole connected kinship component reachable from one person, for the interactive chart at
+            /FamilyTree/{id} (client draws the layout; this just hands over every person and every edge in
+            that connected subgraph - see GanjoorRelatedPersonService.GetFamilyTreeAsync). Deliberately not
+            scoped to strict descendants of RootId: an ancestor several rows up, or a spouse's own side of
+            the family, is part of the same connected component and is included too, exactly like
+            akhakhafrasiyab.ir's chart isn't confined to the clicked node's own subtree.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeViewModel.RootId">
+            <summary>
+            the person id the chart was requested for (not necessarily the topmost node once rendered -
+            the client walks Parent/Ancestor edges to find the actual top of each lineage in Persons)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeViewModel.Persons">
+            <summary>
+            every person in the connected component, including RootId itself
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeViewModel.Relations">
+            <summary>
+            every kinship edge touching any person in Persons
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeEdge">
+            <summary>
+            a GanjoorPersonRelation row stripped down to what the client-side layout needs (no
+            Person1/Person2 navigation - Persons above already carries full person data)
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjooRhymeAnalysisResult">
             <summary>
             Rhyme Analysis Result
@@ -17912,6 +17964,15 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetFamilyTreeAsync(System.Int32)">
+            <summary>
+            get the whole connected kinship component reachable from this person (ancestors,
+            descendants, spouses, siblings - whichever edges connect to it, transitively), for the
+            interactive family-tree chart at /FamilyTree/{id}
+            </summary>
+            <param name="rootId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.SuggestPersonEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion)">
             <summary>
             submit a suggested edit to an already-approved person's own fields - goes into the
@@ -21414,6 +21475,13 @@
             get the (approved, materialized) poem geo/date tags that name this person
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetFamilyTreeAsync(System.Int32)">
+            <summary>
+            get the whole connected kinship component reachable from this person
+            </summary>
+            <param name="rootId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.SuggestPersonEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion)">

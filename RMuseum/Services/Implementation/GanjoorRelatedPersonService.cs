@@ -173,6 +173,93 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get the whole connected kinship component reachable from this person
+        /// </summary>
+        /// <param name="rootId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorFamilyTreeViewModel>> GetFamilyTreeAsync(int rootId)
+        {
+            try
+            {
+                var rootExists = await _context.GanjoorRelatedPersons.Where(p => p.Id == rootId).AnyAsync();
+                if (!rootExists)
+                {
+                    return new RServiceResult<GanjoorFamilyTreeViewModel>(null, "شخصیت پیدا نشد.");
+                }
+
+                // kinship graph tends to be small (a few hundred rows at most for this kind of data),
+                // so it's simplest/cheapest to load the whole table and walk it in memory rather than
+                // issuing a recursive query
+                var allRelations = await _context.GanjoorPersonRelations.ToListAsync();
+
+                var edgesByPersonId = new Dictionary<int, List<GanjoorPersonRelation>>();
+                void IndexEdge(int personId, GanjoorPersonRelation edge)
+                {
+                    if (!edgesByPersonId.TryGetValue(personId, out var list))
+                    {
+                        list = new List<GanjoorPersonRelation>();
+                        edgesByPersonId[personId] = list;
+                    }
+                    list.Add(edge);
+                }
+                foreach (var edge in allRelations)
+                {
+                    IndexEdge(edge.Person1Id, edge);
+                    IndexEdge(edge.Person2Id, edge);
+                }
+
+                var visitedPersonIds = new HashSet<int>() { rootId };
+                var visitedRelationIds = new HashSet<int>();
+                var queue = new Queue<int>();
+                queue.Enqueue(rootId);
+
+                while (queue.Count > 0)
+                {
+                    var personId = queue.Dequeue();
+                    if (!edgesByPersonId.TryGetValue(personId, out var touchingEdges))
+                        continue;
+
+                    foreach (var edge in touchingEdges)
+                    {
+                        visitedRelationIds.Add(edge.Id);
+                        var otherPersonId = edge.Person1Id == personId ? edge.Person2Id : edge.Person1Id;
+                        if (visitedPersonIds.Add(otherPersonId))
+                        {
+                            queue.Enqueue(otherPersonId);
+                        }
+                    }
+                }
+
+                var persons = await _context.GanjoorRelatedPersons
+                    .Where(p => visitedPersonIds.Contains(p.Id))
+                    .OrderBy(p => p.Id)
+                    .ToListAsync();
+
+                var relations = allRelations
+                    .Where(r => visitedRelationIds.Contains(r.Id))
+                    .Select(r => new GanjoorFamilyTreeEdge()
+                    {
+                        Person1Id = r.Person1Id,
+                        Person2Id = r.Person2Id,
+                        RelationType = r.RelationType,
+                        DegreeHint = r.DegreeHint,
+                    })
+                    .ToList();
+
+                return new RServiceResult<GanjoorFamilyTreeViewModel>(new GanjoorFamilyTreeViewModel()
+                {
+                    RootId = rootId,
+                    Persons = persons,
+                    Relations = relations,
+                });
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorFamilyTreeViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// submit a suggested edit to an already-approved person's own fields
         /// </summary>
         /// <param name="suggestion"></param>

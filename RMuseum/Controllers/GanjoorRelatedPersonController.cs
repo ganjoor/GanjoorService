@@ -112,6 +112,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get the whole connected kinship component reachable from this person (ancestors,
+        /// descendants, spouses, siblings), for the interactive family-tree chart
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id:int}/familytree")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorFamilyTreeViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetFamilyTreeAsync(int id)
+        {
+            var res = await _personService.GetFamilyTreeAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// suggest an edit to an already-approved person's own fields - any logged-in user, same as
         /// suggesting a poem correction. Goes into the pending queue; does not change the person.
         /// </summary>
