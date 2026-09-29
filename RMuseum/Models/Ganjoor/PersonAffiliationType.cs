@@ -41,6 +41,24 @@ namespace RMuseum.Models.Ganjoor
         Rival = 5,
 
         /// <summary>
+        /// Person1 was a servant (personal attendant, not a court office) of Person2 - narrower than
+        /// Courtier, for a purely domestic/personal-service tie rather than a court role
+        /// </summary>
+        Servant = 6,
+
+        /// <summary>
+        /// Person1 and Person2 were companions/comrades - e.g. fellow travelers, brothers-in-arms
+        /// (symmetric - order doesn't matter)
+        /// </summary>
+        Companion = 7,
+
+        /// <summary>
+        /// Person1 succeeded Person2 in a role/office/throne (directional - Person1 is the one who
+        /// came after)
+        /// </summary>
+        Successor = 8,
+
+        /// <summary>
         /// doesn't fit any of the above - rely on Note for what the tie actually is
         /// </summary>
         Other = 99,

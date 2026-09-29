@@ -100,11 +100,15 @@ namespace GanjooRazor.Pages
                 { PersonAffiliationType.Patron, "حامیِ" },
                 { PersonAffiliationType.Ally, "متحدِ" },
                 { PersonAffiliationType.Rival, "رقیبِ" },
+                { PersonAffiliationType.Servant, "خدمتکارِ" },
+                { PersonAffiliationType.Companion, "همراهِ" },
+                { PersonAffiliationType.Successor, "جانشینِ" },
                 { PersonAffiliationType.Other, "دارای نسبتی (به یادداشت نگاه کنید) با" },
             };
 
         private static bool IsSymmetricAffiliation(PersonAffiliationType t) =>
-            t == PersonAffiliationType.Ally || t == PersonAffiliationType.Rival || t == PersonAffiliationType.Other;
+            t == PersonAffiliationType.Ally || t == PersonAffiliationType.Rival ||
+            t == PersonAffiliationType.Companion || t == PersonAffiliationType.Other;
 
         public async Task<IActionResult> OnGetAsync(int id)
         {

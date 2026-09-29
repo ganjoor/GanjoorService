@@ -806,6 +806,84 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// get the whole known network of people, for the force-directed "ontology" explorer
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPersonGraphViewModel>> GetPersonGraphAsync()
+        {
+            try
+            {
+                var relations = await _context.GanjoorPersonRelations.ToListAsync();
+                var affiliations = await _context.GanjoorPersonAffiliations.ToListAsync();
+
+                var involvedPersonIds = new HashSet<int>();
+                foreach (var r in relations)
+                {
+                    involvedPersonIds.Add(r.Person1Id);
+                    involvedPersonIds.Add(r.Person2Id);
+                }
+                foreach (var a in affiliations)
+                {
+                    involvedPersonIds.Add(a.Person1Id);
+                    involvedPersonIds.Add(a.Person2Id);
+                }
+
+                var persons = await _context.GanjoorRelatedPersons
+                    .Where(p => involvedPersonIds.Contains(p.Id))
+                    .ToListAsync();
+                var personById = persons.ToDictionary(p => p.Id);
+
+                var nodes = persons.Select(p => new GanjoorPersonGraphNode()
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    HasFamilyTree = !string.IsNullOrEmpty(p.FamilyTreeCaption),
+                }).ToList();
+
+                var edges = new List<GanjoorPersonGraphEdge>();
+
+                foreach (var r in relations)
+                {
+                    edges.Add(new GanjoorPersonGraphEdge()
+                    {
+                        Person1Id = r.Person1Id,
+                        Person1Name = personById.TryGetValue(r.Person1Id, out var rp1) ? rp1.Name : "",
+                        Person2Id = r.Person2Id,
+                        Person2Name = personById.TryGetValue(r.Person2Id, out var rp2) ? rp2.Name : "",
+                        Category = "Relation",
+                        TypeValue = (int)r.RelationType,
+                        DegreeHint = r.DegreeHint,
+                        Note = r.Note,
+                    });
+                }
+
+                foreach (var a in affiliations)
+                {
+                    edges.Add(new GanjoorPersonGraphEdge()
+                    {
+                        Person1Id = a.Person1Id,
+                        Person1Name = personById.TryGetValue(a.Person1Id, out var ap1) ? ap1.Name : "",
+                        Person2Id = a.Person2Id,
+                        Person2Name = personById.TryGetValue(a.Person2Id, out var ap2) ? ap2.Name : "",
+                        Category = "Affiliation",
+                        TypeValue = (int)a.AffiliationType,
+                        Note = a.Note,
+                    });
+                }
+
+                return new RServiceResult<GanjoorPersonGraphViewModel>(new GanjoorPersonGraphViewModel()
+                {
+                    Nodes = nodes,
+                    Edges = edges,
+                });
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPersonGraphViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// Database Context
         /// </summary>
         protected readonly RMuseumDbContext _context;

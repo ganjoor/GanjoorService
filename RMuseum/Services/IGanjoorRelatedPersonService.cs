@@ -138,5 +138,13 @@ namespace RMuseum.Services
         /// <param name="reviewNote"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorPersonRelationEditSuggestion>> ModeratePersonRelationEditSuggestionAsync(Guid moderatorUserId, int suggestionId, CorrectionReviewResult result, string reviewNote);
+
+        /// <summary>
+        /// get the whole known network of people (every person with at least one kinship edge or
+        /// non-family tie, plus every one of those edges/ties) for the force-directed "ontology"
+        /// explorer at /PeopleGraph - see GanjoorPersonGraphViewModel
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPersonGraphViewModel>> GetPersonGraphAsync();
     }
 }

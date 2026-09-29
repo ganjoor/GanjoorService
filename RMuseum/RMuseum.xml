@@ -2838,6 +2838,15 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetPersonGraphAsync">
+            <summary>
+            get the whole known network of people (every person with at least one kinship edge or
+            non-family tie, plus every one of those edges/ties), for the force-directed "ontology"
+            explorer at /PeopleGraph. Registered before the "{id}" route below (and constrained to
+            int there) so this literal segment isn't swallowed as an id.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetPersonAsync(System.Int32)">
             <summary>
             get person by id
@@ -11749,6 +11758,24 @@
             Person1 and Person2 were rivals/enemies (symmetric - order doesn't matter)
             </summary>
         </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Servant">
+            <summary>
+            Person1 was a servant (personal attendant, not a court office) of Person2 - narrower than
+            Courtier, for a purely domestic/personal-service tie rather than a court role
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Companion">
+            <summary>
+            Person1 and Person2 were companions/comrades - e.g. fellow travelers, brothers-in-arms
+            (symmetric - order doesn't matter)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Successor">
+            <summary>
+            Person1 succeeded Person2 in a role/office/throne (directional - Person1 is the one who
+            came after)
+            </summary>
+        </member>
         <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Other">
             <summary>
             doesn't fit any of the above - rely on Note for what the tie actually is
@@ -13290,6 +13317,97 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPageSummaryViewModel.FullUrl">
             <summary>
             FullUrl
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphViewModel">
+            <summary>
+            the whole known network of people - every GanjoorRelatedPerson that has at least one kinship
+            edge or non-family tie, plus every one of those edges/ties - served by GET api/people/graph
+            for the force-directed "ontology" explorer at /PeopleGraph, the nowruzgan-style counterpart of
+            the strict-tree /FamilyTree/{id} view. Loaded whole (like GetFamilyTreeAsync does for a single
+            component) since the graph as a whole is small - a few hundred rows at most.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphViewModel.Nodes">
+            <summary>
+            every person that appears in at least one edge below
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphViewModel.Edges">
+            <summary>
+            every kinship edge (GanjoorPersonRelation) and non-family tie (GanjoorPersonAffiliation),
+            merged into one flat list - see GanjoorPersonGraphEdge.Category to tell them apart
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphNode">
+            <summary>
+            one node of the people graph
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphNode.Id">
+            <summary>
+            GanjoorRelatedPerson.Id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphNode.Name">
+            <summary>
+            GanjoorRelatedPerson.Name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphNode.HasFamilyTree">
+            <summary>
+            true if this person captions a family tree (GanjoorRelatedPerson.FamilyTreeCaption not
+            empty) - used client-side to draw such nodes slightly larger/more prominent, and to link
+            to their /FamilyTree/{id} strict-tree view
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphEdge">
+            <summary>
+            one edge of the people graph - either a kinship edge or a non-family tie, flattened to a
+            common shape so the client can draw/list them uniformly
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphEdge.Person1Id">
+            <summary>
+            first person - directional meaning (if any) depends on Category/TypeValue, same as the
+            underlying GanjoorPersonRelation/GanjoorPersonAffiliation row
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphEdge.Person1Name">
+            <summary>
+            first person's name, denormalized here so the client doesn't need a second lookup
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphEdge.Person2Id">
+            <summary>
+            second person
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphEdge.Person2Name">
+            <summary>
+            second person's name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphEdge.Category">
+            <summary>
+            "Relation" for a GanjoorPersonRelation edge, "Affiliation" for a GanjoorPersonAffiliation
+            one - tells the client which enum TypeValue is a numeric value of
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphEdge.TypeValue">
+            <summary>
+            the numeric value of PersonRelationType (when Category is "Relation") or
+            PersonAffiliationType (when Category is "Affiliation")
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphEdge.DegreeHint">
+            <summary>
+            see GanjoorPersonRelation.DegreeHint - null for an Affiliation edge
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphEdge.Note">
+            <summary>
+            free-text note
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationsViewModel">
@@ -18259,6 +18377,14 @@
             <param name="reviewNote"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetPersonGraphAsync">
+            <summary>
+            get the whole known network of people (every person with at least one kinship edge or
+            non-family tie, plus every one of those edges/ties) for the force-directed "ontology"
+            explorer at /PeopleGraph - see GanjoorPersonGraphViewModel
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorService">
             <summary>
             Ganjoor Poems Content Privider Service
@@ -21809,6 +21935,12 @@
             <param name="suggestionId"></param>
             <param name="result"></param>
             <param name="reviewNote"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetPersonGraphAsync">
+            <summary>
+            get the whole known network of people, for the force-directed "ontology" explorer
+            </summary>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorRelatedPersonService._context">

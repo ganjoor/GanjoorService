@@ -1,0 +1,104 @@
+@page
+@model GanjooRazor.Pages.PeopleGraphModel
+@{
+    Layout = "_Layout";
+}
+@section Head {
+    <meta name="robots" content="noindex, nofollow" />
+}
+@if (!string.IsNullOrEmpty(Model.LastError))
+{
+    @Model.LastError
+}
+else
+{
+    <!-- #hdr2 -->
+
+    <div id="fa">
+
+        <div id="maincnt">
+
+            <partial name="_InlineLoginPartial" model="Model" />
+
+            <div class="spacer">&nbsp;</div>
+
+            <div class="poem">
+                <h1>
+                    شبکهٔ روابط شخصیت‌ها
+                    <a href="/people" class="up-btn up-btn--ghost up-btn--sm">فهرست شجره‌نامه‌ها</a>
+                </h1>
+                <p class="up-hint"><small>
+                    این نمودار همهٔ خویشاوندی‌ها و وابستگی‌های غیرخویشاوندی ثبت‌شده را با هم نشان می‌دهد؛ برخلاف نمودار شجره‌نامه که به یک خانواده محدود است.
+                    روی هر گره کلیک کنید تا فقط ارتباط‌های همان شخص برجسته شود (کلیک دوباره برای بازگشت)؛ برای جابه‌جایی یک گره آن را بکشید (برای رها کردنش دوبار کلیک کنید).
+                    برای پیمایش نمودار آن را با ماوس بکشید و با غلتک ماوس بزرگ/کوچک کنید.
+                </small></p>
+
+                <div style="margin-bottom:10px;">
+                    <input type="text" id="pg-search" placeholder="جستجوی نام شخصیت..." style="width:240px;" />
+                    <a role="button" id="pg-reset" class="up-btn up-btn--ghost up-btn--sm">نمایش همه</a>
+                </div>
+
+                <div id="pg-legend" class="pg-legend"></div>
+
+                <div id="peoplegraph-container" style="position:relative;width:100%;height:65vh;border:1px solid #d8cdb8;border-radius:6px;overflow:hidden;background:#faf7f0;">
+                    <svg id="peoplegraph-svg" width="100%" height="100%"></svg>
+                </div>
+
+                <div class="spacer">&nbsp;</div>
+
+                <h2>فهرست ارتباط‌ها</h2>
+                <div style="max-height:40vh;overflow:auto;">
+                    <table class="up-table">
+                        <thead>
+                            <tr>
+                                <th>شخص اول</th>
+                                <th>نوع ارتباط</th>
+                                <th>شخص دوم</th>
+                                <th>یادداشت</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pg-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="spacer">&nbsp;</div>
+
+        </div>
+
+        <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true}) />
+
+    </div>
+
+    <style>
+        .pg-circle { fill: #fdf6e6; stroke: #8b6b4a; stroke-width: 1.5; }
+        .pg-circle-tree { fill: #f3e2b8; stroke: #7a4a2a; stroke-width: 2; }
+        .pg-label { font-size: 11px; fill: #4a3520; font-family: inherit; }
+        .pg-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+        .pg-legend-item { font-size: 12px; display: inline-flex; align-items: center; gap: 4px; }
+        .pg-legend-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: middle; }
+    </style>
+
+    <script>
+        var peopleGraphData = @Html.Raw(Model.GraphDataJson);
+    </script>
+    <script src="/js/peoplegraph.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            GanjoorPeopleGraph.render({
+                containerId: 'peoplegraph-container',
+                svgId: 'peoplegraph-svg',
+                tableBodyId: 'pg-table-body',
+                legendId: 'pg-legend',
+                searchInputId: 'pg-search',
+                resetButtonId: 'pg-reset',
+                data: peopleGraphData
+            });
+        });
+    </script>
+
+    @if (ViewData["TrackingScript"] != null && !string.IsNullOrEmpty(ViewData["TrackingScript"].ToString()))
+    {
+        @Html.Raw(ViewData["TrackingScript"])
+    }
+}

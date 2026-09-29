@@ -60,6 +60,25 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get the whole known network of people (every person with at least one kinship edge or
+        /// non-family tie, plus every one of those edges/ties), for the force-directed "ontology"
+        /// explorer at /PeopleGraph. Registered before the "{id}" route below (and constrained to
+        /// int there) so this literal segment isn't swallowed as an id.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("graph")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPersonGraphViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPersonGraphAsync()
+        {
+            var res = await _personService.GetPersonGraphAsync();
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// get person by id
         /// </summary>
         /// <param name="id"></param>
