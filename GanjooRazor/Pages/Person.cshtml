@@ -24,7 +24,13 @@ else
             <div class="spacer">&nbsp;</div>
 
             <div class="poem">
-                <h1>@Model.Person.Name</h1>
+                <h1>
+                    @Model.Person.Name
+                    @if (Model.LoggedIn)
+                    {
+                        <a href="/SuggestPersonEdit/@Model.Person.Id" class="up-icon-btn" title="پیشنهاد ویرایش این شخصیت" aria-label="پیشنهاد ویرایش این شخصیت">✎</a>
+                    }
+                </h1>
 
                 @if (!string.IsNullOrEmpty(Model.Person.FamilyTreeCaption))
                 {

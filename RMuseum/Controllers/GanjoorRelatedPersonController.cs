@@ -1,15 +1,25 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RMuseum.Services;
+using RSecurityBackend.Models.Auth.Memory;
+using RSecurityBackend.Models.Generic;
+using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace RMuseum.Controllers
 {
     /// <summary>
-    /// related people (family tree / person tagging) - read-only for now, see IGanjoorRelatedPersonService
+    /// related people (family tree / person tagging) - reads are anonymous; the only write paths are
+    /// the suggestion queue below (any logged-in user may suggest an edit to an existing person,
+    /// same as suggesting a poem correction; a moderator reviews it the same way a poem correction is
+    /// reviewed). There is no direct-edit endpoint for GanjoorRelatedPerson.
     /// </summary>
     [Produces("application/json")]
     [Route("api/people")]
@@ -96,6 +106,84 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> GetPoemsByPersonAsync(int id)
         {
             var res = await _personService.GetPoemsByPersonAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// suggest an edit to an already-approved person's own fields - any logged-in user, same as
+        /// suggesting a poem correction. Goes into the pending queue; does not change the person.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="suggestion"></param>
+        /// <returns></returns>
+        [HttpPost("{id:int}/editsuggestion")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPersonEditSuggestion))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> SuggestPersonEditAsync(int id, [FromBody] GanjoorPersonEditSuggestion suggestion)
+        {
+            suggestion.PersonId = id;
+            suggestion.UserId = new Guid(User.Claims.First(c => c.Type == "UserId").Value);
+            var res = await _personService.SuggestPersonEditAsync(suggestion);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// get the next unreviewed person-edit suggestion, for the moderator queue - same permission
+        /// as reviewing a poem correction
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        [HttpGet("editsuggestions/next")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPersonEditSuggestion))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetNextUnreviewedPersonEditSuggestionAsync(int skip = 0)
+        {
+            var res = await _personService.GetNextUnreviewedPersonEditSuggestionAsync(skip);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            var resCount = await _personService.GetUnreviewedPersonEditSuggestionCountAsync();
+            if (!string.IsNullOrEmpty(resCount.ExceptionString))
+                return BadRequest(resCount.ExceptionString);
+
+            // Paging Header - same shape ReviewEdits.cshtml.cs already knows how to read for poem corrections
+            HttpContext.Response.Headers.Append("paging-headers",
+                JsonConvert.SerializeObject(
+                    new PaginationMetadata()
+                    {
+                        totalCount = resCount.Result,
+                        pageSize = -1,
+                        currentPage = -1,
+                        hasNextPage = false,
+                        hasPreviousPage = false,
+                        totalPages = -1
+                    })
+                );
+
+            return Ok(res.Result);//might be null
+        }
+
+        /// <summary>
+        /// apply a moderator's decision to a pending person-edit suggestion - same permission as
+        /// moderating a poem correction
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="moderation"></param>
+        /// <returns></returns>
+        [HttpPost("editsuggestions/{id:int}/moderate")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPersonEditSuggestion))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> ModeratePersonEditSuggestionAsync(int id, [FromBody] PersonEditSuggestionModerationViewModel moderation)
+        {
+            Guid userId = new Guid(User.Claims.First(c => c.Type == "UserId").Value);
+            var res = await _personService.ModeratePersonEditSuggestionAsync(userId, id, moderation.Result, moderation.ReviewNote);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

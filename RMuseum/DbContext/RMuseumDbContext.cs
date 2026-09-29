@@ -620,6 +620,12 @@ namespace RMuseum.DbContext
         public DbSet<GanjoorPersonAffiliation> GanjoorPersonAffiliations { get; set; }
 
         /// <summary>
+        /// pending/reviewed suggested edits to an already-approved GanjoorRelatedPerson's own fields -
+        /// see GanjoorPersonEditSuggestion
+        /// </summary>
+        public DbSet<GanjoorPersonEditSuggestion> GanjoorPersonEditSuggestions { get; set; }
+
+        /// <summary>
         /// Books (PDF Library)
         /// </summary>
         public DbSet<Book> Books { get; set; }

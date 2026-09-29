@@ -1,14 +1,19 @@
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
+using System;
 using System.Threading.Tasks;
 
 namespace RMuseum.Services
 {
     /// <summary>
-    /// related people (family tree / person tagging) service - read-only for now: the only way a
-    /// new person is created is via the geo/date/person tag correction's SuggestedPersonGraphJson,
-    /// materialized on moderator approval (see GanjoorService-ModeratePoemCorrection.cs)
+    /// related people (family tree / person tagging) service. A new person is normally created via
+    /// the geo/date/person tag correction's SuggestedPersonGraphJson, materialized on moderator
+    /// approval (see GanjoorService-ModeratePoemCorrection.cs). Editing an already-approved person's
+    /// own fields (e.g. adding a FamilyTreeCaption after the fact) goes through the suggest/review
+    /// queue below (SuggestPersonEditAsync / ModeratePersonEditSuggestionAsync) - there is no
+    /// direct-edit path; nothing ever writes to a GanjoorRelatedPerson's fields except that approval
+    /// step and the original creation-on-approval in GanjoorService-ModeratePoemCorrection.cs.
     /// </summary>
     public interface IGanjoorRelatedPersonService
     {
@@ -47,5 +52,40 @@ namespace RMuseum.Services
         /// <param name="id"></param>
         /// <returns></returns>
         Task<RServiceResult<PoemGeoDateTag[]>> GetPoemsByPersonAsync(int id);
+
+        /// <summary>
+        /// submit a suggested edit to an already-approved person's own fields - goes into the
+        /// pending queue, does not change the person itself until a moderator approves it
+        /// </summary>
+        /// <param name="suggestion"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPersonEditSuggestion>> SuggestPersonEditAsync(GanjoorPersonEditSuggestion suggestion);
+
+        /// <summary>
+        /// get the next unreviewed person-edit suggestion (for the moderator queue), including the
+        /// target person's current fields (for a before/after diff) and the suggester's nickname
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPersonEditSuggestion>> GetNextUnreviewedPersonEditSuggestionAsync(int skip);
+
+        /// <summary>
+        /// unreviewed person-edit suggestion count
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<int>> GetUnreviewedPersonEditSuggestionCountAsync();
+
+        /// <summary>
+        /// apply a moderator's decision to a pending person-edit suggestion. On Approved, copies the
+        /// suggestion's Suggested* fields onto the target GanjoorRelatedPerson (Id and
+        /// MachineGenerated on the person are left untouched); any other result just marks the
+        /// suggestion reviewed/rejected without touching the person.
+        /// </summary>
+        /// <param name="moderatorUserId"></param>
+        /// <param name="suggestionId"></param>
+        /// <param name="result"></param>
+        /// <param name="reviewNote"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPersonEditSuggestion>> ModeratePersonEditSuggestionAsync(Guid moderatorUserId, int suggestionId, CorrectionReviewResult result, string reviewNote);
     }
 }

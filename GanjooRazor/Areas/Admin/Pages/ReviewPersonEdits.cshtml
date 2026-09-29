@@ -1,0 +1,168 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.ReviewPersonEditsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using DNTPersianUtils.Core
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "بازبینی پیشنهادهای ویرایش شخصیت‌ها";
+}
+
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.FatalError))
+{
+    <div class="up-alert up-alert--danger">@Model.FatalError</div>
+}
+else if (Model.Suggestion == null)
+{
+    <partial name="_EmptyState" model="@("پیشنهاد ویرایشی وجود ندارد.")" />
+}
+else
+{
+    var s = Model.Suggestion;
+    var p = s.Person;
+
+    <p>
+        <a role="button" target="_blank" href="/person/@p.Id" class="up-btn up-btn--ghost up-btn--sm">@p.Name</a>
+    </p>
+
+    <table>
+        <tr>
+            <td>پیشنهاد دهنده:</td>
+            <td>
+                <a href="/user/edits/?allusers=1&userid=@s.UserId" target="_blank">@(s.User != null ? s.User.NickName : s.UserId.ToString())</a>
+                — @s.Date.ToFriendlyPersianDateTextify()
+            </td>
+        </tr>
+        @if (!string.IsNullOrEmpty(s.SuggestionNote))
+        {
+            <tr>
+                <td>یادداشت پیشنهاددهنده:</td>
+                <td>@s.SuggestionNote</td>
+            </tr>
+        }
+    </table>
+
+    <table class="up-table">
+        <thead>
+            <tr>
+                <th>فیلد</th>
+                <th>مقدار فعلی</th>
+                <th>پیشنهاد</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>نام</td>
+                <td>@p.Name</td>
+                <td>@s.SuggestedName</td>
+            </tr>
+            <tr>
+                <td>نشانی ویکی‌پدیا</td>
+                <td>@p.WikiUrl</td>
+                <td>@s.SuggestedWikiUrl</td>
+            </tr>
+            <tr>
+                <td>سال تولد (قمری)</td>
+                <td>@(p.BirthYearInLHijri == 0 ? "" : p.BirthYearInLHijri.ToPersianNumbers())</td>
+                <td>@(s.SuggestedBirthYearInLHijri == 0 ? "" : s.SuggestedBirthYearInLHijri.ToPersianNumbers())</td>
+            </tr>
+            <tr>
+                <td>تاریخ تولد مستند است</td>
+                <td>@(p.ValidBirthDate ? "بله" : "خیر")</td>
+                <td>@(s.SuggestedValidBirthDate ? "بله" : "خیر")</td>
+            </tr>
+            <tr>
+                <td>زادگاه</td>
+                <td>@Model.LocationName(p.BirthLocationId)</td>
+                <td>@(s.SuggestedBirthLocation != null ? s.SuggestedBirthLocation.Name : "")</td>
+            </tr>
+            <tr>
+                <td>سال وفات (قمری)</td>
+                <td>@(p.DeathYearInLHijri == 0 ? "" : p.DeathYearInLHijri.ToPersianNumbers())</td>
+                <td>@(s.SuggestedDeathYearInLHijri == 0 ? "" : s.SuggestedDeathYearInLHijri.ToPersianNumbers())</td>
+            </tr>
+            <tr>
+                <td>تاریخ وفات مستند است</td>
+                <td>@(p.ValidDeathDate ? "بله" : "خیر")</td>
+                <td>@(s.SuggestedValidDeathDate ? "بله" : "خیر")</td>
+            </tr>
+            <tr>
+                <td>آرامگاه</td>
+                <td>@Model.LocationName(p.DeathLocationId)</td>
+                <td>@(s.SuggestedDeathLocation != null ? s.SuggestedDeathLocation.Name : "")</td>
+            </tr>
+            <tr>
+                <td>عنوان شجره‌نامه</td>
+                <td>@p.FamilyTreeCaption</td>
+                <td>@s.SuggestedFamilyTreeCaption</td>
+            </tr>
+            <tr>
+                <td>توضیحات</td>
+                <td><small>@p.Description</small></td>
+                <td><small>@s.SuggestedDescription</small></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="spacer">&nbsp;</div>
+
+    <table>
+        <tr>
+            <td>
+                <label><input type="radio" name="review_result" id="review_result_Approved" value="Approved" checked="checked" /> تأیید</label>
+                &nbsp;
+                <label><input type="radio" name="review_result" id="review_result_Rejected" value="Rejected" /> رد</label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                یادداشت برای پیشنهاددهنده:<br />
+                <textarea id="review_note" rows="3" cols="60"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a role="button" id="moderatepersonedit" class="up-btn up-btn--success up-btn--block" onclick="moderatePersonEditSuggestion(@s.Id)">بررسی</a>
+            </td>
+            <td>
+                <form method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" name="next" id="next" class="up-btn up-btn--ghost up-btn--block">بعدی</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+
+    <p><small>@Model.Skip.ToPersianNumbers() از @Model.TotalCount.ToPersianNumbers()</small></p>
+
+    <script>
+        function moderatePersonEditSuggestion(id) {
+            $('#moderatepersonedit').hide();
+
+            var url = '?handler=Moderate';
+
+            var pms = {};
+            pms.id = id;
+            pms.result = $('input[name=review_result]:checked').val();
+            pms.reviewNote = $('#review_note').val();
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: JSON.stringify(pms),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function () {
+                    location.reload(true);
+                },
+                error: function (e) {
+                    upToast(e.responseText || 'خطا رخ داد.', 'error');
+                    $('#moderatepersonedit').show();
+                }
+            });
+        }
+    </script>
+}

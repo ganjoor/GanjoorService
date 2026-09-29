@@ -958,6 +958,7 @@ else
                                 @if (geoTag.PersonId != null)
                                 {
                                     <text>شخصیت: @(geoTag.Person != null ? geoTag.Person.Name : $"شخصیت #{geoTag.PersonId}")</text>
+                                    <a href="/SuggestPersonEdit/@geoTag.PersonId" target="_blank" class="up-icon-btn" title="پیشنهاد ویرایش این شخصیت" aria-label="پیشنهاد ویرایش این شخصیت">✎</a>
                                 }
                                 else if (personGraph?.Person != null)
                                 {

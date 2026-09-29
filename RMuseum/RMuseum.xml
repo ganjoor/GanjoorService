@@ -2818,7 +2818,10 @@
         </member>
         <member name="T:RMuseum.Controllers.GanjoorRelatedPersonController">
             <summary>
-            related people (family tree / person tagging) - read-only for now, see IGanjoorRelatedPersonService
+            related people (family tree / person tagging) - reads are anonymous; the only write paths are
+            the suggestion queue below (any logged-in user may suggest an edit to an existing person,
+            same as suggesting a poem correction; a moderator reviews it the same way a poem correction is
+            reviewed). There is no direct-edit endpoint for GanjoorRelatedPerson.
             </summary>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetPeopleAsync">
@@ -2855,6 +2858,32 @@
             get the poems tagged with this person
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.SuggestPersonEditAsync(System.Int32,RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion)">
+            <summary>
+            suggest an edit to an already-approved person's own fields - any logged-in user, same as
+            suggesting a poem correction. Goes into the pending queue; does not change the person.
+            </summary>
+            <param name="id"></param>
+            <param name="suggestion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetNextUnreviewedPersonEditSuggestionAsync(System.Int32)">
+            <summary>
+            get the next unreviewed person-edit suggestion, for the moderator queue - same permission
+            as reviewing a poem correction
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.ModeratePersonEditSuggestionAsync(System.Int32,RMuseum.Models.Ganjoor.ViewModels.PersonEditSuggestionModerationViewModel)">
+            <summary>
+            apply a moderator's decision to a pending person-edit suggestion - same permission as
+            moderating a poem correction
+            </summary>
+            <param name="id"></param>
+            <param name="moderation"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Controllers.GanjoorRelatedPersonController._personService">
@@ -3985,6 +4014,12 @@
         <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPersonAffiliations">
             <summary>
             approved non-family ties between people (e.g. minister-to-king) - see GanjoorPersonAffiliation
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPersonEditSuggestions">
+            <summary>
+            pending/reviewed suggested edits to an already-approved GanjoorRelatedPerson's own fields -
+            see GanjoorPersonEditSuggestion
             </summary>
         </member>
         <member name="P:RMuseum.DbContext.RMuseumDbContext.Books">
@@ -9240,6 +9275,142 @@
             free-text note (e.g. sourcing/reasoning, or what the tie actually is when AffiliationType is Other)
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion">
+            <summary>
+            a contributor's suggested edit to an existing, already-approved GanjoorRelatedPerson's own
+            fields (name, bio, birth/death info, family tree caption, ...). Reviewed/approved the same
+            way a GanjoorPoemGeoDateTagCorrection is - see GanjoorService-ModeratePersonEditSuggestion.cs -
+            but standalone: it targets a person directly, not a poem/couplet. There is no admin-only
+            direct-edit path for GanjoorRelatedPerson; this suggestion queue is the only way any of its
+            fields change after it is first created.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.Id">
+            <summary>
+            suggestion id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.PersonId">
+            <summary>
+            the person this suggestion proposes changes for
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.Person">
+            <summary>
+            the person this suggestion proposes changes for (their CURRENT, still-unchanged fields -
+            for showing a before/after diff to the moderator)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.Date">
+            <summary>
+            date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.UserId">
+            <summary>
+            suggester's user id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.User">
+            <summary>
+            suggester
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedName">
+            <summary>
+            suggested name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedDescription">
+            <summary>
+            suggested description
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedWikiUrl">
+            <summary>
+            suggested wikipedia url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedBirthYearInLHijri">
+            <summary>
+            suggested birth year in lunar hijri
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedDeathYearInLHijri">
+            <summary>
+            suggested death year in lunar hijri
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedValidBirthDate">
+            <summary>
+            suggested ValidBirthDate
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedValidDeathDate">
+            <summary>
+            suggested ValidDeathDate
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedBirthLocationId">
+            <summary>
+            suggested birth location id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedBirthLocation">
+            <summary>
+            suggested birth location
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedDeathLocationId">
+            <summary>
+            suggested death location id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedDeathLocation">
+            <summary>
+            suggested death location
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedFamilyTreeCaption">
+            <summary>
+            suggested family tree caption
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestionNote">
+            <summary>
+            suggester's note to the moderator
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.Reviewed">
+            <summary>
+            reviewed
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.Result">
+            <summary>
+            review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.ReviewDate">
+            <summary>
+            review date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.ReviewNote">
+            <summary>
+            review note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.ReviewerUserId">
+            <summary>
+            reviewer's user id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.ReviewerUser">
+            <summary>
+            reviewer
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPersonRelation">
             <summary>
             an approved kinship edge between two people (GanjoorRelatedPerson rows) - the live/materialized
@@ -14276,6 +14447,21 @@
             model (not an EF entity), so no [NotMapped] or migration concerns here.
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.PersonEditSuggestionModerationViewModel">
+            <summary>
+            a moderator's decision on a pending GanjoorPersonEditSuggestion
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonEditSuggestionModerationViewModel.Result">
+            <summary>
+            review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonEditSuggestionModerationViewModel.ReviewNote">
+            <summary>
+            review note
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PersonGraphSuggestion">
             <summary>
             deserialized shape of GanjoorPoemGeoDateTagCorrection.SuggestedPersonGraphJson - a brand new
@@ -17681,9 +17867,13 @@
         </member>
         <member name="T:RMuseum.Services.IGanjoorRelatedPersonService">
             <summary>
-            related people (family tree / person tagging) service - read-only for now: the only way a
-            new person is created is via the geo/date/person tag correction's SuggestedPersonGraphJson,
-            materialized on moderator approval (see GanjoorService-ModeratePoemCorrection.cs)
+            related people (family tree / person tagging) service. A new person is normally created via
+            the geo/date/person tag correction's SuggestedPersonGraphJson, materialized on moderator
+            approval (see GanjoorService-ModeratePoemCorrection.cs). Editing an already-approved person's
+            own fields (e.g. adding a FamilyTreeCaption after the fact) goes through the suggest/review
+            queue below (SuggestPersonEditAsync / ModeratePersonEditSuggestionAsync) - there is no
+            direct-edit path; nothing ever writes to a GanjoorRelatedPerson's fields except that approval
+            step and the original creation-on-approval in GanjoorService-ModeratePoemCorrection.cs.
             </summary>
         </member>
         <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetPeopleAsync">
@@ -17720,6 +17910,41 @@
             enough of its Poem to link to it
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.SuggestPersonEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion)">
+            <summary>
+            submit a suggested edit to an already-approved person's own fields - goes into the
+            pending queue, does not change the person itself until a moderator approves it
+            </summary>
+            <param name="suggestion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetNextUnreviewedPersonEditSuggestionAsync(System.Int32)">
+            <summary>
+            get the next unreviewed person-edit suggestion (for the moderator queue), including the
+            target person's current fields (for a before/after diff) and the suggester's nickname
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetUnreviewedPersonEditSuggestionCountAsync">
+            <summary>
+            unreviewed person-edit suggestion count
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.ModeratePersonEditSuggestionAsync(System.Guid,System.Int32,RMuseum.Models.Ganjoor.CorrectionReviewResult,System.String)">
+            <summary>
+            apply a moderator's decision to a pending person-edit suggestion. On Approved, copies the
+            suggestion's Suggested* fields onto the target GanjoorRelatedPerson (Id and
+            MachineGenerated on the person are left untouched); any other result just marks the
+            suggestion reviewed/rejected without touching the person.
+            </summary>
+            <param name="moderatorUserId"></param>
+            <param name="suggestionId"></param>
+            <param name="result"></param>
+            <param name="reviewNote"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorService">
@@ -21189,6 +21414,36 @@
             get the (approved, materialized) poem geo/date tags that name this person
             </summary>
             <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.SuggestPersonEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion)">
+            <summary>
+            submit a suggested edit to an already-approved person's own fields
+            </summary>
+            <param name="suggestion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetNextUnreviewedPersonEditSuggestionAsync(System.Int32)">
+            <summary>
+            get the next unreviewed person-edit suggestion for the moderator queue
+            </summary>
+            <param name="skip"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetUnreviewedPersonEditSuggestionCountAsync">
+            <summary>
+            unreviewed person-edit suggestion count
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.ModeratePersonEditSuggestionAsync(System.Guid,System.Int32,RMuseum.Models.Ganjoor.CorrectionReviewResult,System.String)">
+            <summary>
+            apply a moderator's decision to a pending person-edit suggestion
+            </summary>
+            <param name="moderatorUserId"></param>
+            <param name="suggestionId"></param>
+            <param name="result"></param>
+            <param name="reviewNote"></param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorRelatedPersonService._context">
