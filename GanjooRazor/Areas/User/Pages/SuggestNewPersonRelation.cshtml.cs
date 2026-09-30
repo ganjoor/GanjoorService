@@ -4,13 +4,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using GanjooRazor.Pages;
 using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RMuseum.Models.Ganjoor;
 
-namespace GanjooRazor.Pages
+namespace GanjooRazor.Areas.User.Pages
 {
     /// <summary>
     /// contributor-facing form for suggesting a brand new kinship edge between the subject person
@@ -85,7 +86,7 @@ namespace GanjooRazor.Pages
 
             if (!LoggedIn)
             {
-                return Redirect($"/login?redirect={Uri.EscapeDataString(Request.Path)}");
+                return Redirect($"/login?redirect={Uri.EscapeDataString(Request.Path + Request.QueryString)}");
             }
 
             await PreparePersonAsync(personId);
@@ -99,7 +100,7 @@ namespace GanjooRazor.Pages
 
             if (!LoggedIn)
             {
-                return Redirect($"/login?redirect={Uri.EscapeDataString(Request.Path)}");
+                return Redirect($"/login?redirect={Uri.EscapeDataString(Request.Path + Request.QueryString)}");
             }
 
             LastResult = "";

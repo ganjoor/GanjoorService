@@ -99,7 +99,7 @@ namespace RMuseum.Services
 
         /// <summary>
         /// get a single kinship edge by its own id, with both sides' names resolved - used by
-        /// /SuggestPersonRelationEdit/{relationId} to show what it's about
+        /// /User/SuggestPersonRelationEdit?relationId={relationId} to show what it's about
         /// </summary>
         /// <param name="relationId"></param>
         /// <returns></returns>

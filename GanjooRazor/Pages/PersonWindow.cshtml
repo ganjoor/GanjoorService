@@ -15,7 +15,7 @@ else
             @Model.Person.Name
             @if (Model.LoggedIn)
             {
-                <a href="/SuggestPersonEdit/@Model.Person.Id" class="up-icon-btn" title="پیشنهاد ویرایش این شخصیت" aria-label="پیشنهاد ویرایش این شخصیت">✎</a>
+                <a href="/User/SuggestPersonEdit?id=@Model.Person.Id" class="up-icon-btn" title="پیشنهاد ویرایش این شخصیت" aria-label="پیشنهاد ویرایش این شخصیت">✎</a>
             }
         </h2>
 
@@ -55,7 +55,7 @@ else
                 <a href="/FamilyTree/@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">نمایش نمودار شجره‌نامه</a>
                 @if (Model.LoggedIn)
                 {
-                    <a href="/SuggestNewPersonRelation/@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">افزودن خویشاوند جدید</a>
+                    <a href="/User/SuggestNewPersonRelation?personId=@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">افزودن خویشاوند جدید</a>
                 }
             </h3>
             <ul>
@@ -69,7 +69,7 @@ else
                         }
                         @if (Model.LoggedIn)
                         {
-                            <a href="/SuggestPersonRelationEdit/@row.RelationId" class="up-icon-btn" title="پیشنهاد ویرایش/حذف این نسبت" aria-label="پیشنهاد ویرایش/حذف این نسبت">✎</a>
+                            <a href="/User/SuggestPersonRelationEdit?relationId=@row.RelationId" class="up-icon-btn" title="پیشنهاد ویرایش/حذف این نسبت" aria-label="پیشنهاد ویرایش/حذف این نسبت">✎</a>
                         }
                     </li>
                 }
@@ -79,7 +79,7 @@ else
         {
             <h3>
                 خویشاوندان
-                <a href="/SuggestNewPersonRelation/@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">افزودن خویشاوند جدید</a>
+                <a href="/User/SuggestNewPersonRelation?personId=@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">افزودن خویشاوند جدید</a>
             </h3>
         }
 

@@ -1,0 +1,80 @@
+@page
+@model GanjooRazor.Areas.User.Pages.SuggestNewPersonRelationModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_UserPanelLayout";
+    ViewData["Title"] = "پیشنهاد خویشاوند جدید";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+}
+@if (!string.IsNullOrEmpty(Model.LastError))
+{
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
+}
+else
+{
+    <div class="up-page-header">
+        <h1>پیشنهاد خویشاوند جدید برای: @Model.Person.Name</h1>
+    </div>
+
+    <p class="up-hint">
+        این پیشنهاد مستقیماً اعمال نمی‌شود؛ پس از بررسی و تأیید توسط مدیران، به شجره‌نامهٔ
+        <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.Person.Id)">@Model.Person.Name</a> افزوده خواهد شد.
+    </p>
+
+    @if (!string.IsNullOrEmpty(Model.LastResult))
+    {
+        <p>@Html.Raw(Model.LastResult)</p>
+    }
+
+    <div class="up-card">
+        <form method="post" action="/User/SuggestNewPersonRelation?personId=@Model.Person.Id&amp;Handler=Suggest">
+            @Html.AntiForgeryToken()
+
+            <table>
+                <tr>
+                    <td>خویشاوند:</td>
+                    <td>
+                        <select asp-for="OtherPersonId">
+                            <option value="0">— انتخاب کنید —</option>
+                            @foreach (var p in Model.OtherPeople)
+                            {
+                                <option value="@p.Id">@p.Name</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>نسبت با @Model.Person.Name:</td>
+                    <td>
+                        <select asp-for="RelationKind">
+                            <option value="Child">فرزند این شخصیت است</option>
+                            <option value="Parent">پدر یا مادر این شخصیت است</option>
+                            <option value="Sibling">خواهر یا برادر این شخصیت است</option>
+                            <option value="Spouse">همسر این شخصیت است</option>
+                            <option value="DistantAncestor">نیای دور این شخصیت است (بدون نسل مشخص)</option>
+                            <option value="DistantDescendant">نوادهٔ دور این شخصیت است (بدون نسل مشخص)</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        درجه (فقط برای نیا/نواده):
+                        <p class="up-hint"><small>مثلاً برای پدربزرگ/مادربزرگ عدد ۲ را وارد کنید. اگر نمی‌دانید خالی بگذارید.</small></p>
+                    </td>
+                    <td><input asp-for="DegreeHint" /></td>
+                </tr>
+                <tr>
+                    <td>یادداشت (مستندسازی):</td>
+                    <td><textarea asp-for="Note" rows="3" cols="60"></textarea></td>
+                </tr>
+                <tr>
+                    <td>یادداشت برای مدیر بررسی‌کننده:</td>
+                    <td><textarea asp-for="SuggestionNote" rows="3" cols="60"></textarea></td>
+                </tr>
+            </table>
+
+            <input type="submit" value="ثبت پیشنهاد" class="up-btn up-btn--success" />
+            <a role="button" href="javascript:void(0)" onclick="history.back()" class="up-btn up-btn--ghost">انصراف</a>
+        </form>
+    </div>
+}

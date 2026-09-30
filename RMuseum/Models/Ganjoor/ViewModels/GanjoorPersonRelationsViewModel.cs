@@ -32,7 +32,7 @@ namespace RMuseum.Models.Ganjoor.ViewModels
     {
         /// <summary>
         /// the underlying GanjoorPersonRelation row's own id - needed by the client to link to
-        /// /SuggestPersonRelationEdit/{id} for suggesting a change/removal of this specific edge
+        /// /User/SuggestPersonRelationEdit?relationId={id} for suggesting a change/removal of this specific edge
         /// </summary>
         public int Id { get; set; }
 
