@@ -14,14 +14,17 @@ using RMuseum.Models.Ganjoor;
 namespace GanjooRazor.Areas.User.Pages
 {
     /// <summary>
-    /// contributor-facing form for suggesting a brand new kinship edge between the subject person
-    /// and another already-approved person - the "Add" counterpart of SuggestPersonRelationEdit.cshtml
-    /// (which only handles Modify/Remove of an already-existing edge). Presents a direction-aware
-    /// "RelationKind" choice (e.g. "فرزند" vs "پدر یا مادر") from the subject's point of view, and
-    /// translates it into the correct Person1Id/Person2Id/RelationType triple before submitting -
-    /// GanjoorPersonRelation itself has no notion of "from the subject's point of view", only
-    /// Person1/Person2, so that translation has to happen somewhere, and doing it here keeps the
-    /// underlying suggestion/moderation code simple and symmetric.
+    /// contributor-facing form for suggesting a brand new edge between the subject person and
+    /// another already-approved person - the "Add" counterpart of SuggestPersonRelationEdit.cshtml
+    /// (which only handles Modify/Remove of an already-existing edge). Covers both kinds of edge:
+    /// a family/kinship tie (GanjoorPersonRelation, via RelationKind) and a non-family affiliation
+    /// tie (GanjoorPersonAffiliation, via AffiliationKind) - RelationKindGroup picks which. Both
+    /// present a direction-aware choice from the subject's point of view (e.g. "فرزند" vs "پدر یا
+    /// مادر", or "او وزیر این شخصیت بود" vs "این شخصیت وزیر او بود") and translate it into the
+    /// symmetric Person1Id/Person2Id/type triple the underlying entity actually stores - neither
+    /// GanjoorPersonRelation nor GanjoorPersonAffiliation has any notion of "from the subject's own
+    /// point of view", only Person1/Person2, so that translation has to happen somewhere, and doing
+    /// it here keeps the underlying suggestion/moderation code simple and symmetric.
     /// </summary>
     public class SuggestNewPersonRelationModel : LoginPartialEnabledPageModel
     {
@@ -40,8 +43,22 @@ namespace GanjooRazor.Areas.User.Pages
         [BindProperty]
         public int OtherPersonId { get; set; }
 
+        /// <summary>
+        /// "family" (default) or "affiliation" - which of RelationKind/AffiliationKind below applies
+        /// </summary>
+        [BindProperty]
+        public string RelationKindGroup { get; set; }
+
         [BindProperty]
         public string RelationKind { get; set; }
+
+        /// <summary>
+        /// combined type+direction key for a non-family tie, e.g. "Minister_Subject" meaning
+        /// "this person served as minister to the other person" - see the switch in
+        /// OnPostSuggestAsync for the full list and their direction handling
+        /// </summary>
+        [BindProperty]
+        public string AffiliationKind { get; set; }
 
         [BindProperty]
         public int? DegreeHint { get; set; }
@@ -112,12 +129,10 @@ namespace GanjooRazor.Areas.User.Pages
 
             if (OtherPersonId == 0 || OtherPersonId == personId)
             {
-                LastResult = "لطفاً خویشاوند مورد نظر را انتخاب کنید.";
+                LastResult = "لطفاً خویشاوند یا شخصیت مورد نظر را انتخاب کنید.";
                 return Page();
             }
 
-            // translate the direction-aware choice (from Person's own point of view) into the
-            // symmetric Person1Id/Person2Id/RelationType triple GanjoorPersonRelation actually stores
             var suggestion = new GanjoorPersonRelationEditSuggestion()
             {
                 Action = PersonRelationSuggestionAction.Add,
@@ -126,41 +141,142 @@ namespace GanjooRazor.Areas.User.Pages
                 SuggestionNote = string.IsNullOrWhiteSpace(SuggestionNote) ? null : SuggestionNote.Trim(),
             };
 
-            switch (RelationKind)
+            if (RelationKindGroup == "affiliation")
             {
-                case "Child": // OtherPerson is a child of Person
-                    suggestion.Person1Id = personId;
-                    suggestion.Person2Id = OtherPersonId;
-                    suggestion.SuggestedRelationType = PersonRelationType.Parent;
-                    break;
-                case "Parent": // OtherPerson is a parent of Person
-                    suggestion.Person1Id = OtherPersonId;
-                    suggestion.Person2Id = personId;
-                    suggestion.SuggestedRelationType = PersonRelationType.Parent;
-                    break;
-                case "Sibling":
-                    suggestion.Person1Id = personId;
-                    suggestion.Person2Id = OtherPersonId;
-                    suggestion.SuggestedRelationType = PersonRelationType.Sibling;
-                    break;
-                case "Spouse":
-                    suggestion.Person1Id = personId;
-                    suggestion.Person2Id = OtherPersonId;
-                    suggestion.SuggestedRelationType = PersonRelationType.Spouse;
-                    break;
-                case "DistantAncestor": // OtherPerson is a distant ancestor of Person
-                    suggestion.Person1Id = OtherPersonId;
-                    suggestion.Person2Id = personId;
-                    suggestion.SuggestedRelationType = PersonRelationType.Ancestor;
-                    break;
-                case "DistantDescendant": // OtherPerson is a distant descendant of Person
-                    suggestion.Person1Id = personId;
-                    suggestion.Person2Id = OtherPersonId;
-                    suggestion.SuggestedRelationType = PersonRelationType.Ancestor;
-                    break;
-                default:
-                    LastResult = "نوع نسبت نامعتبر است.";
-                    return Page();
+                suggestion.Kind = PersonRelationSuggestionKind.Affiliation;
+
+                // OtherIsPerson1/SubjectIsPerson1 pairs translate the direction-aware choice into the
+                // symmetric Person1Id/Person2Id pair, following the direction each PersonAffiliationType
+                // value's own doc comment defines (Minister/Advisor/Courtier/Servant: Person1 is the
+                // subordinate one; Patron/Successor: Person1 is the patron/later one; Ally/Rival/
+                // Companion/Other: symmetric, direction doesn't matter)
+                switch (AffiliationKind)
+                {
+                    case "Minister_Other": // the other person served as minister to this one
+                        suggestion.Person1Id = OtherPersonId;
+                        suggestion.Person2Id = personId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Minister;
+                        break;
+                    case "Minister_Subject": // this person served as minister to the other one
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Minister;
+                        break;
+                    case "Advisor_Other":
+                        suggestion.Person1Id = OtherPersonId;
+                        suggestion.Person2Id = personId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Advisor;
+                        break;
+                    case "Advisor_Subject":
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Advisor;
+                        break;
+                    case "Courtier_Other":
+                        suggestion.Person1Id = OtherPersonId;
+                        suggestion.Person2Id = personId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Courtier;
+                        break;
+                    case "Courtier_Subject":
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Courtier;
+                        break;
+                    case "Servant_Other":
+                        suggestion.Person1Id = OtherPersonId;
+                        suggestion.Person2Id = personId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Servant;
+                        break;
+                    case "Servant_Subject":
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Servant;
+                        break;
+                    case "Patron_Other": // the other person was patron of this one
+                        suggestion.Person1Id = OtherPersonId;
+                        suggestion.Person2Id = personId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Patron;
+                        break;
+                    case "Patron_Subject": // this person was patron of the other one
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Patron;
+                        break;
+                    case "Successor_Other": // the other person succeeded this one
+                        suggestion.Person1Id = OtherPersonId;
+                        suggestion.Person2Id = personId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Successor;
+                        break;
+                    case "Successor_Subject": // this person succeeded the other one
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Successor;
+                        break;
+                    case "Ally":
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Ally;
+                        break;
+                    case "Rival":
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Rival;
+                        break;
+                    case "Companion":
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Companion;
+                        break;
+                    case "Other":
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Other;
+                        break;
+                    default:
+                        LastResult = "نوع وابستگی نامعتبر است.";
+                        return Page();
+                }
+            }
+            else
+            {
+                suggestion.Kind = PersonRelationSuggestionKind.Family;
+
+                switch (RelationKind)
+                {
+                    case "Child": // OtherPerson is a child of Person
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedRelationType = PersonRelationType.Parent;
+                        break;
+                    case "Parent": // OtherPerson is a parent of Person
+                        suggestion.Person1Id = OtherPersonId;
+                        suggestion.Person2Id = personId;
+                        suggestion.SuggestedRelationType = PersonRelationType.Parent;
+                        break;
+                    case "Sibling":
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedRelationType = PersonRelationType.Sibling;
+                        break;
+                    case "Spouse":
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedRelationType = PersonRelationType.Spouse;
+                        break;
+                    case "DistantAncestor": // OtherPerson is a distant ancestor of Person
+                        suggestion.Person1Id = OtherPersonId;
+                        suggestion.Person2Id = personId;
+                        suggestion.SuggestedRelationType = PersonRelationType.Ancestor;
+                        break;
+                    case "DistantDescendant": // OtherPerson is a distant descendant of Person
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedRelationType = PersonRelationType.Ancestor;
+                        break;
+                    default:
+                        LastResult = "نوع نسبت نامعتبر است.";
+                        return Page();
+                }
             }
 
             using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))

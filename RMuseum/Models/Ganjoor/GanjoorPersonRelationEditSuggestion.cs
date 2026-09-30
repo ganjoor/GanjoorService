@@ -23,16 +23,38 @@ namespace RMuseum.Models.Ganjoor
         public PersonRelationSuggestionAction Action { get; set; }
 
         /// <summary>
-        /// for Modify/Remove: the existing GanjoorPersonRelation row this suggestion targets. Null
-        /// for Add, where there's nothing existing yet.
+        /// whether this suggestion is about a kinship edge (Family, using SuggestedRelationType /
+        /// ExistingRelationId / ExistingRelation) or a non-family affiliation edge (Affiliation, using
+        /// SuggestedAffiliationType / ExistingAffiliationId / ExistingAffiliation instead). Defaults
+        /// to Family so rows created before this field existed keep working unchanged.
+        /// </summary>
+        public PersonRelationSuggestionKind Kind { get; set; }
+
+        /// <summary>
+        /// for Modify/Remove when Kind is Family: the existing GanjoorPersonRelation row this
+        /// suggestion targets. Null for Add, where there's nothing existing yet, and for any
+        /// Kind == Affiliation suggestion (see ExistingAffiliationId instead).
         /// </summary>
         public int? ExistingRelationId { get; set; }
 
         /// <summary>
         /// the existing relation being modified/removed (for showing a before/after diff to the
-        /// moderator) - null for Add
+        /// moderator) - null for Add, and for Kind == Affiliation
         /// </summary>
         public virtual GanjoorPersonRelation ExistingRelation { get; set; }
+
+        /// <summary>
+        /// for Modify/Remove when Kind is Affiliation: the existing GanjoorPersonAffiliation row this
+        /// suggestion targets. Null for Add, and for any Kind == Family suggestion (see
+        /// ExistingRelationId instead).
+        /// </summary>
+        public int? ExistingAffiliationId { get; set; }
+
+        /// <summary>
+        /// the existing affiliation being modified/removed (for showing a before/after diff to the
+        /// moderator) - null unless Kind is Affiliation and Action is Modify/Remove
+        /// </summary>
+        public virtual GanjoorPersonAffiliation ExistingAffiliation { get; set; }
 
         /// <summary>
         /// the pair this suggestion is about. For Add, this and Person2Id define the new relation.
@@ -58,10 +80,18 @@ namespace RMuseum.Models.Ganjoor
         public virtual GanjoorRelatedPerson Person2 { get; set; }
 
         /// <summary>
-        /// for Add/Modify: the relation type to create/change to. For Remove: a snapshot of the
-        /// existing relation's type at submission time, purely for display (removing doesn't use it).
+        /// for Add/Modify when Kind is Family: the relation type to create/change to. For Remove: a
+        /// snapshot of the existing relation's type at submission time, purely for display (removing
+        /// doesn't use it). Ignored when Kind is Affiliation - see SuggestedAffiliationType instead.
         /// </summary>
         public PersonRelationType SuggestedRelationType { get; set; }
+
+        /// <summary>
+        /// for Add/Modify when Kind is Affiliation: the affiliation type to create/change to. For
+        /// Remove: a snapshot of the existing affiliation's type at submission time, purely for
+        /// display. Null/ignored when Kind is Family - see SuggestedRelationType instead.
+        /// </summary>
+        public PersonAffiliationType? SuggestedAffiliationType { get; set; }
 
         /// <summary>
         /// see GanjoorPersonRelation.DegreeHint - same for/Add/Modify/Remove-display purpose as

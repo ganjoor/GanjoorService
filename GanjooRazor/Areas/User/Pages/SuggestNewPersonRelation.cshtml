@@ -3,7 +3,7 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_UserPanelLayout";
-    ViewData["Title"] = "پیشنهاد خویشاوند جدید";
+    ViewData["Title"] = "پیشنهاد خویشاوند یا وابستگی جدید";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
 @if (!string.IsNullOrEmpty(Model.LastError))
@@ -13,11 +13,11 @@
 else
 {
     <div class="up-page-header">
-        <h1>پیشنهاد خویشاوند جدید برای: @Model.Person.Name</h1>
+        <h1>پیشنهاد خویشاوند یا وابستگی جدید برای: @Model.Person.Name</h1>
     </div>
 
     <p class="up-hint">
-        این پیشنهاد مستقیماً اعمال نمی‌شود؛ پس از بررسی و تأیید توسط مدیران، به شجره‌نامهٔ
+        این پیشنهاد مستقیماً اعمال نمی‌شود؛ پس از بررسی و تأیید توسط مدیران، به شجره‌نامه/شبکهٔ وابستگی‌های
         <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.Person.Id)">@Model.Person.Name</a> افزوده خواهد شد.
     </p>
 
@@ -32,7 +32,7 @@ else
 
             <table>
                 <tr>
-                    <td>خویشاوند:</td>
+                    <td>خویشاوند یا شخصیت دیگر:</td>
                     <td>
                         <select asp-for="OtherPersonId">
                             <option value="0">— انتخاب کنید —</option>
@@ -43,6 +43,18 @@ else
                         </select>
                     </td>
                 </tr>
+                <tr>
+                    <td>نوع پیوند:</td>
+                    <td>
+                        <select id="RelationKindGroup" asp-for="RelationKindGroup">
+                            <option value="family">نسبت خویشاوندی (پدر/مادر، فرزند، همسر، نیا/نواده...)</option>
+                            <option value="affiliation">وابستگی غیرخویشاوندی (وزیر، مشاور، حامی، متحد، رقیب...)</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+
+            <table id="family-relation-fields">
                 <tr>
                     <td>نسبت با @Model.Person.Name:</td>
                     <td>
@@ -63,6 +75,35 @@ else
                     </td>
                     <td><input asp-for="DegreeHint" /></td>
                 </tr>
+            </table>
+
+            <table id="affiliation-fields" style="display:none">
+                <tr>
+                    <td>وابستگی با @Model.Person.Name:</td>
+                    <td>
+                        <select asp-for="AffiliationKind">
+                            <option value="Minister_Other">او وزیر یا کارگزار این شخصیت بود</option>
+                            <option value="Minister_Subject">این شخصیت وزیر یا کارگزار او بود</option>
+                            <option value="Advisor_Other">او مشاور این شخصیت بود</option>
+                            <option value="Advisor_Subject">این شخصیت مشاور او بود</option>
+                            <option value="Courtier_Other">او از درباریان/همراهان این شخصیت بود</option>
+                            <option value="Courtier_Subject">این شخصیت از درباریان/همراهان او بود</option>
+                            <option value="Servant_Other">او خدمتگزار این شخصیت بود</option>
+                            <option value="Servant_Subject">این شخصیت خدمتگزار او بود</option>
+                            <option value="Patron_Other">او از این شخصیت حمایت می‌کرد (حامی او بود)</option>
+                            <option value="Patron_Subject">این شخصیت از او حمایت می‌کرد (حامی او بود)</option>
+                            <option value="Successor_Other">او جانشین این شخصیت شد (پس از او آمد)</option>
+                            <option value="Successor_Subject">این شخصیت جانشین او شد (پس از او آمد)</option>
+                            <option value="Ally">با او متحد/هم‌پیمان بود</option>
+                            <option value="Rival">با او رقیب/دشمن بود</option>
+                            <option value="Companion">با او همراه/همدم بود</option>
+                            <option value="Other">نوع دیگر (در یادداشت توضیح دهید)</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+
+            <table>
                 <tr>
                     <td>یادداشت (مستندسازی):</td>
                     <td><textarea asp-for="Note" rows="3" cols="60"></textarea></td>
@@ -77,4 +118,21 @@ else
             <a role="button" href="javascript:void(0)" onclick="history.back()" class="up-btn up-btn--ghost">انصراف</a>
         </form>
     </div>
+
+    <script>
+        (function () {
+            var groupSelect = document.getElementById('RelationKindGroup');
+            var familyFields = document.getElementById('family-relation-fields');
+            var affiliationFields = document.getElementById('affiliation-fields');
+
+            function applyKindGroup() {
+                var isAffiliation = groupSelect.value === 'affiliation';
+                familyFields.style.display = isAffiliation ? 'none' : '';
+                affiliationFields.style.display = isAffiliation ? '' : 'none';
+            }
+
+            groupSelect.addEventListener('change', applyKindGroup);
+            applyKindGroup();
+        })();
+    </script>
 }

@@ -4955,6 +4955,18 @@
         <member name="M:RMuseum.Migrations.AddGanjoorPersonRelationEditSuggestion.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.AddPersonRelationSuggestionAffiliationSupport">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonRelationSuggestionAffiliationSupport.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonRelationSuggestionAffiliationSupport.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonRelationSuggestionAffiliationSupport.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -9590,16 +9602,38 @@
             what this suggestion proposes doing
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.Kind">
+            <summary>
+            whether this suggestion is about a kinship edge (Family, using SuggestedRelationType /
+            ExistingRelationId / ExistingRelation) or a non-family affiliation edge (Affiliation, using
+            SuggestedAffiliationType / ExistingAffiliationId / ExistingAffiliation instead). Defaults
+            to Family so rows created before this field existed keep working unchanged.
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.ExistingRelationId">
             <summary>
-            for Modify/Remove: the existing GanjoorPersonRelation row this suggestion targets. Null
-            for Add, where there's nothing existing yet.
+            for Modify/Remove when Kind is Family: the existing GanjoorPersonRelation row this
+            suggestion targets. Null for Add, where there's nothing existing yet, and for any
+            Kind == Affiliation suggestion (see ExistingAffiliationId instead).
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.ExistingRelation">
             <summary>
             the existing relation being modified/removed (for showing a before/after diff to the
-            moderator) - null for Add
+            moderator) - null for Add, and for Kind == Affiliation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.ExistingAffiliationId">
+            <summary>
+            for Modify/Remove when Kind is Affiliation: the existing GanjoorPersonAffiliation row this
+            suggestion targets. Null for Add, and for any Kind == Family suggestion (see
+            ExistingRelationId instead).
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.ExistingAffiliation">
+            <summary>
+            the existing affiliation being modified/removed (for showing a before/after diff to the
+            moderator) - null unless Kind is Affiliation and Action is Modify/Remove
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.Person1Id">
@@ -9627,8 +9661,16 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.SuggestedRelationType">
             <summary>
-            for Add/Modify: the relation type to create/change to. For Remove: a snapshot of the
-            existing relation's type at submission time, purely for display (removing doesn't use it).
+            for Add/Modify when Kind is Family: the relation type to create/change to. For Remove: a
+            snapshot of the existing relation's type at submission time, purely for display (removing
+            doesn't use it). Ignored when Kind is Affiliation - see SuggestedAffiliationType instead.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.SuggestedAffiliationType">
+            <summary>
+            for Add/Modify when Kind is Affiliation: the affiliation type to create/change to. For
+            Remove: a snapshot of the existing affiliation's type at submission time, purely for
+            display. Null/ignored when Kind is Family - see SuggestedRelationType instead.
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.SuggestedDegreeHint">
@@ -11817,6 +11859,15 @@
         <member name="F:RMuseum.Models.Ganjoor.PersonRelationSuggestionAction.Remove">
             <summary>
             remove the existing relation ExistingRelationId points to outright
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PersonRelationSuggestionKind">
+            <summary>
+            which kind of edge a GanjoorPersonRelationEditSuggestion is about: a kinship tie
+            (GanjoorPersonRelation, via SuggestedRelationType/ExistingRelationId) or a non-family
+            affiliation tie (GanjoorPersonAffiliation, via SuggestedAffiliationType/ExistingAffiliationId).
+            Defaults to Family (0), so every suggestion row created before this field existed keeps being
+            read exactly as it was before - a plain kinship suggestion.
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PersonRelationType">

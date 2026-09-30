@@ -19,6 +19,24 @@
         }
     }
 
+    string AffiliationTypeName(PersonAffiliationType t)
+    {
+        switch (t)
+        {
+            case PersonAffiliationType.Minister: return "وزیر/کارگزار";
+            case PersonAffiliationType.Advisor: return "مشاور";
+            case PersonAffiliationType.Courtier: return "درباری/همراه";
+            case PersonAffiliationType.Patron: return "حامی";
+            case PersonAffiliationType.Ally: return "متحد";
+            case PersonAffiliationType.Rival: return "رقیب";
+            case PersonAffiliationType.Servant: return "خدمتگزار";
+            case PersonAffiliationType.Companion: return "همدم";
+            case PersonAffiliationType.Successor: return "جانشین";
+            case PersonAffiliationType.Other: return "نوع دیگر";
+            default: return t.ToString();
+        }
+    }
+
     string ActionName(PersonRelationSuggestionAction a)
     {
         switch (a)
@@ -49,6 +67,7 @@ else
 
     <p>
         <span class="up-badge">@ActionName(s.Action)</span>
+        <span class="up-badge">@(s.Kind == PersonRelationSuggestionKind.Affiliation ? "وابستگی غیرخویشاوندی" : "نسبت خویشاوندی")</span>
     </p>
 
     <table>
@@ -111,25 +130,45 @@ else
                     </td>
                 }
             </tr>
-            <tr>
-                <td>نوع نسبت</td>
-                <td>@(s.Action == PersonRelationSuggestionAction.Modify && s.ExistingRelation != null ? RelationTypeName(s.ExistingRelation.RelationType) : RelationTypeName(s.SuggestedRelationType))</td>
-                @if (s.Action == PersonRelationSuggestionAction.Modify)
-                {
-                    <td>@RelationTypeName(s.SuggestedRelationType)</td>
-                }
-            </tr>
-            <tr>
-                <td>درجه (در نیا/نواده)</td>
-                <td>@((s.Action == PersonRelationSuggestionAction.Modify && s.ExistingRelation != null ? s.ExistingRelation.DegreeHint : s.SuggestedDegreeHint)?.ToString().ToPersianNumbers())</td>
-                @if (s.Action == PersonRelationSuggestionAction.Modify)
-                {
-                    <td>@s.SuggestedDegreeHint?.ToString().ToPersianNumbers()</td>
-                }
-            </tr>
+            @if (s.Kind == PersonRelationSuggestionKind.Affiliation)
+            {
+                <tr>
+                    <td>نوع وابستگی</td>
+                    <td>@(s.Action == PersonRelationSuggestionAction.Modify && s.ExistingAffiliation != null ? AffiliationTypeName(s.ExistingAffiliation.AffiliationType) : AffiliationTypeName(s.SuggestedAffiliationType ?? PersonAffiliationType.Other))</td>
+                    @if (s.Action == PersonRelationSuggestionAction.Modify)
+                    {
+                        <td>@AffiliationTypeName(s.SuggestedAffiliationType ?? PersonAffiliationType.Other)</td>
+                    }
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td>نوع نسبت</td>
+                    <td>@(s.Action == PersonRelationSuggestionAction.Modify && s.ExistingRelation != null ? RelationTypeName(s.ExistingRelation.RelationType) : RelationTypeName(s.SuggestedRelationType))</td>
+                    @if (s.Action == PersonRelationSuggestionAction.Modify)
+                    {
+                        <td>@RelationTypeName(s.SuggestedRelationType)</td>
+                    }
+                </tr>
+                <tr>
+                    <td>درجه (در نیا/نواده)</td>
+                    <td>@((s.Action == PersonRelationSuggestionAction.Modify && s.ExistingRelation != null ? s.ExistingRelation.DegreeHint : s.SuggestedDegreeHint)?.ToString().ToPersianNumbers())</td>
+                    @if (s.Action == PersonRelationSuggestionAction.Modify)
+                    {
+                        <td>@s.SuggestedDegreeHint?.ToString().ToPersianNumbers()</td>
+                    }
+                </tr>
+            }
             <tr>
                 <td>یادداشت</td>
-                <td><small>@(s.Action == PersonRelationSuggestionAction.Modify && s.ExistingRelation != null ? s.ExistingRelation.Note : s.SuggestedNote)</small></td>
+                <td>
+                    <small>
+                        @(s.Action == PersonRelationSuggestionAction.Modify
+                            ? (s.Kind == PersonRelationSuggestionKind.Affiliation ? s.ExistingAffiliation?.Note : s.ExistingRelation?.Note)
+                            : s.SuggestedNote)
+                    </small>
+                </td>
                 @if (s.Action == PersonRelationSuggestionAction.Modify)
                 {
                     <td><small>@s.SuggestedNote</small></td>

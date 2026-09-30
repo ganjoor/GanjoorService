@@ -214,29 +214,6 @@
                 document.getElementById('geotag-new-person-name').value = typedText;
             }
         );
-        // birth/death location pickers inside the "new person" panel - these only ever pick an
-        // existing location (a brand-new-location-within-a-brand-new-person is one indirection too
-        // many for this form), so an unmatched search has nothing to offer
-        setupLocationAutocomplete(
-            document.getElementById('geotag-new-person-birthlocation-search'),
-            document.getElementById('geotag-new-person-birthlocation-id'),
-            document.getElementById('geotag-new-person-birthlocation-results'),
-            allGeoLocations,
-            null,
-            function (typedText) {
-                upToast('این مکان در فهرست نیست. ابتدا آن را جدا (در بخش «مکان» بالا) به‌عنوان مکان جدید پیشنهاد دهید.', 'error');
-            }
-        );
-        setupLocationAutocomplete(
-            document.getElementById('geotag-new-person-deathlocation-search'),
-            document.getElementById('geotag-new-person-deathlocation-id'),
-            document.getElementById('geotag-new-person-deathlocation-results'),
-            allGeoLocations,
-            null,
-            function (typedText) {
-                upToast('این مکان در فهرست نیست. ابتدا آن را جدا (در بخش «مکان» بالا) به‌عنوان مکان جدید پیشنهاد دهید.', 'error');
-            }
-        );
     });
     var geoDateTagMap = null;
     var geoDateTagMarker = null;
@@ -488,21 +465,22 @@
             return null;
         }
 
-        var birthLocationId = $('#geotag-new-person-birthlocation-id').val();
-        var deathLocationId = $('#geotag-new-person-deathlocation-id').val();
-
+        // birth/death year, "date is documented" and birth/death location are left out of this
+        // form for now (no real usage of them yet elsewhere) - the shape below still carries all
+        // of PersonGraphNode's fields, just with those ones always null/false, same as any other
+        // field this form doesn't offer a control for.
         var person = {
             localKey: 'new',
             existingPersonId: null,
             name: name,
             description: $('#geotag-new-person-description').val() || null,
             wikiUrl: $('#geotag-new-person-wikiurl').val() || null,
-            birthYearInLHijri: $('#geotag-new-person-birthyear').val() ? parseInt($('#geotag-new-person-birthyear').val()) : null,
-            deathYearInLHijri: $('#geotag-new-person-deathyear').val() ? parseInt($('#geotag-new-person-deathyear').val()) : null,
-            validBirthDate: $('#geotag-new-person-validbirth').is(':checked'),
-            validDeathDate: $('#geotag-new-person-validdeath').is(':checked'),
-            birthLocationId: birthLocationId ? parseInt(birthLocationId) : null,
-            deathLocationId: deathLocationId ? parseInt(deathLocationId) : null,
+            birthYearInLHijri: null,
+            deathYearInLHijri: null,
+            validBirthDate: false,
+            validDeathDate: false,
+            birthLocationId: null,
+            deathLocationId: null,
             familyTreeCaption: $('#geotag-new-person-familytreecaption').val() || null
         };
 
@@ -794,16 +772,6 @@
         $('#geotag-new-person-name').val('');
         $('#geotag-new-person-description').val('');
         $('#geotag-new-person-wikiurl').val('');
-        $('#geotag-new-person-birthyear').val('');
-        $('#geotag-new-person-deathyear').val('');
-        $('#geotag-new-person-validbirth').prop('checked', false);
-        $('#geotag-new-person-validdeath').prop('checked', false);
-        $('#geotag-new-person-birthlocation-id').val('');
-        $('#geotag-new-person-birthlocation-search').val('');
-        $('#geotag-new-person-birthlocation-results').hide().empty();
-        $('#geotag-new-person-deathlocation-id').val('');
-        $('#geotag-new-person-deathlocation-search').val('');
-        $('#geotag-new-person-deathlocation-results').hide().empty();
         $('#geotag-new-person-familytreecaption').val('');
         $('#geotag-person-relatives-list').empty();
         if (document.getElementById('new-person-widget').style.display !== 'none') {
@@ -2616,36 +2584,6 @@ else
             <div class="up-field">
                 <label for="geotag-new-person-wikiurl">لینک ویکی‌پدیا (اختیاری)</label>
                 <input type="text" id="geotag-new-person-wikiurl" />
-            </div>
-            <div class="up-field-row">
-                <div class="up-field">
-                    <label for="geotag-new-person-birthyear">سال تولد (قمری)</label>
-                    <input type="text" id="geotag-new-person-birthyear" />
-                    <span class="up-check-row"><input type="checkbox" id="geotag-new-person-validbirth" /><label for="geotag-new-person-validbirth">تاریخ تولد قطعی است</label></span>
-                </div>
-                <div class="up-field">
-                    <label for="geotag-new-person-deathyear">سال وفات (قمری)</label>
-                    <input type="text" id="geotag-new-person-deathyear" />
-                    <span class="up-check-row"><input type="checkbox" id="geotag-new-person-validdeath" /><label for="geotag-new-person-validdeath">تاریخ وفات قطعی است</label></span>
-                </div>
-            </div>
-            <div class="up-field-row">
-                <div class="up-field">
-                    <label for="geotag-new-person-birthlocation-search">محل تولد (اختیاری، فقط از مکان‌های موجود در فهرست)</label>
-                    <div class="up-autocomplete-wrap">
-                        <input type="text" id="geotag-new-person-birthlocation-search" autocomplete="off" placeholder="نام مکان را تایپ کنید..." />
-                        <input type="hidden" id="geotag-new-person-birthlocation-id" />
-                        <div id="geotag-new-person-birthlocation-results" class="up-autocomplete-results" style="display:none;"></div>
-                    </div>
-                </div>
-                <div class="up-field">
-                    <label for="geotag-new-person-deathlocation-search">محل وفات (اختیاری، فقط از مکان‌های موجود در فهرست)</label>
-                    <div class="up-autocomplete-wrap">
-                        <input type="text" id="geotag-new-person-deathlocation-search" autocomplete="off" placeholder="نام مکان را تایپ کنید..." />
-                        <input type="hidden" id="geotag-new-person-deathlocation-id" />
-                        <div id="geotag-new-person-deathlocation-results" class="up-autocomplete-results" style="display:none;"></div>
-                    </div>
-                </div>
             </div>
             <div class="up-field">
                 <label for="geotag-new-person-familytreecaption">عنوان شجره‌نامه (اختیاری، فقط اگر این شخصیت ریشهٔ یک خانواده/سلسله شناخته‌شده است - مثلاً «ساسانیان»)</label>

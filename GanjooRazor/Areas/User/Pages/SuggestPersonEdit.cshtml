@@ -30,6 +30,17 @@ else
         <form method="post" action="/User/SuggestPersonEdit?id=@Model.Person.Id&amp;Handler=SuggestEdit">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Suggestion.PersonId" />
+            @* birth/death year, "date is documented" and birth/death location have no UI here for now
+               (no real usage of them elsewhere yet) - carried through as hidden fields instead of
+               dropped outright, so submitting this form never blanks out whatever the person record
+               already has for these on approval (GanjoorRelatedPersonService applies every Suggested*
+               field unconditionally, with no "did they actually change this" check). *@
+            <input type="hidden" asp-for="Suggestion.SuggestedBirthYearInLHijri" />
+            <input type="hidden" asp-for="Suggestion.SuggestedValidBirthDate" />
+            <input type="hidden" asp-for="Suggestion.SuggestedBirthLocationId" />
+            <input type="hidden" asp-for="Suggestion.SuggestedDeathYearInLHijri" />
+            <input type="hidden" asp-for="Suggestion.SuggestedValidDeathDate" />
+            <input type="hidden" asp-for="Suggestion.SuggestedDeathLocationId" />
 
             <table>
                 <tr>
@@ -46,44 +57,6 @@ else
                 <tr>
                     <td>نشانی ویکی‌پدیا:</td>
                     <td><input style="text-align:left;direction:ltr;" asp-for="Suggestion.SuggestedWikiUrl" size="60" /></td>
-                </tr>
-                <tr>
-                    <td>زاده:</td>
-                    <td><input asp-for="Suggestion.SuggestedBirthYearInLHijri" /> (قمری)</td>
-                </tr>
-                <tr>
-                    <td>تاریخ تولد مستند است:</td>
-                    <td><input asp-for="Suggestion.SuggestedValidBirthDate" /></td>
-                </tr>
-                <tr>
-                    <td>زادگاه:</td>
-                    <td>
-                        <select asp-for="Suggestion.SuggestedBirthLocationId">
-                            @foreach (var location in Model.Locations)
-                            {
-                                <option value="@(location.Id == 0 ? "" : location.Id.ToString())">@location.Name</option>
-                            }
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>درگذشته:</td>
-                    <td><input asp-for="Suggestion.SuggestedDeathYearInLHijri" /> (قمری)</td>
-                </tr>
-                <tr>
-                    <td>تاریخ وفات مستند است:</td>
-                    <td><input asp-for="Suggestion.SuggestedValidDeathDate" /></td>
-                </tr>
-                <tr>
-                    <td>آرامگاه:</td>
-                    <td>
-                        <select asp-for="Suggestion.SuggestedDeathLocationId">
-                            @foreach (var location in Model.Locations)
-                            {
-                                <option value="@(location.Id == 0 ? "" : location.Id.ToString())">@location.Name</option>
-                            }
-                        </select>
-                    </td>
                 </tr>
                 <tr>
                     <td>

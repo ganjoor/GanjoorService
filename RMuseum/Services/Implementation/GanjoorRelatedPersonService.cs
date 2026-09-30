@@ -465,16 +465,18 @@ namespace RMuseum.Services.Implementation
             var affiliations = await _context.GanjoorPersonAffiliations
                 .Where(a => a.Person1Id == person.Id || a.Person2Id == person.Id)
                 .ToListAsync();
+            var affiliationIds = affiliations.Select(a => a.Id).ToList();
 
             // any other still-pending relation-edit suggestion that touches this person directly, or
-            // targets one of the relations we're about to remove, would otherwise dangle or violate
-            // the Restrict FK above - auto-reject those with an explanatory note rather than letting
-            // the delete fail or silently drop them
+            // targets one of the relations/affiliations we're about to remove, would otherwise dangle
+            // or violate the Restrict FKs above - auto-reject those with an explanatory note rather
+            // than letting the delete fail or silently drop them
             var conflictingRelationSuggestions = await _context.GanjoorPersonRelationEditSuggestions
                 .Where(s => !s.Reviewed && (
                     s.Person1Id == person.Id ||
                     s.Person2Id == person.Id ||
-                    (s.ExistingRelationId != null && relationIds.Contains(s.ExistingRelationId.Value))
+                    (s.ExistingRelationId != null && relationIds.Contains(s.ExistingRelationId.Value)) ||
+                    (s.ExistingAffiliationId != null && affiliationIds.Contains(s.ExistingAffiliationId.Value))
                 ))
                 .ToListAsync();
             foreach (var conflicting in conflictingRelationSuggestions)
@@ -553,34 +555,65 @@ namespace RMuseum.Services.Implementation
                 }
 
                 GanjoorPersonRelation existingRelation = null;
+                GanjoorPersonAffiliation existingAffiliation = null;
                 if (suggestion.Action == PersonRelationSuggestionAction.Modify || suggestion.Action == PersonRelationSuggestionAction.Remove)
                 {
-                    if (suggestion.ExistingRelationId == null)
+                    if (suggestion.Kind == PersonRelationSuggestionKind.Affiliation)
                     {
-                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "نسبت مورد نظر برای ویرایش یا حذف مشخص نشده است.");
+                        if (suggestion.ExistingAffiliationId == null)
+                        {
+                            return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "وابستگی مورد نظر برای ویرایش یا حذف مشخص نشده است.");
+                        }
+
+                        existingAffiliation = await _context.GanjoorPersonAffiliations
+                            .Include(a => a.Person1)
+                            .Include(a => a.Person2)
+                            .Where(a => a.Id == suggestion.ExistingAffiliationId.Value)
+                            .SingleOrDefaultAsync();
+
+                        if (existingAffiliation == null)
+                        {
+                            return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "وابستگی مورد نظر پیدا نشد.");
+                        }
+
+                        // same trust-the-existing-row convention as the Family branch below
+                        suggestion.Person1Id = existingAffiliation.Person1Id;
+                        suggestion.Person2Id = existingAffiliation.Person2Id;
+                        if (suggestion.Action == PersonRelationSuggestionAction.Remove)
+                        {
+                            suggestion.SuggestedAffiliationType = existingAffiliation.AffiliationType;
+                            suggestion.SuggestedNote = existingAffiliation.Note;
+                        }
                     }
-
-                    existingRelation = await _context.GanjoorPersonRelations
-                        .Include(r => r.Person1)
-                        .Include(r => r.Person2)
-                        .Where(r => r.Id == suggestion.ExistingRelationId.Value)
-                        .SingleOrDefaultAsync();
-
-                    if (existingRelation == null)
+                    else
                     {
-                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "نسبت مورد نظر پیدا نشد.");
-                    }
+                        if (suggestion.ExistingRelationId == null)
+                        {
+                            return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "نسبت مورد نظر برای ویرایش یا حذف مشخص نشده است.");
+                        }
 
-                    // always trust the existing relation's own Person1Id/Person2Id/type/etc over
-                    // whatever the client sent, so the suggestion is guaranteed self-consistent with
-                    // what it actually targets, even for a Remove-display
-                    suggestion.Person1Id = existingRelation.Person1Id;
-                    suggestion.Person2Id = existingRelation.Person2Id;
-                    if (suggestion.Action == PersonRelationSuggestionAction.Remove)
-                    {
-                        suggestion.SuggestedRelationType = existingRelation.RelationType;
-                        suggestion.SuggestedDegreeHint = existingRelation.DegreeHint;
-                        suggestion.SuggestedNote = existingRelation.Note;
+                        existingRelation = await _context.GanjoorPersonRelations
+                            .Include(r => r.Person1)
+                            .Include(r => r.Person2)
+                            .Where(r => r.Id == suggestion.ExistingRelationId.Value)
+                            .SingleOrDefaultAsync();
+
+                        if (existingRelation == null)
+                        {
+                            return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "نسبت مورد نظر پیدا نشد.");
+                        }
+
+                        // always trust the existing relation's own Person1Id/Person2Id/type/etc over
+                        // whatever the client sent, so the suggestion is guaranteed self-consistent with
+                        // what it actually targets, even for a Remove-display
+                        suggestion.Person1Id = existingRelation.Person1Id;
+                        suggestion.Person2Id = existingRelation.Person2Id;
+                        if (suggestion.Action == PersonRelationSuggestionAction.Remove)
+                        {
+                            suggestion.SuggestedRelationType = existingRelation.RelationType;
+                            suggestion.SuggestedDegreeHint = existingRelation.DegreeHint;
+                            suggestion.SuggestedNote = existingRelation.Note;
+                        }
                     }
                 }
                 else // Add
@@ -600,6 +633,7 @@ namespace RMuseum.Services.Implementation
 
                 suggestion.Id = 0;
                 suggestion.ExistingRelation = null;
+                suggestion.ExistingAffiliation = null;
                 suggestion.Person1 = null;
                 suggestion.Person2 = null;
                 suggestion.Date = DateTime.Now;
@@ -613,17 +647,19 @@ namespace RMuseum.Services.Implementation
                 _context.GanjoorPersonRelationEditSuggestions.Add(suggestion);
                 await _context.SaveChangesAsync();
 
+                bool isAffiliation = suggestion.Kind == PersonRelationSuggestionKind.Affiliation;
                 string actionTitle = suggestion.Action switch
                 {
-                    PersonRelationSuggestionAction.Add => "پیشنهاد نسبت خویشاوندی جدید",
-                    PersonRelationSuggestionAction.Modify => "پیشنهاد ویرایش نسبت خویشاوندی",
-                    _ => "پیشنهاد حذف نسبت خویشاوندی",
+                    PersonRelationSuggestionAction.Add => isAffiliation ? "پیشنهاد وابستگی جدید" : "پیشنهاد نسبت خویشاوندی جدید",
+                    PersonRelationSuggestionAction.Modify => isAffiliation ? "پیشنهاد ویرایش وابستگی" : "پیشنهاد ویرایش نسبت خویشاوندی",
+                    _ => isAffiliation ? "پیشنهاد حذف وابستگی" : "پیشنهاد حذف نسبت خویشاوندی",
                 };
+                string edgeLabel = isAffiliation ? "وابستگی" : "نسبت خویشاوندی";
                 string actionText = suggestion.Action switch
                 {
-                    PersonRelationSuggestionAction.Add => $"کاربری پیشنهاد افزودن نسبت خویشاوندی جدید بین «{person1.Name}» و «{person2.Name}» را داده است.",
-                    PersonRelationSuggestionAction.Modify => $"کاربری پیشنهاد ویرایش نسبت خویشاوندی بین «{person1.Name}» و «{person2.Name}» را داده است.",
-                    _ => $"کاربری پیشنهاد حذف نسبت خویشاوندی بین «{person1.Name}» و «{person2.Name}» را داده است.",
+                    PersonRelationSuggestionAction.Add => $"کاربری پیشنهاد افزودن {edgeLabel} جدید بین «{person1.Name}» و «{person2.Name}» را داده است.",
+                    PersonRelationSuggestionAction.Modify => $"کاربری پیشنهاد ویرایش {edgeLabel} بین «{person1.Name}» و «{person2.Name}» را داده است.",
+                    _ => $"کاربری پیشنهاد حذف {edgeLabel} بین «{person1.Name}» و «{person2.Name}» را داده است.",
                 };
 
                 await NotifyModeratorsOfPendingSuggestionAsync(
@@ -652,6 +688,7 @@ namespace RMuseum.Services.Implementation
                     .Include(s => s.Person1)
                     .Include(s => s.Person2)
                     .Include(s => s.ExistingRelation)
+                    .Include(s => s.ExistingAffiliation)
                     .Include(s => s.User)
                     .Where(s => s.Reviewed == false)
                     .OrderBy(s => s.Id)
@@ -715,51 +752,101 @@ namespace RMuseum.Services.Implementation
 
                 if (result == CorrectionReviewResult.Approved)
                 {
-                    switch (suggestion.Action)
+                    if (suggestion.Kind == PersonRelationSuggestionKind.Affiliation)
                     {
-                        case PersonRelationSuggestionAction.Add:
-                            _context.GanjoorPersonRelations.Add(new GanjoorPersonRelation()
-                            {
-                                Person1Id = suggestion.Person1Id,
-                                Person2Id = suggestion.Person2Id,
-                                RelationType = suggestion.SuggestedRelationType,
-                                DegreeHint = suggestion.SuggestedDegreeHint,
-                                Note = suggestion.SuggestedNote,
-                            });
-                            break;
-                        case PersonRelationSuggestionAction.Modify:
-                            {
-                                var existing = await _context.GanjoorPersonRelations.Where(r => r.Id == suggestion.ExistingRelationId.Value).SingleOrDefaultAsync();
-                                if (existing == null)
+                        switch (suggestion.Action)
+                        {
+                            case PersonRelationSuggestionAction.Add:
+                                _context.GanjoorPersonAffiliations.Add(new GanjoorPersonAffiliation()
                                 {
-                                    return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "نسبت مورد نظر دیگر وجود ندارد.");
-                                }
-                                existing.RelationType = suggestion.SuggestedRelationType;
-                                existing.DegreeHint = suggestion.SuggestedDegreeHint;
-                                existing.Note = suggestion.SuggestedNote;
+                                    Person1Id = suggestion.Person1Id,
+                                    Person2Id = suggestion.Person2Id,
+                                    AffiliationType = suggestion.SuggestedAffiliationType ?? PersonAffiliationType.Other,
+                                    Note = suggestion.SuggestedNote,
+                                });
                                 break;
-                            }
-                        case PersonRelationSuggestionAction.Remove:
-                            {
-                                var existing = await _context.GanjoorPersonRelations.Where(r => r.Id == suggestion.ExistingRelationId.Value).SingleOrDefaultAsync();
-                                if (existing != null)
+                            case PersonRelationSuggestionAction.Modify:
                                 {
-                                    // any other still-pending suggestion targeting this same relation
-                                    // would otherwise dangle once it's gone - auto-reject those too
-                                    var conflicting = await _context.GanjoorPersonRelationEditSuggestions
-                                        .Where(s => !s.Reviewed && s.Id != suggestion.Id && s.ExistingRelationId == existing.Id)
-                                        .ToListAsync();
-                                    foreach (var c in conflicting)
+                                    var existing = await _context.GanjoorPersonAffiliations.Where(a => a.Id == suggestion.ExistingAffiliationId.Value).SingleOrDefaultAsync();
+                                    if (existing == null)
                                     {
-                                        c.Reviewed = true;
-                                        c.Result = CorrectionReviewResult.RejectedBecauseUnnecessaryChange;
-                                        c.ReviewNote = "این نسبت پیش‌تر حذف شد.";
-                                        c.ReviewDate = DateTime.Now;
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "وابستگی مورد نظر دیگر وجود ندارد.");
                                     }
-                                    _context.GanjoorPersonRelations.Remove(existing);
+                                    existing.AffiliationType = suggestion.SuggestedAffiliationType ?? existing.AffiliationType;
+                                    existing.Note = suggestion.SuggestedNote;
+                                    break;
                                 }
+                            case PersonRelationSuggestionAction.Remove:
+                                {
+                                    var existing = await _context.GanjoorPersonAffiliations.Where(a => a.Id == suggestion.ExistingAffiliationId.Value).SingleOrDefaultAsync();
+                                    if (existing != null)
+                                    {
+                                        // any other still-pending suggestion targeting this same affiliation
+                                        // would otherwise dangle once it's gone - auto-reject those too
+                                        var conflicting = await _context.GanjoorPersonRelationEditSuggestions
+                                            .Where(s => !s.Reviewed && s.Id != suggestion.Id && s.ExistingAffiliationId == existing.Id)
+                                            .ToListAsync();
+                                        foreach (var c in conflicting)
+                                        {
+                                            c.Reviewed = true;
+                                            c.Result = CorrectionReviewResult.RejectedBecauseUnnecessaryChange;
+                                            c.ReviewNote = "این وابستگی پیش‌تر حذف شد.";
+                                            c.ReviewDate = DateTime.Now;
+                                        }
+                                        _context.GanjoorPersonAffiliations.Remove(existing);
+                                    }
+                                    break;
+                                }
+                        }
+                    }
+                    else
+                    {
+                        switch (suggestion.Action)
+                        {
+                            case PersonRelationSuggestionAction.Add:
+                                _context.GanjoorPersonRelations.Add(new GanjoorPersonRelation()
+                                {
+                                    Person1Id = suggestion.Person1Id,
+                                    Person2Id = suggestion.Person2Id,
+                                    RelationType = suggestion.SuggestedRelationType,
+                                    DegreeHint = suggestion.SuggestedDegreeHint,
+                                    Note = suggestion.SuggestedNote,
+                                });
                                 break;
-                            }
+                            case PersonRelationSuggestionAction.Modify:
+                                {
+                                    var existing = await _context.GanjoorPersonRelations.Where(r => r.Id == suggestion.ExistingRelationId.Value).SingleOrDefaultAsync();
+                                    if (existing == null)
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "نسبت مورد نظر دیگر وجود ندارد.");
+                                    }
+                                    existing.RelationType = suggestion.SuggestedRelationType;
+                                    existing.DegreeHint = suggestion.SuggestedDegreeHint;
+                                    existing.Note = suggestion.SuggestedNote;
+                                    break;
+                                }
+                            case PersonRelationSuggestionAction.Remove:
+                                {
+                                    var existing = await _context.GanjoorPersonRelations.Where(r => r.Id == suggestion.ExistingRelationId.Value).SingleOrDefaultAsync();
+                                    if (existing != null)
+                                    {
+                                        // any other still-pending suggestion targeting this same relation
+                                        // would otherwise dangle once it's gone - auto-reject those too
+                                        var conflicting = await _context.GanjoorPersonRelationEditSuggestions
+                                            .Where(s => !s.Reviewed && s.Id != suggestion.Id && s.ExistingRelationId == existing.Id)
+                                            .ToListAsync();
+                                        foreach (var c in conflicting)
+                                        {
+                                            c.Reviewed = true;
+                                            c.Result = CorrectionReviewResult.RejectedBecauseUnnecessaryChange;
+                                            c.ReviewNote = "این نسبت پیش‌تر حذف شد.";
+                                            c.ReviewDate = DateTime.Now;
+                                        }
+                                        _context.GanjoorPersonRelations.Remove(existing);
+                                    }
+                                    break;
+                                }
+                        }
                     }
                 }
 
@@ -771,11 +858,12 @@ namespace RMuseum.Services.Implementation
 
                 await _context.SaveChangesAsync();
 
+                string edgeLabel = suggestion.Kind == PersonRelationSuggestionKind.Affiliation ? "وابستگی" : "نسبت خویشاوندی";
                 string actionLabel = suggestion.Action switch
                 {
-                    PersonRelationSuggestionAction.Add => "افزودن نسبت خویشاوندی",
-                    PersonRelationSuggestionAction.Modify => "ویرایش نسبت خویشاوندی",
-                    _ => "حذف نسبت خویشاوندی",
+                    PersonRelationSuggestionAction.Add => $"افزودن {edgeLabel}",
+                    PersonRelationSuggestionAction.Modify => $"ویرایش {edgeLabel}",
+                    _ => $"حذف {edgeLabel}",
                 };
 
                 if (result == CorrectionReviewResult.Approved)

@@ -177,6 +177,14 @@ namespace RMuseum.DbContext
                 .HasForeignKey(s => s.ExistingRelationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // same Restrict treatment as ExistingRelationId above, but for Kind == Affiliation
+            // suggestions targeting a GanjoorPersonAffiliation instead
+            builder.Entity<GanjoorPersonRelationEditSuggestion>()
+                .HasOne(s => s.ExistingAffiliation)
+                .WithMany()
+                .HasForeignKey(s => s.ExistingAffiliationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Entity<GanjoorUserBookmark>()
                 .HasIndex(b => new { b.UserId, b.PoemId, b.CoupletIndex });
 
