@@ -198,7 +198,7 @@
                 for (var i = 0; i < reversed.length; i++) {
                     var item = reversed[i];
                     html += '<div class="changelog-item">'
-                        + '<span class="changelog-date">' + item.date + '</span>'
+                        + '<span class="changelog-date">' + toPersianNumber(item.date) + '</span>'
                         + '<span class="changelog-desc">' + item.description + '</span>'
                         + '</div>';
                 }
