@@ -142,7 +142,8 @@ namespace RMuseum.Services
         /// <summary>
         /// get the whole known network of people (every person with at least one kinship edge or
         /// non-family tie, plus every one of those edges/ties) for the force-directed "ontology"
-        /// explorer at /PeopleGraph - see GanjoorPersonGraphViewModel
+        /// explorer opened via the PeopleExplorer.open() modal (formerly the standalone page
+        /// /PeopleGraph) - see GanjoorPersonGraphViewModel
         /// </summary>
         /// <returns></returns>
         Task<RServiceResult<GanjoorPersonGraphViewModel>> GetPersonGraphAsync();

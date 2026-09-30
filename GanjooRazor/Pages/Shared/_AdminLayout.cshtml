@@ -39,6 +39,11 @@
     </script>
 
     <script src="~/js/bk.js" asp-append-version="true"></script>
+    @* person profile / people-explorer inline modal - see _Layout.cshtml for the same include on
+       the public site; needed here too since ReviewPersonEdits/ReviewPersonRelationEdits link to
+       a person's profile *@
+    <script src="~/js/peoplegraph.js" asp-append-version="true"></script>
+    <script src="~/js/personwindow.js" asp-append-version="true"></script>
     <script>
         function editBanner(bannerId) {
             var url = '?handler=Edit';

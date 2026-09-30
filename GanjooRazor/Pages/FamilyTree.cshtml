@@ -25,7 +25,7 @@ else
             <div class="poem">
                 <h1>
                     شجره‌نامهٔ @(string.IsNullOrEmpty(Model.RootPerson.FamilyTreeCaption) ? Model.RootPerson.Name : Model.RootPerson.FamilyTreeCaption)
-                    <a href="/person/@Model.RootPerson.Id" class="up-btn up-btn--ghost up-btn--sm">بازگشت به صفحهٔ شخصیت</a>
+                    <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.RootPerson.Id)" class="up-btn up-btn--ghost up-btn--sm">مشاهدهٔ اطلاعات این شخصیت</a>
                 </h1>
                 <p class="up-hint"><small>
                     برای مشاهدهٔ توضیحات هر شخصیت، روی آن کلیک کنید. برای پیمایش نمودار آن را با ماوس بکشید و با غلتک ماوس بزرگ/کوچک کنید.

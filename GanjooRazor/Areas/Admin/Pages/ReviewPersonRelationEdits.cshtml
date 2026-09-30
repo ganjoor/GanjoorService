@@ -90,24 +90,24 @@ else
             <tr>
                 <td>طرف اول</td>
                 <td>
-                    <a role="button" target="_blank" href="/person/@s.Person1Id" class="up-btn up-btn--ghost up-btn--sm">@(s.Person1 != null ? s.Person1.Name : s.Person1Id.ToString())</a>
+                    <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@s.Person1Id)" class="up-btn up-btn--ghost up-btn--sm">@(s.Person1 != null ? s.Person1.Name : s.Person1Id.ToString())</a>
                 </td>
                 @if (s.Action == PersonRelationSuggestionAction.Modify)
                 {
                     <td>
-                        <a role="button" target="_blank" href="/person/@s.Person1Id" class="up-btn up-btn--ghost up-btn--sm">@(s.Person1 != null ? s.Person1.Name : s.Person1Id.ToString())</a>
+                        <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@s.Person1Id)" class="up-btn up-btn--ghost up-btn--sm">@(s.Person1 != null ? s.Person1.Name : s.Person1Id.ToString())</a>
                     </td>
                 }
             </tr>
             <tr>
                 <td>طرف دوم</td>
                 <td>
-                    <a role="button" target="_blank" href="/person/@s.Person2Id" class="up-btn up-btn--ghost up-btn--sm">@(s.Person2 != null ? s.Person2.Name : s.Person2Id.ToString())</a>
+                    <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@s.Person2Id)" class="up-btn up-btn--ghost up-btn--sm">@(s.Person2 != null ? s.Person2.Name : s.Person2Id.ToString())</a>
                 </td>
                 @if (s.Action == PersonRelationSuggestionAction.Modify)
                 {
                     <td>
-                        <a role="button" target="_blank" href="/person/@s.Person2Id" class="up-btn up-btn--ghost up-btn--sm">@(s.Person2 != null ? s.Person2.Name : s.Person2Id.ToString())</a>
+                        <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@s.Person2Id)" class="up-btn up-btn--ghost up-btn--sm">@(s.Person2 != null ? s.Person2.Name : s.Person2Id.ToString())</a>
                     </td>
                 }
             </tr>

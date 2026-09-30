@@ -1694,7 +1694,7 @@ function loadCatRecitations(catId) {
 
 // on-demand "شخصیت‌ها" tab on a poet/category page - loads the category-scoped person/relation
 // graph (see _PersonGraphPartial.cshtml / OnGetPersonGraphAsync) and hands its JSON payload to the
-// same peoplegraph.js force-directed renderer used by /PeopleGraph, with element ids prefixed
+// same peoplegraph.js force-directed renderer used by the PeopleExplorer.open() modal, with element ids prefixed
 // "pg-cat-" so it doesn't collide with anything else on the page
 function loadPersonGraph(catId) {
 

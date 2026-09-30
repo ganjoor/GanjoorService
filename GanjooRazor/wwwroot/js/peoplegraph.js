@@ -11,12 +11,14 @@
 //     4=Ally,5=Rival,6=Servant,7=Companion,8=Successor,99=Other). directlyTagged is false only on
 // the category-scoped graph (GET api/ganjoor/cat/{id}/persongraph, the "characters in this work"
 // tab): such a node was pulled in as a one-hop relative/affiliate of someone actually named in the
-// work's verses, and is never false on the whole-site graph fed by PeopleGraph.cshtml.
+// work's verses, and is never false on the whole-site graph fed by PeopleExplorer.cshtml.
 //
-// Called with an options object (see PeopleGraph.cshtml and _PersonGraphPartial.cshtml for two call
-// sites with different element-id prefixes and data payloads), so the same renderer serves both the
-// whole-site /PeopleGraph explorer and any number of category-scoped "شخصیت‌ها" tabs on cat/poet
-// pages.
+// Called with an options object (see PeopleExplorer.cshtml and _PersonGraphPartial.cshtml for two
+// call sites with different element-id prefixes and data payloads), so the same renderer serves
+// both the whole-site "explore all characters" modal (PeopleExplorer.open() in personwindow.js)
+// and any number of category-scoped "شخصیت‌ها" tabs on cat/poet pages. A clicked node label or
+// table-row name opens that person's own profile via PersonWindow.open(id) (personwindow.js),
+// which is why this file assumes personwindow.js is also loaded on the page.
 //
 // Unlike FamilyTree.cshtml (a strict tree layout for one connected component), this lays out the
 // WHOLE graph with a simple force simulation (mutual repulsion + spring edges + light centering,
@@ -218,9 +220,17 @@
             });
             var text = el('text', {
                 'text-anchor': 'middle', dy: -(nodeRadius(n) + 6),
-                'class': n.directlyTagged ? 'pg-label' : 'pg-label pg-label-secondary', direction: 'rtl'
+                'class': n.directlyTagged ? 'pg-label' : 'pg-label pg-label-secondary', direction: 'rtl',
+                style: 'cursor:pointer'
             });
             text.textContent = n.name;
+            // the label opens the person's profile window; the circle (handled below, on the
+            // whole <g>) keeps its own click behaviour of focusing this node's ego-network, so the
+            // label needs its own listener with stopPropagation to not also trigger that
+            text.addEventListener('click', function (evt) {
+                evt.stopPropagation();
+                if (window.PersonWindow) window.PersonWindow.open(n.id);
+            });
             g.appendChild(circle);
             g.appendChild(text);
             nodesGroup.appendChild(g);
@@ -263,11 +273,19 @@
                 tr.setAttribute('data-edge-index', idx);
                 tr.style.cursor = 'pointer';
                 tr.innerHTML =
-                    '<td>' + escapeHtml(e.raw.person1Name) + '</td>' +
+                    '<td><a href="javascript:void(0)" class="pg-person-link" data-person-id="' + e.raw.person1Id + '">' + escapeHtml(e.raw.person1Name) + '</a></td>' +
                     '<td><span class="pg-legend-swatch" style="background:' + e.meta.color + '"></span> ' + escapeHtml(e.meta.label) + '</td>' +
-                    '<td>' + escapeHtml(e.raw.person2Name) + '</td>' +
+                    '<td><a href="javascript:void(0)" class="pg-person-link" data-person-id="' + e.raw.person2Id + '">' + escapeHtml(e.raw.person2Name) + '</a></td>' +
                     '<td><small>' + escapeHtml(e.note || '') + '</small></td>';
                 tr.addEventListener('click', function () { focusOnPersons([e.raw.person1Id, e.raw.person2Id]); });
+                // the name links open the person's profile window without also triggering the
+                // row's own focus-on-click behaviour above
+                tr.querySelectorAll('.pg-person-link').forEach(function (link) {
+                    link.addEventListener('click', function (evt) {
+                        evt.stopPropagation();
+                        if (window.PersonWindow) window.PersonWindow.open(Number(link.getAttribute('data-person-id')));
+                    });
+                });
                 tableBody.appendChild(tr);
                 tableRows.push(tr);
             });

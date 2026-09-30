@@ -11,14 +11,17 @@ using RMuseum.Models.Ganjoor.ViewModels;
 namespace GanjooRazor.Pages
 {
     /// <summary>
-    /// read-only person/family-tree browsing page - shows one GanjoorRelatedPerson, their kinship
-    /// and non-family ties (see GanjoorPersonRelation/GanjoorPersonAffiliation), and the poems
-    /// tagged with them. Public counterpart of the Editor.cshtml suggestion form and
-    /// ReviewEdits.cshtml moderation view for the same data, once it's approved and materialized.
+    /// one person's bio, kinship/affiliation ties and tagged poems, rendered as a bare fragment
+    /// (Layout = null - no header, footer or site chrome) and opened as an inline modal via
+    /// PersonWindow.open(id) in personwindow.js, from wherever a person is referenced: a poem's
+    /// tagged-persons list, the category/whole-site graph, the family-tree chart, the
+    /// suggestion/moderation forms. This used to be the standalone page Person.cshtml; it has no
+    /// entry point of its own any more; every "view this person" link on the site now calls
+    /// PersonWindow.open(id) instead of navigating here.
     /// </summary>
-    public class PersonModel : LoginPartialEnabledPageModel
+    public class PersonWindowModel : LoginPartialEnabledPageModel
     {
-        public PersonModel(HttpClient httpClient, IConfiguration configuration) : base(httpClient, configuration)
+        public PersonWindowModel(HttpClient httpClient, IConfiguration configuration) : base(httpClient, configuration)
         {
         }
 
@@ -126,8 +129,6 @@ namespace GanjooRazor.Pages
                 LastError = "شخصیتی با این کد پیدا نشد.";
                 return Page();
             }
-
-            ViewData["Title"] = $"گنجور » {Person.Name}";
 
             var relationsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/people/{id}/relations");
             if (!relationsResponse.IsSuccessStatusCode)

@@ -1,0 +1,121 @@
+@page "{id:int}"
+@model GanjooRazor.Pages.PersonWindowModel
+@using DNTPersianUtils.Core
+@{
+    Layout = null;
+}
+@if (!string.IsNullOrEmpty(Model.LastError))
+{
+    <p>@Model.LastError</p>
+}
+else
+{
+    <div class="up-modal-person">
+        <h2>
+            @Model.Person.Name
+            @if (Model.LoggedIn)
+            {
+                <a href="/SuggestPersonEdit/@Model.Person.Id" class="up-icon-btn" title="پیشنهاد ویرایش این شخصیت" aria-label="پیشنهاد ویرایش این شخصیت">✎</a>
+            }
+        </h2>
+
+        @if (!string.IsNullOrEmpty(Model.Person.FamilyTreeCaption))
+        {
+            <p><strong>شجره‌نامه: @Model.Person.FamilyTreeCaption</strong></p>
+        }
+
+        @if (Model.Person.BirthYearInLHijri != 0 || Model.Person.DeathYearInLHijri != 0)
+        {
+            <p>
+                @if (Model.Person.BirthYearInLHijri != 0)
+                {
+                    <text>تولد: @Model.Person.BirthYearInLHijri.ToPersianNumbers() (قمری) @(Model.Person.ValidBirthDate ? "" : "- تخمینی")</text>
+                }
+                @if (Model.Person.DeathYearInLHijri != 0)
+                {
+                    <text> — وفات: @Model.Person.DeathYearInLHijri.ToPersianNumbers() (قمری) @(Model.Person.ValidDeathDate ? "" : "- تخمینی")</text>
+                }
+            </p>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.Person.Description))
+        {
+            <p>@Model.Person.Description</p>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.Person.WikiUrl))
+        {
+            <p><a href="@Model.Person.WikiUrl" target="_blank" rel="noopener">صفحهٔ ویکی‌پدیا</a></p>
+        }
+
+        @if (Model.RelationRows.Count > 0)
+        {
+            <h3>
+                خویشاوندان
+                <a href="/FamilyTree/@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">نمایش نمودار شجره‌نامه</a>
+                @if (Model.LoggedIn)
+                {
+                    <a href="/SuggestNewPersonRelation/@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">افزودن خویشاوند جدید</a>
+                }
+            </h3>
+            <ul>
+                @foreach (var row in Model.RelationRows)
+                {
+                    <li>
+                        @row.Label — <a href="javascript:void(0)" onclick="PersonWindow.open(@row.OtherPersonId)">@row.OtherPersonName</a>
+                        @if (!string.IsNullOrEmpty(row.Note))
+                        {
+                            <text> (@row.Note)</text>
+                        }
+                        @if (Model.LoggedIn)
+                        {
+                            <a href="/SuggestPersonRelationEdit/@row.RelationId" class="up-icon-btn" title="پیشنهاد ویرایش/حذف این نسبت" aria-label="پیشنهاد ویرایش/حذف این نسبت">✎</a>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+        else if (Model.LoggedIn)
+        {
+            <h3>
+                خویشاوندان
+                <a href="/SuggestNewPersonRelation/@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">افزودن خویشاوند جدید</a>
+            </h3>
+        }
+
+        @if (Model.AffiliationRows.Count > 0)
+        {
+            <h3>وابستگی‌های غیرخویشاوندی</h3>
+            <ul>
+                @foreach (var row in Model.AffiliationRows)
+                {
+                    <li>
+                        @row.SentenceBeforeOtherName<a href="javascript:void(0)" onclick="PersonWindow.open(@row.OtherPersonId)">@row.OtherPersonName</a>@row.SentenceAfterOtherName
+                        @if (!string.IsNullOrEmpty(row.Note))
+                        {
+                            <text> (@row.Note)</text>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+
+        @if (Model.Poems != null && Model.Poems.Length > 0)
+        {
+            <h3>اشعار برچسب‌خورده با این شخصیت</h3>
+            <ul>
+                @foreach (var tag in Model.Poems)
+                {
+                    if (tag.Poem != null)
+                    {
+                        <li><a href="@tag.Poem.FullUrl">@tag.Poem.FullTitle</a></li>
+                    }
+                }
+            </ul>
+        }
+        else
+        {
+            <p><small>هنوز شعری با این شخصیت برچسب‌گذاری نشده است.</small></p>
+        }
+    </div>
+}

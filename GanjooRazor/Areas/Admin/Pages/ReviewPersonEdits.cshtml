@@ -25,7 +25,7 @@ else
     var p = s.Person;
 
     <p>
-        <a role="button" target="_blank" href="/person/@p.Id" class="up-btn up-btn--ghost up-btn--sm">@p.Name</a>
+        <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@p.Id)" class="up-btn up-btn--ghost up-btn--sm">@p.Name</a>
     </p>
 
     <table>

@@ -278,7 +278,7 @@
             if (p.description) {
                 html += '<p style="margin:4px 0"><small>' + escapeHtml(p.description) + '</small></p>';
             }
-            html += '<p style="margin:8px 0 0 0"><a href="/person/' + p.id + '" target="_blank">مشاهدهٔ صفحهٔ شخصیت</a></p>';
+            html += '<p style="margin:8px 0 0 0"><a href="javascript:void(0)" onclick="PersonWindow.open(' + p.id + ')">مشاهدهٔ اطلاعات کامل</a></p>';
             tooltip.innerHTML = html;
             tooltip.style.display = 'block';
             tooltip.querySelector('.ft-tooltip-close').addEventListener('click', function () {

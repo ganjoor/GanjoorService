@@ -37,6 +37,11 @@
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/js/bk.js" asp-append-version="true"></script>
+    @* person profile / people-explorer inline modal - global since a person's name can turn up
+       almost anywhere (poem pages, family tree, suggestion forms); peoplegraph.js is the shared
+       force-directed renderer both PeopleExplorer.open() and the category-scoped "شخصیت‌ها" tab use *@
+    <script src="~/js/peoplegraph.js" asp-append-version="true"></script>
+    <script src="~/js/personwindow.js" asp-append-version="true"></script>
     <script>
         var cookieValue = getCookie("playerScrollLock");
         var playerScrollLock = cookieValue === "true";

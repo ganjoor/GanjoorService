@@ -176,7 +176,7 @@ namespace GanjooRazor.Pages
                     return Page();
                 }
 
-                LastResult = $"پیشنهاد شما ثبت شد و پس از بررسی توسط مدیران اعمال خواهد شد. <a role=\"button\" href=\"/person/{personId}\" class=\"actionlink\">بازگشت به صفحهٔ شخصیت</a>";
+                LastResult = $"پیشنهاد شما ثبت شد و پس از بررسی توسط مدیران اعمال خواهد شد. <a role=\"button\" href=\"javascript:void(0)\" onclick=\"PersonWindow.open({personId})\" class=\"actionlink\">مشاهدهٔ اطلاعات این شخصیت</a>";
 
                 return Page();
             }

@@ -29,7 +29,7 @@ else
 
                 <p class="up-hint">
                     این پیشنهاد مستقیماً اعمال نمی‌شود؛ پس از بررسی و تأیید توسط مدیران، به شجره‌نامهٔ
-                    <a href="/person/@Model.Person.Id">@Model.Person.Name</a> افزوده خواهد شد.
+                    <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.Person.Id)">@Model.Person.Name</a> افزوده خواهد شد.
                 </p>
 
                 @if (!string.IsNullOrEmpty(Model.LastResult))
@@ -84,7 +84,7 @@ else
                     </table>
 
                     <input type="submit" value="ثبت پیشنهاد" class="up-btn up-btn--success" />
-                    <a role="button" href="/person/@Model.Person.Id" class="up-btn up-btn--ghost">انصراف</a>
+                    <a role="button" href="javascript:void(0)" onclick="history.back()" class="up-btn up-btn--ghost">انصراف</a>
                 </form>
             </div>
 

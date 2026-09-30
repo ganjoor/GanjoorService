@@ -28,9 +28,9 @@ else
             <div class="poem">
                 <h1>
                     پیشنهاد ویرایش نسبت:
-                    <a href="/person/@Model.Relation.Person1Id">@(Model.Relation.Person1 != null ? Model.Relation.Person1.Name : Model.Relation.Person1Id.ToString())</a>
+                    <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.Relation.Person1Id)">@(Model.Relation.Person1 != null ? Model.Relation.Person1.Name : Model.Relation.Person1Id.ToString())</a>
                     و
-                    <a href="/person/@Model.Relation.Person2Id">@(Model.Relation.Person2 != null ? Model.Relation.Person2.Name : Model.Relation.Person2Id.ToString())</a>
+                    <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.Relation.Person2Id)">@(Model.Relation.Person2 != null ? Model.Relation.Person2.Name : Model.Relation.Person2Id.ToString())</a>
                 </h1>
 
                 <p class="up-hint">
@@ -86,7 +86,7 @@ else
                     </table>
 
                     <input type="submit" value="ثبت پیشنهاد" class="up-btn up-btn--success" />
-                    <a role="button" href="/person/@Model.Relation.Person1Id" class="up-btn up-btn--ghost">انصراف</a>
+                    <a role="button" href="javascript:void(0)" onclick="history.back()" class="up-btn up-btn--ghost">انصراف</a>
                 </form>
             </div>
 

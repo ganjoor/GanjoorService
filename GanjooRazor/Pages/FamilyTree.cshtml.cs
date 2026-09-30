@@ -11,8 +11,8 @@ namespace GanjooRazor.Pages
     /// <summary>
     /// interactive family-tree chart, drawn client-side (vanilla JS/SVG - see the &lt;script&gt; block
     /// in FamilyTree.cshtml) from the connected kinship component GET api/people/{id}/familytree
-    /// returns. Public/read-only counterpart of Person.cshtml's plain relatives list, reachable from
-    /// there and from People.cshtml's family-tree index.
+    /// returns. Public/read-only counterpart of the PersonWindow.open() modal's plain relatives
+    /// list, reachable from there and from the PeopleExplorer.open() modal's family-tree index.
     /// </summary>
     public class FamilyTreeModel : LoginPartialEnabledPageModel
     {

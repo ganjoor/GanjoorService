@@ -460,7 +460,7 @@
                         <p>
                             @foreach (var taggedPerson in poemTaggedPersons)
                             {
-                                <a href="/Person/@taggedPerson.Id" class="pagebutton comments-link">@taggedPerson.Name</a>
+                                <a href="javascript:void(0)" onclick="PersonWindow.open(@taggedPerson.Id)" class="pagebutton comments-link">@taggedPerson.Name</a>
                             }
                         </p>
                     </div>

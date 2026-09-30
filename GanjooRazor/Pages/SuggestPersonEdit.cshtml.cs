@@ -15,7 +15,7 @@ namespace GanjooRazor.Pages
     /// contributor-facing form for suggesting an edit to an already-approved GanjoorRelatedPerson.
     /// Any logged-in user may submit here (same bar as suggesting a poem correction); nothing is
     /// changed until a moderator approves it via Admin/ReviewPersonEdits. Reachable both from a
-    /// person's own public page (Person.cshtml) and from the poem-correction moderation page
+    /// person's PersonWindow.open() modal and from the poem-correction moderation page
     /// (ReviewEdits.cshtml, when a correction links to an existing person).
     /// </summary>
     public class SuggestPersonEditModel : LoginPartialEnabledPageModel
@@ -145,7 +145,7 @@ namespace GanjooRazor.Pages
                     return Page();
                 }
 
-                LastResult = $"پیشنهاد ویرایش شما ثبت شد و پس از بررسی توسط مدیران اعمال خواهد شد. <a role=\"button\" href=\"/person/{id}\" class=\"actionlink\">بازگشت به صفحهٔ شخصیت</a>";
+                LastResult = $"پیشنهاد ویرایش شما ثبت شد و پس از بررسی توسط مدیران اعمال خواهد شد. <a role=\"button\" href=\"javascript:void(0)\" onclick=\"PersonWindow.open({id})\" class=\"actionlink\">مشاهدهٔ اطلاعات این شخصیت</a>";
 
                 FillSuggestionFromCurrentPerson();
 

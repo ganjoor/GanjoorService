@@ -62,7 +62,8 @@ namespace RMuseum.Controllers
         /// <summary>
         /// get the whole known network of people (every person with at least one kinship edge or
         /// non-family tie, plus every one of those edges/ties), for the force-directed "ontology"
-        /// explorer at /PeopleGraph. Registered before the "{id}" route below (and constrained to
+        /// explorer opened via the PeopleExplorer.open() modal (formerly the standalone page
+        /// /PeopleGraph). Registered before the "{id}" route below (and constrained to
         /// int there) so this literal segment isn't swallowed as an id.
         /// </summary>
         /// <returns></returns>

@@ -7,10 +7,10 @@ namespace GanjooRazor.Pages
 {
     /// <summary>
     /// model for the on-demand "شخصیت‌ها" (characters) tab shown on a poet/category page - renders
-    /// the same force-directed graph as PeopleGraph.cshtml/peoplegraph.js, but scoped to one
-    /// work/category (see GanjoorRelatedPersonService.GetCatPersonGraphAsync) instead of the whole
-    /// site. Element ids are prefixed "pg-cat-" so this partial can sit on the same page as (and not
-    /// collide with) any other graph instance.
+    /// the same force-directed graph as the PeopleExplorer.open() modal/peoplegraph.js, but scoped
+    /// to one work/category (see GanjoorRelatedPersonService.GetCatPersonGraphAsync) instead of the
+    /// whole site. Element ids are prefixed "pg-cat-" so this partial can sit on the same page as
+    /// (and not collide with) any other graph instance.
     /// </summary>
     public class _PersonGraphPartialModel : PageModel
     {

@@ -5,7 +5,8 @@ namespace RMuseum.Models.Ganjoor.ViewModels
     /// <summary>
     /// the whole known network of people - every GanjoorRelatedPerson that has at least one kinship
     /// edge or non-family tie, plus every one of those edges/ties - served by GET api/people/graph
-    /// for the force-directed "ontology" explorer at /PeopleGraph, the nowruzgan-style counterpart of
+    /// for the force-directed "ontology" explorer opened via the PeopleExplorer.open() modal
+    /// (formerly the standalone page /PeopleGraph), the nowruzgan-style counterpart of
     /// the strict-tree /FamilyTree/{id} view. Loaded whole (like GetFamilyTreeAsync does for a single
     /// component) since the graph as a whole is small - a few hundred rows at most.
     /// </summary>

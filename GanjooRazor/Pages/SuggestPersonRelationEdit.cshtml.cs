@@ -14,7 +14,7 @@ namespace GanjooRazor.Pages
     /// contributor-facing form for suggesting a change to, or removal of, an existing
     /// GanjoorPersonRelation - the kinship-edge counterpart of SuggestPersonEdit.cshtml. Any
     /// logged-in user may submit here; nothing is changed until a moderator approves it via
-    /// Admin/ReviewPersonRelationEdits. Reachable from a person's own public page (Person.cshtml).
+    /// Admin/ReviewPersonRelationEdits. Reachable from a person's PersonWindow.open() modal.
     /// </summary>
     public class SuggestPersonRelationEditModel : LoginPartialEnabledPageModel
     {
@@ -122,7 +122,7 @@ namespace GanjooRazor.Pages
                     return Page();
                 }
 
-                LastResult = $"پیشنهاد شما ثبت شد و پس از بررسی توسط مدیران اعمال خواهد شد. <a role=\"button\" href=\"/person/{Relation.Person1Id}\" class=\"actionlink\">بازگشت به صفحهٔ شخصیت</a>";
+                LastResult = $"پیشنهاد شما ثبت شد و پس از بررسی توسط مدیران اعمال خواهد شد. <a role=\"button\" href=\"javascript:void(0)\" onclick=\"PersonWindow.open({Relation.Person1Id})\" class=\"actionlink\">مشاهدهٔ اطلاعات این شخصیت</a>";
 
                 FillSuggestionFromCurrentRelation();
 

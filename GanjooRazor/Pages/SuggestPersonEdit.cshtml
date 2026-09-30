@@ -29,7 +29,7 @@ else
 
                 <p class="up-hint">
                     این پیشنهاد مستقیماً اعمال نمی‌شود؛ پس از بررسی و تأیید توسط مدیران، در مشخصات
-                    <a href="/person/@Model.Person.Id">@Model.Person.Name</a> اعمال خواهد شد.
+                    <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.Person.Id)">@Model.Person.Name</a> اعمال خواهد شد.
                 </p>
 
                 @if (!string.IsNullOrEmpty(Model.LastResult))
@@ -98,7 +98,7 @@ else
                         <tr>
                             <td>
                                 عنوان شجره‌نامه:
-                                <p class="up-hint"><small>پُر کنید تا این شخصیت روی <a href="/people" target="_blank">صفحهٔ شجره‌نامه‌ها</a> با این عنوان فهرست شود.</small></p>
+                                <p class="up-hint"><small>پُر کنید تا این شخصیت در <a href="javascript:void(0)" onclick="PeopleExplorer.open()">فهرست شجره‌نامه‌ها</a> با این عنوان دیده شود.</small></p>
                             </td>
                             <td><input asp-for="Suggestion.SuggestedFamilyTreeCaption" size="40" /></td>
                         </tr>
@@ -113,7 +113,7 @@ else
                     </table>
 
                     <input type="submit" value="ثبت پیشنهاد" class="up-btn up-btn--success" />
-                    <a role="button" href="/person/@Model.Person.Id" class="up-btn up-btn--ghost">انصراف</a>
+                    <a role="button" href="javascript:void(0)" onclick="history.back()" class="up-btn up-btn--ghost">انصراف</a>
                 </form>
             </div>
 
