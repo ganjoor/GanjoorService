@@ -292,8 +292,22 @@
             return d.innerHTML;
         }
 
+        svg.removeAttribute('viewBox'); // pan/zoom via transform, not viewBox, once we have a canvas group
+        var svgWidth = Math.max(container.clientWidth, maxX + MARGIN);
+        var svgHeight = Math.max(container.clientHeight, maxY + MARGIN);
+        svg.setAttribute('width', svgWidth);
+        svg.setAttribute('height', svgHeight);
+
         // pan + zoom - a small, dependency-free version of the usual SVG drag/wheel recipe
-        var scale = 1, tx = 0, ty = 0;
+        var scale = 1;
+        // The tree itself is only (maxX + MARGIN) x (maxY + MARGIN) "big", but the SVG element is
+        // stretched to fill the whole container (so there's room to pan around a small tree) - drawn
+        // at a bare translate(0,0), that left it pinned to the top-left corner instead of centered
+        // whenever the tree is smaller than the container (e.g. a two-person tree in a wide panel).
+        // Starting the pan offset centered - rather than at (0,0) - fixes that without changing how
+        // panning/zooming themselves work.
+        var tx = Math.max(0, (svgWidth - (maxX + MARGIN)) / 2);
+        var ty = Math.max(0, (svgHeight - (maxY + MARGIN)) / 2);
         var dragging = false, lastX = 0, lastY = 0;
 
         function applyTransform() {
@@ -318,9 +332,7 @@
             applyTransform();
         }, { passive: false });
         svg.style.cursor = 'grab';
-        svg.removeAttribute('viewBox'); // pan/zoom via transform, not viewBox, once we have a canvas group
-        svg.setAttribute('width', Math.max(container.clientWidth, maxX + MARGIN));
-        svg.setAttribute('height', Math.max(container.clientHeight, maxY + MARGIN));
+        applyTransform();
     }
 
     window.GanjoorFamilyTree = { render: renderFamilyTree };

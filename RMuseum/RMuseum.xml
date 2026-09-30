@@ -13468,7 +13468,7 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo.Id">
             <summary>
             the underlying GanjoorPersonRelation row's own id - needed by the client to link to
-            /SuggestPersonRelationEdit/{id} for suggesting a change/removal of this specific edge
+            /User/SuggestPersonRelationEdit?relationId={id} for suggesting a change/removal of this specific edge
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo.OtherPersonId">
@@ -18366,7 +18366,7 @@
         <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetRelationByIdAsync(System.Int32)">
             <summary>
             get a single kinship edge by its own id, with both sides' names resolved - used by
-            /SuggestPersonRelationEdit/{relationId} to show what it's about
+            /User/SuggestPersonRelationEdit?relationId={relationId} to show what it's about
             </summary>
             <param name="relationId"></param>
             <returns></returns>
