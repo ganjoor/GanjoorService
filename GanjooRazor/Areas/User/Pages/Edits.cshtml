@@ -2,6 +2,7 @@
 @model GanjooRazor.Areas.User.Pages.EditsModel
 @using DNTPersianUtils.Core
 @using RMuseum.Models.Ganjoor
+@using GanjooRazor.Utils
 @{
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "ویرایش‌های من";
@@ -279,7 +280,7 @@ else
                     {
                         <tr>
                             <td colspan="3">
-                                برچسب جغرافیایی/تاریخی -
+                                @(GeoDateTagCorrectionDisplay.IsPersonTag(geoTag) ? "شخصیت" : "برچسب جغرافیایی/تاریخی") -
                                 @if (geoTag.CoupletIndex == null)
                                 {
                                     <text>کل شعر</text>
@@ -298,6 +299,30 @@ else
                                 </td>
                                 <td>
                                     <p style="color:green">حذف شود</p>
+                                </td>
+                                <td>
+                                    <partial name="_ReviewResultBadge" model="geoTag.Result" />
+                                </td>
+                            </tr>
+                        }
+                        else if (GeoDateTagCorrectionDisplay.IsPersonTag(geoTag))
+                        {
+                            <tr>
+                                <td>
+                                    <p style="color:red">-</p>
+                                </td>
+                                <td>
+                                    <p style="color:green">
+                                        @if (geoTag.PersonId != null)
+                                        {
+                                            <a href="javascript:void(0)" onclick="PersonWindow.open(@geoTag.PersonId)">@(geoTag.Person != null ? geoTag.Person.Name : $"شخصیت #{geoTag.PersonId}")</a>
+                                        }
+                                        else
+                                        {
+                                            var suggestedPersonName = GeoDateTagCorrectionDisplay.GetSuggestedPersonName(geoTag.SuggestedPersonGraphJson);
+                                            <text>شخصیت جدید@(string.IsNullOrEmpty(suggestedPersonName) ? "" : $": {suggestedPersonName}")</text>
+                                        }
+                                    </p>
                                 </td>
                                 <td>
                                     <partial name="_ReviewResultBadge" model="geoTag.Result" />

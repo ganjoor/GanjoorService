@@ -287,6 +287,11 @@ namespace GanjooRazor.Areas.User.Pages
                         var geoDateTagsRollback = new List<GanjoorPoemGeoDateTagCorrection>();
                         foreach (var geoTag in currentCorrection.GeoDateTags.Where(g => g.Result == CorrectionReviewResult.Approved))
                         {
+                            // PersonId (if the deleted tag was a person tag) is part of what got snapshotted
+                            // onto this same record when the delete request was approved, so it's already
+                            // available here for GeoDateTagCorrectionDisplay.IsPersonTag to tell the two kinds
+                            // of tag apart for the note text below.
+                            var geoTagLabel = GeoDateTagCorrectionDisplay.IsPersonTag(geoTag) ? "شخصیت" : "برچسب جغرافیایی/تاریخی";
                             if (geoTag.MarkForDelete)
                             {
                                 // the original request deleted an existing tag - undo that by re-adding a tag with
@@ -302,7 +307,7 @@ namespace GanjooRazor.Areas.User.Pages
                                     LunarDay = geoTag.LunarDay,
                                     PersonId = geoTag.PersonId,
                                     IgnoreInCategory = geoTag.IgnoreInCategory,
-                                    SuggestionNote = $"برگشت حذف برچسب جغرافیایی/تاریخی با کد {correctionId}"
+                                    SuggestionNote = $"برگشت حذف {geoTagLabel} با کد {correctionId}"
                                 });
                             }
                             else if (geoTag.ExistingTagId != null)
@@ -314,7 +319,7 @@ namespace GanjooRazor.Areas.User.Pages
                                     CoupletIndex = geoTag.CoupletIndex,
                                     MarkForDelete = true,
                                     ExistingTagId = geoTag.ExistingTagId,
-                                    SuggestionNote = $"برگشت افزودن برچسب جغرافیایی/تاریخی با کد {correctionId}"
+                                    SuggestionNote = $"برگشت افزودن {geoTagLabel} با کد {correctionId}"
                                 });
                             }
                         }

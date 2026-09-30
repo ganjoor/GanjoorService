@@ -4,6 +4,7 @@
 @using RMuseum.Models.Ganjoor
 @using RMuseum.Services.Implementation
 @using DNTPersianUtils.Core;
+@using GanjooRazor.Utils
 @{
     Layout = "_UserPanelLayout";
     ViewData["Title"] = "سوابق ویرایش";
@@ -173,7 +174,7 @@ else
                         {
                             <tr>
                                 <td colspan="2">
-                                    برچسب جغرافیایی/تاریخی -
+                                    @(GeoDateTagCorrectionDisplay.IsPersonTag(geoTag) ? "شخصیت" : "برچسب جغرافیایی/تاریخی") -
                                     @if (geoTag.CoupletIndex == null)
                                     {
                                         <text>کل شعر</text>
@@ -192,6 +193,27 @@ else
                                     </td>
                                     <td>
                                         <p class="red-color">حذف شد</p>
+                                    </td>
+                                </tr>
+                            }
+                            else if (GeoDateTagCorrectionDisplay.IsPersonTag(geoTag))
+                            {
+                                <tr>
+                                    <td>
+                                        <p class="red-color">-</p>
+                                    </td>
+                                    <td>
+                                        <p class="green-color">
+                                            @if (geoTag.PersonId != null)
+                                            {
+                                                <a href="javascript:void(0)" onclick="PersonWindow.open(@geoTag.PersonId)">@(geoTag.Person != null ? geoTag.Person.Name : $"شخصیت #{geoTag.PersonId}")</a>
+                                            }
+                                            else
+                                            {
+                                                var suggestedPersonName = GeoDateTagCorrectionDisplay.GetSuggestedPersonName(geoTag.SuggestedPersonGraphJson);
+                                                <text>شخصیت جدید@(string.IsNullOrEmpty(suggestedPersonName) ? "" : $": {suggestedPersonName}")</text>
+                                            }
+                                        </p>
                                     </td>
                                 </tr>
                             }
