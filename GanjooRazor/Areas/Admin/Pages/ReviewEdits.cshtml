@@ -985,7 +985,7 @@ else
                                             @if (!string.IsNullOrEmpty(personGraph.Person.Description)) { <text>توضیحات: @personGraph.Person.Description<br /></text> }
                                             @if (personGraph.Person.BirthYearInLHijri != null) { <text>تولد: @personGraph.Person.BirthYearInLHijri @(personGraph.Person.ValidBirthDate ? "(قطعی)" : "(تخمینی)")<br /></text> }
                                             @if (personGraph.Person.DeathYearInLHijri != null) { <text>وفات: @personGraph.Person.DeathYearInLHijri @(personGraph.Person.ValidDeathDate ? "(قطعی)" : "(تخمینی)")<br /></text> }
-                                            @if (!string.IsNullOrEmpty(personGraph.Person.FamilyTreeCaption)) { <text>عنوان شجره‌نامه: @personGraph.Person.FamilyTreeCaption<br /></text> }
+                                            @if (!string.IsNullOrEmpty(personGraph.Person.FamilyTreeCaption)) { <text>عنوان تبارنامه: @personGraph.Person.FamilyTreeCaption<br /></text> }
                                         </small>
                                     </p>
                                     @if (personGraph.RelatedPeople != null && personGraph.RelatedPeople.Count > 0)

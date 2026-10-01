@@ -21,7 +21,7 @@ else
 
         @if (!string.IsNullOrEmpty(Model.Person.FamilyTreeCaption))
         {
-            <p><strong>شجره‌نامه: @Model.Person.FamilyTreeCaption</strong></p>
+            <p><strong>تبارنامه: @Model.Person.FamilyTreeCaption</strong></p>
         }
 
         @if (Model.Person.BirthYearInLHijri != 0 || Model.Person.DeathYearInLHijri != 0)
@@ -52,7 +52,7 @@ else
         {
             <h3>
                 خویشاوندان
-                <a href="/FamilyTree/@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">نمایش نمودار شجره‌نامه</a>
+                <a href="/FamilyTree/@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">نمایش نمودار تبارنامه</a>
                 @if (Model.LoggedIn)
                 {
                     <a href="/User/SuggestNewPersonRelation?personId=@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">افزودن خویشاوند جدید</a>

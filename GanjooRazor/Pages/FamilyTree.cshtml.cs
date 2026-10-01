@@ -54,7 +54,7 @@ namespace GanjooRazor.Pages
                 return Page();
             }
 
-            ViewData["Title"] = $"گنجور » شجره‌نامهٔ {(string.IsNullOrEmpty(RootPerson.FamilyTreeCaption) ? RootPerson.Name : RootPerson.FamilyTreeCaption)}";
+            ViewData["Title"] = $"گنجور » تبارنامهٔ {(string.IsNullOrEmpty(RootPerson.FamilyTreeCaption) ? RootPerson.Name : RootPerson.FamilyTreeCaption)}";
 
             var treeResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/people/{id}/familytree");
             if (!treeResponse.IsSuccessStatusCode)
