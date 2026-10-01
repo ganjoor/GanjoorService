@@ -75,6 +75,13 @@ namespace RMuseum.Models.Ganjoor.ViewModels
     public class GanjoorPersonAffiliationInfo
     {
         /// <summary>
+        /// the underlying GanjoorPersonAffiliation row's own id - used to link to
+        /// /User/SuggestPersonRelationEdit?affiliationId={Id} for suggesting a change/removal of
+        /// this edge, same role RelationId plays on GanjoorPersonRelationInfo
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
         /// the other person in this tie
         /// </summary>
         public int OtherPersonId { get; set; }

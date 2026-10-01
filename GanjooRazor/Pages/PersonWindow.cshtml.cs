@@ -62,6 +62,13 @@ namespace GanjooRazor.Pages
         public class PersonAffiliationDisplayRow
         {
             /// <summary>
+            /// the underlying GanjoorPersonAffiliation row's own id - used to link to
+            /// /User/SuggestPersonRelationEdit?affiliationId={AffiliationId} for suggesting a
+            /// change/removal of this edge, same role RelationId plays on PersonRelationDisplayRow
+            /// </summary>
+            public int AffiliationId { get; set; }
+
+            /// <summary>
             /// full Persian sentence with a "{0}" placeholder for where the other person's linked
             /// name goes (kept as a placeholder, rather than a pre-built string, so the .cshtml can
             /// still render the name as a link)
@@ -156,6 +163,7 @@ namespace GanjooRazor.Pages
                 bool subjectServes = a.SubjectIsPerson1 || IsSymmetricAffiliation(a.AffiliationType);
                 AffiliationRows.Add(new PersonAffiliationDisplayRow()
                 {
+                    AffiliationId = a.Id,
                     SentenceBeforeOtherName = subjectServes ? $"این شخصیت {roleWord} " : "",
                     SentenceAfterOtherName = subjectServes ? " بود" : $" {roleWord} این شخصیت بود",
                     OtherPersonId = a.OtherPersonId,

@@ -246,6 +246,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get a single affiliation edge by its own id, with both sides' names resolved - used by
+        /// /SuggestPersonRelationEdit?affiliationId={affiliationId} to show what it's about
+        /// </summary>
+        /// <param name="affiliationId"></param>
+        /// <returns></returns>
+        [HttpGet("affiliations/{affiliationId:int}")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPersonAffiliation))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetAffiliationByIdAsync(int affiliationId)
+        {
+            var res = await _personService.GetAffiliationByIdAsync(affiliationId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// suggest an addition, change or removal of a kinship edge - any logged-in user, same as
         /// suggesting a person edit. Goes into the pending queue; does not change anything.
         /// </summary>

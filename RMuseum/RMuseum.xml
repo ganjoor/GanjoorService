@@ -2929,6 +2929,14 @@
             <param name="relationId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetAffiliationByIdAsync(System.Int32)">
+            <summary>
+            get a single affiliation edge by its own id, with both sides' names resolved - used by
+            /SuggestPersonRelationEdit?affiliationId={affiliationId} to show what it's about
+            </summary>
+            <param name="affiliationId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.SuggestPersonRelationEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion)">
             <summary>
             suggest an addition, change or removal of a kinship edge - any logged-in user, same as
@@ -13559,6 +13567,13 @@
             as GanjoorPersonRelationInfo above, but for a non-family tie
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonAffiliationInfo.Id">
+            <summary>
+            the underlying GanjoorPersonAffiliation row's own id - used to link to
+            /User/SuggestPersonRelationEdit?affiliationId={Id} for suggesting a change/removal of
+            this edge, same role RelationId plays on GanjoorPersonRelationInfo
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonAffiliationInfo.OtherPersonId">
             <summary>
             the other person in this tie
@@ -18422,6 +18437,14 @@
             <param name="relationId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetAffiliationByIdAsync(System.Int32)">
+            <summary>
+            get a single affiliation edge by its own id, with both sides' names resolved - used by
+            /User/SuggestPersonRelationEdit?affiliationId={affiliationId} to show what it's about
+            </summary>
+            <param name="affiliationId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.SuggestPersonRelationEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion)">
             <summary>
             submit a suggested addition, change or removal of a kinship edge - goes into the
@@ -21995,6 +22018,15 @@
             get a single kinship edge by its own id, with both sides' names resolved
             </summary>
             <param name="relationId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetAffiliationByIdAsync(System.Int32)">
+            <summary>
+            get a single affiliation edge by its own id, with both sides' names resolved - the
+            Kind == Affiliation counterpart of GetRelationByIdAsync, used the same way by
+            /User/SuggestPersonRelationEdit?affiliationId={id}
+            </summary>
+            <param name="affiliationId"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.SuggestPersonRelationEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion)">

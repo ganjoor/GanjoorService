@@ -106,6 +106,14 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPersonRelation>> GetRelationByIdAsync(int relationId);
 
         /// <summary>
+        /// get a single affiliation edge by its own id, with both sides' names resolved - used by
+        /// /User/SuggestPersonRelationEdit?affiliationId={affiliationId} to show what it's about
+        /// </summary>
+        /// <param name="affiliationId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPersonAffiliation>> GetAffiliationByIdAsync(int affiliationId);
+
+        /// <summary>
         /// submit a suggested addition, change or removal of a kinship edge - goes into the
         /// pending queue, does not change anything until a moderator approves it
         /// </summary>

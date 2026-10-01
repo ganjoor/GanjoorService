@@ -4,8 +4,12 @@
 @using RMuseum.Models.Ganjoor
 @{
     Layout = "_UserPanelLayout";
-    ViewData["Title"] = "پیشنهاد ویرایش نسبت خویشاوندی";
+    bool isAffiliation = Model.Kind == PersonRelationSuggestionKind.Affiliation;
+    ViewData["Title"] = isAffiliation ? "پیشنهاد ویرایش وابستگی" : "پیشنهاد ویرایش نسبت خویشاوندی";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+    string formAction = isAffiliation
+        ? $"/User/SuggestPersonRelationEdit?affiliationId={Model.Affiliation.Id}&Handler=SuggestEdit"
+        : $"/User/SuggestPersonRelationEdit?relationId={Model.Relation.Id}&Handler=SuggestEdit";
 }
 @if (!string.IsNullOrEmpty(Model.LastError))
 {
@@ -15,10 +19,10 @@ else
 {
     <div class="up-page-header">
         <h1>
-            پیشنهاد ویرایش نسبت:
-            <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.Relation.Person1Id)">@(Model.Relation.Person1 != null ? Model.Relation.Person1.Name : Model.Relation.Person1Id.ToString())</a>
+            @(isAffiliation ? "پیشنهاد ویرایش وابستگی:" : "پیشنهاد ویرایش نسبت:")
+            <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.Person1Id)">@Model.Person1Name</a>
             و
-            <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.Relation.Person2Id)">@(Model.Relation.Person2 != null ? Model.Relation.Person2.Name : Model.Relation.Person2Id.ToString())</a>
+            <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.Person2Id)">@Model.Person2Name</a>
         </h1>
     </div>
 
@@ -32,9 +36,10 @@ else
     }
 
     <div class="up-card">
-        <form method="post" action="/User/SuggestPersonRelationEdit?relationId=@Model.Relation.Id&amp;Handler=SuggestEdit">
+        <form method="post" action="@formAction">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Suggestion.ExistingRelationId" />
+            <input type="hidden" asp-for="Suggestion.ExistingAffiliationId" />
             <input type="hidden" asp-for="Suggestion.Person1Id" />
             <input type="hidden" asp-for="Suggestion.Person2Id" />
 
@@ -42,29 +47,53 @@ else
                 <tr>
                     <td>نوع درخواست:</td>
                     <td>
-                        <label><input type="radio" name="Action" value="Modify" checked="checked" /> ویرایش این نسبت</label>
+                        <label><input type="radio" name="Action" value="Modify" checked="checked" /> @(isAffiliation ? "ویرایش این وابستگی" : "ویرایش این نسبت")</label>
                         &nbsp;
-                        <label><input type="radio" name="Action" value="Remove" /> حذف این نسبت (اشتباه ثبت شده است)</label>
+                        <label><input type="radio" name="Action" value="Remove" /> @(isAffiliation ? "حذف این وابستگی (اشتباه ثبت شده است)" : "حذف این نسبت (اشتباه ثبت شده است)")</label>
                     </td>
                 </tr>
-                <tr>
-                    <td>نوع نسبت:</td>
-                    <td>
-                        <select asp-for="Suggestion.SuggestedRelationType">
-                            <option value="@((int)PersonRelationType.Parent)">پدر/مادر و فرزند (طرف اول، پدر/مادر است)</option>
-                            <option value="@((int)PersonRelationType.Sibling)">خواهر/برادر</option>
-                            <option value="@((int)PersonRelationType.Spouse)">همسر</option>
-                            <option value="@((int)PersonRelationType.Ancestor)">نیا و نواده (طرف اول، نیاست)</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        درجه (فقط برای نیا/نواده):
-                        <p class="up-hint"><small>مثلاً برای پدربزرگ/مادربزرگ عدد ۲ را وارد کنید. اگر نمی‌دانید خالی بگذارید.</small></p>
-                    </td>
-                    <td><input asp-for="Suggestion.SuggestedDegreeHint" /></td>
-                </tr>
+                @if (isAffiliation)
+                {
+                    <tr>
+                        <td>نوع وابستگی:</td>
+                        <td>
+                            <select asp-for="Suggestion.SuggestedAffiliationType">
+                                <option value="@((int)PersonAffiliationType.Minister)">وزیر/کارگزار (طرف اول، زیردست است)</option>
+                                <option value="@((int)PersonAffiliationType.Advisor)">مشاور (طرف اول، مشاور طرف دوم است)</option>
+                                <option value="@((int)PersonAffiliationType.Courtier)">درباری/همراه (طرف اول، همراه طرف دوم است)</option>
+                                <option value="@((int)PersonAffiliationType.Servant)">خدمتگزار (طرف اول، خدمتگزار طرف دوم است)</option>
+                                <option value="@((int)PersonAffiliationType.Patron)">حامی (طرف اول، حامی طرف دوم است)</option>
+                                <option value="@((int)PersonAffiliationType.Successor)">جانشین (طرف اول، جانشین طرف دوم است)</option>
+                                <option value="@((int)PersonAffiliationType.Ally)">متحد/هم‌پیمان</option>
+                                <option value="@((int)PersonAffiliationType.Rival)">رقیب/دشمن</option>
+                                <option value="@((int)PersonAffiliationType.Companion)">همراه/همدم</option>
+                                <option value="@((int)PersonAffiliationType.Other)">نوع دیگر (در یادداشت توضیح دهید)</option>
+                            </select>
+                            <p class="up-hint"><small>جهت وابستگی (کدام طرف زیردست/حامی/... است) قابل تغییر نیست؛ در صورت اشتباه بودن جهت، این وابستگی را حذف و یکی تازه پیشنهاد کنید.</small></p>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>نوع نسبت:</td>
+                        <td>
+                            <select asp-for="Suggestion.SuggestedRelationType">
+                                <option value="@((int)PersonRelationType.Parent)">پدر/مادر و فرزند (طرف اول، پدر/مادر است)</option>
+                                <option value="@((int)PersonRelationType.Sibling)">خواهر/برادر</option>
+                                <option value="@((int)PersonRelationType.Spouse)">همسر</option>
+                                <option value="@((int)PersonRelationType.Ancestor)">نیا و نواده (طرف اول، نیاست)</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            درجه (فقط برای نیا/نواده):
+                            <p class="up-hint"><small>مثلاً برای پدربزرگ/مادربزرگ عدد ۲ را وارد کنید. اگر نمی‌دانید خالی بگذارید.</small></p>
+                        </td>
+                        <td><input asp-for="Suggestion.SuggestedDegreeHint" /></td>
+                    </tr>
+                }
                 <tr>
                     <td>یادداشت (مستندسازی):</td>
                     <td><textarea asp-for="Suggestion.SuggestedNote" rows="3" cols="60"></textarea></td>

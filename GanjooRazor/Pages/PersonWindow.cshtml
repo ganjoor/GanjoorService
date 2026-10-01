@@ -85,7 +85,13 @@ else
 
         @if (Model.AffiliationRows.Count > 0)
         {
-            <h3>وابستگی‌های غیرخویشاوندی</h3>
+            <h3>
+                وابستگی‌های غیرخویشاوندی
+                @if (Model.LoggedIn)
+                {
+                    <a href="/User/SuggestNewPersonRelation?personId=@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">افزودن وابستگی جدید</a>
+                }
+            </h3>
             <ul>
                 @foreach (var row in Model.AffiliationRows)
                 {
@@ -95,9 +101,20 @@ else
                         {
                             <text> (@row.Note)</text>
                         }
+                        @if (Model.LoggedIn)
+                        {
+                            <a href="/User/SuggestPersonRelationEdit?affiliationId=@row.AffiliationId" class="up-icon-btn" title="پیشنهاد ویرایش/حذف این وابستگی" aria-label="پیشنهاد ویرایش/حذف این وابستگی">✎</a>
+                        }
                     </li>
                 }
             </ul>
+        }
+        else if (Model.LoggedIn)
+        {
+            <h3>
+                وابستگی‌های غیرخویشاوندی
+                <a href="/User/SuggestNewPersonRelation?personId=@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">افزودن وابستگی جدید</a>
+            </h3>
         }
 
         @if (Model.Poems != null && Model.Poems.Length > 0)

@@ -123,6 +123,7 @@ namespace RMuseum.Services.Implementation
 
                 var affiliations = affiliationRows.Select(a => new GanjoorPersonAffiliationInfo()
                 {
+                    Id = a.Id,
                     OtherPersonId = a.Person1Id == id ? a.Person2Id : a.Person1Id,
                     OtherPersonName = a.Person1Id == id ? a.Person2.Name : a.Person1.Name,
                     AffiliationType = a.AffiliationType,
@@ -537,6 +538,36 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<GanjoorPersonRelation>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// get a single affiliation edge by its own id, with both sides' names resolved - the
+        /// Kind == Affiliation counterpart of GetRelationByIdAsync, used the same way by
+        /// /User/SuggestPersonRelationEdit?affiliationId={id}
+        /// </summary>
+        /// <param name="affiliationId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorPersonAffiliation>> GetAffiliationByIdAsync(int affiliationId)
+        {
+            try
+            {
+                var affiliation = await _context.GanjoorPersonAffiliations
+                    .Include(a => a.Person1)
+                    .Include(a => a.Person2)
+                    .Where(a => a.Id == affiliationId)
+                    .SingleOrDefaultAsync();
+
+                if (affiliation == null)
+                {
+                    return new RServiceResult<GanjoorPersonAffiliation>(null, "وابستگی پیدا نشد.");
+                }
+
+                return new RServiceResult<GanjoorPersonAffiliation>(affiliation);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPersonAffiliation>(null, exp.ToString());
             }
         }
 
