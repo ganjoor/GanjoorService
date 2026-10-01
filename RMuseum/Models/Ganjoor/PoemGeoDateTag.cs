@@ -1,4 +1,6 @@
-﻿namespace RMuseum.Models.Ganjoor
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace RMuseum.Models.Ganjoor
 {
     /// <summary>
     /// Geo + date tags for poems
@@ -79,5 +81,20 @@
         /// AI generated
         /// </summary>
         public bool MachineGenerated { get; set; }
+
+        /// <summary>
+        /// optional explanatory note for this tag (e.g. why this couplet is relevant to the
+        /// tagged person - carried over from the suggestion's SuggestionNote when a moderator
+        /// approves it, and editable afterwards like the tag's other fields)
+        /// </summary>
+        public string Note { get; set; }
+
+        /// <summary>
+        /// the tagged couplet's own text (both مصرع of the verse at PoemId/CoupletIndex),
+        /// filled in on read by whichever service method needs to show it (e.g.
+        /// GanjoorRelatedPersonService.GetPoemsByPersonAsync) - not a mapped database column
+        /// </summary>
+        [NotMapped]
+        public string CoupletText { get; set; }
     }
 }

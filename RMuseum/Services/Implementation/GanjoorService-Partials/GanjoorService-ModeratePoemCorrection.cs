@@ -746,6 +746,10 @@ namespace RMuseum.Services.Implementation
                                     IgnoreInCategory = dbGeoDateTag.IgnoreInCategory,
                                     VerifiedDate = false,
                                     MachineGenerated = false,
+                                    // carry the contributor's reasoning (e.g. "this couplet indicates she is
+                                    // daughter of Jamshid") onto the live tag so it can be shown wherever the
+                                    // tag itself is displayed, not just during moderation
+                                    Note = string.IsNullOrWhiteSpace(dbGeoDateTag.SuggestionNote) ? null : dbGeoDateTag.SuggestionNote.Trim(),
                                 };
                                 newTag.LunarDateTotalNumber = _PrepareLunarDateTotalNumber(newTag);
                                 _context.PoemGeoDateTags.Add(newTag);

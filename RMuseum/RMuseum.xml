@@ -4975,6 +4975,18 @@
         <member name="M:RMuseum.Migrations.AddPersonRelationSuggestionAffiliationSupport.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.AddPoemGeoDateTagNote">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPoemGeoDateTagNote.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPoemGeoDateTagNote.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPoemGeoDateTagNote.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -11988,6 +12000,20 @@
         <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.MachineGenerated">
             <summary>
             AI generated
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.Note">
+            <summary>
+            optional explanatory note for this tag (e.g. why this couplet is relevant to the
+            tagged person - carried over from the suggestion's SuggestionNote when a moderator
+            approves it, and editable afterwards like the tag's other fields)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.CoupletText">
+            <summary>
+            the tagged couplet's own text (both مصرع of the verse at PoemId/CoupletIndex),
+            filled in on read by whichever service method needs to show it (e.g.
+            GanjoorRelatedPersonService.GetPoemsByPersonAsync) - not a mapped database column
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PoemMusicTrack">

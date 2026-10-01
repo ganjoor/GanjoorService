@@ -168,6 +168,21 @@ namespace RMuseum.Services.Implementation
                         tag.Poem.HtmlText = null;
                         tag.Poem.PlainText = null;
                     }
+
+                    // fill in the tagged couplet's own text (CoupletIndex 0 means "whole poem" - no
+                    // single couplet to show), so the person page can show the actual verse instead
+                    // of just a link to the poem it came from
+                    if (tag.CoupletIndex > 0)
+                    {
+                        var coupletVerses = await _context.GanjoorVerses.AsNoTracking()
+                            .Where(v => v.PoemId == tag.PoemId && v.CoupletIndex == tag.CoupletIndex)
+                            .OrderBy(v => v.VOrder)
+                            .ToListAsync();
+                        if (coupletVerses.Count > 0)
+                        {
+                            tag.CoupletText = string.Join(" ", coupletVerses.Select(v => v.Text)).Trim();
+                        }
+                    }
                 }
 
                 return new RServiceResult<PoemGeoDateTag[]>(tags);

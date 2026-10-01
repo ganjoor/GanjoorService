@@ -125,7 +125,17 @@ else
                 {
                     if (tag.Poem != null)
                     {
-                        <li><a href="@tag.Poem.FullUrl">@tag.Poem.FullTitle</a></li>
+                        <li>
+                            <a href="@tag.Poem.FullUrl">@tag.Poem.FullTitle</a>
+                            @if (!string.IsNullOrEmpty(tag.CoupletText))
+                            {
+                                <p>@tag.CoupletText</p>
+                            }
+                            @if (!string.IsNullOrEmpty(tag.Note))
+                            {
+                                <p class="up-hint"><small>یادداشت: @tag.Note</small></p>
+                            }
+                        </li>
                     }
                 }
             </ul>

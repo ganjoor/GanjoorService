@@ -89,6 +89,7 @@ namespace RMuseum.Services.Implementation
                 dbTag.PoemId = tag.PoemId;
                 dbTag.VerifiedDate = tag.VerifiedDate;
                 dbTag.IgnoreInCategory = tag.IgnoreInCategory;
+                dbTag.Note = string.IsNullOrWhiteSpace(tag.Note) ? null : tag.Note.Trim();
                 dbTag.LunarDateTotalNumber = _PrepareLunarDateTotalNumber(tag);
                 _context.Update(dbTag);
                 await _context.SaveChangesAsync();
