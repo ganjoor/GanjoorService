@@ -196,7 +196,16 @@ else
                         </div>
                     </div>
 
-                       
+                    <div class="century" id="books-shelf-caption">
+                        مرور کتابها
+                    </div>
+                    <div id="books-shelf-outer">
+                        <button type="button" class="books-shelf-handle books-shelf-handle-right" aria-label="نمایش کتابهای بیشتر در سمت راست" onclick="scrollBooksShelf(220)">‹</button>
+                        <div id="books-shelf-wrap">
+                            <div id="books-shelf" aria-label="مرور کتابها"></div>
+                        </div>
+                        <button type="button" class="books-shelf-handle books-shelf-handle-left" aria-label="نمایش کتابهای بیشتر در سمت چپ" onclick="scrollBooksShelf(-220)">›</button>
+                    </div>
 
                 </div>
 
@@ -210,4 +219,10 @@ else
 @if (ViewData["TrackingScript"] != null && !string.IsNullOrEmpty(ViewData["TrackingScript"].ToString()))
 {
     @Html.Raw(ViewData["TrackingScript"])
+}
+
+@section Scripts {
+    <script>
+        initHomeBooksShelf();
+    </script>
 }

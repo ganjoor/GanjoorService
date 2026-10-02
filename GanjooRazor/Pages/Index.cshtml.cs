@@ -115,6 +115,24 @@ namespace GanjooRazor.Pages
             return Redirect(pageUrl);
         }
 
+        /// <summary>
+        /// JSON endpoint for the home page's "مرور کتابها" horizontal book shelf (see bk.js's
+        /// initHomeBooksShelf()). Fetched client-side via "?Handler=BookCatalog" rather than hitting
+        /// the api/ganjoor/book-catalog API route directly from browser JS, same as every other
+        /// client-side data fetch on this site - the browser only ever talks to this page's own
+        /// handlers, which proxy to the API server-side.
+        /// </summary>
+        public async Task<IActionResult> OnGetBookCatalogAsync()
+        {
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/book-catalog");
+            if (!response.IsSuccessStatusCode)
+            {
+                return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
+            }
+            var books = JsonConvert.DeserializeObject<GanjoorBookViewModel[]>(await response.Content.ReadAsStringAsync());
+            return new OkObjectResult(books);
+        }
+
         public async Task<IActionResult> OnGetAsync()
         {
             var maintenanceResult = TryGetMaintenanceModeResult();

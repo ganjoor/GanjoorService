@@ -342,6 +342,180 @@ select {
     color: var(--ink-black);
 }
 
+/* Home page "مرور کتابها" book shelf - see initHomeBooksShelf()/buildBookSpine() in bk.js. */
+#books-shelf-outer {
+    position: relative;
+}
+
+#books-shelf-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding: 10px 34px 26px;
+}
+
+#books-shelf-wrap::-webkit-scrollbar {
+    display: none;
+}
+
+.books-shelf-handle {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--accent-border);
+    background-color: var(--card-paper);
+    color: var(--ink-black);
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.books-shelf-handle:hover {
+    background-color: var(--brand);
+    color: #fff;
+}
+
+.books-shelf-handle-right {
+    right: 0;
+}
+
+.books-shelf-handle-left {
+    left: 0;
+}
+
+#books-shelf {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    width: max-content;
+    min-width: 100%;
+    padding: 0 10px;
+}
+
+.book-spine {
+    position: relative;
+    flex: 0 0 auto;
+    width: 56px;
+    height: 230px;
+    border-radius: 4px 4px 3px 3px;
+    cursor: pointer;
+    box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.28);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, width 0.3s ease, height 0.3s ease;
+    outline-offset: 3px;
+}
+
+.book-spine:hover,
+.book-spine:focus-visible {
+    transform: translateY(-12px);
+    box-shadow: 4px 12px 20px rgba(0, 0, 0, 0.4);
+}
+
+.book-spine.expanded {
+    width: 170px;
+    height: 262px;
+}
+
+.book-spine.expanded:hover {
+    transform: translateY(-6px);
+}
+
+.spine-compact {
+    position: absolute;
+    inset: 0;
+}
+
+.book-spine.expanded .spine-compact {
+    display: none;
+}
+
+.spine-title,
+.spine-poet {
+    position: absolute;
+    left: 50%;
+    transform-origin: center center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    color: #fdf8ee;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+}
+
+.spine-title {
+    top: 95px;
+    width: 150px;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    font-family: 'IranNastaliq', serif;
+    font-size: 1.2rem;
+}
+
+.spine-poet {
+    top: 200px;
+    width: 50px;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    font-size: 0.68rem;
+    opacity: 0.85;
+}
+
+.spine-cover {
+    display: none;
+    position: absolute;
+    inset: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 18px 12px;
+    text-align: center;
+    color: #fdf8ee;
+}
+
+.book-spine.expanded .spine-cover {
+    display: flex;
+}
+
+.spine-cover-title {
+    font-family: 'IranNastaliq', serif;
+    font-size: 1.7rem;
+    line-height: 1.5;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.spine-cover-poet {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.spine-cover-close {
+    position: absolute;
+    top: 6px;
+    inset-inline-end: 6px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.25);
+    color: #fdf8ee;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.spine-cover-close:hover {
+    background: rgba(0, 0, 0, 0.4);
+}
+
 #guides {
     max-width: 860px;
     display: block;

@@ -1620,6 +1620,139 @@ function clearHomeSearch() {
     input.focus();
 }
 
+// Home page (Index.cshtml) only: "مرور کتابها" - a horizontally scrollable shelf of book "spines",
+// Grokipedia-homepage-style. Fetched once from this page's own "?Handler=BookCatalog" (which proxies
+// RMuseum's api/ganjoor/book-catalog server-side) rather than calling that API directly from browser
+// JS - same convention every other client-side data fetch on this site follows. There's no cover-art
+// image for any book in the database, so each spine's color is a deterministic hash of its id instead
+// of a real illustration - stable across visits/reloads (not reshuffled on every page load), while
+// still giving the shelf the varied-color look a real bookshelf has.
+var expandedBookSpine = null;
+
+function hashBookColorHue(key) {
+    var str = String(key);
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+        hash = (hash * 31 + str.charCodeAt(i)) | 0;
+    }
+    return Math.abs(hash) % 360;
+}
+
+function collapseExpandedBookSpine() {
+    if (expandedBookSpine) {
+        expandedBookSpine.classList.remove('expanded');
+        expandedBookSpine = null;
+    }
+}
+
+function buildBookSpine(book) {
+    var spine = document.createElement('div');
+    spine.className = 'book-spine';
+    spine.tabIndex = 0;
+    spine.setAttribute('role', 'button');
+    spine.setAttribute('aria-label', book.name + (book.poetName ? ' - ' + book.poetName : ''));
+
+    var hue = hashBookColorHue(book.id);
+    spine.style.background =
+        'linear-gradient(90deg, rgba(0,0,0,.22), transparent 12%, transparent 88%, rgba(255,255,255,.12)), ' +
+        'hsl(' + hue + ', 42%, 30%)';
+
+    // The compact (spine) face: book name on top, poet name below (smaller) - both laid out as a
+    // normal horizontal line of text first, so Persian letter-joining/shaping happens correctly,
+    // then rotated 90deg as a whole block. True CSS vertical writing-mode (the "right" way to do
+    // this for Latin text, which is how Grokipedia's own spines work) breaks cursive Arabic/Persian
+    // script - it uprights each letter separately instead of rotating the shaped line - so rotating
+    // the finished line is the only way to get this to read correctly.
+    var compact = document.createElement('div');
+    compact.className = 'spine-compact';
+    var title = document.createElement('span');
+    title.className = 'spine-title';
+    title.textContent = book.name;
+    var poet = document.createElement('span');
+    poet.className = 'spine-poet';
+    poet.textContent = book.poetName || '';
+    compact.appendChild(title);
+    compact.appendChild(poet);
+
+    // The expanded (cover) face: shown once this spine is clicked - see openOrNavigateBookSpine().
+    var cover = document.createElement('div');
+    cover.className = 'spine-cover';
+    var closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'spine-cover-close';
+    closeBtn.setAttribute('aria-label', 'بستن');
+    closeBtn.textContent = '×';
+    closeBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        collapseExpandedBookSpine();
+    });
+    var coverTitle = document.createElement('div');
+    coverTitle.className = 'spine-cover-title';
+    coverTitle.textContent = book.name;
+    var coverPoet = document.createElement('div');
+    coverPoet.className = 'spine-cover-poet';
+    coverPoet.textContent = book.poetName || '';
+    cover.appendChild(closeBtn);
+    cover.appendChild(coverTitle);
+    cover.appendChild(coverPoet);
+
+    spine.appendChild(compact);
+    spine.appendChild(cover);
+
+    function openOrNavigateBookSpine() {
+        if (spine.classList.contains('expanded')) {
+            if (book.fullUrl) window.location.href = book.fullUrl;
+            return;
+        }
+        // Only one spine open at a time - collapsing the previous one first is what makes a growing
+        // spine read as "picking a different book" rather than stacking expanded covers.
+        collapseExpandedBookSpine();
+        spine.classList.add('expanded');
+        expandedBookSpine = spine;
+        // The spine's own width grows a lot (56px -> 170px) - without this, it can end up partly
+        // scrolled out of view, which looks like nothing happened.
+        spine.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+
+    spine.addEventListener('click', openOrNavigateBookSpine);
+    spine.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openOrNavigateBookSpine();
+        }
+    });
+
+    return spine;
+}
+
+// Called by the "<"/">" handles next to the shelf (see Index.cshtml). amount is signed in the
+// ordinary "positive = move the view right, negative = move it left" sense - evergreen browsers
+// (Chrome/Firefox/Safari) all follow the spec's "negative" RTL scrollLeft model, where scrollLeft
+// is 0 at the right/start edge and goes negative toward the left/end edge, so a plain scrollBy
+// without any RTL sign-flip already moves the view the way its own delta's sign says.
+function scrollBooksShelf(amount) {
+    var wrap = document.getElementById('books-shelf-wrap');
+    if (!wrap) return;
+    wrap.scrollBy({ left: amount, behavior: 'smooth' });
+}
+
+function initHomeBooksShelf() {
+    var shelf = document.getElementById('books-shelf');
+    if (!shelf) return;
+    $.ajax({
+        type: 'GET',
+        url: '?Handler=BookCatalog',
+        success: function (books) {
+            if (!books || books.length === 0) return;
+            var frag = document.createDocumentFragment();
+            for (var i = 0; i < books.length; i++) {
+                frag.appendChild(buildBookSpine(books[i]));
+            }
+            shelf.appendChild(frag);
+        }
+    });
+}
+
 function onInlineSearch(value, resultBlockId, itemsClass) {
     const foundPoetsNode = document.getElementById(resultBlockId);
     foundPoetsNode.innerHTML = '';
