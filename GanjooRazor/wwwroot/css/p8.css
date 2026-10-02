@@ -303,6 +303,45 @@ select {
     text-align: left
 }
 
+/* #searchhorm input, #searchhorm select, #searchhorm label (further below in this file) float
+   them all right, which is how the search box's input/combo/button end up in the right order in
+   this RTL layout - each one floats to the right of the one before it. Wrapping the text input in
+   this span for the clear button moved it out from under that rule (a plain, non-floated span
+   isn't selected by "#searchhorm input"), which is what reshuffled the search box the first time
+   this shipped. Floating the wrapper itself the same way, and cancelling the float that still lands
+   on the nested input, restores the original left-to-right float order. */
+#searchhorm .home-search-input-wrap {
+    position: relative;
+    float: right;
+    margin: 1px;
+}
+
+#searchhorm .home-search-input-wrap input {
+    float: none;
+    margin: 0;
+}
+
+#searchhorm .home-search-input-wrap .inputText {
+    padding-inline-end: 20px;
+}
+
+.home-search-clear {
+    position: absolute;
+    inset-inline-end: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.1em;
+    line-height: 1;
+    color: var(--text-muted);
+    padding: 0 3px;
+    user-select: none;
+}
+
+.home-search-clear:hover {
+    color: var(--ink-black);
+}
+
 #guides {
     max-width: 860px;
     display: block;

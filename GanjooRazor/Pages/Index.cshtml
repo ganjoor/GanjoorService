@@ -57,7 +57,10 @@ else
 
         <div class="actionbox">
             <form action="/search" method="get" id="searchhorm">
-                <input type="text" name="s" id="s" placeholder="جستجو" class="inputText" size="35" value="">
+                <span class="home-search-input-wrap">
+                    <input type="text" name="s" id="s" placeholder="جستجو" class="inputText" size="35" value="" autocomplete="off" oninput="onHomeSearchInput(this.value)">
+                    <span id="home-search-clear" class="home-search-clear" style="display:none" title="پاک‌کردن" onclick="clearHomeSearch()">×</span>
+                </span>
                 <input type="hidden" name="es" id="es" value="1">
                 <select name="author" id="author">
                     <option value="0" selected>در آثار همهٔ سخنوران</option>
@@ -72,41 +75,45 @@ else
             </form>
         </div>
 
+        <div class="spacer" id="home-found-poets" style="display:none"></div>
+        <p class="up-hint" id="home-search-hint" style="display:none"><small>برای جستجوی کامل در شعرها کلید اینتر را بزنید یا روی «بیاب» کلیک کنید؛ فهرست زیر فقط جستجوی نام سخنوران است.</small></p>
+
         <partial name="_InlineLoginPartial" model="Model" />
 
             <div id="main">
                 <div id="guides">
 
-                    <div class="century">
-                        سخنوران پرمخاطب
+                    <div id="home-popular-poets-row">
+                        <div class="century">
+                            سخنوران پرمخاطب
+                        </div>
+
+                        @{
+                            var popularGroup = Model.PoetGroups.Where(g => g.Id == 0).Single();
+
+                            if (popularGroup.ShowInTimeLine)
+                            {
+                                <div class="century">
+                                    @popularGroup.Name
+                                </div>
+                            }
+                            <div class="spacer">
+                                @foreach (var poet in popularGroup.Poets)
+                                {
+                                    <div class="poet" data-value="@poet.Nickname">
+                                        <a href="@poet.FullUrl" title="@poet.Name">
+                                            <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name">
+                                        </a>
+                                        <div class="caption">
+                                            <a href="@poet.FullUrl">@poet.Nickname</a>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
                     </div>
 
                     @{
-                        var popularGroup = Model.PoetGroups.Where(g => g.Id == 0).Single();
-
-                        if (popularGroup.ShowInTimeLine)
-                        {
-                            <div class="century">
-                                @popularGroup.Name
-                            </div>
-                        }
-                        <div class="spacer">
-                            @foreach (var poet in popularGroup.Poets)
-                            {
-                                <div class="poet">
-                                    <a href="@poet.FullUrl" title="@poet.Name">
-                                        <img src="@(GanjooRazor.APIRoot.InternetUrl+poet.ImageUrl)" alt="@poet.Name">
-                                    </a>
-                                    <div class="caption">
-                                        <a href="@poet.FullUrl">@poet.Nickname</a>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                        <div class="clear-both">
-                            <input type="text" id="findpoet" placeholder="جستجوی سخنور" size="35" value="" oninput="onInlineSearch(this.value, 'found-poets', 'poet')">
-                            <div class="spacer" id="found-poets"></div>
-                        </div>
                         <div class="century" id="cl">
                             دسته‌بندی بر اساس قرن
                         </div>

@@ -1554,6 +1554,55 @@ function persianizeNumerals(value) {
         .replace(/9/gi, "۹");
 }
 
+// Home page (Index.cshtml) only: the top search box (#s) used to just submit a full poem search
+// (POST-free GET to /search) and the home page separately had its own "جستجوی سخنور" inline box
+// (#findpoet, now removed) that filtered the poet list live as you typed. This merges that second
+// behavior into the top box: typing filters poets live (same underlying match as onInlineSearch,
+// against every ".poet" element's data-value), while submitting the form (Enter / the "بیاب" button)
+// still does the original full poem search unchanged - so nothing about submission itself changes.
+function onHomeSearchInput(value) {
+    var clearBtn = document.getElementById('home-search-clear');
+    var popularRow = document.getElementById('home-popular-poets-row');
+    var foundNode = document.getElementById('home-found-poets');
+    var hintNode = document.getElementById('home-search-hint');
+    if (!foundNode) return;
+
+    var hasValue = value.length > 0;
+    if (clearBtn) clearBtn.style.display = hasValue ? 'inline' : 'none';
+    if (popularRow) popularRow.style.display = hasValue ? 'none' : '';
+    if (hintNode) hintNode.style.display = hasValue ? 'block' : 'none';
+
+    foundNode.innerHTML = '';
+    if (!hasValue) {
+        foundNode.style.display = 'none';
+        return;
+    }
+
+    var replaced = persianizeNumerals(value);
+    // querySelectorAll (not getElementsByClassName) is required here: getElementsByClassName
+    // returns a LIVE collection, and the clones we append below also carry class="poet" and land
+    // earlier in document order than the originals (home-found-poets sits above the poet lists) -
+    // every append was reshuffling the live collection's indices so the same source element kept
+    // reappearing at the loop's current index forever, hanging the page. querySelectorAll takes a
+    // static snapshot up front, so appends during the loop can't affect it.
+    var poets = document.querySelectorAll('.poet');
+    for (var i = 0; i < poets.length; i++) {
+        var dataValue = poets[i].getAttribute('data-value');
+        if (dataValue != null && dataValue.indexOf(replaced) !== -1) {
+            foundNode.appendChild(poets[i].cloneNode(true));
+        }
+    }
+    foundNode.style.display = foundNode.childElementCount > 0 ? '' : 'none';
+}
+
+function clearHomeSearch() {
+    var input = document.getElementById('s');
+    if (!input) return;
+    input.value = '';
+    onHomeSearchInput('');
+    input.focus();
+}
+
 function onInlineSearch(value, resultBlockId, itemsClass) {
     const foundPoetsNode = document.getElementById(resultBlockId);
     foundPoetsNode.innerHTML = '';
