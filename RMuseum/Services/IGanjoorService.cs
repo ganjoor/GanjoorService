@@ -23,6 +23,16 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPoetViewModel[]>> GetPoets(bool published, bool includeBio = true);
 
         /// <summary>
+        /// Get list of books (GanjoorCat entries whose CatType is Book), sorted alphabetically by name.
+        /// Not to be confused with GetBooksAsync() below, which lists GanjoorCat entries by their
+        /// (separate, legacy) BookName field for cover-image generation.
+        /// </summary>
+        /// <param name="name">optional, only books whose name contains this (case-insensitive)</param>
+        /// <param name="poetId">optional, only books belonging to this poet</param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorBookViewModel[]>> GetBookCatalogAsync(string name = null, int? poetId = null);
+
+        /// <summary>
         /// get poet by id
         /// </summary>
         /// <param name="id"></param>

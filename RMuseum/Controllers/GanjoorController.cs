@@ -60,6 +60,50 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// get list of books (GanjoorCat entries whose CatType is Book, sorted alphabetically by name),
+        /// optionally filtered by (part of) name and/or poet id. Not to be confused with
+        /// GetBooksAsync()/"books" above, which lists GanjoorCat entries by their (separate,
+        /// legacy) BookName field for cover-image generation.
+        /// </summary>
+        /// <param name="name">optional, only books whose name contains this</param>
+        /// <param name="poetId">optional, only books belonging to this poet</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("book-catalog")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorBookViewModel[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetBookCatalog(string name = null, int? poetId = null)
+        {
+            // only the common, unfiltered call (the one the home page's book search will use to load
+            // the full list once and filter client-side) is worth caching - a filtered call is cheap
+            // on a table this small (well under 200 rows) and caching every name/poetId combination
+            // would just grow the cache for no benefit.
+            if (string.IsNullOrEmpty(name) && poetId == null)
+            {
+                var cacheKey = $"ganjoor/book-catalog";
+                if (!_memoryCache.TryGetValue(cacheKey, out GanjoorBookViewModel[] cachedBooks))
+                {
+                    RServiceResult<GanjoorBookViewModel[]> cachedRes =
+                        await _ganjoorService.GetBookCatalogAsync();
+                    if (!string.IsNullOrEmpty(cachedRes.ExceptionString))
+                        return BadRequest(cachedRes.ExceptionString);
+
+                    cachedBooks = cachedRes.Result;
+                    if (AggressiveCacheEnabled)
+                        _memoryCache.Set(cacheKey, cachedBooks, TimeSpan.FromHours(1));
+                }
+                return Ok(cachedBooks);
+            }
+
+            RServiceResult<GanjoorBookViewModel[]> res =
+                await _ganjoorService.GetBookCatalogAsync(name, poetId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// gets list of poets grouped by centuries (first one is the pinned ones)
         /// </summary>
         /// <returns></returns>
