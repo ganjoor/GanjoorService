@@ -1569,12 +1569,12 @@ function onHomeSearchInput(value) {
 
     var hasValue = value.length > 0;
     if (clearBtn) clearBtn.style.display = hasValue ? 'inline' : 'none';
-    if (popularRow) popularRow.style.display = hasValue ? 'none' : '';
-    if (hintNode) hintNode.style.display = hasValue ? 'block' : 'none';
 
     foundNode.innerHTML = '';
     if (!hasValue) {
         foundNode.style.display = 'none';
+        if (popularRow) popularRow.style.display = '';
+        if (hintNode) hintNode.style.display = 'none';
         return;
     }
 
@@ -1586,13 +1586,30 @@ function onHomeSearchInput(value) {
     // reappearing at the loop's current index forever, hanging the page. querySelectorAll takes a
     // static snapshot up front, so appends during the loop can't affect it.
     var poets = document.querySelectorAll('.poet');
+    // A poet who's one of the "سخنوران پرمخاطب" favorites is also listed again further down under
+    // their real century - that's the normal page structure, not a data error - so a name that
+    // matches both copies would otherwise get rendered twice. Dedupe by the poet's link, the one
+    // thing both copies share.
+    var seenHrefs = {};
     for (var i = 0; i < poets.length; i++) {
         var dataValue = poets[i].getAttribute('data-value');
-        if (dataValue != null && dataValue.indexOf(replaced) !== -1) {
-            foundNode.appendChild(poets[i].cloneNode(true));
+        if (dataValue == null || dataValue.indexOf(replaced) === -1) continue;
+        var link = poets[i].querySelector('a');
+        var href = link ? link.getAttribute('href') : null;
+        if (href != null) {
+            if (seenHrefs[href]) continue;
+            seenHrefs[href] = true;
         }
+        foundNode.appendChild(poets[i].cloneNode(true));
     }
-    foundNode.style.display = foundNode.childElementCount > 0 ? '' : 'none';
+
+    var hasMatches = foundNode.childElementCount > 0;
+    foundNode.style.display = hasMatches ? '' : 'none';
+    // No matching poet: there's nothing useful to show in place of the favorites row, so put the
+    // page back the way it looked before the user started typing (same as clearing the box) rather
+    // than leaving an empty gap with the "press Enter" hint still showing over it.
+    if (popularRow) popularRow.style.display = hasMatches ? 'none' : '';
+    if (hintNode) hintNode.style.display = hasMatches ? 'block' : 'none';
 }
 
 function clearHomeSearch() {
