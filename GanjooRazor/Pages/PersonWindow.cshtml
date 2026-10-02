@@ -52,7 +52,7 @@ else
         {
             <h3>
                 خویشاوندان
-                <a href="/FamilyTree/@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">نمایش نمودار تبارنامه</a>
+                <a href="javascript:void(0)" onclick="FamilyTreeWindow.open(@Model.Person.Id)" class="up-btn up-btn--ghost up-btn--sm">نمایش نمودار تبارنامه</a>
                 @if (Model.LoggedIn)
                 {
                     <a href="/User/SuggestNewPersonRelation?personId=@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">افزودن خویشاوند جدید</a>

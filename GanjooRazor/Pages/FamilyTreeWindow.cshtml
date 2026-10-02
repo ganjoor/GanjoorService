@@ -1,0 +1,53 @@
+@page "{id:int}"
+@model GanjooRazor.Pages.FamilyTreeWindowModel
+@{
+    Layout = null;
+}
+@if (!string.IsNullOrEmpty(Model.LastError))
+{
+    <p>@Model.LastError</p>
+}
+else
+{
+    <div class="up-modal-familytree">
+        <h2>
+            تبارنامهٔ @(string.IsNullOrEmpty(Model.RootPerson.FamilyTreeCaption) ? Model.RootPerson.Name : Model.RootPerson.FamilyTreeCaption)
+            <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.RootPerson.Id)" class="up-btn up-btn--ghost up-btn--sm">مشاهدهٔ اطلاعات این شخصیت</a>
+        </h2>
+        <p class="up-hint"><small>
+            برای مشاهدهٔ توضیحات هر شخصیت، روی آن کلیک کنید. برای پیمایش نمودار آن را با ماوس بکشید و با غلتک ماوس بزرگ/کوچک کنید.
+            این نمودار محدود به فرزندان این شخصیت نیست؛ تمام خویشاوندان به‌هم‌پیوسته (از جمله نیاکان و خانوادهٔ همسر) را نشان می‌دهد.
+        </small></p>
+
+        <div id="familytree-container" style="position:relative;width:100%;height:65vh;border:1px solid #d8cdb8;border-radius:6px;overflow:hidden;background:#faf7f0;">
+            <svg id="familytree-svg" width="100%" height="100%"></svg>
+            <div id="familytree-tooltip" class="ft-tooltip-panel" style="display:none;"></div>
+        </div>
+
+        <style>
+            .ft-box { fill: #fdf6e6; stroke: #8b6b4a; stroke-width: 1.5; }
+            .ft-box-current { fill: #f3e2b8; stroke: #7a4a2a; stroke-width: 2.5; }
+            .ft-box-text { font-size: 14px; fill: #4a3520; font-family: inherit; }
+            .ft-heart { font-size: 13px; fill: #a0455c; }
+            .ft-line { fill: none; stroke: #a99a7c; stroke-width: 1.5; }
+            .ft-line-spouse { stroke-dasharray: 3,3; }
+            .ft-tooltip-panel {
+                position: absolute; top: 10px; left: 10px; max-width: 300px;
+                background: #fffdf7; border: 1px solid #8b6b4a; border-radius: 8px;
+                padding: 12px 16px; box-shadow: 0 2px 10px rgba(0,0,0,.25); z-index: 10;
+                direction: rtl; text-align: right;
+            }
+            .ft-tooltip-close {
+                float: left; border: none; background: none; font-size: 18px; cursor: pointer; color: #7a4a2a;
+            }
+        </style>
+
+        @* not an executable script - just a data holder, parsed and rendered explicitly by
+           FamilyTreeWindow.open()'s onReady callback in personwindow.js once this fragment has
+           been injected into the modal body (innerHTML never executes a <script> tag, so unlike
+           the old standalone FamilyTree.cshtml page this can't just call GanjoorFamilyTree.render()
+           directly here) - same pattern _PersonGraphPartial.cshtml uses for pge-data *@
+        <script type="application/json" id="ftw-data">@Html.Raw(Model.TreeDataJson)</script>
+        <input type="hidden" id="ftw-root-id" value="@Model.RootPerson.Id" />
+    </div>
+}

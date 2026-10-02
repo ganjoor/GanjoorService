@@ -1,19 +1,22 @@
 // Generic inline-modal shell, loaded on every page (see _Layout.cshtml / _AdminLayout.cshtml),
-// used to replace what used to be three standalone pages: Person.cshtml (a person's profile),
-// People.cshtml (family-tree-roots index) and PeopleGraph.cshtml (whole-site relationship graph).
-// Those pages had no independent purpose of their own - they only ever existed to show data
-// reachable from somewhere else (a poem's tagged persons, a category's "شخصیت‌ها" tab, an admin
-// moderation queue, the family-tree chart) - so instead of navigating away, callers open one of
-// these two windows over whatever page they're already on:
+// used to replace what used to be four standalone pages: Person.cshtml (a person's profile),
+// People.cshtml (family-tree-roots index), PeopleGraph.cshtml (whole-site relationship graph) and
+// FamilyTree.cshtml (one person's family-tree chart). Those pages had no independent purpose of
+// their own - they only ever existed to show data reachable from somewhere else (a poem's tagged
+// persons, a category's "شخصیت‌ها" tab, an admin moderation queue) - so instead of navigating
+// away, callers open one of these three windows over whatever page they're already on:
 //
-//   PersonWindow.open(id)   - a small modal: one person's bio/relations/affiliations/poems,
-//                             fetched from /PersonWindow/{id} (Person.cshtml's old content,
-//                             stripped of site chrome - see PersonWindow.cshtml).
-//   PeopleExplorer.open()   - a large modal: the whole-site force-directed graph (formerly
-//                             /PeopleGraph) plus the family-tree-roots list (formerly /People),
-//                             merged into one fragment fetched from /PeopleExplorer.
+//   PersonWindow.open(id)      - a small modal: one person's bio/relations/affiliations/poems,
+//                                fetched from /PersonWindow/{id} (Person.cshtml's old content,
+//                                stripped of site chrome - see PersonWindow.cshtml).
+//   PeopleExplorer.open()      - a large modal: the whole-site force-directed graph (formerly
+//                                /PeopleGraph) plus the family-tree-roots list (formerly /People),
+//                                merged into one fragment fetched from /PeopleExplorer.
+//   FamilyTreeWindow.open(id)  - a large modal: one person's connected-kinship-component tree
+//                                chart (formerly /FamilyTree/{id}), fetched from
+//                                /FamilyTreeWindow/{id} - see FamilyTreeWindow.cshtml.
 //
-// Both render into the same reusable overlay/modal shell built here on first use.
+// All three render into the same reusable overlay/modal shell built here on first use.
 (function () {
     'use strict';
 
@@ -117,6 +120,20 @@
         });
     }
 
+    function openFamilyTree(id) {
+        openModal(true);
+        loadInto('/FamilyTreeWindow/' + String(id), function () {
+            var dataEl = document.getElementById('ftw-data');
+            var rootIdEl = document.getElementById('ftw-root-id');
+            if (dataEl && rootIdEl && window.GanjoorFamilyTree) {
+                var treeData = JSON.parse(dataEl.textContent);
+                var rootId = parseInt(rootIdEl.value, 10);
+                GanjoorFamilyTree.render('familytree-container', 'familytree-svg', 'familytree-tooltip', treeData, rootId);
+            }
+        });
+    }
+
     window.PersonWindow = { open: openPerson, close: closeModal };
     window.PeopleExplorer = { open: openExplorer, close: closeModal };
+    window.FamilyTreeWindow = { open: openFamilyTree, close: closeModal };
 })();

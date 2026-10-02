@@ -39,10 +39,11 @@
     </script>
     <script src="/lib/diff.js"></script>
     <script src="~/js/bk.js" asp-append-version="true"></script>
-    <!-- PersonWindow.open()/PeopleExplorer.open() are used by pages under Areas/User/Pages (e.g. the
-         Suggest* person-editing forms), so they're loaded globally here, same as _Layout.cshtml and
-         _AdminLayout.cshtml do for the rest of the site. -->
+    <!-- PersonWindow.open()/PeopleExplorer.open()/FamilyTreeWindow.open() are used by pages under
+         Areas/User/Pages (e.g. the Suggest* person-editing forms), so they're loaded globally here,
+         same as _Layout.cshtml and _AdminLayout.cshtml do for the rest of the site. -->
     <script src="~/js/peoplegraph.js" asp-append-version="true"></script>
+    <script src="~/js/familytree.js" asp-append-version="true"></script>
     <script src="~/js/personwindow.js" asp-append-version="true"></script>
     <script>
         function compareCorrectionBlocks(originalElemenyId, editedElementId, resultElementId) {

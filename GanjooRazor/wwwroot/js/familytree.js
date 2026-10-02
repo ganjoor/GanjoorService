@@ -1,9 +1,12 @@
-// Renders the interactive family-tree chart on /FamilyTree/{id}. Pure vanilla JS + SVG - no external
-// charting library - since the shape of the problem (a handful to a few hundred nodes, drawn once,
+// Renders the interactive family-tree chart inside the FamilyTreeWindow.open(id) modal (see
+// personwindow.js and FamilyTreeWindow.cshtml). Pure vanilla JS + SVG - no external charting
+// library - since the shape of the problem (a handful to a few hundred nodes, drawn once,
 // panned/zoomed by the user) doesn't need one, and the project prefers self-hosted, dependency-light
 // front-end code.
 //
-// Input (window.familyTreeData, set inline by FamilyTree.cshtml): the JSON of
+// Input (passed as the render() call's data/requestedRootId arguments - see personwindow.js's
+// openFamilyTree(), which reads them from the #ftw-data/#ftw-root-id elements
+// FamilyTreeWindow.cshtml embeds): the JSON of
 // RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeViewModel, camelCased -
 //   { rootId, persons: [{id, name, birthYearInLHijri, deathYearInLHijri, validBirthDate,
 //     validDeathDate, description, wikiUrl, familyTreeCaption, ...}], relations: [{person1Id,

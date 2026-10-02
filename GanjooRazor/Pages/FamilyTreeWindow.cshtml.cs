@@ -9,14 +9,16 @@ using RMuseum.Models.Ganjoor.ViewModels;
 namespace GanjooRazor.Pages
 {
     /// <summary>
-    /// interactive family-tree chart, drawn client-side (vanilla JS/SVG - see the &lt;script&gt; block
-    /// in FamilyTree.cshtml) from the connected kinship component GET api/people/{id}/familytree
-    /// returns. Public/read-only counterpart of the PersonWindow.open() modal's plain relatives
-    /// list, reachable from there and from the PeopleExplorer.open() modal's family-tree index.
+    /// interactive family-tree chart, drawn client-side (vanilla JS/SVG - see familytree.js) from
+    /// the connected kinship component GET api/people/{id}/familytree returns. Inline-modal
+    /// counterpart of the old standalone FamilyTree.cshtml page (now removed) - fetched as a
+    /// fragment (Layout = null, no site chrome) and opened over whatever page the user is already
+    /// on via FamilyTreeWindow.open(id) in personwindow.js, the same pattern PersonWindow.cshtml/
+    /// PeopleExplorer.cshtml use.
     /// </summary>
-    public class FamilyTreeModel : LoginPartialEnabledPageModel
+    public class FamilyTreeWindowModel : LoginPartialEnabledPageModel
     {
-        public FamilyTreeModel(HttpClient httpClient, IConfiguration configuration) : base(httpClient, configuration)
+        public FamilyTreeWindowModel(HttpClient httpClient, IConfiguration configuration) : base(httpClient, configuration)
         {
         }
 
@@ -27,9 +29,10 @@ namespace GanjooRazor.Pages
         public GanjoorFamilyTreeViewModel Tree { get; set; }
 
         /// <summary>
-        /// Tree, re-serialized with an explicit camelCase contract (same convention ReviewEdits.cshtml.cs
-        /// uses for AllLocationsJson/AllPeopleJson) so the client-side layout script has a predictable
-        /// shape to parse, regardless of the API's own default casing
+        /// Tree, re-serialized with an explicit camelCase contract (same convention
+        /// _PersonGraphPartial.cshtml.cs's GraphDataJson uses) so familytree.js has a predictable
+        /// shape to parse once this fragment's data block is read, regardless of the API's own
+        /// default casing
         /// </summary>
         public string TreeDataJson =>
             JsonConvert.SerializeObject(
@@ -53,8 +56,6 @@ namespace GanjooRazor.Pages
                 LastError = "شخصیتی با این کد پیدا نشد.";
                 return Page();
             }
-
-            ViewData["Title"] = $"گنجور » تبارنامهٔ {(string.IsNullOrEmpty(RootPerson.FamilyTreeCaption) ? RootPerson.Name : RootPerson.FamilyTreeCaption)}";
 
             var treeResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/people/{id}/familytree");
             if (!treeResponse.IsSuccessStatusCode)
