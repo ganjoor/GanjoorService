@@ -8,7 +8,7 @@
 //     person2Id, person2Name, category, typeValue, degreeHint, note}] } where category is
 //     "Relation" (typeValue is PersonRelationType: 0=Parent,1=Sibling,2=Spouse,3=Ancestor) or
 //     "Affiliation" (typeValue is PersonAffiliationType: 0=Minister,1=Advisor,2=Courtier,3=Patron,
-//     4=Ally,5=Rival,6=Servant,7=Companion,8=Successor,99=Other). directlyTagged is false only on
+//     4=Ally,5=Rival,6=Servant,7=Companion,8=Successor,9=Panegyrized,10=Satirized,99=Other). directlyTagged is false only on
 // the category-scoped graph (GET api/ganjoor/cat/{id}/persongraph, the "characters in this work"
 // tab): such a node was pulled in as a one-hop relative/affiliate of someone actually named in the
 // work's verses, and is never false on the whole-site graph fed by PeopleExplorer.cshtml.
@@ -46,6 +46,8 @@
         'Affiliation:6': { label: 'خدمتکار', color: '#c07a2b', directional: true },
         'Affiliation:7': { label: 'همراه', color: '#5aa08a', directional: false },
         'Affiliation:8': { label: 'جانشین', color: '#8a4ac0', directional: true },
+        'Affiliation:9': { label: 'مدح‌گو', color: '#b08a2a', directional: true },
+        'Affiliation:10': { label: 'هجوگو', color: '#7a3a9a', directional: true },
         'Affiliation:99': { label: 'سایر', color: '#888888', directional: false }
     };
 

@@ -59,6 +59,18 @@ namespace RMuseum.Models.Ganjoor
         Successor = 8,
 
         /// <summary>
+        /// Person1 (a poet) wrote panegyric/praise poetry (قصیدهٔ مدح) about Person2 (the ممدوح -
+        /// the praised patron/king/dignitary) - directional, same convention as Minister/Patron
+        /// </summary>
+        Panegyrized = 9,
+
+        /// <summary>
+        /// Person1 (a poet) wrote satirical/mocking poetry (هجو) about Person2 (the هجو شده -
+        /// the satire's target) - directional, same convention as Minister/Patron
+        /// </summary>
+        Satirized = 10,
+
+        /// <summary>
         /// doesn't fit any of the above - rely on Note for what the tie actually is
         /// </summary>
         Other = 99,

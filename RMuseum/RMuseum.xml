@@ -11856,6 +11856,18 @@
             came after)
             </summary>
         </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Panegyrized">
+            <summary>
+            Person1 (a poet) wrote panegyric/praise poetry (قصیدهٔ مدح) about Person2 (the ممدوح -
+            the praised patron/king/dignitary) - directional, same convention as Minister/Patron
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Satirized">
+            <summary>
+            Person1 (a poet) wrote satirical/mocking poetry (هجو) about Person2 (the هجو شده -
+            the satire's target) - directional, same convention as Minister/Patron
+            </summary>
+        </member>
         <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Other">
             <summary>
             doesn't fit any of the above - rely on Note for what the tie actually is

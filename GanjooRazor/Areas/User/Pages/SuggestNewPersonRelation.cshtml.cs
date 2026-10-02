@@ -148,8 +148,9 @@ namespace GanjooRazor.Areas.User.Pages
                 // OtherIsPerson1/SubjectIsPerson1 pairs translate the direction-aware choice into the
                 // symmetric Person1Id/Person2Id pair, following the direction each PersonAffiliationType
                 // value's own doc comment defines (Minister/Advisor/Courtier/Servant: Person1 is the
-                // subordinate one; Patron/Successor: Person1 is the patron/later one; Ally/Rival/
-                // Companion/Other: symmetric, direction doesn't matter)
+                // subordinate one; Patron/Successor: Person1 is the patron/later one; Panegyrized/
+                // Satirized: Person1 is the poet; Ally/Rival/Companion/Other: symmetric, direction
+                // doesn't matter)
                 switch (AffiliationKind)
                 {
                     case "Minister_Other": // the other person served as minister to this one
@@ -211,6 +212,26 @@ namespace GanjooRazor.Areas.User.Pages
                         suggestion.Person1Id = personId;
                         suggestion.Person2Id = OtherPersonId;
                         suggestion.SuggestedAffiliationType = PersonAffiliationType.Successor;
+                        break;
+                    case "Panegyrized_Other": // the other person (a poet) wrote praise poetry about this one
+                        suggestion.Person1Id = OtherPersonId;
+                        suggestion.Person2Id = personId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Panegyrized;
+                        break;
+                    case "Panegyrized_Subject": // this person (a poet) wrote praise poetry about the other one
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Panegyrized;
+                        break;
+                    case "Satirized_Other": // the other person (a poet) wrote satirical poetry about this one
+                        suggestion.Person1Id = OtherPersonId;
+                        suggestion.Person2Id = personId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Satirized;
+                        break;
+                    case "Satirized_Subject": // this person (a poet) wrote satirical poetry about the other one
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Satirized;
                         break;
                     case "Ally":
                         suggestion.Person1Id = personId;

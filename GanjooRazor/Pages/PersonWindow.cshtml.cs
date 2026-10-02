@@ -113,6 +113,8 @@ namespace GanjooRazor.Pages
                 { PersonAffiliationType.Servant, "خدمتکارِ" },
                 { PersonAffiliationType.Companion, "همراهِ" },
                 { PersonAffiliationType.Successor, "جانشینِ" },
+                { PersonAffiliationType.Panegyrized, "مدح‌گویِ" },
+                { PersonAffiliationType.Satirized, "هجوگویِ" },
                 { PersonAffiliationType.Other, "دارای نسبتی (به یادداشت نگاه کنید) با" },
             };
 
