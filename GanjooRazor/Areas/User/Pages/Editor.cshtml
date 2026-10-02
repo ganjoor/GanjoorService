@@ -275,12 +275,14 @@
             '<div class="up-field-row" id="person-relative-direction-wrap-' + idx + '">' +
                 '<div class="up-field">' +
                     '<label>جهت رابطه</label>' +
-                    // "otherFirst" (the already-existing person is the parent/minister side) is
-                    // listed first and pre-selected, since the usual workflow here is building a
-                    // tree top-down - the ancestor/senior side already exists, and this new person
-                    // being created is their child/subordinate. Defaulting to "newFirst" instead
-                    // silently assumed the opposite and was an easy, hard-to-notice way to enter a
-                    // relation backwards (e.g. recording a son as his own father's parent).
+                    // "otherFirst" (the already-existing person is the parent side) is listed first
+                    // and pre-selected, since a row starts out on the "family" kind and the usual
+                    // workflow there is building a tree top-down - the ancestor/senior side already
+                    // exists, and this new person being created is their child. Defaulting to
+                    // "newFirst" instead silently assumed the opposite and was an easy, hard-to-notice
+                    // way to enter a relation backwards (e.g. recording a son as his own father's
+                    // parent). Non-family affiliations default the other way around - see
+                    // togglePersonRelativeKind(), which flips this select's value on kind change.
                     '<select id="person-relative-direction-' + idx + '" onchange="updatePersonRelativeHint(' + idx + ')">' +
                         '<option value="otherFirst" selected="selected">شخصیت دیگر، طرف اول رابطه است (مثلاً پدر/وزیر این شخصیت جدید)</option>' +
                         '<option value="newFirst">این شخصیت جدید، طرف اول رابطه است (مثلاً پدر/وزیر طرف دوم)</option>' +
@@ -335,6 +337,14 @@
         $('#person-relative-familytype-wrap-' + idx).toggle(isFamily);
         $('#person-relative-affiliationtype-wrap-' + idx).toggle(!isFamily);
         togglePersonRelativeDegreeHint(idx);
+        // Family relations default to "the already-existing person is the first/senior side" - the
+        // usual top-down tree-building flow, where the parent is already in the system and this new
+        // person is their child. Non-family affiliations run the other way around in the common case:
+        // the already-existing person is typically the senior/more prominent figure (a king, a
+        // patron) already in the system, and the new person being added is the one standing in the
+        // subordinate affiliation role toward them (their minister, their advisor) - so for
+        // affiliations the new person should default to being the first side instead.
+        $('#person-relative-direction-' + idx).val(isFamily ? 'otherFirst' : 'newFirst');
         updatePersonRelativeHint(idx);
     }
 
