@@ -342,7 +342,94 @@ select {
     color: var(--ink-black);
 }
 
-/* Home page "مرور کتابها" book shelf - see initHomeBooksShelf()/buildBookSpine() in bk.js. */
+/* A book matched by the top search box's live filter (see onHomeSearchInput()/
+   buildHomeBookResultChip() in bk.js) - rendered alongside matching poets in #home-found-poets, so
+   it needs the same flex-row layout .spacer:has(.poet) gives poet results, but triggered on its own
+   class too since a search can match only books and no poets at all. */
+.spacer:has(.home-book-result) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 14px 28px;
+    margin: 15px auto 25px auto;
+    padding: 0;
+    clear: both;
+}
+
+/* Sized and laid out to match .spacer .poet exactly (110px column, 76x96 "portrait" area, same pill
+   caption below) so a book result sits proportionate to the poet results next to it instead of
+   looming over them as its own, differently-sized shape. */
+.home-book-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 110px;
+    margin: 0 0 10px 0;
+    text-decoration: none;
+    transition: transform 0.25s ease;
+}
+
+.home-book-result:hover {
+    transform: translateY(-5px);
+}
+
+.home-book-result-cover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 76px;
+    height: 96px;
+    border-radius: 10px;
+    padding: 6px;
+    overflow: hidden;
+    text-align: center;
+    color: #fdf8ee;
+    font-family: 'IranNastaliq', serif;
+    font-size: 1rem;
+    line-height: 1.35;
+    box-shadow:
+        0 0 0 2px var(--gold),
+        0 0 0 5px var(--bg-page),
+        0 0 0 7px var(--border-gold),
+        0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: box-shadow 0.25s ease;
+}
+
+.home-book-result:hover .home-book-result-cover {
+    box-shadow:
+        0 0 0 2px var(--brand),
+        0 0 0 5px var(--bg-page),
+        0 0 0 7px var(--brand),
+        0 6px 18px rgba(0, 0, 0, 0.22);
+}
+
+.home-book-result-caption {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+    margin: 5px 0 8px 0;
+    padding: 6px 12px;
+    border-radius: 12px;
+    background-color: var(--card-inner);
+    border: 1px solid var(--border-gold);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--lapis);
+    transition: all 0.2s ease;
+}
+
+.home-book-result:hover .home-book-result-caption {
+    background-color: var(--gold-subtle);
+    border-color: var(--brand);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* Home page "قفسهٔ کتابها" book shelf - see initHomeBooksShelf()/buildBookSpine() in bk.js. */
 #books-shelf-outer {
     position: relative;
 }

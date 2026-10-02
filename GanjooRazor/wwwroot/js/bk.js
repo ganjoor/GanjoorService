@@ -1560,6 +1560,31 @@ function persianizeNumerals(value) {
 // behavior into the top box: typing filters poets live (same underlying match as onInlineSearch,
 // against every ".poet" element's data-value), while submitting the form (Enter / the "بیاب" button)
 // still does the original full poem search unchanged - so nothing about submission itself changes.
+// homeBooksCache is filled once by initHomeBooksShelf() further below - the same catalog backing
+// the "قفسهٔ کتابها" shelf is reused here so a search also matches book names, not just poets.
+var homeBooksCache = [];
+
+function buildHomeBookResultChip(book) {
+    var a = document.createElement('a');
+    a.className = 'home-book-result';
+    a.href = book.fullUrl || '#';
+
+    // Same 76x96 "portrait" box a poet result uses, just filled with the book's own hashed color
+    // and its name instead of a photo - see .home-book-result-cover in p8.css for the sizing.
+    var cover = document.createElement('span');
+    cover.className = 'home-book-result-cover';
+    cover.style.background = 'hsl(' + hashBookColorHue(book.id) + ', 42%, 32%)';
+    cover.textContent = book.name;
+
+    var caption = document.createElement('span');
+    caption.className = 'home-book-result-caption';
+    caption.textContent = book.poetName || '';
+
+    a.appendChild(cover);
+    a.appendChild(caption);
+    return a;
+}
+
 function onHomeSearchInput(value) {
     var clearBtn = document.getElementById('home-search-clear');
     var popularRow = document.getElementById('home-popular-poets-row');
@@ -1603,6 +1628,13 @@ function onHomeSearchInput(value) {
         foundNode.appendChild(poets[i].cloneNode(true));
     }
 
+    for (var k = 0; k < homeBooksCache.length; k++) {
+        var book = homeBooksCache[k];
+        if (book.name && book.name.indexOf(replaced) !== -1) {
+            foundNode.appendChild(buildHomeBookResultChip(book));
+        }
+    }
+
     var hasMatches = foundNode.childElementCount > 0;
     foundNode.style.display = hasMatches ? '' : 'none';
     // No matching poet: there's nothing useful to show in place of the favorites row, so put the
@@ -1620,7 +1652,7 @@ function clearHomeSearch() {
     input.focus();
 }
 
-// Home page (Index.cshtml) only: "مرور کتابها" - a horizontally scrollable shelf of book "spines",
+// Home page (Index.cshtml) only: "قفسهٔ کتابها" - a horizontally scrollable shelf of book "spines",
 // Grokipedia-homepage-style. Fetched once from this page's own "?Handler=BookCatalog" (which proxies
 // RMuseum's api/ganjoor/book-catalog server-side) rather than calling that API directly from browser
 // JS - same convention every other client-side data fetch on this site follows. There's no cover-art
@@ -1744,6 +1776,7 @@ function initHomeBooksShelf() {
         url: '?Handler=BookCatalog',
         success: function (books) {
             if (!books || books.length === 0) return;
+            homeBooksCache = books;
             var frag = document.createDocumentFragment();
             for (var i = 0; i < books.length; i++) {
                 frag.appendChild(buildBookSpine(books[i]));
