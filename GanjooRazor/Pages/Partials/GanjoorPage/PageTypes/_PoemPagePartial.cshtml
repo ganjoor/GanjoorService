@@ -329,6 +329,43 @@
                     <p id="track-record"></p>
                 }
 
+                <a onclick="copyPoemText()" role="button" class="pagebutton comments-link" title="رونوشت متن">
+                    رونوشت متن
+                    <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" /></svg>
+                </a>
+
+                <a onclick="copyPoemLink()" role="button" class="pagebutton comments-link" title="رونوشت نشانی">
+                    رونوشت نشانی
+                    <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm-3-4h8v2H8z" /></svg>
+                </a>
+
+                <a href="/t6e?p=@Model.GanjoorPage.Id" role="button" class="pagebutton comments-link" target="_blank">
+                    نمای مشابه کتابهای چاپی (فقط رایانه)
+                    <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12v2H8v-4h8v2zm2-2v-2H6v2H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2z" /><circle cx="18" cy="11.5" r="1" /></svg>
+                </a>
+
+                @{
+                    // distinct persons tagged in this poem (same GeoDateTags rows the map below uses -
+                    // already filtered to approved/non-machine-generated tags by GetPoemGeoDateTagsAsync)
+                    var poemTaggedPersons = Model.GanjoorPage.Poem.GeoDateTags
+                        .Where(t => t.Person != null)
+                        .GroupBy(t => t.PersonId)
+                        .Select(g => g.First().Person)
+                        .ToList();
+                }
+                @if (poemTaggedPersons.Count > 0)
+                {
+                    <div class="notice" id="poem-persons" data-nosnippet>
+                        <div class="century">نامبردگان</div>
+                        <p>
+                            @foreach (var taggedPerson in poemTaggedPersons)
+                            {
+                                <a href="javascript:void(0)" onclick="PersonWindow.open(@taggedPerson.Id)" class="pagebutton comments-link">@taggedPerson.Name</a>
+                            }
+                        </p>
+                    </div>
+                }
+
                 @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.PoemSummary))
                 {
                     <div class="notice" id="summary" data-nosnippet>
@@ -426,43 +463,6 @@
                                 </div>
                             }
                         }
-                    </div>
-                }
-
-                <a onclick="copyPoemText()" role="button" class="pagebutton comments-link" title="رونوشت متن">
-                    رونوشت متن
-                    <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" /></svg>
-                </a>
-
-                <a onclick="copyPoemLink()" role="button" class="pagebutton comments-link" title="رونوشت نشانی">
-                    رونوشت نشانی
-                    <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm-3-4h8v2H8z" /></svg>
-                </a>
-
-                <a href="/t6e?p=@Model.GanjoorPage.Id" role="button" class="pagebutton comments-link" target="_blank">
-                    نمای مشابه کتابهای چاپی (فقط رایانه)
-                    <svg class="noindent-info-button" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12v2H8v-4h8v2zm2-2v-2H6v2H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2z" /><circle cx="18" cy="11.5" r="1" /></svg>
-                </a>
-
-                @{
-                    // distinct persons tagged in this poem (same GeoDateTags rows the map below uses -
-                    // already filtered to approved/non-machine-generated tags by GetPoemGeoDateTagsAsync)
-                    var poemTaggedPersons = Model.GanjoorPage.Poem.GeoDateTags
-                        .Where(t => t.Person != null)
-                        .GroupBy(t => t.PersonId)
-                        .Select(g => g.First().Person)
-                        .ToList();
-                }
-                @if (poemTaggedPersons.Count > 0)
-                {
-                    <div class="notice" id="poem-persons" data-nosnippet>
-                        <div class="century">شخصیت‌های نامبرده در این شعر</div>
-                        <p>
-                            @foreach (var taggedPerson in poemTaggedPersons)
-                            {
-                                <a href="javascript:void(0)" onclick="PersonWindow.open(@taggedPerson.Id)" class="pagebutton comments-link">@taggedPerson.Name</a>
-                            }
-                        </p>
                     </div>
                 }
 
