@@ -43,14 +43,31 @@
             (spouseOf[b] = spouseOf[b] || []).push(a);
         }
 
+        var siblingPairs = [];
         (data.relations || []).forEach(function (r) {
             if (r.relationType === 0 || r.relationType === 3) {
                 addParentChild(r.person1Id, r.person2Id);
             } else if (r.relationType === 2) {
                 addSpouse(r.person1Id, r.person2Id);
+            } else if (r.relationType === 1) {
+                siblingPairs.push([r.person1Id, r.person2Id]);
             }
-            // relationType === 1 (Sibling) isn't needed for layout: siblings normally end up
-            // adjacent anyway once they share a primaryParentOf below.
+        });
+
+        // A sibling pair where only one side has a recorded parent (e.g. a sibling relation was
+        // entered but no separate parent relation for the other sibling) used to leave the parentless
+        // sibling with no parent at all, turning them into their own disconnected chart root instead
+        // of being drawn next to their actual family. Have the parentless sibling inherit the same
+        // parent(s), purely so the drawing places them together - this doesn't change any real data.
+        siblingPairs.forEach(function (pair) {
+            var a = pair[0], b = pair[1];
+            var aHasParent = parentsOf[a] && parentsOf[a].length > 0;
+            var bHasParent = parentsOf[b] && parentsOf[b].length > 0;
+            if (aHasParent && !bHasParent) {
+                parentsOf[a].forEach(function (p) { addParentChild(p, b); });
+            } else if (bHasParent && !aHasParent) {
+                parentsOf[b].forEach(function (p) { addParentChild(p, a); });
+            }
         });
 
         Object.keys(childrenOf).forEach(function (k) { childrenOf[k] = dedup(childrenOf[k]); });
@@ -226,6 +243,7 @@
         });
 
         var maxX = 0, maxY = 0;
+        var drawnPos = {}; // id -> {x,y} for every box actually drawn (primary nodes and attached spouses)
 
         function drawBox(id, x, y, w, h, isRequested) {
             var p = layoutInfo.persons[id];
@@ -244,6 +262,7 @@
             nodesGroup.appendChild(g);
             maxX = Math.max(maxX, x + w / 2);
             maxY = Math.max(maxY, y + h / 2);
+            drawnPos[id] = { x: x, y: y };
         }
 
         Object.keys(layoutInfo.nodeX).forEach(function (idStr) {
@@ -296,21 +315,34 @@
         }
 
         svg.removeAttribute('viewBox'); // pan/zoom via transform, not viewBox, once we have a canvas group
-        var svgWidth = Math.max(container.clientWidth, maxX + MARGIN);
-        var svgHeight = Math.max(container.clientHeight, maxY + MARGIN);
+        // The SVG element is always sized to the CONTAINER - never to the full tree - so it acts as a
+        // fixed "viewport" onto the (possibly much larger) tree, which is panned/zoomed via the canvas
+        // group's transform below. Previously this grew the SVG itself to (maxX+MARGIN)/(maxY+MARGIN)
+        // whenever the tree was bigger than the container; combined with the page's RTL layout and the
+        // container's overflow:hidden, that pinned the oversized SVG's right edge to the container's
+        // right edge, which could hide the requested root's own subtree entirely if it was laid out
+        // toward the left - with nothing below ever panning the view back to it.
+        var svgWidth = container.clientWidth || (maxX + MARGIN);
+        var svgHeight = container.clientHeight || (maxY + MARGIN);
         svg.setAttribute('width', svgWidth);
         svg.setAttribute('height', svgHeight);
 
         // pan + zoom - a small, dependency-free version of the usual SVG drag/wheel recipe
         var scale = 1;
-        // The tree itself is only (maxX + MARGIN) x (maxY + MARGIN) "big", but the SVG element is
-        // stretched to fill the whole container (so there's room to pan around a small tree) - drawn
-        // at a bare translate(0,0), that left it pinned to the top-left corner instead of centered
-        // whenever the tree is smaller than the container (e.g. a two-person tree in a wide panel).
-        // Starting the pan offset centered - rather than at (0,0) - fixes that without changing how
-        // panning/zooming themselves work.
-        var tx = Math.max(0, (svgWidth - (maxX + MARGIN)) / 2);
-        var ty = Math.max(0, (svgHeight - (maxY + MARGIN)) / 2);
+        // Center the initial view on the requested root's own drawn position (falling back to an
+        // attached/spouse box's position if that's how it was drawn) so the person actually asked for
+        // is what's visible first, rather than whatever subtree happened to land at low x. When the
+        // whole tree already fits inside the viewport, center the whole tree instead (matches the old,
+        // still-correct behavior for small trees).
+        var tx, ty;
+        if ((maxX + MARGIN) <= svgWidth && (maxY + MARGIN) <= svgHeight) {
+            tx = Math.max(0, (svgWidth - (maxX + MARGIN)) / 2);
+            ty = Math.max(0, (svgHeight - (maxY + MARGIN)) / 2);
+        } else {
+            var focus = drawnPos[requestedRootId] || { x: (maxX + MARGIN) / 2, y: (maxY + MARGIN) / 2 };
+            tx = svgWidth / 2 - focus.x;
+            ty = svgHeight / 2 - focus.y;
+        }
         var dragging = false, lastX = 0, lastY = 0;
 
         function applyTransform() {
