@@ -410,7 +410,12 @@ select {
     justify-content: center;
     width: 100%;
     text-align: center;
-    margin: 5px 0 8px 0;
+    /* 11px top margin, not 5px: matches the poet pill's effective gap. .spacer .poet .caption is a
+       flex item with margin-top:6px wrapping an <a> with its own margin-top:5px - flex items don't
+       collapse margins with their children, so those two stack to an 11px gap above the poet's
+       pill. This caption has no such wrapper, so its own margin-top has to carry the full 11px to
+       land at the same vertical offset as the poet pill next to it. */
+    margin: 11px 0 8px 0;
     padding: 6px 12px;
     border-radius: 12px;
     background-color: var(--card-inner);
