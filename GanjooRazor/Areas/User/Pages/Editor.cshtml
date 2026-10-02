@@ -255,7 +255,7 @@
                 '</div>' +
                 '<div class="up-field" id="person-relative-affiliationtype-wrap-' + idx + '" style="display:none;">' +
                     '<label>نوع وابستگی</label>' +
-                    '<select id="person-relative-affiliationtype-' + idx + '">' +
+                    '<select id="person-relative-affiliationtype-' + idx + '" onchange="updatePersonRelativeHint(' + idx + ')">' +
                         '<option value="Minister">وزیر</option>' +
                         '<option value="Advisor">مشاور</option>' +
                         '<option value="Courtier">درباری</option>' +
@@ -281,7 +281,7 @@
                     // being created is their child/subordinate. Defaulting to "newFirst" instead
                     // silently assumed the opposite and was an easy, hard-to-notice way to enter a
                     // relation backwards (e.g. recording a son as his own father's parent).
-                    '<select id="person-relative-direction-' + idx + '">' +
+                    '<select id="person-relative-direction-' + idx + '" onchange="updatePersonRelativeHint(' + idx + ')">' +
                         '<option value="otherFirst" selected="selected">شخصیت دیگر، طرف اول رابطه است (مثلاً پدر/وزیر این شخصیت جدید)</option>' +
                         '<option value="newFirst">این شخصیت جدید، طرف اول رابطه است (مثلاً پدر/وزیر طرف دوم)</option>' +
                     '</select>' +
@@ -291,7 +291,7 @@
                 '<div class="up-field">' +
                     '<label>شخصیت دیگر (باید از قبل در فهرست موجود باشد)</label>' +
                     '<div class="up-autocomplete-wrap">' +
-                        '<input type="text" id="person-relative-person-search-' + idx + '" autocomplete="off" placeholder="نام شخصیت را تایپ کنید..." />' +
+                        '<input type="text" id="person-relative-person-search-' + idx + '" autocomplete="off" placeholder="نام شخصیت را تایپ کنید..." oninput="updatePersonRelativeHint(' + idx + ')" />' +
                         '<input type="hidden" id="person-relative-person-id-' + idx + '" />' +
                         '<div id="person-relative-person-results-' + idx + '" class="up-autocomplete-results" style="display:none;"></div>' +
                     '</div>' +
@@ -301,7 +301,11 @@
                     '<input type="text" id="person-relative-note-' + idx + '" />' +
                 '</div>' +
                 '<a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="removePersonRelativeRow(' + idx + ')">✕ حذف این رابطه</a>' +
-            '</div>';
+            '</div>' +
+            // live "x پدر/مادر y است."-style readback of whatever is currently selected, so the
+            // user can confirm the direction is right before submitting, instead of having to
+            // mentally translate the kind/type/direction combo themselves every time
+            '<p class="up-hint" id="person-relative-hint-' + idx + '"></p>';
         document.getElementById('geotag-person-relatives-list').appendChild(row);
 
         setupPersonAutocomplete(
@@ -309,11 +313,15 @@
             document.getElementById('person-relative-person-id-' + idx),
             document.getElementById('person-relative-person-results-' + idx),
             allGeoPeople,
-            null,
+            function () {
+                updatePersonRelativeHint(idx);
+            },
             function (typedText) {
                 upToast('این شخصیت در فهرست نیست. طرف دیگر یک رابطه باید از قبل تعریف‌شده باشد؛ برای دو شخصیت تازه، ابتدا این فرم را برای یکی از آن‌ها به‌صورت جدا تکمیل و ثبت کنید.', 'error');
             }
         );
+
+        updatePersonRelativeHint(idx);
     }
 
     function removePersonRelativeRow(idx) {
@@ -327,12 +335,65 @@
         $('#person-relative-familytype-wrap-' + idx).toggle(isFamily);
         $('#person-relative-affiliationtype-wrap-' + idx).toggle(!isFamily);
         togglePersonRelativeDegreeHint(idx);
+        updatePersonRelativeHint(idx);
     }
 
     function togglePersonRelativeDegreeHint(idx) {
         var kind = $('#person-relative-kind-' + idx).val();
         var isAncestor = kind === 'family' && $('#person-relative-familytype-' + idx).val() === 'Ancestor';
         $('#person-relative-degreehint-wrap-' + idx).toggle(isAncestor);
+        updatePersonRelativeHint(idx);
+    }
+
+    // one sentence-building function per relation type (family kind) / affiliation type, so the
+    // "جهت رابطه" readback hint below each row can show something like "x پدر/مادر y است." using
+    // whichever two names are currently in play - matches the wording used elsewhere for the same
+    // types (PersonWindow's role words, ReviewPersonRelationEdits' labels)
+    var PERSON_RELATIVE_HINT_TEMPLATES = {
+        family: {
+            Parent: function (p1, p2) { return p1 + ' پدر/مادر ' + p2 + ' است.'; },
+            Sibling: function (p1, p2) { return p1 + ' و ' + p2 + ' خواهر/برادر هم هستند.'; },
+            Spouse: function (p1, p2) { return p1 + ' و ' + p2 + ' همسر هم هستند.'; },
+            Ancestor: function (p1, p2) { return p1 + ' نیای ' + p2 + ' است.'; }
+        },
+        affiliation: {
+            Minister: function (p1, p2) { return p1 + ' وزیر ' + p2 + ' است.'; },
+            Advisor: function (p1, p2) { return p1 + ' مشاور ' + p2 + ' است.'; },
+            Courtier: function (p1, p2) { return p1 + ' درباری ' + p2 + ' است.'; },
+            Servant: function (p1, p2) { return p1 + ' خدمتگزار ' + p2 + ' است.'; },
+            Patron: function (p1, p2) { return p1 + ' حامی ' + p2 + ' است.'; },
+            Successor: function (p1, p2) { return p1 + ' جانشین ' + p2 + ' است.'; },
+            Panegyrized: function (p1, p2) { return p1 + ' ' + p2 + ' را مدح کرده است.'; },
+            Satirized: function (p1, p2) { return p1 + ' ' + p2 + ' را هجو کرده است.'; },
+            Ally: function (p1, p2) { return p1 + ' و ' + p2 + ' متحد هم هستند.'; },
+            Rival: function (p1, p2) { return p1 + ' و ' + p2 + ' رقیب هم هستند.'; },
+            Companion: function (p1, p2) { return p1 + ' و ' + p2 + ' همراه هم هستند.'; },
+            Other: function (p1, p2) { return p1 + ' با ' + p2 + ' نسبتی دارد (طبق یادداشت).'; }
+        }
+    };
+
+    function updatePersonRelativeHint(idx) {
+        var hintEl = document.getElementById('person-relative-hint-' + idx);
+        if (!hintEl) return;
+        var kind = $('#person-relative-kind-' + idx).val();
+        var type = kind === 'family'
+            ? $('#person-relative-familytype-' + idx).val()
+            : $('#person-relative-affiliationtype-' + idx).val();
+        var direction = $('#person-relative-direction-' + idx).val();
+        var otherName = ($('#person-relative-person-search-' + idx).val() || '').trim() || 'شخصیت دیگر';
+        var newName = ($('#geotag-new-person-name').val() || '').trim() || 'این شخصیت جدید';
+        var person1Name = direction === 'otherFirst' ? otherName : newName;
+        var person2Name = direction === 'otherFirst' ? newName : otherName;
+        var build = (PERSON_RELATIVE_HINT_TEMPLATES[kind] || {})[type];
+        hintEl.textContent = build ? build(person1Name, person2Name) : '';
+    }
+
+    // the new person's own name field is shared by every relative row, so typing into it has to
+    // refresh all of them, not just whichever row happens to be focused
+    function updateAllPersonRelativeHints() {
+        $('[id^="person-relative-hint-"]').each(function () {
+            updatePersonRelativeHint(this.id.replace('person-relative-hint-', ''));
+        });
     }
 
     function toggleNewLocationWidget() {
@@ -2583,7 +2644,7 @@ else
         <div id="new-person-widget" style="display:none;">
             <div class="up-field">
                 <label for="geotag-new-person-name">نام</label>
-                <input type="text" id="geotag-new-person-name" />
+                <input type="text" id="geotag-new-person-name" oninput="updateAllPersonRelativeHints()" />
             </div>
             <div class="up-field">
                 <label for="geotag-new-person-description">توضیحات (اختیاری)</label>
