@@ -1007,7 +1007,7 @@
                 location.reload(true);
             },
             error: function (e) {
-                upToast(e.responseText || String(e), 'error');
+                upShowError(e.responseText || String(e));
                 $('#savecorrections').show();
                 $('#saving').text('');
             }
@@ -1024,7 +1024,7 @@
                 id: poemId
             },
             error: function (e) {
-                upToast(e.responseText || String(e), 'error');
+                upShowError(e.responseText || String(e));
             },
             success: function (rhyme) {
                 $(elementId).val(rhyme);
@@ -1049,7 +1049,7 @@
                 poemid: id,
             },
             error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
             success: function () {
                 location.reload(true);
@@ -1074,7 +1074,7 @@
 
             },
             error: function (e) {
-                upToast(e.responseText || String(e), 'error');
+                upShowError(e.responseText || String(e));
             },
             success: function () {
                 location.reload(true);
@@ -1161,7 +1161,7 @@
                 location.href = '/?p=' + String(id);
             },
             error: function (e) {
-                upToast(e.responseText || String(e), 'error');
+                upShowError(e.responseText || String(e));
                 $('#breakpoem-' + String(vOrder)).show();
             }
 
@@ -1182,7 +1182,7 @@
                 upToast('انجام شد.');
             },
             error: function (e) {
-                upToast(e.responseText || String(e), 'error');
+                upShowError(e.responseText || String(e));
             }
 
         });
@@ -1210,7 +1210,7 @@
                 id: id,
             },
             error: function (e) {
-                upToast(e.responseText || String(e), 'error');
+                upShowError(e.responseText || String(e));
             },
             success: function () {
                 upToast('انجام شد.');
@@ -1235,7 +1235,7 @@
                 id: id,
             },
             error: function (e) {
-                upToast(e.responseText || String(e), 'error');
+                upShowError(e.responseText || String(e));
             },
             success: function () {
                 upToast('انجام شد.');
@@ -1268,7 +1268,7 @@
                 location.reload();
             },
             error: function (e) {
-                upToast(e.responseText || String(e), 'error');
+                upShowError(e.responseText || String(e));
             }
 
         });
@@ -1289,7 +1289,7 @@
                 location.reload();
             },
             error: function (e) {
-                upToast(e.responseText || String(e), 'error');
+                upShowError(e.responseText || String(e));
             }
 
         });

@@ -475,6 +475,33 @@ body.up-modal-open {
     overflow: hidden;
 }
 
+/* ---------- error modal (persistent service-error display, see _ErrorModal.cshtml) ---------- */
+
+.up-modal--error {
+    max-width: 700px;
+    text-align: start;
+}
+
+.up-modal__details {
+    max-height: 50vh;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    /* backend error text/stack traces are English - keep them LTR regardless of the page's own
+       RTL direction, same reasoning as .linputText elsewhere in this file */
+    direction: ltr;
+    text-align: left;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--up-text);
+    background: var(--up-bg);
+    border: 1px solid var(--up-border);
+    border-radius: var(--up-radius-sm);
+    padding: var(--up-space-2);
+    margin: 0 0 var(--up-space-4);
+}
+
 /* ---------- dashboard quick links ---------- */
 
 .up-quick-links {

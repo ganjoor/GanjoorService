@@ -1,0 +1,14 @@
+@* Styled, non-auto-dismissing display for a service error's full text (these often carry the
+   backend's exception message and stack trace, which upToast's few-second toast never gave
+   anyone enough time to actually read before it faded out). Included once by
+   _UserPanelLayout.cshtml. Trigger with JS: upShowError(message) *@
+<div class="up-modal-backdrop" id="upErrorBackdrop" hidden>
+    <div class="up-modal up-modal--error" role="alertdialog" aria-modal="true" aria-labelledby="upErrorTitle">
+        <p id="upErrorTitle" class="up-modal__message">خطایی در ارتباط با سرویس رخ داد:</p>
+        <pre id="upErrorDetails" class="up-modal__details"></pre>
+        <div class="up-modal__actions">
+            <button type="button" class="up-btn up-btn--ghost" id="upErrorCopy">کپی متن خطا</button>
+            <button type="button" class="up-btn up-btn--danger" id="upErrorClose">بستن</button>
+        </div>
+    </div>
+</div>
