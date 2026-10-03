@@ -109,6 +109,19 @@ namespace GanjooRazor.Areas.User.Pages
             return Math.Min(100, coupletNumber * 100 / TotalCoupletsCount);
         }
 
+        /// <summary>
+        /// hsl() color for a 0-100 read-progress percentage - red at 0% (just started), green at
+        /// 100% (reached the end), smoothly interpolated in between (same traffic-light hue sweep
+        /// idea, 0deg..120deg). Used as the end color of the progress bar's fill gradient (see
+        /// up-verse-progress-fill in user-panel.css), so the fill itself reads redder near the start
+        /// of the poem and greener near the end.
+        /// </summary>
+        public string GetCoupletProgressColor(int percent)
+        {
+            int hue = Math.Max(0, Math.Min(100, percent)) * 120 / 100;
+            return $"hsl({hue}, 70%, 42%)";
+        }
+
 
         public PoemRelatedImage TextSourceImage { get; set; }
 

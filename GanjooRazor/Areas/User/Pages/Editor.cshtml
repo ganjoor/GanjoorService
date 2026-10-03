@@ -1812,7 +1812,8 @@ else
             <div class="up-verse-row" id="tr-@verse.VOrder">
                 <p>
                     <span class="up-verse-number">@verseCoupletNumber.ToPersianNumbers()</span>
-                    <span class="up-verse-progress" title="@verseCoupletNumber.ToPersianNumbers() از @Model.TotalCoupletsCount.ToPersianNumbers()"><span class="up-verse-progress-fill" style="width:@(Model.GetCoupletProgressPercent(verseCoupletNumber))%"></span></span>
+                    @{ var verseProgressPercent = Model.GetCoupletProgressPercent(verseCoupletNumber); }
+                    <span class="up-verse-progress" title="@verseCoupletNumber.ToPersianNumbers() از @Model.TotalCoupletsCount.ToPersianNumbers()"><span class="up-verse-progress-fill" style="width:@(verseProgressPercent)%;--up-progress-color:@(Model.GetCoupletProgressColor(verseProgressPercent))"></span></span>
                     <span class="up-hint">ترتیب مصرع یا خط از ابتدا: @verse.VOrder.ToPersianNumbers()</span>
                 </p>
 
@@ -1946,7 +1947,7 @@ else
                 </script>
 
                 <div class="up-btn-group">
-                    <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost up-btn--block">⬇ رفتن به ذخیره</a>
+                    <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--save-jump up-btn--block">⬇ رفتن به ذخیره</a>
                     @if (Model.ShowAdminOps && verse.VOrder > 1 && verse.VersePosition != RMuseum.Models.Ganjoor.VersePosition.Left)
                     {
                         <a role="button" id="breakpoem-@verse.VOrder" class="up-btn up-btn--sm up-btn--danger" onclick="breakPoem(@Model.PageInformation.Poem.Id, @verse.VOrder, '@verse.Text')">✂️ شکستن از اینجا</a>
@@ -2224,7 +2225,7 @@ else
             </div>
         </div>
 
-        <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost up-btn--block">⬇ رفتن به ذخیره</a>
+        <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--save-jump up-btn--block">⬇ رفتن به ذخیره</a>
     </div>
 
     <div class="up-card">
@@ -2242,7 +2243,8 @@ else
                 <div class="up-verse-row">
                     <p>
                         <span class="up-verse-number">@summaryCoupletNumber.ToPersianNumbers()</span>
-                        <span class="up-verse-progress" title="@summaryCoupletNumber.ToPersianNumbers() از @Model.TotalCoupletsCount.ToPersianNumbers()"><span class="up-verse-progress-fill" style="width:@(Model.GetCoupletProgressPercent(summaryCoupletNumber))%"></span></span>
+                        @{ var summaryProgressPercent = Model.GetCoupletProgressPercent(summaryCoupletNumber); }
+                        <span class="up-verse-progress" title="@summaryCoupletNumber.ToPersianNumbers() از @Model.TotalCoupletsCount.ToPersianNumbers()"><span class="up-verse-progress-fill" style="width:@(summaryProgressPercent)%;--up-progress-color:@(Model.GetCoupletProgressColor(summaryProgressPercent))"></span></span>
                     </p>
                     <div class="up-field">
                         <label>متن</label>
@@ -2318,7 +2320,7 @@ else
                         </div>
                     </div>
 
-                    <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--ghost up-btn--block">⬇ رفتن به ذخیره</a>
+                    <a role="button" href="#savecorrections" class="up-btn up-btn--sm up-btn--save-jump up-btn--block">⬇ رفتن به ذخیره</a>
                 </div>
             }
         }

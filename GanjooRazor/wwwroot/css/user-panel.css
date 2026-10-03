@@ -16,6 +16,7 @@
 
     --up-success: #0a0;
     --up-success-dark: darkgreen;
+    --up-success-light: #e3f6e4;
     --up-danger: #f00;
     --up-danger-dark: darkred;
     --up-gray: slategray;
@@ -53,6 +54,7 @@
         --up-primary: #a54a4a;
         --up-primary-hover: #c25e5e;
         --up-on-primary: #fff;
+        --up-success-light: #1e3a22;
     }
 }
 
@@ -187,6 +189,27 @@
 .up-btn--ghost:hover {
     background-color: var(--up-surface-alt);
     color: var(--up-text);
+}
+
+/* "jump to save" shortcut links scattered through the editor (⬇ رفتن به ذخیره) - a light green
+   tint instead of the plain ghost look, to visually tag them as the one action every section
+   points back to */
+.up-btn--save-jump {
+    background-color: var(--up-success-light);
+    border-color: var(--up-success-light);
+    color: var(--up-success-dark);
+}
+
+.up-btn--save-jump:hover {
+    background-color: var(--up-success);
+    border-color: var(--up-success);
+    color: var(--up-on-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+    .up-btn--save-jump {
+        color: #bdeec2;
+    }
 }
 
 .up-btn--sm {
@@ -816,7 +839,10 @@ body.up-modal-open {
 .up-verse-progress-fill {
     display: block;
     height: 100%;
-    background: var(--up-primary);
+    /* red -> green gradient, set per-bar via inline style (ends at the color matching this
+       couplet's progress percentage) so the fill reads redder near the poem's start and
+       greener near its end - see GetCoupletProgressColor() in Editor.cshtml.cs */
+    background: linear-gradient(to right, hsl(0, 70%, 45%), var(--up-progress-color, var(--up-success)));
     border-radius: 999px;
 }
 
