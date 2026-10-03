@@ -800,6 +800,26 @@ body.up-modal-open {
     vertical-align: middle;
 }
 
+/* small read-progress indicator shown beside the couplet number - how far through the whole
+   poem this couplet is, not a form control */
+.up-verse-progress {
+    display: inline-block;
+    width: 44px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--up-border);
+    overflow: hidden;
+    vertical-align: middle;
+    margin-inline-end: var(--up-space-2);
+}
+
+.up-verse-progress-fill {
+    display: block;
+    height: 100%;
+    background: var(--up-primary);
+    border-radius: 999px;
+}
+
 .up-form-actions {
     display: flex;
     gap: var(--up-space-2);

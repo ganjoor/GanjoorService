@@ -88,6 +88,27 @@ namespace GanjooRazor.Areas.User.Pages
             return -1;
         }
 
+        /// <summary>
+        /// total number of couplets/lines in the poem (same counting rules as GetVerseCoupletNumber,
+        /// just run all the way through) - used to render the small read-progress bar next to the
+        /// couplet number in the verse-editing and couplet-summary ("خلاصه و معنی") sections.
+        /// </summary>
+        public int TotalCoupletsCount =>
+            PageInformation?.Poem?.Verses == null || PageInformation.Poem.Verses.Length == 0
+            ? 0
+            : GetVerseCoupletNumber(PageInformation.Poem.Verses[PageInformation.Poem.Verses.Length - 1]);
+
+        /// <summary>
+        /// 0-100 fill percentage for the read-progress bar, for a given couplet number (1-based, as
+        /// returned by GetVerseCoupletNumber)
+        /// </summary>
+        public int GetCoupletProgressPercent(int coupletNumber)
+        {
+            if (TotalCoupletsCount <= 0 || coupletNumber <= 0)
+                return 0;
+            return Math.Min(100, coupletNumber * 100 / TotalCoupletsCount);
+        }
+
 
         public PoemRelatedImage TextSourceImage { get; set; }
 
