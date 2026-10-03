@@ -635,7 +635,21 @@ namespace GanjooRazor.Areas.Admin.Pages
                         }
                         else
                         {
-                            err = JsonConvert.DeserializeObject<string>(err);
+                            try
+                            {
+                                // normal case: the API returns the error as a JSON-encoded string (see
+                                // OnPostDeletePoemCorrectionsAsync in Editor.cshtml.cs for the same
+                                // pattern). Guard against it not being one - e.g. an HTML error page
+                                // from a proxy/host in front of the API - so that doesn't throw an
+                                // unhandled exception here and surface as GanjooRazor's own generic HTML
+                                // error page, which is unreadable and leaves the real error only in the
+                                // Windows Event Log.
+                                err = JsonConvert.DeserializeObject<string>(err);
+                            }
+                            catch (JsonException)
+                            {
+                                err = "خطایی در سرور رخ داد. لطفاً بعداً دوباره تلاش کنید.";
+                            }
                         }
                         return new BadRequestObjectResult(err);
                     }

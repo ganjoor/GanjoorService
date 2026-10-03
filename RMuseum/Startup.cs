@@ -3,6 +3,7 @@ using Betalgo.Ranul.OpenAI.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -16,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Newtonsoft.Json;
 using RMuseum.DbContext;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Services;
@@ -358,7 +360,29 @@ namespace RMuseum
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                // RMuseum is API-only (see UseEndpoints below - MapControllers only), so there is no
+                // Razor "/Error" page or MVC "Error" action for the old app.UseExceptionHandler("/Error")
+                // to redirect to - that redirect just 404s, and (especially when hosted behind IIS/ANCM,
+                // as in production here) a 404 with no body of its own can get replaced by IIS's own
+                // generic HTML error page instead. Either way, callers - including GanjooRazor's own
+                // server-side page handlers, which otherwise assume every error body is a JSON-encoded
+                // string - got back unreadable HTML instead of the real exception, visible only by
+                // digging through the Windows Event Log. Handling the exception directly here instead
+                // of redirecting anywhere guarantees a small JSON-string body with the real exception
+                // message, in the exact same shape a normal RServiceResult.ExceptionString error already
+                // comes back as (see e.g. GanjoorController's "return BadRequest(res.ExceptionString)"),
+                // so every existing client-side error handler keeps working unchanged.
+                app.UseExceptionHandler(errApp =>
+                {
+                    errApp.Run(async context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                        context.Response.ContentType = "application/json; charset=utf-8";
+                        var exceptionFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+                        var message = exceptionFeature?.Error?.ToString() ?? "خطای غیرمنتظره‌ای در سرور رخ داد.";
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(message));
+                    });
+                });
             }
 
 

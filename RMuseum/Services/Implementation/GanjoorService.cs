@@ -2076,6 +2076,17 @@ namespace RMuseum.Services.Implementation
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPoemCorrectionViewModel>> SuggestPoemCorrection(GanjoorPoemCorrectionViewModel correction)
         {
+            // wrapped in try/catch (matching ModeratePoemCorrection's own pattern) so an unexpected
+            // exception - e.g. the EF Core "same key value is already being tracked" conflict this
+            // method used to throw on a second save - comes back as a normal RServiceResult.ExceptionString
+            // instead of an unhandled exception. Left uncaught, it would bypass GanjoorController's own
+            // "if (!string.IsNullOrEmpty(res.ExceptionString)) return BadRequest(...)" check entirely
+            // (that line is never reached because this method never returns), fall through to the
+            // framework's generic HTML error page, and show up to the user as unreadable HTML source
+            // instead of a readable message - with the real exception visible only in the Windows Event
+            // Log.
+            try
+            {
             if (!string.IsNullOrEmpty(correction.Rhythm3) || !string.IsNullOrEmpty(correction.Rhythm4))
                 return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "انتساب وزن سوم و چهارم هنوز پیاده‌سازی نشده است.");
 
@@ -2263,6 +2274,11 @@ namespace RMuseum.Services.Implementation
             }
 
             return new RServiceResult<GanjoorPoemCorrectionViewModel>(correction);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, exp.ToString());
+            }
         }
 
         /// <summary>
