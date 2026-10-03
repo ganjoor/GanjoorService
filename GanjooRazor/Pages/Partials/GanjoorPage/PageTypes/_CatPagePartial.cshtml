@@ -104,8 +104,11 @@
         <div id="topvisits-placeholder"></div>
     </div>
 
-    @* Map *@
-    @if (!Model.OfflineMode && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+    @* Map - only when at least one tag actually carries a Location; person tags (added alongside
+       geo/date tags on the same CategoryPoemGeoDateTags array) never have one, so a category whose
+       tags are all person tags would otherwise still pass a plain "array not empty" check below and
+       render an empty map with nothing to pin. *@
+    @if (!Model.OfflineMode && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Any(t => t.Location != null))
     {
         <div id="catmap"></div>
     }
@@ -146,7 +149,7 @@
     </div>
 }
 
-@if (!Model.OfflineMode && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
+@if (!Model.OfflineMode && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Any(t => t.Location != null))
 {
     <script>
         var poemGeoTags = [];
