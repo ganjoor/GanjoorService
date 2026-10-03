@@ -1119,6 +1119,34 @@ else
                                     <input type="text" id="geotag@(geoIndex)_latitude" name="geotag@(geoIndex)_latitude" value="@geoTag.SuggestedLatitude" size="12" />
                                     <label for="geotag@(geoIndex)_longitude">طول جغرافیایی اصلاح‌شده:</label>
                                     <input type="text" id="geotag@(geoIndex)_longitude" name="geotag@(geoIndex)_longitude" value="@geoTag.SuggestedLongitude" size="12" />
+                                    @if (geoTag.SuggestedLatitude != null && geoTag.SuggestedLongitude != null)
+                                    {
+                                        <!-- read-only-at-a-glance preview of the user's suggested coordinates, same Leaflet
+                                             setup Editor.cshtml's own geotag picker uses (see _AdminLayout.cshtml for the
+                                             leaflet.css/js includes added for this) - the marker is left draggable, and the
+                                             map click-to-move too, so a moderator who spots a small mistake can nudge the
+                                             coordinates visually instead of rejecting a suggestion that's otherwise fine -->
+                                        <div id="geotag@(geoIndex)_map" style="height:220px;margin-top:8px;border:1px solid #d8cdb8;border-radius:6px;"></div>
+                                        <p class="up-hint"><small>برای مشاهدهٔ دقیق‌تر یا اصلاح مختصات، نشانگر را بکشید یا روی نقشه کلیک کنید.</small></p>
+                                        <script>
+                                            (function () {
+                                                var lat = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(geoTag.SuggestedLatitude));
+                                                var lng = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(geoTag.SuggestedLongitude));
+                                                var map = L.map('geotag@(geoIndex)_map').setView([lat, lng], 10);
+                                                L.tileLayer.provider('OpenStreetMap').addTo(map);
+                                                var marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+                                                function syncFieldsFromMarker(latlng) {
+                                                    document.getElementById('geotag@(geoIndex)_latitude').value = latlng.lat;
+                                                    document.getElementById('geotag@(geoIndex)_longitude').value = latlng.lng;
+                                                }
+                                                marker.on('dragend', function () { syncFieldsFromMarker(marker.getLatLng()); });
+                                                map.on('click', function (e) {
+                                                    marker.setLatLng(e.latlng);
+                                                    syncFieldsFromMarker(e.latlng);
+                                                });
+                                            })();
+                                        </script>
+                                    }
                                 </div>
                             }
                         </td>
