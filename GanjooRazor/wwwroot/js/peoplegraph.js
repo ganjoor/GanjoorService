@@ -4,14 +4,17 @@
 // self-hosted, dependency-light front-end code over pulling in something like d3-force.
 //
 // Data shape (RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphViewModel, camelCased) -
-//   { nodes: [{id, name, hasFamilyTree, directlyTagged}], edges: [{person1Id, person1Name,
+//   { nodes: [{id, name, hasFamilyTree, directlyTagged, importance}], edges: [{person1Id, person1Name,
 //     person2Id, person2Name, category, typeValue, degreeHint, note}] } where category is
 //     "Relation" (typeValue is PersonRelationType: 0=Parent,1=Sibling,2=Spouse,3=Ancestor) or
 //     "Affiliation" (typeValue is PersonAffiliationType: 0=Minister,1=Advisor,2=Courtier,3=Patron,
 //     4=Ally,5=Rival,6=Servant,7=Companion,8=Successor,9=Panegyrized,10=Satirized,99=Other). directlyTagged is false only on
 // the category-scoped graph (GET api/ganjoor/cat/{id}/persongraph, the "characters in this work"
 // tab): such a node was pulled in as a one-hop relative/affiliate of someone actually named in the
-// work's verses, and is never false on the whole-site graph fed by PeopleExplorer.cshtml.
+// work's verses, and is never false on the whole-site graph fed by PeopleExplorer.cshtml. importance
+// is PersonImportance (0=Normal,1=Important,2=VeryImportant), an editorial prominence set on the
+// person themselves (see Editor.cshtml's new-person widget and SuggestPersonEdit.cshtml) - used
+// below, alongside hasFamilyTree and degree, to size a node's circle (see nodeRadius()).
 //
 // Called with an options object (see PeopleExplorer.cshtml and _PersonGraphPartial.cshtml for two
 // call sites with different element-id prefixes and data payloads), so the same renderer serves
@@ -87,7 +90,7 @@
         var nodesById = {};
         var nodes = data.nodes.map(function (n) {
             var node = {
-                id: n.id, name: n.name, hasFamilyTree: n.hasFamilyTree,
+                id: n.id, name: n.name, hasFamilyTree: n.hasFamilyTree, importance: n.importance || 0,
                 // absent on the whole-site graph payload (always directly tagged there) - default true
                 directlyTagged: n.directlyTagged !== false,
                 x: W / 2 + (Math.random() - 0.5) * W * 0.6,
@@ -204,8 +207,14 @@
             return { el: line, edge: e };
         });
 
+        // importance (PersonImportance: 0=Normal,1=Important,2=VeryImportant) is the dominant term -
+        // a VeryImportant person should read as clearly bigger even with few edges - hasFamilyTree
+        // adds a smaller, independent bump on top (a tree root is worth noting regardless of its
+        // own importance), and degree only fine-tunes within that.
+        var IMPORTANCE_RADIUS_BUMP = { 0: 0, 1: 4, 2: 9 };
         function nodeRadius(n) {
-            return (n.hasFamilyTree ? 10 : 7) + Math.min(6, n.degree * 0.6);
+            var base = (n.hasFamilyTree ? 10 : 7) + (IMPORTANCE_RADIUS_BUMP[n.importance] || 0);
+            return base + Math.min(6, n.degree * 0.6);
         }
 
         var nodeEls = nodes.map(function (n) {

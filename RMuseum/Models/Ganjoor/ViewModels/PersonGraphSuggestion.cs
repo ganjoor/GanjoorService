@@ -60,6 +60,13 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// to be a tree's named root
         /// </summary>
         public string FamilyTreeCaption { get; set; }
+
+        /// <summary>
+        /// name of a PersonImportance value ("Normal", "Important", "VeryImportant") - same
+        /// string-enum convention as PersonGraphRelationEntry.RelationType/AffiliationType below.
+        /// Null/empty is treated as Normal.
+        /// </summary>
+        public string Importance { get; set; }
     }
 
     /// <summary>

@@ -54,6 +54,12 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// as secondary (e.g. dashed/dimmer) since it's context the reader wasn't shown directly.
         /// </summary>
         public bool DirectlyTagged { get; set; } = true;
+
+        /// <summary>
+        /// numeric value of PersonImportance (0=Normal, 1=Important, 2=VeryImportant) - used
+        /// client-side to size this node larger or smaller, see peoplegraph.js's nodeRadius()
+        /// </summary>
+        public int Importance { get; set; }
     }
 
     /// <summary>

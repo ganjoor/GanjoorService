@@ -560,7 +560,8 @@
             validDeathDate: false,
             birthLocationId: null,
             deathLocationId: null,
-            familyTreeCaption: $('#geotag-new-person-familytreecaption').val() || null
+            familyTreeCaption: $('#geotag-new-person-familytreecaption').val() || null,
+            importance: $('#geotag-new-person-importance').val()
         };
 
         var relatedPeople = [];
@@ -852,6 +853,7 @@
         $('#geotag-new-person-description').val('');
         $('#geotag-new-person-wikiurl').val('');
         $('#geotag-new-person-familytreecaption').val('');
+        $('#geotag-new-person-importance').val('Normal');
         $('#geotag-person-relatives-list').empty();
         if (document.getElementById('new-person-widget').style.display !== 'none') {
             toggleNewPersonWidget();
@@ -2667,6 +2669,15 @@ else
             <div class="up-field">
                 <label for="geotag-new-person-familytreecaption">عنوان تبارنامه (اختیاری، فقط اگر این نامبرده ریشهٔ یک خانواده/سلسله شناخته‌شده است - مثلاً «ساسانیان»)</label>
                 <input type="text" id="geotag-new-person-familytreecaption" />
+            </div>
+            <div class="up-field">
+                <label for="geotag-new-person-importance">درجهٔ اهمیت</label>
+                <select id="geotag-new-person-importance">
+                    <option value="Normal" selected="selected">معمولی</option>
+                    <option value="Important">مهم</option>
+                    <option value="VeryImportant">بسیار مهم</option>
+                </select>
+                <p class="up-hint"><small>فقط اندازهٔ نمایش این نامبرده را در نمودار شخصیت‌ها تعیین می‌کند.</small></p>
             </div>
 
             <p class="up-hint">

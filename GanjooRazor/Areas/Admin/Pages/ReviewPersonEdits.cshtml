@@ -109,6 +109,11 @@ else
                     <td>@s.SuggestedFamilyTreeCaption</td>
                 </tr>
                 <tr>
+                    <td>درجهٔ اهمیت</td>
+                    <td>@Model.ImportanceLabel(p.Importance)</td>
+                    <td>@Model.ImportanceLabel(s.SuggestedImportance)</td>
+                </tr>
+                <tr>
                     <td>توضیحات</td>
                     <td><small>@p.Description</small></td>
                     <td><small>@s.SuggestedDescription</small></td>

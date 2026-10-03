@@ -9517,6 +9517,11 @@
             suggested family tree caption
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedImportance">
+            <summary>
+            suggested importance (see GanjoorRelatedPerson.Importance)
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedForDeletion">
             <summary>
             true if this suggestion is actually a request to delete the person outright, not to
@@ -11317,6 +11322,12 @@
             needs one set).
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.Importance">
+            <summary>
+            editorial prominence, used to size this person's node in the people graph larger or
+            smaller (see PersonImportance and peoplegraph.js's nodeRadius()) - defaults to Normal
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorSiteBanner">
             <summary>
             ganjoor.net site banner
@@ -11882,6 +11893,29 @@
         <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Other">
             <summary>
             doesn't fit any of the above - rely on Note for what the tie actually is
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PersonImportance">
+            <summary>
+            how editorially prominent a GanjoorRelatedPerson is treated as - purely a display/sizing
+            hint (see GanjoorRelatedPerson.Importance, GanjoorPersonGraphNode.Importance and
+            peoplegraph.js's nodeRadius()), never used to filter, rank or otherwise affect query
+            results. New values can be appended safely later (stored as int).
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonImportance.Normal">
+            <summary>
+            default - no special prominence, drawn at the normal node size
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonImportance.Important">
+            <summary>
+            somewhat prominent (e.g. a well-known minister or local ruler) - drawn larger than Normal
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonImportance.VeryImportant">
+            <summary>
+            most prominent (e.g. a major poet or king) - drawn largest
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PersonRelationSuggestionAction">
@@ -13528,6 +13562,12 @@
             as secondary (e.g. dashed/dimmer) since it's context the reader wasn't shown directly.
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphNode.Importance">
+            <summary>
+            numeric value of PersonImportance (0=Normal, 1=Important, 2=VeryImportant) - used
+            client-side to size this node larger or smaller, see peoplegraph.js's nodeRadius()
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphEdge">
             <summary>
             one edge of the people graph - either a kinship edge or a non-family tie, flattened to a
@@ -15061,6 +15101,13 @@
             <summary>
             see GanjoorRelatedPerson.FamilyTreeCaption - only meaningful for whichever node is meant
             to be a tree's named root
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphNode.Importance">
+            <summary>
+            name of a PersonImportance value ("Normal", "Important", "VeryImportant") - same
+            string-enum convention as PersonGraphRelationEntry.RelationType/AffiliationType below.
+            Null/empty is treated as Normal.
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PersonGraphRelationEntry">

@@ -904,6 +904,12 @@ namespace RMuseum.Services.Implementation
                     return new Tuple<int, string>(0, "نام یکی از افراد پیشنهادی وارد نشده است.");
                 }
 
+                var importance = PersonImportance.Normal;
+                if (!string.IsNullOrWhiteSpace(node.Importance) && !Enum.TryParse<PersonImportance>(node.Importance, out importance))
+                {
+                    return new Tuple<int, string>(0, $"درجهٔ اهمیت «{node.Importance}» نامعتبر است.");
+                }
+
                 var newPerson = new GanjoorRelatedPerson()
                 {
                     Name = node.Name.Trim(),
@@ -916,6 +922,7 @@ namespace RMuseum.Services.Implementation
                     BirthLocationId = node.BirthLocationId,
                     DeathLocationId = node.DeathLocationId,
                     FamilyTreeCaption = string.IsNullOrWhiteSpace(node.FamilyTreeCaption) ? null : node.FamilyTreeCaption.Trim(),
+                    Importance = importance,
                     MachineGenerated = false,
                 };
                 _context.GanjoorRelatedPersons.Add(newPerson);

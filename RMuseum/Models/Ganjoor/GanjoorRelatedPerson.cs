@@ -78,5 +78,11 @@
         /// needs one set).
         /// </summary>
         public string FamilyTreeCaption { get; set; }
+
+        /// <summary>
+        /// editorial prominence, used to size this person's node in the people graph larger or
+        /// smaller (see PersonImportance and peoplegraph.js's nodeRadius()) - defaults to Normal
+        /// </summary>
+        public PersonImportance Importance { get; set; }
     }
 }

@@ -421,6 +421,7 @@ namespace RMuseum.Services.Implementation
                         person.BirthLocationId = suggestion.SuggestedBirthLocationId;
                         person.DeathLocationId = suggestion.SuggestedDeathLocationId;
                         person.FamilyTreeCaption = suggestion.SuggestedFamilyTreeCaption;
+                        person.Importance = suggestion.SuggestedImportance;
                         // Id and MachineGenerated on the person are intentionally left untouched
                     }
                 }
@@ -1115,6 +1116,7 @@ namespace RMuseum.Services.Implementation
                 Name = p.Name,
                 HasFamilyTree = !string.IsNullOrEmpty(p.FamilyTreeCaption),
                 DirectlyTagged = directlyTaggedIds == null || directlyTaggedIds.Contains(p.Id),
+                Importance = (int)p.Importance,
             }).ToList();
         }
 

@@ -56,6 +56,19 @@ namespace GanjooRazor.Areas.Admin.Pages
             return loc == null ? "" : loc.Name;
         }
 
+        public string ImportanceLabel(PersonImportance importance)
+        {
+            switch (importance)
+            {
+                case PersonImportance.Important:
+                    return "مهم";
+                case PersonImportance.VeryImportant:
+                    return "بسیار مهم";
+                default:
+                    return "معمولی";
+            }
+        }
+
         public IActionResult OnPost()
         {
             Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);
