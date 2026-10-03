@@ -2200,6 +2200,27 @@ namespace RMuseum.Services.Implementation
                     verse.OriginalCoupletSummary = v.CoupletSummary;
                 }
             }
+            if (correction.GeoDateTags != null)
+            {
+                // every submission here creates a brand-new GanjoorPoemCorrection row (and any older
+                // unreviewed correction for the same user/poem - preCorrections above - is removed
+                // together with its own GeoDateTags rows a few lines down). The client pre-fills the
+                // form from the user's previous, still-unreviewed draft (MyLastEditGeoDateTagsJson in
+                // Editor.cshtml.cs/.cshtml), so when the user only adds one more tag and resubmits, the
+                // posted GeoDateTags array still carries the OLD rows' real database Ids alongside the
+                // new one. Those old rows are already tracked by EF from the preCorrections query above,
+                // so attaching this freshly-deserialized correction.GeoDateTags (Added, because its new
+                // parent dbCorrection is Added) under those same Ids makes EF try to track two different
+                // instances for the same key, throwing "cannot be tracked because another instance with
+                // the same key value ... is already being tracked" - reproducible simply by saving a
+                // correction, then adding another person/tag and saving again. Every tag belongs to a
+                // brand-new correction row here, so none of them should ever reuse an old row's Id.
+                foreach (var geoDateTag in correction.GeoDateTags)
+                {
+                    geoDateTag.Id = 0;
+                }
+            }
+
             GanjoorPoemCorrection dbCorrection = new GanjoorPoemCorrection()
             {
                 PoemId = correction.PoemId,
