@@ -264,6 +264,9 @@
                         '<option value="Rival">رقیب</option>' +
                         '<option value="Panegyrized">مدح‌گو (طرف اول، طرف دوم را مدح کرده)</option>' +
                         '<option value="Satirized">هجوگو (طرف اول، طرف دوم را هجو کرده)</option>' +
+                        '<option value="MilitaryCommander">سردار</option>' +
+                        '<option value="Champion">پهلوان</option>' +
+                        '<option value="Contemporary">هم‌عصر (بدون نسبت دیگر)</option>' +
                         '<option value="Other">سایر</option>' +
                     '</select>' +
                 '</div>' +
@@ -378,6 +381,9 @@
             Ally: function (p1, p2) { return p1 + ' و ' + p2 + ' متحد هم هستند.'; },
             Rival: function (p1, p2) { return p1 + ' و ' + p2 + ' رقیب هم هستند.'; },
             Companion: function (p1, p2) { return p1 + ' و ' + p2 + ' همراه هم هستند.'; },
+            MilitaryCommander: function (p1, p2) { return p1 + ' سردار ' + p2 + ' است.'; },
+            Champion: function (p1, p2) { return p1 + ' پهلوان ' + p2 + ' است.'; },
+            Contemporary: function (p1, p2) { return p1 + ' و ' + p2 + ' هم‌عصر هم هستند.'; },
             Other: function (p1, p2) { return p1 + ' با ' + p2 + ' نسبتی دارد (طبق یادداشت).'; }
         }
     };

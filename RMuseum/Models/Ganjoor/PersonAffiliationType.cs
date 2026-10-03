@@ -71,6 +71,32 @@ namespace RMuseum.Models.Ganjoor
         Satirized = 10,
 
         /// <summary>
+        /// Person1 served as a military commander/general (سردار) under Person2 - directional, same
+        /// subordinate-side convention as Minister/Advisor/Courtier, but deliberately kept separate
+        /// from Courtier: a سردار's tie to Person2 is a military command relationship, not a court
+        /// role, and (unlike e.g. Minister, which implies one standing appointment) doesn't imply the
+        /// tie held continuously - a commander could serve across campaigns/kings, with specifics
+        /// (which campaign, how long) left to Note
+        /// </summary>
+        MilitaryCommander = 11,
+
+        /// <summary>
+        /// Person1 was a champion/legendary warrior (پهلوان) associated with Person2 - directional,
+        /// same subordinate-side convention as MilitaryCommander, but distinct from it: a پهلوان's
+        /// standing comes from individual prowess/heroism (e.g. Rostam), not from holding a command
+        /// post, and like MilitaryCommander this doesn't imply a permanent/continuous tie
+        /// </summary>
+        Champion = 12,
+
+        /// <summary>
+        /// Person1 and Person2 lived in the same era (هم‌عصر), with no other relationship between
+        /// them necessarily known/implied - symmetric (order doesn't matter). Unlike every other
+        /// value here, this doesn't assert any kind of tie or interaction, only overlapping lifetimes;
+        /// use one of the other types instead whenever an actual relationship is known
+        /// </summary>
+        Contemporary = 13,
+
+        /// <summary>
         /// doesn't fit any of the above - rely on Note for what the tie actually is
         /// </summary>
         Other = 99,
