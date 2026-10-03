@@ -855,7 +855,7 @@
         $('#geotag-new-person-wikiurl').val('');
         $('#geotag-new-person-familytreecaption').val('');
         $('#geotag-new-person-importance').val('Normal');
-        $('#geotag-new-person-gender').val('Unknown');
+        $('#geotag-new-person-gender').val('Male');
         $('#geotag-person-relatives-list').empty();
         if (document.getElementById('new-person-widget').style.display !== 'none') {
             toggleNewPersonWidget();
@@ -2696,8 +2696,8 @@ else
             <div class="up-field">
                 <label for="geotag-new-person-gender">جنسیت</label>
                 <select id="geotag-new-person-gender">
-                    <option value="Unknown" selected="selected">نامشخص</option>
-                    <option value="Male">مرد</option>
+                    <option value="Unknown">نامشخص</option>
+                    <option value="Male" selected="selected">مرد</option>
                     <option value="Female">زن</option>
                 </select>
                 <p class="up-hint"><small>فقط در ترسیم نمودار تبارنامه استفاده می‌شود (برای تشخیص اینکه کدام والد به عنوان ادامهٔ اصلی شاخهٔ خانوادگی رسم شود).</small></p>
