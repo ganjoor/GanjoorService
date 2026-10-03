@@ -31,6 +31,10 @@ else
             .ft-heart { font-size: 13px; fill: #a0455c; }
             .ft-line { fill: none; stroke: #a99a7c; stroke-width: 1.5; }
             .ft-line-spouse { stroke-dasharray: 3,3; }
+            /* sibling relation with no recorded shared parent - deliberately plainer than the
+               spouse dashing (finer dots, lighter/grayer) and gets no heart icon, so it doesn't
+               read as a marriage or as a confirmed shared-parent claim */
+            .ft-line-sibling { stroke-dasharray: 1,3; stroke: #a0a0a0; }
             .ft-tooltip-panel {
                 position: absolute; top: 10px; left: 10px; max-width: 300px;
                 background: #fffdf7; border: 1px solid #8b6b4a; border-radius: 8px;

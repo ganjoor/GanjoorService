@@ -54,21 +54,17 @@
             }
         });
 
-        // A sibling pair where only one side has a recorded parent (e.g. a sibling relation was
-        // entered but no separate parent relation for the other sibling) used to leave the parentless
-        // sibling with no parent at all, turning them into their own disconnected chart root instead
-        // of being drawn next to their actual family. Have the parentless sibling inherit the same
-        // parent(s), purely so the drawing places them together - this doesn't change any real data.
-        siblingPairs.forEach(function (pair) {
-            var a = pair[0], b = pair[1];
-            var aHasParent = parentsOf[a] && parentsOf[a].length > 0;
-            var bHasParent = parentsOf[b] && parentsOf[b].length > 0;
-            if (aHasParent && !bHasParent) {
-                parentsOf[a].forEach(function (p) { addParentChild(p, b); });
-            } else if (bHasParent && !aHasParent) {
-                parentsOf[b].forEach(function (p) { addParentChild(p, a); });
-            }
-        });
+        // NOTE: a recorded Sibling relation deliberately does not say which parent(s), if any, are
+        // shared (see PersonRelationType.Sibling's own doc comment: "doesn't require either parent
+        // to be known/recorded") - a text might call two people brothers without saying whether
+        // they share a father, a mother, or both. So siblingPairs is intentionally NOT turned into
+        // addParentChild() calls here (an earlier version of this code did exactly that, inheriting
+        // ALL of the known sibling's recorded parents onto the parentless one - fabricating a
+        // specific shared-parentage claim the source material never made, and quietly corrupting
+        // isRoot/parentsOf for that person everywhere else in this function too, e.g. the gender
+        // tie-break above). Instead, a parentless sibling is drawn as a plain "sibling, parentage
+        // unspecified" attachment beside whichever sibling does have a known position - see
+        // tryAttachSibling below.
 
         Object.keys(childrenOf).forEach(function (k) { childrenOf[k] = dedup(childrenOf[k]); });
         Object.keys(parentsOf).forEach(function (k) { parentsOf[k] = dedup(parentsOf[k]); });
@@ -122,6 +118,10 @@
         // akhakhafrasiyab.ir's chart
         var attachedTo = {};    // spouseId -> primaryId
         var attachedList = {};  // primaryId -> [spouseId,...]
+        var attachedAsSibling = {}; // spouseId -> true, for ids attached via tryAttachSibling below -
+                                     // drawBox/the attached-box renderer uses this to draw a plain line
+                                     // with no heart icon, instead of implying a marriage that was
+                                     // never recorded
 
         function tryAttach(primaryId, spouseId) {
             if (attachedTo[spouseId] !== undefined || spouseId === primaryId) return false;
@@ -142,6 +142,25 @@
                 if (tryAttach(a, b)) return;
                 tryAttach(b, a);
             });
+        });
+
+        // Siblings with no (or no other) known position are drawn beside whichever sibling does have
+        // one - purely a placement choice, not a parentage claim (see the long comment above
+        // siblingPairs). Deliberately reuses tryAttach's own "isRoot && no children of their own"
+        // guard, so this never steals a sibling who already has a real, independently-documented
+        // position (their own recorded parents, or children) in the tree.
+        function tryAttachSibling(primaryId, siblingId) {
+            if (tryAttach(primaryId, siblingId)) {
+                attachedAsSibling[siblingId] = true;
+                return true;
+            }
+            return false;
+        }
+        siblingPairs.forEach(function (pair) {
+            var a = pair[0], b = pair[1];
+            if (attachedTo[a] !== undefined || attachedTo[b] !== undefined) return;
+            if (tryAttachSibling(a, b)) return;
+            tryAttachSibling(b, a);
         });
 
         var topLevelRoots = allIds.filter(function (id) { return isRoot[id] && attachedTo[id] === undefined; });
@@ -188,6 +207,7 @@
             primaryParentOf: primaryParentOf,
             secondaryParentOf: secondaryParentOf,
             attachedList: attachedList,
+            attachedAsSibling: attachedAsSibling,
             topLevelRoots: topLevelRoots,
             nodeX: nodeX,
             nodeDepth: nodeDepth
@@ -307,15 +327,21 @@
             var attached = layoutInfo.attachedList[id] || [];
             var edgeX = p.x + size.w / 2;
             attached.forEach(function (spouseId, i) {
+                var isSibling = !!layoutInfo.attachedAsSibling[spouseId];
                 var attSize = boxSizeFor(layoutInfo.persons[spouseId], ATTACH_W, BOX_H);
                 var ax = edgeX + ATTACH_GAP + attSize.w / 2;
                 var ay = p.y;
                 drawBox(spouseId, ax, ay, attSize.w, attSize.h, spouseId === requestedRootId);
-                line(edgeX, p.y, ax - attSize.w / 2, ay, 'ft-line ft-line-spouse');
-                var heartX = edgeX + ATTACH_GAP / 2;
-                var heart = el('text', { x: heartX, y: ay + 4, 'text-anchor': 'middle', 'class': 'ft-heart' });
-                heart.textContent = '♥';
-                nodesGroup.appendChild(heart);
+                // a sibling drawn this way is placed next to the OTHER sibling purely for layout -
+                // it is not a marriage, so it gets a plain neutral connector and no heart icon (see
+                // the long comment above siblingPairs/tryAttachSibling in buildLayout)
+                line(edgeX, p.y, ax - attSize.w / 2, ay, isSibling ? 'ft-line ft-line-sibling' : 'ft-line ft-line-spouse');
+                if (!isSibling) {
+                    var heartX = edgeX + ATTACH_GAP / 2;
+                    var heart = el('text', { x: heartX, y: ay + 4, 'text-anchor': 'middle', 'class': 'ft-heart' });
+                    heart.textContent = '♥';
+                    nodesGroup.appendChild(heart);
+                }
                 maxX = Math.max(maxX, ax + attSize.w / 2);
                 edgeX = ax + attSize.w / 2 + ATTACH_GAP;
             });
