@@ -291,7 +291,7 @@ namespace GanjooRazor.Areas.User.Pages
                             // onto this same record when the delete request was approved, so it's already
                             // available here for GeoDateTagCorrectionDisplay.IsPersonTag to tell the two kinds
                             // of tag apart for the note text below.
-                            var geoTagLabel = GeoDateTagCorrectionDisplay.IsPersonTag(geoTag) ? "شخصیت" : "برچسب جغرافیایی/تاریخی";
+                            var geoTagLabel = GeoDateTagCorrectionDisplay.IsPersonTag(geoTag) ? "نامبرده" : "برچسب جغرافیایی/تاریخی";
                             if (geoTag.MarkForDelete)
                             {
                                 // the original request deleted an existing tag - undo that by re-adding a tag with

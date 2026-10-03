@@ -201,7 +201,7 @@ namespace GanjooRazor.Areas.User.Pages
                     return Page();
                 }
 
-                LastResult = $"پیشنهاد شما ثبت شد و پس از بررسی توسط مدیران اعمال خواهد شد. <a role=\"button\" href=\"javascript:void(0)\" onclick=\"PersonWindow.open({Person1Id})\" class=\"actionlink\">مشاهدهٔ اطلاعات این شخصیت</a>";
+                LastResult = $"پیشنهاد شما ثبت شد و پس از بررسی توسط مدیران اعمال خواهد شد. <a role=\"button\" href=\"javascript:void(0)\" onclick=\"PersonWindow.open({Person1Id})\" class=\"actionlink\">مشاهدهٔ اطلاعات این نامبرده</a>";
 
                 FillSuggestionFromCurrent();
 

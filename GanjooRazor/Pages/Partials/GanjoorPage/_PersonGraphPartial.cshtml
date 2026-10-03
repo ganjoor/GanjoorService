@@ -2,7 +2,7 @@
 
 @if (Model.Graph == null || Model.Graph.Nodes == null || Model.Graph.Nodes.Count == 0)
 {
-    <p>برای این بخش هنوز شخصیتی برچسب‌گذاری نشده است.</p>
+    <p>برای این بخش هنوز نامبرده‌ای برچسب‌گذاری نشده است.</p>
 }
 else
 {
@@ -17,9 +17,9 @@ else
         </small></p>
 
         <div style="margin-bottom:10px;">
-            <input type="text" id="pg-cat-search" placeholder="جستجوی نام شخصیت..." style="width:240px;" />
+            <input type="text" id="pg-cat-search" placeholder="جستجوی نام نامبرده..." style="width:240px;" />
             <a role="button" id="pg-cat-reset" class="up-btn up-btn--ghost up-btn--sm">نمایش همه</a>
-            <a role="button" href="javascript:void(0)" onclick="PeopleExplorer.open()" class="up-btn up-btn--ghost up-btn--sm">نمایش شبکهٔ کامل شخصیت‌ها</a>
+            <a role="button" href="javascript:void(0)" onclick="PeopleExplorer.open()" class="up-btn up-btn--ghost up-btn--sm">نمایش شبکهٔ کامل نامبردگان</a>
         </div>
 
         <div id="pg-cat-legend" class="pg-legend"></div>

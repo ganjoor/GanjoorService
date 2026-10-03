@@ -284,16 +284,16 @@
                     // parent). Non-family affiliations default the other way around - see
                     // togglePersonRelativeKind(), which flips this select's value on kind change.
                     '<select id="person-relative-direction-' + idx + '" onchange="updatePersonRelativeHint(' + idx + ')">' +
-                        '<option value="otherFirst" selected="selected">شخصیت دیگر، طرف اول رابطه است (مثلاً پدر/وزیر این شخصیت جدید)</option>' +
-                        '<option value="newFirst">این شخصیت جدید، طرف اول رابطه است (مثلاً پدر/وزیر طرف دوم)</option>' +
+                        '<option value="otherFirst" selected="selected">نامبردۀ دیگر، طرف اول رابطه است (مثلاً پدر/وزیر این نامبردۀ جدید)</option>' +
+                        '<option value="newFirst">این نامبردۀ جدید، طرف اول رابطه است (مثلاً پدر/وزیر طرف دوم)</option>' +
                     '</select>' +
                 '</div>' +
             '</div>' +
             '<div class="up-field-row">' +
                 '<div class="up-field">' +
-                    '<label>شخصیت دیگر (باید از قبل در فهرست موجود باشد)</label>' +
+                    '<label>نامبردۀ دیگر (باید از قبل در فهرست موجود باشد)</label>' +
                     '<div class="up-autocomplete-wrap">' +
-                        '<input type="text" id="person-relative-person-search-' + idx + '" autocomplete="off" placeholder="نام شخصیت را تایپ کنید..." oninput="updatePersonRelativeHint(' + idx + ')" />' +
+                        '<input type="text" id="person-relative-person-search-' + idx + '" autocomplete="off" placeholder="نام نامبرده را تایپ کنید..." oninput="updatePersonRelativeHint(' + idx + ')" />' +
                         '<input type="hidden" id="person-relative-person-id-' + idx + '" />' +
                         '<div id="person-relative-person-results-' + idx + '" class="up-autocomplete-results" style="display:none;"></div>' +
                     '</div>' +
@@ -319,7 +319,7 @@
                 updatePersonRelativeHint(idx);
             },
             function (typedText) {
-                upToast('این شخصیت در فهرست نیست. طرف دیگر یک رابطه باید از قبل تعریف‌شده باشد؛ برای دو شخصیت تازه، ابتدا این فرم را برای یکی از آن‌ها به‌صورت جدا تکمیل و ثبت کنید.', 'error');
+                upToast('این نامبرده در فهرست نیست. طرف دیگر یک رابطه باید از قبل تعریف‌شده باشد؛ برای دو نامبردۀ تازه، ابتدا این فرم را برای یکی از آن‌ها به‌صورت جدا تکمیل و ثبت کنید.', 'error');
             }
         );
 
@@ -390,8 +390,8 @@
             ? $('#person-relative-familytype-' + idx).val()
             : $('#person-relative-affiliationtype-' + idx).val();
         var direction = $('#person-relative-direction-' + idx).val();
-        var otherName = ($('#person-relative-person-search-' + idx).val() || '').trim() || 'شخصیت دیگر';
-        var newName = ($('#geotag-new-person-name').val() || '').trim() || 'این شخصیت جدید';
+        var otherName = ($('#person-relative-person-search-' + idx).val() || '').trim() || 'نامبردۀ دیگر';
+        var newName = ($('#geotag-new-person-name').val() || '').trim() || 'این نامبردۀ جدید';
         var person1Name = direction === 'otherFirst' ? otherName : newName;
         var person2Name = direction === 'otherFirst' ? newName : otherName;
         var build = (PERSON_RELATIVE_HINT_TEMPLATES[kind] || {})[type];
@@ -540,7 +540,7 @@
     function buildPersonGraphJson() {
         var name = ($('#geotag-new-person-name').val() || '').trim();
         if (name == '') {
-            upToast('لطفاً نام شخصیت جدید را وارد کنید.', 'error');
+            upToast('لطفاً نام نامبردۀ جدید را وارد کنید.', 'error');
             return null;
         }
 
@@ -572,7 +572,7 @@
             var idx = rows[r].id.replace('person-relative-row-', '');
             var otherPersonId = $('#person-relative-person-id-' + idx).val();
             if (!otherPersonId) {
-                upToast('برای یکی از روابط افزوده‌شده، شخصیت دیگر انتخاب نشده است.', 'error');
+                upToast('برای یکی از روابط افزوده‌شده، نامبردۀ دیگر انتخاب نشده است.', 'error');
                 return null;
             }
             otherPersonId = parseInt(otherPersonId);
@@ -652,7 +652,7 @@
             container.innerHTML = '';
             return;
         }
-        var html = '<table><tr><th>وضعیت</th><th>بیت</th><th>شخصیت</th><th>#</th></tr>';
+        var html = '<table><tr><th>وضعیت</th><th>بیت</th><th>نامبرده</th><th>#</th></tr>';
         for (var r = 0; r < rows.length; r++) {
             var i = rows[r];
             var s = geoDateTagSuggestions[i];
@@ -661,13 +661,13 @@
             var personText = '';
             if (!s.markForDelete) {
                 if (s.personId) {
-                    personText = (allGeoPeople.filter(function (p) { return p.id === s.personId; })[0] || {}).name || ('شخصیت #' + s.personId);
+                    personText = (allGeoPeople.filter(function (p) { return p.id === s.personId; })[0] || {}).name || ('نامبرده #' + s.personId);
                 } else if (s.suggestedPersonGraphJson) {
                     try {
                         var parsedGraph = JSON.parse(s.suggestedPersonGraphJson);
-                        personText = 'شخصیت جدید: ' + (parsedGraph.person ? parsedGraph.person.name : '');
+                        personText = 'نامبردۀ جدید: ' + (parsedGraph.person ? parsedGraph.person.name : '');
                     } catch (e) {
-                        personText = 'شخصیت جدید';
+                        personText = 'نامبردۀ جدید';
                     }
                 }
             }
@@ -792,7 +792,7 @@
 
         if (!hasPerson) {
             if (showErrorIfEmpty) {
-                upToast('لطفاً یک شخصیت موجود را انتخاب کنید یا شخصیت جدیدی تعریف کنید.', 'error');
+                upToast('لطفاً یک نامبردۀ موجود را انتخاب کنید یا نامبردۀ جدیدی تعریف کنید.', 'error');
             }
             return null;
         }
@@ -1732,7 +1732,7 @@ else
         }
         <a role="button" href="#summaries" class="up-btn up-btn--sm up-btn--ghost">💬 بخش معنی</a>
         <a role="button" href="#geo-date-section" class="up-btn up-btn--sm up-btn--ghost">🗺️ بخش زمان و مکان</a>
-        <a role="button" href="#person-tag-section" class="up-btn up-btn--sm up-btn--ghost">🧑‍🎓 بخش شخصیت‌ها</a>
+        <a role="button" href="#person-tag-section" class="up-btn up-btn--sm up-btn--ghost">🧑‍🎓 بخش نامبردگان</a>
         <a role="button" href="#footer" class="up-btn up-btn--sm up-btn--ghost">⬇ پایین صفحه</a>
     </div>
 
@@ -2602,22 +2602,22 @@ else
        with its own "existing tags" table, its own pending list, and its own add button - a
        suggestion coming out of this card never carries a location or a date. *@
     <div class="up-card" id="person-tag-section">
-        <h2 class="up-card__title">🧑‍🎓 برچسب‌های شخصیت (پیشنهادی)</h2>
-        <p class="up-hint">می‌توانید پیشنهاد دهید که این شعر به یک شخصیت (تاریخی یا داستانی) اشاره دارد. پیشنهادهای شما پس از بررسی ناظران اعمال خواهد شد. با دکمهٔ «ذخیره» بالا همراه با بقیهٔ تغییرات ثبت می‌شود.</p>
+        <h2 class="up-card__title">🧑‍🎓 برچسب‌های نامبرده (پیشنهادی)</h2>
+        <p class="up-hint">می‌توانید پیشنهاد دهید که این شعر به یک نامبرده (تاریخی یا داستانی) اشاره دارد. پیشنهادهای شما پس از بررسی ناظران اعمال خواهد شد. با دکمهٔ «ذخیره» بالا همراه با بقیهٔ تغییرات ثبت می‌شود.</p>
 
         @if (Model.PoemGeoDateTags != null && Model.PoemGeoDateTags.Any(t => t.PersonId != null))
         {
             <table>
                 <tr>
                     <th>بیت</th>
-                    <th>شخصیت</th>
+                    <th>نامبرده</th>
                     <th>#</th>
                 </tr>
                 @foreach (var tag in Model.PoemGeoDateTags.Where(t => t.PersonId != null))
                 {
                     <tr id="existing-geotag-@tag.Id">
                         <td>@(Model.Couplets.Where(c => c.Item1 == tag.CoupletIndex).Select(c => c.Item2).FirstOrDefault() ?? "— کل شعر —")</td>
-                        <td>@(tag.Person != null ? tag.Person.Name : $"شخصیت #{tag.PersonId}")</td>
+                        <td>@(tag.Person != null ? tag.Person.Name : $"نامبرده #{tag.PersonId}")</td>
                         <td>
                             <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="requestDeleteExistingPersonTag(@tag.Id, this)">🗑️ درخواست حذف</a>
                         </td>
@@ -2641,14 +2641,14 @@ else
         </div>
 
         <div class="up-field">
-            <label for="geotag-person-search">شخصیت</label>
+            <label for="geotag-person-search">نامبرده</label>
             <div class="up-autocomplete-wrap">
-                <input type="text" id="geotag-person-search" autocomplete="off" placeholder="نام شخصیت را تایپ کنید..." />
+                <input type="text" id="geotag-person-search" autocomplete="off" placeholder="نام نامبرده را تایپ کنید..." />
                 <input type="hidden" id="geotag-person-select" />
                 <div id="geotag-person-results" class="up-autocomplete-results" style="display:none;"></div>
             </div>
-            <p class="up-hint">شروع به تایپ کنید تا فهرست شخصیت‌ها بر اساس نام فیلتر شود؛ اگر شخصیت مورد نظر پیدا نشد، گزینهٔ تعریف او به‌عنوان شخصیت جدید نمایش داده می‌شود.</p>
-            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="toggleNewPersonWidget()">👤 شخصیت جدید پیشنهاد بده</a>
+            <p class="up-hint">شروع به تایپ کنید تا فهرست نامبردگان بر اساس نام فیلتر شود؛ اگر نامبردۀ مورد نظر پیدا نشد، گزینهٔ تعریف او به‌عنوان نامبردۀ جدید نمایش داده می‌شود.</p>
+            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="toggleNewPersonWidget()">👤 نامبردۀ جدید پیشنهاد بده</a>
         </div>
 
         <div id="new-person-widget" style="display:none;">
@@ -2665,20 +2665,20 @@ else
                 <input type="text" id="geotag-new-person-wikiurl" />
             </div>
             <div class="up-field">
-                <label for="geotag-new-person-familytreecaption">عنوان تبارنامه (اختیاری، فقط اگر این شخصیت ریشهٔ یک خانواده/سلسله شناخته‌شده است - مثلاً «ساسانیان»)</label>
+                <label for="geotag-new-person-familytreecaption">عنوان تبارنامه (اختیاری، فقط اگر این نامبرده ریشهٔ یک خانواده/سلسله شناخته‌شده است - مثلاً «ساسانیان»)</label>
                 <input type="text" id="geotag-new-person-familytreecaption" />
             </div>
 
             <p class="up-hint">
-                اگر خویشاوندی یا وابستگی این شخصیت با شخصیتی دیگر را می‌دانید، می‌توانید همین‌جا اضافه کنید (شخصیت دیگر باید از قبل در فهرست موجود باشد؛
-                برای شخصیتی که او هم تازه است، ابتدا این فرم را برای او هم به‌صورت جدا تکمیل و ثبت کنید، سپس این رابطه را اضافه کنید).
+                اگر خویشاوندی یا وابستگی این نامبرده با نامبردۀ دیگری را می‌دانید، می‌توانید همین‌جا اضافه کنید (نامبردۀ دیگر باید از قبل در فهرست موجود باشد؛
+                برای نامبرده‌ای که او هم تازه است، ابتدا این فرم را برای او هم به‌صورت جدا تکمیل و ثبت کنید، سپس این رابطه را اضافه کنید).
             </p>
             <div id="geotag-person-relatives-list"></div>
             <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="addPersonRelativeRow()">➕ افزودن خویشاوند یا وابستگی</a>
         </div>
 
         <div class="up-field">
-            <label for="persontag-note">دلیل این برچسب (اختیاری، به‌ویژه برای اشاره‌های غیرمستقیم به این شخصیت)</label>
+            <label for="persontag-note">دلیل این برچسب (اختیاری، به‌ویژه برای اشاره‌های غیرمستقیم به این نامبرده)</label>
             <textarea id="persontag-note" rows="2"></textarea>
         </div>
 

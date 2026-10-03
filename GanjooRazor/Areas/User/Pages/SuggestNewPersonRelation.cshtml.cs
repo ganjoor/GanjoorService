@@ -81,7 +81,7 @@ namespace GanjooRazor.Areas.User.Pages
             Person = JsonConvert.DeserializeObject<GanjoorRelatedPerson>(await response.Content.ReadAsStringAsync());
             if (Person == null)
             {
-                LastError = "شخصیتی با این کد پیدا نشد.";
+                LastError = "نامبرده‌ای با این کد پیدا نشد.";
                 return false;
             }
 
@@ -129,7 +129,7 @@ namespace GanjooRazor.Areas.User.Pages
 
             if (OtherPersonId == 0 || OtherPersonId == personId)
             {
-                LastResult = "لطفاً خویشاوند یا شخصیت مورد نظر را انتخاب کنید.";
+                LastResult = "لطفاً خویشاوند یا نامبردۀ مورد نظر را انتخاب کنید.";
                 return Page();
             }
 
@@ -314,7 +314,7 @@ namespace GanjooRazor.Areas.User.Pages
                     return Page();
                 }
 
-                LastResult = $"پیشنهاد شما ثبت شد و پس از بررسی توسط مدیران اعمال خواهد شد. <a role=\"button\" href=\"javascript:void(0)\" onclick=\"PersonWindow.open({personId})\" class=\"actionlink\">مشاهدهٔ اطلاعات این شخصیت</a>";
+                LastResult = $"پیشنهاد شما ثبت شد و پس از بررسی توسط مدیران اعمال خواهد شد. <a role=\"button\" href=\"javascript:void(0)\" onclick=\"PersonWindow.open({personId})\" class=\"actionlink\">مشاهدهٔ اطلاعات این نامبرده</a>";
 
                 return Page();
             }

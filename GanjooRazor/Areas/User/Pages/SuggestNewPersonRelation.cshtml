@@ -32,7 +32,7 @@ else
 
             <table>
                 <tr>
-                    <td>خویشاوند یا شخصیت دیگر:</td>
+                    <td>خویشاوند یا نامبردۀ دیگر:</td>
                     <td>
                         <select asp-for="OtherPersonId">
                             <option value="0">— انتخاب کنید —</option>
@@ -59,12 +59,12 @@ else
                     <td>نسبت با @Model.Person.Name:</td>
                     <td>
                         <select asp-for="RelationKind">
-                            <option value="Child">فرزند این شخصیت است</option>
-                            <option value="Parent">پدر یا مادر این شخصیت است</option>
-                            <option value="Sibling">خواهر یا برادر این شخصیت است</option>
-                            <option value="Spouse">همسر این شخصیت است</option>
-                            <option value="DistantAncestor">نیای دور این شخصیت است (بدون نسل مشخص)</option>
-                            <option value="DistantDescendant">نوادهٔ دور این شخصیت است (بدون نسل مشخص)</option>
+                            <option value="Child">فرزند این نامبرده است</option>
+                            <option value="Parent">پدر یا مادر این نامبرده است</option>
+                            <option value="Sibling">خواهر یا برادر این نامبرده است</option>
+                            <option value="Spouse">همسر این نامبرده است</option>
+                            <option value="DistantAncestor">نیای دور این نامبرده است (بدون نسل مشخص)</option>
+                            <option value="DistantDescendant">نوادهٔ دور این نامبرده است (بدون نسل مشخص)</option>
                         </select>
                     </td>
                 </tr>
@@ -82,22 +82,22 @@ else
                     <td>وابستگی با @Model.Person.Name:</td>
                     <td>
                         <select asp-for="AffiliationKind">
-                            <option value="Minister_Other">او وزیر یا کارگزار این شخصیت بود</option>
-                            <option value="Minister_Subject">این شخصیت وزیر یا کارگزار او بود</option>
-                            <option value="Advisor_Other">او مشاور این شخصیت بود</option>
-                            <option value="Advisor_Subject">این شخصیت مشاور او بود</option>
-                            <option value="Courtier_Other">او از درباریان/همراهان این شخصیت بود</option>
-                            <option value="Courtier_Subject">این شخصیت از درباریان/همراهان او بود</option>
-                            <option value="Servant_Other">او خدمتگزار این شخصیت بود</option>
-                            <option value="Servant_Subject">این شخصیت خدمتگزار او بود</option>
-                            <option value="Patron_Other">او از این شخصیت حمایت می‌کرد (حامی او بود)</option>
-                            <option value="Patron_Subject">این شخصیت از او حمایت می‌کرد (حامی او بود)</option>
-                            <option value="Successor_Other">او جانشین این شخصیت شد (پس از او آمد)</option>
-                            <option value="Successor_Subject">این شخصیت جانشین او شد (پس از او آمد)</option>
-                            <option value="Panegyrized_Other">او در شعری این شخصیت را مدح/ستایش کرد (مدح‌گوی او بود)</option>
-                            <option value="Panegyrized_Subject">این شخصیت در شعری او را مدح/ستایش کرد (مدح‌گوی او بود)</option>
-                            <option value="Satirized_Other">او در شعری این شخصیت را هجو کرد (هجوگوی او بود)</option>
-                            <option value="Satirized_Subject">این شخصیت در شعری او را هجو کرد (هجوگوی او بود)</option>
+                            <option value="Minister_Other">او وزیر یا کارگزار این نامبرده بود</option>
+                            <option value="Minister_Subject">این نامبرده وزیر یا کارگزار او بود</option>
+                            <option value="Advisor_Other">او مشاور این نامبرده بود</option>
+                            <option value="Advisor_Subject">این نامبرده مشاور او بود</option>
+                            <option value="Courtier_Other">او از درباریان/همراهان این نامبرده بود</option>
+                            <option value="Courtier_Subject">این نامبرده از درباریان/همراهان او بود</option>
+                            <option value="Servant_Other">او خدمتگزار این نامبرده بود</option>
+                            <option value="Servant_Subject">این نامبرده خدمتگزار او بود</option>
+                            <option value="Patron_Other">او از این نامبرده حمایت می‌کرد (حامی او بود)</option>
+                            <option value="Patron_Subject">این نامبرده از او حمایت می‌کرد (حامی او بود)</option>
+                            <option value="Successor_Other">او جانشین این نامبرده شد (پس از او آمد)</option>
+                            <option value="Successor_Subject">این نامبرده جانشین او شد (پس از او آمد)</option>
+                            <option value="Panegyrized_Other">او در شعری این نامبرده را مدح/ستایش کرد (مدح‌گوی او بود)</option>
+                            <option value="Panegyrized_Subject">این نامبرده در شعری او را مدح/ستایش کرد (مدح‌گوی او بود)</option>
+                            <option value="Satirized_Other">او در شعری این نامبرده را هجو کرد (هجوگوی او بود)</option>
+                            <option value="Satirized_Subject">این نامبرده در شعری او را هجو کرد (هجوگوی او بود)</option>
                             <option value="Ally">با او متحد/هم‌پیمان بود</option>
                             <option value="Rival">با او رقیب/دشمن بود</option>
                             <option value="Companion">با او همراه/همدم بود</option>

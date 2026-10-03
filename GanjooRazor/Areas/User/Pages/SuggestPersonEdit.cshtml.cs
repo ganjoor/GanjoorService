@@ -64,7 +64,7 @@ namespace GanjooRazor.Areas.User.Pages
             Person = JsonConvert.DeserializeObject<GanjoorRelatedPerson>(await response.Content.ReadAsStringAsync());
             if (Person == null)
             {
-                LastError = "شخصیتی با این کد پیدا نشد.";
+                LastError = "نامبرده‌ای با این کد پیدا نشد.";
                 return false;
             }
 
@@ -146,7 +146,7 @@ namespace GanjooRazor.Areas.User.Pages
                     return Page();
                 }
 
-                LastResult = $"پیشنهاد ویرایش شما ثبت شد و پس از بررسی توسط مدیران اعمال خواهد شد. <a role=\"button\" href=\"javascript:void(0)\" onclick=\"PersonWindow.open({id})\" class=\"actionlink\">مشاهدهٔ اطلاعات این شخصیت</a>";
+                LastResult = $"پیشنهاد ویرایش شما ثبت شد و پس از بررسی توسط مدیران اعمال خواهد شد. <a role=\"button\" href=\"javascript:void(0)\" onclick=\"PersonWindow.open({id})\" class=\"actionlink\">مشاهدهٔ اطلاعات این نامبرده</a>";
 
                 FillSuggestionFromCurrentPerson();
 

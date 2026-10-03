@@ -3,7 +3,7 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_UserPanelLayout";
-    ViewData["Title"] = "پیشنهاد ویرایش شخصیت";
+    ViewData["Title"] = "پیشنهاد ویرایش نامبرده";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
 }
 @if (!string.IsNullOrEmpty(Model.LastError))
@@ -44,10 +44,10 @@ else
 
             <table>
                 <tr>
-                    <td>پیشنهاد حذف این شخصیت:</td>
+                    <td>پیشنهاد حذف این نامبرده:</td>
                     <td>
                         <input asp-for="Suggestion.SuggestedForDeletion" id="suggestedForDeletion" />
-                        <p class="up-hint"><small>در صورت انتخاب این گزینه سایر فیلدها نادیده گرفته خواهد شد و در صورت تأیید مدیران، این شخصیت و همهٔ نسبت‌ها/وابستگی‌های آن حذف می‌شود.</small></p>
+                        <p class="up-hint"><small>در صورت انتخاب این گزینه سایر فیلدها نادیده گرفته خواهد شد و در صورت تأیید مدیران، این نامبرده و همهٔ نسبت‌ها/وابستگی‌های آن حذف می‌شود.</small></p>
                     </td>
                 </tr>
                 <tr>
@@ -61,7 +61,7 @@ else
                 <tr>
                     <td>
                         عنوان تبارنامه:
-                        <p class="up-hint"><small>پُر کنید تا این شخصیت در <a href="javascript:void(0)" onclick="PeopleExplorer.open()">فهرست تبارنامه‌ها</a> با این عنوان دیده شود.</small></p>
+                        <p class="up-hint"><small>پُر کنید تا این نامبرده در <a href="javascript:void(0)" onclick="PeopleExplorer.open()">فهرست تبارنامه‌ها</a> با این عنوان دیده شود.</small></p>
                     </td>
                     <td><input asp-for="Suggestion.SuggestedFamilyTreeCaption" size="40" /></td>
                 </tr>

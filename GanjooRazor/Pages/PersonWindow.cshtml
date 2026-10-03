@@ -15,7 +15,7 @@ else
             @Model.Person.Name
             @if (Model.LoggedIn)
             {
-                <a href="/User/SuggestPersonEdit?id=@Model.Person.Id" class="up-icon-btn" title="پیشنهاد ویرایش این شخصیت" aria-label="پیشنهاد ویرایش این شخصیت">✎</a>
+                <a href="/User/SuggestPersonEdit?id=@Model.Person.Id" class="up-icon-btn" title="پیشنهاد ویرایش این نامبرده" aria-label="پیشنهاد ویرایش این نامبرده">✎</a>
             }
         </h2>
 
@@ -119,7 +119,7 @@ else
 
         @if (Model.Poems != null && Model.Poems.Length > 0)
         {
-            <h3>اشعار برچسب‌خورده با این شخصیت</h3>
+            <h3>اشعار برچسب‌خورده با این نامبرده</h3>
             <ul>
                 @foreach (var tag in Model.Poems)
                 {
@@ -142,7 +142,7 @@ else
         }
         else
         {
-            <p><small>هنوز شعری با این شخصیت برچسب‌گذاری نشده است.</small></p>
+            <p><small>هنوز شعری با این نامبرده برچسب‌گذاری نشده است.</small></p>
         }
     </div>
 }
