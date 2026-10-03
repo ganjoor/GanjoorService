@@ -9,7 +9,7 @@
 // FamilyTreeWindow.cshtml embeds): the JSON of
 // RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeViewModel, camelCased -
 //   { rootId, persons: [{id, name, birthYearInLHijri, deathYearInLHijri, validBirthDate,
-//     validDeathDate, description, wikiUrl, familyTreeCaption, ...}], relations: [{person1Id,
+//     validDeathDate, description, wikiUrl, familyTreeCaption, importance, ...}], relations: [{person1Id,
 //     person2Id, relationType, degreeHint}] } where relationType is PersonRelationType's numeric
 //     value: 0=Parent, 1=Sibling, 2=Spouse, 3=Ancestor (Person1 is the parent/ancestor side for
 //     0 and 3; order doesn't matter for 1 and 2).
@@ -193,6 +193,15 @@
         return s;
     }
 
+    // same PersonImportance-driven size bump idea as peoplegraph.js's nodeRadius()/
+    // IMPORTANCE_RADIUS_BUMP - 0=Normal, 1=Important, 2=VeryImportant. Kept modest relative to
+    // COL_WIDTH/ATTACH_GAP below so a bumped box never overlaps its column neighbors.
+    var IMPORTANCE_BOX_BUMP = { 0: { w: 0, h: 0 }, 1: { w: 20, h: 4 }, 2: { w: 40, h: 10 } };
+    function boxSizeFor(p, baseW, baseH) {
+        var bump = IMPORTANCE_BOX_BUMP[(p && p.importance) || 0] || IMPORTANCE_BOX_BUMP[0];
+        return { w: baseW + bump.w, h: baseH + bump.h };
+    }
+
     function renderFamilyTree(containerId, svgId, tooltipId, data, requestedRootId) {
         var container = document.getElementById(containerId);
         var svg = document.getElementById(svgId);
@@ -239,7 +248,9 @@
             var parentId = layoutInfo.primaryParentOf[childId];
             if (layoutInfo.nodeX[parentId] === undefined || layoutInfo.nodeX[childId] === undefined) return;
             var pp = pos(parentId), cp = pos(childId);
-            line(pp.x, pp.y + BOX_H / 2, cp.x, cp.y - BOX_H / 2, 'ft-line ft-line-parent');
+            var parentH = boxSizeFor(layoutInfo.persons[parentId], BOX_W, BOX_H).h;
+            var childH = boxSizeFor(layoutInfo.persons[childId], BOX_W, BOX_H).h;
+            line(pp.x, pp.y + parentH / 2, cp.x, cp.y - childH / 2, 'ft-line ft-line-parent');
         });
 
         var maxX = 0, maxY = 0;
@@ -268,19 +279,23 @@
         Object.keys(layoutInfo.nodeX).forEach(function (idStr) {
             var id = parseInt(idStr, 10);
             var p = pos(id);
-            drawBox(id, p.x, p.y, BOX_W, BOX_H, id === requestedRootId);
+            var size = boxSizeFor(layoutInfo.persons[id], BOX_W, BOX_H);
+            drawBox(id, p.x, p.y, size.w, size.h, id === requestedRootId);
 
             var attached = layoutInfo.attachedList[id] || [];
+            var edgeX = p.x + size.w / 2;
             attached.forEach(function (spouseId, i) {
-                var ax = p.x + BOX_W / 2 + ATTACH_GAP + ATTACH_W / 2 + i * (ATTACH_W + ATTACH_GAP);
+                var attSize = boxSizeFor(layoutInfo.persons[spouseId], ATTACH_W, BOX_H);
+                var ax = edgeX + ATTACH_GAP + attSize.w / 2;
                 var ay = p.y;
-                drawBox(spouseId, ax, ay, ATTACH_W, BOX_H, spouseId === requestedRootId);
-                line(p.x + BOX_W / 2, p.y, ax - ATTACH_W / 2, ay, 'ft-line ft-line-spouse');
-                var heartX = p.x + BOX_W / 2 + ATTACH_GAP / 2;
+                drawBox(spouseId, ax, ay, attSize.w, attSize.h, spouseId === requestedRootId);
+                line(edgeX, p.y, ax - attSize.w / 2, ay, 'ft-line ft-line-spouse');
+                var heartX = edgeX + ATTACH_GAP / 2;
                 var heart = el('text', { x: heartX, y: ay + 4, 'text-anchor': 'middle', 'class': 'ft-heart' });
                 heart.textContent = '♥';
                 nodesGroup.appendChild(heart);
-                maxX = Math.max(maxX, ax + ATTACH_W / 2);
+                maxX = Math.max(maxX, ax + attSize.w / 2);
+                edgeX = ax + attSize.w / 2 + ATTACH_GAP;
             });
         });
 
