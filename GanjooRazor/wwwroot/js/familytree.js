@@ -133,8 +133,23 @@
             return false;
         }
 
+        // A secondary parent (e.g. the mother, when the father was picked as the primary/spine
+        // parent above) who is themselves a root with no children of their own gets drawn as an
+        // attached spouse-box right next to the primary parent. But when the secondary parent has
+        // their OWN recorded ancestors (not uncommon - e.g. two fully-documented royal lines
+        // marrying), tryAttach refuses to move them next to someone else's position, since they
+        // already have a real, independent one of their own elsewhere in the tree. That used to
+        // mean the relation was just dropped - the child only ever showed a line to the primary
+        // parent. Track those cases here instead, so an extra connector can still be drawn straight
+        // to wherever that parent actually ended up, once every node has a position (see
+        // unattachedSecondaryParents below and its use in renderFamilyTree).
+        var unattachedSecondaryParents = []; // [{parentId, childId}]
         Object.keys(secondaryParentOf).forEach(function (childId) {
-            tryAttach(primaryParentOf[childId], secondaryParentOf[childId]);
+            var parentId = secondaryParentOf[childId];
+            var primaryId = primaryParentOf[childId];
+            if (!tryAttach(primaryId, parentId)) {
+                unattachedSecondaryParents.push({ parentId: parentId, childId: parseInt(childId, 10) });
+            }
         });
         Object.keys(spouseOf).forEach(function (a) {
             spouseOf[a].forEach(function (b) {
@@ -208,6 +223,7 @@
             secondaryParentOf: secondaryParentOf,
             attachedList: attachedList,
             attachedAsSibling: attachedAsSibling,
+            unattachedSecondaryParents: unattachedSecondaryParents,
             topLevelRoots: topLevelRoots,
             nodeX: nodeX,
             nodeDepth: nodeDepth
@@ -345,6 +361,22 @@
                 maxX = Math.max(maxX, ax + attSize.w / 2);
                 edgeX = ax + attSize.w / 2 + ATTACH_GAP;
             });
+        });
+
+        // extra connector for a recorded second parent who couldn't be drawn attached next to the
+        // primary parent (see unattachedSecondaryParents in buildLayout) - drawn last, once every
+        // box (both plain tree nodes and attached ones) has a real position in drawnPos, straight
+        // from wherever that parent actually ended up to the child. Styled distinctly from the
+        // primary parent-child line (solid) and from spouse/sibling attachments (both dashed) so it
+        // doesn't get misread as either - it's a real, independently-documented parent, just not the
+        // one the chart chose as this child's spine.
+        layoutInfo.unattachedSecondaryParents.forEach(function (edge) {
+            var pp = drawnPos[edge.parentId], cp = drawnPos[edge.childId];
+            if (!pp || !cp) return; // shouldn't happen, but never let a bad edge break the whole chart
+            var parentH = boxSizeFor(layoutInfo.persons[edge.parentId], BOX_W, BOX_H).h;
+            var childH = boxSizeFor(layoutInfo.persons[edge.childId], BOX_W, BOX_H).h;
+            var dy = cp.y > pp.y ? 1 : -1; // usually the child is drawn lower, but not guaranteed
+            line(pp.x, pp.y + dy * parentH / 2, cp.x, cp.y - dy * childH / 2, 'ft-line ft-line-second-parent');
         });
 
         svg.setAttribute('viewBox', '0 0 ' + (maxX + MARGIN) + ' ' + (maxY + MARGIN));
