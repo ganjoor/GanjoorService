@@ -422,6 +422,7 @@ namespace RMuseum.Services.Implementation
                         person.DeathLocationId = suggestion.SuggestedDeathLocationId;
                         person.FamilyTreeCaption = suggestion.SuggestedFamilyTreeCaption;
                         person.Importance = suggestion.SuggestedImportance;
+                        person.Gender = suggestion.SuggestedGender;
                         // Id and MachineGenerated on the person are intentionally left untouched
                     }
                 }

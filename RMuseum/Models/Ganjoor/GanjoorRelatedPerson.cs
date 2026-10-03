@@ -84,5 +84,12 @@
         /// smaller (see PersonImportance and peoplegraph.js's nodeRadius()) - defaults to Normal
         /// </summary>
         public PersonImportance Importance { get; set; }
+
+        /// <summary>
+        /// gender - only used by the family-tree chart to pick which parent is drawn as the tree's
+        /// spine when a child has two recorded parents who both have their own recorded ancestors
+        /// (see PersonGender and familytree.js's buildLayout()) - defaults to Unknown
+        /// </summary>
+        public PersonGender Gender { get; set; }
     }
 }

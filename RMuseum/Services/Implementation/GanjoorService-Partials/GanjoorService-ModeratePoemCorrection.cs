@@ -108,7 +108,7 @@ namespace RMuseum.Services.Implementation
                     if(dbCorrection.SummaryReviewResult == CorrectionReviewResult.Approved)
                     {
                         dbCorrection.AffectedThePoem = true;
-                        dbPoem.PoemSummary = moderation.PoemSummary.Replace("ۀ", "هٔ").Replace("ك", "ک");
+                        dbPoem.PoemSummary = moderation.PoemSummary.Replace("ۀ", "هٔ").Replace("ك", "ک").Replace("ي", "ی");
                         updatePoem = true;
                     }
                 }
@@ -167,7 +167,11 @@ namespace RMuseum.Services.Implementation
                         if (dbVerse.VersePositionResult == CorrectionReviewResult.Approved)
                             poemVerse.VersePosition = (VersePosition)dbVerse.VersePosition;
                         if (dbVerse.SummaryReviewResult == CorrectionReviewResult.Approved)
-                            poemVerse.CoupletSummary = dbVerse.CoupletSummary;
+                            // dbVerse.CoupletSummary was already run through this same substitution when the
+                            // suggestion was first submitted (see Editor.cshtml.cs's OnPostSaveCorrectionsAsync),
+                            // but re-applying it here too - same as Title/PoemSummary/verse Text above - keeps
+                            // this field consistent even if a suggestion ever arrives through another path.
+                            poemVerse.CoupletSummary = dbVerse.CoupletSummary?.Replace("ۀ", "هٔ").Replace("ك", "ک").Replace("ي", "ی");
                         if (dbVerse.LanguageReviewResult == CorrectionReviewResult.Approved)
                         {
                             if(dbVerse.LanguageId == 1)//fa-IR
@@ -910,6 +914,12 @@ namespace RMuseum.Services.Implementation
                     return new Tuple<int, string>(0, $"درجهٔ اهمیت «{node.Importance}» نامعتبر است.");
                 }
 
+                var gender = PersonGender.Unknown;
+                if (!string.IsNullOrWhiteSpace(node.Gender) && !Enum.TryParse<PersonGender>(node.Gender, out gender))
+                {
+                    return new Tuple<int, string>(0, $"جنسیت «{node.Gender}» نامعتبر است.");
+                }
+
                 var newPerson = new GanjoorRelatedPerson()
                 {
                     Name = node.Name.Trim(),
@@ -923,6 +933,7 @@ namespace RMuseum.Services.Implementation
                     DeathLocationId = node.DeathLocationId,
                     FamilyTreeCaption = string.IsNullOrWhiteSpace(node.FamilyTreeCaption) ? null : node.FamilyTreeCaption.Trim(),
                     Importance = importance,
+                    Gender = gender,
                     MachineGenerated = false,
                 };
                 _context.GanjoorRelatedPersons.Add(newPerson);

@@ -69,6 +69,19 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
         }
 
+        public string GenderLabel(PersonGender gender)
+        {
+            switch (gender)
+            {
+                case PersonGender.Male:
+                    return "مرد";
+                case PersonGender.Female:
+                    return "زن";
+                default:
+                    return "نامشخص";
+            }
+        }
+
         public IActionResult OnPost()
         {
             Skip = string.IsNullOrEmpty(Request.Query["skip"]) ? 0 : int.Parse(Request.Query["skip"]);

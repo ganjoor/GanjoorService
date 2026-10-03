@@ -67,6 +67,12 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// Null/empty is treated as Normal.
         /// </summary>
         public string Importance { get; set; }
+
+        /// <summary>
+        /// name of a PersonGender value ("Unknown", "Male", "Female") - same string-enum convention
+        /// as Importance above. Null/empty is treated as Unknown.
+        /// </summary>
+        public string Gender { get; set; }
     }
 
     /// <summary>

@@ -79,8 +79,21 @@
         allIds.forEach(function (id) { isRoot[id] = !parentsOf[id] || parentsOf[id].length === 0; });
 
         // one child can have two recorded parents (mother + father) - pick a single "primary"
-        // parent per child to build a drawable tree, preferring whichever parent is NOT themselves
-        // a chart-root (so the root-level spouse ends up as the "attached" side, see below)
+        // parent per child to build a drawable tree. Preference order:
+        //   1) whichever parent is NOT themselves a chart-root (so the tree keeps following a
+        //      documented lineage instead of dead-ending at a root with no known ancestors) -
+        //      the root-level parent then ends up as the "attached" side, see below;
+        //   2) if that's a tie (both parents are roots, or both have their own recorded
+        //      ancestors - common in legendary/mythological genealogies where both sides are
+        //      fully documented), prefer the father (PersonGender.Male = 1), matching
+        //      conventional patrilineal genealogy-chart practice;
+        //   3) if gender doesn't resolve it either (same gender, or neither recorded), fall back
+        //      to ascending person id, just to be deterministic - this last step has no meaning
+        //      of its own and is only a last resort.
+        function genderRank(id) {
+            var g = (persons[id] && persons[id].gender) || 0;
+            return g === 1 ? 0 : (g === 2 ? 1 : 2); // Male first, then Female, then Unknown
+        }
         var primaryParentOf = {};
         var secondaryParentOf = {};
         allIds.forEach(function (childId) {
@@ -90,6 +103,8 @@
             var sorted = ps.slice().sort(function (a, b) {
                 var ar = isRoot[a] ? 1 : 0, br = isRoot[b] ? 1 : 0;
                 if (ar !== br) return ar - br;
+                var ag = genderRank(a), bg = genderRank(b);
+                if (ag !== bg) return ag - bg;
                 return a - b;
             });
             primaryParentOf[childId] = sorted[0];
@@ -202,6 +217,9 @@
         return { w: baseW + bump.w, h: baseH + bump.h };
     }
 
+    // 0=Normal (regular weight), 1=Important (semi-bold), 2=VeryImportant (bold)
+    var IMPORTANCE_FONT_WEIGHT = { 0: 400, 1: 600, 2: 700 };
+
     function renderFamilyTree(containerId, svgId, tooltipId, data, requestedRootId) {
         var container = document.getElementById(containerId);
         var svg = document.getElementById(svgId);
@@ -264,8 +282,12 @@
                 'class': isRequested ? 'ft-box ft-box-current' : 'ft-box'
             });
             g.appendChild(rect);
+            // same importance->weight idea as the width/height bump above - Important/VeryImportant
+            // names are drawn bolder, not just in a bigger box, so they stand out at a glance
+            var fontWeight = IMPORTANCE_FONT_WEIGHT[(p && p.importance) || 0] || IMPORTANCE_FONT_WEIGHT[0];
             var text = el('text', {
-                x: x, y: y + 5, 'text-anchor': 'middle', 'class': 'ft-box-text', direction: 'rtl'
+                x: x, y: y + 5, 'text-anchor': 'middle', 'class': 'ft-box-text', direction: 'rtl',
+                style: 'font-weight:' + fontWeight
             });
             text.textContent = personLabel(p);
             g.appendChild(text);

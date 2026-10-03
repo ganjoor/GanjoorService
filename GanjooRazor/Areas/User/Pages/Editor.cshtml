@@ -561,7 +561,8 @@
             birthLocationId: null,
             deathLocationId: null,
             familyTreeCaption: $('#geotag-new-person-familytreecaption').val() || null,
-            importance: $('#geotag-new-person-importance').val()
+            importance: $('#geotag-new-person-importance').val(),
+            gender: $('#geotag-new-person-gender').val()
         };
 
         var relatedPeople = [];
@@ -854,6 +855,7 @@
         $('#geotag-new-person-wikiurl').val('');
         $('#geotag-new-person-familytreecaption').val('');
         $('#geotag-new-person-importance').val('Normal');
+        $('#geotag-new-person-gender').val('Unknown');
         $('#geotag-person-relatives-list').empty();
         if (document.getElementById('new-person-widget').style.display !== 'none') {
             toggleNewPersonWidget();
@@ -2690,6 +2692,15 @@ else
                     <option value="VeryImportant">بسیار مهم</option>
                 </select>
                 <p class="up-hint"><small>فقط اندازهٔ نمایش این نامبرده را در نمودار شخصیت‌ها تعیین می‌کند.</small></p>
+            </div>
+            <div class="up-field">
+                <label for="geotag-new-person-gender">جنسیت</label>
+                <select id="geotag-new-person-gender">
+                    <option value="Unknown" selected="selected">نامشخص</option>
+                    <option value="Male">مرد</option>
+                    <option value="Female">زن</option>
+                </select>
+                <p class="up-hint"><small>فقط در ترسیم نمودار تبارنامه استفاده می‌شود (برای تشخیص اینکه کدام والد به عنوان ادامهٔ اصلی شاخهٔ خانوادگی رسم شود).</small></p>
             </div>
 
             <p class="up-hint">

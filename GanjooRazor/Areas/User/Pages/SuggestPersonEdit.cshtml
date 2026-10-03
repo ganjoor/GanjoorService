@@ -79,6 +79,19 @@ else
                     </td>
                 </tr>
                 <tr>
+                    <td>
+                        جنسیت:
+                        <p class="up-hint"><small>صِرفاً در ترسیم نمودار تبارنامه استفاده می‌شود (برای تشخیص اینکه کدام والد به عنوان ادامهٔ اصلی شاخهٔ خانوادگی رسم شود)؛ در هیچ فهرست یا جستجویی تأثیری ندارد.</small></p>
+                    </td>
+                    <td>
+                        <select asp-for="Suggestion.SuggestedGender">
+                            <option value="Unknown">نامشخص</option>
+                            <option value="Male">مرد</option>
+                            <option value="Female">زن</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
                     <td>توضیحات:</td>
                     <td><textarea asp-for="Suggestion.SuggestedDescription" rows="10" cols="60"></textarea></td>
                 </tr>

@@ -114,6 +114,11 @@ namespace RMuseum.Models.Ganjoor
         public PersonImportance SuggestedImportance { get; set; }
 
         /// <summary>
+        /// suggested gender (see GanjoorRelatedPerson.Gender)
+        /// </summary>
+        public PersonGender SuggestedGender { get; set; }
+
+        /// <summary>
         /// true if this suggestion is actually a request to delete the person outright, not to
         /// change their fields - when true, every Suggested* field above is ignored on approval
         /// (they still carry whatever the contributor's pre-filled form happened to hold) and

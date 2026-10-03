@@ -90,6 +90,7 @@ namespace GanjooRazor.Areas.User.Pages
                 SuggestedDeathLocationId = Person.DeathLocationId,
                 SuggestedFamilyTreeCaption = Person.FamilyTreeCaption,
                 SuggestedImportance = Person.Importance,
+                SuggestedGender = Person.Gender,
             };
         }
 

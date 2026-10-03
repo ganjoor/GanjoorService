@@ -5010,6 +5010,18 @@
         <member name="M:RMuseum.Migrations.AddPersonImportance.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.AddPersonGender">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonGender.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonGender.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonGender.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -9534,6 +9546,11 @@
             suggested importance (see GanjoorRelatedPerson.Importance)
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedGender">
+            <summary>
+            suggested gender (see GanjoorRelatedPerson.Gender)
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedForDeletion">
             <summary>
             true if this suggestion is actually a request to delete the person outright, not to
@@ -11340,6 +11357,13 @@
             smaller (see PersonImportance and peoplegraph.js's nodeRadius()) - defaults to Normal
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.Gender">
+            <summary>
+            gender - only used by the family-tree chart to pick which parent is drawn as the tree's
+            spine when a child has two recorded parents who both have their own recorded ancestors
+            (see PersonGender and familytree.js's buildLayout()) - defaults to Unknown
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorSiteBanner">
             <summary>
             ganjoor.net site banner
@@ -11905,6 +11929,33 @@
         <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Other">
             <summary>
             doesn't fit any of the above - rely on Note for what the tie actually is
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PersonGender">
+            <summary>
+            a GanjoorRelatedPerson's gender - used only by the family-tree chart (familytree.js's
+            buildLayout()) to break ties when a child has two recorded parents and both happen to have
+            their own recorded ancestors (so neither side can be preferred on "continues a documented
+            lineage" grounds alone): the father is preferred as the tree's spine parent, matching
+            conventional patrilineal genealogy-chart practice, with the mother then drawn attached
+            beside him. Never used to filter, rank or otherwise affect query results. New values can be
+            appended safely later (stored as int).
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonGender.Unknown">
+            <summary>
+            default - not recorded. Falls back to the old ambiguous-tie-break behavior (ascending
+            person id) when it matters.
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonGender.Male">
+            <summary>
+            male
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonGender.Female">
+            <summary>
+            female
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PersonImportance">
@@ -15120,6 +15171,12 @@
             name of a PersonImportance value ("Normal", "Important", "VeryImportant") - same
             string-enum convention as PersonGraphRelationEntry.RelationType/AffiliationType below.
             Null/empty is treated as Normal.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphNode.Gender">
+            <summary>
+            name of a PersonGender value ("Unknown", "Male", "Female") - same string-enum convention
+            as Importance above. Null/empty is treated as Unknown.
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PersonGraphRelationEntry">
