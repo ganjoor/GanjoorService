@@ -26,6 +26,12 @@ else
         <p>@Html.Raw(Model.LastResult)</p>
     }
 
+    <script>
+        // full catalog of every person except the subject ($Model.Person) - same shape/purpose as
+        // allGeoLocations/allGeoPeople in ReviewEdits.cshtml/Editor.cshtml, see OtherPeopleJson
+        var otherPeopleCatalog = @Html.Raw(Model.OtherPeopleJson);
+    </script>
+
     <div class="up-card">
         <form method="post" action="/User/SuggestNewPersonRelation?personId=@Model.Person.Id&amp;Handler=Suggest">
             @Html.AntiForgeryToken()
@@ -34,13 +40,28 @@ else
                 <tr>
                     <td>خویشاوند یا نامبردۀ دیگر:</td>
                     <td>
-                        <select asp-for="OtherPersonId">
-                            <option value="0">— انتخاب کنید —</option>
-                            @foreach (var p in Model.OtherPeople)
-                            {
-                                <option value="@p.Id">@p.Name</option>
-                            }
-                        </select>
+                        <div class="up-autocomplete-wrap">
+                            <input type="text" id="other-person-search" autocomplete="off" placeholder="نام خویشاوند یا نامبردۀ دیگر را تایپ کنید..."
+                                   value="@(Model.OtherPersonId != 0 ? (Model.OtherPeople ?? new List<RMuseum.Models.Ganjoor.GanjoorRelatedPerson>()).Where(p => p.Id == Model.OtherPersonId).Select(p => p.Name).FirstOrDefault() : null)" />
+                            <input type="hidden" asp-for="OtherPersonId" />
+                            <div id="other-person-results" class="up-autocomplete-results" style="display:none;"></div>
+                        </div>
+                        <p class="up-hint"><small>
+                            اگر بیش از یک نامبرده با نام مشابه در فهرست باشد (مثلاً شخصیت‌های شاهنامه)، پس از انتخاب از روی سال تولد/وفات مطمئن شوید
+                            یا با کلیک روی 👁 اطلاعات کامل آن را ببینید.
+                        </small></p>
+                        <script>
+                            setupPersonAutocomplete(
+                                document.getElementById('other-person-search'),
+                                document.getElementById('OtherPersonId'),
+                                document.getElementById('other-person-results'),
+                                otherPeopleCatalog,
+                                null,
+                                function (typedText) {
+                                    upToast('این نامبرده در فهرست نیست. طرف دیگر یک رابطه باید از قبل تعریف‌شده باشد؛ برای افزودن یک نامبردۀ تازه، ابتدا او را به‌طور جدا از صفحهٔ ویرایشگر تعریف کنید.', 'error');
+                                }
+                            );
+                        </script>
                     </td>
                 </tr>
                 <tr>

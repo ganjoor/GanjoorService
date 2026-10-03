@@ -2885,6 +2885,35 @@ function setupLocationAutocomplete(searchInput, hiddenInput, resultsBox, locatio
 function setupPersonAutocomplete(searchInput, hiddenInput, resultsBox, people, onSelect, onNotFound) {
     var MAX_RESULTS = 12;
 
+    // The birth/death-year subtitle in each dropdown row below helps tell two same-named people
+    // apart (the Shahnameh/mythological person catalog in particular has several), but it's not
+    // always enough - two people can share both a name and era, or the subtitle can be blank if
+    // neither year is recorded. So once a pick is made (or the field already carries one from the
+    // server, e.g. correcting an existing suggestion), show a small "👁 view full info" link right
+    // next to the box, opening that exact person's full profile (PersonWindow.open) so whoever is
+    // picking - or a moderator reviewing someone else's pick - can be sure it's the right person,
+    // not just one with a matching name/years.
+    var viewLink = document.createElement('a');
+    viewLink.href = 'javascript:void(0)';
+    viewLink.className = 'up-icon-btn';
+    viewLink.title = 'مشاهدهٔ اطلاعات کامل این شخصیت';
+    viewLink.setAttribute('aria-label', 'مشاهدهٔ اطلاعات کامل این شخصیت');
+    viewLink.style.marginRight = '4px';
+    viewLink.textContent = '👁';
+    viewLink.addEventListener('click', function () {
+        var id = parseInt(hiddenInput.value, 10);
+        if (id) PersonWindow.open(id);
+    });
+    if (searchInput.parentNode) {
+        searchInput.parentNode.insertBefore(viewLink, searchInput.nextSibling);
+    }
+
+    function updateViewLink() {
+        var id = parseInt(hiddenInput.value, 10);
+        viewLink.style.display = id ? 'inline' : 'none';
+    }
+    updateViewLink(); // the hidden input may already carry a value set by the server (editing/correcting an existing pick)
+
     function hide() {
         resultsBox.style.display = 'none';
         resultsBox.innerHTML = '';
@@ -2906,6 +2935,7 @@ function setupPersonAutocomplete(searchInput, hiddenInput, resultsBox, people, o
     function selectPerson(p) {
         searchInput.value = p.name;
         hiddenInput.value = String(p.id);
+        updateViewLink();
         hide();
         if (onSelect) onSelect(p);
     }
@@ -2953,6 +2983,7 @@ function setupPersonAutocomplete(searchInput, hiddenInput, resultsBox, people, o
 
     searchInput.addEventListener('input', function () {
         hiddenInput.value = ''; // typing invalidates whatever was previously selected
+        updateViewLink();
         var typed = searchInput.value.trim();
         if (typed == '') {
             hide();

@@ -40,6 +40,21 @@ namespace GanjooRazor.Areas.User.Pages
 
         public List<GanjoorRelatedPerson> OtherPeople { get; set; }
 
+        /// <summary>
+        /// camelCase JSON of OtherPeople (id/name/birthYearInLHijri/deathYearInLHijri only), used
+        /// client-side for the search-as-you-type person picker replacing the old plain &lt;select&gt;
+        /// (see setupPersonAutocomplete in bk.js) - same shape/purpose as
+        /// ReviewEdits.cshtml.cs's/Editor.cshtml.cs's AllPeopleJson. The catalog can legitimately
+        /// contain more than one person sharing the same name (e.g. Shahnameh figures), so the
+        /// picker shows birth/death years as a disambiguating subtitle and a "👁 view full info" link
+        /// once a candidate is picked.
+        /// </summary>
+        public string OtherPeopleJson =>
+            JsonConvert.SerializeObject(
+                (OtherPeople ?? new List<GanjoorRelatedPerson>()).Select(p => new { p.Id, p.Name, p.BirthYearInLHijri, p.DeathYearInLHijri }),
+                new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }
+            );
+
         [BindProperty]
         public int OtherPersonId { get; set; }
 
