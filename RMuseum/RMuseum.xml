@@ -15214,6 +15214,17 @@
             as Importance above. Null/empty is treated as Unknown.
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphNode.ConfirmedNewDespiteNameMatch">
+            <summary>
+            only meaningful when ExistingPersonId is null (a brand new person is being created).
+            Normally, if Name exactly matches an already-approved GanjoorRelatedPerson,
+            _MaterializePersonGraphAsync rejects the submission rather than silently creating a
+            near-duplicate node - the far more common case is a contributor who free-typed a name
+            instead of picking the existing person via the search-as-you-type selector. Set this to
+            true only when the name collision is known/intentional (e.g. two distinct Shahnameh
+            characters sharing a name) to let the new person be created anyway.
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PersonGraphRelationEntry">
             <summary>
             one edge in a PersonGraphSuggestion, between two nodes referenced by their LocalKey (Person1/
@@ -22271,6 +22282,21 @@
             contradictory suggestion is rejected up front) and ModeratePersonRelationEditSuggestionAsync
             (so it's still caught even if another suggestion was approved in the meantime, or the
             submission-time check is ever bypassed).
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.GanjoorRelatedPersonService._symmetricAffiliationTypes">
+            <summary>
+            affiliation types whose two sides are interchangeable (Person1/Person2 order carries no
+            meaning) - mirrors the convention already baked into SuggestNewPersonRelation.cshtml's
+            dropdown, where these are the only affiliation options with no "_Other"/"_Subject" pair
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._CrossesSymmetricDirectionalBoundary(RMuseum.Models.Ganjoor.PersonAffiliationType,RMuseum.Models.Ganjoor.PersonAffiliationType)">
+            <summary>
+            true if modifying an affiliation edge from oldType to newType would cross the symmetric/
+            directional boundary - PersonAffiliationType.Other is excluded on either side, since its
+            direction (if any) is whatever the free-text Note says rather than something the type
+            itself implies, so moving into/out of Other is never treated as crossing the boundary
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.SuggestPersonEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion)">

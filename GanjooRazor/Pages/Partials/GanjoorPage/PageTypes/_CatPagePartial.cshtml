@@ -182,7 +182,13 @@
                 if (marker.poemGeoTag.LunarYear != null) {
                     markOrder = marker.order + ' - ';
                 }
-                var poemDesc = markOrder + '<a class="actionlink" onclick="viewLocation(marker.poemGeoTag.Location.Latitude, marker.poemGeoTag.Location.Longitude)">' + marker.poemGeoTag.Location.Name + '</a> <br> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
+                // the location's own coordinates are embedded here as literal numbers, not as a
+                // "marker.poemGeoTag...." lookup - that onclick string is parsed and executed later,
+                // when the rendered link is actually clicked, in global scope, where "marker" would
+                // otherwise resolve to the shared/leaked loop variable below (whichever marker was
+                // built LAST), making every popup's link open the same one location regardless of
+                // which marker was actually clicked
+                var poemDesc = markOrder + '<a class="actionlink" onclick="viewLocation(' + marker.poemGeoTag.Location.Latitude + ', ' + marker.poemGeoTag.Location.Longitude + ')">' + marker.poemGeoTag.Location.Name + '</a> <br> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
                 if (marker.poemGeoTag.LunarYear != null) {
                     poemDesc += '<br> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
                 }
@@ -200,7 +206,10 @@
 
             for (var i = 0; i < poemGeoTags.length; i++) {
                 var poemGeoTag = poemGeoTags[i];
-                marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
+                // declared with "var" so it's local to this closure instead of leaking as an
+                // implicit global that every iteration overwrites (see the onclick fix above for
+                // why that leak was the actual user-visible bug)
+                var marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
                 marker.poemGeoTag = poemGeoTag
                 marker.order = persianizeNumerals((i + 1).toString());
                 marker.addTo(layerGroup);
