@@ -281,6 +281,203 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// finds another person already carrying a non-null FamilyTreeCaption within the same
+        /// connected kinship component as personId (if any). Captions are resolved per requested
+        /// person, not stored on the tree itself, so nothing stops two different people in one
+        /// connected component from each getting their own caption - which would silently produce
+        /// two separate "family tree" list entries (GetFamilyTreeRootsAsync) that both open to the
+        /// exact same graph. This is used to catch that at approval time rather than let it happen
+        /// silently; it only ever flags an OTHER person, so re-saving/editing the caption a person
+        /// already uniquely holds in their own tree is never blocked by it.
+        /// </summary>
+        private async Task<GanjoorRelatedPerson> _FindOtherFamilyTreeCaptionHolderInComponentAsync(int personId)
+        {
+            var allRelations = await _context.GanjoorPersonRelations.ToListAsync();
+            var edgesByPersonId = new Dictionary<int, List<GanjoorPersonRelation>>();
+            void IndexEdge(int pid, GanjoorPersonRelation edge)
+            {
+                if (!edgesByPersonId.TryGetValue(pid, out var list))
+                {
+                    list = new List<GanjoorPersonRelation>();
+                    edgesByPersonId[pid] = list;
+                }
+                list.Add(edge);
+            }
+            foreach (var edge in allRelations)
+            {
+                IndexEdge(edge.Person1Id, edge);
+                IndexEdge(edge.Person2Id, edge);
+            }
+
+            var visited = new HashSet<int>() { personId };
+            var queue = new Queue<int>();
+            queue.Enqueue(personId);
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                if (!edgesByPersonId.TryGetValue(current, out var touchingEdges))
+                    continue;
+                foreach (var edge in touchingEdges)
+                {
+                    var otherPersonId = edge.Person1Id == current ? edge.Person2Id : edge.Person1Id;
+                    if (visited.Add(otherPersonId))
+                    {
+                        queue.Enqueue(otherPersonId);
+                    }
+                }
+            }
+            visited.Remove(personId);
+
+            if (visited.Count == 0)
+                return null;
+
+            return await _context.GanjoorRelatedPersons
+                .Where(p => visited.Contains(p.Id) && !string.IsNullOrEmpty(p.FamilyTreeCaption))
+                .FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// loads every directed ancestor-type kinship edge (RelationType Parent or Ancestor,
+        /// Person1 = ancestor, Person2 = descendant) currently in the live graph, optionally
+        /// excluding one relation row by id (used so a Modify suggestion can be checked against
+        /// every OTHER edge without tripping on the very row it's about to replace)
+        /// </summary>
+        private async Task<List<GanjoorPersonRelation>> _GetAncestorEdgesAsync(int? excludeRelationId)
+        {
+            var query = _context.GanjoorPersonRelations
+                .Where(r => r.RelationType == PersonRelationType.Parent || r.RelationType == PersonRelationType.Ancestor);
+            if (excludeRelationId != null)
+            {
+                query = query.Where(r => r.Id != excludeRelationId.Value);
+            }
+            return await query.ToListAsync();
+        }
+
+        /// <summary>
+        /// true if adding a directed ancestor-type edge ancestorId -&gt; descendantId (ancestorId
+        /// becomes a parent/ancestor of descendantId) would create a cycle in the kinship graph -
+        /// i.e. descendantId is already (directly or transitively) an ancestor of ancestorId, or
+        /// they're literally the same person. Without this, nothing stops e.g. approving "A is
+        /// parent of B" and later "B is parent of A", which familytree.js's unguarded recursive
+        /// layout() would then infinite-loop on when rendering that tree.
+        /// </summary>
+        private async Task<bool> _WouldCreateAncestryCycleAsync(int ancestorId, int descendantId, int? excludeRelationId)
+        {
+            if (ancestorId == descendantId)
+                return true;
+
+            var edges = await _GetAncestorEdgesAsync(excludeRelationId);
+            var childrenOf = new Dictionary<int, List<int>>();
+            foreach (var edge in edges)
+            {
+                if (!childrenOf.TryGetValue(edge.Person1Id, out var list))
+                {
+                    list = new List<int>();
+                    childrenOf[edge.Person1Id] = list;
+                }
+                list.Add(edge.Person2Id);
+            }
+
+            // walk forward from descendantId: if it can already reach ancestorId through existing
+            // edges, descendantId is already an ancestor of ancestorId, so the new edge would close a loop
+            var visited = new HashSet<int>() { descendantId };
+            var queue = new Queue<int>();
+            queue.Enqueue(descendantId);
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                if (current == ancestorId)
+                    return true;
+                if (!childrenOf.TryGetValue(current, out var children))
+                    continue;
+                foreach (var child in children)
+                {
+                    if (visited.Add(child))
+                    {
+                        queue.Enqueue(child);
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// counts this child's distinct existing Parent-type edges (biological parents), optionally
+        /// excluding one relation row by id - used to cap a person at two recorded parents, since
+        /// familytree.js's buildLayout only ever attaches the first two it sorts to the front and
+        /// silently drops any further ones with no error
+        /// </summary>
+        private async Task<int> _CountParentsAsync(int childId, int? excludeRelationId)
+        {
+            var query = _context.GanjoorPersonRelations
+                .Where(r => r.RelationType == PersonRelationType.Parent && r.Person2Id == childId);
+            if (excludeRelationId != null)
+            {
+                query = query.Where(r => r.Id != excludeRelationId.Value);
+            }
+            return await query.Select(r => r.Person1Id).Distinct().CountAsync();
+        }
+
+        /// <summary>
+        /// returns an existing kinship edge between this unordered pair (if any), other than
+        /// excludeRelationId, whose RelationType differs from proposedType - used to stop a pair
+        /// from simultaneously carrying two contradictory family relations (e.g. Parent AND Spouse,
+        /// or Parent AND Sibling, between the very same two people)
+        /// </summary>
+        private async Task<GanjoorPersonRelation> _GetConflictingRelationAsync(int person1Id, int person2Id, PersonRelationType proposedType, int? excludeRelationId)
+        {
+            var query = _context.GanjoorPersonRelations
+                .Include(r => r.Person1)
+                .Include(r => r.Person2)
+                .Where(r =>
+                    ((r.Person1Id == person1Id && r.Person2Id == person2Id) || (r.Person1Id == person2Id && r.Person2Id == person1Id))
+                    && r.RelationType != proposedType);
+            if (excludeRelationId != null)
+            {
+                query = query.Where(r => r.Id != excludeRelationId.Value);
+            }
+            return await query.FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// runs every family-relation data-integrity check (self-reference is checked separately by
+        /// the caller for Add) that applies to adding/changing a kinship edge of relationType between
+        /// person1Id and person2Id: ancestry cycles, the two-parents cap, and contradictory relation
+        /// types already existing between the same pair. Returns a Persian error message, or null if
+        /// the edge is fine to create/apply. Shared by SuggestPersonRelationEditAsync (so a
+        /// contradictory suggestion is rejected up front) and ModeratePersonRelationEditSuggestionAsync
+        /// (so it's still caught even if another suggestion was approved in the meantime, or the
+        /// submission-time check is ever bypassed).
+        /// </summary>
+        private async Task<string> _ValidateFamilyRelationAsync(int person1Id, int person2Id, PersonRelationType relationType, int? excludeRelationId)
+        {
+            if (relationType == PersonRelationType.Parent || relationType == PersonRelationType.Ancestor)
+            {
+                if (await _WouldCreateAncestryCycleAsync(person1Id, person2Id, excludeRelationId))
+                {
+                    return "این نسبت باعث ایجاد حلقهٔ تناقض‌آمیز در شجره‌نامه می‌شود (مثلاً فردی نیای خود شناخته می‌شود). لطفاً نسبت‌های موجود بین این دو نفر و نیاکان/نوادگان آن‌ها را بررسی کنید.";
+                }
+            }
+
+            if (relationType == PersonRelationType.Parent)
+            {
+                var existingParentsCount = await _CountParentsAsync(person2Id, excludeRelationId);
+                if (existingParentsCount >= 2)
+                {
+                    return "این نامبرده هم‌اکنون دو پدر/مادر ثبت‌شده دارد. برای افزودن سومی، نخست یکی از نسبت‌های پدر/مادری موجود را ویرایش یا حذف کنید.";
+                }
+            }
+
+            var conflictingRelation = await _GetConflictingRelationAsync(person1Id, person2Id, relationType, excludeRelationId);
+            if (conflictingRelation != null)
+            {
+                return $"هم‌اکنون نسبت خویشاوندی دیگری بین «{conflictingRelation.Person1?.Name}» و «{conflictingRelation.Person2?.Name}» ثبت شده که با نوع جدید پیشنهادی در تناقض است. لطفاً نخست آن را ویرایش یا حذف کنید.";
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// submit a suggested edit to an already-approved person's own fields
         /// </summary>
         /// <param name="suggestion"></param>
@@ -411,6 +608,16 @@ namespace RMuseum.Services.Implementation
                     }
                     else
                     {
+                        if (!string.IsNullOrWhiteSpace(suggestion.SuggestedFamilyTreeCaption))
+                        {
+                            var otherCaptionHolder = await _FindOtherFamilyTreeCaptionHolderInComponentAsync(person.Id);
+                            if (otherCaptionHolder != null)
+                            {
+                                return new RServiceResult<GanjoorPersonEditSuggestion>(null,
+                                    $"شخصیت «{otherCaptionHolder.Name}» هم‌اکنون در همین خوشهٔ خویشاوندی (همان شجره‌نامه) عنوان تبارنامهٔ «{otherCaptionHolder.FamilyTreeCaption}» را دارد. تأیید این پیشنهاد باعث می‌شود یک شجره‌نامهٔ واحد دو عنوان/مدخل جداگانه در فهرست شجره‌نامه‌ها پیدا کند. نخست عنوان «{otherCaptionHolder.Name}» را حذف یا ویرایش کنید، یا این پیشنهاد را رد کنید.");
+                            }
+                        }
+
                         person.Name = suggestion.SuggestedName;
                         person.Description = suggestion.SuggestedDescription;
                         person.WikiUrl = suggestion.SuggestedWikiUrl;
@@ -679,6 +886,17 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "یکی از دو طرف نسبت پیدا نشد.");
                 }
 
+                if (suggestion.Kind == PersonRelationSuggestionKind.Family &&
+                    (suggestion.Action == PersonRelationSuggestionAction.Add || suggestion.Action == PersonRelationSuggestionAction.Modify))
+                {
+                    var excludeRelationId = suggestion.Action == PersonRelationSuggestionAction.Modify ? suggestion.ExistingRelationId : null;
+                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, excludeRelationId);
+                    if (validationError != null)
+                    {
+                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, validationError);
+                    }
+                }
+
                 suggestion.Id = 0;
                 suggestion.ExistingRelation = null;
                 suggestion.ExistingAffiliation = null;
@@ -852,21 +1070,36 @@ namespace RMuseum.Services.Implementation
                         switch (suggestion.Action)
                         {
                             case PersonRelationSuggestionAction.Add:
-                                _context.GanjoorPersonRelations.Add(new GanjoorPersonRelation()
                                 {
-                                    Person1Id = suggestion.Person1Id,
-                                    Person2Id = suggestion.Person2Id,
-                                    RelationType = suggestion.SuggestedRelationType,
-                                    DegreeHint = suggestion.SuggestedDegreeHint,
-                                    Note = suggestion.SuggestedNote,
-                                });
-                                break;
+                                    // re-validated here (not just at submission time in
+                                    // SuggestPersonRelationEditAsync) in case another suggestion
+                                    // touching the same people/relations was approved in between
+                                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, null);
+                                    if (validationError != null)
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, validationError);
+                                    }
+                                    _context.GanjoorPersonRelations.Add(new GanjoorPersonRelation()
+                                    {
+                                        Person1Id = suggestion.Person1Id,
+                                        Person2Id = suggestion.Person2Id,
+                                        RelationType = suggestion.SuggestedRelationType,
+                                        DegreeHint = suggestion.SuggestedDegreeHint,
+                                        Note = suggestion.SuggestedNote,
+                                    });
+                                    break;
+                                }
                             case PersonRelationSuggestionAction.Modify:
                                 {
                                     var existing = await _context.GanjoorPersonRelations.Where(r => r.Id == suggestion.ExistingRelationId.Value).SingleOrDefaultAsync();
                                     if (existing == null)
                                     {
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "نسبت مورد نظر دیگر وجود ندارد.");
+                                    }
+                                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, existing.Id);
+                                    if (validationError != null)
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, validationError);
                                     }
                                     existing.RelationType = suggestion.SuggestedRelationType;
                                     existing.DegreeHint = suggestion.SuggestedDegreeHint;

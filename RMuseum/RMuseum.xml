@@ -11952,6 +11952,15 @@
             use one of the other types instead whenever an actual relationship is known
             </summary>
         </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Killer">
+            <summary>
+            Person1 killed Person2 (کشتن) - directional. Deliberately separate from Rival: an act of
+            killing is usually a single event (e.g. in battle, by treachery, in a duel), and doesn't by
+            itself mean the two were ongoing enemies/rivals beforehand - they could have been allies,
+            kin-by-marriage, or strangers. Use Rival instead (additionally, if applicable) when there
+            was a standing enmity, and Note for how/why the killing happened
+            </summary>
+        </member>
         <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Other">
             <summary>
             doesn't fit any of the above - rely on Note for what the tie actually is
@@ -22206,6 +22215,64 @@
             <param name="rootId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._FindOtherFamilyTreeCaptionHolderInComponentAsync(System.Int32)">
+            <summary>
+            finds another person already carrying a non-null FamilyTreeCaption within the same
+            connected kinship component as personId (if any). Captions are resolved per requested
+            person, not stored on the tree itself, so nothing stops two different people in one
+            connected component from each getting their own caption - which would silently produce
+            two separate "family tree" list entries (GetFamilyTreeRootsAsync) that both open to the
+            exact same graph. This is used to catch that at approval time rather than let it happen
+            silently; it only ever flags an OTHER person, so re-saving/editing the caption a person
+            already uniquely holds in their own tree is never blocked by it.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._GetAncestorEdgesAsync(System.Nullable{System.Int32})">
+            <summary>
+            loads every directed ancestor-type kinship edge (RelationType Parent or Ancestor,
+            Person1 = ancestor, Person2 = descendant) currently in the live graph, optionally
+            excluding one relation row by id (used so a Modify suggestion can be checked against
+            every OTHER edge without tripping on the very row it's about to replace)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._WouldCreateAncestryCycleAsync(System.Int32,System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            true if adding a directed ancestor-type edge ancestorId -&gt; descendantId (ancestorId
+            becomes a parent/ancestor of descendantId) would create a cycle in the kinship graph -
+            i.e. descendantId is already (directly or transitively) an ancestor of ancestorId, or
+            they're literally the same person. Without this, nothing stops e.g. approving "A is
+            parent of B" and later "B is parent of A", which familytree.js's unguarded recursive
+            layout() would then infinite-loop on when rendering that tree.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._CountParentsAsync(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            counts this child's distinct existing Parent-type edges (biological parents), optionally
+            excluding one relation row by id - used to cap a person at two recorded parents, since
+            familytree.js's buildLayout only ever attaches the first two it sorts to the front and
+            silently drops any further ones with no error
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._GetConflictingRelationAsync(System.Int32,System.Int32,RMuseum.Models.Ganjoor.PersonRelationType,System.Nullable{System.Int32})">
+            <summary>
+            returns an existing kinship edge between this unordered pair (if any), other than
+            excludeRelationId, whose RelationType differs from proposedType - used to stop a pair
+            from simultaneously carrying two contradictory family relations (e.g. Parent AND Spouse,
+            or Parent AND Sibling, between the very same two people)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._ValidateFamilyRelationAsync(System.Int32,System.Int32,RMuseum.Models.Ganjoor.PersonRelationType,System.Nullable{System.Int32})">
+            <summary>
+            runs every family-relation data-integrity check (self-reference is checked separately by
+            the caller for Add) that applies to adding/changing a kinship edge of relationType between
+            person1Id and person2Id: ancestry cycles, the two-parents cap, and contradictory relation
+            types already existing between the same pair. Returns a Persian error message, or null if
+            the edge is fine to create/apply. Shared by SuggestPersonRelationEditAsync (so a
+            contradictory suggestion is rejected up front) and ModeratePersonRelationEditSuggestionAsync
+            (so it's still caught even if another suggestion was approved in the meantime, or the
+            submission-time check is ever bypassed).
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.SuggestPersonEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion)">
             <summary>
             submit a suggested edit to an already-approved person's own fields
@@ -22934,6 +23001,17 @@
             node (the one that ends up assigned to the tag's PersonId), or an error message.
             </summary>
             <param name="json">SuggestedPersonGraphJson value - see its doc comment for the expected shape</param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._WouldCreateAncestryCycleInGraphAsync(System.Int32,System.Int32,System.Collections.Generic.List{System.ValueTuple{System.Int32,System.Int32}})">
+            <summary>
+            true if adding a directed ancestor-type edge ancestorId -&gt; descendantId (ancestorId
+            becomes a parent/ancestor of descendantId) would create a cycle, counting both the
+            already-live kinship graph AND any ancestor-type edges added earlier in the same
+            in-progress _MaterializePersonGraphAsync batch (extraEdges) - mirrors
+            GanjoorRelatedPersonService's own _WouldCreateAncestryCycleAsync, duplicated here since
+            this runs in a different service/DbContext and also has to account for not-yet-saved,
+            same-batch edges that the other copy never needs to.
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ModeratePoemSectionCorrection(System.Guid,RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemSectionCorrectionViewModel)">
             <summary>

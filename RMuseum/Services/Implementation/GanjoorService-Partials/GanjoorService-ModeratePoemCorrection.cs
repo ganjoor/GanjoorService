@@ -944,12 +944,26 @@ namespace RMuseum.Services.Implementation
             // second pass: now that every node has a real id, create the edges between them
             if (graph.Relations != null)
             {
+                // ancestor-type (Parent/Ancestor) edges added earlier in THIS SAME batch, kept
+                // separately because they're not queryable from _context until the final
+                // SaveChangesAsync below - a single suggested-person-graph payload can easily
+                // describe more than one generation at once (e.g. a new person plus their new
+                // parent plus that parent's own already-known parent), so the cycle/parent-cap
+                // checks below need to see these in-flight edges too, not just what's already live
+                var newlyAddedAncestorEdges = new List<(int AncestorId, int DescendantId)>();
+                var newlyAddedRelations = new List<(int Person1Id, int Person2Id, PersonRelationType RelationType)>();
+
                 foreach (var relation in graph.Relations)
                 {
                     if (!localKeyToPersonId.TryGetValue(relation.Person1 ?? "", out int person1Id) ||
                         !localKeyToPersonId.TryGetValue(relation.Person2 ?? "", out int person2Id))
                     {
                         return new Tuple<int, string>(0, "یکی از روابط پیشنهادی به شخصیتی خارج از این پیشنهاد اشاره می‌کند.");
+                    }
+
+                    if (person1Id == person2Id)
+                    {
+                        return new Tuple<int, string>(0, "دو طرف یک رابطه نمی‌توانند یک شخص باشند.");
                     }
 
                     if (string.Equals(relation.Kind, "affiliation", StringComparison.OrdinalIgnoreCase))
@@ -972,6 +986,40 @@ namespace RMuseum.Services.Implementation
                         {
                             return new Tuple<int, string>(0, $"نوع رابطهٔ خویشاوندی «{relation.RelationType}» نامعتبر است.");
                         }
+
+                        if (relationType == PersonRelationType.Parent || relationType == PersonRelationType.Ancestor)
+                        {
+                            if (await _WouldCreateAncestryCycleInGraphAsync(person1Id, person2Id, newlyAddedAncestorEdges))
+                            {
+                                return new Tuple<int, string>(0, "این رابطه باعث ایجاد حلقهٔ تناقض‌آمیز در شجره‌نامه می‌شود (مثلاً فردی نیای خود شناخته می‌شود).");
+                            }
+                        }
+
+                        if (relationType == PersonRelationType.Parent)
+                        {
+                            var existingParentsCount = await _context.GanjoorPersonRelations
+                                .Where(r => r.RelationType == PersonRelationType.Parent && r.Person2Id == person2Id)
+                                .Select(r => r.Person1Id).Distinct().CountAsync();
+                            var newParentsCount = newlyAddedAncestorEdges.Count(e => e.DescendantId == person2Id && e.AncestorId != person1Id);
+                            if (existingParentsCount + newParentsCount >= 2)
+                            {
+                                return new Tuple<int, string>(0, "این نامبرده هم‌اکنون دو پدر/مادر دارد؛ نمی‌توان سومی را از طریق این برچسب افزود.");
+                            }
+                        }
+
+                        var conflictingExisting = await _context.GanjoorPersonRelations
+                            .Where(r =>
+                                ((r.Person1Id == person1Id && r.Person2Id == person2Id) || (r.Person1Id == person2Id && r.Person2Id == person1Id))
+                                && r.RelationType != relationType)
+                            .AnyAsync();
+                        var conflictingNew = newlyAddedRelations.Any(r =>
+                            ((r.Person1Id == person1Id && r.Person2Id == person2Id) || (r.Person1Id == person2Id && r.Person2Id == person1Id))
+                            && r.RelationType != relationType);
+                        if (conflictingExisting || conflictingNew)
+                        {
+                            return new Tuple<int, string>(0, "نسبت دیگری با نوع متفاوت بین همین دو نفر از قبل (یا در همین پیشنهاد) ثبت شده که با این مغایرت دارد.");
+                        }
+
                         _context.GanjoorPersonRelations.Add(new GanjoorPersonRelation()
                         {
                             Person1Id = person1Id,
@@ -980,12 +1028,77 @@ namespace RMuseum.Services.Implementation
                             DegreeHint = relation.DegreeHint,
                             Note = relation.Note,
                         });
+
+                        if (relationType == PersonRelationType.Parent || relationType == PersonRelationType.Ancestor)
+                        {
+                            newlyAddedAncestorEdges.Add((person1Id, person2Id));
+                        }
+                        newlyAddedRelations.Add((person1Id, person2Id, relationType));
                     }
                 }
                 await _context.SaveChangesAsync();
             }
 
             return new Tuple<int, string>(localKeyToPersonId[graph.Person.LocalKey], null);
+        }
+
+        /// <summary>
+        /// true if adding a directed ancestor-type edge ancestorId -&gt; descendantId (ancestorId
+        /// becomes a parent/ancestor of descendantId) would create a cycle, counting both the
+        /// already-live kinship graph AND any ancestor-type edges added earlier in the same
+        /// in-progress _MaterializePersonGraphAsync batch (extraEdges) - mirrors
+        /// GanjoorRelatedPersonService's own _WouldCreateAncestryCycleAsync, duplicated here since
+        /// this runs in a different service/DbContext and also has to account for not-yet-saved,
+        /// same-batch edges that the other copy never needs to.
+        /// </summary>
+        private async Task<bool> _WouldCreateAncestryCycleInGraphAsync(int ancestorId, int descendantId, List<(int AncestorId, int DescendantId)> extraEdges)
+        {
+            if (ancestorId == descendantId)
+                return true;
+
+            var edges = await _context.GanjoorPersonRelations
+                .Where(r => r.RelationType == PersonRelationType.Parent || r.RelationType == PersonRelationType.Ancestor)
+                .Select(r => new { r.Person1Id, r.Person2Id })
+                .ToListAsync();
+
+            var childrenOf = new Dictionary<int, List<int>>();
+            void AddEdge(int parent, int child)
+            {
+                if (!childrenOf.TryGetValue(parent, out var list))
+                {
+                    list = new List<int>();
+                    childrenOf[parent] = list;
+                }
+                list.Add(child);
+            }
+            foreach (var edge in edges)
+            {
+                AddEdge(edge.Person1Id, edge.Person2Id);
+            }
+            foreach (var edge in extraEdges)
+            {
+                AddEdge(edge.AncestorId, edge.DescendantId);
+            }
+
+            var visited = new HashSet<int>() { descendantId };
+            var queue = new Queue<int>();
+            queue.Enqueue(descendantId);
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                if (current == ancestorId)
+                    return true;
+                if (!childrenOf.TryGetValue(current, out var children))
+                    continue;
+                foreach (var child in children)
+                {
+                    if (visited.Add(child))
+                    {
+                        queue.Enqueue(child);
+                    }
+                }
+            }
+            return false;
         }
     }
 }
