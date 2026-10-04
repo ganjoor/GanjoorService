@@ -788,7 +788,11 @@ namespace RMuseum.Services.Implementation
                     htmlText += " (بخش‌هایی که در این جدول نیامده‌اند فاقد شعر بوده‌اند)";
                 }
                 htmlText += $":</p>{Environment.NewLine}";
-                htmlText += $"<table  class=\"stats\" id=\"cats-stats\">{Environment.NewLine}<thead>{Environment.NewLine}" +
+                // this table's own row order is intentionally the sub-categories' natural/defined
+                // order, not sorted by couplet count like the other stats tables on this page - so
+                // the generic plotChart() in bk.js is told (via data-chart-sort) to sort by value
+                // before charting, without touching the table's own displayed row order
+                htmlText += $"<table  class=\"stats\" id=\"cats-stats\" data-chart-sort=\"value-desc\">{Environment.NewLine}<thead>{Environment.NewLine}" +
                        $"<tr class=\"h\">{Environment.NewLine}" +
                        $"<td class=\"c1\">ردیف</td>{Environment.NewLine}" +
                        $"<td class=\"c2\">بخش</td>{Environment.NewLine}" +

@@ -2541,28 +2541,38 @@ function plotChart(tableId, maxCols = 9) {
     let table = document.getElementById(tableId);
     if (!table) return;
 
-    let labels = [];
-    let values = [];
-
     let headerCols = table.querySelector("thead tr").children;
     let xTitle = headerCols[1].innerText.trim();
     let yTitle = headerCols[2].innerText.trim();
+
+    // collect every eligible row first - a table's own displayed row order can be meaningful on
+    // the page itself (e.g. sub-categories kept in their natural/defined order rather than sorted
+    // by count), so that order is never disturbed here; sorting/truncating for the chart only
+    // happens below, on a separate copy
+    let rows = [];
     table.querySelectorAll("tbody tr").forEach(row => {
         let cols = row.querySelectorAll("td");
         if (cols.length >= 3) {
-            if (values.length > maxCols) return;
             let rowNumber = persianToEnglishNumber(cols[0].innerText.trim());
             if (rowNumber === "0") return; // Ignore rows with row number ۰
 
             let xValue = persianToEnglishNumber(cols[1].innerText.trim());
             let yValue = persianToEnglishNumber(cols[2].innerText.trim());
 
-            labels.push(xValue);
-            values.push(parseInt(yValue));
-            
-
+            rows.push({ label: xValue, value: parseInt(yValue) });
         }
     });
+
+    // a table opts into charting its top values by count - rather than whatever its own row order
+    // happens to be - via data-chart-sort="value-desc" on the <table> itself
+    if (table.dataset.chartSort === "value-desc") {
+        rows.sort((a, b) => b.value - a.value);
+    }
+
+    rows = rows.slice(0, maxCols + 1);
+
+    let labels = rows.map(r => r.label);
+    let values = rows.map(r => r.value);
 
     let existingCanvas = document.getElementById(`chart-${tableId}`);
     if (existingCanvas) {
