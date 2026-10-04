@@ -908,6 +908,24 @@ namespace RMuseum.Services.Implementation
                     return new Tuple<int, string>(0, "نام یکی از افراد پیشنهادی وارد نشده است.");
                 }
 
+                if (!node.ConfirmedNewDespiteNameMatch)
+                {
+                    // the contributor free-typed a name instead of picking an existing person via
+                    // the search-as-you-type selector (which would have set ExistingPersonId
+                    // instead) - almost always this means they just didn't notice a matching person
+                    // already exists, which would otherwise silently create a near-duplicate node
+                    // with no relation back to the real one
+                    var trimmedName = node.Name.Trim();
+                    var existingNamesake = await _context.GanjoorRelatedPersons
+                        .Where(p => p.Name == trimmedName)
+                        .FirstOrDefaultAsync();
+                    if (existingNamesake != null)
+                    {
+                        return new Tuple<int, string>(0,
+                            $"شخصیتی با نام «{trimmedName}» (کد {existingNamesake.Id}) از قبل ثبت شده است. اگر منظور همان شخصیت است، او را از فهرست جستجو انتخاب کنید نه اینکه نام را تازه تایپ کنید. اگر مطمئنید که این شخصیت دیگری با همین نام است (مثلاً دو شخصیت متفاوت در شاهنامه)، لازم است این موضوع به‌صراحت تأیید شود.");
+                    }
+                }
+
                 var importance = PersonImportance.Normal;
                 if (!string.IsNullOrWhiteSpace(node.Importance) && !Enum.TryParse<PersonImportance>(node.Importance, out importance))
                 {

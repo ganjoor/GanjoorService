@@ -73,6 +73,17 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// as Importance above. Null/empty is treated as Unknown.
         /// </summary>
         public string Gender { get; set; }
+
+        /// <summary>
+        /// only meaningful when ExistingPersonId is null (a brand new person is being created).
+        /// Normally, if Name exactly matches an already-approved GanjoorRelatedPerson,
+        /// _MaterializePersonGraphAsync rejects the submission rather than silently creating a
+        /// near-duplicate node - the far more common case is a contributor who free-typed a name
+        /// instead of picking the existing person via the search-as-you-type selector. Set this to
+        /// true only when the name collision is known/intentional (e.g. two distinct Shahnameh
+        /// characters sharing a name) to let the new person be created anyway.
+        /// </summary>
+        public bool ConfirmedNewDespiteNameMatch { get; set; }
     }
 
     /// <summary>

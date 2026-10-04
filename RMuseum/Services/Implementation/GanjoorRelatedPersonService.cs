@@ -478,6 +478,32 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// affiliation types whose two sides are interchangeable (Person1/Person2 order carries no
+        /// meaning) - mirrors the convention already baked into SuggestNewPersonRelation.cshtml's
+        /// dropdown, where these are the only affiliation options with no "_Other"/"_Subject" pair
+        /// </summary>
+        private static readonly HashSet<PersonAffiliationType> _symmetricAffiliationTypes = new HashSet<PersonAffiliationType>()
+        {
+            PersonAffiliationType.Ally,
+            PersonAffiliationType.Rival,
+            PersonAffiliationType.Companion,
+            PersonAffiliationType.Contemporary,
+        };
+
+        /// <summary>
+        /// true if modifying an affiliation edge from oldType to newType would cross the symmetric/
+        /// directional boundary - PersonAffiliationType.Other is excluded on either side, since its
+        /// direction (if any) is whatever the free-text Note says rather than something the type
+        /// itself implies, so moving into/out of Other is never treated as crossing the boundary
+        /// </summary>
+        private static bool _CrossesSymmetricDirectionalBoundary(PersonAffiliationType oldType, PersonAffiliationType newType)
+        {
+            if (oldType == PersonAffiliationType.Other || newType == PersonAffiliationType.Other)
+                return false;
+            return _symmetricAffiliationTypes.Contains(oldType) != _symmetricAffiliationTypes.Contains(newType);
+        }
+
+        /// <summary>
         /// submit a suggested edit to an already-approved person's own fields
         /// </summary>
         /// <param name="suggestion"></param>
@@ -839,6 +865,12 @@ namespace RMuseum.Services.Implementation
                             suggestion.SuggestedAffiliationType = existingAffiliation.AffiliationType;
                             suggestion.SuggestedNote = existingAffiliation.Note;
                         }
+                        else if (suggestion.Action == PersonRelationSuggestionAction.Modify && suggestion.SuggestedAffiliationType != null
+                            && _CrossesSymmetricDirectionalBoundary(existingAffiliation.AffiliationType, suggestion.SuggestedAffiliationType.Value))
+                        {
+                            return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null,
+                                "تغییر نوع وابستگی بین یک نوع متقارن (مثل هم‌عصر/متحد/رقیب/همراه) و یک نوع جهت‌دار (که در آن یک طرف زیردست/حامی/جانشین/... طرف دیگر است) ممکن نیست، چون جهت صحیح طرف اول و دوم برای نوع تازه معلوم نیست. لطفاً این وابستگی را حذف کرده و یک وابستگی تازه با نوع و جهت درست پیشنهاد دهید.");
+                        }
                     }
                     else
                     {
@@ -1038,7 +1070,20 @@ namespace RMuseum.Services.Implementation
                                     {
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "وابستگی مورد نظر دیگر وجود ندارد.");
                                     }
-                                    existing.AffiliationType = suggestion.SuggestedAffiliationType ?? existing.AffiliationType;
+                                    var newAffiliationType = suggestion.SuggestedAffiliationType ?? existing.AffiliationType;
+                                    if (_CrossesSymmetricDirectionalBoundary(existing.AffiliationType, newAffiliationType))
+                                    {
+                                        // Person1Id/Person2Id were fixed when the ORIGINAL (symmetric or
+                                        // directional) type was created/approved, and a Modify suggestion
+                                        // never lets the submitter re-pick which side is which (see the
+                                        // "جهت ... قابل تغییر نیست" hint in SuggestPersonRelationEdit.cshtml)
+                                        // - so crossing this boundary would silently keep the old Person1/
+                                        // Person2 assignment under a type whose direction convention no
+                                        // longer matches it
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null,
+                                            "تغییر نوع وابستگی بین یک نوع متقارن (مثل هم‌عصر/متحد/رقیب/همراه) و یک نوع جهت‌دار (که در آن یک طرف زیردست/حامی/جانشین/... طرف دیگر است) ممکن نیست، چون جهت صحیح طرف اول و دوم برای نوع تازه معلوم نیست. لطفاً این وابستگی را حذف کرده و یک وابستگی تازه با نوع و جهت درست پیشنهاد دهید.");
+                                    }
+                                    existing.AffiliationType = newAffiliationType;
                                     existing.Note = suggestion.SuggestedNote;
                                     break;
                                 }
