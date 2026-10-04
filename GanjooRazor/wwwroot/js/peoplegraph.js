@@ -52,6 +52,10 @@
         'Affiliation:8': { label: 'جانشین', color: '#8a4ac0', directional: true },
         'Affiliation:9': { label: 'مدح‌گو', color: '#b08a2a', directional: true },
         'Affiliation:10': { label: 'هجوگو', color: '#7a3a9a', directional: true },
+        'Affiliation:11': { label: 'سردار', color: '#4a6ea5', directional: true },
+        'Affiliation:12': { label: 'پهلوان', color: '#a56e3a', directional: true },
+        'Affiliation:13': { label: 'هم‌عصر', color: '#6a8a6a', directional: false },
+        'Affiliation:14': { label: 'قاتل', color: '#8a1a1a', directional: true },
         'Affiliation:99': { label: 'سایر', color: '#888888', directional: false }
     };
 
