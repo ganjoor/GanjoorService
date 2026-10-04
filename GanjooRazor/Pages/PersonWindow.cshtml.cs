@@ -118,6 +118,7 @@ namespace GanjooRazor.Pages
                 { PersonAffiliationType.MilitaryCommander, "سردارِ" },
                 { PersonAffiliationType.Champion, "پهلوانِ" },
                 { PersonAffiliationType.Contemporary, "هم‌عصرِ" },
+                { PersonAffiliationType.Killer, "قاتلِ" },
                 { PersonAffiliationType.Other, "دارای نسبتی (به یادداشت نگاه کنید) با" },
             };
 

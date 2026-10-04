@@ -164,8 +164,9 @@ namespace GanjooRazor.Areas.User.Pages
                 // symmetric Person1Id/Person2Id pair, following the direction each PersonAffiliationType
                 // value's own doc comment defines (Minister/Advisor/Courtier/Servant/MilitaryCommander/
                 // Champion: Person1 is the subordinate one; Patron/Successor: Person1 is the
-                // patron/later one; Panegyrized/Satirized: Person1 is the poet; Ally/Rival/Companion/
-                // Contemporary/Other: symmetric, direction doesn't matter)
+                // patron/later one; Panegyrized/Satirized: Person1 is the poet; Killer: Person1 is the
+                // one who did the killing; Ally/Rival/Companion/Contemporary/Other: symmetric,
+                // direction doesn't matter)
                 switch (AffiliationKind)
                 {
                     case "Minister_Other": // the other person served as minister to this one
@@ -287,6 +288,16 @@ namespace GanjooRazor.Areas.User.Pages
                         suggestion.Person1Id = personId;
                         suggestion.Person2Id = OtherPersonId;
                         suggestion.SuggestedAffiliationType = PersonAffiliationType.Contemporary;
+                        break;
+                    case "Killer_Other": // the other person killed this one
+                        suggestion.Person1Id = OtherPersonId;
+                        suggestion.Person2Id = personId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Killer;
+                        break;
+                    case "Killer_Subject": // this person killed the other one
+                        suggestion.Person1Id = personId;
+                        suggestion.Person2Id = OtherPersonId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Killer;
                         break;
                     case "Other":
                         suggestion.Person1Id = personId;

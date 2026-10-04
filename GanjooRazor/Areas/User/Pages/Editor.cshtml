@@ -267,6 +267,7 @@
                         '<option value="MilitaryCommander">سردار</option>' +
                         '<option value="Champion">پهلوان</option>' +
                         '<option value="Contemporary">هم‌عصر (بدون نسبت دیگر)</option>' +
+                        '<option value="Killer">قاتل (طرف اول، طرف دوم را کشته است)</option>' +
                         '<option value="Other">سایر</option>' +
                     '</select>' +
                 '</div>' +
@@ -384,6 +385,7 @@
             MilitaryCommander: function (p1, p2) { return p1 + ' سردار ' + p2 + ' است.'; },
             Champion: function (p1, p2) { return p1 + ' پهلوان ' + p2 + ' است.'; },
             Contemporary: function (p1, p2) { return p1 + ' و ' + p2 + ' هم‌عصر هم هستند.'; },
+            Killer: function (p1, p2) { return p1 + ' ' + p2 + ' را کشته است.'; },
             Other: function (p1, p2) { return p1 + ' با ' + p2 + ' نسبتی دارد (طبق یادداشت).'; }
         }
     };

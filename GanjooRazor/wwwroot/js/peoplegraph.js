@@ -9,7 +9,7 @@
 //     "Relation" (typeValue is PersonRelationType: 0=Parent,1=Sibling,2=Spouse,3=Ancestor) or
 //     "Affiliation" (typeValue is PersonAffiliationType: 0=Minister,1=Advisor,2=Courtier,3=Patron,
 //     4=Ally,5=Rival,6=Servant,7=Companion,8=Successor,9=Panegyrized,10=Satirized,11=MilitaryCommander,
-//     12=Champion,13=Contemporary,99=Other). directlyTagged is false only on
+//     12=Champion,13=Contemporary,14=Killer,99=Other). directlyTagged is false only on
 // the category-scoped graph (GET api/ganjoor/cat/{id}/persongraph, the "characters in this work"
 // tab): such a node was pulled in as a one-hop relative/affiliate of someone actually named in the
 // work's verses, and is never false on the whole-site graph fed by PeopleExplorer.cshtml. importance

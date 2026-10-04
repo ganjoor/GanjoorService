@@ -97,6 +97,15 @@ namespace RMuseum.Models.Ganjoor
         Contemporary = 13,
 
         /// <summary>
+        /// Person1 killed Person2 (کشتن) - directional. Deliberately separate from Rival: an act of
+        /// killing is usually a single event (e.g. in battle, by treachery, in a duel), and doesn't by
+        /// itself mean the two were ongoing enemies/rivals beforehand - they could have been allies,
+        /// kin-by-marriage, or strangers. Use Rival instead (additionally, if applicable) when there
+        /// was a standing enmity, and Note for how/why the killing happened
+        /// </summary>
+        Killer = 14,
+
+        /// <summary>
         /// doesn't fit any of the above - rely on Note for what the tie actually is
         /// </summary>
         Other = 99,
