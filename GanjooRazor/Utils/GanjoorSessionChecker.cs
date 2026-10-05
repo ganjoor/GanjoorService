@@ -71,6 +71,16 @@ namespace GanjooRazor.Utils
             if (string.IsNullOrEmpty(request.Cookies["SessionId"]))
                 return null;
 
+            // ReLogin REPLACES the session row (old SessionId is deleted, a new one is issued), but
+            // request.Cookies keeps showing the OLD SessionId/Token for the rest of this request -
+            // only the response carries the new ones. So a second relogin attempt in the same request
+            // (PrepareClient's pre-flight check heals the session via GanjoorReloginHandler, then the
+            // next API call still carries the old token, gets a 401 and relogins again) would present
+            // a session that no longer exists, fail, and the page would render an empty/failed state
+            // on the first load and work only after a refresh. Remember the fresh token per request.
+            if (request.HttpContext.Items.TryGetValue(RefreshedTokenItemKey, out var alreadyRefreshed) && alreadyRefreshed is string refreshedToken)
+                return refreshedToken;
+
             using (HttpClient reloginClient = new HttpClient())
             {
                 if (!string.IsNullOrEmpty(request.Cookies["Token"]))
@@ -120,9 +130,16 @@ namespace GanjooRazor.Utils
 
                 response.Cookies.Append("CanEdit", canEditContent.ToString(), cookieOption);
 
+                request.HttpContext.Items[RefreshedTokenItemKey] = loggedOnUser.Token;
+
                 return loggedOnUser.Token;
             }
         }
+
+        /// <summary>
+        /// HttpContext.Items key under which the token obtained by a relogin during the current request is kept
+        /// </summary>
+        internal const string RefreshedTokenItemKey = "GanjoorRefreshedToken";
 
         /// <summary>
         /// has permission

@@ -49,6 +49,13 @@ namespace GanjooRazor.Utils
             // keep a resend-able copy before the original message gets consumed/disposed by the first attempt
             HttpRequestMessage retryRequest = string.IsNullOrEmpty(_request.Cookies["SessionId"]) ? null : await CloneAsync(request);
 
+            // if this request already relogged in (see GanjoorSessionChecker.TryReloginAsync), the
+            // incoming cookie token is stale - start with the fresh one instead of burning a 401 round trip
+            if (_request.HttpContext.Items.TryGetValue(GanjoorSessionChecker.RefreshedTokenItemKey, out var fresh) && fresh is string freshToken && request.Headers.Authorization != null)
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", freshToken);
+            }
+
             var response = await base.SendAsync(request, cancellationToken);
 
             if (response.StatusCode == HttpStatusCode.Unauthorized && retryRequest != null)
