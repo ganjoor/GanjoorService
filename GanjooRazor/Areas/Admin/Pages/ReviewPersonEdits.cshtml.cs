@@ -108,7 +108,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var locationsResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/locations");
                     if (!locationsResponse.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await locationsResponse.Content.ReadAsStringAsync());
+                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(locationsResponse);
                         return Page();
                     }
                     Locations = JsonConvert.DeserializeObject<List<GanjoorGeoLocation>>(await locationsResponse.Content.ReadAsStringAsync());
@@ -116,7 +116,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var nextResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/people/editsuggestions/next?skip={Skip}");
                     if (!nextResponse.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await nextResponse.Content.ReadAsStringAsync());
+                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(nextResponse);
                         return Page();
                     }
 

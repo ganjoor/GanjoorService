@@ -160,7 +160,7 @@ namespace GanjooRazor.Pages
                     var response = await secureClient.PostAsync(methodUrl, stringContent);
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                     }
                     else
                     {
@@ -214,7 +214,7 @@ namespace GanjooRazor.Pages
                             if (!responseOption.IsSuccessStatusCode)
                             {
                                 spotifyAccessToken = "";
-                                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync()));
+                                return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(responseOption));
                             }
                             else
                             {
@@ -267,7 +267,7 @@ namespace GanjooRazor.Pages
                         await _RefreshSpotifyToken();
                         return await OnPostSearchByArtistNameAsync(search, true);
                     }
-                    return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                    return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                 }
             }
 
@@ -402,7 +402,7 @@ namespace GanjooRazor.Pages
                             if (!responseOption.IsSuccessStatusCode)
                             {
                                 spotifyAccessToken = "";
-                                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync()));
+                                return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(responseOption));
                             }
                             else
                             {
@@ -513,7 +513,7 @@ namespace GanjooRazor.Pages
                             if (!responseOption.IsSuccessStatusCode)
                             {
                                 spotifyAccessToken = "";
-                                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync()));
+                                return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(responseOption));
                             }
                             else
                             {
@@ -616,7 +616,7 @@ namespace GanjooRazor.Pages
                             if (!responseOption.IsSuccessStatusCode)
                             {
                                 spotifyAccessToken = "";
-                                return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await responseOption.Content.ReadAsStringAsync()));
+                                return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(responseOption));
                             }
                             else
                             {

@@ -38,7 +38,7 @@ namespace GanjooRazor.Areas.User.Pages
                         HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/faq/secure/{Request.Query["id"]}");
                         if (!response.IsSuccessStatusCode)
                         {
-                            LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                            LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                             return Page();
                         }
 
@@ -75,7 +75,7 @@ namespace GanjooRazor.Areas.User.Pages
                     ;
                 if (!response.IsSuccessStatusCode)
                 {
-                    LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                     return Page();
                 }
 

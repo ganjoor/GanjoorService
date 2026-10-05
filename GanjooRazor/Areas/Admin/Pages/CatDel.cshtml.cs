@@ -45,7 +45,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{Request.Query["id"]}");
             if (!response.IsSuccessStatusCode)
             {
-                LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 return Page();
             }
             Cat = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
@@ -65,7 +65,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 }
                 else
                 {

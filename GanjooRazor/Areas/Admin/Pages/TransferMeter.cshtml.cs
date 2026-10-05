@@ -60,7 +60,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var rhythmResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms?sortOnVerseCount=true");
                     if (!rhythmResponse.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await rhythmResponse.Content.ReadAsStringAsync());
+                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(rhythmResponse);
                         return Page();
                     }
 
@@ -84,7 +84,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
                     if (!pageUrlResponse.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(pageUrlResponse);
                         return Page();
                     }
                     var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
@@ -92,7 +92,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var pageQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
                     if (!pageQuery.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(pageQuery);
                         return Page();
                     }
                 }
@@ -113,7 +113,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var rhythmResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms?sortOnVerseCount=true");
                     if (!rhythmResponse.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await rhythmResponse.Content.ReadAsStringAsync());
+                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(rhythmResponse);
                         return new BadRequestObjectResult(FatalError);
                     }
 
@@ -125,7 +125,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/prosody/transfer/{sourceMeter.Id}/{destMeter.Id}", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }

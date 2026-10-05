@@ -30,7 +30,7 @@ namespace GanjooRazor.Pages
             var responsePoem = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{Request.Query["p"]}?verseDetails=true&catInfo=false&rhymes=false&recitations=false&images=false&songs=false&comments=false&navigation=false");
             if (!responsePoem.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await responsePoem.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(responsePoem);
                 return Page();
             }
 

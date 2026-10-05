@@ -50,7 +50,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var responseKeepFirstTimeUsersComments = await secureClient.GetAsync($"{APIRoot.Url}/api/options/global/KeepFirstTimeUsersComments");
                     if (!responseKeepFirstTimeUsersComments.IsSuccessStatusCode)
                     {
-                        LastError = JsonConvert.DeserializeObject<string>(await responseKeepFirstTimeUsersComments.Content.ReadAsStringAsync());
+                        LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(responseKeepFirstTimeUsersComments);
                         return Page();
                     }
 
@@ -64,7 +64,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/comments/awaiting?PageNumber={pageNumber}&PageSize=20");
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         return Page();
                     }
 
@@ -158,7 +158,7 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
 
                 }
@@ -179,7 +179,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/comment/awaiting/publish", new StringContent(JsonConvert.SerializeObject(id), Encoding.UTF8, "application/json"));
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                 }
                 else
@@ -199,7 +199,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var response = await secureClient.PutAsync($"{APIRoot.Url}/api/options/global/KeepFirstTimeUsersComments", new StringContent(JsonConvert.SerializeObject(false.ToString()), Encoding.UTF8, "application/json"));
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                 }
                 else
@@ -219,7 +219,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var response = await secureClient.PutAsync($"{APIRoot.Url}/api/options/global/KeepFirstTimeUsersComments", new StringContent(JsonConvert.SerializeObject(true.ToString()), Encoding.UTF8, "application/json"));
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                 }
                 else

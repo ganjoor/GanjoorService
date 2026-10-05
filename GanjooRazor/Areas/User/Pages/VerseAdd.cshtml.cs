@@ -74,7 +74,7 @@ namespace GanjooRazor.Areas.User.Pages
                 var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
                 if (!pageUrlResponse.IsSuccessStatusCode)
                 {
-                    LastError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                    LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(pageUrlResponse);
                     return Page();
                 }
                 var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
@@ -82,7 +82,7 @@ namespace GanjooRazor.Areas.User.Pages
                 var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
                 if (!pageQuery.IsSuccessStatusCode)
                 {
-                    LastError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                    LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(pageQuery);
                     return Page();
                 }
                 PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
@@ -117,7 +117,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={NewVerses.PoemId}");
                     if (!pageUrlResponse.IsSuccessStatusCode)
                     {
-                        LastError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                        LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(pageUrlResponse);
                         return Page();
                     }
                     var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
@@ -125,7 +125,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
                     if (!pageQuery.IsSuccessStatusCode)
                     {
-                        LastError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                        LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(pageQuery);
                         return Page();
                     }
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
@@ -174,7 +174,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var response = await _httpClient.PostAsync(methodUrl, stringContent);
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                     }
                     else
                     {

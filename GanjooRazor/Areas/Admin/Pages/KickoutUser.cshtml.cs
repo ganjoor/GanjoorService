@@ -44,7 +44,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     }
                     else
                     {
-                        LastResult = JsonConvert.DeserializeObject<string>(await userInfoResponse.Content.ReadAsStringAsync());
+                        LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(userInfoResponse);
                     }
                 }
                 else
@@ -70,7 +70,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 }
                 else
                 {
-                    LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 }
 
                 return Page();

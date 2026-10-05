@@ -60,7 +60,7 @@ namespace GanjooRazor.Areas.User.Pages
                         var responsePhoto = await secureClient.GetAsync($"{APIRoot.Url}/api/poetphotos/{id}");
                         if (!responsePhoto.IsSuccessStatusCode)
                         {
-                            LastError = JsonConvert.DeserializeObject<string>(await responsePhoto.Content.ReadAsStringAsync());
+                            LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(responsePhoto);
                             return Page();
                         }
                         Suggestion = JsonConvert.DeserializeObject<GanjoorPoetSuggestedPictureViewModel>(await responsePhoto.Content.ReadAsStringAsync());
@@ -83,7 +83,7 @@ namespace GanjooRazor.Areas.User.Pages
                             }
                             else
                             {
-                                LastError = JsonConvert.DeserializeObject<string>(await suggestionResponse.Content.ReadAsStringAsync());
+                                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(suggestionResponse);
                             }
                             return Page();
                         }
@@ -105,7 +105,7 @@ namespace GanjooRazor.Areas.User.Pages
                         var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{Suggestion.PoetId}");
                         if (!response.IsSuccessStatusCode)
                         {
-                            LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                            LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                             return Page();
                         }
 
@@ -143,7 +143,7 @@ namespace GanjooRazor.Areas.User.Pages
                         var putResponse = await secureClient.PutAsync($"{APIRoot.Url}/api/poetphotos", new StringContent(JsonConvert.SerializeObject(Suggestion), Encoding.UTF8, "application/json"));
                         if (!putResponse.IsSuccessStatusCode)
                         {
-                            LastError = JsonConvert.DeserializeObject<string>(await putResponse.Content.ReadAsStringAsync());
+                            LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(putResponse);
                         }
                     }
                     else
@@ -151,7 +151,7 @@ namespace GanjooRazor.Areas.User.Pages
                         var rejectResponse = await secureClient.PutAsync($"{APIRoot.Url}/api/poetphotos/reject/{Suggestion.Id}", new StringContent(JsonConvert.SerializeObject(Suggestion.RejectionCause), Encoding.UTF8, "application/json"));
                         if (!rejectResponse.IsSuccessStatusCode)
                         {
-                            LastError = JsonConvert.DeserializeObject<string>(await rejectResponse.Content.ReadAsStringAsync());
+                            LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(rejectResponse);
                         }
                     }
 

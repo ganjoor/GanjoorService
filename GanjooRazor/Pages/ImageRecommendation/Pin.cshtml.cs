@@ -65,7 +65,7 @@ namespace GanjooRazor.Pages
 
                         if (response.StatusCode != HttpStatusCode.OK)
                         {
-                            LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                            LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         }
                         else
                         {

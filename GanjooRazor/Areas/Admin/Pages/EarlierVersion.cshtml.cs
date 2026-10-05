@@ -36,7 +36,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/oldversion/{Request.Query["id"]}");
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         return Page();
                     }
 

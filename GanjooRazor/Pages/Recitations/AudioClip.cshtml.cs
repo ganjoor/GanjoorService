@@ -62,7 +62,7 @@ namespace GanjooRazor.Pages
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/published/{Request.Query["a"]}");
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 return Page();
             }
 
@@ -71,7 +71,7 @@ namespace GanjooRazor.Pages
             var responsePoem = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{Recitation.PoemId}?verseDetails=true&catInfo=true&rhymes=false&recitations=false&images=false&songs=false&comments=false&navigation=false");
             if (!responsePoem.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await responsePoem.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(responsePoem);
                 return Page();
             }
 

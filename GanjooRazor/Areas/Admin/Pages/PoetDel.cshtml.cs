@@ -47,7 +47,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             if (!response.IsSuccessStatusCode)
             {
-                LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 return false;
             }
 
@@ -79,7 +79,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 HttpResponseMessage response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/poet/{Request.Query["id"]}");
                 if (!response.IsSuccessStatusCode)
                 {
-                    LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                     return Page();
                 }
 

@@ -41,7 +41,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
             if(!response.IsSuccessStatusCode)
             {
-                LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 return Page();
             }
 
@@ -65,7 +65,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                 HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/donations/expense/{Request.Query["id"]}", new StringContent(JsonConvert.SerializeObject(Expense), Encoding.UTF8, "application/json"));
                 if (!response.IsSuccessStatusCode)
                 {
-                    LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                     return Page();
                 }
                 return Redirect("/Admin/Expenses");

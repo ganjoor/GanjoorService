@@ -92,7 +92,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             var rhythmResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/rhythms");
             if (!rhythmResponse.IsSuccessStatusCode)
             {
-                LastMessage = JsonConvert.DeserializeObject<string>(await rhythmResponse.Content.ReadAsStringAsync());
+                LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(rhythmResponse);
                 return false;
             }
 
@@ -108,7 +108,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             var pageUrlResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
             if (!pageUrlResponse.IsSuccessStatusCode)
             {
-                LastMessage = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(pageUrlResponse);
                 return false;
             }
 
@@ -117,7 +117,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             var pageQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
             if (!pageQuery.IsSuccessStatusCode)
             {
-                LastMessage = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(pageQuery);
                 return false;
             }
             PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
@@ -173,7 +173,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/analysisrhyme/{id}");
             if (!response.IsSuccessStatusCode)
             {
-                return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
             }
             var rhyme = JsonConvert.DeserializeObject<GanjooRhymeAnalysisResult>(await response.Content.ReadAsStringAsync());
             return new OkObjectResult(rhyme.Rhyme);
@@ -190,7 +190,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/page", new StringContent(JsonConvert.SerializeObject(ModifyModel), Encoding.UTF8, "application/json"));
                         if (!response.IsSuccessStatusCode)
                         {
-                            LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                            LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         }
                         else
                         {
@@ -203,7 +203,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/page/{Request.Query["id"]}", new StringContent(JsonConvert.SerializeObject(ModifyModel), Encoding.UTF8, "application/json"));
                         if (!response.IsSuccessStatusCode)
                         {
-                            LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                            LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         }
                         else
                         {
@@ -228,7 +228,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat?url={PageInformation.FullUrl}&poems=true");
             if (!response.IsSuccessStatusCode)
             {
-                LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 return Page();
             }
 
@@ -244,7 +244,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         var htmlRes = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/cat/toc/{Cat.Cat.Id}/{(int)GanjoorTOC}", null);
                         if (!htmlRes.IsSuccessStatusCode)
                         {
-                            LastMessage = JsonConvert.DeserializeObject<string>(await htmlRes.Content.ReadAsStringAsync());
+                            LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(htmlRes);
                             return Page();
                         }
 
@@ -267,7 +267,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                         var htmlRes = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/toc/{Cat.Cat.Id}/{(int)GanjoorTOC}");
                         if (!htmlRes.IsSuccessStatusCode)
                         {
-                            LastMessage = JsonConvert.DeserializeObject<string>(await htmlRes.Content.ReadAsStringAsync());
+                            LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(htmlRes);
                             return Page();
                         }
 
@@ -295,7 +295,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sitemap", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -312,7 +312,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sitemap/tajik", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -330,7 +330,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/rebuild/stats", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -352,7 +352,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/publicdata/batchexport", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -373,7 +373,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/tajik/publicdata/batchexport", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -391,7 +391,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/fillsectioncoupletcounts", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -411,7 +411,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/quoted/pages/generate", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -428,7 +428,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/source/stats/rebuild", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -445,7 +445,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/transilerate", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -466,7 +466,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/page/cache/{id}");
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -483,7 +483,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/wordcounts/rebuild/{poetId}", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -509,7 +509,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/naskban/import/poetbooks/{poetId}", stringContent);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -528,7 +528,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/papersources/import/{poetId}", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }

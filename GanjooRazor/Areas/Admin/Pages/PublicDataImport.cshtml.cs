@@ -62,7 +62,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
 
                     return new OkObjectResult(true);

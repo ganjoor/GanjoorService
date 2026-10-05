@@ -42,7 +42,7 @@ namespace GanjooRazor.Areas.User.Pages
                     HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/faq/cat/secure");
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         return Page();
                     }
 
@@ -54,7 +54,7 @@ namespace GanjooRazor.Areas.User.Pages
                         response = await secureClient.GetAsync($"{APIRoot.Url}/api/faq/cat/items/secure?catId={CatId}");
                         if (!response.IsSuccessStatusCode)
                         {
-                            return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                            return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                         }
 
                         CategoryItems = JsonConvert.DeserializeObject<FAQItem[]>(await response.Content.ReadAsStringAsync());
@@ -80,7 +80,7 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                 }
                 else
@@ -100,7 +100,7 @@ namespace GanjooRazor.Areas.User.Pages
                     HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/faq/cat/items/secure?catId={id}");
                     if (!response.IsSuccessStatusCode)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
 
                     return new JsonResult(JsonConvert.DeserializeObject<FAQItem[]>(await response.Content.ReadAsStringAsync()));
@@ -123,7 +123,7 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                 }
                 else

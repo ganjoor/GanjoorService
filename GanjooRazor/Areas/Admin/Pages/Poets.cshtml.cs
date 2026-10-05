@@ -36,7 +36,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var response = await secureClient.GetAsync($"{APIRoot.Url}/api/locations");
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         return;
                     }
 
@@ -77,7 +77,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets/secure");
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         return Page();
                     }
 
@@ -105,7 +105,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqlite/batchexport", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -134,7 +134,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/poet/{id}", new StringContent(JsonConvert.SerializeObject(poet), Encoding.UTF8, "application/json"));
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
 
                     _memoryCache.Remove($"/api/ganjoor/poets");
@@ -158,7 +158,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/periods", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }

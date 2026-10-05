@@ -69,14 +69,14 @@ namespace GanjooRazor.Areas.Admin.Pages
                         var responseSaveOption = await secureClient.PutAsync($"{APIRoot.Url}/api/options/global/SpotifyAccessToken", new StringContent(JsonConvert.SerializeObject(encryptedAccessToken), Encoding.UTF8, "application/json"));
                         if (!responseSaveOption.IsSuccessStatusCode)
                         {
-                            Error = JsonConvert.DeserializeObject<string>(await responseSaveOption.Content.ReadAsStringAsync());
+                            Error = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(responseSaveOption);
                         }
                         else
                         {
                             responseSaveOption = await secureClient.PutAsync($"{APIRoot.Url}/api/options/global/SpotifyRefreshToken", new StringContent(JsonConvert.SerializeObject(encryptedRefreshToken), Encoding.UTF8, "application/json"));
                             if (!responseSaveOption.IsSuccessStatusCode)
                             {
-                                Error = JsonConvert.DeserializeObject<string>(await responseSaveOption.Content.ReadAsStringAsync());
+                                Error = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(responseSaveOption);
                             }
                         }
                     }
@@ -89,7 +89,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             }
             else
             {
-                Error = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                Error = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
             }
             return new OkResult();
         }

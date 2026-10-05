@@ -46,7 +46,7 @@ namespace GanjooRazor.Pages
         /// </summary>
         protected static async Task<string> ReadErrorMessageAsync(HttpResponseMessage response)
         {
-            return JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+            return await ApiErrorReader.ReadErrorAsync(response);
         }
 
         /// <summary>

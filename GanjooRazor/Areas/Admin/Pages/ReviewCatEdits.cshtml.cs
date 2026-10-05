@@ -62,7 +62,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var nextResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/correction/next?skip={Skip}");
                     if (!nextResponse.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await nextResponse.Content.ReadAsStringAsync());
+                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(nextResponse);
                         return Page();
                     }
 
@@ -77,14 +77,14 @@ namespace GanjooRazor.Areas.Admin.Pages
                         var catQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{Correction.CatId}");
                         if (!catQuery.IsSuccessStatusCode)
                         {
-                            FatalError = JsonConvert.DeserializeObject<string>(await catQuery.Content.ReadAsStringAsync());
+                            FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(catQuery);
                             return Page();
                         }
                         var cat = JsonConvert.DeserializeObject<GanjoorPoetCompleteViewModel>(await catQuery.Content.ReadAsStringAsync());
                         var pageQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={cat.Cat.FullUrl}");
                         if (!pageQuery.IsSuccessStatusCode)
                         {
-                            FatalError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                            FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(pageQuery);
                             return Page();
                         }
                         PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
@@ -123,7 +123,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var correctionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/correction/{pms.correctionId}");
                     if (!correctionResponse.IsSuccessStatusCode)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await correctionResponse.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(correctionResponse));
                     }
 
                     Correction = JsonConvert.DeserializeObject<GanjoorCatCorrectionViewModel>(await correctionResponse.Content.ReadAsStringAsync());

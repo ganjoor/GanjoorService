@@ -69,7 +69,7 @@ namespace GanjooRazor.Pages
                     var response = await secureClient.PostAsync(methodUrl, stringContent);
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                     }
                     else
                     {

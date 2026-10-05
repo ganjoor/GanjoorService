@@ -95,7 +95,7 @@ namespace GanjooRazor.Pages
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/users/captchaimage");
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 _FillViewData();
                 return Page();
             }
@@ -120,7 +120,7 @@ namespace GanjooRazor.Pages
             var response = await _httpClient.PostAsync($"{APIRoot.Url}/api/users/signup", new StringContent(JsonConvert.SerializeObject(SignUpViewModel), Encoding.UTF8, "application/json"));
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 if(LastError == null)
                 {
                     LastError = "لطفاً ایمیل خود و عدد تصویر امنیتی را به درستی وارد کنید.";
@@ -129,7 +129,7 @@ namespace GanjooRazor.Pages
                 response = await _httpClient.GetAsync($"{APIRoot.Url}/api/users/captchaimage");
                 if (!response.IsSuccessStatusCode)
                 {
-                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                     _FillViewData();
                     return Page();
                 }
@@ -169,7 +169,7 @@ namespace GanjooRazor.Pages
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/users/verify?type=0&secret={Secret}");
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 _FillViewData();
                 return Page();
             }
@@ -219,7 +219,7 @@ namespace GanjooRazor.Pages
             var response = await _httpClient.PostAsync($"{APIRoot.Url}/api/users/finalizesignup", new StringContent(JsonConvert.SerializeObject(postViewModel), Encoding.UTF8, "application/json"));
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 _FillViewData();
                 return Page();
             }
@@ -239,7 +239,7 @@ namespace GanjooRazor.Pages
 
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 _FillViewData();
                 return Page();
             }

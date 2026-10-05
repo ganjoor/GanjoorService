@@ -66,7 +66,7 @@ namespace GanjooRazor.Areas.User.Pages
                         var response = await secureClient.GetAsync($"{APIRoot.Url}/api/audio/votes/?PageNumber={pageNumber}&PageSize=20");
                         if (!response.IsSuccessStatusCode)
                         {
-                            LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                            LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                             return Page();
                         }
 

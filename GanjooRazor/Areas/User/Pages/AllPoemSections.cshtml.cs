@@ -35,7 +35,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var sectionsResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/sections/{Request.Query["id"]}");
                     if (!sectionsResponse.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await sectionsResponse.Content.ReadAsStringAsync());
+                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(sectionsResponse);
                         return Page();
                     }
                     PoemSections = JsonConvert.DeserializeObject<GanjoorPoemSection[]>(await sectionsResponse.Content.ReadAsStringAsync());
@@ -57,7 +57,7 @@ namespace GanjooRazor.Areas.User.Pages
                         );
                     if (!response.IsSuccessStatusCode)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkResult();
                 }

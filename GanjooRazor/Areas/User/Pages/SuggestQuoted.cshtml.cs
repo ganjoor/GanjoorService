@@ -104,7 +104,7 @@ namespace GanjooRazor.Areas.User.Pages
             var poemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}");
             if (!poemQuery.IsSuccessStatusCode)
             {
-                LastMessage = JsonConvert.DeserializeObject<string>(await poemQuery.Content.ReadAsStringAsync());
+                LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(poemQuery);
                 return LastMessage;
             }
             Poem = JObject.Parse(await poemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
@@ -118,7 +118,7 @@ namespace GanjooRazor.Areas.User.Pages
                 var quoteQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/quoted/{id}");
                 if (!quoteQuery.IsSuccessStatusCode)
                 {
-                    LastMessage = JsonConvert.DeserializeObject<string>(await quoteQuery.Content.ReadAsStringAsync());
+                    LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(quoteQuery);
                     return LastMessage;
                 }
                 GanjoorQuotedPoem = JObject.Parse(await quoteQuery.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoemViewModel>();
@@ -127,7 +127,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var relPoemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{GanjoorQuotedPoem.RelatedPoemId}");
                     if (!relPoemQuery.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await relPoemQuery.Content.ReadAsStringAsync());
+                        LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(relPoemQuery);
                         return LastMessage;
                     }
                     RelatedPoem = JObject.Parse(await relPoemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
@@ -138,7 +138,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var revQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{GanjoorQuotedPoem.RelatedPoemId}/quoteds/{GanjoorQuotedPoem.PoemId}");
                     if (!revQuery.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await revQuery.Content.ReadAsStringAsync());
+                        LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(revQuery);
                         return LastMessage;
                     }
 
@@ -201,7 +201,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var quoteQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/quoted/{Request.Query["id"]}");
                     if (!quoteQuery.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await quoteQuery.Content.ReadAsStringAsync());
+                        LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(quoteQuery);
                         return Page();
                     }
                     GanjoorQuotedPoem = JObject.Parse(await quoteQuery.Content.ReadAsStringAsync()).ToObject<GanjoorQuotedPoemViewModel>();
@@ -249,7 +249,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var relPoemQuery = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{GanjoorQuotedPoem.RelatedPoemId}");
                     if (!relPoemQuery.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await relPoemQuery.Content.ReadAsStringAsync());
+                        LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(relPoemQuery);
                         return Page();
                     }
                     RelatedPoem = JObject.Parse(await relPoemQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPoemCompleteViewModel>();
@@ -293,7 +293,7 @@ namespace GanjooRazor.Areas.User.Pages
                             await secureClient.PutAsync(url, payload);
                         if (!response.IsSuccessStatusCode)
                         {
-                            LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                            LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         }
                         else
                         {
@@ -324,7 +324,7 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
 
                 }

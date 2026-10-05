@@ -54,7 +54,7 @@ namespace GanjooRazor.Pages
                 var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/audio/votes/{poemId}/scores");
                 if (!response.IsSuccessStatusCode)
                 {
-                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 }
                 else
                 {
@@ -64,7 +64,7 @@ namespace GanjooRazor.Pages
                         response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/recitations");
                         if(!response.IsSuccessStatusCode)
                         {
-                            LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                            LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         }
                         var recitations = JsonConvert.DeserializeObject<PublicRecitationViewModel[]>(await response.Content.ReadAsStringAsync());
                         foreach (var score in Scores)

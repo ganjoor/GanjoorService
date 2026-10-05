@@ -66,7 +66,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var nextResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/people/relationeditsuggestions/next?skip={Skip}");
                     if (!nextResponse.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await nextResponse.Content.ReadAsStringAsync());
+                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(nextResponse);
                         return Page();
                     }
 

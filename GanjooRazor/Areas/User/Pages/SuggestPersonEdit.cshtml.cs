@@ -143,7 +143,7 @@ namespace GanjooRazor.Areas.User.Pages
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                     FillSuggestionFromCurrentPerson();
                     return Page();
                 }

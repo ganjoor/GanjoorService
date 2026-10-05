@@ -37,7 +37,7 @@ namespace GanjooRazor.Areas.User.Pages
                     HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/languages/{Request.Query["id"]}");
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         return Page();
                     }
 
@@ -62,7 +62,7 @@ namespace GanjooRazor.Areas.User.Pages
                 HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/translations/languages", new StringContent(JsonConvert.SerializeObject(Language), Encoding.UTF8, "application/json"));
                 if (!response.IsSuccessStatusCode)
                 {
-                    LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                     return Page();
                 }
 

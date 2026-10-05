@@ -53,7 +53,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
                     if (!pageUrlResponse.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
+                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(pageUrlResponse);
                         return Page();
                     }
                     var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
@@ -61,7 +61,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var pageQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
                     if (!pageQuery.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await pageQuery.Content.ReadAsStringAsync());
+                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(pageQuery);
                         return Page();
                     }
                     PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
@@ -70,7 +70,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var editResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/correction/last/{CatId}");
                     if (!editResponse.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await editResponse.Content.ReadAsStringAsync());
+                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(editResponse);
                         return Page();
                     }
                     MyLastEdit = JsonConvert.DeserializeObject<GanjoorCatCorrectionViewModel>(await editResponse.Content.ReadAsStringAsync());
@@ -108,7 +108,7 @@ namespace GanjooRazor.Areas.User.Pages
                         $"{APIRoot.Url}/api/ganjoor/cat/correction/{catid}");
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -134,7 +134,7 @@ namespace GanjooRazor.Areas.User.Pages
                             "application/json"));
                         if (!response.IsSuccessStatusCode)
                         {
-                            FatalError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                            FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         }
                     }
                     else

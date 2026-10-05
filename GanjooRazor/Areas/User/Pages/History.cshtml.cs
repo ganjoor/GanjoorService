@@ -51,7 +51,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var response = await secureClient.GetAsync($"{APIRoot.Url}/api/options/KeepHistory");
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         return Page();
                     }
                     TrackingIsEnabled = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()) == true.ToString();
@@ -81,7 +81,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var responseHistoryItems = await secureClient.GetAsync($"{APIRoot.Url}/api/tracking/?PageNumber={pageNumber}&PageSize=20");
                     if (!responseHistoryItems.IsSuccessStatusCode)
                     {
-                        LastError = JsonConvert.DeserializeObject<string>(await responseHistoryItems.Content.ReadAsStringAsync());
+                        LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(responseHistoryItems);
                         return Page();
                     }
 
@@ -176,7 +176,7 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
 
                 }
@@ -198,7 +198,7 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
 
                     if(Request.Cookies["KeepHistory"] != null)
@@ -233,7 +233,7 @@ namespace GanjooRazor.Areas.User.Pages
 
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
 
                     

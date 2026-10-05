@@ -98,7 +98,7 @@ namespace GanjooRazor.Pages
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/users/captchaimage");
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 _FillViewData();
                 return Page();
             }
@@ -121,12 +121,12 @@ namespace GanjooRazor.Pages
             var response = await _httpClient.PostAsync($"{APIRoot.Url}/api/users/forgotpassword", new StringContent(JsonConvert.SerializeObject(ForgotPasswordViewModel), Encoding.UTF8, "application/json"));
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
 
                 response = await _httpClient.GetAsync($"{APIRoot.Url}/api/users/captchaimage");
                 if (!response.IsSuccessStatusCode)
                 {
-                    LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                    LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                     _FillViewData();
                     return Page();
                 }
@@ -164,7 +164,7 @@ namespace GanjooRazor.Pages
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/users/verify?type=1&secret={Secret}");
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 _FillViewData();
                 return Page();
             }
@@ -207,7 +207,7 @@ namespace GanjooRazor.Pages
             var response = await _httpClient.PostAsync($"{APIRoot.Url}/api/users/resetpassword", new StringContent(JsonConvert.SerializeObject(postViewModel), Encoding.UTF8, "application/json"));
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 _FillViewData();
                 return Page();
             }
@@ -227,7 +227,7 @@ namespace GanjooRazor.Pages
 
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 _FillViewData();
                 return Page();
             }

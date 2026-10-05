@@ -174,7 +174,7 @@ namespace GanjooRazor.Pages
             if (!response.IsSuccessStatusCode)
             {
                 // the API's error text is Persian and Location headers must be ASCII, so it is encoded
-                string loginError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                string loginError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 return Redirect($"/login?redirect={Uri.EscapeDataString(Request.Path)}&error={Uri.EscapeDataString(loginError ?? "")}");
             }
 

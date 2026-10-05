@@ -29,7 +29,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var response = await secureClient.GetAsync($"{APIRoot.Url}/api/rjobs");
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastMessage = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastMessage = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         return Page();
                     }
                     Jobs = JsonConvert.DeserializeObject<RLongRunningJobStatus[]>(await response.Content.ReadAsStringAsync());
@@ -48,7 +48,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/rjobs/cleanup");
                     if (!response.IsSuccessStatusCode)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                 }
                 else
@@ -68,7 +68,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/rjobs?id={id}");
                     if (!response.IsSuccessStatusCode)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                 }
                 else

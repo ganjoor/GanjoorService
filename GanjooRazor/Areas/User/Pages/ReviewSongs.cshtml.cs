@@ -82,7 +82,7 @@ namespace GanjooRazor.Areas.User.Pages
                         );
                     if (!trackResponse.IsSuccessStatusCode)
                     {
-                        LastError = JsonConvert.DeserializeObject<string>(await trackResponse.Content.ReadAsStringAsync());
+                        LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(trackResponse);
                     }
                     else
                     {
@@ -161,7 +161,7 @@ namespace GanjooRazor.Areas.User.Pages
                             var putResponse = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/song/update", new StringContent(JsonConvert.SerializeObject(PoemMusicTrackViewModel), Encoding.UTF8, "application/json"));
                             if (!putResponse.IsSuccessStatusCode)
                             {
-                                LastError = JsonConvert.DeserializeObject<string>(await putResponse.Content.ReadAsStringAsync());
+                                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(putResponse);
                             }
                         }
                         else
@@ -169,7 +169,7 @@ namespace GanjooRazor.Areas.User.Pages
                             var delResponse = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/song?id={Request.Query["id"]}");
                             if (!delResponse.IsSuccessStatusCode)
                             {
-                                LastError = JsonConvert.DeserializeObject<string>(await delResponse.Content.ReadAsStringAsync());
+                                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(delResponse);
                             }
                         }
                         
@@ -204,7 +204,7 @@ namespace GanjooRazor.Areas.User.Pages
                         var putResponse = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/song", new StringContent(JsonConvert.SerializeObject(PoemMusicTrackViewModel), Encoding.UTF8, "application/json"));
                         if (!putResponse.IsSuccessStatusCode)
                         {
-                            LastError = JsonConvert.DeserializeObject<string>(await putResponse.Content.ReadAsStringAsync());
+                            LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(putResponse);
                         }
                     }
                     else
@@ -233,7 +233,7 @@ namespace GanjooRazor.Areas.User.Pages
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/rebuild/mundex", null);
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
                     return new OkObjectResult(true);
                 }
@@ -250,13 +250,13 @@ namespace GanjooRazor.Areas.User.Pages
                     HttpResponseMessage response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/page/cache/64899");// =>/mundex
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
 
                     response = await secureClient.DeleteAsync($"{APIRoot.Url}/api/ganjoor/page/cache/70833");// =>mundex/bypoet
                     if (!response.IsSuccessStatusCode)
                     {
-                        return BadRequest(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
 
                     return new OkObjectResult(true);

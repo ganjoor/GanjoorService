@@ -67,7 +67,7 @@ namespace GanjooRazor.Areas.User.Pages
                         ));
                     if(!response.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                     }
                     else
                     {
@@ -98,7 +98,7 @@ namespace GanjooRazor.Areas.User.Pages
                         );
                     if (!response.IsSuccessStatusCode)
                     {
-                        FatalError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                     }
                     else
                     {

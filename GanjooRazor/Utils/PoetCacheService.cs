@@ -51,7 +51,7 @@ namespace GanjooRazor.Utils
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
             if (!response.IsSuccessStatusCode)
             {
-                return (false, null, JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                return (false, null, await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
             }
 
             poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
@@ -78,7 +78,7 @@ namespace GanjooRazor.Utils
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{poetId}");
             if (!response.IsSuccessStatusCode)
             {
-                return (false, null, JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                return (false, null, await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
             }
 
             poet = JObject.Parse(await response.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();

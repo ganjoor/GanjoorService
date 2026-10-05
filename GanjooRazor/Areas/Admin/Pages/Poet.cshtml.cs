@@ -73,7 +73,7 @@ namespace GanjooRazor.Areas.Admin.Pages
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poet/{Request.Query["id"]}");
             if (!response.IsSuccessStatusCode)
             {
-                LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 return false;
             }
 
@@ -94,7 +94,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     var response = await secureClient.GetAsync($"{APIRoot.Url}/api/locations");
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         return;
                     }
 
@@ -160,7 +160,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/poet", new StringContent(JsonConvert.SerializeObject(Poet), Encoding.UTF8, "application/json"));
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         return Page();
                     }
 
@@ -180,7 +180,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/poet/{Request.Query["id"]}", new StringContent(JsonConvert.SerializeObject(Poet), Encoding.UTF8, "application/json"));
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         return Page();
                     }
 
@@ -230,7 +230,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/poet/image/{Request.Query["id"]}", form);
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         return Page();
                     }
 
@@ -266,7 +266,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqlite/import/{Request.Query["id"]}", form);
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         return Page();
                     }
 
@@ -302,7 +302,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     HttpResponseMessage response = await secureClient.PostAsync($"{APIRoot.Url}/api/ganjoor/sqlite/update/{Request.Query["id"]}?note={CorrecionDbModel.Note}", form);
                     if (!response.IsSuccessStatusCode)
                     {
-                        LastResult = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                        LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                         return Page();
                     }
 

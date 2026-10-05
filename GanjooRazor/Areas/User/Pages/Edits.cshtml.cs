@@ -59,7 +59,7 @@ namespace GanjooRazor.Areas.User.Pages
             HttpResponseMessage response = await secureClient.GetAsync($"{APIRoot.Url}/api/translations/languages");
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 return;
             }
 
@@ -96,7 +96,7 @@ namespace GanjooRazor.Areas.User.Pages
                                 var responseUserProfile = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/user/profile/{filteredUserId}");
                                 if (!responseUserProfile.IsSuccessStatusCode)
                                 {
-                                    LastError = JsonConvert.DeserializeObject<string>(await responseUserProfile.Content.ReadAsStringAsync());
+                                    LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(responseUserProfile);
                                     return Page();
                                 }
 
@@ -106,7 +106,7 @@ namespace GanjooRazor.Areas.User.Pages
                         var response = await secureClient.GetAsync(url);
                         if (!response.IsSuccessStatusCode)
                         {
-                            LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                            LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                             return Page();
                         }
 
@@ -212,7 +212,7 @@ namespace GanjooRazor.Areas.User.Pages
                     var correctionResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/correction/{correctionId}");
                     if (!correctionResponse.IsSuccessStatusCode)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await correctionResponse.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(correctionResponse));
                     }
 
                     var currentCorrection = JsonConvert.DeserializeObject<GanjoorPoemCorrectionViewModel>(await correctionResponse.Content.ReadAsStringAsync());
@@ -343,7 +343,7 @@ namespace GanjooRazor.Areas.User.Pages
                         "application/json"));
                     if (!response.IsSuccessStatusCode)
                     {
-                        return new BadRequestObjectResult(JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync()));
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
 
 

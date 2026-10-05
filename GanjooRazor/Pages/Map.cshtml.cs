@@ -21,7 +21,7 @@ namespace GanjooRazor.Pages
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poets");
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 return new List<GanjoorPoetViewModel>();
             }
             var poets = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoetViewModel>>();
@@ -44,7 +44,7 @@ namespace GanjooRazor.Pages
             var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/centuries");
             if (!response.IsSuccessStatusCode)
             {
-                LastError = JsonConvert.DeserializeObject<string>(await response.Content.ReadAsStringAsync());
+                LastError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                 return;
             }
             var poetGroups = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorCenturyViewModel>>();
