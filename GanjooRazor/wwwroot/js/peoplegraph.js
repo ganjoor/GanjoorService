@@ -280,6 +280,18 @@
             });
         }
 
+        // a table cell for one side of an edge: the name (opens the profile, as before), a 👁
+        // profile icon and - only when the person actually has a family tree - a 🌳 icon that
+        // opens it, so same-named people can be told apart right from the list
+        function personCell(id, name) {
+            var node = nodesById[id];
+            return '<a href="javascript:void(0)" class="pg-person-link" data-person-id="' + id + '">' + escapeHtml(name) + '</a> ' +
+                '<a href="javascript:void(0)" class="pg-person-link" data-person-id="' + id + '" title="مشاهدهٔ اطلاعات کامل این شخصیت">👁</a>' +
+                (node && node.hasFamilyTree
+                    ? ' <a href="javascript:void(0)" class="pg-person-tree" data-person-id="' + id + '" title="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>'
+                    : '');
+        }
+
         var tableRows = [];
         function buildTable() {
             if (!tableBody) return;
@@ -289,9 +301,9 @@
                 tr.setAttribute('data-edge-index', idx);
                 tr.style.cursor = 'pointer';
                 tr.innerHTML =
-                    '<td><a href="javascript:void(0)" class="pg-person-link" data-person-id="' + e.raw.person1Id + '">' + escapeHtml(e.raw.person1Name) + '</a></td>' +
+                    '<td>' + personCell(e.raw.person1Id, e.raw.person1Name) + '</td>' +
                     '<td><span class="pg-legend-swatch" style="background:' + e.meta.color + '"></span> ' + escapeHtml(e.meta.label) + '</td>' +
-                    '<td><a href="javascript:void(0)" class="pg-person-link" data-person-id="' + e.raw.person2Id + '">' + escapeHtml(e.raw.person2Name) + '</a></td>' +
+                    '<td>' + personCell(e.raw.person2Id, e.raw.person2Name) + '</td>' +
                     '<td><small>' + escapeHtml(e.note || '') + '</small></td>';
                 tr.addEventListener('click', function () { focusOnPersons([e.raw.person1Id, e.raw.person2Id]); });
                 // the name links open the person's profile window without also triggering the
@@ -300,6 +312,13 @@
                     link.addEventListener('click', function (evt) {
                         evt.stopPropagation();
                         if (window.PersonWindow) window.PersonWindow.open(Number(link.getAttribute('data-person-id')));
+                    });
+                });
+                // same for the 🌳 icon (family tree, only rendered for people who have one)
+                tr.querySelectorAll('.pg-person-tree').forEach(function (link) {
+                    link.addEventListener('click', function (evt) {
+                        evt.stopPropagation();
+                        if (window.FamilyTreeWindow) window.FamilyTreeWindow.open(Number(link.getAttribute('data-person-id')));
                     });
                 });
                 tableBody.appendChild(tr);
