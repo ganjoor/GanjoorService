@@ -2950,6 +2950,23 @@ function setupPersonAutocomplete(searchInput, hiddenInput, resultsBox, people, o
         if (onSelect) onSelect(p);
     }
 
+    // small inline icon button inside a dropdown row - stops the click from reaching the row's
+    // own select handler (and from being treated as "clicked outside" by the document-level
+    // close listener below), so previewing a candidate never picks it or closes the list.
+    function makeRowIconButton(icon, title, onClick) {
+        var btn = document.createElement('a');
+        btn.href = 'javascript:void(0)';
+        btn.className = 'up-icon-btn up-autocomplete-item-icon';
+        btn.title = title;
+        btn.setAttribute('aria-label', title);
+        btn.textContent = icon;
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            onClick();
+        });
+        return btn;
+    }
+
     function render(typedText) {
         var typedLower = typedText.toLowerCase();
         var matches = (people || []).filter(function (p) {
@@ -2975,11 +2992,29 @@ function setupPersonAutocomplete(searchInput, hiddenInput, resultsBox, people, o
             var p = matches[i];
             var subtitle = personSubtitle(p);
             var row = document.createElement('div');
-            row.className = 'up-autocomplete-item';
-            row.textContent = subtitle ? (p.name + ' (' + subtitle + ')') : p.name;
-            row.addEventListener('click', function (person) {
+            row.className = 'up-autocomplete-item up-autocomplete-item--withicons';
+
+            var label = document.createElement('span');
+            label.className = 'up-autocomplete-item-label';
+            label.textContent = subtitle ? (p.name + ' (' + subtitle + ')') : p.name;
+            label.addEventListener('click', function (person) {
                 return function () { selectPerson(person); };
             }(p));
+            row.appendChild(label);
+
+            // Two (or more) catalog entries can share both a name and the birth/death-year
+            // subtitle - every Shahnameh/mythological figure with the same name does, since
+            // those have no recorded years at all - so give a way to check exactly which one a
+            // row is *before* committing to it: a profile preview and, since that's often not
+            // enough either (a bare bio rarely says "father of افراسیاب"), that row's own family
+            // tree, same as the 👁 link shown next to the box after a pick is made.
+            row.appendChild(makeRowIconButton('👁', 'مشاهدهٔ اطلاعات کامل این شخصیت', function (person) {
+                return function () { PersonWindow.open(person.id); };
+            }(p)));
+            row.appendChild(makeRowIconButton('🌳', 'مشاهدهٔ شجره‌نامهٔ این شخصیت', function (person) {
+                return function () { FamilyTreeWindow.open(person.id); };
+            }(p)));
+
             resultsBox.appendChild(row);
         }
         if (matches.length > MAX_RESULTS) {

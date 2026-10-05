@@ -116,11 +116,17 @@ else
                 <td>طرف اول</td>
                 <td>
                     <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@s.Person1Id)" class="up-btn up-btn--ghost up-btn--sm">@(s.Person1 != null ? s.Person1.Name : s.Person1Id.ToString())</a>
+                    @* a bare name/id is not enough to tell two same-named people apart (e.g. the
+                       Shahnameh's several پشنگ‌ها) - this family-tree shortcut lets the moderator
+                       confirm it is the exact person the suggester meant, same as the 🌳 shortcut
+                       already offered to the suggester themselves when picking this person. *@
+                    <a role="button" href="javascript:void(0)" onclick="FamilyTreeWindow.open(@s.Person1Id)" class="up-icon-btn" title="مشاهدهٔ شجره‌نامهٔ این شخصیت" aria-label="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>
                 </td>
                 @if (s.Action == PersonRelationSuggestionAction.Modify)
                 {
                     <td>
                         <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@s.Person1Id)" class="up-btn up-btn--ghost up-btn--sm">@(s.Person1 != null ? s.Person1.Name : s.Person1Id.ToString())</a>
+                        <a role="button" href="javascript:void(0)" onclick="FamilyTreeWindow.open(@s.Person1Id)" class="up-icon-btn" title="مشاهدهٔ شجره‌نامهٔ این شخصیت" aria-label="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>
                     </td>
                 }
             </tr>
@@ -128,11 +134,13 @@ else
                 <td>طرف دوم</td>
                 <td>
                     <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@s.Person2Id)" class="up-btn up-btn--ghost up-btn--sm">@(s.Person2 != null ? s.Person2.Name : s.Person2Id.ToString())</a>
+                    <a role="button" href="javascript:void(0)" onclick="FamilyTreeWindow.open(@s.Person2Id)" class="up-icon-btn" title="مشاهدهٔ شجره‌نامهٔ این شخصیت" aria-label="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>
                 </td>
                 @if (s.Action == PersonRelationSuggestionAction.Modify)
                 {
                     <td>
                         <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@s.Person2Id)" class="up-btn up-btn--ghost up-btn--sm">@(s.Person2 != null ? s.Person2.Name : s.Person2Id.ToString())</a>
+                        <a role="button" href="javascript:void(0)" onclick="FamilyTreeWindow.open(@s.Person2Id)" class="up-icon-btn" title="مشاهدهٔ شجره‌نامهٔ این شخصیت" aria-label="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>
                     </td>
                 }
             </tr>

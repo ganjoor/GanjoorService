@@ -1002,6 +1002,16 @@ else
                                                     <small>
                                                         @(relation.Kind == "affiliation" ? relation.AffiliationType : relation.RelationType)
                                                         — @otherName
+                                                        @if (otherNode != null && otherNode.ExistingPersonId != null)
+                                                        {
+                                                            @* the user picked an already-existing person as the other side of this
+                                                               relation - a bare name is not enough to tell them apart when more than
+                                                               one person shares it (e.g. several Shahnameh figures named پشنگ), so
+                                                               give the moderator the same two checks the picker itself offers: the
+                                                               full profile and that exact candidate's own family tree *@
+                                                            <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@otherNode.ExistingPersonId)" class="up-icon-btn" title="مشاهدهٔ اطلاعات کامل این شخصیت" aria-label="مشاهدهٔ اطلاعات کامل این شخصیت">👁</a>
+                                                            <a role="button" href="javascript:void(0)" onclick="FamilyTreeWindow.open(@otherNode.ExistingPersonId)" class="up-icon-btn" title="مشاهدهٔ شجره‌نامهٔ این شخصیت" aria-label="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>
+                                                        }
                                                         @if (!string.IsNullOrEmpty(relation.Note)) { <text>(@relation.Note)</text> }
                                                     </small>
                                                 </li>
