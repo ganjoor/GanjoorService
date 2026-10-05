@@ -718,24 +718,36 @@ namespace RMuseum.Services.Implementation
                 .ToListAsync();
             var affiliationIds = affiliations.Select(a => a.Id).ToList();
 
-            // any other still-pending relation-edit suggestion that touches this person directly, or
-            // targets one of the relations/affiliations we're about to remove, would otherwise dangle
-            // or violate the Restrict FKs above - auto-reject those with an explanatory note rather
-            // than letting the delete fail or silently drop them
-            var conflictingRelationSuggestions = await _context.GanjoorPersonRelationEditSuggestions
-                .Where(s => !s.Reviewed && (
+            // every relation-edit suggestion row (pending OR already reviewed - history included) that
+            // still references this person or one of the relations/affiliations being removed would
+            // violate a Restrict FK and make the delete fail. Rows whose own Person1/Person2 is this
+            // person can't be kept (those columns are required), so they're deleted; rows that only
+            // point at a removed relation/affiliation via the optional Existing*Id columns are kept
+            // for history with that reference cleared. Still-pending ones among the latter are
+            // auto-rejected with an explanatory note first.
+            var referencingSuggestions = await _context.GanjoorPersonRelationEditSuggestions
+                .Where(s =>
                     s.Person1Id == person.Id ||
                     s.Person2Id == person.Id ||
                     (s.ExistingRelationId != null && relationIds.Contains(s.ExistingRelationId.Value)) ||
-                    (s.ExistingAffiliationId != null && affiliationIds.Contains(s.ExistingAffiliationId.Value))
-                ))
+                    (s.ExistingAffiliationId != null && affiliationIds.Contains(s.ExistingAffiliationId.Value)))
                 .ToListAsync();
-            foreach (var conflicting in conflictingRelationSuggestions)
+            foreach (var referencing in referencingSuggestions)
             {
-                conflicting.Reviewed = true;
-                conflicting.Result = CorrectionReviewResult.RejectedBecauseUnnecessaryChange;
-                conflicting.ReviewNote = "شخصیت یا نسبت مرتبط با این پیشنهاد حذف شد.";
-                conflicting.ReviewDate = DateTime.Now;
+                if (referencing.Person1Id == person.Id || referencing.Person2Id == person.Id)
+                {
+                    _context.GanjoorPersonRelationEditSuggestions.Remove(referencing);
+                    continue;
+                }
+                if (!referencing.Reviewed)
+                {
+                    referencing.Reviewed = true;
+                    referencing.Result = CorrectionReviewResult.RejectedBecauseUnnecessaryChange;
+                    referencing.ReviewNote = "شخصیت یا نسبت مرتبط با این پیشنهاد حذف شد.";
+                    referencing.ReviewDate = DateTime.Now;
+                }
+                referencing.ExistingRelationId = null;
+                referencing.ExistingAffiliationId = null;
             }
 
             var geoDateTags = await _context.PoemGeoDateTags.Where(t => t.PersonId == person.Id).ToListAsync();

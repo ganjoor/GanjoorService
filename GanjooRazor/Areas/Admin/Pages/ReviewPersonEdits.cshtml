@@ -180,7 +180,7 @@ else
                     location.reload(true);
                 },
                 error: function (e) {
-                    upToast(e.responseText || 'خطا رخ داد.', 'error');
+                    upShowError(e.responseText || 'خطا رخ داد.');
                     $('#moderatepersonedit').show();
                 }
             });
