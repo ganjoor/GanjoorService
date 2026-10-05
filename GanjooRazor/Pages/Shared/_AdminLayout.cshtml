@@ -545,6 +545,10 @@
 
     <partial name="_Toasts" />
     <partial name="_ConfirmModal" />
+    @* needed for upShowError() - a styled, non-auto-dismissing error display used instead of
+       upToast() wherever a backend error message is too long/important to risk missing in a
+       few-second toast (see ReviewPersonRelationEdits.cshtml's moderation error handling) *@
+    <partial name="_ErrorModal" />
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
