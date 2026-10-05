@@ -570,7 +570,11 @@
             deathLocationId: null,
             familyTreeCaption: $('#geotag-new-person-familytreecaption').val() || null,
             importance: $('#geotag-new-person-importance').val(),
-            gender: $('#geotag-new-person-gender').val()
+            gender: $('#geotag-new-person-gender').val(),
+            // defaults to false: the server rejects a brand new person whose name exactly matches
+            // an already-approved one, unless the submitter explicitly confirms (via this checkbox)
+            // that they really do mean a different, same-named person
+            confirmedNewDespiteNameMatch: $('#geotag-new-person-confirm-distinct').is(':checked')
         };
 
         var relatedPeople = [];
@@ -859,6 +863,7 @@
         $('#geotag-person-search').val('');
         $('#geotag-person-results').hide().empty();
         $('#geotag-new-person-name').val('');
+        $('#geotag-new-person-confirm-distinct').prop('checked', false);
         $('#geotag-new-person-description').val('');
         $('#geotag-new-person-wikiurl').val('');
         $('#geotag-new-person-familytreecaption').val('');
@@ -2679,6 +2684,18 @@ else
             <div class="up-field">
                 <label for="geotag-new-person-name">نام</label>
                 <input type="text" id="geotag-new-person-name" oninput="updateAllPersonRelativeHints()" />
+            </div>
+            <div class="up-field">
+                <label>
+                    <input type="checkbox" id="geotag-new-person-confirm-distinct" />
+                    این شخصیت، شخصیتی متفاوت از هر نامبردۀ دیگری با همین نام است
+                </label>
+                <p class="up-hint"><small>
+                    اگر از قبل نامبرده‌ای دقیقاً با همین نام ثبت شده باشد، این پیشنهاد به‌طور پیش‌فرض رد می‌شود
+                    (برای پیشگیری از ایجاد ناخواستۀ یک نامبردۀ تکراری به‌جای انتخاب همان نامبردۀ موجود از فهرست جستجو).
+                    این گزینه را فقط در صورتی علامت بزنید که مطمئن هستید منظورتان شخصیتی واقعاً متفاوت است
+                    (مثلاً دو شخصیت هم‌نام مختلف در شاهنامه).
+                </small></p>
             </div>
             <div class="up-field">
                 <label for="geotag-new-person-description">توضیحات (اختیاری)</label>
