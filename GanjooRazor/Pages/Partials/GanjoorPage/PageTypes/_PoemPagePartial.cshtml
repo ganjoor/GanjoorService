@@ -1052,7 +1052,10 @@
 
             var popup = new L.Popup();
             oms.addListener('click', function (marker) {
-                var poemDesc = '<a class="actionlink" onclick="viewLocation(marker.poemGeoTag.Location.Latitude, marker.poemGeoTag.Location.Longitude)">' + marker.poemGeoTag.Location.Name + '</a>';
+                // literal coordinates embedded here, not a "marker...." lookup - see the identical
+                // fix in _CatPagePartial.cshtml/_PoetPagePartial.cshtml for why referencing the
+                // identifier here always ends up pointing at the last-built marker instead
+                var poemDesc = '<a class="actionlink" onclick="viewLocation(' + marker.poemGeoTag.Location.Latitude + ', ' + marker.poemGeoTag.Location.Longitude + ')">' + marker.poemGeoTag.Location.Name + '</a>';
                 if (marker.poemGeoTag.LunarYear != null) {
                     poemDesc += '<br> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
                 }
@@ -1063,7 +1066,9 @@
 
             for (var i = 0; i < poemGeoTags.length; i++) {
                 var poemGeoTag = poemGeoTags[i];
-                marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
+                // declared with "var" so it's local to this closure instead of leaking as an
+                // implicit global that every iteration overwrites
+                var marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
                 marker.poemGeoTag = poemGeoTag
                 marker.order = persianizeNumerals((i + 1).toString());
                 marker.addTo(layerGroup);
