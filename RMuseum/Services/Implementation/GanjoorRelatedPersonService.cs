@@ -1104,6 +1104,22 @@ namespace RMuseum.Services.Implementation
                                             c.ReviewNote = "این وابستگی پیش‌تر حذف شد.";
                                             c.ReviewDate = DateTime.Now;
                                         }
+
+                                        // ExistingAffiliationId is a Restrict FK, so every suggestion row still
+                                        // pointing at this affiliation - this one included (it's the Remove
+                                        // suggestion being approved right now), the ones just auto-rejected
+                                        // above, and any older, already-reviewed suggestion from this
+                                        // affiliation's own history (e.g. a past approved Modify) - would block
+                                        // the delete below unless detached first. The rows themselves are kept
+                                        // for history; only the now-dangling reference is cleared.
+                                        var allReferencing = await _context.GanjoorPersonRelationEditSuggestions
+                                            .Where(s => s.ExistingAffiliationId == existing.Id)
+                                            .ToListAsync();
+                                        foreach (var r in allReferencing)
+                                        {
+                                            r.ExistingAffiliationId = null;
+                                        }
+
                                         _context.GanjoorPersonAffiliations.Remove(existing);
                                     }
                                     break;
@@ -1168,6 +1184,24 @@ namespace RMuseum.Services.Implementation
                                             c.ReviewNote = "این نسبت پیش‌تر حذف شد.";
                                             c.ReviewDate = DateTime.Now;
                                         }
+
+                                        // ExistingRelationId is a Restrict FK, so every suggestion row still
+                                        // pointing at this relation - this one included (it's the Remove
+                                        // suggestion being approved right now), the ones just auto-rejected
+                                        // above, and any older, already-reviewed suggestion from this
+                                        // relation's own history (e.g. a past approved Modify, or simply a
+                                        // relation that has had more than one suggestion against it over
+                                        // time) - would block the delete below unless detached first. The
+                                        // rows themselves are kept for history; only the now-dangling
+                                        // reference is cleared.
+                                        var allReferencing = await _context.GanjoorPersonRelationEditSuggestions
+                                            .Where(s => s.ExistingRelationId == existing.Id)
+                                            .ToListAsync();
+                                        foreach (var r in allReferencing)
+                                        {
+                                            r.ExistingRelationId = null;
+                                        }
+
                                         _context.GanjoorPersonRelations.Remove(existing);
                                     }
                                     break;
