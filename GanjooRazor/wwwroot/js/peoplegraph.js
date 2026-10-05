@@ -280,16 +280,37 @@
             });
         }
 
-        // a table cell for one side of an edge: the name (opens the profile, as before), a 👁
-        // profile icon and - only when the person actually has a family tree - a 🌳 icon that
-        // opens it, so same-named people can be told apart right from the list
-        function personCell(id, name) {
-            var node = nodesById[id];
-            return '<a href="javascript:void(0)" class="pg-person-link" data-person-id="' + id + '">' + escapeHtml(name) + '</a> ' +
-                '<a href="javascript:void(0)" class="pg-person-link" data-person-id="' + id + '" title="مشاهدهٔ اطلاعات کامل این شخصیت">👁</a>' +
-                (node && node.hasFamilyTree
-                    ? ' <a href="javascript:void(0)" class="pg-person-tree" data-person-id="' + id + '" title="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>'
-                    : '');
+        // --- selected-person bar ------------------------------------------------------------------
+        // shown above the relations table for the currently selected node, independent of the
+        // table rows (a person with no relations has no rows at all, but can still be selected):
+        // name + 👁 full info + 🌳 family tree (only if the person has one)
+        var selectedBar = null;
+        if (tableBody) {
+            var tableEl = tableBody.closest ? tableBody.closest('table') : null;
+            if (tableEl && tableEl.parentNode) {
+                selectedBar = document.createElement('div');
+                selectedBar.className = 'pg-selected-bar';
+                selectedBar.style.cssText = 'display:none;margin:6px 0;padding:6px 10px;border:1px solid #d8cdb8;border-radius:6px;background:#faf7f0;';
+                tableEl.parentNode.insertBefore(selectedBar, tableEl);
+            }
+        }
+
+        function showSelected(node) {
+            if (!selectedBar) return;
+            if (!node) { selectedBar.style.display = 'none'; selectedBar.innerHTML = ''; return; }
+            selectedBar.innerHTML =
+                '<span>شخص انتخاب‌شده: </span><b>' + escapeHtml(node.name) + '</b> ' +
+                '<a href="javascript:void(0)" class="pg-sel-info" title="مشاهدهٔ اطلاعات کامل این شخصیت">👁</a>' +
+                (node.hasFamilyTree ? ' <a href="javascript:void(0)" class="pg-sel-tree" title="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>' : '') +
+                (node.degree === 0 ? ' <small>(بدون ارتباط ثبت‌شده)</small>' : '');
+            selectedBar.querySelector('.pg-sel-info').addEventListener('click', function () {
+                if (window.PersonWindow) window.PersonWindow.open(node.id);
+            });
+            var treeLink = selectedBar.querySelector('.pg-sel-tree');
+            if (treeLink) treeLink.addEventListener('click', function () {
+                if (window.FamilyTreeWindow) window.FamilyTreeWindow.open(node.id);
+            });
+            selectedBar.style.display = '';
         }
 
         var tableRows = [];
@@ -301,9 +322,9 @@
                 tr.setAttribute('data-edge-index', idx);
                 tr.style.cursor = 'pointer';
                 tr.innerHTML =
-                    '<td>' + personCell(e.raw.person1Id, e.raw.person1Name) + '</td>' +
+                    '<td><a href="javascript:void(0)" class="pg-person-link" data-person-id="' + e.raw.person1Id + '">' + escapeHtml(e.raw.person1Name) + '</a></td>' +
                     '<td><span class="pg-legend-swatch" style="background:' + e.meta.color + '"></span> ' + escapeHtml(e.meta.label) + '</td>' +
-                    '<td>' + personCell(e.raw.person2Id, e.raw.person2Name) + '</td>' +
+                    '<td><a href="javascript:void(0)" class="pg-person-link" data-person-id="' + e.raw.person2Id + '">' + escapeHtml(e.raw.person2Name) + '</a></td>' +
                     '<td><small>' + escapeHtml(e.note || '') + '</small></td>';
                 tr.addEventListener('click', function () { focusOnPersons([e.raw.person1Id, e.raw.person2Id]); });
                 // the name links open the person's profile window without also triggering the
@@ -312,13 +333,6 @@
                     link.addEventListener('click', function (evt) {
                         evt.stopPropagation();
                         if (window.PersonWindow) window.PersonWindow.open(Number(link.getAttribute('data-person-id')));
-                    });
-                });
-                // same for the 🌳 icon (family tree, only rendered for people who have one)
-                tr.querySelectorAll('.pg-person-tree').forEach(function (link) {
-                    link.addEventListener('click', function (evt) {
-                        evt.stopPropagation();
-                        if (window.FamilyTreeWindow) window.FamilyTreeWindow.open(Number(link.getAttribute('data-person-id')));
                     });
                 });
                 tableBody.appendChild(tr);
@@ -350,6 +364,7 @@
         }
 
         function clearFocus() {
+            showSelected(null);
             focusedIds = null;
             applyFocus();
         }
@@ -378,6 +393,7 @@
                     clearFocus();
                 } else {
                     focusOnPersons([item.node.id]);
+                    showSelected(item.node);
                 }
             });
         });
@@ -391,8 +407,9 @@
                 var q = searchInput.value.trim();
                 if (!q) { clearFocus(); return; }
                 var matchIds = nodes.filter(function (n) { return n.name && n.name.indexOf(q) !== -1; }).map(function (n) { return n.id; });
-                if (matchIds.length === 0) { focusedIds = {}; applyFocus(); return; }
+                if (matchIds.length === 0) { showSelected(null); focusedIds = {}; applyFocus(); return; }
                 focusOnPersons(matchIds);
+                showSelected(matchIds.length === 1 ? nodesById[matchIds[0]] : null);
             });
         }
 
