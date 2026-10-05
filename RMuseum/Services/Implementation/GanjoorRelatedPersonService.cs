@@ -449,7 +449,7 @@ namespace RMuseum.Services.Implementation
         /// (so it's still caught even if another suggestion was approved in the meantime, or the
         /// submission-time check is ever bypassed).
         /// </summary>
-        private async Task<string> _ValidateFamilyRelationAsync(int person1Id, int person2Id, PersonRelationType relationType, int? excludeRelationId)
+        private async Task<string> _ValidateFamilyRelationAsync(int person1Id, int person2Id, PersonRelationType relationType, int? excludeRelationId, bool confirmedExtraParent = false)
         {
             if (relationType == PersonRelationType.Parent || relationType == PersonRelationType.Ancestor)
             {
@@ -459,12 +459,12 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
-            if (relationType == PersonRelationType.Parent)
+            if (relationType == PersonRelationType.Parent && !confirmedExtraParent)
             {
                 var existingParentsCount = await _CountParentsAsync(person2Id, excludeRelationId);
                 if (existingParentsCount >= 2)
                 {
-                    return "این نامبرده هم‌اکنون دو پدر/مادر ثبت‌شده دارد. برای افزودن سومی، نخست یکی از نسبت‌های پدر/مادری موجود را ویرایش یا حذف کنید.";
+                    return "این نامبرده هم‌اکنون دو پدر/مادر ثبت‌شده دارد. اگر این سومی اشتباه است، نخست یکی از نسبت‌های پدر/مادری موجود را ویرایش یا حذف کنید؛ اگر عمداً یک پدر/مادر سوم (مثلاً بر اساس روایت دیگری) اضافه می‌کنید، گزینهٔ تأیید «سومین پدر/مادر» را علامت بزنید.";
                 }
             }
 
@@ -634,13 +634,13 @@ namespace RMuseum.Services.Implementation
                     }
                     else
                     {
-                        if (!string.IsNullOrWhiteSpace(suggestion.SuggestedFamilyTreeCaption))
+                        if (!string.IsNullOrWhiteSpace(suggestion.SuggestedFamilyTreeCaption) && !suggestion.ConfirmedDuplicateFamilyTreeCaption)
                         {
                             var otherCaptionHolder = await _FindOtherFamilyTreeCaptionHolderInComponentAsync(person.Id);
                             if (otherCaptionHolder != null)
                             {
                                 return new RServiceResult<GanjoorPersonEditSuggestion>(null,
-                                    $"شخصیت «{otherCaptionHolder.Name}» هم‌اکنون در همین خوشهٔ خویشاوندی (همان شجره‌نامه) عنوان تبارنامهٔ «{otherCaptionHolder.FamilyTreeCaption}» را دارد. تأیید این پیشنهاد باعث می‌شود یک شجره‌نامهٔ واحد دو عنوان/مدخل جداگانه در فهرست شجره‌نامه‌ها پیدا کند. نخست عنوان «{otherCaptionHolder.Name}» را حذف یا ویرایش کنید، یا این پیشنهاد را رد کنید.");
+                                    $"شخصیت «{otherCaptionHolder.Name}» هم‌اکنون در همین خوشهٔ خویشاوندی (همان شجره‌نامه) عنوان تبارنامهٔ «{otherCaptionHolder.FamilyTreeCaption}» را دارد. تأیید این پیشنهاد باعث می‌شود یک شجره‌نامهٔ واحد دو عنوان/مدخل جداگانه در فهرست شجره‌نامه‌ها پیدا کند. اگر این دو عنوان جدا برای همان یک شجره‌نامه عمداً مدنظر است (مثلاً دو نام رایج برای یک سلسله)، پیشنهاد را با علامت‌زدن گزینهٔ تأیید «عنوان تبارنامهٔ تکراری» دوباره ثبت کنید؛ در غیر این صورت نخست عنوان «{otherCaptionHolder.Name}» را حذف یا ویرایش کنید، یا این پیشنهاد را رد کنید.");
                             }
                         }
 
@@ -922,7 +922,7 @@ namespace RMuseum.Services.Implementation
                     (suggestion.Action == PersonRelationSuggestionAction.Add || suggestion.Action == PersonRelationSuggestionAction.Modify))
                 {
                     var excludeRelationId = suggestion.Action == PersonRelationSuggestionAction.Modify ? suggestion.ExistingRelationId : null;
-                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, excludeRelationId);
+                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, excludeRelationId, suggestion.ConfirmedExtraParent);
                     if (validationError != null)
                     {
                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, validationError);
@@ -1119,7 +1119,7 @@ namespace RMuseum.Services.Implementation
                                     // re-validated here (not just at submission time in
                                     // SuggestPersonRelationEditAsync) in case another suggestion
                                     // touching the same people/relations was approved in between
-                                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, null);
+                                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, null, suggestion.ConfirmedExtraParent);
                                     if (validationError != null)
                                     {
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, validationError);
@@ -1141,7 +1141,7 @@ namespace RMuseum.Services.Implementation
                                     {
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "نسبت مورد نظر دیگر وجود ندارد.");
                                     }
-                                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, existing.Id);
+                                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, existing.Id, suggestion.ConfirmedExtraParent);
                                     if (validationError != null)
                                     {
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, validationError);

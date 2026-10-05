@@ -96,6 +96,16 @@ else
                     </td>
                     <td><input asp-for="DegreeHint" /></td>
                 </tr>
+                <tr>
+                    <td>
+                        تأیید سومین پدر/مادر:
+                        <p class="up-hint"><small>فقط برای «فرزند»/«پدر یا مادر» کاربرد دارد.</small></p>
+                    </td>
+                    <td>
+                        <label><input type="checkbox" asp-for="ConfirmedExtraParent" /> اگر نامبردهٔ مقابل هم‌اکنون دو پدر/مادر ثبت‌شده دارد، این پیشنهاد سومی است و عمداً اضافه می‌شود</label>
+                        <p class="up-hint"><small>به‌طور پیش‌فرض، سومین رابطهٔ پدر/مادری برای یک نفر رد می‌شود؛ این گزینه را فقط در این حالت و وقتی مطمئنید علامت بزنید.</small></p>
+                    </td>
+                </tr>
             </table>
 
             <table id="affiliation-fields" style="display:none">

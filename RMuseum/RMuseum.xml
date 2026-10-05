@@ -5022,6 +5022,18 @@
         <member name="M:RMuseum.Migrations.AddPersonGender.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.AddPersonSuggestionConfirmationOverrides">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonSuggestionConfirmationOverrides.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonSuggestionConfirmationOverrides.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonSuggestionConfirmationOverrides.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -9541,6 +9553,16 @@
             suggested family tree caption
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.ConfirmedDuplicateFamilyTreeCaption">
+            <summary>
+            only meaningful alongside a non-null SuggestedFamilyTreeCaption. Normally,
+            ModeratePersonEditSuggestionAsync rejects approving a caption when another person in the
+            same connected kinship component already carries one (two separate "family tree" list
+            entries would otherwise open to the exact same graph). Set this to true only when a
+            second, distinct caption on the very same tree is genuinely intended (e.g. two commonly
+            used alternate names for the same dynasty/family) to approve it anyway.
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedImportance">
             <summary>
             suggested importance (see GanjoorRelatedPerson.Importance)
@@ -9729,6 +9751,15 @@
             for Add/Modify when Kind is Family: the relation type to create/change to. For Remove: a
             snapshot of the existing relation's type at submission time, purely for display (removing
             doesn't use it). Ignored when Kind is Affiliation - see SuggestedAffiliationType instead.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.ConfirmedExtraParent">
+            <summary>
+            only meaningful when SuggestedRelationType is Parent. Normally, a third Parent edge for
+            the same child is rejected (familytree.js's buildLayout only ever attaches the first two
+            it sorts to the front and silently drops the rest). Set this to true only when a third
+            recorded parent is genuinely intended (e.g. competing genealogy traditions for the same
+            legendary figure) to add/keep it anyway.
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.SuggestedAffiliationType">
@@ -15253,6 +15284,14 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphRelationEntry.DegreeHint">
             <summary>
             only meaningful for a family relation of type Ancestor - see GanjoorPersonRelation.DegreeHint
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonGraphRelationEntry.ConfirmedExtraParent">
+            <summary>
+            only meaningful when Kind is "family" and RelationType is "Parent" - see
+            GanjoorPersonRelationEditSuggestion.ConfirmedExtraParent, same escape hatch for a third
+            recorded parent, just on this JSON-graph submission path instead of the relation-edit
+            suggestion form
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel">
@@ -22272,7 +22311,7 @@
             or Parent AND Sibling, between the very same two people)
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._ValidateFamilyRelationAsync(System.Int32,System.Int32,RMuseum.Models.Ganjoor.PersonRelationType,System.Nullable{System.Int32})">
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._ValidateFamilyRelationAsync(System.Int32,System.Int32,RMuseum.Models.Ganjoor.PersonRelationType,System.Nullable{System.Int32},System.Boolean)">
             <summary>
             runs every family-relation data-integrity check (self-reference is checked separately by
             the caller for Add) that applies to adding/changing a kinship edge of relationType between

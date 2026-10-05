@@ -109,6 +109,16 @@ namespace RMuseum.Models.Ganjoor
         public string SuggestedFamilyTreeCaption { get; set; }
 
         /// <summary>
+        /// only meaningful alongside a non-null SuggestedFamilyTreeCaption. Normally,
+        /// ModeratePersonEditSuggestionAsync rejects approving a caption when another person in the
+        /// same connected kinship component already carries one (two separate "family tree" list
+        /// entries would otherwise open to the exact same graph). Set this to true only when a
+        /// second, distinct caption on the very same tree is genuinely intended (e.g. two commonly
+        /// used alternate names for the same dynasty/family) to approve it anyway.
+        /// </summary>
+        public bool ConfirmedDuplicateFamilyTreeCaption { get; set; }
+
+        /// <summary>
         /// suggested importance (see GanjoorRelatedPerson.Importance)
         /// </summary>
         public PersonImportance SuggestedImportance { get; set; }

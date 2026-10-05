@@ -99,6 +99,15 @@ else
                         </td>
                         <td><input asp-for="Suggestion.SuggestedDegreeHint" /></td>
                     </tr>
+                    <tr>
+                        <td>
+                            تأیید سومین پدر/مادر:
+                            <p class="up-hint"><small>فقط وقتی نوع نسبت را به «پدر/مادر و فرزند» تغییر می‌دهید و طرف فرزند هم‌اکنون دو پدر/مادر دارد کاربرد دارد.</small></p>
+                        </td>
+                        <td>
+                            <label><input type="checkbox" asp-for="Suggestion.ConfirmedExtraParent" /> این سومین رابطهٔ پدر/مادری است و عمداً اضافه می‌شود</label>
+                        </td>
+                    </tr>
                 }
                 <tr>
                     <td>یادداشت (مستندسازی):</td>

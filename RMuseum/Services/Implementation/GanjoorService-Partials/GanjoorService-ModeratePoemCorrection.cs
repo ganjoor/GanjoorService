@@ -1013,7 +1013,7 @@ namespace RMuseum.Services.Implementation
                             }
                         }
 
-                        if (relationType == PersonRelationType.Parent)
+                        if (relationType == PersonRelationType.Parent && !relation.ConfirmedExtraParent)
                         {
                             var existingParentsCount = await _context.GanjoorPersonRelations
                                 .Where(r => r.RelationType == PersonRelationType.Parent && r.Person2Id == person2Id)
@@ -1021,7 +1021,7 @@ namespace RMuseum.Services.Implementation
                             var newParentsCount = newlyAddedAncestorEdges.Count(e => e.DescendantId == person2Id && e.AncestorId != person1Id);
                             if (existingParentsCount + newParentsCount >= 2)
                             {
-                                return new Tuple<int, string>(0, "این نامبرده هم‌اکنون دو پدر/مادر دارد؛ نمی‌توان سومی را از طریق این برچسب افزود.");
+                                return new Tuple<int, string>(0, "این نامبرده هم‌اکنون دو پدر/مادر دارد. اگر این سومی عمداً است (مثلاً بر اساس روایت دیگری)، فیلد «تأیید سومین پدر/مادر» این رابطه را true کنید.");
                             }
                         }
 

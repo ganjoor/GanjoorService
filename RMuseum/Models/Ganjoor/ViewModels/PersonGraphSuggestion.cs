@@ -120,5 +120,13 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public int? DegreeHint { get; set; }
 
         public string Note { get; set; }
+
+        /// <summary>
+        /// only meaningful when Kind is "family" and RelationType is "Parent" - see
+        /// GanjoorPersonRelationEditSuggestion.ConfirmedExtraParent, same escape hatch for a third
+        /// recorded parent, just on this JSON-graph submission path instead of the relation-edit
+        /// suggestion form
+        /// </summary>
+        public bool ConfirmedExtraParent { get; set; }
     }
 }

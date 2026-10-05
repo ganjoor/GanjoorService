@@ -78,6 +78,13 @@ namespace GanjooRazor.Areas.User.Pages
         [BindProperty]
         public int? DegreeHint { get; set; }
 
+        /// <summary>
+        /// see GanjoorPersonRelationEditSuggestion.ConfirmedExtraParent - only meaningful when
+        /// RelationKind is "Child" or "Parent" (both produce a PersonRelationType.Parent edge)
+        /// </summary>
+        [BindProperty]
+        public bool ConfirmedExtraParent { get; set; }
+
         [BindProperty]
         public string Note { get; set; }
 
@@ -154,6 +161,10 @@ namespace GanjooRazor.Areas.User.Pages
                 SuggestedDegreeHint = DegreeHint,
                 SuggestedNote = string.IsNullOrWhiteSpace(Note) ? null : Note.Trim(),
                 SuggestionNote = string.IsNullOrWhiteSpace(SuggestionNote) ? null : SuggestionNote.Trim(),
+                // only meaningful when RelationKind ends up producing a PersonRelationType.Parent
+                // edge ("Child"/"Parent" below) - harmless to always carry, the server only
+                // consults it in that case
+                ConfirmedExtraParent = ConfirmedExtraParent,
             };
 
             if (RelationKindGroup == "affiliation")

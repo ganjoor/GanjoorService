@@ -63,7 +63,17 @@ else
                         عنوان تبارنامه:
                         <p class="up-hint"><small>پُر کنید تا این نامبرده در <a href="javascript:void(0)" onclick="PeopleExplorer.open()">فهرست تبارنامه‌ها</a> با این عنوان دیده شود.</small></p>
                     </td>
-                    <td><input asp-for="Suggestion.SuggestedFamilyTreeCaption" size="40" /></td>
+                    <td>
+                        <input asp-for="Suggestion.SuggestedFamilyTreeCaption" size="40" />
+                        <p class="up-hint">
+                            <label>
+                                <input type="checkbox" asp-for="Suggestion.ConfirmedDuplicateFamilyTreeCaption" />
+                                این عنوان تبارنامه، عنوان دومِ عمدیِ همان شجره‌نامه‌ای است که شخصیت دیگری در آن از قبل عنوان دارد
+                            </label>
+                            <br />
+                            <small>اگر نامبردۀ دیگری در همین خوشهٔ خویشاوندی از قبل عنوان تبارنامه دارد، این پیشنهاد به‌طور پیش‌فرض رد می‌شود. این گزینه را فقط در صورتی علامت بزنید که عمداً می‌خواهید همان شجره‌نامه با عنوان دیگری هم در فهرست دیده شود.</small>
+                        </p>
+                    </td>
                 </tr>
                 <tr>
                     <td>

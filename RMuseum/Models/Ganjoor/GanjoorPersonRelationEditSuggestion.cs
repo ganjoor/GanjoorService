@@ -87,6 +87,15 @@ namespace RMuseum.Models.Ganjoor
         public PersonRelationType SuggestedRelationType { get; set; }
 
         /// <summary>
+        /// only meaningful when SuggestedRelationType is Parent. Normally, a third Parent edge for
+        /// the same child is rejected (familytree.js's buildLayout only ever attaches the first two
+        /// it sorts to the front and silently drops the rest). Set this to true only when a third
+        /// recorded parent is genuinely intended (e.g. competing genealogy traditions for the same
+        /// legendary figure) to add/keep it anyway.
+        /// </summary>
+        public bool ConfirmedExtraParent { get; set; }
+
+        /// <summary>
         /// for Add/Modify when Kind is Affiliation: the affiliation type to create/change to. For
         /// Remove: a snapshot of the existing affiliation's type at submission time, purely for
         /// display. Null/ignored when Kind is Family - see SuggestedRelationType instead.
