@@ -89,7 +89,7 @@ else
                 وابستگی‌های غیرخویشاوندی
                 @if (Model.LoggedIn)
                 {
-                    <a href="/User/SuggestNewPersonRelation?personId=@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">افزودن وابستگی جدید</a>
+                    <a href="/User/SuggestNewPersonRelation?personId=@Model.Person.Id&amp;kind=affiliation" class="up-btn up-btn--ghost up-btn--sm">افزودن وابستگی جدید</a>
                 }
             </h3>
             <ul>
@@ -113,7 +113,7 @@ else
         {
             <h3>
                 وابستگی‌های غیرخویشاوندی
-                <a href="/User/SuggestNewPersonRelation?personId=@Model.Person.Id" class="up-btn up-btn--ghost up-btn--sm">افزودن وابستگی جدید</a>
+                <a href="/User/SuggestNewPersonRelation?personId=@Model.Person.Id&amp;kind=affiliation" class="up-btn up-btn--ghost up-btn--sm">افزودن وابستگی جدید</a>
             </h3>
         }
 

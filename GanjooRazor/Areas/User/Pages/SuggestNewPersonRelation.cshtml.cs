@@ -119,13 +119,20 @@ namespace GanjooRazor.Areas.User.Pages
             return true;
         }
 
-        public async Task<IActionResult> OnGetAsync(int personId)
+        public async Task<IActionResult> OnGetAsync(int personId, string kind = null)
         {
             InitializeCommonPageState();
 
             if (!LoggedIn)
             {
                 return Redirect($"/login?redirect={Uri.EscapeDataString(Request.Path + Request.QueryString)}");
+            }
+
+            // the profile window's "add affiliation" links pass kind=affiliation so the form opens
+            // on the non-family tie type instead of the default family one
+            if (kind == "affiliation")
+            {
+                RelationKindGroup = "affiliation";
             }
 
             await PreparePersonAsync(personId);
