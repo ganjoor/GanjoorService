@@ -634,7 +634,15 @@ namespace RMuseum.Services.Implementation
                     }
                     else
                     {
-                        if (!string.IsNullOrWhiteSpace(suggestion.SuggestedFamilyTreeCaption) && !suggestion.ConfirmedDuplicateFamilyTreeCaption)
+                        // only when the caption is actually being set/changed: the edit form pre-fills the person's
+                        // current caption, so an unrelated edit (description, name...) of someone who already
+                        // holds a caption would otherwise be blocked by the other caption holders that
+                        // legitimately already exist in the same tree
+                        var captionChanged = !string.Equals(
+                            (suggestion.SuggestedFamilyTreeCaption ?? "").Trim(),
+                            (person.FamilyTreeCaption ?? "").Trim(),
+                            StringComparison.Ordinal);
+                        if (captionChanged && !string.IsNullOrWhiteSpace(suggestion.SuggestedFamilyTreeCaption) && !suggestion.ConfirmedDuplicateFamilyTreeCaption)
                         {
                             var otherCaptionHolder = await _FindOtherFamilyTreeCaptionHolderInComponentAsync(person.Id);
                             if (otherCaptionHolder != null)
