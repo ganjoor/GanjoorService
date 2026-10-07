@@ -440,6 +440,48 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// returns an existing kinship edge of exactly this type between this pair, other than
+        /// excludeRelationId - same ordered pair, or either order for the interchangeable types
+        /// (Sibling/Spouse). Complements _GetConflictingRelationAsync, which only looks at
+        /// DIFFERENT types, so the same fact can't be recorded twice.
+        /// </summary>
+        private async Task<GanjoorPersonRelation> _GetDuplicateRelationAsync(int person1Id, int person2Id, PersonRelationType type, int? excludeRelationId)
+        {
+            bool symmetric = type == PersonRelationType.Sibling || type == PersonRelationType.Spouse;
+            var query = _context.GanjoorPersonRelations
+                .Include(r => r.Person1)
+                .Include(r => r.Person2)
+                .Where(r => r.RelationType == type &&
+                    ((r.Person1Id == person1Id && r.Person2Id == person2Id) ||
+                     (symmetric && r.Person1Id == person2Id && r.Person2Id == person1Id)));
+            if (excludeRelationId != null)
+            {
+                query = query.Where(r => r.Id != excludeRelationId.Value);
+            }
+            return await query.FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// same idea as _GetDuplicateRelationAsync, for non-family affiliation edges: same type and
+        /// same ordered pair, or either order for the symmetric types
+        /// </summary>
+        private async Task<GanjoorPersonAffiliation> _GetDuplicateAffiliationAsync(int person1Id, int person2Id, PersonAffiliationType type, int? excludeAffiliationId)
+        {
+            bool symmetric = _symmetricAffiliationTypes.Contains(type);
+            var query = _context.GanjoorPersonAffiliations
+                .Include(a => a.Person1)
+                .Include(a => a.Person2)
+                .Where(a => a.AffiliationType == type &&
+                    ((a.Person1Id == person1Id && a.Person2Id == person2Id) ||
+                     (symmetric && a.Person1Id == person2Id && a.Person2Id == person1Id)));
+            if (excludeAffiliationId != null)
+            {
+                query = query.Where(a => a.Id != excludeAffiliationId.Value);
+            }
+            return await query.FirstOrDefaultAsync();
+        }
+
+        /// <summary>
         /// runs every family-relation data-integrity check (self-reference is checked separately by
         /// the caller for Add) that applies to adding/changing a kinship edge of relationType between
         /// person1Id and person2Id: ancestry cycles, the two-parents cap, and contradictory relation
@@ -451,6 +493,12 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         private async Task<string> _ValidateFamilyRelationAsync(int person1Id, int person2Id, PersonRelationType relationType, int? excludeRelationId, bool confirmedExtraParent = false)
         {
+            var duplicateRelation = await _GetDuplicateRelationAsync(person1Id, person2Id, relationType, excludeRelationId);
+            if (duplicateRelation != null)
+            {
+                return $"این نسبت خویشاوندی هم‌اکنون بین «{duplicateRelation.Person1?.Name}» و «{duplicateRelation.Person2?.Name}» ثبت شده است. برای تغییر جزئیات آن (مثل یادداشت یا درجه) پیشنهاد ویرایش همان نسبت را ثبت کنید.";
+            }
+
             if (relationType == PersonRelationType.Parent || relationType == PersonRelationType.Ancestor)
             {
                 if (await _WouldCreateAncestryCycleAsync(person1Id, person2Id, excludeRelationId))
@@ -949,6 +997,19 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
+                if (suggestion.Kind == PersonRelationSuggestionKind.Affiliation &&
+                    (suggestion.Action == PersonRelationSuggestionAction.Add || suggestion.Action == PersonRelationSuggestionAction.Modify) &&
+                    suggestion.SuggestedAffiliationType != null)
+                {
+                    var excludeAffiliationId = suggestion.Action == PersonRelationSuggestionAction.Modify ? suggestion.ExistingAffiliationId : null;
+                    var duplicateAffiliation = await _GetDuplicateAffiliationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedAffiliationType.Value, excludeAffiliationId);
+                    if (duplicateAffiliation != null)
+                    {
+                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null,
+                            $"این وابستگی هم‌اکنون بین «{duplicateAffiliation.Person1?.Name}» و «{duplicateAffiliation.Person2?.Name}» ثبت شده است.");
+                    }
+                }
+
                 suggestion.Id = 0;
                 suggestion.ExistingRelation = null;
                 suggestion.ExistingAffiliation = null;
@@ -1075,14 +1136,23 @@ namespace RMuseum.Services.Implementation
                         switch (suggestion.Action)
                         {
                             case PersonRelationSuggestionAction.Add:
-                                _context.GanjoorPersonAffiliations.Add(new GanjoorPersonAffiliation()
                                 {
-                                    Person1Id = suggestion.Person1Id,
-                                    Person2Id = suggestion.Person2Id,
-                                    AffiliationType = suggestion.SuggestedAffiliationType ?? PersonAffiliationType.Other,
-                                    Note = suggestion.SuggestedNote,
-                                });
-                                break;
+                                    var addType = suggestion.SuggestedAffiliationType ?? PersonAffiliationType.Other;
+                                    var duplicateAffiliation = await _GetDuplicateAffiliationAsync(suggestion.Person1Id, suggestion.Person2Id, addType, null);
+                                    if (duplicateAffiliation != null)
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null,
+                                            $"این وابستگی هم‌اکنون بین «{duplicateAffiliation.Person1?.Name}» و «{duplicateAffiliation.Person2?.Name}» ثبت شده است.");
+                                    }
+                                    _context.GanjoorPersonAffiliations.Add(new GanjoorPersonAffiliation()
+                                    {
+                                        Person1Id = suggestion.Person1Id,
+                                        Person2Id = suggestion.Person2Id,
+                                        AffiliationType = addType,
+                                        Note = suggestion.SuggestedNote,
+                                    });
+                                    break;
+                                }
                             case PersonRelationSuggestionAction.Modify:
                                 {
                                     var existing = await _context.GanjoorPersonAffiliations.Where(a => a.Id == suggestion.ExistingAffiliationId.Value).SingleOrDefaultAsync();
@@ -1102,6 +1172,12 @@ namespace RMuseum.Services.Implementation
                                         // longer matches it
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null,
                                             "تغییر نوع وابستگی بین یک نوع متقارن (مثل هم‌عصر/متحد/رقیب/همراه) و یک نوع جهت‌دار (که در آن یک طرف زیردست/حامی/جانشین/... طرف دیگر است) ممکن نیست، چون جهت صحیح طرف اول و دوم برای نوع تازه معلوم نیست. لطفاً این وابستگی را حذف کرده و یک وابستگی تازه با نوع و جهت درست پیشنهاد دهید.");
+                                    }
+                                    var duplicateOnModify = await _GetDuplicateAffiliationAsync(existing.Person1Id, existing.Person2Id, newAffiliationType, existing.Id);
+                                    if (duplicateOnModify != null)
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null,
+                                            $"وابستگی دیگری از همین نوع هم‌اکنون بین «{duplicateOnModify.Person1?.Name}» و «{duplicateOnModify.Person2?.Name}» ثبت شده است.");
                                     }
                                     existing.AffiliationType = newAffiliationType;
                                     existing.Note = suggestion.SuggestedNote;

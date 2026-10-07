@@ -970,6 +970,7 @@ namespace RMuseum.Services.Implementation
                 // checks below need to see these in-flight edges too, not just what's already live
                 var newlyAddedAncestorEdges = new List<(int AncestorId, int DescendantId)>();
                 var newlyAddedRelations = new List<(int Person1Id, int Person2Id, PersonRelationType RelationType)>();
+                var newlyAddedAffiliations = new List<(int Person1Id, int Person2Id, PersonAffiliationType AffiliationType)>();
 
                 foreach (var relation in graph.Relations)
                 {
@@ -990,6 +991,22 @@ namespace RMuseum.Services.Implementation
                         {
                             return new Tuple<int, string>(0, $"نوع رابطهٔ غیرخویشاوندی «{relation.AffiliationType}» نامعتبر است.");
                         }
+                        // an identical affiliation (same type; either order for the symmetric
+                        // types) already live, or already added earlier in this same batch
+                        bool symmetricAffiliation = affiliationType == PersonAffiliationType.Ally || affiliationType == PersonAffiliationType.Rival ||
+                            affiliationType == PersonAffiliationType.Companion || affiliationType == PersonAffiliationType.Contemporary;
+                        var duplicateAffiliationLive = await _context.GanjoorPersonAffiliations
+                            .Where(a => a.AffiliationType == affiliationType &&
+                                ((a.Person1Id == person1Id && a.Person2Id == person2Id) ||
+                                 (symmetricAffiliation && a.Person1Id == person2Id && a.Person2Id == person1Id)))
+                            .AnyAsync();
+                        var duplicateAffiliationNew = newlyAddedAffiliations.Any(a => a.AffiliationType == affiliationType &&
+                            ((a.Person1Id == person1Id && a.Person2Id == person2Id) ||
+                             (symmetricAffiliation && a.Person1Id == person2Id && a.Person2Id == person1Id)));
+                        if (duplicateAffiliationLive || duplicateAffiliationNew)
+                        {
+                            return new Tuple<int, string>(0, "یکی از وابستگی‌های پیشنهادی (همان نوع بین همین دو نفر) از قبل ثبت شده یا در همین پیشنهاد تکرار شده است.");
+                        }
                         _context.GanjoorPersonAffiliations.Add(new GanjoorPersonAffiliation()
                         {
                             Person1Id = person1Id,
@@ -997,6 +1014,7 @@ namespace RMuseum.Services.Implementation
                             AffiliationType = affiliationType,
                             Note = relation.Note,
                         });
+                        newlyAddedAffiliations.Add((person1Id, person2Id, affiliationType));
                     }
                     else
                     {
@@ -1023,6 +1041,20 @@ namespace RMuseum.Services.Implementation
                             {
                                 return new Tuple<int, string>(0, "این نامبرده هم‌اکنون دو پدر/مادر دارد. اگر این سومی عمداً است (مثلاً بر اساس روایت دیگری)، فیلد «تأیید سومین پدر/مادر» این رابطه را true کنید.");
                             }
+                        }
+
+                        bool symmetricKinship = relationType == PersonRelationType.Sibling || relationType == PersonRelationType.Spouse;
+                        var duplicateExisting = await _context.GanjoorPersonRelations
+                            .Where(r => r.RelationType == relationType &&
+                                ((r.Person1Id == person1Id && r.Person2Id == person2Id) ||
+                                 (symmetricKinship && r.Person1Id == person2Id && r.Person2Id == person1Id)))
+                            .AnyAsync();
+                        var duplicateNew = newlyAddedRelations.Any(r => r.RelationType == relationType &&
+                            ((r.Person1Id == person1Id && r.Person2Id == person2Id) ||
+                             (symmetricKinship && r.Person1Id == person2Id && r.Person2Id == person1Id)));
+                        if (duplicateExisting || duplicateNew)
+                        {
+                            return new Tuple<int, string>(0, "همین نسبت خویشاوندی بین همین دو نفر از قبل ثبت شده یا در همین پیشنهاد تکرار شده است.");
                         }
 
                         var conflictingExisting = await _context.GanjoorPersonRelations
