@@ -1108,6 +1108,30 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "یکی از دو طرف نسبت پیدا نشد.");
                 }
 
+                // a "Modify" that changes nothing is pointless for the moderator (and is what a contributor
+                // gets when they open the edit form and submit without touching anything) - reject it
+                if (suggestion.Action == PersonRelationSuggestionAction.Modify)
+                {
+                    string Norm(string s) => (s ?? "").Trim();
+                    bool unchanged = false;
+                    if (existingRelation != null)
+                    {
+                        unchanged = suggestion.SuggestedRelationType == existingRelation.RelationType
+                            && suggestion.SuggestedDegreeHint == existingRelation.DegreeHint
+                            && Norm(suggestion.SuggestedNote) == Norm(existingRelation.Note);
+                    }
+                    else if (existingAffiliation != null)
+                    {
+                        unchanged = suggestion.SuggestedAffiliationType == existingAffiliation.AffiliationType
+                            && Norm(suggestion.SuggestedNote) == Norm(existingAffiliation.Note);
+                    }
+                    if (unchanged)
+                    {
+                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null,
+                            "در این پیشنهاد چیزی تغییر نکرده است. نوع، درجه یا یادداشت را تغییر دهید، یا اگر می‌خواهید مستندی (بیتی از شعر) برای این نسبت ثبت کنید گزینهٔ «افزودن مستند» را انتخاب کنید.");
+                    }
+                }
+
                 if (suggestion.Kind == PersonRelationSuggestionKind.Family &&
                     (suggestion.Action == PersonRelationSuggestionAction.Add || suggestion.Action == PersonRelationSuggestionAction.Modify))
                 {
