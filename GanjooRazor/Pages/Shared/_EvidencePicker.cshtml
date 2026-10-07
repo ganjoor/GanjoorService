@@ -102,6 +102,11 @@
                     select.add(option);
                 }
                 document.getElementById('evidence-couplet-field').style.display = result.indices.length ? 'block' : 'none';
+
+                // on the relation-edit page, picking a poem means "add evidence" - switch the action
+                // radio so the choice isn't silently submitted as a plain edit
+                var addEvidenceRadio = document.querySelector('input[name="Action"][value="AddEvidence"]');
+                if (addEvidenceRadio) { addEvidenceRadio.checked = true; }
                 document.getElementById('evidence-open-frame').style.display = 'inline-block';
                 document.getElementById('evidence-open-frame').textContent = '🔎 تغییر شعر';
             })

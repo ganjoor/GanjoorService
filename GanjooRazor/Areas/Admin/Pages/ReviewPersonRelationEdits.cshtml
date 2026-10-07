@@ -234,7 +234,7 @@ else
         </tr>
     </table>
 
-    <p><small>@Model.Skip.ToPersianNumbers() از @Model.TotalCount.ToPersianNumbers()</small></p>
+    <p><small>@((Model.Skip + 1).ToPersianNumbers()) از @Model.TotalCount.ToPersianNumbers()</small></p>
 
     <script>
         function moderatePersonRelationEditSuggestion(id) {
