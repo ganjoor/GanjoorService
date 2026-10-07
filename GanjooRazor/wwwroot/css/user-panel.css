@@ -993,3 +993,10 @@ body.up-modal-open {
     color: var(--up-danger-dark);
     opacity: 0.75;
 }
+
+/* moderation diff: changed rows stand out, unchanged rows recede, changed words are marked */
+.up-table tr.up-same-row td { opacity: .55; }
+.up-table tr.up-diff-row td { background: rgba(255, 193, 7, .14); }
+.up-diff-badge { display: inline-block; margin-inline-start: .4em; padding: 0 .45em; border-radius: 999px; font-size: .75em; background: rgba(255, 152, 0, .85); color: #fff; }
+.up-diff-del { background: rgba(220, 53, 69, .25); text-decoration: line-through; border-radius: 2px; }
+.up-diff-add { background: rgba(40, 167, 69, .3); border-radius: 2px; }

@@ -43,6 +43,13 @@
         }
     }
 
+    // Modify only: highlight a row whose current and suggested text differ (unchanged rows recede)
+    string RowClass(bool isModify, string oldText, string newText)
+    {
+        if (!isModify) { return ""; }
+        return (oldText ?? "").Trim() != (newText ?? "").Trim() ? "up-diff-row" : "up-same-row";
+    }
+
     string ActionName(PersonRelationSuggestionAction a)
     {
         switch (a)
@@ -72,6 +79,7 @@ else if (Model.Suggestion == null)
 else
 {
     var s = Model.Suggestion;
+    bool isModify = s.Action == PersonRelationSuggestionAction.Modify;
 
     <p>
         <span class="up-badge">@ActionName(s.Action)</span>
@@ -148,46 +156,52 @@ else
             </tr>
             @if (s.Kind == PersonRelationSuggestionKind.Affiliation)
             {
-                <tr>
-                    <td>نوع وابستگی</td>
-                    <td>@(s.Action == PersonRelationSuggestionAction.Modify && s.ExistingAffiliation != null ? AffiliationTypeName(s.ExistingAffiliation.AffiliationType) : AffiliationTypeName(s.SuggestedAffiliationType ?? PersonAffiliationType.Other))</td>
+                var affOld = s.Action == PersonRelationSuggestionAction.Modify && s.ExistingAffiliation != null ? AffiliationTypeName(s.ExistingAffiliation.AffiliationType) : AffiliationTypeName(s.SuggestedAffiliationType ?? PersonAffiliationType.Other);
+                var affNew = AffiliationTypeName(s.SuggestedAffiliationType ?? PersonAffiliationType.Other);
+                <tr class="@RowClass(isModify, affOld, affNew)">
+                    <td>نوع وابستگی @if (isModify && affOld != affNew) { <span class="up-diff-badge">تغییر کرد</span> }</td>
+                    <td>@affOld</td>
                     @if (s.Action == PersonRelationSuggestionAction.Modify)
                     {
-                        <td>@AffiliationTypeName(s.SuggestedAffiliationType ?? PersonAffiliationType.Other)</td>
+                        <td>@affNew</td>
                     }
                 </tr>
             }
             else
             {
-                <tr>
-                    <td>نوع نسبت</td>
-                    <td>@(s.Action == PersonRelationSuggestionAction.Modify && s.ExistingRelation != null ? RelationTypeName(s.ExistingRelation.RelationType) : RelationTypeName(s.SuggestedRelationType))</td>
+                var relOld = s.Action == PersonRelationSuggestionAction.Modify && s.ExistingRelation != null ? RelationTypeName(s.ExistingRelation.RelationType) : RelationTypeName(s.SuggestedRelationType);
+                var relNew = RelationTypeName(s.SuggestedRelationType);
+                var degOld = (s.Action == PersonRelationSuggestionAction.Modify && s.ExistingRelation != null ? s.ExistingRelation.DegreeHint : s.SuggestedDegreeHint)?.ToString().ToPersianNumbers();
+                var degNew = s.SuggestedDegreeHint?.ToString().ToPersianNumbers();
+                <tr class="@RowClass(isModify, relOld, relNew)">
+                    <td>نوع نسبت @if (isModify && relOld != relNew) { <span class="up-diff-badge">تغییر کرد</span> }</td>
+                    <td>@relOld</td>
                     @if (s.Action == PersonRelationSuggestionAction.Modify)
                     {
-                        <td>@RelationTypeName(s.SuggestedRelationType)</td>
+                        <td>@relNew</td>
                     }
                 </tr>
-                <tr>
-                    <td>درجه (در نیا/نواده)</td>
-                    <td>@((s.Action == PersonRelationSuggestionAction.Modify && s.ExistingRelation != null ? s.ExistingRelation.DegreeHint : s.SuggestedDegreeHint)?.ToString().ToPersianNumbers())</td>
+                <tr class="@RowClass(isModify, degOld, degNew)">
+                    <td>درجه (در نیا/نواده) @if (isModify && (degOld ?? "") != (degNew ?? "")) { <span class="up-diff-badge">تغییر کرد</span> }</td>
+                    <td>@degOld</td>
                     @if (s.Action == PersonRelationSuggestionAction.Modify)
                     {
-                        <td>@s.SuggestedDegreeHint?.ToString().ToPersianNumbers()</td>
+                        <td>@degNew</td>
                     }
                 </tr>
             }
-            <tr>
-                <td>یادداشت</td>
-                <td>
-                    <small>
-                        @(s.Action == PersonRelationSuggestionAction.Modify
-                            ? (s.Kind == PersonRelationSuggestionKind.Affiliation ? s.ExistingAffiliation?.Note : s.ExistingRelation?.Note)
-                            : s.SuggestedNote)
-                    </small>
-                </td>
-                @if (s.Action == PersonRelationSuggestionAction.Modify)
+            @{
+                var noteOld = isModify
+                    ? (s.Kind == PersonRelationSuggestionKind.Affiliation ? s.ExistingAffiliation?.Note : s.ExistingRelation?.Note)
+                    : s.SuggestedNote;
+                bool noteChanged = isModify && (noteOld ?? "").Trim() != (s.SuggestedNote ?? "").Trim();
+            }
+            <tr class="@RowClass(isModify, noteOld, s.SuggestedNote)" data-diff="@(noteChanged ? "1" : null)">
+                <td>یادداشت @if (noteChanged) { <span class="up-diff-badge">تغییر کرد</span> }</td>
+                <td class="diff-old-cell"><small>@noteOld</small></td>
+                @if (isModify)
                 {
-                    <td><small>@s.SuggestedNote</small></td>
+                    <td class="diff-new-cell"><small>@s.SuggestedNote</small></td>
                 }
             </tr>
         </tbody>
@@ -204,6 +218,8 @@ else
             }
         </div>
     }
+
+    <script src="/js/textdiff.js"></script>
 
     <div class="spacer">&nbsp;</div>
 

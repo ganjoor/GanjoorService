@@ -55,6 +55,24 @@ else
     }
     else
     {
+        // (label, current, suggested, show a word-level diff for the text of this row)
+            var diffRows = new List<(string Label, string Old, string New, bool WordDiff)>
+            {
+                ("نام", p.Name, s.SuggestedName, true),
+                ("نشانی ویکی‌پدیا", p.WikiUrl, s.SuggestedWikiUrl, true),
+                ("سال تولد (قمری)", p.BirthYearInLHijri == 0 ? "" : p.BirthYearInLHijri.ToPersianNumbers(), s.SuggestedBirthYearInLHijri == 0 ? "" : s.SuggestedBirthYearInLHijri.ToPersianNumbers(), false),
+                ("تاریخ تولد مستند است", p.ValidBirthDate ? "بله" : "خیر", s.SuggestedValidBirthDate ? "بله" : "خیر", false),
+                ("زادگاه", Model.LocationName(p.BirthLocationId), s.SuggestedBirthLocation != null ? s.SuggestedBirthLocation.Name : "", false),
+                ("سال وفات (قمری)", p.DeathYearInLHijri == 0 ? "" : p.DeathYearInLHijri.ToPersianNumbers(), s.SuggestedDeathYearInLHijri == 0 ? "" : s.SuggestedDeathYearInLHijri.ToPersianNumbers(), false),
+                ("تاریخ وفات مستند است", p.ValidDeathDate ? "بله" : "خیر", s.SuggestedValidDeathDate ? "بله" : "خیر", false),
+                ("آرامگاه", Model.LocationName(p.DeathLocationId), s.SuggestedDeathLocation != null ? s.SuggestedDeathLocation.Name : "", false),
+                ("عنوان تبارنامه", p.FamilyTreeCaption, s.SuggestedFamilyTreeCaption, true),
+                ("درجهٔ اهمیت", Model.ImportanceLabel(p.Importance), Model.ImportanceLabel(s.SuggestedImportance), false),
+                ("جنسیت", Model.GenderLabel(p.Gender), Model.GenderLabel(s.SuggestedGender), false),
+                ("توضیحات", p.Description, s.SuggestedDescription, true),
+            };
+            int changedCount = diffRows.Count(r => (r.Old ?? "").Trim() != (r.New ?? "").Trim());
+        <p class="up-hint">@(changedCount == 0 ? "هیچ فیلدی تغییر نکرده است." : $"{changedCount.ToPersianNumbers()} فیلد تغییر کرده است (ردیف‌های تغییرکرده رنگی‌اند).")</p>
         <table class="up-table">
             <thead>
                 <tr>
@@ -64,68 +82,18 @@ else
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>نام</td>
-                    <td>@p.Name</td>
-                    <td>@s.SuggestedName</td>
-                </tr>
-                <tr>
-                    <td>نشانی ویکی‌پدیا</td>
-                    <td>@p.WikiUrl</td>
-                    <td>@s.SuggestedWikiUrl</td>
-                </tr>
-                <tr>
-                    <td>سال تولد (قمری)</td>
-                    <td>@(p.BirthYearInLHijri == 0 ? "" : p.BirthYearInLHijri.ToPersianNumbers())</td>
-                    <td>@(s.SuggestedBirthYearInLHijri == 0 ? "" : s.SuggestedBirthYearInLHijri.ToPersianNumbers())</td>
-                </tr>
-                <tr>
-                    <td>تاریخ تولد مستند است</td>
-                    <td>@(p.ValidBirthDate ? "بله" : "خیر")</td>
-                    <td>@(s.SuggestedValidBirthDate ? "بله" : "خیر")</td>
-                </tr>
-                <tr>
-                    <td>زادگاه</td>
-                    <td>@Model.LocationName(p.BirthLocationId)</td>
-                    <td>@(s.SuggestedBirthLocation != null ? s.SuggestedBirthLocation.Name : "")</td>
-                </tr>
-                <tr>
-                    <td>سال وفات (قمری)</td>
-                    <td>@(p.DeathYearInLHijri == 0 ? "" : p.DeathYearInLHijri.ToPersianNumbers())</td>
-                    <td>@(s.SuggestedDeathYearInLHijri == 0 ? "" : s.SuggestedDeathYearInLHijri.ToPersianNumbers())</td>
-                </tr>
-                <tr>
-                    <td>تاریخ وفات مستند است</td>
-                    <td>@(p.ValidDeathDate ? "بله" : "خیر")</td>
-                    <td>@(s.SuggestedValidDeathDate ? "بله" : "خیر")</td>
-                </tr>
-                <tr>
-                    <td>آرامگاه</td>
-                    <td>@Model.LocationName(p.DeathLocationId)</td>
-                    <td>@(s.SuggestedDeathLocation != null ? s.SuggestedDeathLocation.Name : "")</td>
-                </tr>
-                <tr>
-                    <td>عنوان تبارنامه</td>
-                    <td>@p.FamilyTreeCaption</td>
-                    <td>@s.SuggestedFamilyTreeCaption</td>
-                </tr>
-                <tr>
-                    <td>درجهٔ اهمیت</td>
-                    <td>@Model.ImportanceLabel(p.Importance)</td>
-                    <td>@Model.ImportanceLabel(s.SuggestedImportance)</td>
-                </tr>
-                <tr>
-                    <td>جنسیت</td>
-                    <td>@Model.GenderLabel(p.Gender)</td>
-                    <td>@Model.GenderLabel(s.SuggestedGender)</td>
-                </tr>
-                <tr>
-                    <td>توضیحات</td>
-                    <td><small>@p.Description</small></td>
-                    <td><small>@s.SuggestedDescription</small></td>
-                </tr>
+                @foreach (var r in diffRows)
+                {
+                    bool changed = (r.Old ?? "").Trim() != (r.New ?? "").Trim();
+                    <tr class="@(changed ? "up-diff-row" : "up-same-row")" data-diff="@(changed && r.WordDiff ? "1" : null)">
+                        <td>@r.Label @if (changed) { <span class="up-diff-badge">تغییر کرد</span> }</td>
+                        <td class="diff-old-cell">@r.Old</td>
+                        <td class="diff-new-cell">@r.New</td>
+                    </tr>
+                }
             </tbody>
         </table>
+        <script src="/js/textdiff.js"></script>
     }
 
     <div class="spacer">&nbsp;</div>
