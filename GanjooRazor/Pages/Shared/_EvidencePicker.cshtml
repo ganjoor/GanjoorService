@@ -1,0 +1,114 @@
+@model string
+@*
+    Poem + couplet picker for relation evidence, same interaction as User/SuggestQuoted: the person
+    opens the site in an iframe, navigates to the poem, presses "انتخاب کردم", and the page's couplets
+    are listed in a select. Model = the form-field name prefix ("Suggestion." or ""), so the posted
+    fields bind to EvidencePoemId / EvidenceCoupletIndex on either page. Couplet values are the
+    0-based couplet index (the same numbering as GanjoorVerse.CoupletIndex); the select is empty
+    (and posts nothing) until a poem is chosen.
+*@
+@{
+    string prefix = Model ?? "";
+}
+<div class="up-evidence-picker">
+    <input type="hidden" id="evidence-poem-id" name="@(prefix)EvidencePoemId" value="" />
+    <p id="evidence-poem-title" class="up-hint"></p>
+
+    <a onclick="evidenceSelectPage()" class="up-btn up-btn--ghost" role="button" id="evidence-open-frame">🔎 گزینش شعر</a>
+    <a onclick="evidenceFinalizePage()" class="up-btn up-btn--ghost" role="button" id="evidence-finalize" style="display:none">انتخاب کردم</a>
+    <span id="evidence-loading" style="display:none"><img src="/image/loading.gif" alt="" /></span>
+    <iframe id="evidence-frame" src="/" height="600" style="display:none;width:100%;margin:auto"></iframe>
+
+    <div class="up-field" id="evidence-couplet-field" style="display:none">
+        <label for="evidence-couplet-select">بیتی که این نسبت را بیان می‌کند</label>
+        <select id="evidence-couplet-select" name="@(prefix)EvidenceCoupletIndex"></select>
+    </div>
+</div>
+
+<script>
+    function evidencePersianDigits(n) {
+        return String(n).replace(/\d/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; });
+    }
+
+    function evidenceSelectPage() {
+        document.getElementById('evidence-open-frame').style.display = 'none';
+        document.getElementById('evidence-frame').style.display = 'block';
+        document.getElementById('evidence-finalize').style.display = 'inline-block';
+    }
+
+    // same couplet numbering rules as SuggestQuoted.cshtml's getCouplets / GanjoorService._FillPoemCoupletIndices
+    function evidenceGetCouplets(verses) {
+        var index = -1, text = '', indices = [], texts = [], incomplete = false;
+        for (var i = 0; i < verses.length; i++) {
+            switch (verses[i].versePosition) {
+                case 5: // comment
+                    incomplete = false;
+                    break;
+                case -1: // paragraph
+                case 4: // single
+                    incomplete = false;
+                    if (text) { indices.push(index); texts.push(text); text = ''; }
+                    index++;
+                    indices.push(index);
+                    texts.push(verses[i].text);
+                    break;
+                case 0: // right
+                case 2: // centered verse 1
+                    incomplete = false;
+                    if (text) { indices.push(index); texts.push(text); }
+                    index++;
+                    text = verses[i].text;
+                    break;
+                case 1: // left
+                case 3: // centered verse 2
+                    incomplete = true;
+                    text += ' - ' + verses[i].text;
+                    break;
+            }
+        }
+        if (incomplete && text) { indices.push(index); texts.push(text); }
+        return { indices: indices, texts: texts };
+    }
+
+    function evidenceFinalizePage() {
+        var frame = document.getElementById('evidence-frame');
+        var currentUrl = frame.contentWindow.location.href;
+        var url = currentUrl.substring(currentUrl.indexOf('/', currentUrl.indexOf('//') + 2));
+
+        document.getElementById('evidence-loading').style.display = 'inline';
+        frame.style.display = 'none';
+        document.getElementById('evidence-finalize').style.display = 'none';
+
+        fetch('@(GanjooRazor.APIRoot.InternetUrl)/api/ganjoor/page?url=' + encodeURIComponent(url))
+            .then(function (response) { return response.json(); })
+            .then(function (json) {
+                document.getElementById('evidence-loading').style.display = 'none';
+                if (json.poem == null) {
+                    upToast('صفحه‌ای که انتخاب کرده‌اید حاوی یک شعر نیست.', 'error');
+                    evidenceSelectPage();
+                    return;
+                }
+
+                document.getElementById('evidence-poem-id').value = json.poem.id;
+                document.getElementById('evidence-poem-title').textContent = 'شعر انتخاب‌شده: ' + json.poem.fullTitle;
+
+                var result = evidenceGetCouplets(json.poem.verses);
+                var select = document.getElementById('evidence-couplet-select');
+                select.length = 0;
+                for (var i = 0; i < result.indices.length; i++) {
+                    var option = document.createElement('option');
+                    option.text = evidencePersianDigits(i + 1) + ' - ' + result.texts[i];
+                    option.value = result.indices[i];
+                    select.add(option);
+                }
+                document.getElementById('evidence-couplet-field').style.display = result.indices.length ? 'block' : 'none';
+                document.getElementById('evidence-open-frame').style.display = 'inline-block';
+                document.getElementById('evidence-open-frame').textContent = '🔎 تغییر شعر';
+            })
+            .catch(function (error) {
+                document.getElementById('evidence-loading').style.display = 'none';
+                upToast('در انتخاب صفحه خطایی رخ داد. جزئیات بیشتر: ' + error, 'error');
+                evidenceSelectPage();
+            });
+    }
+</script>

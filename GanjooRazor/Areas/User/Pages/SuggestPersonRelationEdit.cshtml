@@ -151,11 +151,10 @@ else
                     <tr>
                         <td>
                             افزودن مستند جدید:
-                            <p class="up-hint"><small>فقط برای گزینهٔ «افزودن مستند» کاربرد دارد. شناسهٔ شعر همان عدد پس از <code>?p=</code> در نشانی پیوند یکتای شعر است؛ شمارهٔ بیت از ۱ شروع می‌شود.</small></p>
+                            <p class="up-hint"><small>فقط برای گزینهٔ «افزودن مستند» کاربرد دارد: شعر را گزینش کنید و سپس بیت مورد نظر را از فهرست برگزینید.</small></p>
                         </td>
                         <td>
-                            شناسهٔ شعر: <input asp-for="Suggestion.EvidencePoemId" type="number" min="1" />
-                            شمارهٔ بیت: <input asp-for="Suggestion.EvidenceCoupletIndex" type="number" min="1" />
+                            <partial name="_EvidencePicker" model="@("Suggestion.")" />
                         </td>
                     </tr>
                 }
