@@ -138,7 +138,7 @@ else
                                     <div>
                                         <label>
                                             <input type="radio" name="Suggestion.ExistingEvidenceId" value="@ev.Id" />
-                                            <a href="/?p=@ev.PoemId" target="_blank">@(string.IsNullOrEmpty(ev.MasterCatTitle) ? "شعر " + ev.PoemId : ev.MasterCatTitle)</a>
+                                            <a href="/?p=@ev.PoemId#bn@(ev.CoupletIndex + 1)" target="_blank">@(string.IsNullOrEmpty(ev.MasterCatTitle) ? "شعر " + ev.PoemId : ev.MasterCatTitle)</a>
                                             @if (ev.Inferred) { <span class="up-badge">حدسی</span> }
                                             <br /><small>@ev.CoupletText</small>
                                         </label>

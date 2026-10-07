@@ -79,7 +79,7 @@ else
                                 {
                                     <div>
                                         <small>
-                                            <a href="/?p=@ev.PoemId" target="_blank">@(string.IsNullOrEmpty(ev.MasterCatTitle) ? "شعر " + ev.PoemId : ev.MasterCatTitle)</a>
+                                            <a href="/?p=@ev.PoemId#bn@(ev.CoupletIndex + 1)" target="_blank">@(string.IsNullOrEmpty(ev.MasterCatTitle) ? "شعر " + ev.PoemId : ev.MasterCatTitle)</a>
                                             @if (ev.Inferred) { <text> (حدسی)</text> }
                                             — @ev.CoupletText
                                         </small>
@@ -142,7 +142,7 @@ else
                     if (tag.Poem != null)
                     {
                         <li>
-                            <a href="@tag.Poem.FullUrl">@tag.Poem.FullTitle</a>
+                            <a href="@(tag.CoupletIndex > 0 ? tag.Poem.FullUrl + "#bn" + (tag.CoupletIndex + 1) : tag.Poem.FullUrl)">@tag.Poem.FullTitle</a>
                             @if (!string.IsNullOrEmpty(tag.CoupletText))
                             {
                                 <p>@tag.CoupletText</p>

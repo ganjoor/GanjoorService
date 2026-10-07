@@ -214,7 +214,7 @@ else
             <p>@s.EvidenceCoupletText</p>
             @if (s.EvidencePoemId != null)
             {
-                <a href="/?p=@s.EvidencePoemId" target="_blank" class="up-btn up-btn--ghost up-btn--sm">مشاهدهٔ شعر (بیت @(((s.EvidenceCoupletIndex ?? 0) + 1).ToPersianNumbers()))</a>
+                <a href="/?p=@s.EvidencePoemId#bn@((s.EvidenceCoupletIndex ?? 0) + 1)" target="_blank" class="up-btn up-btn--ghost up-btn--sm">مشاهدهٔ شعر (بیت @(((s.EvidenceCoupletIndex ?? 0) + 1).ToPersianNumbers()))</a>
             }
         </div>
     }
