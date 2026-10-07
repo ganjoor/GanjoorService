@@ -27,6 +27,39 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// every kinship edge touching any person in Persons
         /// </summary>
         public List<GanjoorFamilyTreeEdge> Relations { get; set; }
+
+        /// <summary>
+        /// the book (master category) this view was computed for, or null for the unfiltered
+        /// whole-tree view. Edges then carry a State, see GanjoorFamilyTreeEdge.State.
+        /// </summary>
+        public int? MasterCatId { get; set; }
+
+        /// <summary>
+        /// every book that has at least one human-attached evidence row for a relation in this tree
+        /// (what the book picker lists)
+        /// </summary>
+        public List<GanjoorFamilyTreeBook> Books { get; set; }
+    }
+
+    /// <summary>
+    /// a master category (book) that attests relations of a tree
+    /// </summary>
+    public class GanjoorFamilyTreeBook
+    {
+        /// <summary>
+        /// master category id
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
+        /// category title
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// number of this tree's relations attested in this book
+        /// </summary>
+        public int RelationCount { get; set; }
     }
 
     /// <summary>
@@ -39,5 +72,24 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public int Person2Id { get; set; }
         public PersonRelationType RelationType { get; set; }
         public int? DegreeHint { get; set; }
+
+        /// <summary>
+        /// the relation row's id
+        /// </summary>
+        public int RelationId { get; set; }
+
+        /// <summary>
+        /// only set when the tree was requested for a book (MasterCatId): "attested" (human evidence
+        /// in this book), "otherBook" (evidence only in other books, nothing here contradicts it),
+        /// "unattested" (no human evidence anywhere), or "contradicted" (a parent link that conflicts
+        /// with a parent link attested in this book - same gender as an attested parent of the same
+        /// child, or both parent slots already taken by attested parents). Null in the unfiltered view.
+        /// </summary>
+        public string State { get; set; }
+
+        /// <summary>
+        /// titles of the books that attest this relation (human evidence only), for tooltips
+        /// </summary>
+        public List<string> AttestedIn { get; set; }
     }
 }

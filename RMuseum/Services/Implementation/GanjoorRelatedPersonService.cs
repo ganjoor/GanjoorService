@@ -202,11 +202,79 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// the state of every relation of a tree as seen from one book (master category), or null for
+        /// the unfiltered view: "attested" (human evidence in this book), "otherBook" (evidence only
+        /// elsewhere), "unattested" (no human evidence anywhere), or "contradicted" - only ever a
+        /// Parent edge that is not attested here but conflicts with a parent attested here for the
+        /// same child: the attested parent has the same (known) gender, or the child already has two
+        /// attested parents here and this one is neither. Sibling/Spouse/Ancestor edges are never
+        /// contradicted (multiple marriages are normal; ancestry has no exclusivity to test).
+        /// </summary>
+        private static Dictionary<int, string> _ComputeBookRelationStates(
+            List<GanjoorPersonRelation> relations,
+            List<GanjoorRelatedPerson> persons,
+            Dictionary<int, List<int>> booksByRelation,
+            int? masterCatId)
+        {
+            if (masterCatId == null)
+            {
+                return null;
+            }
+
+            var attestedHere = new HashSet<int>(booksByRelation.Where(kv => kv.Value.Contains(masterCatId.Value)).Select(kv => kv.Key));
+            var genderOf = persons.ToDictionary(p => p.Id, p => p.Gender);
+
+            var attestedParentsOf = relations
+                .Where(r => r.RelationType == PersonRelationType.Parent && attestedHere.Contains(r.Id))
+                .GroupBy(r => r.Person2Id)
+                .ToDictionary(g => g.Key, g => g.Select(r => r.Person1Id).Distinct().ToList());
+
+            var states = new Dictionary<int, string>();
+            foreach (var r in relations)
+            {
+                string state;
+                if (attestedHere.Contains(r.Id))
+                {
+                    state = "attested";
+                }
+                else if (r.RelationType == PersonRelationType.Parent
+                    && attestedParentsOf.TryGetValue(r.Person2Id, out var attestedParents)
+                    && _ConflictsWithAttestedParents(r.Person1Id, attestedParents, genderOf))
+                {
+                    state = "contradicted";
+                }
+                else
+                {
+                    state = booksByRelation.ContainsKey(r.Id) ? "otherBook" : "unattested";
+                }
+                states[r.Id] = state;
+            }
+            return states;
+        }
+
+        private static bool _ConflictsWithAttestedParents(int parentId, List<int> attestedParents, Dictionary<int, PersonGender> genderOf)
+        {
+            var others = attestedParents.Where(q => q != parentId).ToList();
+            if (others.Count >= 2)
+            {
+                return true; // both parent slots already taken by attested parents
+            }
+
+            var gender = genderOf.TryGetValue(parentId, out var g) ? g : PersonGender.Unknown;
+            if (gender == PersonGender.Unknown)
+            {
+                return false; // can't tell father from mother - leave visible
+            }
+            return others.Any(q => genderOf.TryGetValue(q, out var gq) && gq == gender);
+        }
+
+        /// <summary>
         /// get the whole connected kinship component reachable from this person
         /// </summary>
         /// <param name="rootId"></param>
+        /// <param name="masterCatId">optional master category (book) id: when given, each edge is labelled attested / otherBook / unattested / contradicted relative to that book</param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorFamilyTreeViewModel>> GetFamilyTreeAsync(int rootId)
+        public async Task<RServiceResult<GanjoorFamilyTreeViewModel>> GetFamilyTreeAsync(int rootId, int? masterCatId = null)
         {
             try
             {
@@ -264,14 +332,43 @@ namespace RMuseum.Services.Implementation
                     .OrderBy(p => p.Id)
                     .ToListAsync();
 
-                var relations = allRelations
-                    .Where(r => visitedRelationIds.Contains(r.Id))
+                var treeRelations = allRelations.Where(r => visitedRelationIds.Contains(r.Id)).ToList();
+
+                // human-attached evidence only: inferred (backfilled) rows never count for book views
+                var evidenceRows = await _context.GanjoorPersonRelationEvidences.AsNoTracking()
+                    .Where(e => !e.Inferred && visitedRelationIds.Contains(e.RelationId))
+                    .ToListAsync();
+                var catTitles = await _GetCatTitlesAsync(evidenceRows.Select(e => e.MasterCatId).Distinct().ToList());
+                var booksByRelation = evidenceRows
+                    .GroupBy(e => e.RelationId)
+                    .ToDictionary(g => g.Key, g => g.Select(e => e.MasterCatId).Distinct().ToList());
+
+                var books = evidenceRows
+                    .GroupBy(e => e.MasterCatId)
+                    .Select(g => new GanjoorFamilyTreeBook()
+                    {
+                        Id = g.Key,
+                        Title = catTitles.TryGetValue(g.Key, out var title) ? title : g.Key.ToString(),
+                        RelationCount = g.Select(e => e.RelationId).Distinct().Count(),
+                    })
+                    .OrderByDescending(b => b.RelationCount)
+                    .ThenBy(b => b.Title)
+                    .ToList();
+
+                var relationStates = _ComputeBookRelationStates(treeRelations, persons, booksByRelation, masterCatId);
+
+                var relations = treeRelations
                     .Select(r => new GanjoorFamilyTreeEdge()
                     {
+                        RelationId = r.Id,
                         Person1Id = r.Person1Id,
                         Person2Id = r.Person2Id,
                         RelationType = r.RelationType,
                         DegreeHint = r.DegreeHint,
+                        State = relationStates != null ? relationStates[r.Id] : null,
+                        AttestedIn = booksByRelation.TryGetValue(r.Id, out var attestedBooks)
+                            ? attestedBooks.Select(b => catTitles.TryGetValue(b, out var bt) ? bt : b.ToString()).ToList()
+                            : new List<string>(),
                     })
                     .ToList();
 
@@ -280,6 +377,8 @@ namespace RMuseum.Services.Implementation
                     RootId = rootId,
                     Persons = persons,
                     Relations = relations,
+                    MasterCatId = masterCatId,
+                    Books = books,
                 });
             }
             catch (Exception exp)

@@ -136,14 +136,15 @@ namespace RMuseum.Controllers
         /// descendants, spouses, siblings), for the interactive family-tree chart
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="masterCatId">optional master category (book) id: when given, each edge is labelled attested / otherBook / unattested / contradicted relative to that book</param>
         /// <returns></returns>
         [HttpGet("{id:int}/familytree")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorFamilyTreeViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetFamilyTreeAsync(int id)
+        public async Task<IActionResult> GetFamilyTreeAsync(int id, int? masterCatId = null)
         {
-            var res = await _personService.GetFamilyTreeAsync(id);
+            var res = await _personService.GetFamilyTreeAsync(id, masterCatId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

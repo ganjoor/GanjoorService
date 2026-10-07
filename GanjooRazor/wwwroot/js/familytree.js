@@ -256,7 +256,63 @@
     // 0=Normal (regular weight), 1=Important (semi-bold), 2=VeryImportant (bold)
     var IMPORTANCE_FONT_WEIGHT = { 0: 400, 1: 600, 2: 700 };
 
-    function renderFamilyTree(containerId, svgId, tooltipId, data, requestedRootId) {
+    var STATE_RANK = { attested: 0, otherBook: 1, unattested: 2, contradicted: 3 };
+    var STATE_CLASS = { attested: 'ft-state-attested', otherBook: 'ft-state-otherbook', unattested: 'ft-state-unattested', contradicted: 'ft-state-contradicted' };
+
+    // Book view (edges carry a `state`): drops contradicted edges unless showHidden, then keeps only
+    // the component still reachable from the requested root over the remaining edges, so a person
+    // reachable only through a hidden edge disappears with it. Returns data unchanged when no
+    // edge has a state (no book selected).
+    function applyBookFilter(data, requestedRootId, showHidden) {
+        var rels = data.relations || [];
+        if (!rels.some(function (r) { return r.state; })) return data;
+        var kept = rels.filter(function (r) { return showHidden || r.state !== 'contradicted'; });
+        var adj = {};
+        kept.forEach(function (r) {
+            (adj[r.person1Id] = adj[r.person1Id] || []).push(r.person2Id);
+            (adj[r.person2Id] = adj[r.person2Id] || []).push(r.person1Id);
+        });
+        var seen = {}; seen[requestedRootId] = true;
+        var queue = [requestedRootId];
+        while (queue.length) {
+            var cur = queue.shift();
+            (adj[cur] || []).forEach(function (n) { if (!seen[n]) { seen[n] = true; queue.push(n); } });
+        }
+        return {
+            rootId: data.rootId, masterCatId: data.masterCatId, books: data.books,
+            persons: data.persons.filter(function (p) { return seen[p.id]; }),
+            relations: kept.filter(function (r) { return seen[r.person1Id] && seen[r.person2Id]; })
+        };
+    }
+
+    // best state among edges linking the two people (any relation type, either direction)
+    function pairInfo(edgesByPair, a, b) {
+        var list = edgesByPair[Math.min(a, b) + ':' + Math.max(a, b)];
+        if (!list || !list.length) return null;
+        var best = list[0];
+        list.forEach(function (e) { if ((STATE_RANK[e.state] === undefined ? 9 : STATE_RANK[e.state]) < (STATE_RANK[best.state] === undefined ? 9 : STATE_RANK[best.state])) best = e; });
+        return best;
+    }
+
+    function renderFamilyTree(containerId, svgId, tooltipId, fullData, requestedRootId, opts) {
+        var data = fullData ? applyBookFilter(fullData, requestedRootId, !!(opts && opts.showHidden)) : fullData;
+        var edgesByPair = {};
+        if (data && data.relations) data.relations.forEach(function (r) {
+            var k = Math.min(r.person1Id, r.person2Id) + ':' + Math.max(r.person1Id, r.person2Id);
+            (edgesByPair[k] = edgesByPair[k] || []).push(r);
+        });
+        function stateCls(a, b) {
+            var e = pairInfo(edgesByPair, a, b);
+            return e && e.state && STATE_CLASS[e.state] ? ' ' + STATE_CLASS[e.state] : '';
+        }
+        function stateTitle(a, b) {
+            var e = pairInfo(edgesByPair, a, b);
+            if (!e || !e.state) return null;
+            if (e.state === 'attested') return 'مستند در این کتاب' + (e.attestedIn && e.attestedIn.length ? ': ' + e.attestedIn.join('، ') : '');
+            if (e.state === 'otherBook') return 'مستند در کتاب دیگر' + (e.attestedIn && e.attestedIn.length ? ': ' + e.attestedIn.join('، ') : '');
+            if (e.state === 'unattested') return 'بدون شاهد';
+            return 'متناقض با شواهد این کتاب';
+        }
         var container = document.getElementById(containerId);
         var svg = document.getElementById(svgId);
         var tooltip = document.getElementById(tooltipId);
@@ -288,11 +344,16 @@
             };
         }
 
-        function line(x1, y1, x2, y2, cls) {
+        function line(x1, y1, x2, y2, cls, a, b) {
+            if (a !== undefined) cls = (cls || 'ft-line') + stateCls(a, b);
             var l = el('path', {
                 d: 'M ' + x1 + ' ' + y1 + ' C ' + x1 + ' ' + (y1 + (y2 - y1) / 2) + ', ' + x2 + ' ' + (y1 + (y2 - y1) / 2) + ', ' + x2 + ' ' + y2,
                 'class': cls || 'ft-line'
             });
+            if (a !== undefined) {
+                var t = stateTitle(a, b);
+                if (t) { var ti = el('title'); ti.textContent = t; l.appendChild(ti); }
+            }
             linesGroup.appendChild(l);
         }
 
@@ -304,7 +365,7 @@
             var pp = pos(parentId), cp = pos(childId);
             var parentH = boxSizeFor(layoutInfo.persons[parentId], BOX_W, BOX_H).h;
             var childH = boxSizeFor(layoutInfo.persons[childId], BOX_W, BOX_H).h;
-            line(pp.x, pp.y + parentH / 2, cp.x, cp.y - childH / 2, 'ft-line ft-line-parent');
+            line(pp.x, pp.y + parentH / 2, cp.x, cp.y - childH / 2, 'ft-line ft-line-parent', parentId, childId);
         });
 
         var maxX = 0, maxY = 0;
@@ -351,7 +412,7 @@
                 // a sibling drawn this way is placed next to the OTHER sibling purely for layout -
                 // it is not a marriage, so it gets a plain neutral connector and no heart icon (see
                 // the long comment above siblingPairs/tryAttachSibling in buildLayout)
-                line(edgeX, p.y, ax - attSize.w / 2, ay, isSibling ? 'ft-line ft-line-sibling' : 'ft-line ft-line-spouse');
+                line(edgeX, p.y, ax - attSize.w / 2, ay, isSibling ? 'ft-line ft-line-sibling' : 'ft-line ft-line-spouse', id, spouseId);
                 if (!isSibling) {
                     var heartX = edgeX + ATTACH_GAP / 2;
                     var heart = el('text', { x: heartX, y: ay + 4, 'text-anchor': 'middle', 'class': 'ft-heart' });
@@ -376,7 +437,7 @@
             var parentH = boxSizeFor(layoutInfo.persons[edge.parentId], BOX_W, BOX_H).h;
             var childH = boxSizeFor(layoutInfo.persons[edge.childId], BOX_W, BOX_H).h;
             var dy = cp.y > pp.y ? 1 : -1; // usually the child is drawn lower, but not guaranteed
-            line(pp.x, pp.y + dy * parentH / 2, cp.x, cp.y - dy * childH / 2, 'ft-line ft-line-second-parent');
+            line(pp.x, pp.y + dy * parentH / 2, cp.x, cp.y - dy * childH / 2, 'ft-line ft-line-second-parent', edge.parentId, edge.childId);
         });
 
         svg.setAttribute('viewBox', '0 0 ' + (maxX + MARGIN) + ' ' + (maxY + MARGIN));

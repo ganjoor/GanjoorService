@@ -2898,7 +2898,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetFamilyTreeAsync(System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetFamilyTreeAsync(System.Int32,System.Nullable{System.Int32})">
             <summary>
             get the whole connected kinship component reachable from this person (ancestors,
             descendants, spouses, siblings), for the interactive family-tree chart
@@ -13516,10 +13516,61 @@
             every kinship edge touching any person in Persons
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeViewModel.MasterCatId">
+            <summary>
+            the book (master category) this view was computed for, or null for the unfiltered
+            whole-tree view. Edges then carry a State, see GanjoorFamilyTreeEdge.State.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeViewModel.Books">
+            <summary>
+            every book that has at least one human-attached evidence row for a relation in this tree
+            (what the book picker lists)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeBook">
+            <summary>
+            a master category (book) that attests relations of a tree
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeBook.Id">
+            <summary>
+            master category id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeBook.Title">
+            <summary>
+            category title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeBook.RelationCount">
+            <summary>
+            number of this tree's relations attested in this book
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeEdge">
             <summary>
             a GanjoorPersonRelation row stripped down to what the client-side layout needs (no
             Person1/Person2 navigation - Persons above already carries full person data)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeEdge.RelationId">
+            <summary>
+            the relation row's id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeEdge.State">
+            <summary>
+            only set when the tree was requested for a book (MasterCatId): "attested" (human evidence
+            in this book), "otherBook" (evidence only in other books, nothing here contradicts it),
+            "unattested" (no human evidence anywhere), or "contradicted" (a parent link that conflicts
+            with a parent link attested in this book - same gender as an attested parent of the same
+            child, or both parent slots already taken by attested parents). Null in the unfiltered view.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorFamilyTreeEdge.AttestedIn">
+            <summary>
+            titles of the books that attest this relation (human evidence only), for tooltips
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjooRhymeAnalysisResult">
@@ -18834,7 +18885,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetFamilyTreeAsync(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetFamilyTreeAsync(System.Int32,System.Nullable{System.Int32})">
             <summary>
             get the whole connected kinship component reachable from this person (ancestors,
             descendants, spouses, siblings - whichever edges connect to it, transitively), for the
@@ -22426,7 +22477,18 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetFamilyTreeAsync(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._ComputeBookRelationStates(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorPersonRelation},System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorRelatedPerson},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.List{System.Int32}},System.Nullable{System.Int32})">
+            <summary>
+            the state of every relation of a tree as seen from one book (master category), or null for
+            the unfiltered view: "attested" (human evidence in this book), "otherBook" (evidence only
+            elsewhere), "unattested" (no human evidence anywhere), or "contradicted" - only ever a
+            Parent edge that is not attested here but conflicts with a parent attested here for the
+            same child: the attested parent has the same (known) gender, or the child already has two
+            attested parents here and this one is neither. Sibling/Spouse/Ancestor edges are never
+            contradicted (multiple marriages are normal; ancestry has no exclusivity to test).
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetFamilyTreeAsync(System.Int32,System.Nullable{System.Int32})">
             <summary>
             get the whole connected kinship component reachable from this person
             </summary>

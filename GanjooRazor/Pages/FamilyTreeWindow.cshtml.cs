@@ -29,6 +29,11 @@ namespace GanjooRazor.Pages
         public GanjoorFamilyTreeViewModel Tree { get; set; }
 
         /// <summary>
+        /// number of edges hidden by default because the selected book contradicts them
+        /// </summary>
+        public int HiddenCount => Tree?.Relations == null ? 0 : System.Linq.Enumerable.Count(Tree.Relations, r => r.State == "contradicted");
+
+        /// <summary>
         /// Tree, re-serialized with an explicit camelCase contract (same convention
         /// _PersonGraphPartial.cshtml.cs's GraphDataJson uses) so familytree.js has a predictable
         /// shape to parse once this fragment's data block is read, regardless of the API's own
@@ -40,7 +45,7 @@ namespace GanjooRazor.Pages
                 new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }
             );
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int id, int? masterCatId = null)
         {
             InitializeCommonPageState();
 
@@ -57,7 +62,7 @@ namespace GanjooRazor.Pages
                 return Page();
             }
 
-            var treeResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/people/{id}/familytree");
+            var treeResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/people/{id}/familytree" + (masterCatId.HasValue ? $"?masterCatId={masterCatId.Value}" : ""));
             if (!treeResponse.IsSuccessStatusCode)
             {
                 LastError = await ReadErrorMessageAsync(treeResponse);

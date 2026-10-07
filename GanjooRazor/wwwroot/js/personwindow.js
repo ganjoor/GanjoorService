@@ -120,15 +120,22 @@
         });
     }
 
-    function openFamilyTree(id) {
+    function openFamilyTree(id, masterCatId) {
         openModal(true);
-        loadInto('/FamilyTreeWindow/' + String(id), function () {
+        var url = '/FamilyTreeWindow/' + String(id) + (masterCatId ? '?masterCatId=' + String(masterCatId) : '');
+        loadInto(url, function () {
             var dataEl = document.getElementById('ftw-data');
             var rootIdEl = document.getElementById('ftw-root-id');
             if (dataEl && rootIdEl && window.GanjoorFamilyTree) {
                 var treeData = JSON.parse(dataEl.textContent);
                 var rootId = parseInt(rootIdEl.value, 10);
-                GanjoorFamilyTree.render('familytree-container', 'familytree-svg', 'familytree-tooltip', treeData, rootId);
+                var hiddenToggle = document.getElementById('ftw-show-hidden');
+                function draw() {
+                    GanjoorFamilyTree.render('familytree-container', 'familytree-svg', 'familytree-tooltip', treeData, rootId,
+                        { showHidden: !!(hiddenToggle && hiddenToggle.checked) });
+                }
+                if (hiddenToggle) hiddenToggle.addEventListener('change', draw);
+                draw();
             }
         });
     }

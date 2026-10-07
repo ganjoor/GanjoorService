@@ -59,8 +59,9 @@ namespace RMuseum.Services
         /// interactive family-tree chart at /FamilyTree/{id}
         /// </summary>
         /// <param name="rootId"></param>
+        /// <param name="masterCatId">optional master category (book) id: when given, each edge is labelled attested / otherBook / unattested / contradicted relative to that book</param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorFamilyTreeViewModel>> GetFamilyTreeAsync(int rootId);
+        Task<RServiceResult<GanjoorFamilyTreeViewModel>> GetFamilyTreeAsync(int rootId, int? masterCatId = null);
 
         /// <summary>
         /// submit a suggested edit to an already-approved person's own fields - goes into the

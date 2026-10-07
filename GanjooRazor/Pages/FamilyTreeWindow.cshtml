@@ -19,6 +19,35 @@ else
             این نمودار محدود به فرزندان این شخصیت نیست؛ تمام خویشاوندان به‌هم‌پیوسته (از جمله نیاکان و خانوادهٔ همسر) را نشان می‌دهد.
         </small></p>
 
+        @if (Model.Tree.Books != null && Model.Tree.Books.Count > 0)
+        {
+            <div class="ft-book-bar">
+                <label>
+                    نمایش بر اساس کتاب:
+                    <select id="ftw-book" onchange="FamilyTreeWindow.open(@Model.RootPerson.Id, this.value ? parseInt(this.value, 10) : null)">
+                        <option value="">همهٔ کتاب‌ها (بدون فیلتر)</option>
+                        @foreach (var b in Model.Tree.Books)
+                        {
+                            <option value="@b.Id" selected="@(Model.Tree.MasterCatId == b.Id)">@b.Title (@b.RelationCount)</option>
+                        }
+                    </select>
+                </label>
+                @if (Model.Tree.MasterCatId.HasValue)
+                {
+                    <label style="margin-right:16px;">
+                        <input type="checkbox" id="ftw-show-hidden" />
+                        نمایش پیوندهای متناقض با این کتاب (@Model.HiddenCount پنهان)
+                    </label>
+                    <span class="ft-legend">
+                        <span class="ft-legend-item"><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" class="ft-line ft-state-attested"/></svg> مستند در این کتاب</span>
+                        <span class="ft-legend-item"><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" class="ft-line ft-state-otherbook"/></svg> مستند در کتاب دیگر</span>
+                        <span class="ft-legend-item"><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" class="ft-line ft-state-unattested"/></svg> بدون شاهد</span>
+                        <span class="ft-legend-item"><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" class="ft-line ft-state-contradicted"/></svg> متناقض با این کتاب</span>
+                    </span>
+                }
+            </div>
+        }
+
         <div id="familytree-container" style="position:relative;width:100%;height:65vh;border:1px solid #d8cdb8;border-radius:6px;overflow:hidden;background:#faf7f0;">
             <svg id="familytree-svg" width="100%" height="100%"></svg>
             <div id="familytree-tooltip" class="ft-tooltip-panel" style="display:none;"></div>
@@ -42,6 +71,15 @@ else
                spouse line (marriage) and the sibling line (unspecified shared
                parent), since this one *is* a confirmed parent-child relation. */
             .ft-line-second-parent { stroke-dasharray: 6,2; stroke: #a0455c; stroke-width: 1.25; }
+            .ft-book-bar { margin: 6px 0; font-size: 13px; }
+            .ft-legend { margin-right: 16px; }
+            .ft-legend-item { margin-left: 12px; white-space: nowrap; }
+            /* relation states in book view - declared after (and compounded with .ft-line) so they
+               override the spouse/sibling/second-parent dash styles */
+            .ft-line.ft-state-attested { stroke: #3d6b35; stroke-width: 2.5; stroke-dasharray: none; }
+            .ft-line.ft-state-otherbook { stroke: #2f6fb0; stroke-width: 1.75; stroke-dasharray: 7,4; }
+            .ft-line.ft-state-unattested { stroke: #b5b5b5; stroke-width: 1.25; stroke-dasharray: 2,4; }
+            .ft-line.ft-state-contradicted { stroke: #c0392b; stroke-width: 1; stroke-dasharray: 4,3; opacity: .8; }
             .ft-tooltip-panel {
                 position: absolute; top: 10px; left: 10px; max-width: 300px;
                 background: #fffdf7; border: 1px solid #8b6b4a; border-radius: 8px;
@@ -60,5 +98,6 @@ else
            directly here) - same pattern _PersonGraphPartial.cshtml uses for pge-data *@
         <script type="application/json" id="ftw-data">@Html.Raw(Model.TreeDataJson)</script>
         <input type="hidden" id="ftw-root-id" value="@Model.RootPerson.Id" />
+        <input type="hidden" id="ftw-master-cat-id" value="@(Model.Tree.MasterCatId?.ToString() ?? "")" />
     </div>
 }
