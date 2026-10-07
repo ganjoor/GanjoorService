@@ -585,6 +585,31 @@ namespace RMuseum.Services.Implementation
                 suggestion.SuggestedDescription = string.IsNullOrWhiteSpace(suggestion.SuggestedDescription) ? null : suggestion.SuggestedDescription.Trim();
                 suggestion.SuggestedWikiUrl = string.IsNullOrWhiteSpace(suggestion.SuggestedWikiUrl) ? null : suggestion.SuggestedWikiUrl.Trim();
                 suggestion.SuggestedFamilyTreeCaption = string.IsNullOrWhiteSpace(suggestion.SuggestedFamilyTreeCaption) ? null : suggestion.SuggestedFamilyTreeCaption.Trim();
+                // an edit that changes nothing is pointless for the moderator (it is what a contributor
+                // gets by opening the edit form and submitting it untouched) - reject it. A deletion
+                // request is never a no-op, so it is exempt.
+                if (!suggestion.SuggestedForDeletion)
+                {
+                    string Norm(string s) => (s ?? "").Trim();
+                    bool unchanged =
+                        Norm(suggestion.SuggestedName) == Norm(person.Name)
+                        && Norm(suggestion.SuggestedDescription) == Norm(person.Description)
+                        && Norm(suggestion.SuggestedWikiUrl) == Norm(person.WikiUrl)
+                        && suggestion.SuggestedBirthYearInLHijri == person.BirthYearInLHijri
+                        && suggestion.SuggestedDeathYearInLHijri == person.DeathYearInLHijri
+                        && suggestion.SuggestedValidBirthDate == person.ValidBirthDate
+                        && suggestion.SuggestedValidDeathDate == person.ValidDeathDate
+                        && suggestion.SuggestedBirthLocationId == person.BirthLocationId
+                        && suggestion.SuggestedDeathLocationId == person.DeathLocationId
+                        && Norm(suggestion.SuggestedFamilyTreeCaption) == Norm(person.FamilyTreeCaption)
+                        && suggestion.SuggestedImportance == person.Importance
+                        && suggestion.SuggestedGender == person.Gender;
+                    if (unchanged)
+                    {
+                        return new RServiceResult<GanjoorPersonEditSuggestion>(null, "در این پیشنهاد چیزی تغییر نکرده است.");
+                    }
+                }
+
                 suggestion.Reviewed = false;
                 suggestion.Result = CorrectionReviewResult.NotReviewed;
                 suggestion.ReviewNote = null;
