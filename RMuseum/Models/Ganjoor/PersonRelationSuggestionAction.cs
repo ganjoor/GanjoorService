@@ -19,5 +19,16 @@ namespace RMuseum.Models.Ganjoor
         /// remove the existing relation ExistingRelationId points to outright
         /// </summary>
         Remove = 2,
+
+        /// <summary>
+        /// attach one more piece of evidence (a poem couplet, see GanjoorPersonRelationEvidence) to the
+        /// existing relation ExistingRelationId points to. Only valid for Kind == Family.
+        /// </summary>
+        AddEvidence = 3,
+
+        /// <summary>
+        /// detach the evidence row ExistingEvidenceId points to from its relation (the relation itself stays)
+        /// </summary>
+        RemoveEvidence = 4,
     }
 }

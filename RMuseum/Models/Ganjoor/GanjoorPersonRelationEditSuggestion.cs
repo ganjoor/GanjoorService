@@ -115,6 +115,30 @@ namespace RMuseum.Models.Ganjoor
         public string SuggestedNote { get; set; }
 
         /// <summary>
+        /// evidence couplet (see GanjoorPersonRelationEvidence): the poem it is in. Required for
+        /// Action == AddEvidence; optional for Action == Add (the evidence is attached to the new
+        /// relation when the suggestion is approved). Ignored otherwise.
+        /// </summary>
+        public int? EvidencePoemId { get; set; }
+
+        /// <summary>
+        /// evidence couplet index inside EvidencePoemId's poem
+        /// </summary>
+        public int? EvidenceCoupletIndex { get; set; }
+
+        /// <summary>
+        /// snapshot of the evidence couplet's text, filled in by the server at submission time so the
+        /// moderator sees exactly what the suggester pointed at
+        /// </summary>
+        public string EvidenceCoupletText { get; set; }
+
+        /// <summary>
+        /// for Action == RemoveEvidence: the GanjoorPersonRelationEvidence row to detach (a plain id,
+        /// not an FK, so deleting that row never conflicts with old suggestions that mention it)
+        /// </summary>
+        public int? ExistingEvidenceId { get; set; }
+
+        /// <summary>
         /// suggester's note to the moderator (e.g. why an existing relation is wrong)
         /// </summary>
         public string SuggestionNote { get; set; }

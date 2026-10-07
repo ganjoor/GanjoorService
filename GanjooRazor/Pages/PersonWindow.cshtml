@@ -71,6 +71,22 @@ else
                         {
                             <a href="/User/SuggestPersonRelationEdit?relationId=@row.RelationId" class="up-icon-btn" title="پیشنهاد ویرایش/حذف این نسبت" aria-label="پیشنهاد ویرایش/حذف این نسبت">✎</a>
                         }
+                        @if (row.Evidence.Count > 0)
+                        {
+                            <details>
+                                <summary><small>مستند (@row.Evidence.Count)</small></summary>
+                                @foreach (var ev in row.Evidence)
+                                {
+                                    <div>
+                                        <small>
+                                            <a href="/?p=@ev.PoemId" target="_blank">@(string.IsNullOrEmpty(ev.MasterCatTitle) ? "شعر " + ev.PoemId : ev.MasterCatTitle)</a>
+                                            @if (ev.Inferred) { <text> (حدسی)</text> }
+                                            — @ev.CoupletText
+                                        </small>
+                                    </div>
+                                }
+                            </details>
+                        }
                     </li>
                 }
             </ul>

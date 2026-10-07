@@ -53,7 +53,7 @@ namespace GanjooRazor.Areas.User.Pages
         public GanjoorPersonRelationEditSuggestion Suggestion { get; set; }
 
         [BindProperty]
-        public string Action { get; set; } // "Modify" or "Remove", from the posted radio buttons
+        public string Action { get; set; } // "Modify", "Remove", "AddEvidence" or "RemoveEvidence", from the posted radio buttons
 
         private async Task<bool> PrepareAsync(int? relationId, int? affiliationId)
         {
@@ -174,7 +174,13 @@ namespace GanjooRazor.Areas.User.Pages
             }
 
             Suggestion.Kind = Kind;
-            Suggestion.Action = Action == "Remove" ? PersonRelationSuggestionAction.Remove : PersonRelationSuggestionAction.Modify;
+            Suggestion.Action = Action switch
+            {
+                "Remove" => PersonRelationSuggestionAction.Remove,
+                "AddEvidence" when Kind == PersonRelationSuggestionKind.Family => PersonRelationSuggestionAction.AddEvidence,
+                "RemoveEvidence" when Kind == PersonRelationSuggestionKind.Family => PersonRelationSuggestionAction.RemoveEvidence,
+                _ => PersonRelationSuggestionAction.Modify,
+            };
             if (Kind == PersonRelationSuggestionKind.Affiliation)
             {
                 Suggestion.ExistingAffiliationId = Affiliation.Id;

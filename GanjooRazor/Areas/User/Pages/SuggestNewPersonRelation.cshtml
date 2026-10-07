@@ -151,6 +151,16 @@ else
                     <td><textarea asp-for="Note" rows="3" cols="60"></textarea></td>
                 </tr>
                 <tr>
+                    <td>
+                        مستند (اختیاری، فقط برای نسبت خویشاوندی):
+                        <p class="up-hint"><small>بیتی از یک شعر که این نسبت را بیان می‌کند. شناسهٔ شعر همان عدد پس از <code>?p=</code> در نشانی پیوند یکتای شعر است؛ شمارهٔ بیت از ۱ شروع می‌شود. می‌توانید بعداً هم مستند اضافه کنید.</small></p>
+                    </td>
+                    <td>
+                        شناسهٔ شعر: <input asp-for="EvidencePoemId" type="number" min="1" />
+                        شمارهٔ بیت: <input asp-for="EvidenceCoupletIndex" type="number" min="1" />
+                    </td>
+                </tr>
+                <tr>
                     <td>یادداشت برای مدیر بررسی‌کننده:</td>
                     <td><textarea asp-for="SuggestionNote" rows="3" cols="60"></textarea></td>
                 </tr>

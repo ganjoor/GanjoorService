@@ -185,6 +185,21 @@ namespace RMuseum.DbContext
                 .HasForeignKey(s => s.ExistingAffiliationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // evidence rows die with their relation (single cascade path, so SQL Server accepts it);
+            // one row per relation/couplet, and MasterCatId is indexed for per-book view filtering
+            builder.Entity<GanjoorPersonRelationEvidence>()
+                .HasOne(e => e.Relation)
+                .WithMany()
+                .HasForeignKey(e => e.RelationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<GanjoorPersonRelationEvidence>()
+                .HasIndex(e => new { e.RelationId, e.PoemId, e.CoupletIndex })
+                .IsUnique();
+
+            builder.Entity<GanjoorPersonRelationEvidence>()
+                .HasIndex(e => e.MasterCatId);
+
             builder.Entity<GanjoorUserBookmark>()
                 .HasIndex(b => new { b.UserId, b.PoemId, b.CoupletIndex });
 
@@ -661,6 +676,11 @@ namespace RMuseum.DbContext
         /// already-approved people - see GanjoorPersonRelationEditSuggestion
         /// </summary>
         public DbSet<GanjoorPersonRelationEditSuggestion> GanjoorPersonRelationEditSuggestions { get; set; }
+
+        /// <summary>
+        /// poem couplets attesting kinship relations (per-book family tree versions) - see GanjoorPersonRelationEvidence
+        /// </summary>
+        public DbSet<GanjoorPersonRelationEvidence> GanjoorPersonRelationEvidences { get; set; }
 
         /// <summary>
         /// Books (PDF Library)

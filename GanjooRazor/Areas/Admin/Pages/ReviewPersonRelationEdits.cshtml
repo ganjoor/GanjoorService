@@ -50,6 +50,8 @@
             case PersonRelationSuggestionAction.Add: return "افزودن نسبت جدید";
             case PersonRelationSuggestionAction.Modify: return "ویرایش نسبت موجود";
             case PersonRelationSuggestionAction.Remove: return "حذف نسبت موجود";
+            case PersonRelationSuggestionAction.AddEvidence: return "افزودن مستند به نسبت";
+            case PersonRelationSuggestionAction.RemoveEvidence: return "حذف مستند از نسبت";
             default: return a.ToString();
         }
     }
@@ -104,7 +106,7 @@ else
         <thead>
             <tr>
                 <th></th>
-                <th>@(s.Action == PersonRelationSuggestionAction.Remove || s.Action == PersonRelationSuggestionAction.Modify ? "مقدار فعلی" : "پیشنهاد")</th>
+                <th>@(s.Action == PersonRelationSuggestionAction.Remove || s.Action == PersonRelationSuggestionAction.Modify || s.Action == PersonRelationSuggestionAction.AddEvidence || s.Action == PersonRelationSuggestionAction.RemoveEvidence ? "مقدار فعلی" : "پیشنهاد")</th>
                 @if (s.Action == PersonRelationSuggestionAction.Modify)
                 {
                     <th>پیشنهاد</th>
@@ -190,6 +192,18 @@ else
             </tr>
         </tbody>
     </table>
+
+    @if (!string.IsNullOrEmpty(s.EvidenceCoupletText) || s.EvidencePoemId != null)
+    {
+        <div class="up-card">
+            <strong>@(s.Action == PersonRelationSuggestionAction.RemoveEvidence ? "مستندی که قرار است حذف شود:" : "مستند پیشنهادی (بیتی که این نسبت را بیان می‌کند):")</strong>
+            <p>@s.EvidenceCoupletText</p>
+            @if (s.EvidencePoemId != null)
+            {
+                <a href="/?p=@s.EvidencePoemId" target="_blank" class="up-btn up-btn--ghost up-btn--sm">مشاهدهٔ شعر (بیت @s.EvidenceCoupletIndex)</a>
+            }
+        </div>
+    }
 
     <div class="spacer">&nbsp;</div>
 

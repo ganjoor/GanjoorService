@@ -88,6 +88,15 @@ namespace GanjooRazor.Areas.User.Pages
         [BindProperty]
         public string Note { get; set; }
 
+        /// <summary>
+        /// optional evidence couplet for a new family relation - see GanjoorPersonRelationEditSuggestion.EvidencePoemId
+        /// </summary>
+        [BindProperty]
+        public int? EvidencePoemId { get; set; }
+
+        [BindProperty]
+        public int? EvidenceCoupletIndex { get; set; }
+
         [BindProperty]
         public string SuggestionNote { get; set; }
 
@@ -173,6 +182,12 @@ namespace GanjooRazor.Areas.User.Pages
                 // consults it in that case
                 ConfirmedExtraParent = ConfirmedExtraParent,
             };
+
+            if (RelationKindGroup != "affiliation" && EvidencePoemId != null && EvidenceCoupletIndex != null)
+            {
+                suggestion.EvidencePoemId = EvidencePoemId;
+                suggestion.EvidenceCoupletIndex = EvidenceCoupletIndex;
+            }
 
             if (RelationKindGroup == "affiliation")
             {

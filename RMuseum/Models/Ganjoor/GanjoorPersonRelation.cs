@@ -51,5 +51,12 @@ namespace RMuseum.Models.Ganjoor
         /// free-text note (e.g. sourcing/reasoning for this relation)
         /// </summary>
         public string Note { get; set; }
+
+        /// <summary>
+        /// evidence couplets for this relation - filled in only by GetRelationByIdAsync (not a column;
+        /// the stored rows are GanjoorPersonRelationEvidence)
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        public System.Collections.Generic.List<ViewModels.GanjoorPersonRelationEvidenceInfo> Evidence { get; set; }
     }
 }

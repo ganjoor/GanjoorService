@@ -4115,6 +4115,11 @@
             already-approved people - see GanjoorPersonRelationEditSuggestion
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPersonRelationEvidences">
+            <summary>
+            poem couplets attesting kinship relations (per-book family tree versions) - see GanjoorPersonRelationEvidence
+            </summary>
+        </member>
         <member name="P:RMuseum.DbContext.RMuseumDbContext.Books">
             <summary>
             Books (PDF Library)
@@ -5032,6 +5037,18 @@
             <inheritdoc />
         </member>
         <member name="M:RMuseum.Migrations.AddPersonSuggestionConfirmationOverrides.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.AddPersonRelationEvidence">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonRelationEvidence.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonRelationEvidence.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonRelationEvidence.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -9670,6 +9687,12 @@
             free-text note (e.g. sourcing/reasoning for this relation)
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelation.Evidence">
+            <summary>
+            evidence couplets for this relation - filled in only by GetRelationByIdAsync (not a column;
+            the stored rows are GanjoorPersonRelationEvidence)
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion">
             <summary>
             a contributor's suggestion to add a brand new kinship edge between two already-approved
@@ -9781,6 +9804,30 @@
             SuggestedRelationType above
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.EvidencePoemId">
+            <summary>
+            evidence couplet (see GanjoorPersonRelationEvidence): the poem it is in. Required for
+            Action == AddEvidence; optional for Action == Add (the evidence is attached to the new
+            relation when the suggestion is approved). Ignored otherwise.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.EvidenceCoupletIndex">
+            <summary>
+            evidence couplet index inside EvidencePoemId's poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.EvidenceCoupletText">
+            <summary>
+            snapshot of the evidence couplet's text, filled in by the server at submission time so the
+            moderator sees exactly what the suggester pointed at
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.ExistingEvidenceId">
+            <summary>
+            for Action == RemoveEvidence: the GanjoorPersonRelationEvidence row to detach (a plain id,
+            not an FK, so deleting that row never conflicts with old suggestions that mention it)
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.SuggestionNote">
             <summary>
             suggester's note to the moderator (e.g. why an existing relation is wrong)
@@ -9829,6 +9876,71 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.ReviewerUser">
             <summary>
             reviewer
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPersonRelationEvidence">
+            <summary>
+            one piece of evidence ("attested in") for a GanjoorPersonRelation: a specific couplet of a
+            specific poem that states or implies the relation. A relation may have any number of these.
+            Evidence rows are what lets the same pair of people have different relations in different
+            books (e.g. different editions of the Shahnameh) - each row remembers the "master category"
+            (see MasterCatId) of its poem, so a view can be limited to relations attested in one book.
+            PoemId/MasterCatId are deliberately plain ints (no FK) and CoupletText is a snapshot, so
+            re-importing or deleting poems/categories never blocks or silently erases evidence.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEvidence.Id">
+            <summary>
+            record id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEvidence.RelationId">
+            <summary>
+            the relation this evidence supports (deleting the relation deletes its evidence)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEvidence.Relation">
+            <summary>
+            relation (navigation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEvidence.PoemId">
+            <summary>
+            poem the couplet belongs to (not an FK, see class remarks)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEvidence.CoupletIndex">
+            <summary>
+            couplet index inside the poem, same convention as PoemGeoDateTag.CoupletIndex
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEvidence.CoupletText">
+            <summary>
+            snapshot of the couplet text at the time the evidence was added
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEvidence.MasterCatId">
+            <summary>
+            the poem's master category: the first category, walking up from the poem's own category,
+            whose CatType is Book; or the topmost category (ParentId == null) if none is a Book.
+            Computed when the evidence is added (not an FK, see class remarks).
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEvidence.Inferred">
+            <summary>
+            true for rows guessed by a backfill script rather than attached by a person. Inferred
+            rows are never counted when filtering a view by master category - see
+            GanjoorPersonRelationService docs; only a moderator-confirmed (Inferred == false) row counts.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEvidence.AddedByUserId">
+            <summary>
+            user who suggested this evidence (null for backfilled rows)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEvidence.DateAdded">
+            <summary>
+            date added
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPoem">
@@ -12067,6 +12179,17 @@
             remove the existing relation ExistingRelationId points to outright
             </summary>
         </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonRelationSuggestionAction.AddEvidence">
+            <summary>
+            attach one more piece of evidence (a poem couplet, see GanjoorPersonRelationEvidence) to the
+            existing relation ExistingRelationId points to. Only valid for Kind == Family.
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonRelationSuggestionAction.RemoveEvidence">
+            <summary>
+            detach the evidence row ExistingEvidenceId points to from its relation (the relation itself stays)
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.PersonRelationSuggestionKind">
             <summary>
             which kind of edge a GanjoorPersonRelationEditSuggestion is about: a kinship tie
@@ -13808,6 +13931,51 @@
             <summary>
             true if the subject person is Person1 in the underlying GanjoorPersonRelation row -
             needed by the client to render directional types (Parent, Ancestor) correctly
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo.Evidence">
+            <summary>
+            couplets attesting this relation (see GanjoorPersonRelationEvidence), empty if none
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationEvidenceInfo">
+            <summary>
+            read-only projection of GanjoorPersonRelationEvidence
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationEvidenceInfo.Id">
+            <summary>
+            evidence row id (what a RemoveEvidence suggestion refers to)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationEvidenceInfo.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationEvidenceInfo.CoupletIndex">
+            <summary>
+            couplet index inside the poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationEvidenceInfo.CoupletText">
+            <summary>
+            couplet text snapshot
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationEvidenceInfo.MasterCatId">
+            <summary>
+            master category id (book) the poem belongs to
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationEvidenceInfo.MasterCatTitle">
+            <summary>
+            master category title (filled by the server for display)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationEvidenceInfo.Inferred">
+            <summary>
+            true if guessed by a backfill rather than attached by a person (does not count for per-book filtering)
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonAffiliationInfo">
@@ -22311,6 +22479,20 @@
             or Parent AND Sibling, between the very same two people)
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._GetDuplicateRelationAsync(System.Int32,System.Int32,RMuseum.Models.Ganjoor.PersonRelationType,System.Nullable{System.Int32})">
+            <summary>
+            returns an existing kinship edge of exactly this type between this pair, other than
+            excludeRelationId - same ordered pair, or either order for the interchangeable types
+            (Sibling/Spouse). Complements _GetConflictingRelationAsync, which only looks at
+            DIFFERENT types, so the same fact can't be recorded twice.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._GetDuplicateAffiliationAsync(System.Int32,System.Int32,RMuseum.Models.Ganjoor.PersonAffiliationType,System.Nullable{System.Int32})">
+            <summary>
+            same idea as _GetDuplicateRelationAsync, for non-family affiliation edges: same type and
+            same ordered pair, or either order for the symmetric types
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._ValidateFamilyRelationAsync(System.Int32,System.Int32,RMuseum.Models.Ganjoor.PersonRelationType,System.Nullable{System.Int32},System.Boolean)">
             <summary>
             runs every family-relation data-integrity check (self-reference is checked separately by
@@ -22392,6 +22574,20 @@
             </summary>
             <param name="affiliationId"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._GetMasterCatIdAsync(System.Int32)">
+            <summary>
+            the "master category" of a poem: walking up from the poem's own category, the first
+            category whose CatType is Book, or the topmost category (ParentId == null) when none is -
+            the label under which relation evidence from this poem is grouped. Null if the poem is unknown.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._ValidateAndFillEvidenceAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion,System.Nullable{System.Int32})">
+            <summary>
+            validates the evidence couplet carried by a suggestion (poem exists, couplet exists, not
+            already attached to the relation) and fills in its server-side text snapshot. Returns an
+            error message or null.
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.SuggestPersonRelationEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion)">
             <summary>

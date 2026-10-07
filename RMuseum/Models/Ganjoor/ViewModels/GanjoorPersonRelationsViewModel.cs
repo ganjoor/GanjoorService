@@ -66,6 +66,52 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// needed by the client to render directional types (Parent, Ancestor) correctly
         /// </summary>
         public bool SubjectIsPerson1 { get; set; }
+
+        /// <summary>
+        /// couplets attesting this relation (see GanjoorPersonRelationEvidence), empty if none
+        /// </summary>
+        public List<GanjoorPersonRelationEvidenceInfo> Evidence { get; set; }
+    }
+
+    /// <summary>
+    /// read-only projection of GanjoorPersonRelationEvidence
+    /// </summary>
+    public class GanjoorPersonRelationEvidenceInfo
+    {
+        /// <summary>
+        /// evidence row id (what a RemoveEvidence suggestion refers to)
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
+        /// poem id
+        /// </summary>
+        public int PoemId { get; set; }
+
+        /// <summary>
+        /// couplet index inside the poem
+        /// </summary>
+        public int CoupletIndex { get; set; }
+
+        /// <summary>
+        /// couplet text snapshot
+        /// </summary>
+        public string CoupletText { get; set; }
+
+        /// <summary>
+        /// master category id (book) the poem belongs to
+        /// </summary>
+        public int MasterCatId { get; set; }
+
+        /// <summary>
+        /// master category title (filled by the server for display)
+        /// </summary>
+        public string MasterCatTitle { get; set; }
+
+        /// <summary>
+        /// true if guessed by a backfill rather than attached by a person (does not count for per-book filtering)
+        /// </summary>
+        public bool Inferred { get; set; }
     }
 
     /// <summary>

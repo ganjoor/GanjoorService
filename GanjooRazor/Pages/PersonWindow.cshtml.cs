@@ -57,6 +57,11 @@ namespace GanjooRazor.Pages
             public int OtherPersonId { get; set; }
             public string OtherPersonName { get; set; }
             public string Note { get; set; }
+
+            /// <summary>
+            /// couplets attesting this relation, one per book at most per line shown (see GanjoorPersonRelationEvidenceInfo)
+            /// </summary>
+            public List<GanjoorPersonRelationEvidenceInfo> Evidence { get; set; } = new List<GanjoorPersonRelationEvidenceInfo>();
         }
 
         public class PersonAffiliationDisplayRow
@@ -161,6 +166,7 @@ namespace GanjooRazor.Pages
                     OtherPersonId = r.OtherPersonId,
                     OtherPersonName = r.OtherPersonName,
                     Note = r.Note,
+                    Evidence = r.Evidence ?? new List<GanjoorPersonRelationEvidenceInfo>(),
                 });
             }
 

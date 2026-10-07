@@ -104,8 +104,16 @@ namespace RMuseum.Services.Implementation
                     .Where(r => r.Person1Id == id || r.Person2Id == id)
                     .ToListAsync();
 
+                var relationIds = relationRows.Select(r => r.Id).ToList();
+                var evidenceRows = await _context.GanjoorPersonRelationEvidences.AsNoTracking()
+                    .Where(e => relationIds.Contains(e.RelationId))
+                    .OrderBy(e => e.Id)
+                    .ToListAsync();
+                var evidenceCatTitles = await _GetCatTitlesAsync(evidenceRows.Select(e => e.MasterCatId).Distinct().ToList());
+
                 var relations = relationRows.Select(r => new GanjoorPersonRelationInfo()
                 {
+                    Evidence = evidenceRows.Where(e => e.RelationId == r.Id).Select(e => _ToEvidenceInfo(e, evidenceCatTitles)).ToList(),
                     Id = r.Id,
                     OtherPersonId = r.Person1Id == id ? r.Person2Id : r.Person1Id,
                     OtherPersonName = r.Person1Id == id ? r.Person2.Name : r.Person1.Name,
@@ -851,6 +859,13 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<GanjoorPersonRelation>(null, "نسبت پیدا نشد.");
                 }
 
+                var evidenceRows = await _context.GanjoorPersonRelationEvidences.AsNoTracking()
+                    .Where(e => e.RelationId == relation.Id)
+                    .OrderBy(e => e.Id)
+                    .ToListAsync();
+                var catTitles = await _GetCatTitlesAsync(evidenceRows.Select(e => e.MasterCatId).Distinct().ToList());
+                relation.Evidence = evidenceRows.Select(e => _ToEvidenceInfo(e, catTitles)).ToList();
+
                 return new RServiceResult<GanjoorPersonRelation>(relation);
             }
             catch (Exception exp)
@@ -889,6 +904,107 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        private static GanjoorPersonRelationEvidenceInfo _ToEvidenceInfo(GanjoorPersonRelationEvidence e, Dictionary<int, string> catTitles)
+        {
+            return new GanjoorPersonRelationEvidenceInfo()
+            {
+                Id = e.Id,
+                PoemId = e.PoemId,
+                CoupletIndex = e.CoupletIndex,
+                CoupletText = e.CoupletText,
+                MasterCatId = e.MasterCatId,
+                MasterCatTitle = catTitles != null && catTitles.TryGetValue(e.MasterCatId, out var title) ? title : null,
+                Inferred = e.Inferred,
+            };
+        }
+
+        private async Task<Dictionary<int, string>> _GetCatTitlesAsync(List<int> catIds)
+        {
+            if (catIds == null || catIds.Count == 0)
+            {
+                return new Dictionary<int, string>();
+            }
+            return await _context.GanjoorCategories.AsNoTracking()
+                .Where(c => catIds.Contains(c.Id))
+                .ToDictionaryAsync(c => c.Id, c => c.Title);
+        }
+
+        /// <summary>
+        /// the "master category" of a poem: walking up from the poem's own category, the first
+        /// category whose CatType is Book, or the topmost category (ParentId == null) when none is -
+        /// the label under which relation evidence from this poem is grouped. Null if the poem is unknown.
+        /// </summary>
+        private async Task<int?> _GetMasterCatIdAsync(int poemId)
+        {
+            var catId = await _context.GanjoorPoems.AsNoTracking().Where(p => p.Id == poemId).Select(p => (int?)p.CatId).SingleOrDefaultAsync();
+            if (catId == null)
+            {
+                return null;
+            }
+
+            int current = catId.Value;
+            for (int guard = 0; guard < 100; guard++)
+            {
+                var cat = await _context.GanjoorCategories.AsNoTracking()
+                    .Where(c => c.Id == current)
+                    .Select(c => new { c.Id, c.ParentId, c.CatType })
+                    .SingleOrDefaultAsync();
+                if (cat == null)
+                {
+                    return null;
+                }
+                if (cat.CatType == GanjoorCatType.Book || cat.ParentId == null)
+                {
+                    return cat.Id;
+                }
+                current = cat.ParentId.Value;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// validates the evidence couplet carried by a suggestion (poem exists, couplet exists, not
+        /// already attached to the relation) and fills in its server-side text snapshot. Returns an
+        /// error message or null.
+        /// </summary>
+        private async Task<string> _ValidateAndFillEvidenceAsync(GanjoorPersonRelationEditSuggestion suggestion, int? relationId)
+        {
+            if (suggestion.EvidencePoemId == null || suggestion.EvidenceCoupletIndex == null)
+            {
+                return "شعر و بیت مورد نظر برای مستند کردن نسبت مشخص نشده است.";
+            }
+
+            var poemId = suggestion.EvidencePoemId.Value;
+            var coupletIndex = suggestion.EvidenceCoupletIndex.Value;
+            if (coupletIndex < 0)
+            {
+                return "شمارهٔ بیت نامعتبر است.";
+            }
+
+            var coupletVerses = await _context.GanjoorVerses.AsNoTracking()
+                .Where(v => v.PoemId == poemId && v.CoupletIndex == coupletIndex)
+                .OrderBy(v => v.VOrder)
+                .ToListAsync();
+            if (coupletVerses.Count == 0)
+            {
+                return "بیت مورد نظر در شعر مشخص‌شده پیدا نشد.";
+            }
+
+            if (await _GetMasterCatIdAsync(poemId) == null)
+            {
+                return "دستهٔ اصلی این شعر مشخص نشد.";
+            }
+
+            if (relationId != null && await _context.GanjoorPersonRelationEvidences.AsNoTracking()
+                .AnyAsync(e => e.RelationId == relationId.Value && e.PoemId == poemId && e.CoupletIndex == coupletIndex))
+            {
+                return "این بیت هم‌اکنون به عنوان مستند این نسبت ثبت شده است.";
+            }
+
+            suggestion.EvidenceCoupletText = string.Join(" ", coupletVerses.Select(v => v.Text)).Trim();
+            return null;
+        }
+
         /// <summary>
         /// submit a suggested addition, change or removal of a kinship edge
         /// </summary>
@@ -903,9 +1019,15 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "اطلاعات پیشنهاد ناقص است.");
                 }
 
+                bool isEvidenceAction = suggestion.Action == PersonRelationSuggestionAction.AddEvidence || suggestion.Action == PersonRelationSuggestionAction.RemoveEvidence;
+                if (isEvidenceAction && suggestion.Kind != PersonRelationSuggestionKind.Family)
+                {
+                    return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "مستند فقط برای نسبت‌های خویشاوندی قابل ثبت است.");
+                }
+
                 GanjoorPersonRelation existingRelation = null;
                 GanjoorPersonAffiliation existingAffiliation = null;
-                if (suggestion.Action == PersonRelationSuggestionAction.Modify || suggestion.Action == PersonRelationSuggestionAction.Remove)
+                if (suggestion.Action == PersonRelationSuggestionAction.Modify || suggestion.Action == PersonRelationSuggestionAction.Remove || isEvidenceAction)
                 {
                     if (suggestion.Kind == PersonRelationSuggestionKind.Affiliation)
                     {
@@ -963,7 +1085,7 @@ namespace RMuseum.Services.Implementation
                         // what it actually targets, even for a Remove-display
                         suggestion.Person1Id = existingRelation.Person1Id;
                         suggestion.Person2Id = existingRelation.Person2Id;
-                        if (suggestion.Action == PersonRelationSuggestionAction.Remove)
+                        if (suggestion.Action != PersonRelationSuggestionAction.Modify)
                         {
                             suggestion.SuggestedRelationType = existingRelation.RelationType;
                             suggestion.SuggestedDegreeHint = existingRelation.DegreeHint;
@@ -1010,6 +1132,46 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
+                if (suggestion.Kind == PersonRelationSuggestionKind.Family &&
+                    (suggestion.Action == PersonRelationSuggestionAction.AddEvidence ||
+                     (suggestion.Action == PersonRelationSuggestionAction.Add && suggestion.EvidencePoemId != null)))
+                {
+                    var evidenceError = await _ValidateAndFillEvidenceAsync(suggestion, suggestion.Action == PersonRelationSuggestionAction.AddEvidence ? existingRelation?.Id : null);
+                    if (evidenceError != null)
+                    {
+                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, evidenceError);
+                    }
+                }
+                else if (suggestion.Action == PersonRelationSuggestionAction.RemoveEvidence)
+                {
+                    if (suggestion.ExistingEvidenceId == null)
+                    {
+                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "مستند مورد نظر برای حذف مشخص نشده است.");
+                    }
+                    var evidence = await _context.GanjoorPersonRelationEvidences.AsNoTracking()
+                        .Where(e => e.Id == suggestion.ExistingEvidenceId.Value && e.RelationId == existingRelation.Id)
+                        .SingleOrDefaultAsync();
+                    if (evidence == null)
+                    {
+                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "مستند مورد نظر برای این نسبت پیدا نشد.");
+                    }
+                    // display snapshot only
+                    suggestion.EvidencePoemId = evidence.PoemId;
+                    suggestion.EvidenceCoupletIndex = evidence.CoupletIndex;
+                    suggestion.EvidenceCoupletText = evidence.CoupletText;
+                }
+                else
+                {
+                    suggestion.EvidencePoemId = null;
+                    suggestion.EvidenceCoupletIndex = null;
+                    suggestion.EvidenceCoupletText = null;
+                    suggestion.ExistingEvidenceId = null;
+                }
+                if (suggestion.Action != PersonRelationSuggestionAction.RemoveEvidence)
+                {
+                    suggestion.ExistingEvidenceId = null;
+                }
+
                 suggestion.Id = 0;
                 suggestion.ExistingRelation = null;
                 suggestion.ExistingAffiliation = null;
@@ -1031,6 +1193,8 @@ namespace RMuseum.Services.Implementation
                 {
                     PersonRelationSuggestionAction.Add => isAffiliation ? "پیشنهاد وابستگی جدید" : "پیشنهاد نسبت خویشاوندی جدید",
                     PersonRelationSuggestionAction.Modify => isAffiliation ? "پیشنهاد ویرایش وابستگی" : "پیشنهاد ویرایش نسبت خویشاوندی",
+                    PersonRelationSuggestionAction.AddEvidence => "پیشنهاد مستند برای نسبت خویشاوندی",
+                    PersonRelationSuggestionAction.RemoveEvidence => "پیشنهاد حذف مستند نسبت خویشاوندی",
                     _ => isAffiliation ? "پیشنهاد حذف وابستگی" : "پیشنهاد حذف نسبت خویشاوندی",
                 };
                 string edgeLabel = isAffiliation ? "وابستگی" : "نسبت خویشاوندی";
@@ -1038,6 +1202,8 @@ namespace RMuseum.Services.Implementation
                 {
                     PersonRelationSuggestionAction.Add => $"کاربری پیشنهاد افزودن {edgeLabel} جدید بین «{person1.Name}» و «{person2.Name}» را داده است.",
                     PersonRelationSuggestionAction.Modify => $"کاربری پیشنهاد ویرایش {edgeLabel} بین «{person1.Name}» و «{person2.Name}» را داده است.",
+                    PersonRelationSuggestionAction.AddEvidence => $"کاربری پیشنهاد افزودن مستند (بیتی از شعر) برای {edgeLabel} بین «{person1.Name}» و «{person2.Name}» را داده است.",
+                    PersonRelationSuggestionAction.RemoveEvidence => $"کاربری پیشنهاد حذف یکی از مستندهای {edgeLabel} بین «{person1.Name}» و «{person2.Name}» را داده است.",
                     _ => $"کاربری پیشنهاد حذف {edgeLabel} بین «{person1.Name}» و «{person2.Name}» را داده است.",
                 };
 
@@ -1236,14 +1402,35 @@ namespace RMuseum.Services.Implementation
                                     {
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, validationError);
                                     }
-                                    _context.GanjoorPersonRelations.Add(new GanjoorPersonRelation()
+                                    var newRelation = new GanjoorPersonRelation()
                                     {
                                         Person1Id = suggestion.Person1Id,
                                         Person2Id = suggestion.Person2Id,
                                         RelationType = suggestion.SuggestedRelationType,
                                         DegreeHint = suggestion.SuggestedDegreeHint,
                                         Note = suggestion.SuggestedNote,
-                                    });
+                                    };
+                                    _context.GanjoorPersonRelations.Add(newRelation);
+
+                                    // optional evidence submitted together with the new relation
+                                    if (suggestion.EvidencePoemId != null && suggestion.EvidenceCoupletIndex != null)
+                                    {
+                                        var masterCatId = await _GetMasterCatIdAsync(suggestion.EvidencePoemId.Value);
+                                        if (masterCatId != null)
+                                        {
+                                            _context.GanjoorPersonRelationEvidences.Add(new GanjoorPersonRelationEvidence()
+                                            {
+                                                Relation = newRelation,
+                                                PoemId = suggestion.EvidencePoemId.Value,
+                                                CoupletIndex = suggestion.EvidenceCoupletIndex.Value,
+                                                CoupletText = suggestion.EvidenceCoupletText,
+                                                MasterCatId = masterCatId.Value,
+                                                Inferred = false,
+                                                AddedByUserId = suggestion.UserId,
+                                                DateAdded = DateTime.Now,
+                                            });
+                                        }
+                                    }
                                     break;
                                 }
                             case PersonRelationSuggestionAction.Modify:
@@ -1261,6 +1448,51 @@ namespace RMuseum.Services.Implementation
                                     existing.RelationType = suggestion.SuggestedRelationType;
                                     existing.DegreeHint = suggestion.SuggestedDegreeHint;
                                     existing.Note = suggestion.SuggestedNote;
+                                    break;
+                                }
+                            case PersonRelationSuggestionAction.AddEvidence:
+                                {
+                                    if (suggestion.ExistingRelationId == null || suggestion.EvidencePoemId == null || suggestion.EvidenceCoupletIndex == null)
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "اطلاعات مستند ناقص است.");
+                                    }
+                                    var existing = await _context.GanjoorPersonRelations.Where(r => r.Id == suggestion.ExistingRelationId.Value).SingleOrDefaultAsync();
+                                    if (existing == null)
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "نسبت مورد نظر دیگر وجود ندارد.");
+                                    }
+                                    var poemId = suggestion.EvidencePoemId.Value;
+                                    var coupletIndex = suggestion.EvidenceCoupletIndex.Value;
+                                    if (await _context.GanjoorPersonRelationEvidences.AnyAsync(e => e.RelationId == existing.Id && e.PoemId == poemId && e.CoupletIndex == coupletIndex))
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "این بیت هم‌اکنون به عنوان مستند این نسبت ثبت شده است.");
+                                    }
+                                    var masterCatId = await _GetMasterCatIdAsync(poemId);
+                                    if (masterCatId == null)
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "دستهٔ اصلی این شعر مشخص نشد.");
+                                    }
+                                    _context.GanjoorPersonRelationEvidences.Add(new GanjoorPersonRelationEvidence()
+                                    {
+                                        RelationId = existing.Id,
+                                        PoemId = poemId,
+                                        CoupletIndex = coupletIndex,
+                                        CoupletText = suggestion.EvidenceCoupletText,
+                                        MasterCatId = masterCatId.Value,
+                                        Inferred = false,
+                                        AddedByUserId = suggestion.UserId,
+                                        DateAdded = DateTime.Now,
+                                    });
+                                    break;
+                                }
+                            case PersonRelationSuggestionAction.RemoveEvidence:
+                                {
+                                    var evidence = suggestion.ExistingEvidenceId == null ? null :
+                                        await _context.GanjoorPersonRelationEvidences.Where(e => e.Id == suggestion.ExistingEvidenceId.Value).SingleOrDefaultAsync();
+                                    if (evidence != null)
+                                    {
+                                        _context.GanjoorPersonRelationEvidences.Remove(evidence);
+                                    }
                                     break;
                                 }
                             case PersonRelationSuggestionAction.Remove:
@@ -1319,6 +1551,8 @@ namespace RMuseum.Services.Implementation
                 {
                     PersonRelationSuggestionAction.Add => $"افزودن {edgeLabel}",
                     PersonRelationSuggestionAction.Modify => $"ویرایش {edgeLabel}",
+                    PersonRelationSuggestionAction.AddEvidence => "افزودن مستند نسبت خویشاوندی",
+                    PersonRelationSuggestionAction.RemoveEvidence => "حذف مستند نسبت خویشاوندی",
                     _ => $"حذف {edgeLabel}",
                 };
 
