@@ -655,7 +655,7 @@ namespace RMuseum.Services.Implementation
         /// familytree.js's buildLayout only ever attaches the first two it sorts to the front and
         /// silently drops any further ones with no error
         /// </summary>
-        private async Task<int> _CountParentsAsync(int childId, int? excludeRelationId)
+        private async Task<int> _CountParentsAsync(int childId, int? excludeRelationId, ICollection<int> scopeMasterCatIds = null)
         {
             var query = _context.GanjoorPersonRelations
                 .Where(r => r.RelationType == PersonRelationType.Parent && r.Person2Id == childId);
@@ -663,7 +663,81 @@ namespace RMuseum.Services.Implementation
             {
                 query = query.Where(r => r.Id != excludeRelationId.Value);
             }
-            return await query.Select(r => r.Person1Id).Distinct().CountAsync();
+            var parents = await query.Select(r => new { r.Id, r.Person1Id }).ToListAsync();
+            if (scopeMasterCatIds != null)
+            {
+                var books = await _GetRelationBooksAsync(parents.Select(r => r.Id).ToList());
+                parents = parents.Where(r => _InBookScope(books, r.Id, scopeMasterCatIds)).ToList();
+            }
+            return parents.Select(r => r.Person1Id).Distinct().Count();
+        }
+
+        /// <summary>
+        /// the master categories (books) in which each of these relations is attested by human-attached
+        /// evidence (inferred rows never count) - relations with no such evidence are absent from the result
+        /// </summary>
+        private async Task<Dictionary<int, HashSet<int>>> _GetRelationBooksAsync(List<int> relationIds)
+        {
+            var result = new Dictionary<int, HashSet<int>>();
+            foreach (var chunk in relationIds.Chunk(500))
+            {
+                var rows = await _context.GanjoorPersonRelationEvidences.AsNoTracking()
+                    .Where(e => !e.Inferred && chunk.Contains(e.RelationId))
+                    .Select(e => new { e.RelationId, e.MasterCatId })
+                    .ToListAsync();
+                foreach (var row in rows)
+                {
+                    if (!result.TryGetValue(row.RelationId, out var set))
+                    {
+                        set = new HashSet<int>();
+                        result[row.RelationId] = set;
+                    }
+                    set.Add(row.MasterCatId);
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// whether an existing relation takes part in a validation made for the given books: a relation
+        /// with no human evidence anywhere belongs to no book in particular, so it is always taken into
+        /// account (nothing says it was told by a different source); an attested one only when it is
+        /// attested in at least one of those books
+        /// </summary>
+        private static bool _InBookScope(Dictionary<int, HashSet<int>> booksByRelation, int relationId, ICollection<int> scopeMasterCatIds)
+        {
+            if (!booksByRelation.TryGetValue(relationId, out var books) || books.Count == 0)
+            {
+                return true;
+            }
+            return books.Any(b => scopeMasterCatIds.Contains(b));
+        }
+
+        /// <summary>
+        /// the books a family relation suggestion should be validated against: the book of the evidence
+        /// couplet it carries plus the books the relation it modifies is already attested in. Null (no
+        /// book in particular - validate against everything, the pre-evidence behaviour) when neither exists.
+        /// </summary>
+        private async Task<HashSet<int>> _ResolveValidationScopeAsync(int? evidencePoemId, int? existingRelationId)
+        {
+            var scope = new HashSet<int>();
+            if (evidencePoemId != null)
+            {
+                var masterCatId = await _GetMasterCatIdAsync(evidencePoemId.Value);
+                if (masterCatId != null)
+                {
+                    scope.Add(masterCatId.Value);
+                }
+            }
+            if (existingRelationId != null)
+            {
+                var books = await _GetRelationBooksAsync(new List<int> { existingRelationId.Value });
+                if (books.TryGetValue(existingRelationId.Value, out var existingBooks))
+                {
+                    scope.UnionWith(existingBooks);
+                }
+            }
+            return scope.Count == 0 ? null : scope;
         }
 
         /// <summary>
@@ -672,7 +746,7 @@ namespace RMuseum.Services.Implementation
         /// from simultaneously carrying two contradictory family relations (e.g. Parent AND Spouse,
         /// or Parent AND Sibling, between the very same two people)
         /// </summary>
-        private async Task<GanjoorPersonRelation> _GetConflictingRelationAsync(int person1Id, int person2Id, PersonRelationType proposedType, int? excludeRelationId)
+        private async Task<GanjoorPersonRelation> _GetConflictingRelationAsync(int person1Id, int person2Id, PersonRelationType proposedType, int? excludeRelationId, ICollection<int> scopeMasterCatIds = null)
         {
             var query = _context.GanjoorPersonRelations
                 .Include(r => r.Person1)
@@ -684,7 +758,13 @@ namespace RMuseum.Services.Implementation
             {
                 query = query.Where(r => r.Id != excludeRelationId.Value);
             }
-            return await query.FirstOrDefaultAsync();
+            var candidates = await query.ToListAsync();
+            if (scopeMasterCatIds != null && candidates.Count > 0)
+            {
+                var books = await _GetRelationBooksAsync(candidates.Select(r => r.Id).ToList());
+                candidates = candidates.Where(r => _InBookScope(books, r.Id, scopeMasterCatIds)).ToList();
+            }
+            return candidates.FirstOrDefault();
         }
 
         /// <summary>
@@ -739,7 +819,7 @@ namespace RMuseum.Services.Implementation
         /// (so it's still caught even if another suggestion was approved in the meantime, or the
         /// submission-time check is ever bypassed).
         /// </summary>
-        private async Task<string> _ValidateFamilyRelationAsync(int person1Id, int person2Id, PersonRelationType relationType, int? excludeRelationId, bool confirmedExtraParent = false)
+        private async Task<string> _ValidateFamilyRelationAsync(int person1Id, int person2Id, PersonRelationType relationType, int? excludeRelationId, bool confirmedExtraParent = false, ICollection<int> scopeMasterCatIds = null)
         {
             var duplicateRelation = await _GetDuplicateRelationAsync(person1Id, person2Id, relationType, excludeRelationId);
             if (duplicateRelation != null)
@@ -757,19 +837,52 @@ namespace RMuseum.Services.Implementation
 
             if (relationType == PersonRelationType.Parent && !confirmedExtraParent)
             {
-                var existingParentsCount = await _CountParentsAsync(person2Id, excludeRelationId);
+                var existingParentsCount = await _CountParentsAsync(person2Id, excludeRelationId, scopeMasterCatIds);
                 if (existingParentsCount >= 2)
                 {
-                    return "این نامبرده هم‌اکنون دو پدر/مادر ثبت‌شده دارد. اگر این سومی اشتباه است، نخست یکی از نسبت‌های پدر/مادری موجود را ویرایش یا حذف کنید؛ اگر عمداً یک پدر/مادر سوم (مثلاً بر اساس روایت دیگری) اضافه می‌کنید، گزینهٔ تأیید «سومین پدر/مادر» را علامت بزنید.";
+                    return (scopeMasterCatIds != null ? "این نامبرده در این کتاب (یا بدون ذکر کتاب) " : "این نامبرده ") + "هم‌اکنون دو پدر/مادر ثبت‌شده دارد. اگر این سومی اشتباه است، نخست یکی از نسبت‌های پدر/مادری موجود را ویرایش یا حذف کنید؛ اگر عمداً یک پدر/مادر سوم (مثلاً بر اساس روایت دیگری) اضافه می‌کنید، گزینهٔ تأیید «سومین پدر/مادر» را علامت بزنید.";
                 }
             }
 
-            var conflictingRelation = await _GetConflictingRelationAsync(person1Id, person2Id, relationType, excludeRelationId);
+            var conflictingRelation = await _GetConflictingRelationAsync(person1Id, person2Id, relationType, excludeRelationId, scopeMasterCatIds);
             if (conflictingRelation != null)
             {
-                return $"هم‌اکنون نسبت خویشاوندی دیگری بین «{conflictingRelation.Person1?.Name}» و «{conflictingRelation.Person2?.Name}» ثبت شده که با نوع جدید پیشنهادی در تناقض است. لطفاً نخست آن را ویرایش یا حذف کنید.";
+                return (scopeMasterCatIds != null ? "(در این کتاب یا بدون ذکر کتاب) " : "") + $"هم‌اکنون نسبت خویشاوندی دیگری بین «{conflictingRelation.Person1?.Name}» و «{conflictingRelation.Person2?.Name}» ثبت شده که با نوع جدید پیشنهادی در تناقض است. لطفاً نخست آن را ویرایش یا حذف کنید.";
             }
 
+            return null;
+        }
+
+        /// <summary>
+        /// validation for attaching evidence from a book to an existing relation that is not attested in
+        /// that book yet: from then on the relation takes part in that book's view, so it must not
+        /// conflict with what that book already says (a second relation type between the same two people,
+        /// or a third parent). Null if fine.
+        /// </summary>
+        private async Task<string> _ValidateRelationInBookAsync(GanjoorPersonRelation relation, int masterCatId, bool confirmedExtraParent)
+        {
+            var books = await _GetRelationBooksAsync(new List<int> { relation.Id });
+            if (books.TryGetValue(relation.Id, out var attestedIn) && attestedIn.Contains(masterCatId))
+            {
+                return null; // already part of this book, validated when it got there
+            }
+            return await _ValidateFamilyRelationInBookOnlyAsync(relation.Person1Id, relation.Person2Id, relation.RelationType, relation.Id, confirmedExtraParent, new HashSet<int> { masterCatId });
+        }
+
+        private async Task<string> _ValidateFamilyRelationInBookOnlyAsync(int person1Id, int person2Id, PersonRelationType relationType, int excludeRelationId, bool confirmedExtraParent, ICollection<int> scope)
+        {
+            if (relationType == PersonRelationType.Parent && !confirmedExtraParent)
+            {
+                if (await _CountParentsAsync(person2Id, excludeRelationId, scope) >= 2)
+                {
+                    return "این نامبرده در این کتاب (یا بدون ذکر کتاب) هم‌اکنون دو پدر/مادر ثبت‌شده دارد. اگر عمداً پدر/مادر سومی را در این کتاب اضافه می‌کنید، گزینهٔ تأیید «سومین پدر/مادر» را علامت بزنید.";
+                }
+            }
+            var conflictingRelation = await _GetConflictingRelationAsync(person1Id, person2Id, relationType, excludeRelationId, scope);
+            if (conflictingRelation != null)
+            {
+                return $"(در این کتاب یا بدون ذکر کتاب) هم‌اکنون نسبت خویشاوندی دیگری بین «{conflictingRelation.Person1?.Name}» و «{conflictingRelation.Person2?.Name}» ثبت شده که با این نسبت در تناقض است. لطفاً نخست آن را ویرایش یا حذف کنید، یا مستند آن را در کتاب خودش ثبت کنید.";
+            }
             return null;
         }
 
@@ -1401,7 +1514,8 @@ namespace RMuseum.Services.Implementation
                     (suggestion.Action == PersonRelationSuggestionAction.Add || suggestion.Action == PersonRelationSuggestionAction.Modify))
                 {
                     var excludeRelationId = suggestion.Action == PersonRelationSuggestionAction.Modify ? suggestion.ExistingRelationId : null;
-                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, excludeRelationId, suggestion.ConfirmedExtraParent);
+                    var validationScope = await _ResolveValidationScopeAsync(suggestion.EvidencePoemId, excludeRelationId);
+                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, excludeRelationId, suggestion.ConfirmedExtraParent, validationScope);
                     if (validationError != null)
                     {
                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, validationError);
@@ -1429,6 +1543,18 @@ namespace RMuseum.Services.Implementation
                     if (evidenceError != null)
                     {
                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, evidenceError);
+                    }
+                    if (suggestion.Action == PersonRelationSuggestionAction.AddEvidence && existingRelation != null && suggestion.EvidencePoemId != null)
+                    {
+                        var evidenceBook = await _GetMasterCatIdAsync(suggestion.EvidencePoemId.Value);
+                        if (evidenceBook != null)
+                        {
+                            var bookError = await _ValidateRelationInBookAsync(existingRelation, evidenceBook.Value, suggestion.ConfirmedExtraParent);
+                            if (bookError != null)
+                            {
+                                return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, bookError);
+                            }
+                        }
                     }
                 }
                 else if (suggestion.Action == PersonRelationSuggestionAction.RemoveEvidence)
@@ -1686,7 +1812,8 @@ namespace RMuseum.Services.Implementation
                                     // re-validated here (not just at submission time in
                                     // SuggestPersonRelationEditAsync) in case another suggestion
                                     // touching the same people/relations was approved in between
-                                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, null, suggestion.ConfirmedExtraParent);
+                                    var addScope = await _ResolveValidationScopeAsync(suggestion.EvidencePoemId, null);
+                                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, null, suggestion.ConfirmedExtraParent, addScope);
                                     if (validationError != null)
                                     {
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, validationError);
@@ -1729,7 +1856,8 @@ namespace RMuseum.Services.Implementation
                                     {
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "نسبت مورد نظر دیگر وجود ندارد.");
                                     }
-                                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, existing.Id, suggestion.ConfirmedExtraParent);
+                                    var modifyScope = await _ResolveValidationScopeAsync(suggestion.EvidencePoemId, existing.Id);
+                                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, existing.Id, suggestion.ConfirmedExtraParent, modifyScope);
                                     if (validationError != null)
                                     {
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, validationError);
@@ -1760,6 +1888,11 @@ namespace RMuseum.Services.Implementation
                                     if (masterCatId == null)
                                     {
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "دستهٔ اصلی این شعر مشخص نشد.");
+                                    }
+                                    var bookError = await _ValidateRelationInBookAsync(existing, masterCatId.Value, suggestion.ConfirmedExtraParent);
+                                    if (bookError != null)
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, bookError);
                                     }
                                     _context.GanjoorPersonRelationEvidences.Add(new GanjoorPersonRelationEvidence()
                                     {

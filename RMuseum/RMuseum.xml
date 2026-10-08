@@ -22778,7 +22778,7 @@
             layout() would then infinite-loop on when rendering that tree.
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._CountParentsAsync(System.Int32,System.Nullable{System.Int32})">
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._CountParentsAsync(System.Int32,System.Nullable{System.Int32},System.Collections.Generic.ICollection{System.Int32})">
             <summary>
             counts this child's distinct existing Parent-type edges (biological parents), optionally
             excluding one relation row by id - used to cap a person at two recorded parents, since
@@ -22786,7 +22786,28 @@
             silently drops any further ones with no error
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._GetConflictingRelationAsync(System.Int32,System.Int32,RMuseum.Models.Ganjoor.PersonRelationType,System.Nullable{System.Int32})">
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._GetRelationBooksAsync(System.Collections.Generic.List{System.Int32})">
+            <summary>
+            the master categories (books) in which each of these relations is attested by human-attached
+            evidence (inferred rows never count) - relations with no such evidence are absent from the result
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._InBookScope(System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.HashSet{System.Int32}},System.Int32,System.Collections.Generic.ICollection{System.Int32})">
+            <summary>
+            whether an existing relation takes part in a validation made for the given books: a relation
+            with no human evidence anywhere belongs to no book in particular, so it is always taken into
+            account (nothing says it was told by a different source); an attested one only when it is
+            attested in at least one of those books
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._ResolveValidationScopeAsync(System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            the books a family relation suggestion should be validated against: the book of the evidence
+            couplet it carries plus the books the relation it modifies is already attested in. Null (no
+            book in particular - validate against everything, the pre-evidence behaviour) when neither exists.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._GetConflictingRelationAsync(System.Int32,System.Int32,RMuseum.Models.Ganjoor.PersonRelationType,System.Nullable{System.Int32},System.Collections.Generic.ICollection{System.Int32})">
             <summary>
             returns an existing kinship edge between this unordered pair (if any), other than
             excludeRelationId, whose RelationType differs from proposedType - used to stop a pair
@@ -22808,7 +22829,7 @@
             same ordered pair, or either order for the symmetric types
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._ValidateFamilyRelationAsync(System.Int32,System.Int32,RMuseum.Models.Ganjoor.PersonRelationType,System.Nullable{System.Int32},System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._ValidateFamilyRelationAsync(System.Int32,System.Int32,RMuseum.Models.Ganjoor.PersonRelationType,System.Nullable{System.Int32},System.Boolean,System.Collections.Generic.ICollection{System.Int32})">
             <summary>
             runs every family-relation data-integrity check (self-reference is checked separately by
             the caller for Add) that applies to adding/changing a kinship edge of relationType between
@@ -22818,6 +22839,14 @@
             contradictory suggestion is rejected up front) and ModeratePersonRelationEditSuggestionAsync
             (so it's still caught even if another suggestion was approved in the meantime, or the
             submission-time check is ever bypassed).
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._ValidateRelationInBookAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelation,System.Int32,System.Boolean)">
+            <summary>
+            validation for attaching evidence from a book to an existing relation that is not attested in
+            that book yet: from then on the relation takes part in that book's view, so it must not
+            conflict with what that book already says (a second relation type between the same two people,
+            or a third parent). Null if fine.
             </summary>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorRelatedPersonService._symmetricAffiliationTypes">
