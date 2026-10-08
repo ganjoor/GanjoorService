@@ -411,9 +411,71 @@ namespace RMuseum.Services.Implementation
             await context.SaveChangesAsync();
 
             var suggestQuotes = await context.GanjoorQuotedPoems.Where(s => s.SuggestedById == userId).ToListAsync();
-            foreach(var suggestedQuote in suggestedPoetPhotos)
+            foreach (var suggestedQuote in suggestQuotes)
                 suggestedQuote.SuggestedById = deletedUserId;
-            context.UpdateRange(suggestedPoetPhotos);
+            context.UpdateRange(suggestQuotes);
+            await context.SaveChangesAsync();
+
+            var reviewedQuotes = await context.GanjoorQuotedPoems.Where(s => s.ReviewerUserId == userId).ToListAsync();
+            foreach (var reviewedQuote in reviewedQuotes)
+                reviewedQuote.ReviewerUserId = deletedUserId;
+            context.UpdateRange(reviewedQuotes);
+            await context.SaveChangesAsync();
+
+            //person edit suggestions (fields of a person): suggestions - pending ones included, so they stay in the
+            //moderation queue - and reviews go to the deleted-user account
+            var suggestedPersonEdits = await context.GanjoorPersonEditSuggestions.Where(c => c.UserId == userId).ToListAsync();
+            foreach (var suggestedPersonEdit in suggestedPersonEdits)
+                suggestedPersonEdit.UserId = deletedUserId;
+            context.UpdateRange(suggestedPersonEdits);
+            await context.SaveChangesAsync();
+
+            var reviewedPersonEdits = await context.GanjoorPersonEditSuggestions.Where(c => c.ReviewerUserId == userId).ToListAsync();
+            foreach (var reviewedPersonEdit in reviewedPersonEdits)
+                reviewedPersonEdit.ReviewerUserId = deletedUserId;
+            context.UpdateRange(reviewedPersonEdits);
+            await context.SaveChangesAsync();
+
+            //person relation / affiliation / relation evidence suggestions
+            var suggestedRelationEdits = await context.GanjoorPersonRelationEditSuggestions.Where(c => c.UserId == userId).ToListAsync();
+            foreach (var suggestedRelationEdit in suggestedRelationEdits)
+                suggestedRelationEdit.UserId = deletedUserId;
+            context.UpdateRange(suggestedRelationEdits);
+            await context.SaveChangesAsync();
+
+            var reviewedRelationEdits = await context.GanjoorPersonRelationEditSuggestions.Where(c => c.ReviewerUserId == userId).ToListAsync();
+            foreach (var reviewedRelationEdit in reviewedRelationEdits)
+                reviewedRelationEdit.ReviewerUserId = deletedUserId;
+            context.UpdateRange(reviewedRelationEdits);
+            await context.SaveChangesAsync();
+
+            //evidence couplets attached to relations are public data: keep them, just change who added them
+            //(plain id column, no foreign key, but it should not point to a user who no longer exists)
+            var addedEvidences = await context.GanjoorPersonRelationEvidences.Where(e => e.AddedByUserId == userId).ToListAsync();
+            foreach (var addedEvidence in addedEvidences)
+                addedEvidence.AddedByUserId = deletedUserId;
+            context.UpdateRange(addedEvidences);
+            await context.SaveChangesAsync();
+
+            //pdf library links to ganjoor poems
+            var pdfGanjoorLinks = await context.PDFGanjoorLinks.Where(l => l.SuggestedById == userId).ToListAsync();
+            foreach (var pdfGanjoorLink in pdfGanjoorLinks)
+                pdfGanjoorLink.SuggestedById = deletedUserId;
+            context.UpdateRange(pdfGanjoorLinks);
+            await context.SaveChangesAsync();
+
+            var reviewedPdfGanjoorLinks = await context.PDFGanjoorLinks.Where(l => l.ReviewerId == userId).ToListAsync();
+            foreach (var reviewedPdfGanjoorLink in reviewedPdfGanjoorLinks)
+                reviewedPdfGanjoorLink.ReviewerId = deletedUserId;
+            context.UpdateRange(reviewedPdfGanjoorLinks);
+            await context.SaveChangesAsync();
+
+            //abuse reports on museum user notes: moderation items, keep them under the deleted-user account
+            //(the report row has a foreign key to the user that would otherwise block deletion)
+            var reportedUserNotes = await context.ReportedUserNotes.Where(r => r.ReporterId == userId).ToListAsync();
+            foreach (var reportedUserNote in reportedUserNotes)
+                reportedUserNote.ReporterId = deletedUserId;
+            context.UpdateRange(reportedUserNotes);
             await context.SaveChangesAsync();
 
             var visits = await context.GanjoorUserPoemVisits.Where(v => v.UserId == userId).ToListAsync();
@@ -432,6 +494,11 @@ namespace RMuseum.Services.Implementation
             context.RemoveRange(recitations);
             await context.SaveChangesAsync();
 
+            //the user's own recitation profiles (personal; recitations that used them were removed just above)
+            var recitationProfiles = await context.UserRecitationProfiles.Where(p => p.UserId == userId).ToListAsync();
+            context.RemoveRange(recitationProfiles);
+            await context.SaveChangesAsync();
+
             var ganjoorBookmarks = await context.GanjoorUserBookmarks.Where(b => b.UserId == userId).ToListAsync();
             context.RemoveRange(ganjoorBookmarks);
             await context.SaveChangesAsync();
@@ -440,6 +507,25 @@ namespace RMuseum.Services.Implementation
             var reportedRecitaions = await context.RecitationErrorReports.Where(r => r.ReporterId == userId).ToListAsync();
             context.RemoveRange(reportedRecitaions);
             await context.SaveChangesAsync();
+
+            //likes/dislikes the user gave to comments: personal, removed - and since the counters and the sort key of
+            //the rated comments are stored on the comments themselves they have to be recalculated afterwards
+            //(reactions on the user's own comments go away with those comments below)
+            var commentReactions = await context.GanjoorCommentReactions.Where(r => r.UserId == userId).ToListAsync();
+            var ratedCommentIds = commentReactions.Select(r => r.GanjoorCommentId).Distinct().ToList();
+            context.RemoveRange(commentReactions);
+            await context.SaveChangesAsync();
+            foreach (var ratedCommentId in ratedCommentIds)
+            {
+                var ratedComment = await context.GanjoorComments.Where(c => c.Id == ratedCommentId).SingleOrDefaultAsync();
+                if (ratedComment == null)
+                    continue;
+                ratedComment.LikeCount = await context.GanjoorCommentReactions.AsNoTracking().CountAsync(r => r.GanjoorCommentId == ratedCommentId && r.Value == 1);
+                ratedComment.DislikeCount = await context.GanjoorCommentReactions.AsNoTracking().CountAsync(r => r.GanjoorCommentId == ratedCommentId && r.Value == -1);
+                ratedComment.SortKey = RMuseum.Utils.GanjoorCommentRankingScoreCalculator.ComputeRankingScore(ratedComment.LikeCount, ratedComment.DislikeCount);
+                context.Update(ratedComment);
+                await context.SaveChangesAsync();
+            }
 
             var comments = await context.GanjoorComments.Where(c => c.UserId == userId).ToListAsync();
             foreach (var comment in comments)
