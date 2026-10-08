@@ -2683,9 +2683,9 @@ else
                 {
                     <tr id="existing-geotag-@tag.Id">
                         <td>@(Model.Couplets.Where(c => c.Item1 == tag.CoupletIndex).Select(c => c.Item2).FirstOrDefault() ?? "— کل شعر —")</td>
-                        <td>@(tag.Person != null ? tag.Person.Name : $"نامبرده #{tag.PersonId}")@(tag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? " (اشاره)" : "")</td>
+                        <td>@(tag.Person != null ? tag.Person.Name : $"نامبرده #{tag.PersonId}")<br /><small>نقش فعلی: @(tag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? "فقط اشاره" : "بخشی از داستان/متن")</small></td>
                         <td>
-                            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="requestChangeMentionOfExistingPersonTag(@tag.Id, @(tag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? 0 : 1), @(tag.CoupletIndex == 0 ? "null" : tag.CoupletIndex.ToString()), this)">@(tag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? "✏️ این نامبرده بخشی از داستان است" : "✏️ فقط اشاره است")</a>
+                            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="requestChangeMentionOfExistingPersonTag(@tag.Id, @(tag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? 0 : 1), @(tag.CoupletIndex == 0 ? "null" : tag.CoupletIndex.ToString()), this)">@(tag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? "✏️ تغییر نقش به: بخشی از داستان" : "✏️ تغییر نقش به: فقط اشاره")</a>
                             <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="requestDeleteExistingPersonTag(@tag.Id, this)">🗑️ درخواست حذف</a>
                         </td>
                     </tr>
