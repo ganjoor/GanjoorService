@@ -151,6 +151,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// people connected to this person by kinship or by an overlap-implying affiliation, with those
+        /// ties, for the "who could have been alive at the same time" view
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id:int}/contemporaries")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorContemporaryGraphViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetContemporaryGraphAsync(int id)
+        {
+            var res = await _personService.GetContemporaryGraphAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// suggest an edit to an already-approved person's own fields - any logged-in user, same as
         /// suggesting a poem correction. Goes into the pending queue; does not change the person.
         /// </summary>

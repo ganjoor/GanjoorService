@@ -64,6 +64,14 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorFamilyTreeViewModel>> GetFamilyTreeAsync(int rootId, int? masterCatId = null);
 
         /// <summary>
+        /// the people connected to this person by kinship or by an overlap-implying affiliation
+        /// (transitively), with those ties - input of the "who could have been alive at the same time" view
+        /// </summary>
+        /// <param name="rootId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorContemporaryGraphViewModel>> GetContemporaryGraphAsync(int rootId);
+
+        /// <summary>
         /// submit a suggested edit to an already-approved person's own fields - goes into the
         /// pending queue, does not change the person itself until a moderator approves it
         /// </summary>

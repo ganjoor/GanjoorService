@@ -269,6 +269,101 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// affiliation types that imply both people were alive at the same time (the premise of the
+        /// contemporaries view): every working/allied/hostile/companion tie, the explicit Contemporary
+        /// type, Killer (the killer was alive when the victim died) and Panegyrized (praise is
+        /// addressed to someone living). Deliberately left out - they say nothing reliable about
+        /// overlap: Successor (an heir can come long after), Satirized (satire can be posthumous), Other.
+        /// </summary>
+        public static readonly PersonAffiliationType[] OverlapAffiliationTypes = new[]
+        {
+            PersonAffiliationType.Minister, PersonAffiliationType.Advisor, PersonAffiliationType.Courtier,
+            PersonAffiliationType.Patron, PersonAffiliationType.Ally, PersonAffiliationType.Rival,
+            PersonAffiliationType.Servant, PersonAffiliationType.Companion, PersonAffiliationType.Panegyrized,
+            PersonAffiliationType.MilitaryCommander, PersonAffiliationType.Champion,
+            PersonAffiliationType.Contemporary, PersonAffiliationType.Killer,
+        };
+
+        /// <summary>
+        /// the people connected to this person by kinship or by an overlap-implying affiliation
+        /// (transitively), with those ties - input of the "who could have been alive at the same
+        /// time" view
+        /// </summary>
+        /// <param name="rootId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<GanjoorContemporaryGraphViewModel>> GetContemporaryGraphAsync(int rootId)
+        {
+            try
+            {
+                var rootExists = await _context.GanjoorRelatedPersons.AsNoTracking().Where(p => p.Id == rootId).AnyAsync();
+                if (!rootExists)
+                {
+                    return new RServiceResult<GanjoorContemporaryGraphViewModel>(null, "شخصیت پیدا نشد.");
+                }
+
+                var allKin = await _context.GanjoorPersonRelations.AsNoTracking().ToListAsync();
+                var types = OverlapAffiliationTypes;
+                var allAff = await _context.GanjoorPersonAffiliations.AsNoTracking()
+                    .Where(a => types.Contains(a.AffiliationType))
+                    .ToListAsync();
+
+                var neighbours = new Dictionary<int, List<int>>();
+                void Link(int a, int b)
+                {
+                    if (!neighbours.TryGetValue(a, out var la)) { la = new List<int>(); neighbours[a] = la; }
+                    la.Add(b);
+                    if (!neighbours.TryGetValue(b, out var lb)) { lb = new List<int>(); neighbours[b] = lb; }
+                    lb.Add(a);
+                }
+                foreach (var r in allKin) Link(r.Person1Id, r.Person2Id);
+                foreach (var a in allAff) Link(a.Person1Id, a.Person2Id);
+
+                var visited = new HashSet<int> { rootId };
+                var queue = new Queue<int>();
+                queue.Enqueue(rootId);
+                while (queue.Count > 0)
+                {
+                    var id = queue.Dequeue();
+                    if (!neighbours.TryGetValue(id, out var list)) continue;
+                    foreach (var other in list)
+                    {
+                        if (visited.Add(other)) queue.Enqueue(other);
+                    }
+                }
+
+                var persons = await _context.GanjoorRelatedPersons.AsNoTracking()
+                    .Where(p => visited.Contains(p.Id))
+                    .OrderBy(p => p.Id)
+                    .ToListAsync();
+
+                return new RServiceResult<GanjoorContemporaryGraphViewModel>(new GanjoorContemporaryGraphViewModel()
+                {
+                    RootId = rootId,
+                    Persons = persons,
+                    Kin = allKin.Where(r => visited.Contains(r.Person1Id))
+                        .Select(r => new GanjoorContemporaryKinTie()
+                        {
+                            Person1Id = r.Person1Id,
+                            Person2Id = r.Person2Id,
+                            RelationType = (int)r.RelationType,
+                            DegreeHint = r.DegreeHint,
+                        }).ToList(),
+                    Affiliations = allAff.Where(a => visited.Contains(a.Person1Id))
+                        .Select(a => new GanjoorContemporaryAffiliationTie()
+                        {
+                            Person1Id = a.Person1Id,
+                            Person2Id = a.Person2Id,
+                            AffiliationType = (int)a.AffiliationType,
+                        }).ToList(),
+                });
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorContemporaryGraphViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// get the whole connected kinship component reachable from this person
         /// </summary>
         /// <param name="rootId"></param>

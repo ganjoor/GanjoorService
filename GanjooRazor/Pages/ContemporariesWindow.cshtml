@@ -1,0 +1,48 @@
+@page "{id:int}"
+@model GanjooRazor.Pages.ContemporariesWindowModel
+@{
+    Layout = null;
+}
+@if (!string.IsNullOrEmpty(Model.LastError))
+{
+    <p>@Model.LastError</p>
+}
+else
+{
+    <div class="up-modal-contemporaries">
+        <h2>
+            هم‌عصران @(string.IsNullOrEmpty(Model.RootPerson.FamilyTreeCaption) ? Model.RootPerson.Name : Model.RootPerson.FamilyTreeCaption)
+            <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.RootPerson.Id)" class="up-btn up-btn--ghost up-btn--sm">مشاهدهٔ اطلاعات این شخصیت</a>
+        </h2>
+        <p class="up-hint"><small>
+            این نمودار بدون استفاده از سال تولد و مرگ، فقط از روی روابط خانوادگی و پیوندهای ثبت‌شده (رقیب، متحد، وزیر، قاتل، ...) برآورد می‌کند چه کسانی می‌توانسته‌اند هم‌زمان با این شخصیت زنده باشند.
+            نوار پررنگ یعنی «حتماً زنده»، نوار کم‌رنگ یعنی «بازهٔ ممکن». نتیجه به فرض‌های زیر بستگی دارد و تاریخ واقعی نیست.
+        </small></p>
+
+        <div class="ct-controls">
+            <label>حداکثر عمر (سال): <input type="number" id="ctw-max-life" value="100" min="20" max="2000" style="width:80px" /></label>
+            <label>حداقل سن والد هنگام تولد فرزند: <input type="number" id="ctw-min-age" value="15" min="1" max="100" style="width:70px" /></label>
+            <label><input type="checkbox" id="ctw-show-impossible" /> نمایش کسانی که هم‌عصر نبوده‌اند</label>
+            <span id="ctw-note" class="ct-note"></span>
+        </div>
+        <div class="ct-legend">
+            <span><i style="background:#7a4a2a"></i> این شخصیت</span>
+            <span><i style="background:#3d6b35"></i> قطعاً هم‌عصر</span>
+            <span><i style="background:#2f6fb0"></i> احتمالاً هم‌عصر</span>
+            <span><i style="background:#b5b5b5"></i> هم‌عصر نبوده</span>
+        </div>
+
+        <div id="ctw-container" style="width:100%;max-height:65vh;overflow:auto;border:1px solid #d8cdb8;border-radius:6px;background:#faf7f0;"></div>
+
+        <style>
+            .ct-controls { margin: 8px 0; font-size: 13px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+            .ct-note { color: #7a6a50; }
+            .ct-legend { margin: 4px 0 8px 0; font-size: 12px; }
+            .ct-legend span { margin-left: 14px; white-space: nowrap; }
+            .ct-legend i { display: inline-block; width: 22px; height: 8px; border-radius: 4px; margin-left: 4px; vertical-align: middle; }
+        </style>
+
+        <script type="application/json" id="ctw-data">@Html.Raw(Model.GraphDataJson)</script>
+        <input type="hidden" id="ctw-root-id" value="@Model.RootPerson.Id" />
+    </div>
+}
