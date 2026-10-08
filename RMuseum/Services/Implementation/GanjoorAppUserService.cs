@@ -249,28 +249,7 @@ namespace RMuseum.Services.Implementation
                         {
                             RMuseumDbContext context = _context as RMuseumDbContext;
                             var poemIdSet = await context.GanjoorComments.AsNoTracking().Where(c => c.UserId == userId).Select(c => c.PoemId).ToListAsync();
-                            foreach (var poemId in poemIdSet)
-                            {
-                                //await _ganjoorService.CacheCleanForPageById(poemId); /*had error in service initializtion, so done it in the dirty way*/
-
-                                var dbPage = await context.GanjoorPages.Where(p => p.Id == poemId).AsNoTracking().SingleOrDefaultAsync();
-                                if (dbPage != null)
-                                {
-                                    //CacheCleanForPageByUrl(dbPage.FullUrl);
-                                    var url = dbPage.FullUrl;
-                                    var cachKey = $"GanjoorService::GetPageByUrl::{url}";
-                                    if (_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
-                                    {
-                                        _memoryCache.Remove(cachKey);
-
-                                        var poemCachKey = $"GetPoemById({page.Id}, {true}, {false}, {true}, {true}, {true}, {true}, {true}, {true}, {true})";
-                                        if (_memoryCache.TryGetValue(poemCachKey, out GanjoorPoemCompleteViewModel p))
-                                        {
-                                            _memoryCache.Remove(poemCachKey);
-                                        }
-                                    }
-                                }
-                            }
+                            await _CleanPageCacheAsync(context, poemIdSet);
                         }
                     }
                     catch
@@ -288,6 +267,31 @@ namespace RMuseum.Services.Implementation
 
         }
 
+
+        /// <summary>
+        /// drops the cached page/poem view models of the given poems (comments are part of them), the
+        /// dirty way - _ganjoorService can't be used here (service initialization error)
+        /// </summary>
+        private async Task _CleanPageCacheAsync(RMuseumDbContext context, IEnumerable<int> poemIds)
+        {
+            foreach (var poemId in poemIds.Distinct())
+            {
+                var dbPage = await context.GanjoorPages.Where(p => p.Id == poemId).AsNoTracking().SingleOrDefaultAsync();
+                if (dbPage == null)
+                    continue;
+                var cachKey = $"GanjoorService::GetPageByUrl::{dbPage.FullUrl}";
+                if (_memoryCache.TryGetValue(cachKey, out GanjoorPageCompleteViewModel page))
+                {
+                    _memoryCache.Remove(cachKey);
+
+                    var poemCachKey = $"GetPoemById({page.Id}, {true}, {false}, {true}, {true}, {true}, {true}, {true}, {true}, {true})";
+                    if (_memoryCache.TryGetValue(poemCachKey, out GanjoorPoemCompleteViewModel p))
+                    {
+                        _memoryCache.Remove(poemCachKey);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// remove user data
@@ -520,6 +524,12 @@ namespace RMuseum.Services.Implementation
             //(reactions on the user's own comments go away with those comments below)
             var commentReactions = await context.GanjoorCommentReactions.Where(r => r.UserId == userId).ToListAsync();
             var ratedCommentIds = commentReactions.Select(r => r.GanjoorCommentId).Distinct().ToList();
+
+            //poems whose cached page shows this user's comments or the counters of comments the user rated -
+            //collected now, cleaned after everything below is done
+            var affectedPoemIds = await context.GanjoorComments.AsNoTracking()
+                .Where(c => c.UserId == userId || ratedCommentIds.Contains(c.Id))
+                .Select(c => c.PoemId).Distinct().ToListAsync();
             context.RemoveRange(commentReactions);
             await context.SaveChangesAsync();
             foreach (var ratedCommentId in ratedCommentIds)
@@ -539,6 +549,15 @@ namespace RMuseum.Services.Implementation
             {
                 //await _ganjoorService.DeleteMyComment(userId, comment.Id);/*had error in service initializtion, so done it in the dirty way*/
                 await _DeleteComment(context, comment.Id);
+            }
+
+            try
+            {
+                await _CleanPageCacheAsync(context, affectedPoemIds);
+            }
+            catch
+            {
+                //cache cleanup is best-effort: the user data itself is already removed
             }
 
             var userNotes = await context.UserNotes.Where(c => c.RAppUserId == userId).ToListAsync();
