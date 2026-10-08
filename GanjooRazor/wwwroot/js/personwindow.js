@@ -183,7 +183,21 @@
         }
     }
 
-    window.PersonWindow = { open: openPerson, close: closeModal };
+    // keeps only the relations/affiliations attested in the chosen book (master category id); rows with
+    // no evidence at all belong to no book and always stay (dimmed while a book is chosen)
+    function filterBook(bookId) {
+        var items = document.querySelectorAll('li[data-pw-books]');
+        for (var i = 0; i < items.length; i++) {
+            var li = items[i];
+            var raw = li.getAttribute('data-pw-books');
+            var books = raw ? raw.split(',') : [];
+            var visible = !bookId || books.length === 0 || books.indexOf(String(bookId)) >= 0;
+            li.style.display = visible ? '' : 'none';
+            li.style.opacity = (bookId && books.length === 0) ? '0.6' : '';
+        }
+    }
+
+    window.PersonWindow = { open: openPerson, close: closeModal, filterBook: filterBook };
     window.PeopleExplorer = { open: openExplorer, close: closeModal };
     window.FamilyTreeWindow = { open: openFamilyTree, close: closeModal };
     window.ContemporariesWindow = { open: openContemporaries, close: closeModal };

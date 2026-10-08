@@ -22637,6 +22637,12 @@
             <param name="updateUserInfo"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService._CleanPageCacheAsync(RMuseum.DbContext.RMuseumDbContext,System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            drops the cached page/poem view models of the given poems (comments are part of them), the
+            dirty way - _ganjoorService can't be used here (service initialization error)
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorAppUserService.RemoveUserData(System.Guid)">
             <summary>
             remove user data

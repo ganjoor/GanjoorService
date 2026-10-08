@@ -64,6 +64,26 @@ namespace GanjooRazor.Pages
             public List<GanjoorPersonRelationEvidenceInfo> Evidence { get; set; } = new List<GanjoorPersonRelationEvidenceInfo>();
         }
 
+        /// <summary>
+        /// books (master categories) that attest at least one of this person's relations or
+        /// affiliations - options of the "show only what this book says" filter
+        /// </summary>
+        public List<KeyValuePair<int, string>> EvidenceBooks =>
+            RelationRows.SelectMany(r => r.Evidence)
+                .Concat(AffiliationRows.SelectMany(r => r.Evidence))
+                .Where(e => !e.Inferred)
+                .GroupBy(e => e.MasterCatId)
+                .Select(g => new KeyValuePair<int, string>(g.Key, g.Select(e => e.MasterCatTitle).FirstOrDefault(t => !string.IsNullOrEmpty(t)) ?? g.Key.ToString()))
+                .OrderBy(kv => kv.Value)
+                .ToList();
+
+        /// <summary>
+        /// comma separated master category ids attesting the given evidence list (human evidence only) -
+        /// the data-books attribute the filter reads
+        /// </summary>
+        public static string BooksAttr(List<GanjoorPersonRelationEvidenceInfo> evidence) =>
+            string.Join(",", (evidence ?? new List<GanjoorPersonRelationEvidenceInfo>()).Where(e => !e.Inferred).Select(e => e.MasterCatId).Distinct());
+
         public class PersonAffiliationDisplayRow
         {
             /// <summary>

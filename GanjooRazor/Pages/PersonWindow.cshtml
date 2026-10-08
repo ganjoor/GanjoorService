@@ -48,6 +48,23 @@ else
             <p><a href="@Model.Person.WikiUrl" target="_blank" rel="noopener">صفحهٔ ویکی‌پدیا</a></p>
         }
 
+        @if (Model.EvidenceBooks.Count > 0)
+        {
+            <p class="pw-book-bar">
+                <label>
+                    فقط آنچه این کتاب می‌گوید:
+                    <select onchange="PersonWindow.filterBook(this.value)">
+                        <option value="">همهٔ کتاب‌ها</option>
+                        @foreach (var b in Model.EvidenceBooks)
+                        {
+                            <option value="@b.Key">@b.Value</option>
+                        }
+                    </select>
+                </label>
+                <small class="up-hint">مواردی که مستندی ندارند همچنان نمایش داده می‌شوند.</small>
+            </p>
+        }
+
         @if (Model.RelationRows.Count > 0)
         {
             <h3>
@@ -62,7 +79,7 @@ else
             <ul>
                 @foreach (var row in Model.RelationRows)
                 {
-                    <li>
+                    <li data-pw-books="@PersonWindowModel.BooksAttr(row.Evidence)">
                         @row.Label — <a href="javascript:void(0)" onclick="PersonWindow.open(@row.OtherPersonId)">@row.OtherPersonName</a>
                         @if (!string.IsNullOrEmpty(row.Note))
                         {
@@ -116,7 +133,7 @@ else
             <ul>
                 @foreach (var row in Model.AffiliationRows)
                 {
-                    <li>
+                    <li data-pw-books="@PersonWindowModel.BooksAttr(row.Evidence)">
                         @row.SentenceBeforeOtherName<a href="javascript:void(0)" onclick="PersonWindow.open(@row.OtherPersonId)">@row.OtherPersonName</a>@row.SentenceAfterOtherName
                         @if (!string.IsNullOrEmpty(row.Note))
                         {
