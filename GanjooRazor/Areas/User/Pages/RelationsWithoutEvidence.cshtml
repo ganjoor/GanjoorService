@@ -18,7 +18,30 @@
             default: return r.RelationType.ToString();
         }
     }
-    string personFilter = Model.PersonId.HasValue ? $"&personId={Model.PersonId.Value}" : "";
+    string AffiliationTypeName(PersonAffiliationType? t)
+    {
+        switch (t)
+        {
+            case PersonAffiliationType.Minister: return "وزیر/کارگزار (اول زیردست دوم)";
+            case PersonAffiliationType.Advisor: return "مشاور";
+            case PersonAffiliationType.Courtier: return "درباری/همراه";
+            case PersonAffiliationType.Patron: return "حامی";
+            case PersonAffiliationType.Ally: return "متحد";
+            case PersonAffiliationType.Rival: return "رقیب";
+            case PersonAffiliationType.Servant: return "خدمتگزار";
+            case PersonAffiliationType.Companion: return "همدم";
+            case PersonAffiliationType.Successor: return "جانشین";
+            case PersonAffiliationType.Panegyrized: return "مدح‌سرا و ممدوح";
+            case PersonAffiliationType.Satirized: return "هجوگو و هجوشده";
+            case PersonAffiliationType.MilitaryCommander: return "سردار";
+            case PersonAffiliationType.Champion: return "پهلوان";
+            case PersonAffiliationType.Contemporary: return "هم‌عصر";
+            case PersonAffiliationType.Killer: return "قاتل و کشته";
+            default: return "نوع دیگر";
+        }
+    }
+    string personFilter = (Model.PersonId.HasValue ? $"&personId={Model.PersonId.Value}" : "") + (Model.Affiliations ? "&affiliations=true" : "");
+    string kindWord = Model.Affiliations ? "وابستگی‌های غیرخویشاوندی" : "نسبت‌های خویشاوندی";
 }
 @if (!string.IsNullOrEmpty(Model.LastError))
 {
@@ -27,14 +50,18 @@
 else
 {
     <div class="up-page-header">
-        <h1>نسبت‌های خویشاوندی بدون مستند</h1>
+        <h1>@kindWord بدون مستند</h1>
     </div>
+    <p>
+        <a href="/User/RelationsWithoutEvidence@(Model.PersonId.HasValue ? "?personId=" + Model.PersonId.Value : "")" class="up-btn up-btn--sm @(Model.Affiliations ? "up-btn--ghost" : "")">نسبت‌های خویشاوندی</a>
+        <a href="/User/RelationsWithoutEvidence?affiliations=true@(Model.PersonId.HasValue ? "&personId=" + Model.PersonId.Value : "")" class="up-btn up-btn--sm @(Model.Affiliations ? "" : "up-btn--ghost")">وابستگی‌های غیرخویشاوندی</a>
+    </p>
     <p class="up-hint">
-        این نسبت‌ها هنوز مستندی (بیتی از یک شعر که آنها را بیان می‌کند) ندارند. برای هر مورد می‌توانید مستند پیشنهاد دهید؛ پس از تأیید مدیران ثبت می‌شود.
+        این موارد هنوز مستندی (بیتی از یک شعر که آنها را بیان می‌کند) ندارند. برای هر مورد می‌توانید مستند پیشنهاد دهید؛ پس از تأیید مدیران ثبت می‌شود.
         @Model.TotalCount.ToString("N0") مورد@(Model.PersonId.HasValue ? " برای این شخصیت" : "")
         @if (Model.PersonId.HasValue)
         {
-            <a href="/User/RelationsWithoutEvidence">نمایش همه</a>
+            <a href="/User/RelationsWithoutEvidence@(Model.Affiliations ? "?affiliations=true" : "")">نمایش همه</a>
         }
     </p>
 
@@ -53,10 +80,10 @@ else
                 <tr>
                     <td>@(Model.Skip + i + 1)</td>
                     <td><a href="javascript:void(0)" onclick="PersonWindow.open(@r.Person1Id)">@r.Person1Name</a></td>
-                    <td>@RelationTypeName(r)</td>
+                    <td>@(r.IsAffiliation ? AffiliationTypeName(r.AffiliationType) : RelationTypeName(r))</td>
                     <td><a href="javascript:void(0)" onclick="PersonWindow.open(@r.Person2Id)">@r.Person2Name</a></td>
                     <td>
-                        <a href="/User/SuggestPersonRelationEdit?relationId=@r.RelationId" class="up-btn up-btn--ghost up-btn--sm">افزودن مستند</a>
+                        <a href="/User/SuggestPersonRelationEdit?@(r.IsAffiliation ? "affiliationId" : "relationId")=@r.RelationId" class="up-btn up-btn--ghost up-btn--sm">افزودن مستند</a>
                         @if (r.PendingEvidenceSuggestions > 0)
                         {
                             <small>(@r.PendingEvidenceSuggestions پیشنهاد در انتظار بررسی)</small>

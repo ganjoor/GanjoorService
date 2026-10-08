@@ -203,5 +203,16 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// number of evidence suggestions for this relation still waiting for review
         /// </summary>
         public int PendingEvidenceSuggestions { get; set; }
+
+        /// <summary>
+        /// true when this row is a non-family affiliation (then RelationId is the affiliation's id and
+        /// AffiliationType is set; RelationType is meaningless)
+        /// </summary>
+        public bool IsAffiliation { get; set; }
+
+        /// <summary>
+        /// the affiliation's type when IsAffiliation
+        /// </summary>
+        public PersonAffiliationType? AffiliationType { get; set; }
     }
 }

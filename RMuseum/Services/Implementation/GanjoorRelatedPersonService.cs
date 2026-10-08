@@ -283,11 +283,42 @@ namespace RMuseum.Services.Implementation
         /// <param name="skip"></param>
         /// <param name="take"></param>
         /// <param name="personId">only relations touching this person</param>
+        /// <param name="affiliations">list non-family affiliations without evidence instead of kinship relations</param>
         /// <returns>the page of rows and the total number of matching relations</returns>
-        public async Task<RServiceResult<(GanjoorRelationWithoutEvidence[] Rows, int TotalCount)>> GetRelationsWithoutEvidenceAsync(int skip, int take, int? personId)
+        public async Task<RServiceResult<(GanjoorRelationWithoutEvidence[] Rows, int TotalCount)>> GetRelationsWithoutEvidenceAsync(int skip, int take, int? personId, bool affiliations = false)
         {
             try
             {
+                if (affiliations)
+                {
+                    var affQuery = _context.GanjoorPersonAffiliations.AsNoTracking()
+                        .Where(a => !_context.GanjoorPersonAffiliationEvidences.Any(e => e.AffiliationId == a.Id));
+                    if (personId.HasValue)
+                    {
+                        affQuery = affQuery.Where(a => a.Person1Id == personId.Value || a.Person2Id == personId.Value);
+                    }
+
+                    int affTotal = await affQuery.CountAsync();
+                    var affRows = await affQuery
+                        .OrderBy(a => a.Id)
+                        .Skip(Math.Max(skip, 0))
+                        .Take(Math.Clamp(take, 1, 200))
+                        .Select(a => new GanjoorRelationWithoutEvidence()
+                        {
+                            RelationId = a.Id,
+                            IsAffiliation = true,
+                            AffiliationType = a.AffiliationType,
+                            Person1Id = a.Person1Id,
+                            Person1Name = a.Person1.Name,
+                            Person2Id = a.Person2Id,
+                            Person2Name = a.Person2.Name,
+                            PendingEvidenceSuggestions = _context.GanjoorPersonRelationEditSuggestions
+                                .Count(s => !s.Reviewed && s.ExistingAffiliationId == a.Id && s.Action == PersonRelationSuggestionAction.AddEvidence),
+                        })
+                        .ToArrayAsync();
+                    return new RServiceResult<(GanjoorRelationWithoutEvidence[] Rows, int TotalCount)>((affRows, affTotal));
+                }
+
                 var query = _context.GanjoorPersonRelations.AsNoTracking()
                     .Where(r => !_context.GanjoorPersonRelationEvidences.Any(e => e.RelationId == r.Id && !e.Inferred));
                 if (personId.HasValue)

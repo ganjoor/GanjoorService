@@ -157,14 +157,15 @@ namespace RMuseum.Controllers
         /// <param name="skip"></param>
         /// <param name="take"></param>
         /// <param name="personId">only relations touching this person</param>
+        /// <param name="affiliations">true to list non-family affiliations without evidence instead</param>
         /// <returns></returns>
         [HttpGet("relations/withoutevidence")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorRelationWithoutEvidence[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetRelationsWithoutEvidenceAsync(int skip = 0, int take = 50, int? personId = null)
+        public async Task<IActionResult> GetRelationsWithoutEvidenceAsync(int skip = 0, int take = 50, int? personId = null, bool affiliations = false)
         {
-            var res = await _personService.GetRelationsWithoutEvidenceAsync(skip, take, personId);
+            var res = await _personService.GetRelationsWithoutEvidenceAsync(skip, take, personId, affiliations);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
 

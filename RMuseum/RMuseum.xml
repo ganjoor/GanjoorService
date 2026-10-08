@@ -2910,7 +2910,7 @@
             <param name="masterCatId">optional master category (book) id: when given, each edge is labelled attested / otherBook / unattested / contradicted relative to that book</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetRelationsWithoutEvidenceAsync(System.Int32,System.Int32,System.Nullable{System.Int32})">
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetRelationsWithoutEvidenceAsync(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean)">
             <summary>
             kinship relations that have no human-attached evidence couplet yet - the worklist for
             contributors adding evidence. Paging info is returned in the paging-headers header.
@@ -2918,6 +2918,7 @@
             <param name="skip"></param>
             <param name="take"></param>
             <param name="personId">only relations touching this person</param>
+            <param name="affiliations">true to list non-family affiliations without evidence instead</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetContemporaryGraphAsync(System.Int32)">
@@ -14360,6 +14361,17 @@
             number of evidence suggestions for this relation still waiting for review
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationWithoutEvidence.IsAffiliation">
+            <summary>
+            true when this row is a non-family affiliation (then RelationId is the affiliation's id and
+            AffiliationType is set; RelationType is meaningless)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationWithoutEvidence.AffiliationType">
+            <summary>
+            the affiliation's type when IsAffiliation
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel">
             <summary>
             a more complete GanjoorPoem View Model
@@ -19224,7 +19236,7 @@
             <param name="rootId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetRelationsWithoutEvidenceAsync(System.Int32,System.Int32,System.Nullable{System.Int32})">
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetRelationsWithoutEvidenceAsync(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean)">
             <summary>
             kinship relations with no human-attached evidence couplet - the worklist for adding evidence
             </summary>
@@ -22869,7 +22881,7 @@
             contradicted (multiple marriages are normal; ancestry has no exclusivity to test).
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetRelationsWithoutEvidenceAsync(System.Int32,System.Int32,System.Nullable{System.Int32})">
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetRelationsWithoutEvidenceAsync(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean)">
             <summary>
             kinship relations with no human-attached evidence couplet (the worklist for adding evidence),
             oldest first
@@ -22877,6 +22889,7 @@
             <param name="skip"></param>
             <param name="take"></param>
             <param name="personId">only relations touching this person</param>
+            <param name="affiliations">list non-family affiliations without evidence instead of kinship relations</param>
             <returns>the page of rows and the total number of matching relations</returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorRelatedPersonService.OverlapAffiliationTypes">

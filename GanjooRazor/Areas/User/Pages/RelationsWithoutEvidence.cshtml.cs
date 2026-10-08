@@ -34,7 +34,12 @@ namespace GanjooRazor.Areas.User.Pages
 
         public int? PersonId { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int skip = 0, int? personId = null)
+        /// <summary>
+        /// listing non-family affiliations instead of kinship relations
+        /// </summary>
+        public bool Affiliations { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(int skip = 0, int? personId = null, bool affiliations = false)
         {
             InitializeCommonPageState();
 
@@ -45,8 +50,9 @@ namespace GanjooRazor.Areas.User.Pages
 
             Skip = Math.Max(skip, 0);
             PersonId = personId;
+            Affiliations = affiliations;
 
-            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/people/relations/withoutevidence?skip={Skip}&take={PageSize}" + (personId.HasValue ? $"&personId={personId.Value}" : ""));
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/people/relations/withoutevidence?skip={Skip}&take={PageSize}" + (personId.HasValue ? $"&personId={personId.Value}" : "") + (affiliations ? "&affiliations=true" : ""));
             if (!response.IsSuccessStatusCode)
             {
                 LastError = await ReadErrorMessageAsync(response);

@@ -78,7 +78,7 @@ namespace RMuseum.Services
         /// <param name="take"></param>
         /// <param name="personId">only relations touching this person</param>
         /// <returns></returns>
-        Task<RServiceResult<(GanjoorRelationWithoutEvidence[] Rows, int TotalCount)>> GetRelationsWithoutEvidenceAsync(int skip, int take, int? personId);
+        Task<RServiceResult<(GanjoorRelationWithoutEvidence[] Rows, int TotalCount)>> GetRelationsWithoutEvidenceAsync(int skip, int take, int? personId, bool affiliations = false);
 
         /// <summary>
         /// submit a suggested edit to an already-approved person's own fields - goes into the
