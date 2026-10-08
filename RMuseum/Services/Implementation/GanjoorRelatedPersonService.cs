@@ -269,6 +269,52 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// kinship relations with no human-attached evidence couplet (the worklist for adding evidence),
+        /// oldest first
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <param name="personId">only relations touching this person</param>
+        /// <returns>the page of rows and the total number of matching relations</returns>
+        public async Task<RServiceResult<(GanjoorRelationWithoutEvidence[] Rows, int TotalCount)>> GetRelationsWithoutEvidenceAsync(int skip, int take, int? personId)
+        {
+            try
+            {
+                var query = _context.GanjoorPersonRelations.AsNoTracking()
+                    .Where(r => !_context.GanjoorPersonRelationEvidences.Any(e => e.RelationId == r.Id && !e.Inferred));
+                if (personId.HasValue)
+                {
+                    query = query.Where(r => r.Person1Id == personId.Value || r.Person2Id == personId.Value);
+                }
+
+                int total = await query.CountAsync();
+                var rows = await query
+                    .OrderBy(r => r.Id)
+                    .Skip(Math.Max(skip, 0))
+                    .Take(Math.Clamp(take, 1, 200))
+                    .Select(r => new GanjoorRelationWithoutEvidence()
+                    {
+                        RelationId = r.Id,
+                        Person1Id = r.Person1Id,
+                        Person1Name = r.Person1.Name,
+                        Person2Id = r.Person2Id,
+                        Person2Name = r.Person2.Name,
+                        RelationType = r.RelationType,
+                        DegreeHint = r.DegreeHint,
+                        PendingEvidenceSuggestions = _context.GanjoorPersonRelationEditSuggestions
+                            .Count(s => !s.Reviewed && s.ExistingRelationId == r.Id && s.Action == PersonRelationSuggestionAction.AddEvidence),
+                    })
+                    .ToArrayAsync();
+
+                return new RServiceResult<(GanjoorRelationWithoutEvidence[] Rows, int TotalCount)>((rows, total));
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<(GanjoorRelationWithoutEvidence[] Rows, int TotalCount)>((null, 0), exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// affiliation types that imply both people were alive at the same time (the premise of the
         /// contemporaries view): every working/allied/hostile/companion tie, the explicit Contemporary
         /// type, Killer (the killer was alive when the victim died) and Panegyrized (praise is

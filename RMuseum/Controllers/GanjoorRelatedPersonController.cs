@@ -151,6 +151,40 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// kinship relations that have no human-attached evidence couplet yet - the worklist for
+        /// contributors adding evidence. Paging info is returned in the paging-headers header.
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <param name="personId">only relations touching this person</param>
+        /// <returns></returns>
+        [HttpGet("relations/withoutevidence")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorRelationWithoutEvidence[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetRelationsWithoutEvidenceAsync(int skip = 0, int take = 50, int? personId = null)
+        {
+            var res = await _personService.GetRelationsWithoutEvidenceAsync(skip, take, personId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+
+            HttpContext.Response.Headers.Append("paging-headers",
+                JsonConvert.SerializeObject(
+                    new PaginationMetadata()
+                    {
+                        totalCount = res.Result.TotalCount,
+                        pageSize = take,
+                        currentPage = -1,
+                        hasNextPage = skip + take < res.Result.TotalCount,
+                        hasPreviousPage = skip > 0,
+                        totalPages = -1
+                    }
+                    )
+                );
+            return Ok(res.Result.Rows);
+        }
+
+        /// <summary>
         /// people connected to this person by kinship or by an overlap-implying affiliation, with those
         /// ties, for the "who could have been alive at the same time" view
         /// </summary>

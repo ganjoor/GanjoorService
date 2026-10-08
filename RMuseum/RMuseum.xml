@@ -2910,6 +2910,16 @@
             <param name="masterCatId">optional master category (book) id: when given, each edge is labelled attested / otherBook / unattested / contradicted relative to that book</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetRelationsWithoutEvidenceAsync(System.Int32,System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            kinship relations that have no human-attached evidence couplet yet - the worklist for
+            contributors adding evidence. Paging info is returned in the paging-headers header.
+            </summary>
+            <param name="skip"></param>
+            <param name="take"></param>
+            <param name="personId">only relations touching this person</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetContemporaryGraphAsync(System.Int32)">
             <summary>
             people connected to this person by kinship or by an overlap-implying affiliation, with those
@@ -14153,6 +14163,52 @@
             true if the subject person is Person1 in the underlying GanjoorPersonAffiliation row
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationWithoutEvidence">
+            <summary>
+            a kinship relation that has no human-attached evidence couplet yet (inferred rows do not count) -
+            one row of the "relations without evidence" worklist
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationWithoutEvidence.RelationId">
+            <summary>
+            relation id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationWithoutEvidence.Person1Id">
+            <summary>
+            Person1 id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationWithoutEvidence.Person1Name">
+            <summary>
+            Person1 name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationWithoutEvidence.Person2Id">
+            <summary>
+            Person2 id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationWithoutEvidence.Person2Name">
+            <summary>
+            Person2 name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationWithoutEvidence.RelationType">
+            <summary>
+            relation type
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationWithoutEvidence.DegreeHint">
+            <summary>
+            degree hint (ancestor relations)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationWithoutEvidence.PendingEvidenceSuggestions">
+            <summary>
+            number of evidence suggestions for this relation still waiting for review
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCompleteViewModel">
             <summary>
             a more complete GanjoorPoem View Model
@@ -19017,6 +19073,15 @@
             <param name="rootId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetRelationsWithoutEvidenceAsync(System.Int32,System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            kinship relations with no human-attached evidence couplet - the worklist for adding evidence
+            </summary>
+            <param name="skip"></param>
+            <param name="take"></param>
+            <param name="personId">only relations touching this person</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.SuggestPersonEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion)">
             <summary>
             submit a suggested edit to an already-approved person's own fields - goes into the
@@ -22646,6 +22711,16 @@
             attested parents here and this one is neither. Sibling/Spouse/Ancestor edges are never
             contradicted (multiple marriages are normal; ancestry has no exclusivity to test).
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetRelationsWithoutEvidenceAsync(System.Int32,System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            kinship relations with no human-attached evidence couplet (the worklist for adding evidence),
+            oldest first
+            </summary>
+            <param name="skip"></param>
+            <param name="take"></param>
+            <param name="personId">only relations touching this person</param>
+            <returns>the page of rows and the total number of matching relations</returns>
         </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorRelatedPersonService.OverlapAffiliationTypes">
             <summary>

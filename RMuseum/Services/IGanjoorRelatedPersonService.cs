@@ -72,6 +72,15 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorContemporaryGraphViewModel>> GetContemporaryGraphAsync(int rootId);
 
         /// <summary>
+        /// kinship relations with no human-attached evidence couplet - the worklist for adding evidence
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <param name="personId">only relations touching this person</param>
+        /// <returns></returns>
+        Task<RServiceResult<(GanjoorRelationWithoutEvidence[] Rows, int TotalCount)>> GetRelationsWithoutEvidenceAsync(int skip, int take, int? personId);
+
+        /// <summary>
         /// submit a suggested edit to an already-approved person's own fields - goes into the
         /// pending queue, does not change the person itself until a moderator approves it
         /// </summary>

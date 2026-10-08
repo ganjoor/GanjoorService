@@ -152,4 +152,51 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// </summary>
         public bool SubjectIsPerson1 { get; set; }
     }
+
+    /// <summary>
+    /// a kinship relation that has no human-attached evidence couplet yet (inferred rows do not count) -
+    /// one row of the "relations without evidence" worklist
+    /// </summary>
+    public class GanjoorRelationWithoutEvidence
+    {
+        /// <summary>
+        /// relation id
+        /// </summary>
+        public int RelationId { get; set; }
+
+        /// <summary>
+        /// Person1 id
+        /// </summary>
+        public int Person1Id { get; set; }
+
+        /// <summary>
+        /// Person1 name
+        /// </summary>
+        public string Person1Name { get; set; }
+
+        /// <summary>
+        /// Person2 id
+        /// </summary>
+        public int Person2Id { get; set; }
+
+        /// <summary>
+        /// Person2 name
+        /// </summary>
+        public string Person2Name { get; set; }
+
+        /// <summary>
+        /// relation type
+        /// </summary>
+        public PersonRelationType RelationType { get; set; }
+
+        /// <summary>
+        /// degree hint (ancestor relations)
+        /// </summary>
+        public int? DegreeHint { get; set; }
+
+        /// <summary>
+        /// number of evidence suggestions for this relation still waiting for review
+        /// </summary>
+        public int PendingEvidenceSuggestions { get; set; }
+    }
 }
