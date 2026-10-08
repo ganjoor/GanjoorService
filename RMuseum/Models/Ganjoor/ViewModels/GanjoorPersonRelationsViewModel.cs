@@ -151,6 +151,11 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// true if the subject person is Person1 in the underlying GanjoorPersonAffiliation row
         /// </summary>
         public bool SubjectIsPerson1 { get; set; }
+
+        /// <summary>
+        /// optional couplets attesting this tie (see GanjoorPersonAffiliationEvidence), empty if none
+        /// </summary>
+        public List<GanjoorPersonRelationEvidenceInfo> Evidence { get; set; }
     }
 
     /// <summary>

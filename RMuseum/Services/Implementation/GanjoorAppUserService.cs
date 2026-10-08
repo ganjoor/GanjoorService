@@ -457,6 +457,13 @@ namespace RMuseum.Services.Implementation
             context.UpdateRange(addedEvidences);
             await context.SaveChangesAsync();
 
+            //same for evidence couplets attached to affiliations
+            var addedAffiliationEvidences = await context.GanjoorPersonAffiliationEvidences.Where(e => e.AddedByUserId == userId).ToListAsync();
+            foreach (var addedAffiliationEvidence in addedAffiliationEvidences)
+                addedAffiliationEvidence.AddedByUserId = deletedUserId;
+            context.UpdateRange(addedAffiliationEvidences);
+            await context.SaveChangesAsync();
+
             //pdf library links to ganjoor poems
             var pdfGanjoorLinks = await context.PDFGanjoorLinks.Where(l => l.SuggestedById == userId).ToListAsync();
             foreach (var pdfGanjoorLink in pdfGanjoorLinks)

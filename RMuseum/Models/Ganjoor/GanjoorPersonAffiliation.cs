@@ -46,5 +46,12 @@ namespace RMuseum.Models.Ganjoor
         /// free-text note (e.g. sourcing/reasoning, or what the tie actually is when AffiliationType is Other)
         /// </summary>
         public string Note { get; set; }
+
+        /// <summary>
+        /// optional couplets attesting this tie, filled when read through the service (not a mapped column;
+        /// the stored rows are GanjoorPersonAffiliationEvidence)
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+        public System.Collections.Generic.List<ViewModels.GanjoorPersonRelationEvidenceInfo> Evidence { get; set; }
     }
 }

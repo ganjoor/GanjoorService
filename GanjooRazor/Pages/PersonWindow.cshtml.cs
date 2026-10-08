@@ -83,6 +83,11 @@ namespace GanjooRazor.Pages
             public int OtherPersonId { get; set; }
             public string OtherPersonName { get; set; }
             public string Note { get; set; }
+
+            /// <summary>
+            /// optional couplets attesting this affiliation
+            /// </summary>
+            public List<GanjoorPersonRelationEvidenceInfo> Evidence { get; set; } = new List<GanjoorPersonRelationEvidenceInfo>();
         }
 
         private static string RelationLabel(GanjoorPersonRelationInfo r)
@@ -182,6 +187,7 @@ namespace GanjooRazor.Pages
                     OtherPersonId = a.OtherPersonId,
                     OtherPersonName = a.OtherPersonName,
                     Note = a.Note,
+                    Evidence = a.Evidence ?? new List<GanjoorPersonRelationEvidenceInfo>(),
                 });
             }
 

@@ -200,6 +200,19 @@ namespace RMuseum.DbContext
             builder.Entity<GanjoorPersonRelationEvidence>()
                 .HasIndex(e => e.MasterCatId);
 
+            builder.Entity<GanjoorPersonAffiliationEvidence>()
+                .HasOne(e => e.Affiliation)
+                .WithMany()
+                .HasForeignKey(e => e.AffiliationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<GanjoorPersonAffiliationEvidence>()
+                .HasIndex(e => new { e.AffiliationId, e.PoemId, e.CoupletIndex })
+                .IsUnique();
+
+            builder.Entity<GanjoorPersonAffiliationEvidence>()
+                .HasIndex(e => e.MasterCatId);
+
             builder.Entity<GanjoorUserBookmark>()
                 .HasIndex(b => new { b.UserId, b.PoemId, b.CoupletIndex });
 
@@ -681,6 +694,11 @@ namespace RMuseum.DbContext
         /// poem couplets attesting kinship relations (per-book family tree versions) - see GanjoorPersonRelationEvidence
         /// </summary>
         public DbSet<GanjoorPersonRelationEvidence> GanjoorPersonRelationEvidences { get; set; }
+
+        /// <summary>
+        /// poem couplets attesting non-family affiliations - see GanjoorPersonAffiliationEvidence
+        /// </summary>
+        public DbSet<GanjoorPersonAffiliationEvidence> GanjoorPersonAffiliationEvidences { get; set; }
 
         /// <summary>
         /// Books (PDF Library)

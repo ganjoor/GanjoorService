@@ -4142,6 +4142,11 @@
             poem couplets attesting kinship relations (per-book family tree versions) - see GanjoorPersonRelationEvidence
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPersonAffiliationEvidences">
+            <summary>
+            poem couplets attesting non-family affiliations - see GanjoorPersonAffiliationEvidence
+            </summary>
+        </member>
         <member name="P:RMuseum.DbContext.RMuseumDbContext.Books">
             <summary>
             Books (PDF Library)
@@ -5071,6 +5076,18 @@
             <inheritdoc />
         </member>
         <member name="M:RMuseum.Migrations.AddPersonRelationEvidence.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.AddPersonAffiliationEvidence">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonAffiliationEvidence.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonAffiliationEvidence.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonAffiliationEvidence.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -9489,6 +9506,65 @@
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliation.Note">
             <summary>
             free-text note (e.g. sourcing/reasoning, or what the tie actually is when AffiliationType is Other)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliation.Evidence">
+            <summary>
+            optional couplets attesting this tie, filled when read through the service (not a mapped column;
+            the stored rows are GanjoorPersonAffiliationEvidence)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPersonAffiliationEvidence">
+            <summary>
+            one piece of (optional) evidence for a GanjoorPersonAffiliation: a specific couplet of a
+            specific poem that states or implies the tie (e.g. a poem saying who killed whom).
+            Same idea as GanjoorPersonRelationEvidence; PoemId/MasterCatId are plain ints (no FK) and
+            CoupletText is a snapshot so re-importing poems never blocks or erases evidence.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliationEvidence.Id">
+            <summary>
+            record id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliationEvidence.AffiliationId">
+            <summary>
+            the affiliation this evidence supports (deleting the affiliation deletes its evidence)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliationEvidence.Affiliation">
+            <summary>
+            affiliation (navigation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliationEvidence.PoemId">
+            <summary>
+            poem the couplet belongs to (not an FK)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliationEvidence.CoupletIndex">
+            <summary>
+            couplet index inside the poem (0-based)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliationEvidence.CoupletText">
+            <summary>
+            snapshot of the couplet text at the time the evidence was added
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliationEvidence.MasterCatId">
+            <summary>
+            the poem's master category (see GanjoorPersonRelationEvidence.MasterCatId)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliationEvidence.AddedByUserId">
+            <summary>
+            user who suggested this evidence
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonAffiliationEvidence.DateAdded">
+            <summary>
+            date added
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion">
@@ -14161,6 +14237,11 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonAffiliationInfo.SubjectIsPerson1">
             <summary>
             true if the subject person is Person1 in the underlying GanjoorPersonAffiliation row
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonAffiliationInfo.Evidence">
+            <summary>
+            optional couplets attesting this tie (see GanjoorPersonAffiliationEvidence), empty if none
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationWithoutEvidence">
@@ -22926,7 +23007,7 @@
             the label under which relation evidence from this poem is grouped. Null if the poem is unknown.
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._ValidateAndFillEvidenceAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion,System.Nullable{System.Int32})">
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._ValidateAndFillEvidenceAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion,System.Nullable{System.Int32},System.Nullable{System.Int32})">
             <summary>
             validates the evidence couplet carried by a suggestion (poem exists, couplet exists, not
             already attached to the relation) and fills in its server-side text snapshot. Returns an

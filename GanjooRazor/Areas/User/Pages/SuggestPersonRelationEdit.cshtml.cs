@@ -176,7 +176,7 @@ namespace GanjooRazor.Areas.User.Pages
             Suggestion.Kind = Kind;
             // evidence picked but the action radio left on its default (Modify): the person clearly
             // meant to add evidence - a Modify would silently drop it and change nothing
-            if (Kind == PersonRelationSuggestionKind.Family && (string.IsNullOrEmpty(Action) || Action == "Modify")
+            if ((string.IsNullOrEmpty(Action) || Action == "Modify")
                 && Suggestion.EvidencePoemId != null && Suggestion.EvidenceCoupletIndex != null)
             {
                 Action = "AddEvidence";
@@ -185,8 +185,8 @@ namespace GanjooRazor.Areas.User.Pages
             Suggestion.Action = Action switch
             {
                 "Remove" => PersonRelationSuggestionAction.Remove,
-                "AddEvidence" when Kind == PersonRelationSuggestionKind.Family => PersonRelationSuggestionAction.AddEvidence,
-                "RemoveEvidence" when Kind == PersonRelationSuggestionKind.Family => PersonRelationSuggestionAction.RemoveEvidence,
+                "AddEvidence" => PersonRelationSuggestionAction.AddEvidence,
+                "RemoveEvidence" => PersonRelationSuggestionAction.RemoveEvidence,
                 _ => PersonRelationSuggestionAction.Modify,
             };
             if (Kind == PersonRelationSuggestionKind.Affiliation)

@@ -183,7 +183,7 @@ namespace GanjooRazor.Areas.User.Pages
                 ConfirmedExtraParent = ConfirmedExtraParent,
             };
 
-            if (RelationKindGroup != "affiliation" && EvidencePoemId != null && EvidenceCoupletIndex != null)
+            if (EvidencePoemId != null && EvidenceCoupletIndex != null)
             {
                 suggestion.EvidencePoemId = EvidencePoemId;
                 suggestion.EvidenceCoupletIndex = EvidenceCoupletIndex;

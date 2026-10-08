@@ -129,8 +129,16 @@ namespace RMuseum.Services.Implementation
                     .Where(a => a.Person1Id == id || a.Person2Id == id)
                     .ToListAsync();
 
+                var affiliationIds = affiliationRows.Select(a => a.Id).ToList();
+                var affiliationEvidenceRows = await _context.GanjoorPersonAffiliationEvidences.AsNoTracking()
+                    .Where(e => affiliationIds.Contains(e.AffiliationId))
+                    .OrderBy(e => e.Id)
+                    .ToListAsync();
+                var affiliationEvidenceCatTitles = await _GetCatTitlesAsync(affiliationEvidenceRows.Select(e => e.MasterCatId).Distinct().ToList());
+
                 var affiliations = affiliationRows.Select(a => new GanjoorPersonAffiliationInfo()
                 {
+                    Evidence = affiliationEvidenceRows.Where(e => e.AffiliationId == a.Id).Select(e => _ToEvidenceInfo(e, affiliationEvidenceCatTitles)).ToList(),
                     Id = a.Id,
                     OtherPersonId = a.Person1Id == id ? a.Person2Id : a.Person1Id,
                     OtherPersonName = a.Person1Id == id ? a.Person2.Name : a.Person1.Name,
@@ -1274,6 +1282,13 @@ namespace RMuseum.Services.Implementation
                     return new RServiceResult<GanjoorPersonAffiliation>(null, "وابستگی پیدا نشد.");
                 }
 
+                var evidenceRows = await _context.GanjoorPersonAffiliationEvidences.AsNoTracking()
+                    .Where(e => e.AffiliationId == affiliation.Id)
+                    .OrderBy(e => e.Id)
+                    .ToListAsync();
+                var catTitles = await _GetCatTitlesAsync(evidenceRows.Select(e => e.MasterCatId).Distinct().ToList());
+                affiliation.Evidence = evidenceRows.Select(e => _ToEvidenceInfo(e, catTitles)).ToList();
+
                 return new RServiceResult<GanjoorPersonAffiliation>(affiliation);
             }
             catch (Exception exp)
@@ -1293,6 +1308,20 @@ namespace RMuseum.Services.Implementation
                 MasterCatId = e.MasterCatId,
                 MasterCatTitle = catTitles != null && catTitles.TryGetValue(e.MasterCatId, out var title) ? title : null,
                 Inferred = e.Inferred,
+            };
+        }
+
+        private static GanjoorPersonRelationEvidenceInfo _ToEvidenceInfo(GanjoorPersonAffiliationEvidence e, Dictionary<int, string> catTitles)
+        {
+            return new GanjoorPersonRelationEvidenceInfo()
+            {
+                Id = e.Id,
+                PoemId = e.PoemId,
+                CoupletIndex = e.CoupletIndex,
+                CoupletText = e.CoupletText,
+                MasterCatId = e.MasterCatId,
+                MasterCatTitle = catTitles != null && catTitles.TryGetValue(e.MasterCatId, out var title) ? title : null,
+                Inferred = false,
             };
         }
 
@@ -1345,7 +1374,7 @@ namespace RMuseum.Services.Implementation
         /// already attached to the relation) and fills in its server-side text snapshot. Returns an
         /// error message or null.
         /// </summary>
-        private async Task<string> _ValidateAndFillEvidenceAsync(GanjoorPersonRelationEditSuggestion suggestion, int? relationId)
+        private async Task<string> _ValidateAndFillEvidenceAsync(GanjoorPersonRelationEditSuggestion suggestion, int? relationId, int? affiliationId = null)
         {
             if (suggestion.EvidencePoemId == null || suggestion.EvidenceCoupletIndex == null)
             {
@@ -1379,6 +1408,12 @@ namespace RMuseum.Services.Implementation
                 return "این بیت هم‌اکنون به عنوان مستند این نسبت ثبت شده است.";
             }
 
+            if (affiliationId != null && await _context.GanjoorPersonAffiliationEvidences.AsNoTracking()
+                .AnyAsync(e => e.AffiliationId == affiliationId.Value && e.PoemId == poemId && e.CoupletIndex == coupletIndex))
+            {
+                return "این بیت هم‌اکنون به عنوان مستند این وابستگی ثبت شده است.";
+            }
+
             suggestion.EvidenceCoupletText = string.Join(" ", coupletVerses.Select(v => v.Text)).Trim();
             return null;
         }
@@ -1398,11 +1433,6 @@ namespace RMuseum.Services.Implementation
                 }
 
                 bool isEvidenceAction = suggestion.Action == PersonRelationSuggestionAction.AddEvidence || suggestion.Action == PersonRelationSuggestionAction.RemoveEvidence;
-                if (isEvidenceAction && suggestion.Kind != PersonRelationSuggestionKind.Family)
-                {
-                    return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "مستند فقط برای نسبت‌های خویشاوندی قابل ثبت است.");
-                }
-
                 GanjoorPersonRelation existingRelation = null;
                 GanjoorPersonAffiliation existingAffiliation = null;
                 if (suggestion.Action == PersonRelationSuggestionAction.Modify || suggestion.Action == PersonRelationSuggestionAction.Remove || isEvidenceAction)
@@ -1535,11 +1565,13 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                if (suggestion.Kind == PersonRelationSuggestionKind.Family &&
-                    (suggestion.Action == PersonRelationSuggestionAction.AddEvidence ||
-                     (suggestion.Action == PersonRelationSuggestionAction.Add && suggestion.EvidencePoemId != null)))
+                if (suggestion.Action == PersonRelationSuggestionAction.AddEvidence ||
+                    (suggestion.Action == PersonRelationSuggestionAction.Add && suggestion.EvidencePoemId != null))
                 {
-                    var evidenceError = await _ValidateAndFillEvidenceAsync(suggestion, suggestion.Action == PersonRelationSuggestionAction.AddEvidence ? existingRelation?.Id : null);
+                    bool addingEvidence = suggestion.Action == PersonRelationSuggestionAction.AddEvidence;
+                    var evidenceError = await _ValidateAndFillEvidenceAsync(suggestion,
+                        addingEvidence ? existingRelation?.Id : null,
+                        addingEvidence ? existingAffiliation?.Id : null);
                     if (evidenceError != null)
                     {
                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, evidenceError);
@@ -1563,6 +1595,22 @@ namespace RMuseum.Services.Implementation
                     {
                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "مستند مورد نظر برای حذف مشخص نشده است.");
                     }
+                    if (existingAffiliation != null)
+                    {
+                        var affiliationEvidence = await _context.GanjoorPersonAffiliationEvidences.AsNoTracking()
+                            .Where(e => e.Id == suggestion.ExistingEvidenceId.Value && e.AffiliationId == existingAffiliation.Id)
+                            .SingleOrDefaultAsync();
+                        if (affiliationEvidence == null)
+                        {
+                            return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "مستند مورد نظر برای این وابستگی پیدا نشد.");
+                        }
+                        // display snapshot only
+                        suggestion.EvidencePoemId = affiliationEvidence.PoemId;
+                        suggestion.EvidenceCoupletIndex = affiliationEvidence.CoupletIndex;
+                        suggestion.EvidenceCoupletText = affiliationEvidence.CoupletText;
+                    }
+                    else
+                    {
                     var evidence = await _context.GanjoorPersonRelationEvidences.AsNoTracking()
                         .Where(e => e.Id == suggestion.ExistingEvidenceId.Value && e.RelationId == existingRelation.Id)
                         .SingleOrDefaultAsync();
@@ -1574,6 +1622,7 @@ namespace RMuseum.Services.Implementation
                     suggestion.EvidencePoemId = evidence.PoemId;
                     suggestion.EvidenceCoupletIndex = evidence.CoupletIndex;
                     suggestion.EvidenceCoupletText = evidence.CoupletText;
+                    }
                 }
                 else
                 {
@@ -1608,8 +1657,8 @@ namespace RMuseum.Services.Implementation
                 {
                     PersonRelationSuggestionAction.Add => isAffiliation ? "پیشنهاد وابستگی جدید" : "پیشنهاد نسبت خویشاوندی جدید",
                     PersonRelationSuggestionAction.Modify => isAffiliation ? "پیشنهاد ویرایش وابستگی" : "پیشنهاد ویرایش نسبت خویشاوندی",
-                    PersonRelationSuggestionAction.AddEvidence => "پیشنهاد مستند برای نسبت خویشاوندی",
-                    PersonRelationSuggestionAction.RemoveEvidence => "پیشنهاد حذف مستند نسبت خویشاوندی",
+                    PersonRelationSuggestionAction.AddEvidence => isAffiliation ? "پیشنهاد مستند برای وابستگی" : "پیشنهاد مستند برای نسبت خویشاوندی",
+                    PersonRelationSuggestionAction.RemoveEvidence => isAffiliation ? "پیشنهاد حذف مستند وابستگی" : "پیشنهاد حذف مستند نسبت خویشاوندی",
                     _ => isAffiliation ? "پیشنهاد حذف وابستگی" : "پیشنهاد حذف نسبت خویشاوندی",
                 };
                 string edgeLabel = isAffiliation ? "وابستگی" : "نسبت خویشاوندی";
@@ -1725,13 +1774,77 @@ namespace RMuseum.Services.Implementation
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null,
                                             $"این وابستگی هم‌اکنون بین «{duplicateAffiliation.Person1?.Name}» و «{duplicateAffiliation.Person2?.Name}» ثبت شده است.");
                                     }
-                                    _context.GanjoorPersonAffiliations.Add(new GanjoorPersonAffiliation()
+                                    var newAffiliation = new GanjoorPersonAffiliation()
                                     {
                                         Person1Id = suggestion.Person1Id,
                                         Person2Id = suggestion.Person2Id,
                                         AffiliationType = addType,
                                         Note = suggestion.SuggestedNote,
+                                    };
+                                    _context.GanjoorPersonAffiliations.Add(newAffiliation);
+
+                                    // optional evidence submitted together with the new affiliation
+                                    if (suggestion.EvidencePoemId != null && suggestion.EvidenceCoupletIndex != null)
+                                    {
+                                        var addMasterCatId = await _GetMasterCatIdAsync(suggestion.EvidencePoemId.Value);
+                                        if (addMasterCatId != null)
+                                        {
+                                            _context.GanjoorPersonAffiliationEvidences.Add(new GanjoorPersonAffiliationEvidence()
+                                            {
+                                                Affiliation = newAffiliation,
+                                                PoemId = suggestion.EvidencePoemId.Value,
+                                                CoupletIndex = suggestion.EvidenceCoupletIndex.Value,
+                                                CoupletText = suggestion.EvidenceCoupletText,
+                                                MasterCatId = addMasterCatId.Value,
+                                                AddedByUserId = suggestion.UserId,
+                                                DateAdded = DateTime.Now,
+                                            });
+                                        }
+                                    }
+                                    break;
+                                }
+                            case PersonRelationSuggestionAction.AddEvidence:
+                                {
+                                    if (suggestion.ExistingAffiliationId == null || suggestion.EvidencePoemId == null || suggestion.EvidenceCoupletIndex == null)
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "اطلاعات مستند ناقص است.");
+                                    }
+                                    var existing = await _context.GanjoorPersonAffiliations.Where(a => a.Id == suggestion.ExistingAffiliationId.Value).SingleOrDefaultAsync();
+                                    if (existing == null)
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "وابستگی مورد نظر دیگر وجود ندارد.");
+                                    }
+                                    var poemId = suggestion.EvidencePoemId.Value;
+                                    var coupletIndex = suggestion.EvidenceCoupletIndex.Value;
+                                    if (await _context.GanjoorPersonAffiliationEvidences.AnyAsync(e => e.AffiliationId == existing.Id && e.PoemId == poemId && e.CoupletIndex == coupletIndex))
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "این بیت هم‌اکنون به عنوان مستند این وابستگی ثبت شده است.");
+                                    }
+                                    var masterCatId = await _GetMasterCatIdAsync(poemId);
+                                    if (masterCatId == null)
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "دستهٔ اصلی این شعر مشخص نشد.");
+                                    }
+                                    _context.GanjoorPersonAffiliationEvidences.Add(new GanjoorPersonAffiliationEvidence()
+                                    {
+                                        AffiliationId = existing.Id,
+                                        PoemId = poemId,
+                                        CoupletIndex = coupletIndex,
+                                        CoupletText = suggestion.EvidenceCoupletText,
+                                        MasterCatId = masterCatId.Value,
+                                        AddedByUserId = suggestion.UserId,
+                                        DateAdded = DateTime.Now,
                                     });
+                                    break;
+                                }
+                            case PersonRelationSuggestionAction.RemoveEvidence:
+                                {
+                                    var evidence = suggestion.ExistingEvidenceId == null ? null :
+                                        await _context.GanjoorPersonAffiliationEvidences.Where(e => e.Id == suggestion.ExistingEvidenceId.Value).SingleOrDefaultAsync();
+                                    if (evidence != null)
+                                    {
+                                        _context.GanjoorPersonAffiliationEvidences.Remove(evidence);
+                                    }
                                     break;
                                 }
                             case PersonRelationSuggestionAction.Modify:
@@ -1973,8 +2086,8 @@ namespace RMuseum.Services.Implementation
                 {
                     PersonRelationSuggestionAction.Add => $"افزودن {edgeLabel}",
                     PersonRelationSuggestionAction.Modify => $"ویرایش {edgeLabel}",
-                    PersonRelationSuggestionAction.AddEvidence => "افزودن مستند نسبت خویشاوندی",
-                    PersonRelationSuggestionAction.RemoveEvidence => "حذف مستند نسبت خویشاوندی",
+                    PersonRelationSuggestionAction.AddEvidence => $"افزودن مستند {edgeLabel}",
+                    PersonRelationSuggestionAction.RemoveEvidence => $"حذف مستند {edgeLabel}",
                     _ => $"حذف {edgeLabel}",
                 };
 

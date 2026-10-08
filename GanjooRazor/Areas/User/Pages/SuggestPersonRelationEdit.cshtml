@@ -5,6 +5,7 @@
 @{
     Layout = "_UserPanelLayout";
     bool isAffiliation = Model.Kind == PersonRelationSuggestionKind.Affiliation;
+    var currentEvidence = isAffiliation ? Model.Affiliation.Evidence : Model.Relation.Evidence;
     ViewData["Title"] = isAffiliation ? "پیشنهاد ویرایش وابستگی" : "پیشنهاد ویرایش نسبت خویشاوندی";
     await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
     string formAction = isAffiliation
@@ -50,15 +51,12 @@ else
                         <label><input type="radio" name="Action" value="Modify" checked="checked" /> @(isAffiliation ? "ویرایش این وابستگی" : "ویرایش این نسبت")</label>
                         &nbsp;
                         <label><input type="radio" name="Action" value="Remove" /> @(isAffiliation ? "حذف این وابستگی (اشتباه ثبت شده است)" : "حذف این نسبت (اشتباه ثبت شده است)")</label>
-                        @if (!isAffiliation)
+                        <br />
+                        <label><input type="radio" name="Action" value="AddEvidence" /> افزودن مستند (بیتی از یک شعر که @(isAffiliation ? "این وابستگی" : "این نسبت") را بیان می‌کند)</label>
+                        @if (currentEvidence != null && currentEvidence.Count > 0)
                         {
                             <br />
-                            <label><input type="radio" name="Action" value="AddEvidence" /> افزودن مستند (بیتی از یک شعر که این نسبت را بیان می‌کند)</label>
-                            @if (Model.Relation.Evidence != null && Model.Relation.Evidence.Count > 0)
-                            {
-                                <br />
-                                <label><input type="radio" name="Action" value="RemoveEvidence" /> حذف یکی از مستندهای ثبت‌شده (نسبت باقی می‌ماند)</label>
-                            }
+                            <label><input type="radio" name="Action" value="RemoveEvidence" /> حذف یکی از مستندهای ثبت‌شده (@(isAffiliation ? "وابستگی" : "نسبت") باقی می‌ماند)</label>
                         }
                     </td>
                 </tr>
@@ -119,21 +117,19 @@ else
                         </td>
                     </tr>
                 }
-                @if (!isAffiliation)
-                {
                     <tr>
                         <td>
                             مستندهای ثبت‌شده:
-                            <p class="up-hint"><small>هر نسبت می‌تواند چند مستند داشته باشد؛ مستندها نشان می‌دهند این نسبت در کدام کتاب‌ها آمده است.</small></p>
+                            <p class="up-hint"><small>هر نسبت یا وابستگی می‌تواند چند مستند داشته باشد؛ مستندها نشان می‌دهند این نسبت در کدام کتاب‌ها آمده است.</small></p>
                         </td>
                         <td>
-                            @if (Model.Relation.Evidence == null || Model.Relation.Evidence.Count == 0)
+                            @if (currentEvidence == null || currentEvidence.Count == 0)
                             {
                                 <small>هنوز مستندی ثبت نشده است.</small>
                             }
                             else
                             {
-                                foreach (var ev in Model.Relation.Evidence)
+                                foreach (var ev in currentEvidence)
                                 {
                                     <div>
                                         <label>
@@ -157,7 +153,6 @@ else
                             <partial name="_EvidencePicker" model="@("Suggestion.")" />
                         </td>
                     </tr>
-                }
                 <tr>
                     <td>یادداشت (مستندسازی):</td>
                     <td><textarea asp-for="Suggestion.SuggestedNote" rows="3" cols="60"></textarea></td>

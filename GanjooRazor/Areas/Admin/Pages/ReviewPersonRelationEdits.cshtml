@@ -57,8 +57,8 @@
             case PersonRelationSuggestionAction.Add: return "افزودن نسبت جدید";
             case PersonRelationSuggestionAction.Modify: return "ویرایش نسبت موجود";
             case PersonRelationSuggestionAction.Remove: return "حذف نسبت موجود";
-            case PersonRelationSuggestionAction.AddEvidence: return "افزودن مستند به نسبت";
-            case PersonRelationSuggestionAction.RemoveEvidence: return "حذف مستند از نسبت";
+            case PersonRelationSuggestionAction.AddEvidence: return "افزودن مستند (به نسبت یا وابستگی)";
+            case PersonRelationSuggestionAction.RemoveEvidence: return "حذف مستند (از نسبت یا وابستگی)";
             default: return a.ToString();
         }
     }
@@ -210,7 +210,7 @@ else
     @if (!string.IsNullOrEmpty(s.EvidenceCoupletText) || s.EvidencePoemId != null)
     {
         <div class="up-card">
-            <strong>@(s.Action == PersonRelationSuggestionAction.RemoveEvidence ? "مستندی که قرار است حذف شود:" : "مستند پیشنهادی (بیتی که این نسبت را بیان می‌کند):")</strong>
+            <strong>@(s.Action == PersonRelationSuggestionAction.RemoveEvidence ? "مستندی که قرار است حذف شود:" : "مستند پیشنهادی (بیتی که این " + (s.Kind == PersonRelationSuggestionKind.Affiliation ? "وابستگی" : "نسبت") + " را بیان می‌کند):")</strong>
             <p>@s.EvidenceCoupletText</p>
             @if (s.EvidencePoemId != null)
             {

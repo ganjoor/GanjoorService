@@ -126,6 +126,21 @@ else
                         {
                             <a href="/User/SuggestPersonRelationEdit?affiliationId=@row.AffiliationId" class="up-icon-btn" title="پیشنهاد ویرایش/حذف این وابستگی" aria-label="پیشنهاد ویرایش/حذف این وابستگی">✎</a>
                         }
+                        @if (row.Evidence.Count > 0)
+                        {
+                            <details>
+                                <summary><small>مستند (@row.Evidence.Count)</small></summary>
+                                @foreach (var ev in row.Evidence)
+                                {
+                                    <div>
+                                        <small>
+                                            <a href="/?p=@ev.PoemId#bn@(ev.CoupletIndex + 1)" target="_blank">@(string.IsNullOrEmpty(ev.MasterCatTitle) ? "شعر " + ev.PoemId : ev.MasterCatTitle)</a>
+                                            — @ev.CoupletText
+                                        </small>
+                                    </div>
+                                }
+                            </details>
+                        }
                     </li>
                 }
             </ul>
