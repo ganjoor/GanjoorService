@@ -795,6 +795,7 @@
             poetspeclines
             poetpix
             usernotes,
+            personedits
             users
             </param>
             <param name="paging"></param>
@@ -817,7 +818,8 @@
             pinterestlinks
             poetspeclines
             poetpix
-            usernotes
+            usernotes,
+            personedits
             </param>
             <param name="paging"></param>
             <param name="day"></param>
@@ -840,7 +842,8 @@
             pinterestlinks
             poetspeclines
             poetpix
-            usernotes
+            usernotes,
+            personedits
             users (Days and UserIds are invalid)
             </param>        
             <returns></returns>
@@ -15852,6 +15855,11 @@
             public user notes
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.UserContributionsViewModel.PersonEdits">
+            <summary>
+            approved person edit suggestions plus person relation/affiliation suggestions
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.UserSongSuggestionsHistory">
             <summary>
             history of suggested songs by a user
@@ -18665,6 +18673,29 @@
         <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedUserNotesSummedUpStatsAsync">
             <summary>
             summed up stats of approved user notes
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPersonEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved person edit suggestions and person relation/affiliation suggestions, daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPersonEditsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved person edit and relation suggestions grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IContributionStatsService.GetApprovedPersonEditsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved person edit and relation suggestions
             </summary>
             <returns></returns>
         </member>
@@ -22070,6 +22101,42 @@
         <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedUserNotesSummedUpStatsAsync">
             <summary>
             summed up stats of approved user notes
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.ContributionStatsService.ApprovedPersonEditRow">
+            <summary>
+            one approved person-related suggestion (a person field edit, or a relation/affiliation/evidence
+            suggestion), reduced to what the stats group by
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService._ApprovedPersonEdits">
+            <summary>
+            approved suggestions of both kinds as one sequence: person edit suggestions
+            (GanjoorPersonEditSuggestion) plus person relation suggestions (GanjoorPersonRelationEditSuggestion,
+            which also covers affiliations and relation evidence)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedPersonEditsGroupedByDateAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.Guid})">
+            <summary>
+            approved person edit and relation suggestions daily
+            </summary>
+            <param name="paging"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedPersonEditsGroupedByUserAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.Nullable{System.DateTime},System.Nullable{System.Guid})">
+            <summary>
+            approved person edit and relation suggestions grouped by user
+            </summary>
+            <param name="paging"></param>
+            <param name="day"></param>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.ContributionStatsService.GetApprovedPersonEditsSummedUpStatsAsync">
+            <summary>
+            summed up stats of approved person edit and relation suggestions
             </summary>
             <returns></returns>
         </member>

@@ -76,5 +76,10 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// public user notes
         /// </summary>
         public int PublicUserNotes { get; set; }
+
+        /// <summary>
+        /// approved person edit suggestions plus person relation/affiliation suggestions
+        /// </summary>
+        public int PersonEdits { get; set; }
     }
 }

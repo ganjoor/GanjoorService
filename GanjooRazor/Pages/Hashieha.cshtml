@@ -90,6 +90,8 @@ else
                            Model.Contributions.PoetPictures > 0
                            ||
                            Model.Contributions.PublicUserNotes > 0
+                           ||
+                           Model.Contributions.PersonEdits > 0
                                 )
                             {
                                 
@@ -181,6 +183,13 @@ else
                                         <tr>
                                             <td><p><a href="https://museum.ganjoor.net/notes">یادداشت‌های عمومی گنجینه</a>:</p></td>
                                             <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.PublicUserNotes)</p></td>
+                                        </tr>
+                                    }
+                                    @if (Model.Contributions.PersonEdits > 0)
+                                    {
+                                        <tr>
+                                            <td><p>ویرایش‌ها و پیشنهادهای مربوط به شخصیت‌ها:</p></td>
+                                            <td><p>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Contributions.PersonEdits)</p></td>
                                         </tr>
                                     }
                                 </table>

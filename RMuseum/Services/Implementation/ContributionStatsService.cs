@@ -44,7 +44,8 @@ namespace RMuseum.Services.Implementation
                         PinterestLinks = await _context.PinterestLinks.Where(c => c.HumanReviewed && c.ReviewResult == Models.GanjoorIntegration.ReviewResult.Approved && c.SuggestedById == userId).CountAsync(),
                         PoetSpecLines = await _context.GanjoorPoetSuggestedSpecLines.Where(c => c.Published && c.SuggestedById == userId).CountAsync(),
                         PoetPictures = await _context.GanjoorPoetSuggestedPictures.Where(c => c.Published && c.SuggestedById == userId).CountAsync(),
-                        PublicUserNotes = await _context.UserNotes.Where(c => c.Status == Models.Artifact.PublishStatus.Published && c.NoteType == Models.Note.RNoteType.Public && c.RAppUserId == userId).CountAsync()
+                        PublicUserNotes = await _context.UserNotes.Where(c => c.Status == Models.Artifact.PublishStatus.Published && c.NoteType == Models.Note.RNoteType.Public && c.RAppUserId == userId).CountAsync(),
+                        PersonEdits = await _ApprovedPersonEdits().Where(c => c.UserId == userId).CountAsync()
                     }
                     );
                   
@@ -1491,6 +1492,126 @@ namespace RMuseum.Services.Implementation
 
 
 
+
+        /// <summary>
+        /// one approved person-related suggestion (a person field edit, or a relation/affiliation/evidence
+        /// suggestion), reduced to what the stats group by
+        /// </summary>
+        private class ApprovedPersonEditRow
+        {
+            public DateTime Date { get; set; }
+            public Guid UserId { get; set; }
+        }
+
+        /// <summary>
+        /// approved suggestions of both kinds as one sequence: person edit suggestions
+        /// (GanjoorPersonEditSuggestion) plus person relation suggestions (GanjoorPersonRelationEditSuggestion,
+        /// which also covers affiliations and relation evidence)
+        /// </summary>
+        private IQueryable<ApprovedPersonEditRow> _ApprovedPersonEdits()
+        {
+            return _context.GanjoorPersonEditSuggestions
+                .Where(c => c.Reviewed && c.Result == Models.Ganjoor.CorrectionReviewResult.Approved)
+                .Select(c => new ApprovedPersonEditRow() { Date = c.Date, UserId = c.UserId })
+                .Concat(
+                    _context.GanjoorPersonRelationEditSuggestions
+                    .Where(c => c.Reviewed && c.Result == Models.Ganjoor.CorrectionReviewResult.Approved)
+                    .Select(c => new ApprovedPersonEditRow() { Date = c.Date, UserId = c.UserId })
+                );
+        }
+
+        /// <summary>
+        /// approved person edit and relation suggestions daily
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>> GetApprovedPersonEditsGroupedByDateAsync(PagingParameterModel paging, Guid? userId)
+        {
+            try
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>(
+                    await QueryablePaginator<GroupedByDateViewModel>.Paginate(
+                        _ApprovedPersonEdits()
+                        .Where(c => userId == null || c.UserId == userId)
+                        .GroupBy(a => a.Date.Date)
+                        .Select(a => new GroupedByDateViewModel()
+                        {
+                            Date = a.Key.Date.ToString(),
+                            Number = a.Count(),
+                        }).OrderByDescending(s => s.Date)
+                   , paging));
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByDateViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// approved person edit and relation suggestions grouped by user
+        /// </summary>
+        /// <param name="paging"></param>
+        /// <param name="day"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>> GetApprovedPersonEditsGroupedByUserAsync(PagingParameterModel paging, DateTime? day, Guid? userId)
+        {
+            try
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>(
+                    await QueryablePaginator<GroupedByUserViewModel>.Paginate(
+                        _ApprovedPersonEdits()
+                        .Join
+                        (
+                            _context.Users,
+                            edit => edit.UserId,
+                            user => user.Id,
+                            (edit, user) => new
+                            {
+                                edit.Date,
+                                UserId = user.Id,
+                                UserName = user.NickName,
+                            }
+                        )
+                        .Where(f => (day == null || f.Date.Date == day) && (userId == null || f.UserId == userId))
+                        .GroupBy(a => new { a.UserId, a.UserName }).Select(a => new GroupedByUserViewModel()
+                        {
+                            UserId = a.Key.UserId,
+                            UserName = a.Key.UserName,
+                            Number = a.Count(),
+                        }).OrderByDescending(s => s.Number)
+                        , paging));
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<(PaginationMetadata PagingMeta, GroupedByUserViewModel[] Tracks)>((null, null), e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// summed up stats of approved person edit and relation suggestions
+        /// </summary>
+        /// <returns></returns>
+        public async Task<RServiceResult<SummedUpViewModel>> GetApprovedPersonEditsSummedUpStatsAsync()
+        {
+            try
+            {
+                return new RServiceResult<SummedUpViewModel>
+                    (
+                    new SummedUpViewModel()
+                    {
+                        Days = await _ApprovedPersonEdits().GroupBy(f => f.Date.Date).CountAsync(),
+                        TotalCount = await _ApprovedPersonEdits().CountAsync(),
+                        UserIds = await _ApprovedPersonEdits().GroupBy(f => f.UserId).CountAsync(),
+                    }
+                    );
+            }
+            catch (Exception e)
+            {
+                return new RServiceResult<SummedUpViewModel>(null, e.ToString());
+            }
+        }
 
         /// <summary>
         /// Database Context
