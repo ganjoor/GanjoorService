@@ -104,6 +104,10 @@ else
         {
             <h3>
                 وابستگی‌های غیرخویشاوندی
+                @if (Model.RelationRows.Count == 0)
+                {
+                    <a href="javascript:void(0)" onclick="ContemporariesWindow.open(@Model.Person.Id)" class="up-btn up-btn--ghost up-btn--sm">هم‌عصران</a>
+                }
                 @if (Model.LoggedIn)
                 {
                     <a href="/User/SuggestNewPersonRelation?personId=@Model.Person.Id&amp;kind=affiliation" class="up-btn up-btn--ghost up-btn--sm">افزودن وابستگی جدید</a>

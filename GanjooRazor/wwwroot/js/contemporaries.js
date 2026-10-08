@@ -26,6 +26,9 @@
     function solve(graph, opts) {
         var L = (opts && opts.maxLifespan) || 100;
         var A = (opts && opts.minParentAge) || 15;
+        // a child may be born after the parent's death (up to a year, i.e. a posthumous birth) - off by
+        // default, so parent and child always count as having overlapped
+        var posthumous = (opts && opts.allowPosthumous) ? 1 : 0;
 
         var persons = graph.persons;
         var n = persons.length;
@@ -55,9 +58,8 @@
             var a = r.person1Id, b = r.person2Id;
             if (r.relationType === 0) { // a is parent of b
                 edge(B(b), B(a), -A);
-                // the parent was alive when the child was born (posthumous children are ignored, so
-                // parent and child always count as having overlapped)
-                edge(D(a), B(b), 0);
+                // the parent was alive when the child was born (unless posthumous births are allowed)
+                edge(D(a), B(b), posthumous);
             } else if (r.relationType === 3) { // a is an ancestor of b
                 edge(B(b), B(a), -A * (r.degreeHint || 2));
             } else if (r.relationType === 1 || r.relationType === 2) {
