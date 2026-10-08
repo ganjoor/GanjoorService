@@ -92,6 +92,8 @@
         }
         var primaryParentOf = {};
         var secondaryParentOf = {};
+        var extraParentsOf = {}; // childId -> [third, fourth, ... recorded parent] - possible when different
+                                 // books name different parents for the same person
         allIds.forEach(function (childId) {
             var ps = parentsOf[childId];
             if (!ps || ps.length === 0) return;
@@ -105,6 +107,7 @@
             });
             primaryParentOf[childId] = sorted[0];
             secondaryParentOf[childId] = sorted[1];
+            if (sorted.length > 2) extraParentsOf[childId] = sorted.slice(2);
         });
 
         var hasOwnChildren = {};
@@ -150,6 +153,16 @@
             if (!tryAttach(primaryId, parentId)) {
                 unattachedSecondaryParents.push({ parentId: parentId, childId: parseInt(childId, 10) });
             }
+        });
+        // a third (or further) recorded parent used to be dropped from the drawing without a trace - treat
+        // them like the second one: attach beside the spine parent when they have no position of their
+        // own, otherwise draw a connector to wherever they ended up
+        Object.keys(extraParentsOf).forEach(function (childId) {
+            extraParentsOf[childId].forEach(function (parentId) {
+                if (!tryAttach(primaryParentOf[childId], parentId)) {
+                    unattachedSecondaryParents.push({ parentId: parentId, childId: parseInt(childId, 10) });
+                }
+            });
         });
         Object.keys(spouseOf).forEach(function (a) {
             spouseOf[a].forEach(function (b) {
