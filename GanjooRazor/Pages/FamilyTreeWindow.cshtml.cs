@@ -34,6 +34,11 @@ namespace GanjooRazor.Pages
         public int HiddenCount => Tree?.Relations == null ? 0 : System.Linq.Enumerable.Count(Tree.Relations, r => r.State == "contradicted");
 
         /// <summary>
+        /// number of edges in the given book-view state ("attested", "otherBook", "unattested", "contradicted")
+        /// </summary>
+        public int CountState(string state) => Tree?.Relations == null ? 0 : System.Linq.Enumerable.Count(Tree.Relations, r => r.State == state);
+
+        /// <summary>
         /// Tree, re-serialized with an explicit camelCase contract (same convention
         /// _PersonGraphPartial.cshtml.cs's GraphDataJson uses) so familytree.js has a predictable
         /// shape to parse once this fragment's data block is read, regardless of the API's own

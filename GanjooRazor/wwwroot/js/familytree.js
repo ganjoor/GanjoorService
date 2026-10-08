@@ -307,6 +307,22 @@
         return best;
     }
 
+    var REL_NAME = { 0: 'والد/فرزند', 1: 'برادر/خواهر', 2: 'همسر', 3: 'نیا/نواده' };
+
+    // Unfiltered view: a pair of people linked by more than one kind of relation (e.g. father/daughter
+    // in one book, brother/sister in another) is a book-dependent version - returns the description for
+    // its tooltip, or null
+    function variantInfo(edgesByPair, a, b) {
+        var list = edgesByPair[Math.min(a, b) + ':' + Math.max(a, b)];
+        if (!list || list.length < 2) return null;
+        var kinds = {};
+        list.forEach(function (e) { kinds[e.relationType] = 1; });
+        if (Object.keys(kinds).length < 2) return null;
+        return 'نسبت در منابع مختلف متفاوت است: ' + list.map(function (e) {
+            return (REL_NAME[e.relationType] || '؟') + (e.attestedIn && e.attestedIn.length ? ' (' + e.attestedIn.join('، ') + ')' : ' (بدون شاهد)');
+        }).join(' / ');
+    }
+
     function renderFamilyTree(containerId, svgId, tooltipId, fullData, requestedRootId, opts) {
         var data = fullData ? applyBookFilter(fullData, requestedRootId, !!(opts && opts.showHidden)) : fullData;
         var edgesByPair = {};
@@ -316,10 +332,16 @@
         });
         function stateCls(a, b) {
             var e = pairInfo(edgesByPair, a, b);
+            if (e && !e.state && variantInfo(edgesByPair, a, b)) return ' ft-variant';
             return e && e.state && STATE_CLASS[e.state] ? ' ' + STATE_CLASS[e.state] : '';
         }
         function stateTitle(a, b) {
             var e = pairInfo(edgesByPair, a, b);
+            if (e && !e.state) {
+                var v = variantInfo(edgesByPair, a, b);
+                if (v) return v;
+                return e.attestedIn && e.attestedIn.length ? 'مستند در: ' + e.attestedIn.join('، ') : null;
+            }
             if (!e || !e.state) return null;
             if (e.state === 'attested') return 'مستند در این کتاب' + (e.attestedIn && e.attestedIn.length ? ': ' + e.attestedIn.join('، ') : '');
             if (e.state === 'otherBook') return 'مستند در کتاب دیگر' + (e.attestedIn && e.attestedIn.length ? ': ' + e.attestedIn.join('، ') : '');

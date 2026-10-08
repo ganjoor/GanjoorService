@@ -336,6 +336,9 @@ namespace RMuseum.Services.Implementation
             PersonAffiliationType.Servant, PersonAffiliationType.Companion, PersonAffiliationType.Panegyrized,
             PersonAffiliationType.MilitaryCommander, PersonAffiliationType.Champion,
             PersonAffiliationType.Contemporary, PersonAffiliationType.Killer,
+            // satire is assumed to target a living contemporary, like panegyrics; Successor is sent
+            // too, but the client only treats it as an overlap when the viewer's assumption is on
+            PersonAffiliationType.Satirized, PersonAffiliationType.Successor,
         };
 
         /// <summary>

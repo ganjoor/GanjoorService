@@ -153,13 +153,15 @@
                 var age = document.getElementById('ctw-min-age');
                 var imp = document.getElementById('ctw-show-impossible');
                 var post = document.getElementById('ctw-posthumous');
+                var succ = document.getElementById('ctw-successor');
                 var timer = null;
                 function draw() {
                     GanjoorContemporaries.render('ctw-container', 'ctw-note', graph, rootId, {
                         maxLifespan: Math.max(parseInt(life.value, 10) || 100, 1),
                         minParentAge: Math.max(parseInt(age.value, 10) || 15, 1),
                         showImpossible: imp.checked,
-                        allowPosthumous: post.checked
+                        allowPosthumous: post.checked,
+                        successorsOverlap: succ.checked
                     });
                 }
                 function later() { clearTimeout(timer); timer = setTimeout(draw, 350); }
@@ -167,6 +169,7 @@
                 age.addEventListener('input', later);
                 imp.addEventListener('change', draw);
                 post.addEventListener('change', draw);
+                succ.addEventListener('change', draw);
                 draw();
             });
         }

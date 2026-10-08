@@ -15,6 +15,10 @@ else
             <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.RootPerson.Id)" class="up-btn up-btn--ghost up-btn--sm">مشاهدهٔ اطلاعات این شخصیت</a>
             <a href="javascript:void(0)" onclick="ContemporariesWindow.open(@Model.RootPerson.Id)" class="up-btn up-btn--ghost up-btn--sm">هم‌عصران</a>
         </h2>
+        @if (!Model.Tree.MasterCatId.HasValue && Model.Tree.Books != null && Model.Tree.Books.Count > 1)
+        {
+            <p class="up-hint"><small>خطوط نارنجی نشان می‌دهند نسبت این دو نفر در کتاب‌های مختلف متفاوت آمده است؛ برای دیدن هر نسخه، یک کتاب را برگزینید.</small></p>
+        }
         <p class="up-hint"><small>
             برای مشاهدهٔ توضیحات هر شخصیت، روی آن کلیک کنید. برای پیمایش نمودار آن را با ماوس بکشید و با غلتک ماوس بزرگ/کوچک کنید.
             این نمودار محدود به فرزندان این شخصیت نیست؛ تمام خویشاوندان به‌هم‌پیوسته (از جمله نیاکان و خانوادهٔ همسر) را نشان می‌دهد.
@@ -35,6 +39,13 @@ else
                 </label>
                 @if (Model.Tree.MasterCatId.HasValue)
                 {
+                    <div class="ft-caption">
+                        نسخهٔ نمایش‌داده‌شده: «@(Model.Tree.Books.FirstOrDefault(b => b.Id == Model.Tree.MasterCatId)?.Title)» —
+                        @Model.CountState("attested") پیوند مستند در این کتاب،
+                        @Model.CountState("otherBook") مستند در کتاب دیگر،
+                        @Model.CountState("unattested") بدون شاهد،
+                        @Model.HiddenCount پیوند متناقض با این کتاب.
+                    </div>
                     <label style="margin-right:16px;">
                         <input type="checkbox" id="ftw-show-hidden" />
                         نمایش پیوندهای متناقض با این کتاب (@Model.HiddenCount پنهان)
@@ -74,6 +85,9 @@ else
             .ft-line-second-parent { stroke-dasharray: 6,2; stroke: #a0455c; stroke-width: 1.25; }
             .ft-book-bar { margin: 6px 0; font-size: 13px; }
             .ft-legend { margin-right: 16px; }
+            .ft-caption { margin: 4px 0; font-weight: bold; color: #4a3520; }
+            /* unfiltered view: the same two people are related differently in different books */
+            .ft-line.ft-variant { stroke: #d08a1c; stroke-width: 2; stroke-dasharray: 5,3; }
             .ft-legend-item { margin-left: 12px; white-space: nowrap; }
             /* relation states in book view - declared after (and compounded with .ft-line) so they
                override the spouse/sibling/second-parent dash styles */

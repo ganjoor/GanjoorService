@@ -10,6 +10,7 @@
 //   - ancestor -> descendant: B_anc + minParentAge * generations <= B_desc (generations = degree hint, else 2)
 //   - sibling, spouse, and the affiliations that imply living at the same time (see
 //     GanjoorRelatedPersonService.OverlapAffiliationTypes): each was born no later than the other's death
+//   - Satirized behaves like Panegyrized; Successor counts as an overlap only while "successorsOverlap" is on
 //   - killer -> victim: the victim's death falls inside the killer's lifetime
 // For a chosen person every other person is then "certain" (overlap is forced by the constraints),
 // "impossible" (overlap is ruled out) or "possible". The assumptions (max lifespan, min parent age)
@@ -20,7 +21,8 @@
     'use strict';
 
     var INF = 1e15;
-    var OVERLAP_AFFILIATIONS = { 0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 9: 1, 11: 1, 12: 1, 13: 1, 14: 1 };
+    var OVERLAP_AFFILIATIONS = { 0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 9: 1, 10: 1, 11: 1, 12: 1, 13: 1, 14: 1 };
+    var AFF_SUCCESSOR = 8;
     var AFF_KILLER = 14;
 
     function solve(graph, opts) {
@@ -29,6 +31,9 @@
         // a child may be born after the parent's death (up to a year, i.e. a posthumous birth) - off by
         // default, so parent and child always count as having overlapped
         var posthumous = (opts && opts.allowPosthumous) ? 1 : 0;
+        // a successor (in an office/throne) is assumed to have been alive while the predecessor was -
+        // true for direct succession, not for a seat refilled generations later; on unless switched off
+        var successorsOverlap = !(opts && opts.successorsOverlap === false);
 
         var persons = graph.persons;
         var n = persons.length;
@@ -69,7 +74,7 @@
 
         (graph.affiliations || []).forEach(function (t) {
             if (index[t.person1Id] === undefined || index[t.person2Id] === undefined) return;
-            if (!OVERLAP_AFFILIATIONS[t.affiliationType]) return;
+            if (!OVERLAP_AFFILIATIONS[t.affiliationType] && !(successorsOverlap && t.affiliationType === AFF_SUCCESSOR)) return;
             overlap(t.person1Id, t.person2Id);
             if (t.affiliationType === AFF_KILLER) {
                 edge(D(t.person2Id), B(t.person1Id), 0); // B_killer <= D_victim
@@ -129,7 +134,7 @@
     var AFF_LABEL = {
         0: ['وزیر', 'وزیردهنده'], 1: ['مشاور', 'مشاوره‌گیرنده'], 2: ['درباری', 'مخدوم'], 3: ['حامی', 'تحت حمایت'],
         4: ['متحد', 'متحد'], 5: ['رقیب', 'رقیب'], 6: ['خدمتکار', 'مخدوم'], 7: ['همراه', 'همراه'],
-        9: ['مدح‌سرا', 'ممدوح'], 11: ['سردار', 'فرمانده'], 12: ['پهلوان', 'سرور'], 13: ['هم‌عصر', 'هم‌عصر'],
+        8: ['جانشین', 'پیشین'], 9: ['مدح‌سرا', 'ممدوح'], 10: ['هجوگو', 'هجوشده'], 11: ['سردار', 'فرمانده'], 12: ['پهلوان', 'سرور'], 13: ['هم‌عصر', 'هم‌عصر'],
         14: ['قاتل', 'کشته‌شده به دست او']
     };
     var CLASS_LABEL = { self: 'این شخصیت', certain: 'قطعاً هم‌عصر', possible: 'احتمالاً هم‌عصر', impossible: 'هم‌عصر نبوده' };
