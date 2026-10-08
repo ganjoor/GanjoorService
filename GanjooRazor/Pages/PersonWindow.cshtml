@@ -173,8 +173,9 @@ else
         @if (Model.Poems != null && Model.Poems.Length > 0)
         {
             <h3>اشعار برچسب‌خورده با این نامبرده</h3>
+            var allusionTags = Model.Poems.Where(t => t.Poem != null && t.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion).ToList();
             <ul>
-                @foreach (var tag in Model.Poems)
+                @foreach (var tag in Model.Poems.Where(t => t.PersonMention != RMuseum.Models.Ganjoor.PersonMentionKind.Allusion))
                 {
                     if (tag.Poem != null)
                     {
@@ -192,6 +193,24 @@ else
                     }
                 }
             </ul>
+            @if (allusionTags.Count > 0)
+            {
+                <details>
+                    <summary><small>اشعاری که فقط به این نامبرده اشاره دارند (@allusionTags.Count)</small></summary>
+                    <ul>
+                        @foreach (var tag in allusionTags)
+                        {
+                            <li>
+                                <a href="@(tag.CoupletIndex > 0 ? tag.Poem.FullUrl + "#bn" + (tag.CoupletIndex + 1) : tag.Poem.FullUrl)">@tag.Poem.FullTitle</a>
+                                @if (!string.IsNullOrEmpty(tag.CoupletText))
+                                {
+                                    <p>@tag.CoupletText</p>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </details>
+            }
         }
         else
         {

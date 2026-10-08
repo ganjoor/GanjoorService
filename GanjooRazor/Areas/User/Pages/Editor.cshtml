@@ -688,12 +688,13 @@
             var coupletText = (s.coupletIndex != null && geoDateTagCoupletTexts[s.coupletIndex]) ? geoDateTagCoupletTexts[s.coupletIndex] : '— کل شعر —';
             var personText = '';
             if (!s.markForDelete) {
+                var mentionText = s.personMention === 1 ? ' (اشاره)' : '';
                 if (s.personId) {
-                    personText = (allGeoPeople.filter(function (p) { return p.id === s.personId; })[0] || {}).name || ('نامبرده #' + s.personId);
+                    personText = ((allGeoPeople.filter(function (p) { return p.id === s.personId; })[0] || {}).name || ('نامبرده #' + s.personId)) + mentionText;
                 } else if (s.suggestedPersonGraphJson) {
                     try {
                         var parsedGraph = JSON.parse(s.suggestedPersonGraphJson);
-                        personText = 'نامبردۀ جدید: ' + (parsedGraph.person ? parsedGraph.person.name : '');
+                        personText = 'نامبردۀ جدید: ' + (parsedGraph.person ? parsedGraph.person.name : '') + mentionText;
                     } catch (e) {
                         personText = 'نامبردۀ جدید';
                     }
@@ -846,6 +847,7 @@
             personId: (personId && personId != '') ? parseInt(personId) : null,
             suggestedPersonGraphJson: suggestedPersonGraphJson,
             ignoreInCategory: false, // category-map aggregation is a geo/date-tag concept only
+            personMention: parseInt($('#persontag-mention').val() || '0', 10),
             suggestionNote: $('#persontag-note').val() || null,
             _uiKind: 'person'
         };
@@ -888,6 +890,7 @@
             toggleNewPersonWidget();
         }
         $('#persontag-note').val('');
+        $('#persontag-mention').val('0');
     }
 
     async function addGeoDateTagSuggestion() {
@@ -2660,7 +2663,7 @@ else
                 {
                     <tr id="existing-geotag-@tag.Id">
                         <td>@(Model.Couplets.Where(c => c.Item1 == tag.CoupletIndex).Select(c => c.Item2).FirstOrDefault() ?? "— کل شعر —")</td>
-                        <td>@(tag.Person != null ? tag.Person.Name : $"نامبرده #{tag.PersonId}")</td>
+                        <td>@(tag.Person != null ? tag.Person.Name : $"نامبرده #{tag.PersonId}")@(tag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? " (اشاره)" : "")</td>
                         <td>
                             <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="requestDeleteExistingPersonTag(@tag.Id, this)">🗑️ درخواست حذف</a>
                         </td>
@@ -2748,6 +2751,14 @@ else
             </p>
             <div id="geotag-person-relatives-list"></div>
             <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="addPersonRelativeRow()">➕ افزودن خویشاوند یا وابستگی</a>
+        </div>
+
+        <div class="up-field">
+            <label for="persontag-mention">نقش نامبرده در این بیت/شعر</label>
+            <select id="persontag-mention">
+                <option value="0">بخشی از داستان یا متن است (کنشگر، مخاطب یا موضوع روایت؛ شامل شاعر و یاورانش)</option>
+                <option value="1">فقط اشاره است (تشبیه، یادآوری گذشته، پیش‌بینی آینده، «همچون فلانی»)</option>
+            </select>
         </div>
 
         <div class="up-field">

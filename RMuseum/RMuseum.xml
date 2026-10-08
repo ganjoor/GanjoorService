@@ -5090,6 +5090,18 @@
         <member name="M:RMuseum.Migrations.AddPersonAffiliationEvidence.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.AddPersonMentionKind">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonMentionKind.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonMentionKind.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddPersonMentionKind.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -10577,6 +10589,12 @@
             related person (navigation)
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.PersonMention">
+            <summary>
+            for a person tag: Participant (part of the story/context) or Allusion (mentioned in passing) -
+            copied to PoemGeoDateTag.PersonMention on approval
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.SuggestedPersonGraphJson">
             <summary>
             a brand new, not yet approved person (and optionally that person's relatives/relations,
@@ -12257,6 +12275,26 @@
             most prominent (e.g. a major poet or king) - drawn largest
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.PersonMentionKind">
+            <summary>
+            why a person is named in a tagged couplet/poem (PoemGeoDateTag.PersonMention): is the person
+            actually part of the story/context being told, or only mentioned in passing? Needed to tell
+            "poems where this person appears" from "poems that merely refer to them", e.g. when building
+            presence and lifetime charts. Stored as int; new values can be appended later.
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonMentionKind.Participant">
+            <summary>
+            the person is part of the story or context of the passage: acts in it, is spoken to or about as
+            part of the narration (this includes the poet and the people he names as his helpers)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonMentionKind.Allusion">
+            <summary>
+            the person is mentioned only as a comparison, memory, example, or a reference to a past/future
+            figure ("brave as Rostam") - not part of the passage's own story
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.PersonRelationSuggestionAction">
             <summary>
             what a GanjoorPersonRelationEditSuggestion proposes doing to the kinship graph
@@ -12402,6 +12440,12 @@
         <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.Person">
             <summary>
             related person
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.PersonMention">
+            <summary>
+            only meaningful when PersonId is set: is the person part of what the tagged passage tells
+            (Participant, the default) or only referred to in passing (Allusion)
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.MachineGenerated">

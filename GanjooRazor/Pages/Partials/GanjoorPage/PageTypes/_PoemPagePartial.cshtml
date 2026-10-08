@@ -352,6 +352,13 @@
                         .GroupBy(t => t.PersonId)
                         .Select(g => g.First().Person)
                         .ToList();
+                    // people this poem only alludes to (every tag on them in this poem is an allusion)
+                    var poemAllusionOnlyPersonIds = Model.GanjoorPage.Poem.GeoDateTags
+                        .Where(t => t.Person != null)
+                        .GroupBy(t => t.PersonId)
+                        .Where(g => g.All(t => t.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion))
+                        .Select(g => g.Key)
+                        .ToList();
                 }
                 @if (poemTaggedPersons.Count > 0)
                 {
@@ -360,7 +367,7 @@
                         <p>
                             @foreach (var taggedPerson in poemTaggedPersons)
                             {
-                                <a href="javascript:void(0)" onclick="PersonWindow.open(@taggedPerson.Id)" class="pagebutton comments-link">@taggedPerson.Name</a>
+                                <a href="javascript:void(0)" onclick="PersonWindow.open(@taggedPerson.Id)" class="pagebutton comments-link" title="@(poemAllusionOnlyPersonIds.Contains(taggedPerson.Id) ? "فقط اشاره" : null)">@taggedPerson.Name@(poemAllusionOnlyPersonIds.Contains(taggedPerson.Id) ? " (اشاره)" : "")</a>
                             }
                         </p>
                     </div>

@@ -955,6 +955,7 @@ else
                         </td>
                         <td>
                             <p class="green-color">
+                                <span class="up-badge">@(geoTag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? "اشاره (بخشی از داستان نیست)" : "بخشی از داستان/متن")</span>
                                 @if (geoTag.PersonId != null)
                                 {
                                     <text>نامبرده: @(geoTag.Person != null ? geoTag.Person.Name : $"نامبرده #{geoTag.PersonId}")</text>

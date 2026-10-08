@@ -67,6 +67,12 @@
         public virtual GanjoorRelatedPerson Person { get; set; }
 
         /// <summary>
+        /// for a person tag: Participant (part of the story/context) or Allusion (mentioned in passing) -
+        /// copied to PoemGeoDateTag.PersonMention on approval
+        /// </summary>
+        public PersonMentionKind PersonMention { get; set; }
+
+        /// <summary>
         /// a brand new, not yet approved person (and optionally that person's relatives/relations,
         /// which may themselves be new people) - serialized JSON rather than its own set of
         /// correction tables, because a single suggestion can introduce several interlinked new

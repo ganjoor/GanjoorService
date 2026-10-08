@@ -699,6 +699,7 @@ namespace RMuseum.Services.Implementation
                                         dbGeoDateTag.LunarMonth = existingTag.LunarMonth;
                                         dbGeoDateTag.LunarDay = existingTag.LunarDay;
                                         dbGeoDateTag.PersonId = existingTag.PersonId;
+                                        dbGeoDateTag.PersonMention = existingTag.PersonMention;
                                         dbGeoDateTag.IgnoreInCategory = existingTag.IgnoreInCategory;
 
                                         _context.PoemGeoDateTags.Remove(existingTag);
@@ -747,6 +748,7 @@ namespace RMuseum.Services.Implementation
                                     LunarMonth = dbGeoDateTag.LunarMonth,
                                     LunarDay = dbGeoDateTag.LunarDay,
                                     PersonId = approvedPersonId,
+                                    PersonMention = dbGeoDateTag.PersonMention,
                                     IgnoreInCategory = dbGeoDateTag.IgnoreInCategory,
                                     VerifiedDate = false,
                                     MachineGenerated = false,

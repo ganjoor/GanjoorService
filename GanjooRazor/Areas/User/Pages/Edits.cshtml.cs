@@ -306,6 +306,7 @@ namespace GanjooRazor.Areas.User.Pages
                                     LunarMonth = geoTag.LunarMonth,
                                     LunarDay = geoTag.LunarDay,
                                     PersonId = geoTag.PersonId,
+                                    PersonMention = geoTag.PersonMention,
                                     IgnoreInCategory = geoTag.IgnoreInCategory,
                                     SuggestionNote = $"برگشت حذف {geoTagLabel} با کد {correctionId}"
                                 });

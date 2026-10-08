@@ -78,6 +78,12 @@ namespace RMuseum.Models.Ganjoor
         public virtual GanjoorRelatedPerson Person { get; set; }
 
         /// <summary>
+        /// only meaningful when PersonId is set: is the person part of what the tagged passage tells
+        /// (Participant, the default) or only referred to in passing (Allusion)
+        /// </summary>
+        public PersonMentionKind PersonMention { get; set; }
+
+        /// <summary>
         /// AI generated
         /// </summary>
         public bool MachineGenerated { get; set; }
