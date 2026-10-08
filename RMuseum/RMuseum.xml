@@ -5102,6 +5102,18 @@
         <member name="M:RMuseum.Migrations.AddPersonMentionKind.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.AddTagMentionChange">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddTagMentionChange.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddTagMentionChange.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddTagMentionChange.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -10595,6 +10607,13 @@
             copied to PoemGeoDateTag.PersonMention on approval
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.ChangeMentionOfExistingTag">
+            <summary>
+            true when this row only asks to change the PersonMention of the existing person tag
+            ExistingTagId (to the value in PersonMention) - it neither adds nor deletes a tag. Reverting an
+            approved change is another such row carrying the opposite value.
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.SuggestedPersonGraphJson">
             <summary>
             a brand new, not yet approved person (and optionally that person's relatives/relations,
@@ -14079,6 +14098,13 @@
             GetCatPersonGraphAsync. Always true for the whole-site graph (GetPersonGraphAsync),
             where there's no "work" to be tagged within. Client-side, a false value draws the node
             as secondary (e.g. dashed/dimmer) since it's context the reader wasn't shown directly.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphNode.AllusionOnly">
+            <summary>
+            category graphs only: the person is named in the work solely as an allusion (comparison,
+            memory, example), never as part of its story - drawn dimmed like a one-hop addition, but
+            labelled differently, and never used to pull in relatives
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonGraphNode.Importance">

@@ -98,6 +98,7 @@
                 id: n.id, name: n.name, hasFamilyTree: n.hasFamilyTree, importance: n.importance || 0,
                 // absent on the whole-site graph payload (always directly tagged there) - default true
                 directlyTagged: n.directlyTagged !== false,
+                allusionOnly: !!n.allusionOnly,
                 x: W / 2 + (Math.random() - 0.5) * W * 0.6,
                 y: H / 2 + (Math.random() - 0.5) * H * 0.6,
                 vx: 0, vy: 0, fx: null, fy: null, degree: 0
@@ -239,7 +240,7 @@
                 'class': n.directlyTagged ? 'pg-label' : 'pg-label pg-label-secondary', direction: 'rtl',
                 style: 'cursor:pointer'
             });
-            text.textContent = n.name;
+            text.textContent = n.allusionOnly ? n.name + ' (اشاره)' : n.name;
             // the label opens the person's profile window; the circle (handled below, on the
             // whole <g>) keeps its own click behaviour of focusing this node's ego-network, so the
             // label needs its own listener with stopPropagation to not also trigger that

@@ -292,7 +292,20 @@ namespace GanjooRazor.Areas.User.Pages
                             // available here for GeoDateTagCorrectionDisplay.IsPersonTag to tell the two kinds
                             // of tag apart for the note text below.
                             var geoTagLabel = GeoDateTagCorrectionDisplay.IsPersonTag(geoTag) ? "نامبرده" : "برچسب جغرافیایی/تاریخی";
-                            if (geoTag.MarkForDelete)
+                            if (geoTag.ChangeMentionOfExistingTag)
+                            {
+                                // the original request flipped the mention kind of an existing tag - undo that by
+                                // asking for the other value (there are only two)
+                                geoDateTagsRollback.Add(new GanjoorPoemGeoDateTagCorrection()
+                                {
+                                    CoupletIndex = geoTag.CoupletIndex,
+                                    ChangeMentionOfExistingTag = true,
+                                    ExistingTagId = geoTag.ExistingTagId,
+                                    PersonMention = geoTag.PersonMention == PersonMentionKind.Allusion ? PersonMentionKind.Participant : PersonMentionKind.Allusion,
+                                    SuggestionNote = $"برگشت تغییر نقش {geoTagLabel} با کد {correctionId}"
+                                });
+                            }
+                            else if (geoTag.MarkForDelete)
                             {
                                 // the original request deleted an existing tag - undo that by re-adding a tag with
                                 // the same data, which was snapshotted onto this same record when it was approved

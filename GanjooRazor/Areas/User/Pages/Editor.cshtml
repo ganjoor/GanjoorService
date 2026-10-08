@@ -139,7 +139,7 @@
     // the _uiKind of a "delete this existing tag" suggestion loaded from a saved-but-unsubmitted
     // draft, which otherwise carries nothing but the id being deleted
     var allExistingGeoDateTags = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
-        (Model.PoemGeoDateTags ?? Array.Empty<RMuseum.Models.Ganjoor.PoemGeoDateTag>()).Select(t => new { id = t.Id, personId = t.PersonId })));
+        (Model.PoemGeoDateTags ?? Array.Empty<RMuseum.Models.Ganjoor.PoemGeoDateTag>()).Select(t => new { id = t.Id, personId = t.PersonId, name = t.Person?.Name, mention = (int)t.PersonMention })));
 
     // Works out whether a staged/loaded suggestion is a geo/date tag or a person (شخصیت) tag, for the
     // two render functions to filter on. New items always set _uiKind themselves when pushed; this
@@ -147,6 +147,7 @@
     // from a previous visit), which predate the split and never carry it.
     function _getSuggestionUiKind(s) {
         if (s._uiKind) return s._uiKind;
+        if (s.changeMentionOfExistingTag) return 'person';
         if (s.markForDelete) {
             var existing = allExistingGeoDateTags.filter(function (t) { return t.id === s.existingTagId; })[0];
             return (existing && existing.personId) ? 'person' : 'geo';
@@ -684,10 +685,13 @@
         for (var r = 0; r < rows.length; r++) {
             var i = rows[r];
             var s = geoDateTagSuggestions[i];
-            var status = s.markForDelete ? '🗑️ درخواست حذف' : '➕ پیشنهاد جدید';
+            var status = s.markForDelete ? '🗑️ درخواست حذف' : (s.changeMentionOfExistingTag ? '✏️ تغییر نقش' : '➕ پیشنهاد جدید');
+            var changedTag = s.changeMentionOfExistingTag ? (allExistingGeoDateTags.filter(function (t) { return t.id === s.existingTagId; })[0] || {}) : null;
             var coupletText = (s.coupletIndex != null && geoDateTagCoupletTexts[s.coupletIndex]) ? geoDateTagCoupletTexts[s.coupletIndex] : '— کل شعر —';
             var personText = '';
-            if (!s.markForDelete) {
+            if (changedTag) {
+                personText = (changedTag.name || ('نامبرده #' + changedTag.personId)) + ' ← ' + (s.personMention === 1 ? 'فقط اشاره' : 'بخشی از داستان/متن');
+            } else if (!s.markForDelete) {
                 var mentionText = s.personMention === 1 ? ' (اشاره)' : '';
                 if (s.personId) {
                     personText = ((allGeoPeople.filter(function (p) { return p.id === s.personId; })[0] || {}).name || ('نامبرده #' + s.personId)) + mentionText;
@@ -742,6 +746,22 @@
         $(el).closest('tr').hide();
         renderPendingGeoDateTags();
         scrollToPendingGeoDateTags();
+    }
+
+    // asks to flip the mention kind (0 = part of the story/context, 1 = allusion only) of an existing
+    // person tag, without deleting and re-adding it
+    function requestChangeMentionOfExistingPersonTag(existingTagId, newMention, coupletIndex, el) {
+        geoDateTagSuggestions.push({
+            changeMentionOfExistingTag: true,
+            markForDelete: false,
+            existingTagId: existingTagId,
+            personMention: newMention,
+            coupletIndex: coupletIndex,
+            _uiKind: 'person'
+        });
+        $(el).closest('tr').hide();
+        renderPendingPersonTags();
+        scrollToPendingPersonTags();
     }
 
     // person-tag counterpart of requestDeleteExistingGeoDateTag above
@@ -2665,6 +2685,7 @@ else
                         <td>@(Model.Couplets.Where(c => c.Item1 == tag.CoupletIndex).Select(c => c.Item2).FirstOrDefault() ?? "— کل شعر —")</td>
                         <td>@(tag.Person != null ? tag.Person.Name : $"نامبرده #{tag.PersonId}")@(tag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? " (اشاره)" : "")</td>
                         <td>
+                            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="requestChangeMentionOfExistingPersonTag(@tag.Id, @(tag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? 0 : 1), @(tag.CoupletIndex == 0 ? "null" : tag.CoupletIndex.ToString()), this)">@(tag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? "✏️ این نامبرده بخشی از داستان است" : "✏️ فقط اشاره است")</a>
                             <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="requestDeleteExistingPersonTag(@tag.Id, this)">🗑️ درخواست حذف</a>
                         </td>
                     </tr>

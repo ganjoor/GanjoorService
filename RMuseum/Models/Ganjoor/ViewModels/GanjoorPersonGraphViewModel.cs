@@ -56,6 +56,13 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public bool DirectlyTagged { get; set; } = true;
 
         /// <summary>
+        /// category graphs only: the person is named in the work solely as an allusion (comparison,
+        /// memory, example), never as part of its story - drawn dimmed like a one-hop addition, but
+        /// labelled differently, and never used to pull in relatives
+        /// </summary>
+        public bool AllusionOnly { get; set; }
+
+        /// <summary>
         /// numeric value of PersonImportance (0=Normal, 1=Important, 2=VeryImportant) - used
         /// client-side to size this node larger or smaller, see peoplegraph.js's nodeRadius()
         /// </summary>

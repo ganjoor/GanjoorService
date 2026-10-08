@@ -2218,13 +2218,21 @@ namespace RMuseum.Services.Implementation
 
                 var catIds = await _GetCategorySubtreeIdsAsync(catId);
 
+                // people who take part in the work's story/context are the graph's real members and the seeds
+                // of the one-hop expansion; people named only as an allusion are shown (dimmed, marked) but
+                // never pull their own relatives in
                 var directPersonIds = await _context.PoemGeoDateTags
-                    .Where(t => t.MachineGenerated == false && t.PersonId != null && catIds.Contains(t.Poem.CatId))
+                    .Where(t => t.MachineGenerated == false && t.PersonId != null && t.PersonMention == PersonMentionKind.Participant && catIds.Contains(t.Poem.CatId))
                     .Select(t => t.PersonId.Value)
                     .Distinct()
                     .ToListAsync();
+                var allusionOnlyPersonIds = (await _context.PoemGeoDateTags
+                    .Where(t => t.MachineGenerated == false && t.PersonId != null && t.PersonMention == PersonMentionKind.Allusion && catIds.Contains(t.Poem.CatId))
+                    .Select(t => t.PersonId.Value)
+                    .Distinct()
+                    .ToListAsync()).Where(id => !directPersonIds.Contains(id)).ToList();
 
-                if (directPersonIds.Count == 0)
+                if (directPersonIds.Count == 0 && allusionOnlyPersonIds.Count == 0)
                 {
                     return new RServiceResult<GanjoorPersonGraphViewModel>(new GanjoorPersonGraphViewModel()
                     {
@@ -2243,6 +2251,7 @@ namespace RMuseum.Services.Implementation
                     .ToListAsync();
 
                 var allIdSet = new HashSet<int>(directIdSet);
+                allIdSet.UnionWith(allusionOnlyPersonIds);
                 foreach (var r in oneHopRelations)
                 {
                     allIdSet.Add(r.Person1Id);
@@ -2270,6 +2279,11 @@ namespace RMuseum.Services.Implementation
                 var personById = persons.ToDictionary(p => p.Id);
 
                 var nodes = _BuildGraphNodes(persons, directIdSet);
+                var allusionOnlySet = new HashSet<int>(allusionOnlyPersonIds);
+                foreach (var node in nodes)
+                {
+                    node.AllusionOnly = allusionOnlySet.Contains(node.Id);
+                }
                 var edges = _BuildGraphEdges(relations, affiliations, personById);
 
                 return new RServiceResult<GanjoorPersonGraphViewModel>(new GanjoorPersonGraphViewModel()

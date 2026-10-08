@@ -185,7 +185,18 @@ else
                                     }
                                 </td>
                             </tr>
-                            @if (geoTag.MarkForDelete)
+                            @if (geoTag.ChangeMentionOfExistingTag)
+                            {
+                                <tr>
+                                    <td>
+                                        <p class="red-color">نقش نامبرده در برچسب موجود</p>
+                                    </td>
+                                    <td>
+                                        <p class="green-color">@(geoTag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? "فقط اشاره" : "بخشی از داستان/متن")</p>
+                                    </td>
+                                </tr>
+                            }
+                            else if (geoTag.MarkForDelete)
                             {
                                 <tr>
                                     <td>

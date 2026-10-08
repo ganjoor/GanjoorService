@@ -338,7 +338,7 @@ else
                     {
                         foreach (var summaryTag in Model.Correction.GeoDateTags)
                         {
-                            var summaryExistingTag = summaryTag.MarkForDelete && summaryTag.ExistingTagId != null && Model.PageInformation.Poem.GeoDateTags != null
+                            var summaryExistingTag = (summaryTag.MarkForDelete || summaryTag.ChangeMentionOfExistingTag) && summaryTag.ExistingTagId != null && Model.PageInformation.Poem.GeoDateTags != null
                                 ? Model.PageInformation.Poem.GeoDateTags.Where(t => t.Id == summaryTag.ExistingTagId).FirstOrDefault()
                                 : null;
                             var summaryIsPersonTag = summaryTag.PersonId != null || !string.IsNullOrEmpty(summaryTag.SuggestedPersonGraphJson) || (summaryExistingTag != null && summaryExistingTag.PersonId != null);
@@ -881,7 +881,7 @@ else
                 // for a delete-request row, PersonId/SuggestedPersonGraphJson are always null (the row
                 // only carries ExistingTagId) - so the tag's kind has to be resolved from the existing
                 // tag being deleted instead, or a person-tag deletion would be mislabeled as geo/date
-                var existingTagForKindCheck = geoTag.MarkForDelete && geoTag.ExistingTagId != null && Model.PageInformation.Poem.GeoDateTags != null
+                var existingTagForKindCheck = (geoTag.MarkForDelete || geoTag.ChangeMentionOfExistingTag) && geoTag.ExistingTagId != null && Model.PageInformation.Poem.GeoDateTags != null
                     ? Model.PageInformation.Poem.GeoDateTags.Where(t => t.Id == geoTag.ExistingTagId).FirstOrDefault()
                     : null;
                 var isPersonTag = geoTag.PersonId != null || !string.IsNullOrEmpty(geoTag.SuggestedPersonGraphJson) || (existingTagForKindCheck != null && existingTagForKindCheck.PersonId != null);
@@ -907,7 +907,19 @@ else
                         </td>
                     </tr>
                 }
-                @if (geoTag.MarkForDelete)
+                @if (geoTag.ChangeMentionOfExistingTag)
+                {
+                    <tr>
+                        <td colspan="2">
+                            <p class="green-color">
+                                تغییر نقش نامبرده @(existingTagForKindCheck?.Person?.Name):
+                                @(existingTagForKindCheck?.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? "اشاره" : "بخشی از داستان/متن")
+                                ← <strong>@(geoTag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? "فقط اشاره" : "بخشی از داستان/متن")</strong>
+                            </p>
+                        </td>
+                    </tr>
+                }
+                else if (geoTag.MarkForDelete)
                 {
                     var existingTag = existingTagForKindCheck;
                     <tr>

@@ -40,6 +40,8 @@ namespace GanjooRazor.Pages
         /// (never itself tagged in this work's verses) - used to decide whether to show the
         /// explanatory legend note about dashed/secondary nodes
         /// </summary>
+        public bool HasAllusionNodes => Graph?.Nodes != null && System.Linq.Enumerable.Any(Graph.Nodes, n => n.AllusionOnly);
+
         public bool HasSecondaryNodes
         {
             get
@@ -48,7 +50,7 @@ namespace GanjooRazor.Pages
                     return false;
                 foreach (var node in Graph.Nodes)
                 {
-                    if (!node.DirectlyTagged)
+                    if (!node.DirectlyTagged && !node.AllusionOnly)
                         return true;
                 }
                 return false;

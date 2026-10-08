@@ -2135,6 +2135,33 @@ namespace RMuseum.Services.Implementation
 
                 foreach (var geoDateTag in correction.GeoDateTags)
                 {
+                    if (geoDateTag.ChangeMentionOfExistingTag)
+                    {
+                        // only flips PersonMention of an existing person tag of this very poem - nothing
+                        // else on the row is meaningful, so clear it to keep the stored row unambiguous
+                        var targetTag = geoDateTag.ExistingTagId == null ? null : approvedGeoDateTags.FirstOrDefault(t => t.Id == geoDateTag.ExistingTagId);
+                        if (targetTag == null || targetTag.PersonId == null)
+                        {
+                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "برچسب نامبردهٔ مورد نظر برای تغییر نقش در این شعر پیدا نشد.");
+                        }
+                        if (targetTag.PersonMention == geoDateTag.PersonMention)
+                        {
+                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "نقش این نامبرده هم‌اکنون همین است.");
+                        }
+                        geoDateTag.MarkForDelete = false;
+                        geoDateTag.LocationId = null;
+                        geoDateTag.SuggestedLocationName = null;
+                        geoDateTag.SuggestedLatitude = null;
+                        geoDateTag.SuggestedLongitude = null;
+                        geoDateTag.LunarYear = null;
+                        geoDateTag.LunarMonth = null;
+                        geoDateTag.LunarDay = null;
+                        geoDateTag.PersonId = null;
+                        geoDateTag.SuggestedPersonGraphJson = null;
+                        geoDateTag.CoupletIndex = targetTag.CoupletIndex;
+                        continue;
+                    }
+
                     if (!geoDateTag.MarkForDelete)
                     {
                         bool hasLocation = geoDateTag.LocationId != null ||

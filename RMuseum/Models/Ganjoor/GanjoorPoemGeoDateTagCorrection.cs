@@ -73,6 +73,13 @@
         public PersonMentionKind PersonMention { get; set; }
 
         /// <summary>
+        /// true when this row only asks to change the PersonMention of the existing person tag
+        /// ExistingTagId (to the value in PersonMention) - it neither adds nor deletes a tag. Reverting an
+        /// approved change is another such row carrying the opposite value.
+        /// </summary>
+        public bool ChangeMentionOfExistingTag { get; set; }
+
+        /// <summary>
         /// a brand new, not yet approved person (and optionally that person's relatives/relations,
         /// which may themselves be new people) - serialized JSON rather than its own set of
         /// correction tables, because a single suggestion can introduce several interlinked new

@@ -682,7 +682,19 @@ namespace RMuseum.Services.Implementation
                         {
                             dbCorrection.AffectedThePoem = true;
 
-                            if (dbGeoDateTag.MarkForDelete)
+                            if (dbGeoDateTag.ChangeMentionOfExistingTag)
+                            {
+                                // not an added or removed tag: only the existing person tag's mention kind changes
+                                var tagToChange = dbGeoDateTag.ExistingTagId == null ? null :
+                                    await _context.PoemGeoDateTags.Where(t => t.Id == dbGeoDateTag.ExistingTagId).SingleOrDefaultAsync();
+                                if (tagToChange == null || tagToChange.PersonId == null)
+                                {
+                                    return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "برچسب نامبردهٔ مورد نظر برای تغییر نقش دیگر وجود ندارد.");
+                                }
+                                tagToChange.PersonMention = dbGeoDateTag.PersonMention;
+                                _context.PoemGeoDateTags.Update(tagToChange);
+                            }
+                            else if (dbGeoDateTag.MarkForDelete)
                             {
                                 // approving a delete-suggestion removes the existing, already-approved tag it targets.
                                 // before removing it, snapshot its data onto this correction row itself (reusing the
