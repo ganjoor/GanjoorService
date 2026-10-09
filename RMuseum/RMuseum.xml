@@ -5305,6 +5305,12 @@
             description
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Accounting.ViewModels.UpdateDateDescriptionViewModel.ExpenditureDesc">
+            <summary>
+            expenditure description (donations only; null = leave unchanged, empty = not spent yet).
+            Used to mark credit donations (amount 0) as consumed. Ignored for expenses.
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Artifact.PublishStatus">
             <summary>
             Items or pictures status

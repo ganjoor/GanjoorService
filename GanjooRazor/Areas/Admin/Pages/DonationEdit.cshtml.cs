@@ -49,7 +49,8 @@ namespace GanjooRazor.Areas.Admin.Pages
             Donation = new UpdateDateDescriptionViewModel()
             {
                 Date = donation.RecordDate,
-                Description = donation.DonorName
+                Description = donation.DonorName,
+                ExpenditureDesc = donation.ExpenditureDesc ?? ""
             };
 
             return Page();

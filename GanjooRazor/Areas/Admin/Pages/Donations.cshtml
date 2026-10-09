@@ -26,7 +26,7 @@
 {
     <div class="up-card">
         <h2 class="up-card__title">کمک مالی جدید</h2>
-        <form method="post" class="up-form">
+        <form method="post" class="up-form" id="newDonationForm">
             @Html.AntiForgeryToken()
             <div class="up-field">
                 <label asp-for="Donation.RecordDate">تاریخ</label>
@@ -34,7 +34,7 @@
             </div>
             <div class="up-field">
                 <label asp-for="Donation.Amount">مبلغ</label>
-                <input type="number" asp-for="Donation.Amount" />
+                <input type="text" inputmode="numeric" dir="ltr" autocomplete="off" id="donationAmount" asp-for="Donation.Amount" />
             </div>
             <div class="up-field">
                 <label asp-for="Donation.Unit">واحد</label>
@@ -67,6 +67,7 @@
             <th>تاریخ</th>
             <th>مبلغ</th>
             <th>اهدا کننده</th>
+            <th>محل هزینه</th>
             <th>#</th>
         </tr>
         @foreach (var donation in Model.Donations)
@@ -75,6 +76,7 @@
                 <td>@donation.DateString</td>
                 <td>@donation.AmountString</td>
                 <td>@donation.DonorName</td>
+                <td>@(string.IsNullOrEmpty(donation.ExpenditureDesc) ? "هنوز هزینه نشده." : donation.ExpenditureDesc)</td>
                 <td>
                     <a role="button" href="/Admin/DonationEdit/?id=@donation.Id" class="up-icon-btn" title="ویرایش" aria-label="ویرایش این کمک مالی">✎</a>
                     <a role="button" onclick="deleteItem(@donation.Id, 'کمک')" class="up-icon-btn" title="حذف" aria-label="حذف این کمک مالی">🗑</a>
@@ -88,3 +90,23 @@ else
 {
     <partial name="_EmptyState" model="@("هنوز کمک مالی‌ای ثبت نشده است.")" />
 }
+
+<script>
+    (function () {
+        var inp = document.getElementById('donationAmount');
+        if (!inp) return;
+        function digits(v) {
+            return v.replace(/[\u06F0-\u06F9]/g, function (c) { return c.charCodeAt(0) - 0x06F0; })
+                    .replace(/[\u0660-\u0669]/g, function (c) { return c.charCodeAt(0) - 0x0660; })
+                    .replace(/[^0-9]/g, '');
+        }
+        function fmt() {
+            var d = digits(inp.value);
+            inp.value = d ? d.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
+        }
+        inp.addEventListener('input', fmt);
+        fmt();
+        var form = document.getElementById('newDonationForm');
+        if (form) form.addEventListener('submit', function () { inp.value = digits(inp.value) || '0'; });
+    })();
+</script>

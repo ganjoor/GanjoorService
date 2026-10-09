@@ -27,6 +27,16 @@
                 <td><input size="50" asp-for="Donation.Description" /> </td>
             </tr>
             <tr>
+                <td>محل هزینه / مصرف:</td>
+                <td>
+                    <textarea rows="3" cols="60" id="expDesc" asp-for="Donation.ExpenditureDesc"></textarea>
+                    <br />
+                    <a role="button" class="up-btn up-btn--ghost" onclick="document.getElementById('expDesc').value='این اعتبار مصرف شده است.'">علامت‌گذاری به عنوان مصرف‌شده</a>
+                    <a role="button" class="up-btn up-btn--ghost" onclick="document.getElementById('expDesc').value=''">پاک کردن (هنوز هزینه نشده)</a>
+                    <p class="up-hint">متن این فیلد در ستون «محل هزینه» صفحهٔ /donate نمایش داده می‌شود؛ اگر خالی باشد «هنوز هزینه نشده.» نوشته می‌شود.</p>
+                </td>
+            </tr>
+            <tr>
                 <td colspan="2">
                     <input type="submit" value="ویرایش" />
                 </td>

@@ -114,6 +114,8 @@ namespace RMuseum.Services.Implementation
             donation.RecordDate = updateModel.Date;
             donation.DateString = LanguageUtils.FormatDate(donation.RecordDate);
             donation.DonorName = updateModel.Description;
+            if (updateModel.ExpenditureDesc != null)
+                donation.ExpenditureDesc = updateModel.ExpenditureDesc.Trim();
             _context.GanjoorDonations.Update(donation);
             await _context.SaveChangesAsync();
             await RegenerateDonationsPage(editingUserId, $"ویرایش کمک مالی از {donation.DonorName} به مبلغ {donation.AmountString}");//ignore possible errors here!
