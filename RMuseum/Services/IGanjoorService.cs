@@ -1659,6 +1659,16 @@ namespace RMuseum.Services
         void OpenAIStartFillingGeoLocations(int startFrom, int count);
 
         /// <summary>
+        /// suggest titles for bare "بخش n" poems under a category using AI (registered as unreviewed edit suggestions)
+        /// </summary>
+        /// <param name="masterCatId"></param>
+        /// <param name="suggestingUserId"></param>
+        /// <param name="model"></param>
+        /// <param name="startFrom"></param>
+        /// <param name="count"></param>
+        void OpenAIStartSuggestingPoemTitles(int masterCatId, Guid? suggestingUserId, string model, int startFrom, int count);
+
+        /// <summary>
         /// send cat correction
         /// </summary>
         /// <param name="correction"></param>

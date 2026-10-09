@@ -4841,6 +4841,26 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// suggest titles for bare "بخش n" poems of a book (e.g. Shahnameh = 33) using AI;
+        /// results are registered as unreviewed poem edit suggestions of the given user
+        /// </summary>
+        /// <param name="masterCatId"></param>
+        /// <param name="suggestingUserId"></param>
+        /// <param name="model">AI model id (optional: defaults to OpenAITitleModel in appsettings)</param>
+        /// <param name="startFrom"></param>
+        /// <param name="count">0 = all</param>
+        /// <returns></returns>
+        [HttpPut("ai/generate/poem/titles")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult OpenAIStartSuggestingPoemTitles(int masterCatId = 33, Guid? suggestingUserId = null, string model = null, int startFrom = 0, int count = 0)
+        {
+            _ganjoorService.OpenAIStartSuggestingPoemTitles(masterCatId, suggestingUserId, model, startFrom, count);
+            return Ok();
+        }
+
 
         /// <summary>
         /// send cat corrections
