@@ -1639,17 +1639,21 @@ namespace RMuseum.Services
         /// <summary>
         /// fill couplet summaries using open ai
         /// </summary>
-        /// <param name="startFrom"></param>
-        /// <param name="count"></param>
-        void OpenAIStartFillingCoupletSummaries(int startFrom, int count);
+        /// <param name="startFrom">offset in the ordered list of candidates</param>
+        /// <param name="count">0 means all</param>
+        /// <param name="masterCatId">null or 0 means the whole set</param>
+        /// <param name="regenerateAI">false: only missing; true: also regenerate summaries starting with the AI prefix</param>
+        void OpenAIStartFillingCoupletSummaries(int startFrom, int count, int? masterCatId, bool regenerateAI);
 
 
         /// <summary>
         /// fill poem summaries using open ai
         /// </summary>
-        /// <param name="startFrom"></param>
-        /// <param name="count"></param>
-        void OpenAIStartFillingPoemSummaries(int startFrom, int count);
+        /// <param name="startFrom">offset in the ordered list of candidates</param>
+        /// <param name="count">0 means all</param>
+        /// <param name="masterCatId">null or 0 means the whole set</param>
+        /// <param name="regenerateAI">false: only missing; true: also regenerate summaries starting with the AI prefix</param>
+        void OpenAIStartFillingPoemSummaries(int startFrom, int count, int? masterCatId, bool regenerateAI);
 
         /// <summary>
         /// geo tag poems using AI

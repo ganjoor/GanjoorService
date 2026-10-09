@@ -2577,20 +2577,24 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32,System.Int32,System.Boolean)">
             <summary>
             fill couplet summaries using open ai
             </summary>
             <param name="startFrom"></param>
-            <param name="count"></param>
+            <param name="count">0 means all</param>
+            <param name="masterCatId">0 means the whole set</param>
+            <param name="regenerateAI">false: only missing summaries; true: also regenerate AI generated ones</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32,System.Int32,System.Boolean)">
             <summary>
             fill poem summaries using open ai
             </summary>
             <param name="startFrom"></param>
-            <param name="count"></param>
+            <param name="count">0 means all</param>
+            <param name="masterCatId">0 means the whole set</param>
+            <param name="regenerateAI">false: only missing summaries; true: also regenerate AI generated ones</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingGeoLocations(System.Int32,System.Int32)">
@@ -21006,19 +21010,23 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean)">
             <summary>
             fill couplet summaries using open ai
             </summary>
-            <param name="startFrom"></param>
-            <param name="count"></param>
+            <param name="startFrom">offset in the ordered list of candidates</param>
+            <param name="count">0 means all</param>
+            <param name="masterCatId">null or 0 means the whole set</param>
+            <param name="regenerateAI">false: only missing; true: also regenerate summaries starting with the AI prefix</param>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean)">
             <summary>
             fill poem summaries using open ai
             </summary>
-            <param name="startFrom"></param>
-            <param name="count"></param>
+            <param name="startFrom">offset in the ordered list of candidates</param>
+            <param name="count">0 means all</param>
+            <param name="masterCatId">null or 0 means the whole set</param>
+            <param name="regenerateAI">false: only missing; true: also regenerate summaries starting with the AI prefix</param>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingGeoLocations(System.Int32,System.Int32)">
             <summary>
@@ -24000,19 +24008,39 @@
             <param name="naskbanPassword"></param>
             <returns>number of synched items</returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._NeedsAISummary(System.String,System.Boolean)">
             <summary>
-            fill couplet summaries using open ai
+            should this summary be (re)generated? empty ones always, AI generated ones only when regenerateAI is true
             </summary>
-            <param name="startFrom"></param>
-            <param name="count"></param>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._AIGetCategoryTreeIdsAsync(RMuseum.DbContext.RMuseumDbContext,System.Int32)">
             <summary>
-            fill poem summaries using open ai
+            all category ids under (and including) a root category
             </summary>
-            <param name="startFrom"></param>
-            <param name="count"></param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._CleanAISummary(System.String,System.Int32)">
+            <summary>
+            cleans the model's answer: removes leading labels/quotes, rejects empty, suspicious (the known
+            "اکتبر" garbage), mostly Latin or overly long answers. Returns null when the answer must not be used.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean)">
+            <summary>
+            fill (or regenerate) couplet summaries using open ai
+            </summary>
+            <param name="startFrom">offset in the list of couplets to process (the list is ordered by verse id, so with regenerateAI it is stable and can be used to resume)</param>
+            <param name="count">0 = all</param>
+            <param name="masterCatId">only couplets of poems under this category (0 or null = the whole set)</param>
+            <param name="regenerateAI">false: only couplets without any summary; true: also couplets whose summary starts with «هوش مصنوعی:» (human written summaries are never touched)</param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean)">
+            <summary>
+            fill (or regenerate) poem summaries using open ai
+            </summary>
+            <param name="startFrom">offset in the list of poems to process (ordered by poem id, so with regenerateAI it is stable and can be used to resume)</param>
+            <param name="count">0 = all</param>
+            <param name="masterCatId">only poems under this category (0 or null = the whole set)</param>
+            <param name="regenerateAI">false: only poems without any summary; true: also poems whose summary starts with «هوش مصنوعی:» (human written summaries are never touched)</param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingGeoLocations(System.Int32,System.Int32)">
             <summary>
