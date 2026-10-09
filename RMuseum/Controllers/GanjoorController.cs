@@ -4859,6 +4859,26 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// tag people in the poems of a book (e.g. Shahnameh = 33) starting from a poem id and suggest relations/affiliations
+        /// with couplet evidence using AI; everything is registered as unreviewed suggestions of the configured user.
+        /// Run it again after reviewing: people approved in the meantime are then linked and the remaining tags/relations are added.
+        /// </summary>
+        /// <param name="masterCatId"></param>
+        /// <param name="startPoemId"></param>
+        /// <param name="count">0 = all</param>
+        /// <param name="dryRun">true: write nothing, only report in the job log</param>
+        /// <returns></returns>
+        [HttpPut("ai/generate/poem/people")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult OpenAIStartSuggestingPoemPeople(int masterCatId = 33, int startPoemId = 0, int count = 0, bool dryRun = false)
+        {
+            _ganjoorService.OpenAIStartSuggestingPoemPeople(masterCatId, startPoemId, count, dryRun);
+            return Ok();
+        }
+
 
         /// <summary>
         /// send cat corrections

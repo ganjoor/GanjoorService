@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RMuseum.DbContext;
 using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
@@ -1456,8 +1456,9 @@ namespace RMuseum.Services.Implementation
         /// submit a suggested addition, change or removal of a kinship edge
         /// </summary>
         /// <param name="suggestion"></param>
+        /// <param name="notifyModerators">false for bulk/automatic submissions, to avoid one notification per suggestion</param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPersonRelationEditSuggestion>> SuggestPersonRelationEditAsync(GanjoorPersonRelationEditSuggestion suggestion)
+        public async Task<RServiceResult<GanjoorPersonRelationEditSuggestion>> SuggestPersonRelationEditAsync(GanjoorPersonRelationEditSuggestion suggestion, bool notifyModerators = true)
         {
             try
             {
@@ -1705,10 +1706,13 @@ namespace RMuseum.Services.Implementation
                     _ => $"کاربری پیشنهاد حذف {edgeLabel} بین «{person1.Name}» و «{person2.Name}» را داده است.",
                 };
 
-                await NotifyModeratorsOfPendingSuggestionAsync(
-                    actionTitle,
-                    actionText + " لطفاً بخش <a href=\"https://ganjoor.net/Admin/ReviewPersonRelationEdits\">ویرایش‌های پیشنهادی نسبت‌های خویشاوندی</a> را بررسی فرمایید."
-                );
+                if (notifyModerators)
+                {
+                    await NotifyModeratorsOfPendingSuggestionAsync(
+                        actionTitle,
+                        actionText + " لطفاً بخش <a href=\"https://ganjoor.net/Admin/ReviewPersonRelationEdits\">ویرایش‌های پیشنهادی نسبت‌های خویشاوندی</a> را بررسی فرمایید."
+                    );
+                }
 
                 return new RServiceResult<GanjoorPersonRelationEditSuggestion>(suggestion);
             }

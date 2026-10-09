@@ -1,4 +1,4 @@
-using RMuseum.Models.Ganjoor;
+﻿using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using RSecurityBackend.Models.Generic;
 using System;
@@ -136,8 +136,9 @@ namespace RMuseum.Services
         /// pending queue, does not change anything until a moderator approves it
         /// </summary>
         /// <param name="suggestion"></param>
+        /// <param name="notifyModerators">false for bulk/automatic submissions</param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPersonRelationEditSuggestion>> SuggestPersonRelationEditAsync(GanjoorPersonRelationEditSuggestion suggestion);
+        Task<RServiceResult<GanjoorPersonRelationEditSuggestion>> SuggestPersonRelationEditAsync(GanjoorPersonRelationEditSuggestion suggestion, bool notifyModerators = true);
 
         /// <summary>
         /// get the next unreviewed relation-edit suggestion (for the moderator queue)

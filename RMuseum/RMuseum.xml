@@ -2601,6 +2601,28 @@
             <param name="count"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartSuggestingPoemTitles(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            suggest titles for bare "بخش n" poems of a book (e.g. Shahnameh = 33) using AI;
+            results are registered as unreviewed poem edit suggestions of the given user
+            </summary>
+            <param name="masterCatId"></param>
+            <param name="startFrom"></param>
+            <param name="count">0 = all</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartSuggestingPoemPeople(System.Int32,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            tag people in the poems of a book (e.g. Shahnameh = 33) starting from a poem id and suggest relations/affiliations
+            with couplet evidence using AI; everything is registered as unreviewed suggestions of the configured user.
+            Run it again after reviewing: people approved in the meantime are then linked and the remaining tags/relations are added.
+            </summary>
+            <param name="masterCatId"></param>
+            <param name="startPoemId"></param>
+            <param name="count">0 = all</param>
+            <param name="dryRun">true: write nothing, only report in the job log</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.SuggestCatCorrectionAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel)">
             <summary>
             send cat corrections
@@ -19302,12 +19324,13 @@
             <param name="affiliationId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.SuggestPersonRelationEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion)">
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.SuggestPersonRelationEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion,System.Boolean)">
             <summary>
             submit a suggested addition, change or removal of a kinship edge - goes into the
             pending queue, does not change anything until a moderator approves it
             </summary>
             <param name="suggestion"></param>
+            <param name="notifyModerators">false for bulk/automatic submissions</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetNextUnreviewedPersonRelationEditSuggestionAsync(System.Int32)">
@@ -20982,6 +21005,23 @@
             </summary>
             <param name="startFrom"></param>
             <param name="count"></param>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartSuggestingPoemTitles(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            suggest titles for bare "بخش n" poems under a category using AI (registered as unreviewed edit suggestions)
+            </summary>
+            <param name="masterCatId"></param>
+            <param name="startFrom"></param>
+            <param name="count"></param>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartSuggestingPoemPeople(System.Int32,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            tag people in poems of a book and suggest their relations/affiliations (with couplet evidence) using AI
+            </summary>
+            <param name="masterCatId"></param>
+            <param name="startPoemId"></param>
+            <param name="count"></param>
+            <param name="dryRun"></param>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.SuggestCatCorrectionAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel)">
             <summary>
@@ -23109,11 +23149,12 @@
             error message or null.
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.SuggestPersonRelationEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.SuggestPersonRelationEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion,System.Boolean)">
             <summary>
             submit a suggested addition, change or removal of a kinship edge
             </summary>
             <param name="suggestion"></param>
+            <param name="notifyModerators">false for bulk/automatic submissions, to avoid one notification per suggestion</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetNextUnreviewedPersonRelationEditSuggestionAsync(System.Int32)">
@@ -23214,6 +23255,12 @@
             </summary>
         </member>
         <member name="T:RMuseum.Services.Implementation.GanjoorService">
+            <summary>
+            IGanjoorService implementation
+            </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
             <summary>
             IGanjoorService implementation
             </summary>
@@ -23952,6 +23999,35 @@
             </summary>
             <param name="startFrom"></param>
             <param name="count"></param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._AIFindCandidates(System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIPersonRec},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.Dictionary{System.Int32,System.Int32},System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIPersonRec}@,System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIPersonRec}@)">
+            <summary>
+            strong = exact (normalized) name match, weak = spelling variant / shared name token
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartSuggestingPoemPeople(System.Int32,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            tag people in poems of a book (and suggest relations/affiliations with evidence) using AI;
+            everything is registered as unreviewed suggestions of the configured user
+            </summary>
+            <param name="masterCatId">book category id (33 = Shahnameh)</param>
+            <param name="startPoemId">first poem id to process (poems are processed in id order)</param>
+            <param name="count">0 = all</param>
+            <param name="dryRun">only report in the job log, write nothing</param>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.GanjoorService.OpenAIModel">
+            <summary>
+            AI model used by the summary/geo jobs (OpenAIModel in configuration, gpt-4o-mini if not set)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartSuggestingPoemTitles(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            complete bare "بخش n" titles of poems under a category (e.g. Shahnameh) using AI and
+            submit the results as ordinary (unreviewed) poem edit suggestions of the given user
+            </summary>
+            <param name="masterCatId">book category id (33 = Shahnameh)</param>
+            <param name="startFrom"></param>
+            <param name="count">0 = all</param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryPaperSourcesAsync(System.Int32)">
             <summary>

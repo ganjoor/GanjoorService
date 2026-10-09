@@ -1667,6 +1667,15 @@ namespace RMuseum.Services
         void OpenAIStartSuggestingPoemTitles(int masterCatId, int startFrom, int count);
 
         /// <summary>
+        /// tag people in poems of a book and suggest their relations/affiliations (with couplet evidence) using AI
+        /// </summary>
+        /// <param name="masterCatId"></param>
+        /// <param name="startPoemId"></param>
+        /// <param name="count"></param>
+        /// <param name="dryRun"></param>
+        void OpenAIStartSuggestingPoemPeople(int masterCatId, int startPoemId, int count, bool dryRun);
+
+        /// <summary>
         /// send cat correction
         /// </summary>
         /// <param name="correction"></param>
