@@ -138,7 +138,7 @@ namespace RMuseum.Services.Implementation
                                                     couplet
                                                     ),
                                         },
-                                      Model = Betalgo.Ranul.OpenAI.ObjectModels.Models.Gpt_4o_mini,
+                                      Model = OpenAIModel,
                                   });
                                   if (completionResult.Successful)
                                   {
@@ -249,7 +249,7 @@ namespace RMuseum.Services.Implementation
                                                     poem.PlainText
                                                     ),
                                         },
-                                      Model = Betalgo.Ranul.OpenAI.ObjectModels.Models.Gpt_4o_mini,
+                                      Model = OpenAIModel,
                                   });
                                   if (completionResult.Successful)
                                   {
@@ -359,7 +359,7 @@ namespace RMuseum.Services.Implementation
                                                     poem.PlainText
                                                     ),
                                         },
-                                      Model = Betalgo.Ranul.OpenAI.ObjectModels.Models.Gpt_4o_mini,
+                                      Model = OpenAIModel,
                                   });
                                   if (completionResult.Successful)
                                   {

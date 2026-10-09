@@ -17,6 +17,18 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
+        /// <summary>
+        /// AI model used by the summary/geo jobs (OpenAIModel in configuration, gpt-4o-mini if not set)
+        /// </summary>
+        private string OpenAIModel
+        {
+            get
+            {
+                string model = Configuration["OpenAIModel"];
+                return string.IsNullOrWhiteSpace(model) ? "gpt-4o-mini" : model.Trim();
+            }
+        }
+
         private const string AITitlePromptHeader =
 @"تو یک متخصص ادبیات حماسی فارسی و شاهنامه فردوسی هستی.
 
@@ -44,11 +56,9 @@ namespace RMuseum.Services.Implementation
         /// submit the results as ordinary (unreviewed) poem edit suggestions of the given user
         /// </summary>
         /// <param name="masterCatId">book category id (33 = Shahnameh)</param>
-        /// <param name="suggestingUserIdParam">user the suggestions are registered for (null = OpenAITitleUserId in configuration)</param>
-        /// <param name="model">AI model id (null = OpenAITitleModel in configuration)</param>
         /// <param name="startFrom"></param>
         /// <param name="count">0 = all</param>
-        public void OpenAIStartSuggestingPoemTitles(int masterCatId, Guid? suggestingUserIdParam, string model, int startFrom, int count)
+        public void OpenAIStartSuggestingPoemTitles(int masterCatId, int startFrom, int count)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
               (
@@ -60,17 +70,14 @@ namespace RMuseum.Services.Implementation
                       var job = (await jobProgressServiceEF.NewJob($"OpenAIStartSuggestingPoemTitles - cat: {masterCatId} - start: {startFrom} - count: {count}", "Open AI initialization")).Result;
                       try
                       {
-                          if (string.IsNullOrEmpty(model))
-                              model = Configuration["OpenAITitleModel"];
+                          string model = Configuration["OpenAITitleModel"];
                           if (string.IsNullOrEmpty(model))
                           {
                               await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, "OpenAITitleModel is not set in configuration");
                               return;
                           }
                           Guid suggestingUserId;
-                          if (suggestingUserIdParam != null)
-                              suggestingUserId = suggestingUserIdParam.Value;
-                          else if (!Guid.TryParse(Configuration["OpenAITitleUserId"], out suggestingUserId))
+                          if (!Guid.TryParse(Configuration["OpenAITitleUserId"], out suggestingUserId))
                           {
                               await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, "OpenAITitleUserId is not set (or invalid) in configuration");
                               return;
