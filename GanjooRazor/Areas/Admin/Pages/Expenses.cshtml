@@ -16,7 +16,7 @@
 
 <div class="up-card">
     <h2 class="up-card__title">هزینهٔ جدید</h2>
-    <form method="post" class="up-form">
+    <form method="post" class="up-form" id="newExpenseForm">
         @Html.AntiForgeryToken()
         <div class="up-field">
             <label asp-for="Expense.ExpenseDate">تاریخ</label>
@@ -24,7 +24,7 @@
         </div>
         <div class="up-field">
             <label asp-for="Expense.Amount">مبلغ</label>
-            <input type="number" asp-for="Expense.Amount" />
+            <input type="text" inputmode="numeric" dir="ltr" autocomplete="off" id="expenseAmount" asp-for="Expense.Amount" />
         </div>
         <div class="up-field">
             <label asp-for="Expense.Unit">واحد</label>
@@ -76,3 +76,23 @@ else
 {
     <partial name="_EmptyState" model="@("هنوز هزینه‌ای ثبت نشده است.")" />
 }
+
+<script>
+    (function () {
+        var inp = document.getElementById('expenseAmount');
+        if (!inp) return;
+        function digits(v) {
+            return v.replace(/[\u06F0-\u06F9]/g, function (c) { return c.charCodeAt(0) - 0x06F0; })
+                    .replace(/[\u0660-\u0669]/g, function (c) { return c.charCodeAt(0) - 0x0660; })
+                    .replace(/[^0-9]/g, '');
+        }
+        function fmt() {
+            var d = digits(inp.value);
+            inp.value = d ? d.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
+        }
+        inp.addEventListener('input', fmt);
+        fmt();
+        var form = document.getElementById('newExpenseForm');
+        if (form) form.addEventListener('submit', function () { inp.value = digits(inp.value) || '0'; });
+    })();
+</script>
