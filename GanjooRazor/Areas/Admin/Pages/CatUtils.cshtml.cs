@@ -435,6 +435,40 @@ namespace GanjooRazor.Areas.Admin.Pages
             }, new OkObjectResult(false));
         }
 
+        /// <summary>
+        /// starts one of the AI jobs for the category tree
+        /// </summary>
+        public Task<IActionResult> OnPostStartAIJobAsync(string job, int id, int startFrom, int count, bool regenerateAI, bool dryRun)
+        {
+            string path;
+            switch (job)
+            {
+                case "coupletSummaries":
+                    path = $"ai/generate/summaries?masterCatId={id}&startFrom={startFrom}&count={count}&regenerateAI={regenerateAI.ToString().ToLower()}";
+                    break;
+                case "poemSummaries":
+                    path = $"ai/generate/poem/summaries?masterCatId={id}&startFrom={startFrom}&count={count}&regenerateAI={regenerateAI.ToString().ToLower()}";
+                    break;
+                case "titles":
+                    path = $"ai/generate/poem/titles?masterCatId={id}&startFrom={startFrom}&count={count}";
+                    break;
+                case "people":
+                    path = $"ai/generate/poem/people?masterCatId={id}&startPoemId={startFrom}&count={count}&dryRun={dryRun.ToString().ToLower()}";
+                    break;
+                default:
+                    return Task.FromResult<IActionResult>(new BadRequestObjectResult("کار نامعتبر"));
+            }
+            return WithSecureClientAsync(async secureClient =>
+            {
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/{path}", null);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
+                }
+                return new OkObjectResult(true);
+            }, new OkObjectResult(false));
+        }
+
         public Task<IActionResult> OnPostBatchReSlugCatPoemsAsync(int id)
         {
             return WithSecureClientAsync(async secureClient =>

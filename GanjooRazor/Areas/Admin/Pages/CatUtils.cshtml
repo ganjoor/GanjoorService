@@ -33,7 +33,35 @@
         });
      }
 
-     async function reslugCat(catId) {
+     async function startAIJob(catId, job, title) {
+        var startFrom = parseInt(document.getElementById('ai-start-from').value || '0');
+        var count = parseInt(document.getElementById('ai-count').value || '0');
+        var regenerateAI = document.getElementById('ai-regenerate').checked;
+        var dryRun = document.getElementById('ai-dryrun').checked;
+        var ok = await upConfirm('آیا از شروع کار «' + title + '» برای این بخش و زیربخش‌های آن اطمینان دارید؟');
+        if (!ok) return;
+
+        $.ajax({
+            type: "POST",
+            url: '?handler=StartAIJob',
+            data: {
+                job: job,
+                id: catId,
+                startFrom: startFrom,
+                count: count,
+                regenerateAI: regenerateAI,
+                dryRun: dryRun
+            },
+            error: function (e) {
+                upToast(e.responseText || 'خطا رخ داد.', 'error');
+            },
+            success: function () {
+                upToast('کار در صف قرار گرفت. پیشرفت را در فهرست کارهای طولانی ببینید.', 'success')
+            },
+        });
+    }
+
+    async function reslugCat(catId) {
         var ok = await upConfirm('آیا از تولید مجدد نشانی‌های شعرهای بخش اطمینان دارید؟');
         if (!ok) return;
 
@@ -461,6 +489,36 @@
         <tr>
             <td colspan="2">
                 <p><a role="button" onclick="tagPoemsWithFormat(@Model.Cat.Cat.Id)" class="up-btn up-btn--ghost up-btn--sm">تعیین قالب</a></p>
+            </td>
+        </tr>
+    </table>
+
+    <h2>کارهای هوش مصنوعی</h2>
+    <table>
+        <tr>
+            <td><span class="inputlabel">شروع از (برای کار شخص‌ها: شناسهٔ شعر آغازین)</span></td>
+            <td><input type="number" id="ai-start-from" value="0" min="0" /></td>
+        </tr>
+        <tr>
+            <td><span class="inputlabel">تعداد (۰ یعنی همه)</span></td>
+            <td><input type="number" id="ai-count" value="0" min="0" /></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label><input type="checkbox" id="ai-regenerate" /> بازتولید خلاصه‌های تولید شده با هوش مصنوعی (در غیر این صورت فقط خلاصه‌های خالی پر می‌شوند)</label>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label><input type="checkbox" id="ai-dryrun" /> اجرای آزمایشی برای برچسب‌گذاری شخص‌ها (بدون ثبت پیشنهاد)</label>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <p><a role="button" onclick="startAIJob(@Model.Cat.Cat.Id, 'coupletSummaries', 'خلاصهٔ ابیات')" class="up-btn up-btn--ghost up-btn--sm">خلاصهٔ ابیات</a>
+                <a role="button" onclick="startAIJob(@Model.Cat.Cat.Id, 'poemSummaries', 'خلاصهٔ اشعار')" class="up-btn up-btn--ghost up-btn--sm">خلاصهٔ اشعار</a>
+                <a role="button" onclick="startAIJob(@Model.Cat.Cat.Id, 'titles', 'پیشنهاد عنوان اشعار')" class="up-btn up-btn--ghost up-btn--sm">پیشنهاد عنوان</a>
+                <a role="button" onclick="startAIJob(@Model.Cat.Cat.Id, 'people', 'برچسب‌گذاری شخص‌ها و روابط')" class="up-btn up-btn--ghost up-btn--sm">برچسب‌گذاری شخص‌ها و روابط</a></p>
             </td>
         </tr>
     </table>
