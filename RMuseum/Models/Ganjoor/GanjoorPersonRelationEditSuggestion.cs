@@ -96,6 +96,15 @@ namespace RMuseum.Models.Ganjoor
         public bool ConfirmedExtraParent { get; set; }
 
         /// <summary>
+        /// only meaningful for a Modify of a directional edge (Parent/Ancestor kinship, or any
+        /// non-symmetric affiliation type): when true, approving the suggestion swaps the existing
+        /// edge's Person1Id/Person2Id (e.g. fixes a Killer edge recorded the wrong way round) instead
+        /// of the submitter having to delete it and add a new one. Person1Id/Person2Id of this
+        /// suggestion itself stay those of the existing edge at submission time.
+        /// </summary>
+        public bool ReverseDirection { get; set; }
+
+        /// <summary>
         /// for Add/Modify when Kind is Affiliation: the affiliation type to create/change to. For
         /// Remove: a snapshot of the existing affiliation's type at submission time, purely for
         /// display. Null/ignored when Kind is Family - see SuggestedRelationType instead.

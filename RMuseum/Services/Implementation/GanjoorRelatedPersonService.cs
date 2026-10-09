@@ -1504,6 +1504,11 @@ namespace RMuseum.Services.Implementation
                             return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null,
                                 "تغییر نوع وابستگی بین یک نوع متقارن (مثل هم‌عصر/متحد/رقیب/همراه) و یک نوع جهت‌دار (که در آن یک طرف زیردست/حامی/جانشین/... طرف دیگر است) ممکن نیست، چون جهت صحیح طرف اول و دوم برای نوع تازه معلوم نیست. لطفاً این وابستگی را حذف کرده و یک وابستگی تازه با نوع و جهت درست پیشنهاد دهید.");
                         }
+                        if (suggestion.Action == PersonRelationSuggestionAction.Modify && suggestion.ReverseDirection
+                            && _symmetricAffiliationTypes.Contains(suggestion.SuggestedAffiliationType ?? existingAffiliation.AffiliationType))
+                        {
+                            return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "این نوع وابستگی متقارن است و برعکس کردن جهت آن معنا ندارد.");
+                        }
                     }
                     else
                     {
@@ -1528,6 +1533,11 @@ namespace RMuseum.Services.Implementation
                         // what it actually targets, even for a Remove-display
                         suggestion.Person1Id = existingRelation.Person1Id;
                         suggestion.Person2Id = existingRelation.Person2Id;
+                        if (suggestion.Action == PersonRelationSuggestionAction.Modify && suggestion.ReverseDirection
+                            && (suggestion.SuggestedRelationType == PersonRelationType.Sibling || suggestion.SuggestedRelationType == PersonRelationType.Spouse))
+                        {
+                            return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "این نوع نسبت متقارن است و برعکس کردن جهت آن معنا ندارد.");
+                        }
                         if (suggestion.Action != PersonRelationSuggestionAction.Modify)
                         {
                             suggestion.SuggestedRelationType = existingRelation.RelationType;
@@ -1542,6 +1552,11 @@ namespace RMuseum.Services.Implementation
                     {
                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "دو طرف یک نسبت نمی‌توانند یک نفر باشند.");
                     }
+                }
+
+                if (suggestion.Action != PersonRelationSuggestionAction.Modify)
+                {
+                    suggestion.ReverseDirection = false;
                 }
 
                 var person1 = await _context.GanjoorRelatedPersons.Where(p => p.Id == suggestion.Person1Id).SingleOrDefaultAsync();
@@ -1559,13 +1574,15 @@ namespace RMuseum.Services.Implementation
                     bool unchanged = false;
                     if (existingRelation != null)
                     {
-                        unchanged = suggestion.SuggestedRelationType == existingRelation.RelationType
+                        unchanged = !suggestion.ReverseDirection
+                            && suggestion.SuggestedRelationType == existingRelation.RelationType
                             && suggestion.SuggestedDegreeHint == existingRelation.DegreeHint
                             && Norm(suggestion.SuggestedNote) == Norm(existingRelation.Note);
                     }
                     else if (existingAffiliation != null)
                     {
-                        unchanged = suggestion.SuggestedAffiliationType == existingAffiliation.AffiliationType
+                        unchanged = !suggestion.ReverseDirection
+                            && suggestion.SuggestedAffiliationType == existingAffiliation.AffiliationType
                             && Norm(suggestion.SuggestedNote) == Norm(existingAffiliation.Note);
                     }
                     if (unchanged)
@@ -1580,7 +1597,8 @@ namespace RMuseum.Services.Implementation
                 {
                     var excludeRelationId = suggestion.Action == PersonRelationSuggestionAction.Modify ? suggestion.ExistingRelationId : null;
                     var validationScope = await _ResolveValidationScopeAsync(suggestion.EvidencePoemId, excludeRelationId);
-                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, excludeRelationId, suggestion.ConfirmedExtraParent, validationScope);
+                    bool reverseFamily = suggestion.Action == PersonRelationSuggestionAction.Modify && suggestion.ReverseDirection;
+                    var validationError = await _ValidateFamilyRelationAsync(reverseFamily ? suggestion.Person2Id : suggestion.Person1Id, reverseFamily ? suggestion.Person1Id : suggestion.Person2Id, suggestion.SuggestedRelationType, excludeRelationId, suggestion.ConfirmedExtraParent, validationScope);
                     if (validationError != null)
                     {
                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, validationError);
@@ -1592,7 +1610,8 @@ namespace RMuseum.Services.Implementation
                     suggestion.SuggestedAffiliationType != null)
                 {
                     var excludeAffiliationId = suggestion.Action == PersonRelationSuggestionAction.Modify ? suggestion.ExistingAffiliationId : null;
-                    var duplicateAffiliation = await _GetDuplicateAffiliationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedAffiliationType.Value, excludeAffiliationId);
+                    bool reverseAffiliation = suggestion.Action == PersonRelationSuggestionAction.Modify && suggestion.ReverseDirection;
+                    var duplicateAffiliation = await _GetDuplicateAffiliationAsync(reverseAffiliation ? suggestion.Person2Id : suggestion.Person1Id, reverseAffiliation ? suggestion.Person1Id : suggestion.Person2Id, suggestion.SuggestedAffiliationType.Value, excludeAffiliationId);
                     if (duplicateAffiliation != null)
                     {
                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null,
@@ -1700,7 +1719,7 @@ namespace RMuseum.Services.Implementation
                 string actionText = suggestion.Action switch
                 {
                     PersonRelationSuggestionAction.Add => $"کاربری پیشنهاد افزودن {edgeLabel} جدید بین «{person1.Name}» و «{person2.Name}» را داده است.",
-                    PersonRelationSuggestionAction.Modify => $"کاربری پیشنهاد ویرایش {edgeLabel} بین «{person1.Name}» و «{person2.Name}» را داده است.",
+                    PersonRelationSuggestionAction.Modify => $"کاربری پیشنهاد ویرایش {edgeLabel} بین «{person1.Name}» و «{person2.Name}» را داده است{(suggestion.ReverseDirection ? " (با برعکس شدن جهت)" : "")}.",
                     PersonRelationSuggestionAction.AddEvidence => $"کاربری پیشنهاد افزودن مستند (بیتی از شعر) برای {edgeLabel} بین «{person1.Name}» و «{person2.Name}» را داده است.",
                     PersonRelationSuggestionAction.RemoveEvidence => $"کاربری پیشنهاد حذف یکی از مستندهای {edgeLabel} بین «{person1.Name}» و «{person2.Name}» را داده است.",
                     _ => $"کاربری پیشنهاد حذف {edgeLabel} بین «{person1.Name}» و «{person2.Name}» را داده است.",
@@ -1734,8 +1753,10 @@ namespace RMuseum.Services.Implementation
                 var suggestion = await _context.GanjoorPersonRelationEditSuggestions
                     .Include(s => s.Person1)
                     .Include(s => s.Person2)
-                    .Include(s => s.ExistingRelation)
-                    .Include(s => s.ExistingAffiliation)
+                    .Include(s => s.ExistingRelation).ThenInclude(r => r.Person1)
+                    .Include(s => s.ExistingRelation).ThenInclude(r => r.Person2)
+                    .Include(s => s.ExistingAffiliation).ThenInclude(a => a.Person1)
+                    .Include(s => s.ExistingAffiliation).ThenInclude(a => a.Person2)
                     .Include(s => s.User)
                     .Where(s => s.Reviewed == false)
                     .OrderBy(s => s.Id)
@@ -1905,7 +1926,11 @@ namespace RMuseum.Services.Implementation
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null,
                                             "تغییر نوع وابستگی بین یک نوع متقارن (مثل هم‌عصر/متحد/رقیب/همراه) و یک نوع جهت‌دار (که در آن یک طرف زیردست/حامی/جانشین/... طرف دیگر است) ممکن نیست، چون جهت صحیح طرف اول و دوم برای نوع تازه معلوم نیست. لطفاً این وابستگی را حذف کرده و یک وابستگی تازه با نوع و جهت درست پیشنهاد دهید.");
                                     }
-                                    var duplicateOnModify = await _GetDuplicateAffiliationAsync(existing.Person1Id, existing.Person2Id, newAffiliationType, existing.Id);
+                                    if (suggestion.ReverseDirection && _symmetricAffiliationTypes.Contains(newAffiliationType))
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "این نوع وابستگی متقارن است و برعکس کردن جهت آن معنا ندارد.");
+                                    }
+                                    var duplicateOnModify = await _GetDuplicateAffiliationAsync(suggestion.ReverseDirection ? existing.Person2Id : existing.Person1Id, suggestion.ReverseDirection ? existing.Person1Id : existing.Person2Id, newAffiliationType, existing.Id);
                                     if (duplicateOnModify != null)
                                     {
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null,
@@ -1913,6 +1938,10 @@ namespace RMuseum.Services.Implementation
                                     }
                                     existing.AffiliationType = newAffiliationType;
                                     existing.Note = suggestion.SuggestedNote;
+                                    if (suggestion.ReverseDirection)
+                                    {
+                                        (existing.Person1Id, existing.Person2Id) = (existing.Person2Id, existing.Person1Id);
+                                    }
                                     break;
                                 }
                             case PersonRelationSuggestionAction.Remove:
@@ -2008,11 +2037,19 @@ namespace RMuseum.Services.Implementation
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "نسبت مورد نظر دیگر وجود ندارد.");
                                     }
                                     var modifyScope = await _ResolveValidationScopeAsync(suggestion.EvidencePoemId, existing.Id);
-                                    var validationError = await _ValidateFamilyRelationAsync(suggestion.Person1Id, suggestion.Person2Id, suggestion.SuggestedRelationType, existing.Id, suggestion.ConfirmedExtraParent, modifyScope);
+                                    if (suggestion.ReverseDirection && (suggestion.SuggestedRelationType == PersonRelationType.Sibling || suggestion.SuggestedRelationType == PersonRelationType.Spouse))
+                                    {
+                                        return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, "این نوع نسبت متقارن است و برعکس کردن جهت آن معنا ندارد.");
+                                    }
+                                    int modifiedPerson1Id = suggestion.ReverseDirection ? existing.Person2Id : existing.Person1Id;
+                                    int modifiedPerson2Id = suggestion.ReverseDirection ? existing.Person1Id : existing.Person2Id;
+                                    var validationError = await _ValidateFamilyRelationAsync(modifiedPerson1Id, modifiedPerson2Id, suggestion.SuggestedRelationType, existing.Id, suggestion.ConfirmedExtraParent, modifyScope);
                                     if (validationError != null)
                                     {
                                         return new RServiceResult<GanjoorPersonRelationEditSuggestion>(null, validationError);
                                     }
+                                    existing.Person1Id = modifiedPerson1Id;
+                                    existing.Person2Id = modifiedPerson2Id;
                                     existing.RelationType = suggestion.SuggestedRelationType;
                                     existing.DegreeHint = suggestion.SuggestedDegreeHint;
                                     existing.Note = suggestion.SuggestedNote;

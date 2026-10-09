@@ -134,9 +134,12 @@ else
                 </td>
                 @if (s.Action == PersonRelationSuggestionAction.Modify)
                 {
+                    var newFirstId = s.ReverseDirection ? s.Person2Id : s.Person1Id;
+                    var newFirstName = s.ReverseDirection ? (s.Person2 != null ? s.Person2.Name : s.Person2Id.ToString()) : (s.Person1 != null ? s.Person1.Name : s.Person1Id.ToString());
                     <td>
-                        <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@s.Person1Id)" class="up-btn up-btn--ghost up-btn--sm">@(s.Person1 != null ? s.Person1.Name : s.Person1Id.ToString())</a>
-                        <a role="button" href="javascript:void(0)" onclick="FamilyTreeWindow.open(@s.Person1Id)" class="up-icon-btn" title="مشاهدهٔ شجره‌نامهٔ این شخصیت" aria-label="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>
+                        <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@newFirstId)" class="up-btn up-btn--ghost up-btn--sm">@newFirstName</a>
+                        <a role="button" href="javascript:void(0)" onclick="FamilyTreeWindow.open(@newFirstId)" class="up-icon-btn" title="مشاهدهٔ شجره‌نامهٔ این شخصیت" aria-label="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>
+                        @if (s.ReverseDirection) { <span class="up-diff-badge">جهت برعکس می‌شود</span> }
                     </td>
                 }
             </tr>
@@ -148,9 +151,12 @@ else
                 </td>
                 @if (s.Action == PersonRelationSuggestionAction.Modify)
                 {
+                    var newSecondId = s.ReverseDirection ? s.Person1Id : s.Person2Id;
+                    var newSecondName = s.ReverseDirection ? (s.Person1 != null ? s.Person1.Name : s.Person1Id.ToString()) : (s.Person2 != null ? s.Person2.Name : s.Person2Id.ToString());
                     <td>
-                        <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@s.Person2Id)" class="up-btn up-btn--ghost up-btn--sm">@(s.Person2 != null ? s.Person2.Name : s.Person2Id.ToString())</a>
-                        <a role="button" href="javascript:void(0)" onclick="FamilyTreeWindow.open(@s.Person2Id)" class="up-icon-btn" title="مشاهدهٔ شجره‌نامهٔ این شخصیت" aria-label="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>
+                        <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@newSecondId)" class="up-btn up-btn--ghost up-btn--sm">@newSecondName</a>
+                        <a role="button" href="javascript:void(0)" onclick="FamilyTreeWindow.open(@newSecondId)" class="up-icon-btn" title="مشاهدهٔ شجره‌نامهٔ این شخصیت" aria-label="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>
+                        @if (s.ReverseDirection) { <span class="up-diff-badge">جهت برعکس می‌شود</span> }
                     </td>
                 }
             </tr>

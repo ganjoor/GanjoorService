@@ -5137,6 +5137,18 @@
         <member name="M:RMuseum.Migrations.AddTagMentionChange.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.ReverseDirectionFieldAdded">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.ReverseDirectionFieldAdded.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.ReverseDirectionFieldAdded.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.ReverseDirectionFieldAdded.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -9934,6 +9946,15 @@
             it sorts to the front and silently drops the rest). Set this to true only when a third
             recorded parent is genuinely intended (e.g. competing genealogy traditions for the same
             legendary figure) to add/keep it anyway.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.ReverseDirection">
+            <summary>
+            only meaningful for a Modify of a directional edge (Parent/Ancestor kinship, or any
+            non-symmetric affiliation type): when true, approving the suggestion swaps the existing
+            edge's Person1Id/Person2Id (e.g. fixes a Killer edge recorded the wrong way round) instead
+            of the submitter having to delete it and add a new one. Person1Id/Person2Id of this
+            suggestion itself stay those of the existing edge at submission time.
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonRelationEditSuggestion.SuggestedAffiliationType">
