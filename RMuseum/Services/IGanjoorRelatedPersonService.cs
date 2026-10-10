@@ -42,8 +42,28 @@ namespace RMuseum.Services
         /// side's name), for the read-only person/family-tree browsing page
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="evidenceLimit">if set, each relation/affiliation carries at most this many evidence rows
+        /// (one per book first) along with EvidenceCount; null returns all of them</param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPersonRelationsViewModel>> GetPersonRelationsAsync(int id);
+        Task<RServiceResult<GanjoorPersonRelationsViewModel>> GetPersonRelationsAsync(int id, int? evidenceLimit = null);
+
+        /// <summary>
+        /// evidence rows of one kinship relation, ordered by id
+        /// </summary>
+        /// <param name="relationId"></param>
+        /// <param name="skip"></param>
+        /// <param name="take">0 means all</param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPersonRelationEvidenceInfo[]>> GetRelationEvidenceAsync(int relationId, int skip = 0, int take = 0);
+
+        /// <summary>
+        /// evidence rows of one affiliation, ordered by id
+        /// </summary>
+        /// <param name="affiliationId"></param>
+        /// <param name="skip"></param>
+        /// <param name="take">0 means all</param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorPersonRelationEvidenceInfo[]>> GetAffiliationEvidenceAsync(int affiliationId, int skip = 0, int take = 0);
 
         /// <summary>
         /// get the (approved, materialized) poem geo/date tags that name this person, each carrying

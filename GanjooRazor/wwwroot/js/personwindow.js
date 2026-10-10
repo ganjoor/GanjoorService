@@ -198,7 +198,56 @@
         }
     }
 
-    window.PersonWindow = { open: openPerson, close: closeModal, filterBook: filterBook };
+    // fetches every evidence couplet of one relation/affiliation (the window only loads a few of them)
+    // and replaces the preview list with the complete one; texts go in as text nodes, never as HTML
+    function loadAllEvidence(btn) {
+        var kind = btn.getAttribute('data-pw-kind');
+        var target = btn.getAttribute('data-pw-target');
+        var person = btn.getAttribute('data-pw-person');
+        var details = btn.closest('details');
+        var list = details ? details.querySelector('.pw-ev-list') : null;
+        if (!list) return;
+        var label = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'در حال بارگذاری ...';
+        $.ajax({
+            type: 'GET',
+            url: '/PersonWindow/' + String(person) + '?handler=Evidence&kind=' + encodeURIComponent(kind) + '&targetId=' + encodeURIComponent(target),
+            error: function () {
+                btn.disabled = false;
+                btn.textContent = label;
+                alert('خطا در بارگذاری مستندها.');
+            },
+            success: function (items) {
+                while (list.firstChild) list.removeChild(list.firstChild);
+                for (var i = 0; i < items.length; i++) {
+                    var raw = items[i];
+                    // tolerate either property casing of the API's JSON
+                    var ev = {
+                        poemId: raw.poemId !== undefined ? raw.poemId : raw.PoemId,
+                        coupletIndex: raw.coupletIndex !== undefined ? raw.coupletIndex : raw.CoupletIndex,
+                        coupletText: raw.coupletText !== undefined ? raw.coupletText : raw.CoupletText,
+                        masterCatTitle: raw.masterCatTitle !== undefined ? raw.masterCatTitle : raw.MasterCatTitle,
+                        inferred: raw.inferred !== undefined ? raw.inferred : raw.Inferred
+                    };
+                    var row = document.createElement('div');
+                    var small = document.createElement('small');
+                    var a = document.createElement('a');
+                    a.href = '/?p=' + String(ev.poemId) + '#bn' + String(ev.coupletIndex + 1);
+                    a.target = '_blank';
+                    a.textContent = ev.masterCatTitle ? ev.masterCatTitle : 'شعر ' + String(ev.poemId);
+                    small.appendChild(a);
+                    if (ev.inferred) small.appendChild(document.createTextNode(' (حدسی)'));
+                    small.appendChild(document.createTextNode(' — ' + (ev.coupletText || '')));
+                    row.appendChild(small);
+                    list.appendChild(row);
+                }
+                btn.parentNode.removeChild(btn);
+            }
+        });
+    }
+
+    window.PersonWindow = { open: openPerson, close: closeModal, filterBook: filterBook, loadAllEvidence: loadAllEvidence };
     window.PeopleExplorer = { open: openExplorer, close: closeModal };
     window.FamilyTreeWindow = { open: openFamilyTree, close: closeModal };
     window.ContemporariesWindow = { open: openContemporaries, close: closeModal };

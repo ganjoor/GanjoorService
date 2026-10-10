@@ -106,9 +106,9 @@ namespace RMuseum.Controllers
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPersonRelationsViewModel))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetPersonRelationsAsync(int id)
+        public async Task<IActionResult> GetPersonRelationsAsync(int id, int? evidenceLimit = null)
         {
-            var res = await _personService.GetPersonRelationsAsync(id);
+            var res = await _personService.GetPersonRelationsAsync(id, evidenceLimit > 0 ? evidenceLimit : null);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -277,6 +277,44 @@ namespace RMuseum.Controllers
         {
             Guid userId = new Guid(User.Claims.First(c => c.Type == "UserId").Value);
             var res = await _personService.ModeratePersonEditSuggestionAsync(userId, id, moderation.Result, moderation.ReviewNote);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// evidence rows of one kinship relation (the person window shows a preview and loads the rest from here)
+        /// </summary>
+        /// <param name="relationId"></param>
+        /// <param name="skip"></param>
+        /// <param name="take">0 means all</param>
+        /// <returns></returns>
+        [HttpGet("relations/{relationId:int}/evidence")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPersonRelationEvidenceInfo[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetRelationEvidenceAsync(int relationId, int skip = 0, int take = 0)
+        {
+            var res = await _personService.GetRelationEvidenceAsync(relationId, Math.Max(skip, 0), Math.Max(take, 0));
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// evidence rows of one affiliation
+        /// </summary>
+        /// <param name="affiliationId"></param>
+        /// <param name="skip"></param>
+        /// <param name="take">0 means all</param>
+        /// <returns></returns>
+        [HttpGet("affiliations/{affiliationId:int}/evidence")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPersonRelationEvidenceInfo[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetAffiliationEvidenceAsync(int affiliationId, int skip = 0, int take = 0)
+        {
+            var res = await _personService.GetAffiliationEvidenceAsync(affiliationId, Math.Max(skip, 0), Math.Max(take, 0));
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

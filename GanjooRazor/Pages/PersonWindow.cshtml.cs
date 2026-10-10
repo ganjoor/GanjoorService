@@ -27,6 +27,12 @@ namespace GanjooRazor.Pages
 
         public string LastError { get; set; }
 
+        /// <summary>
+        /// how many evidence couplets are loaded with the window for each relation/affiliation; the
+        /// rest are fetched when the user asks for all of them (see PersonWindow.loadAllEvidence)
+        /// </summary>
+        public const int EvidencePreviewCount = 3;
+
         public GanjoorRelatedPerson Person { get; set; }
 
         /// <summary>
@@ -66,9 +72,19 @@ namespace GanjooRazor.Pages
             public string Note { get; set; }
 
             /// <summary>
-            /// couplets attesting this relation, one per book at most per line shown (see GanjoorPersonRelationEvidenceInfo)
+            /// a preview of the couplets attesting this relation (see GanjoorPersonRelationEvidenceInfo)
             /// </summary>
             public List<GanjoorPersonRelationEvidenceInfo> Evidence { get; set; } = new List<GanjoorPersonRelationEvidenceInfo>();
+
+            /// <summary>
+            /// total number of evidence couplets, which may be more than Evidence holds
+            /// </summary>
+            public int EvidenceCount { get; set; }
+
+            /// <summary>
+            /// books attesting this relation (human evidence), whether or not shown in the preview
+            /// </summary>
+            public List<GanjoorEvidenceBookInfo> Books { get; set; } = new List<GanjoorEvidenceBookInfo>();
         }
 
         /// <summary>
@@ -76,11 +92,10 @@ namespace GanjooRazor.Pages
         /// affiliations - options of the "show only what this book says" filter
         /// </summary>
         public List<KeyValuePair<int, string>> EvidenceBooks =>
-            RelationRows.SelectMany(r => r.Evidence)
-                .Concat(AffiliationRows.SelectMany(r => r.Evidence))
-                .Where(e => !e.Inferred)
-                .GroupBy(e => e.MasterCatId)
-                .Select(g => new KeyValuePair<int, string>(g.Key, g.Select(e => e.MasterCatTitle).FirstOrDefault(t => !string.IsNullOrEmpty(t)) ?? g.Key.ToString()))
+            RelationRows.SelectMany(r => r.Books)
+                .Concat(AffiliationRows.SelectMany(r => r.Books))
+                .GroupBy(b => b.MasterCatId)
+                .Select(g => new KeyValuePair<int, string>(g.Key, g.Select(b => b.MasterCatTitle).FirstOrDefault(t => !string.IsNullOrEmpty(t)) ?? g.Key.ToString()))
                 .OrderBy(kv => kv.Value)
                 .ToList();
 
@@ -88,8 +103,8 @@ namespace GanjooRazor.Pages
         /// comma separated master category ids attesting the given evidence list (human evidence only) -
         /// the data-books attribute the filter reads
         /// </summary>
-        public static string BooksAttr(List<GanjoorPersonRelationEvidenceInfo> evidence) =>
-            string.Join(",", (evidence ?? new List<GanjoorPersonRelationEvidenceInfo>()).Where(e => !e.Inferred).Select(e => e.MasterCatId).Distinct());
+        public static string BooksAttr(List<GanjoorEvidenceBookInfo> books) =>
+            string.Join(",", (books ?? new List<GanjoorEvidenceBookInfo>()).Select(b => b.MasterCatId).Distinct());
 
         public class PersonAffiliationDisplayRow
         {
@@ -112,9 +127,19 @@ namespace GanjooRazor.Pages
             public string Note { get; set; }
 
             /// <summary>
-            /// optional couplets attesting this affiliation
+            /// a preview of the optional couplets attesting this affiliation
             /// </summary>
             public List<GanjoorPersonRelationEvidenceInfo> Evidence { get; set; } = new List<GanjoorPersonRelationEvidenceInfo>();
+
+            /// <summary>
+            /// total number of evidence couplets, which may be more than Evidence holds
+            /// </summary>
+            public int EvidenceCount { get; set; }
+
+            /// <summary>
+            /// books attesting this affiliation, whether or not shown in the preview
+            /// </summary>
+            public List<GanjoorEvidenceBookInfo> Books { get; set; } = new List<GanjoorEvidenceBookInfo>();
         }
 
         private static string RelationLabel(GanjoorPersonRelationInfo r)
@@ -164,6 +189,23 @@ namespace GanjooRazor.Pages
             t == PersonAffiliationType.Companion || t == PersonAffiliationType.Contemporary ||
             t == PersonAffiliationType.Other;
 
+        /// <summary>
+        /// all evidence couplets of one relation or affiliation, as JSON - what the "show all" button of
+        /// the window fetches (GET /PersonWindow/{id}?handler=Evidence&amp;kind=relation&amp;targetId=..)
+        /// </summary>
+        public async Task<IActionResult> OnGetEvidenceAsync(int id, string kind, int targetId)
+        {
+            string url = kind == "affiliation"
+                ? $"{APIRoot.Url}/api/people/affiliations/{targetId}/evidence"
+                : $"{APIRoot.Url}/api/people/relations/{targetId}/evidence";
+            var response = await _httpClient.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+            {
+                return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
+            }
+            return Content(await response.Content.ReadAsStringAsync(), "application/json");
+        }
+
         public async Task<IActionResult> OnGetAsync(int id, int? catId = null)
         {
             CatId = catId;
@@ -182,7 +224,7 @@ namespace GanjooRazor.Pages
                 return Page();
             }
 
-            var relationsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/people/{id}/relations");
+            var relationsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/people/{id}/relations?evidenceLimit={EvidencePreviewCount}");
             if (!relationsResponse.IsSuccessStatusCode)
             {
                 LastError = await ReadErrorMessageAsync(relationsResponse);
@@ -200,6 +242,8 @@ namespace GanjooRazor.Pages
                     OtherPersonName = r.OtherPersonName,
                     Note = r.Note,
                     Evidence = r.Evidence ?? new List<GanjoorPersonRelationEvidenceInfo>(),
+                    EvidenceCount = r.EvidenceCount,
+                    Books = r.EvidenceBooks ?? new List<GanjoorEvidenceBookInfo>(),
                 });
             }
 
@@ -216,6 +260,8 @@ namespace GanjooRazor.Pages
                     OtherPersonName = a.OtherPersonName,
                     Note = a.Note,
                     Evidence = a.Evidence ?? new List<GanjoorPersonRelationEvidenceInfo>(),
+                    EvidenceCount = a.EvidenceCount,
+                    Books = a.EvidenceBooks ?? new List<GanjoorEvidenceBookInfo>(),
                 });
             }
 

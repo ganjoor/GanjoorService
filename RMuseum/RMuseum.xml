@@ -2912,7 +2912,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetPersonRelationsAsync(System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetPersonRelationsAsync(System.Int32,System.Nullable{System.Int32})">
             <summary>
             get a person along with all their kinship/affiliation edges, for the read-only
             person/family-tree browsing page
@@ -2980,6 +2980,24 @@
             </summary>
             <param name="id"></param>
             <param name="moderation"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetRelationEvidenceAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            evidence rows of one kinship relation (the person window shows a preview and loads the rest from here)
+            </summary>
+            <param name="relationId"></param>
+            <param name="skip"></param>
+            <param name="take">0 means all</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetAffiliationEvidenceAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            evidence rows of one affiliation
+            </summary>
+            <param name="affiliationId"></param>
+            <param name="skip"></param>
+            <param name="take">0 means all</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetRelationByIdAsync(System.Int32)">
@@ -14322,6 +14340,33 @@
             couplets attesting this relation (see GanjoorPersonRelationEvidence), empty if none
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo.EvidenceCount">
+            <summary>
+            total number of evidence rows of this relation - Evidence may hold only a preview of them
+            (see GetPersonRelationsAsync evidenceLimit)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationInfo.EvidenceBooks">
+            <summary>
+            books (master categories) that attest this relation by human-attached evidence, whether or
+            not those rows are part of the Evidence preview
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorEvidenceBookInfo">
+            <summary>
+            a book (master category) that attests a relation or affiliation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorEvidenceBookInfo.MasterCatId">
+            <summary>
+            master category id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorEvidenceBookInfo.MasterCatTitle">
+            <summary>
+            master category title
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonRelationEvidenceInfo">
             <summary>
             read-only projection of GanjoorPersonRelationEvidence
@@ -14403,6 +14448,18 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonAffiliationInfo.Evidence">
             <summary>
             optional couplets attesting this tie (see GanjoorPersonAffiliationEvidence), empty if none
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonAffiliationInfo.EvidenceCount">
+            <summary>
+            total number of evidence rows of this relation - Evidence may hold only a preview of them
+            (see GetPersonRelationsAsync evidenceLimit)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPersonAffiliationInfo.EvidenceBooks">
+            <summary>
+            books (master categories) that attest this relation by human-attached evidence, whether or
+            not those rows are part of the Evidence preview
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationWithoutEvidence">
@@ -19317,12 +19374,32 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetPersonRelationsAsync(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetPersonRelationsAsync(System.Int32,System.Nullable{System.Int32})">
             <summary>
             get a person along with all their kinship/affiliation edges (resolved with the other
             side's name), for the read-only person/family-tree browsing page
             </summary>
             <param name="id"></param>
+            <param name="evidenceLimit">if set, each relation/affiliation carries at most this many evidence rows
+            (one per book first) along with EvidenceCount; null returns all of them</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetRelationEvidenceAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            evidence rows of one kinship relation, ordered by id
+            </summary>
+            <param name="relationId"></param>
+            <param name="skip"></param>
+            <param name="take">0 means all</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetAffiliationEvidenceAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            evidence rows of one affiliation, ordered by id
+            </summary>
+            <param name="affiliationId"></param>
+            <param name="skip"></param>
+            <param name="take">0 means all</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetPoemsByPersonAsync(System.Int32,System.Nullable{System.Int32})">
@@ -23012,12 +23089,29 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetPersonRelationsAsync(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetPersonRelationsAsync(System.Int32,System.Nullable{System.Int32})">
             <summary>
             get a person along with all their kinship/affiliation edges
             </summary>
             <param name="id"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._PickEvidencePreviewIds(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Int32,System.Int32,System.Int32,System.Boolean}},System.Nullable{System.Int32})">
+            <summary>
+            which evidence rows to show as a preview: for every parent (relation/affiliation) at most
+            limit rows - human evidence before inferred, one row per book first so the preview is as
+            varied as possible, then filled up by id. limit null picks everything.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetRelationEvidenceAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            evidence rows of one kinship relation, ordered by id
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetAffiliationEvidenceAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            evidence rows of one affiliation, ordered by id
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetPoemsByPersonAsync(System.Int32,System.Nullable{System.Int32})">
             <summary>

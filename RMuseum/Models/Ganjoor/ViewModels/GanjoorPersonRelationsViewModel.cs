@@ -71,6 +71,34 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// couplets attesting this relation (see GanjoorPersonRelationEvidence), empty if none
         /// </summary>
         public List<GanjoorPersonRelationEvidenceInfo> Evidence { get; set; }
+
+        /// <summary>
+        /// total number of evidence rows of this relation - Evidence may hold only a preview of them
+        /// (see GetPersonRelationsAsync evidenceLimit)
+        /// </summary>
+        public int EvidenceCount { get; set; }
+
+        /// <summary>
+        /// books (master categories) that attest this relation by human-attached evidence, whether or
+        /// not those rows are part of the Evidence preview
+        /// </summary>
+        public List<GanjoorEvidenceBookInfo> EvidenceBooks { get; set; }
+    }
+
+    /// <summary>
+    /// a book (master category) that attests a relation or affiliation
+    /// </summary>
+    public class GanjoorEvidenceBookInfo
+    {
+        /// <summary>
+        /// master category id
+        /// </summary>
+        public int MasterCatId { get; set; }
+
+        /// <summary>
+        /// master category title
+        /// </summary>
+        public string MasterCatTitle { get; set; }
     }
 
     /// <summary>
@@ -156,6 +184,18 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         /// optional couplets attesting this tie (see GanjoorPersonAffiliationEvidence), empty if none
         /// </summary>
         public List<GanjoorPersonRelationEvidenceInfo> Evidence { get; set; }
+
+        /// <summary>
+        /// total number of evidence rows of this relation - Evidence may hold only a preview of them
+        /// (see GetPersonRelationsAsync evidenceLimit)
+        /// </summary>
+        public int EvidenceCount { get; set; }
+
+        /// <summary>
+        /// books (master categories) that attest this relation by human-attached evidence, whether or
+        /// not those rows are part of the Evidence preview
+        /// </summary>
+        public List<GanjoorEvidenceBookInfo> EvidenceBooks { get; set; }
     }
 
     /// <summary>

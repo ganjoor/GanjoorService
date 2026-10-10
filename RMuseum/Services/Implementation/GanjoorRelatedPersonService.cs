@@ -88,7 +88,7 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPersonRelationsViewModel>> GetPersonRelationsAsync(int id)
+        public async Task<RServiceResult<GanjoorPersonRelationsViewModel>> GetPersonRelationsAsync(int id, int? evidenceLimit = null)
         {
             try
             {
@@ -105,15 +105,37 @@ namespace RMuseum.Services.Implementation
                     .ToListAsync();
 
                 var relationIds = relationRows.Select(r => r.Id).ToList();
-                var evidenceRows = await _context.GanjoorPersonRelationEvidences.AsNoTracking()
+                // light rows (no couplet text): enough for counts, the attesting books and choosing the preview
+                var lightRelationEvidence = await _context.GanjoorPersonRelationEvidences.AsNoTracking()
                     .Where(e => relationIds.Contains(e.RelationId))
-                    .OrderBy(e => e.Id)
+                    .Select(e => new { e.Id, e.RelationId, e.MasterCatId, e.Inferred })
                     .ToListAsync();
-                var evidenceCatTitles = await _GetCatTitlesAsync(evidenceRows.Select(e => e.MasterCatId).Distinct().ToList());
+                List<GanjoorPersonRelationEvidence> evidenceRows;
+                if (evidenceLimit == null)
+                {
+                    evidenceRows = await _context.GanjoorPersonRelationEvidences.AsNoTracking()
+                        .Where(e => relationIds.Contains(e.RelationId))
+                        .OrderBy(e => e.Id)
+                        .ToListAsync();
+                }
+                else
+                {
+                    var previewIds = _PickEvidencePreviewIds(lightRelationEvidence.Select(e => (e.Id, e.RelationId, e.MasterCatId, e.Inferred)), evidenceLimit).ToList();
+                    evidenceRows = new List<GanjoorPersonRelationEvidence>();
+                    foreach (var chunk in previewIds.Chunk(500))
+                    {
+                        evidenceRows.AddRange(await _context.GanjoorPersonRelationEvidences.AsNoTracking().Where(e => chunk.Contains(e.Id)).ToListAsync());
+                    }
+                    evidenceRows = evidenceRows.OrderBy(e => e.Id).ToList();
+                }
+                var evidenceCatTitles = await _GetCatTitlesAsync(lightRelationEvidence.Select(e => e.MasterCatId).Distinct().ToList());
+                var lightRelationEvidenceLookup = lightRelationEvidence.ToLookup(e => e.RelationId);
 
                 var relations = relationRows.Select(r => new GanjoorPersonRelationInfo()
                 {
                     Evidence = evidenceRows.Where(e => e.RelationId == r.Id).Select(e => _ToEvidenceInfo(e, evidenceCatTitles)).ToList(),
+                    EvidenceCount = lightRelationEvidenceLookup[r.Id].Count(),
+                    EvidenceBooks = _ToEvidenceBookInfos(lightRelationEvidenceLookup[r.Id].Where(e => !e.Inferred).Select(e => e.MasterCatId), evidenceCatTitles),
                     Id = r.Id,
                     OtherPersonId = r.Person1Id == id ? r.Person2Id : r.Person1Id,
                     OtherPersonName = r.Person1Id == id ? r.Person2.Name : r.Person1.Name,
@@ -130,15 +152,36 @@ namespace RMuseum.Services.Implementation
                     .ToListAsync();
 
                 var affiliationIds = affiliationRows.Select(a => a.Id).ToList();
-                var affiliationEvidenceRows = await _context.GanjoorPersonAffiliationEvidences.AsNoTracking()
+                var lightAffiliationEvidence = await _context.GanjoorPersonAffiliationEvidences.AsNoTracking()
                     .Where(e => affiliationIds.Contains(e.AffiliationId))
-                    .OrderBy(e => e.Id)
+                    .Select(e => new { e.Id, e.AffiliationId, e.MasterCatId })
                     .ToListAsync();
-                var affiliationEvidenceCatTitles = await _GetCatTitlesAsync(affiliationEvidenceRows.Select(e => e.MasterCatId).Distinct().ToList());
+                List<GanjoorPersonAffiliationEvidence> affiliationEvidenceRows;
+                if (evidenceLimit == null)
+                {
+                    affiliationEvidenceRows = await _context.GanjoorPersonAffiliationEvidences.AsNoTracking()
+                        .Where(e => affiliationIds.Contains(e.AffiliationId))
+                        .OrderBy(e => e.Id)
+                        .ToListAsync();
+                }
+                else
+                {
+                    var previewIds = _PickEvidencePreviewIds(lightAffiliationEvidence.Select(e => (e.Id, e.AffiliationId, e.MasterCatId, false)), evidenceLimit).ToList();
+                    affiliationEvidenceRows = new List<GanjoorPersonAffiliationEvidence>();
+                    foreach (var chunk in previewIds.Chunk(500))
+                    {
+                        affiliationEvidenceRows.AddRange(await _context.GanjoorPersonAffiliationEvidences.AsNoTracking().Where(e => chunk.Contains(e.Id)).ToListAsync());
+                    }
+                    affiliationEvidenceRows = affiliationEvidenceRows.OrderBy(e => e.Id).ToList();
+                }
+                var affiliationEvidenceCatTitles = await _GetCatTitlesAsync(lightAffiliationEvidence.Select(e => e.MasterCatId).Distinct().ToList());
+                var lightAffiliationEvidenceLookup = lightAffiliationEvidence.ToLookup(e => e.AffiliationId);
 
                 var affiliations = affiliationRows.Select(a => new GanjoorPersonAffiliationInfo()
                 {
                     Evidence = affiliationEvidenceRows.Where(e => e.AffiliationId == a.Id).Select(e => _ToEvidenceInfo(e, affiliationEvidenceCatTitles)).ToList(),
+                    EvidenceCount = lightAffiliationEvidenceLookup[a.Id].Count(),
+                    EvidenceBooks = _ToEvidenceBookInfos(lightAffiliationEvidenceLookup[a.Id].Select(e => e.MasterCatId), affiliationEvidenceCatTitles),
                     Id = a.Id,
                     OtherPersonId = a.Person1Id == id ? a.Person2Id : a.Person1Id,
                     OtherPersonName = a.Person1Id == id ? a.Person2.Name : a.Person1.Name,
@@ -157,6 +200,102 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<GanjoorPersonRelationsViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// which evidence rows to show as a preview: for every parent (relation/affiliation) at most
+        /// limit rows - human evidence before inferred, one row per book first so the preview is as
+        /// varied as possible, then filled up by id. limit null picks everything.
+        /// </summary>
+        private static HashSet<int> _PickEvidencePreviewIds(IEnumerable<(int Id, int ParentId, int MasterCatId, bool Inferred)> rows, int? limit)
+        {
+            var result = new HashSet<int>();
+            foreach (var group in rows.GroupBy(r => r.ParentId))
+            {
+                var ordered = group.OrderBy(r => r.Inferred).ThenBy(r => r.Id).ToList();
+                if (limit == null || ordered.Count <= limit.Value)
+                {
+                    foreach (var r in ordered)
+                        result.Add(r.Id);
+                    continue;
+                }
+                var picked = new List<int>();
+                var seenBooks = new HashSet<int>();
+                foreach (var r in ordered)
+                {
+                    if (picked.Count >= limit.Value)
+                        break;
+                    if (seenBooks.Add(r.MasterCatId))
+                        picked.Add(r.Id);
+                }
+                foreach (var r in ordered)
+                {
+                    if (picked.Count >= limit.Value)
+                        break;
+                    if (!picked.Contains(r.Id))
+                        picked.Add(r.Id);
+                }
+                foreach (var id in picked)
+                    result.Add(id);
+            }
+            return result;
+        }
+
+        private static List<GanjoorEvidenceBookInfo> _ToEvidenceBookInfos(IEnumerable<int> masterCatIds, Dictionary<int, string> catTitles)
+        {
+            return masterCatIds.Distinct()
+                .Select(id => new GanjoorEvidenceBookInfo()
+                {
+                    MasterCatId = id,
+                    MasterCatTitle = catTitles != null && catTitles.TryGetValue(id, out var title) ? title : id.ToString(),
+                })
+                .ToList();
+        }
+
+        /// <summary>
+        /// evidence rows of one kinship relation, ordered by id
+        /// </summary>
+        public async Task<RServiceResult<GanjoorPersonRelationEvidenceInfo[]>> GetRelationEvidenceAsync(int relationId, int skip = 0, int take = 0)
+        {
+            try
+            {
+                IQueryable<GanjoorPersonRelationEvidence> query = _context.GanjoorPersonRelationEvidences.AsNoTracking()
+                    .Where(e => e.RelationId == relationId)
+                    .OrderBy(e => e.Id)
+                    .Skip(skip);
+                if (take > 0)
+                    query = query.Take(take);
+                var rows = await query.ToListAsync();
+                var catTitles = await _GetCatTitlesAsync(rows.Select(e => e.MasterCatId).Distinct().ToList());
+                return new RServiceResult<GanjoorPersonRelationEvidenceInfo[]>(rows.Select(e => _ToEvidenceInfo(e, catTitles)).ToArray());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPersonRelationEvidenceInfo[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// evidence rows of one affiliation, ordered by id
+        /// </summary>
+        public async Task<RServiceResult<GanjoorPersonRelationEvidenceInfo[]>> GetAffiliationEvidenceAsync(int affiliationId, int skip = 0, int take = 0)
+        {
+            try
+            {
+                IQueryable<GanjoorPersonAffiliationEvidence> query = _context.GanjoorPersonAffiliationEvidences.AsNoTracking()
+                    .Where(e => e.AffiliationId == affiliationId)
+                    .OrderBy(e => e.Id)
+                    .Skip(skip);
+                if (take > 0)
+                    query = query.Take(take);
+                var rows = await query.ToListAsync();
+                var catTitles = await _GetCatTitlesAsync(rows.Select(e => e.MasterCatId).Distinct().ToList());
+                return new RServiceResult<GanjoorPersonRelationEvidenceInfo[]>(rows.Select(e => _ToEvidenceInfo(e, catTitles)).ToArray());
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPersonRelationEvidenceInfo[]>(null, exp.ToString());
             }
         }
 
@@ -525,8 +664,10 @@ namespace RMuseum.Services.Implementation
                 var treeRelations = allRelations.Where(r => visitedRelationIds.Contains(r.Id)).ToList();
 
                 // human-attached evidence only: inferred (backfilled) rows never count for book views
+                // columns only: the couplet texts are not needed here and there can be many rows
                 var evidenceRows = await _context.GanjoorPersonRelationEvidences.AsNoTracking()
                     .Where(e => !e.Inferred && visitedRelationIds.Contains(e.RelationId))
+                    .Select(e => new { e.RelationId, e.MasterCatId })
                     .ToListAsync();
                 var catTitles = await _GetCatTitlesAsync(evidenceRows.Select(e => e.MasterCatId).Distinct().ToList());
                 var booksByRelation = evidenceRows

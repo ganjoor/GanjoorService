@@ -84,7 +84,7 @@ else
             <ul>
                 @foreach (var row in Model.RelationRows)
                 {
-                    <li data-pw-books="@PersonWindowModel.BooksAttr(row.Evidence)">
+                    <li data-pw-books="@PersonWindowModel.BooksAttr(row.Books)">
                         @row.Label — <a href="javascript:void(0)" onclick="PersonWindow.open(@row.OtherPersonId)">@row.OtherPersonName</a>
                         @if (!string.IsNullOrEmpty(row.Note))
                         {
@@ -94,19 +94,25 @@ else
                         {
                             <a href="/User/SuggestPersonRelationEdit?relationId=@row.RelationId" class="up-icon-btn" title="پیشنهاد ویرایش/حذف این نسبت" aria-label="پیشنهاد ویرایش/حذف این نسبت">✎</a>
                         }
-                        @if (row.Evidence.Count > 0)
+                        @if (row.EvidenceCount > 0)
                         {
                             <details>
-                                <summary><small>مستند (@row.Evidence.Count)</small></summary>
-                                @foreach (var ev in row.Evidence)
+                                <summary><small>مستند (@row.EvidenceCount)</small></summary>
+                                <div class="pw-ev-list">
+                                    @foreach (var ev in row.Evidence)
+                                    {
+                                        <div>
+                                            <small>
+                                                <a href="/?p=@ev.PoemId#bn@(ev.CoupletIndex + 1)" target="_blank">@(string.IsNullOrEmpty(ev.MasterCatTitle) ? "شعر " + ev.PoemId : ev.MasterCatTitle)</a>
+                                                @if (ev.Inferred) { <text> (حدسی)</text> }
+                                                — @ev.CoupletText
+                                            </small>
+                                        </div>
+                                    }
+                                </div>
+                                @if (row.EvidenceCount > row.Evidence.Count)
                                 {
-                                    <div>
-                                        <small>
-                                            <a href="/?p=@ev.PoemId#bn@(ev.CoupletIndex + 1)" target="_blank">@(string.IsNullOrEmpty(ev.MasterCatTitle) ? "شعر " + ev.PoemId : ev.MasterCatTitle)</a>
-                                            @if (ev.Inferred) { <text> (حدسی)</text> }
-                                            — @ev.CoupletText
-                                        </small>
-                                    </div>
+                                    <button type="button" class="up-btn up-btn--ghost up-btn--sm" data-pw-kind="relation" data-pw-target="@row.RelationId" data-pw-person="@Model.Person.Id" onclick="PersonWindow.loadAllEvidence(this)">نمایش همهٔ @row.EvidenceCount مستند</button>
                                 }
                             </details>
                         }
@@ -138,7 +144,7 @@ else
             <ul>
                 @foreach (var row in Model.AffiliationRows)
                 {
-                    <li data-pw-books="@PersonWindowModel.BooksAttr(row.Evidence)">
+                    <li data-pw-books="@PersonWindowModel.BooksAttr(row.Books)">
                         @row.SentenceBeforeOtherName<a href="javascript:void(0)" onclick="PersonWindow.open(@row.OtherPersonId)">@row.OtherPersonName</a>@row.SentenceAfterOtherName
                         @if (!string.IsNullOrEmpty(row.Note))
                         {
@@ -148,18 +154,24 @@ else
                         {
                             <a href="/User/SuggestPersonRelationEdit?affiliationId=@row.AffiliationId" class="up-icon-btn" title="پیشنهاد ویرایش/حذف این وابستگی" aria-label="پیشنهاد ویرایش/حذف این وابستگی">✎</a>
                         }
-                        @if (row.Evidence.Count > 0)
+                        @if (row.EvidenceCount > 0)
                         {
                             <details>
-                                <summary><small>مستند (@row.Evidence.Count)</small></summary>
-                                @foreach (var ev in row.Evidence)
+                                <summary><small>مستند (@row.EvidenceCount)</small></summary>
+                                <div class="pw-ev-list">
+                                    @foreach (var ev in row.Evidence)
+                                    {
+                                        <div>
+                                            <small>
+                                                <a href="/?p=@ev.PoemId#bn@(ev.CoupletIndex + 1)" target="_blank">@(string.IsNullOrEmpty(ev.MasterCatTitle) ? "شعر " + ev.PoemId : ev.MasterCatTitle)</a>
+                                                — @ev.CoupletText
+                                            </small>
+                                        </div>
+                                    }
+                                </div>
+                                @if (row.EvidenceCount > row.Evidence.Count)
                                 {
-                                    <div>
-                                        <small>
-                                            <a href="/?p=@ev.PoemId#bn@(ev.CoupletIndex + 1)" target="_blank">@(string.IsNullOrEmpty(ev.MasterCatTitle) ? "شعر " + ev.PoemId : ev.MasterCatTitle)</a>
-                                            — @ev.CoupletText
-                                        </small>
-                                    </div>
+                                    <button type="button" class="up-btn up-btn--ghost up-btn--sm" data-pw-kind="affiliation" data-pw-target="@row.AffiliationId" data-pw-person="@Model.Person.Id" onclick="PersonWindow.loadAllEvidence(this)">نمایش همهٔ @row.EvidenceCount مستند</button>
                                 }
                             </details>
                         }
