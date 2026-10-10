@@ -1960,6 +1960,8 @@ function loadPersonGraph(catId) {
                     containerId: 'pg-cat-container',
                     svgId: 'pg-cat-svg',
                     tableBodyId: 'pg-cat-table-body',
+                    peopleTableBodyId: 'pg-cat-people-body',
+                    catId: catId,
                     legendId: 'pg-cat-legend',
                     searchInputId: 'pg-cat-search',
                     resetButtonId: 'pg-cat-reset',

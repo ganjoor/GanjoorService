@@ -42,6 +42,13 @@ namespace GanjooRazor.Pages
 
         public PoemGeoDateTag[] Poems { get; set; }
 
+        /// <summary>
+        /// when set, the poem list is limited to this category (and its subcategories) - used when the
+        /// window is opened from a category's «نامبردگان» tab so that, say, Hafez's page doesn't list
+        /// every Shahnameh couplet that mentions the same person
+        /// </summary>
+        public int? CatId { get; set; }
+
         public class PersonRelationDisplayRow
         {
             /// <summary>
@@ -157,8 +164,9 @@ namespace GanjooRazor.Pages
             t == PersonAffiliationType.Companion || t == PersonAffiliationType.Contemporary ||
             t == PersonAffiliationType.Other;
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int id, int? catId = null)
         {
+            CatId = catId;
             InitializeCommonPageState();
 
             var personResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/people/{id}");
@@ -211,7 +219,7 @@ namespace GanjooRazor.Pages
                 });
             }
 
-            var poemsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/people/{id}/poems");
+            var poemsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/people/{id}/poems" + (catId != null ? $"?catId={catId}" : ""));
             if (!poemsResponse.IsSuccessStatusCode)
             {
                 LastError = await ReadErrorMessageAsync(poemsResponse);

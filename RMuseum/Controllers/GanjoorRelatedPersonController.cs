@@ -118,14 +118,15 @@ namespace RMuseum.Controllers
         /// get the poems tagged with this person
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="catId">optional: only poems under this category (and its subcategories)</param>
         /// <returns></returns>
         [HttpGet("{id:int}/poems")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PoemGeoDateTag[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetPoemsByPersonAsync(int id)
+        public async Task<IActionResult> GetPoemsByPersonAsync(int id, int? catId = null)
         {
-            var res = await _personService.GetPoemsByPersonAsync(id);
+            var res = await _personService.GetPoemsByPersonAsync(id, catId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

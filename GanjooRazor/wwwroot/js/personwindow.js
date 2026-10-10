@@ -96,9 +96,10 @@
         });
     }
 
-    function openPerson(id) {
+    // catId (optional): limit the listed poems to this category - see PersonWindowModel.CatId
+    function openPerson(id, catId) {
         openModal(false);
-        loadInto('/PersonWindow/' + String(id));
+        loadInto('/PersonWindow/' + String(id) + (catId ? '?catId=' + String(catId) : ''));
     }
 
     function openExplorer() {

@@ -177,7 +177,13 @@ else
 
         @if (Model.Poems != null && Model.Poems.Length > 0)
         {
-            <h3>اشعار برچسب‌خورده با این نامبرده</h3>
+            <h3>
+                @(Model.CatId != null ? "اشعار این بخش که این نامبرده در آن‌ها برچسب خورده" : "اشعار برچسب‌خورده با این نامبرده")
+                @if (Model.CatId != null)
+                {
+                    <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.Person.Id)" class="up-btn up-btn--ghost up-btn--sm">نمایش اشعار همهٔ کتاب‌ها</a>
+                }
+            </h3>
             var allusionTags = Model.Poems.Where(t => t.Poem != null && t.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion).ToList();
             <ul>
                 @foreach (var tag in Model.Poems.Where(t => t.PersonMention != RMuseum.Models.Ganjoor.PersonMentionKind.Allusion))
@@ -219,7 +225,11 @@ else
         }
         else
         {
-            <p><small>هنوز شعری با این نامبرده برچسب‌گذاری نشده است.</small></p>
+            <p><small>@(Model.CatId != null ? "در این بخش شعری با این نامبرده برچسب‌گذاری نشده است." : "هنوز شعری با این نامبرده برچسب‌گذاری نشده است.")</small></p>
+            @if (Model.CatId != null)
+            {
+                <p><a href="javascript:void(0)" onclick="PersonWindow.open(@Model.Person.Id)" class="up-btn up-btn--ghost up-btn--sm">نمایش اشعار همهٔ کتاب‌ها</a></p>
+            }
         }
     </div>
 }

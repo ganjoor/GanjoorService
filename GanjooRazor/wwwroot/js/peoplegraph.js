@@ -246,7 +246,7 @@
             // label needs its own listener with stopPropagation to not also trigger that
             text.addEventListener('click', function (evt) {
                 evt.stopPropagation();
-                if (window.PersonWindow) window.PersonWindow.open(n.id);
+                if (window.PersonWindow) window.PersonWindow.open(n.id, opts.catId);
             });
             g.appendChild(circle);
             g.appendChild(text);
@@ -305,7 +305,7 @@
                 (node.hasFamilyTree ? ' <a href="javascript:void(0)" class="pg-sel-tree" title="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>' : '') +
                 (node.degree === 0 ? ' <small>(بدون ارتباط ثبت‌شده)</small>' : '');
             selectedBar.querySelector('.pg-sel-info').addEventListener('click', function () {
-                if (window.PersonWindow) window.PersonWindow.open(node.id);
+                if (window.PersonWindow) window.PersonWindow.open(node.id, opts.catId);
             });
             var treeLink = selectedBar.querySelector('.pg-sel-tree');
             if (treeLink) treeLink.addEventListener('click', function () {
@@ -333,12 +333,37 @@
                 tr.querySelectorAll('.pg-person-link').forEach(function (link) {
                     link.addEventListener('click', function (evt) {
                         evt.stopPropagation();
-                        if (window.PersonWindow) window.PersonWindow.open(Number(link.getAttribute('data-person-id')));
+                        if (window.PersonWindow) window.PersonWindow.open(Number(link.getAttribute('data-person-id')), opts.catId);
                     });
                 });
                 tableBody.appendChild(tr);
                 tableRows.push(tr);
             });
+        }
+
+        // optional second table (category pages only): every person tagged in this category, each with
+        // a link to the poems of THIS category that mention them (the person window is opened with the
+        // category, so poems of other books - e.g. the Shahnameh on a Hafez page - are left out)
+        function buildPeopleTable() {
+            var body = opts.peopleTableBodyId ? document.getElementById(opts.peopleTableBodyId) : null;
+            if (!body) return;
+            body.innerHTML = '';
+            data.nodes
+                .filter(function (n) { return n.directlyTagged !== false; })
+                .sort(function (a, b) { return (a.name || '').localeCompare(b.name || '', 'fa'); })
+                .forEach(function (n) {
+                    var tr = document.createElement('tr');
+                    tr.innerHTML =
+                        '<td><a href="javascript:void(0)" class="pg-person-poems" data-person-id="' + n.id + '">' + escapeHtml(n.name) + '</a></td>' +
+                        '<td><small>' + (n.allusionOnly ? 'فقط اشاره' : 'در متن') + '</small></td>' +
+                        '<td><a href="javascript:void(0)" class="pg-person-poems up-btn up-btn--ghost up-btn--sm" data-person-id="' + n.id + '">اشعار این بخش</a></td>';
+                    tr.querySelectorAll('.pg-person-poems').forEach(function (link) {
+                        link.addEventListener('click', function () {
+                            if (window.PersonWindow) window.PersonWindow.open(n.id, opts.catId);
+                        });
+                    });
+                    body.appendChild(tr);
+                });
         }
 
         // --- focus / ego-network highlighting -----------------------------------------------------
@@ -494,6 +519,7 @@
 
         buildLegend();
         buildTable();
+        buildPeopleTable();
         applyPositions();
         ensureRunning();
     }

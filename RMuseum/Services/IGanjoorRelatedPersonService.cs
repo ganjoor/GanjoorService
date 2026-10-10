@@ -51,7 +51,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<RServiceResult<PoemGeoDateTag[]>> GetPoemsByPersonAsync(int id);
+        Task<RServiceResult<PoemGeoDateTag[]>> GetPoemsByPersonAsync(int id, int? catId = null);
 
         /// <summary>
         /// get the whole connected kinship component reachable from this person (ancestors,

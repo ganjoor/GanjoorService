@@ -165,13 +165,20 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<RServiceResult<PoemGeoDateTag[]>> GetPoemsByPersonAsync(int id)
+        public async Task<RServiceResult<PoemGeoDateTag[]>> GetPoemsByPersonAsync(int id, int? catId = null)
         {
             try
             {
-                var tags = await _context.PoemGeoDateTags
+                var query = _context.PoemGeoDateTags
                     .Include(t => t.Poem)
-                    .Where(t => t.PersonId == id && t.MachineGenerated == false)
+                    .Where(t => t.PersonId == id && t.MachineGenerated == false);
+                if (catId != null)
+                {
+                    //only poems of this category and its subcategories (e.g. one poet's divan)
+                    var catIds = await _GetCategorySubtreeIdsAsync(catId.Value);
+                    query = query.Where(t => catIds.Contains(t.Poem.CatId));
+                }
+                var tags = await query
                     .OrderBy(t => t.Id)
                     .ToArrayAsync();
 

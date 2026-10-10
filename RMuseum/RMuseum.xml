@@ -2920,11 +2920,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetPoemsByPersonAsync(System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetPoemsByPersonAsync(System.Int32,System.Nullable{System.Int32})">
             <summary>
             get the poems tagged with this person
             </summary>
             <param name="id"></param>
+            <param name="catId">optional: only poems under this category (and its subcategories)</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetFamilyTreeAsync(System.Int32,System.Nullable{System.Int32})">
@@ -19324,7 +19325,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetPoemsByPersonAsync(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetPoemsByPersonAsync(System.Int32,System.Nullable{System.Int32})">
             <summary>
             get the (approved, materialized) poem geo/date tags that name this person, each carrying
             enough of its Poem to link to it
@@ -23018,7 +23019,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetPoemsByPersonAsync(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetPoemsByPersonAsync(System.Int32,System.Nullable{System.Int32})">
             <summary>
             get the (approved, materialized) poem geo/date tags that name this person
             </summary>
