@@ -24,6 +24,11 @@ else
             <p><strong>تبارنامه: @Model.Person.FamilyTreeCaption</strong></p>
         }
 
+        @if (!string.IsNullOrEmpty(Model.Person.Aliases))
+        {
+            <p>نام‌های دیگر: @Model.Person.Aliases</p>
+        }
+
         @if (Model.Person.BirthYearInLHijri != 0 || Model.Person.DeathYearInLHijri != 0)
         {
             <p>

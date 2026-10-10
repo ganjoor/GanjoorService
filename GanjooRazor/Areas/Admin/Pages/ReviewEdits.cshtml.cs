@@ -93,7 +93,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public string AllPeopleJson =>
             JsonConvert.SerializeObject(
-                (People ?? new List<GanjoorRelatedPerson>()).Select(p => new { p.Id, p.Name, p.BirthYearInLHijri, p.DeathYearInLHijri }),
+                (People ?? new List<GanjoorRelatedPerson>()).Select(p => new { p.Id, p.Name, p.BirthYearInLHijri, p.DeathYearInLHijri, p.Aliases }),
                 new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }
             );
 

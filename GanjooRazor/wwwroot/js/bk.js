@@ -2970,7 +2970,8 @@ function setupPersonAutocomplete(searchInput, hiddenInput, resultsBox, people, o
     function render(typedText) {
         var typedLower = typedText.toLowerCase();
         var matches = (people || []).filter(function (p) {
-            return p.name && p.name.toLowerCase().indexOf(typedLower) !== -1;
+            return p.name && (p.name.toLowerCase().indexOf(typedLower) !== -1 ||
+                (p.aliases && p.aliases.toLowerCase().indexOf(typedLower) !== -1));
         });
 
         if (matches.length == 0) {
@@ -2997,6 +2998,10 @@ function setupPersonAutocomplete(searchInput, hiddenInput, resultsBox, people, o
             var label = document.createElement('span');
             label.className = 'up-autocomplete-item-label';
             label.textContent = subtitle ? (p.name + ' (' + subtitle + ')') : p.name;
+            if (p.aliases) {
+                // other names of the person (epithets etc.) - also searchable, and help tell same-named people apart
+                label.textContent += ' — نام‌های دیگر: ' + (p.aliases.length > 70 ? p.aliases.substring(0, 70) + '…' : p.aliases);
+            }
             label.addEventListener('click', function (person) {
                 return function () { selectPerson(person); };
             }(p));
