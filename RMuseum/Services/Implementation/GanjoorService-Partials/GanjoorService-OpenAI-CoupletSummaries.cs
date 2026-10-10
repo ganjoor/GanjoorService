@@ -146,7 +146,7 @@ namespace RMuseum.Services.Implementation
                           {
                               ApiKey = Configuration["OpenAIAPIKey"],
                               BaseDomain = Configuration["OpenAIBaseUrl"]
-                          });
+                          }, new System.Net.Http.HttpClient() { Timeout = TimeSpan.FromMinutes(10) });
                           string model = OpenAIModel;
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
@@ -291,7 +291,7 @@ namespace RMuseum.Services.Implementation
                           {
                               ApiKey = Configuration["OpenAIAPIKey"],
                               BaseDomain = Configuration["OpenAIBaseUrl"]
-                          });
+                          }, new System.Net.Http.HttpClient() { Timeout = TimeSpan.FromMinutes(10) });
                           string model = OpenAIModel;
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
@@ -393,7 +393,7 @@ namespace RMuseum.Services.Implementation
                           {
                               ApiKey = Configuration["OpenAIAPIKey"],
                               BaseDomain = Configuration["OpenAIBaseUrl"]
-                          });
+                          }, new System.Net.Http.HttpClient() { Timeout = TimeSpan.FromMinutes(10) });
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
 
