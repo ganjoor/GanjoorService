@@ -708,10 +708,12 @@ namespace RMuseum.Services.Implementation
                 var appearances = p.Appearances.OrderBy(a => a.Couplet).ToList();
                 if (r.Existing != null)
                 {
-                    foreach (var a in appearances)
+                    // only the first couplet of the poem is tagged for each person; a person who already
+                    // has a tag (or a pending tag) anywhere in this poem is skipped altogether
+                    foreach (var a in appearances.Take(1))
                     {
                         var key = (r.Existing.Id, a.Couplet.Value);
-                        if (existingTags.Contains(key) || pendingTags.Contains(key) || !seen.Add(key))
+                        if (existingTags.Any(t => t.Item1 == r.Existing.Id) || pendingTags.Any(t => t.Item1 == r.Existing.Id) || !seen.Add((r.Existing.Id, 0)))
                             continue;
                         newTags.Add(new GanjoorPoemGeoDateTagCorrection()
                         {
@@ -749,7 +751,7 @@ namespace RMuseum.Services.Implementation
                         SuggestionNote = note,
                     });
                     run.NewPeople++;
-                    run.Log.AppendLine($"{tag}: NEW person «{p.Name}» @ {first.Couplet} ({_AIMentionOf(first.Mention)}){(appearances.Count > 1 ? $" - {appearances.Count - 1} more couplet(s) after approval" : "")}");
+                    run.Log.AppendLine($"{tag}: NEW person «{p.Name}» @ {first.Couplet} ({_AIMentionOf(first.Mention)})");
                 }
             }
 
