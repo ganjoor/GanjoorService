@@ -347,10 +347,17 @@
         // optional second table (category pages only): every person tagged in this category, each with
         // a link to the poems of THIS category that mention them (the person window is opened with the
         // category, so poems of other books - e.g. the Shahnameh on a Hafez page - are left out)
+        var peopleRows = [];
+        var peopleEmptyRow = null;
         function buildPeopleTable() {
             var body = opts.peopleTableBodyId ? document.getElementById(opts.peopleTableBodyId) : null;
             if (!body) return;
             body.innerHTML = '';
+            peopleRows = [];
+            peopleEmptyRow = document.createElement('tr');
+            peopleEmptyRow.innerHTML = '<td colspan="3"><small>هیچ‌یک از نامبردگان انتخاب‌شده در اشعار این بخش نیامده‌اند.</small></td>';
+            peopleEmptyRow.style.display = 'none';
+            body.appendChild(peopleEmptyRow);
             data.nodes
                 .filter(function (n) { return n.directlyTagged !== false || n.allusionOnly; })
                 .sort(function (a, b) { return (a.name || '').localeCompare(b.name || '', 'fa'); })
@@ -366,11 +373,13 @@
                         });
                     });
                     body.appendChild(tr);
+                    peopleRows.push({ tr: tr, node: n });
                 });
         }
 
         // --- focus / ego-network highlighting -----------------------------------------------------
         var focusedIds = null; // null = nothing focused (everything full opacity)
+        var primaryIds = null; // the searched / clicked people themselves (focusedIds also holds their neighbours)
 
         function neighborsOf(personId) {
             var set = { };
@@ -384,7 +393,9 @@
 
         function focusOnPersons(personIds) {
             var set = {};
+            primaryIds = {};
             personIds.forEach(function (id) {
+                primaryIds[id] = true;
                 var nb = neighborsOf(id);
                 Object.keys(nb).forEach(function (k) { set[k] = true; });
             });
@@ -395,6 +406,7 @@
         function clearFocus() {
             showSelected(null);
             focusedIds = null;
+            primaryIds = null;
             applyFocus();
         }
 
@@ -424,6 +436,15 @@
                 var dim = focusedIds && !(focusedIds[e.source.id] && focusedIds[e.target.id]);
                 tr.style.display = (dim || isHiddenNode(e.source) || isHiddenNode(e.target)) ? 'none' : '';
             });
+            // the people table follows the search/selection: only the searched or clicked people themselves
+            // (not their neighbours) stay, so their poem links are right there
+            var shownPeople = 0;
+            peopleRows.forEach(function (item) {
+                var visible = !isHiddenNode(item.node) && (!primaryIds || primaryIds[item.node.id]);
+                item.tr.style.display = visible ? '' : 'none';
+                if (visible) shownPeople++;
+            });
+            if (peopleEmptyRow) peopleEmptyRow.style.display = (primaryIds && shownPeople === 0) ? '' : 'none';
         }
 
         nodeEls.forEach(function (item) {
@@ -448,7 +469,7 @@
                 var q = searchInput.value.trim();
                 if (!q) { clearFocus(); return; }
                 var matchIds = nodes.filter(function (n) { return n.name && n.name.indexOf(q) !== -1; }).map(function (n) { return n.id; });
-                if (matchIds.length === 0) { showSelected(null); focusedIds = {}; applyFocus(); return; }
+                if (matchIds.length === 0) { showSelected(null); focusedIds = {}; primaryIds = {}; applyFocus(); return; }
                 focusOnPersons(matchIds);
                 showSelected(matchIds.length === 1 ? nodesById[matchIds[0]] : null);
             });
