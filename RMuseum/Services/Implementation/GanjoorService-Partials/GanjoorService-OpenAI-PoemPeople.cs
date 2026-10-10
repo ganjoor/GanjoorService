@@ -87,7 +87,8 @@ namespace RMuseum.Services.Implementation
         private class AIPeopleRun
         {
             public RMuseumDbContext Context;
-            public OpenAIService Service;
+            public System.Net.Http.HttpClient Http;
+            public string ChatUrl;
             public string Model;
             public Guid UserId;
             public bool DryRun;
@@ -298,25 +299,42 @@ namespace RMuseum.Services.Implementation
             {
                 try
                 {
-                    var result = await run.Service.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
+                    //raw call: only choices[0].message.content is read, so provider-specific
+                    //usage/detail fields can not break deserialization
+                    var body = Newtonsoft.Json.JsonConvert.SerializeObject(new
                     {
-                        Messages = new List<ChatMessage>
-                        {
-                            ChatMessage.FromUser(prompt),
-                        },
-                        Model = run.Model,
+                        model = run.Model,
+                        messages = new[] { new { role = "user", content = prompt } }
                     });
-                    if (result.Successful)
+                    using (var req = new System.Net.Http.HttpRequestMessage(System.Net.Http.HttpMethod.Post, run.ChatUrl))
                     {
-                        string content = result.Choices?.FirstOrDefault()?.Message?.Content;
-                        var parsed = _AIParseJson<T>(content);
-                        if (parsed != null)
-                            return parsed;
-                        run.LastAIError = "unparsable answer (" + (content == null ? 0 : content.Length) + " chars): " + _AIShort(content, 300);
-                    }
-                    else
-                    {
-                        run.LastAIError = "API error: " + result.Error?.Code + " " + result.Error?.Message;
+                        req.Content = new System.Net.Http.StringContent(body, Encoding.UTF8, "application/json");
+                        using (var resp = await run.Http.SendAsync(req))
+                        {
+                            string respText = await resp.Content.ReadAsStringAsync();
+                            if (!resp.IsSuccessStatusCode)
+                            {
+                                run.LastAIError = "API error: HTTP " + (int)resp.StatusCode + " " + _AIShort(respText, 300);
+                            }
+                            else
+                            {
+                                string content = null;
+                                try
+                                {
+                                    var jo = Newtonsoft.Json.Linq.JObject.Parse(respText);
+                                    content = (string)jo.SelectToken("choices[0].message.content");
+                                }
+                                catch (Exception)
+                                {
+                                    run.LastAIError = "unreadable API response: " + _AIShort(respText, 300);
+                                    continue;
+                                }
+                                var parsed = _AIParseJson<T>(content);
+                                if (parsed != null)
+                                    return parsed;
+                                run.LastAIError = "unparsable answer (" + (content == null ? 0 : content.Length) + " chars): " + _AIShort(content, 300);
+                            }
+                        }
                     }
                 }
                 catch (TaskCanceledException ex)
@@ -406,6 +424,7 @@ namespace RMuseum.Services.Implementation
 - نوع‌های خویشاوندی (kind برابر family): Parent یعنی person1 پدر یا مادر person2 است؛ Ancestor یعنی person1 نیا (اجداد) person2 است و degree در صورت صراحت درجه (مثلاً ۲ برای پدربزرگ) و در غیر این صورت null؛ Sibling یعنی برادر یا خواهر هستند؛ Spouse یعنی همسر هستند.
 - نوع‌های وابستگی (kind برابر affiliation): Minister یعنی person1 وزیر person2 بود؛ Advisor یعنی person1 مشاور person2 بود؛ Courtier یعنی person1 درباری یا ملازم person2 بود؛ Servant یعنی person1 خدمتکار شخصی person2 بود؛ MilitaryCommander یعنی person1 سردار و سپهبد زیر فرمان person2 بود؛ Champion یعنی person1 پهلوان وابسته به person2 بود؛ Successor یعنی person1 پس از person2 جانشین او شد؛ Killer یعنی person1 person2 را کشت؛ Ally (هم‌پیمان)، Rival (دشمن و رقیب پایدار) و Companion (همراه و هم‌رزم) متقارن‌اند و ترتیب مهم نیست.
 - فقط مواردی را بیاور که در متن به روشنی آمده است؛ حدس نزن.
+- صرفِ همنشینی در متن نسبت نیست: اگر دو نفر فقط در یک بیت یا یک فهرست کنار هم نام برده شده‌اند، در یک سپاه یا یک صف جنگ بوده‌اند، یا در یک رویداد حضور داشته‌اند، هیچ نسبتی میان آن‌ها ثبت نکن. Ally و Companion و Rival را فقط وقتی بیاور که متن خودش به روشنی بگوید این دو هم‌پیمان، همراه یا دشمن یکدیگرند (مثلاً پیمان بستن، سوگند یاد کردن، یا «همراه او» و «هم‌نبرد او» بودن به صراحت). نام بردن از چند سردار در کنار هم هرگز برای این سه نوع بس نیست.
 
 خروجی را فقط به صورت یک JSON معتبر و بدون هیچ متن دیگری بنویس، با این ساختار:
 {""relations"":[{""kind"":""family"",""person1"":12,""person2"":34,""type"":""Parent"",""degree"":null,""couplet"":7,""quote"":""...""}]}
@@ -477,11 +496,9 @@ namespace RMuseum.Services.Implementation
                               return;
                           }
 
-                          run.Service = new OpenAIService(new OpenAIOptions()
-                          {
-                              ApiKey = Configuration["OpenAIAPIKey"],
-                              BaseDomain = Configuration["OpenAIBaseUrl"]
-                          }, new System.Net.Http.HttpClient() { Timeout = TimeSpan.FromMinutes(5) });
+                          run.Http = new System.Net.Http.HttpClient() { Timeout = TimeSpan.FromMinutes(5) };
+                          run.Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Configuration["OpenAIAPIKey"]);
+                          run.ChatUrl = (Configuration["OpenAIBaseUrl"] ?? "https://api.openai.com/v1").TrimEnd('/') + "/chat/completions";
                           run.RelationService = new GanjoorRelatedPersonService(context, _appUserService, _notificationService);
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
