@@ -319,6 +319,12 @@ namespace RMuseum.Services.Implementation
                         run.LastAIError = "API error: " + result.Error?.Code + " " + result.Error?.Message;
                     }
                 }
+                catch (TaskCanceledException ex)
+                {
+                    //a timeout is not transient - asking again just doubles the wait
+                    run.LastAIError = "timeout: " + ex.Message;
+                    return null;
+                }
                 catch (Exception ex)
                 {
                     run.LastAIError = "exception: " + ex.GetType().Name + " " + ex.Message;
@@ -352,7 +358,7 @@ namespace RMuseum.Services.Implementation
 قوانین:
 - فقط بر پایهٔ همین متن کار کن و از دانسته‌های بیرونی استفاده نکن.
 - حیوانات (مانند اسب‌ها)، مکان‌ها، اقوام و گروه‌ها (مانند ایرانیان و ترکان) و افراد بی‌نام را نیاور.
-- هر شخصیت را فقط یک بار و با نام رایجش بیاور و شمارهٔ همهٔ بیت‌هایی را که در آن‌ها نامش آمده یا مستقیماً به او اشاره شده است فهرست کن.
+- هر شخصیت را فقط یک بار و با نام رایجش بیاور و فقط شمارهٔ حداکثر سه بیتِ نخستی را بنویس که در آن‌ها نامش آمده یا مستقیماً به او اشاره شده است (نه همهٔ بیت‌ها؛ فهرست بلند نساز).
 - برای هر بیت نقش آن شخصیت را مشخص کن: مقدار Participant یعنی او بخشی از داستان یا زمینهٔ همین بخش است (در رویداد حاضر است، کنشگر است، مخاطب است یا موضوع روایت جاری است)؛ مقدار Allusion یعنی نامش فقط برای یادآوری، مقایسه، تشبیه یا اشاره به گذشته یا آینده آمده است.
 - gender را با یکی از مقدارهای Male، Female یا Unknown مشخص کن.
 - description یک توضیح بسیار کوتاه (حداکثر ۱۲ کلمه) فقط بر پایهٔ همین متن است؛ اگر چیزی نمی‌توان گفت آن را خالی بگذار.
@@ -643,6 +649,7 @@ namespace RMuseum.Services.Implementation
                 }
             }
             var allExtractedPeople = new List<AIExtractedPerson>();
+            var extractionTimer = System.Diagnostics.Stopwatch.StartNew();
             for (int w = 0; w < windows.Count; w++)
             {
                 var extraction = await _AIAskJsonAsync<AIExtractionResult>(run, AIPeopleExtractPrompt + windows[w]);
@@ -656,6 +663,7 @@ namespace RMuseum.Services.Implementation
                 if (extraction.People != null)
                     allExtractedPeople.AddRange(extraction.People);
             }
+            run.Log.AppendLine($"{tag}: extraction took {extractionTimer.Elapsed.TotalSeconds:0}s ({windows.Count} part(s), {allExtractedPeople.Count} people)");
             var extracted = _AIMergeExtracted(allExtractedPeople, couplets.Keys);
             if (extracted.Count == 0)
             {
