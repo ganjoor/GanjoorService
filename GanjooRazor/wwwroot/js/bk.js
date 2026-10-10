@@ -1962,6 +1962,7 @@ function loadPersonGraph(catId) {
                     tableBodyId: 'pg-cat-table-body',
                     peopleTableBodyId: 'pg-cat-people-body',
                     catId: catId,
+                    onlyNamedCheckboxId: 'pg-cat-only-named',
                     legendId: 'pg-cat-legend',
                     searchInputId: 'pg-cat-search',
                     resetButtonId: 'pg-cat-reset',

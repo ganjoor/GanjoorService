@@ -23,6 +23,10 @@ else
         <div style="margin-bottom:10px;">
             <input type="text" id="pg-cat-search" placeholder="جستجوی نام نامبرده..." style="width:240px;" />
             <a role="button" id="pg-cat-reset" class="up-btn up-btn--ghost up-btn--sm">نمایش همه</a>
+            @if (Model.HasSecondaryNodes)
+            {
+                <label style="margin-right:10px;"><input type="checkbox" id="pg-cat-only-named" checked="checked" /> فقط نامبردگانی که در متن این بخش آمده‌اند</label>
+            }
             <a role="button" href="javascript:void(0)" onclick="PeopleExplorer.open()" class="up-btn up-btn--ghost up-btn--sm">نمایش شبکهٔ کامل نامبردگان</a>
         </div>
 
@@ -66,6 +70,8 @@ else
             .pg-circle { fill: #fdf6e6; stroke: #8b6b4a; stroke-width: 1.5; }
             .pg-circle-tree { fill: #f3e2b8; stroke: #7a4a2a; stroke-width: 2; }
             .pg-circle-secondary { stroke-dasharray: 3,2; opacity: 0.7; }
+            .pg-circle-allusion { fill: #fffdf6; stroke-width: 1; }
+            .pg-label-allusion { font-style: italic; }
             .pg-label { font-size: 11px; fill: #4a3520; font-family: inherit; }
             .pg-label-secondary { opacity: 0.7; font-style: italic; }
             .pg-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }

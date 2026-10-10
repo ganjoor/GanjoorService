@@ -226,7 +226,10 @@
         var nodeEls = nodes.map(function (n) {
             var g = el('g', { 'class': 'pg-node', 'data-person-id': n.id, style: 'cursor:pointer' });
             var circleClass = n.hasFamilyTree ? 'pg-circle pg-circle-tree' : 'pg-circle';
-            if (!n.directlyTagged) {
+            if (n.allusionOnly) {
+                // named in this section only as a comparison/reminder: solid but lighter than a real participant
+                circleClass += ' pg-circle-allusion';
+            } else if (!n.directlyTagged) {
                 // context pulled in one hop out (a relative/affiliate never actually named in the
                 // work's verses) - draw dashed/dimmer so it reads as secondary, not part of the text
                 circleClass += ' pg-circle-secondary';
@@ -237,7 +240,7 @@
             });
             var text = el('text', {
                 'text-anchor': 'middle', dy: -(nodeRadius(n) + 6),
-                'class': n.directlyTagged ? 'pg-label' : 'pg-label pg-label-secondary', direction: 'rtl',
+                'class': n.allusionOnly ? 'pg-label pg-label-allusion' : (n.directlyTagged ? 'pg-label' : 'pg-label pg-label-secondary'), direction: 'rtl',
                 style: 'cursor:pointer'
             });
             text.textContent = n.allusionOnly ? n.name + ' (اشاره)' : n.name;
@@ -349,7 +352,7 @@
             if (!body) return;
             body.innerHTML = '';
             data.nodes
-                .filter(function (n) { return n.directlyTagged !== false; })
+                .filter(function (n) { return n.directlyTagged !== false || n.allusionOnly; })
                 .sort(function (a, b) { return (a.name || '').localeCompare(b.name || '', 'fa'); })
                 .forEach(function (n) {
                     var tr = document.createElement('tr');
@@ -395,19 +398,31 @@
             applyFocus();
         }
 
+        // optional checkbox (category pages): hide everyone who is not actually named in this section's
+        // verses - i.e. the relatives/affiliates drawn only as one-hop context
+        var onlyNamedBox = opts.onlyNamedCheckboxId ? document.getElementById(opts.onlyNamedCheckboxId) : null;
+        function isHiddenNode(n) {
+            return !!(onlyNamedBox && onlyNamedBox.checked && !n.directlyTagged && !n.allusionOnly);
+        }
+        if (onlyNamedBox) {
+            onlyNamedBox.addEventListener('change', function () { applyFocus(); });
+        }
+
         function applyFocus() {
             nodeEls.forEach(function (item) {
                 var dim = focusedIds && !focusedIds[item.node.id];
                 item.el.style.opacity = dim ? 0.15 : 1;
+                item.el.style.display = isHiddenNode(item.node) ? 'none' : '';
             });
             edgeEls.forEach(function (item) {
                 var dim = focusedIds && !(focusedIds[item.edge.source.id] && focusedIds[item.edge.target.id]);
                 item.el.style.opacity = dim ? 0.05 : 0.55;
+                item.el.style.display = (isHiddenNode(item.edge.source) || isHiddenNode(item.edge.target)) ? 'none' : '';
             });
             tableRows.forEach(function (tr, idx) {
                 var e = edges[idx];
                 var dim = focusedIds && !(focusedIds[e.source.id] && focusedIds[e.target.id]);
-                tr.style.display = dim ? 'none' : '';
+                tr.style.display = (dim || isHiddenNode(e.source) || isHiddenNode(e.target)) ? 'none' : '';
             });
         }
 
@@ -520,6 +535,7 @@
         buildLegend();
         buildTable();
         buildPeopleTable();
+        applyFocus();
         applyPositions();
         ensureRunning();
     }
