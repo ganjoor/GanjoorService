@@ -1157,27 +1157,37 @@ nav#nav {
     word-break: break-word;
 }
 
+/* Text links inside a ".ganjoor-comment" block (author names, poem titles, links pasted into
+   comments/FAQ answers/bookmark notes) are plain links: the site's red link colour, no underline,
+   no box and no margin. The boxed icon-button look used to live here, but the only links that need
+   it are the action icons of a poem-page comment, and those have their own ".comment-actions a"
+   rules further below (more specific, so they are not affected by this rule). Long unbroken Latin
+   text such as URLs wraps instead of overflowing, and is isolated so bidi reordering does not
+   scramble its punctuation. */
 .ganjoor-comment p a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px;
-    margin: 0 1px;
-    border-radius: 6px;
-    background-color: var(--card-inner);
-    border: 1px solid var(--border-gold);
-    color: var(--lapis);
-    -webkit-text-fill-color: var(--lapis);
-    transition: all 0.2s ease;
+    display: inline;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--brand);
+    -webkit-text-fill-color: var(--brand);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    unicode-bidi: isolate;
+    transition: color 0.2s ease;
 }
 
 .ganjoor-comment p a:hover {
-    background-color: var(--brand);
-    border-color: var(--brand);
-    color: var(--card-paper) !important;
-    -webkit-text-fill-color: var(--card-paper) !important;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    background: none;
+    border: none;
+    box-shadow: none;
+    transform: none;
+    color: var(--lapis);
+    -webkit-text-fill-color: var(--lapis);
 }
 
 .ganjoor-comment p a .pageicons {
@@ -1193,10 +1203,12 @@ nav#nav {
 }
 
 .ganjoor-comment blockquote a {
-    color: var(--lapis);
-    -webkit-text-fill-color: var(--lapis);
-    text-decoration: underline;
-    font-weight: 600;
+    color: var(--brand);
+    -webkit-text-fill-color: var(--brand);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    unicode-bidi: isolate;
 }
 
 /* --- Poem-page comment thread only (_CommentPartial.cshtml) ---
@@ -1254,6 +1266,9 @@ nav#nav {
 .ganjoor-comment .comment-body a {
     color: var(--brand);
     -webkit-text-fill-color: var(--brand);
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    unicode-bidi: isolate;
 }
 
 .ganjoor-comment .comment-body a:hover {
