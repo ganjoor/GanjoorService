@@ -90,6 +90,7 @@ namespace RMuseum.Services.Implementation
             public bool DryRun;
             public GanjoorRelatedPersonService RelationService;
             public StringBuilder Log = new StringBuilder();
+            public string LastAIError = "";
             public Dictionary<int, int> TagCounts = new Dictionary<int, int>();
             public int PoemsDone, PoemsSkipped, PoemsFailed;
             public int TagsCreated, NewPeople, Deferred, Ambiguous;
@@ -288,13 +289,20 @@ namespace RMuseum.Services.Implementation
                     });
                     if (result.Successful)
                     {
-                        var parsed = _AIParseJson<T>(result.Choices.First().Message.Content);
+                        string content = result.Choices?.FirstOrDefault()?.Message?.Content;
+                        var parsed = _AIParseJson<T>(content);
                         if (parsed != null)
                             return parsed;
+                        run.LastAIError = "unparsable answer (" + (content == null ? 0 : content.Length) + " chars): " + _AIShort(content, 300);
+                    }
+                    else
+                    {
+                        run.LastAIError = "API error: " + result.Error?.Code + " " + result.Error?.Message;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    run.LastAIError = "exception: " + ex.GetType().Name + " " + ex.Message;
                     //retry once
                 }
             }
@@ -431,7 +439,7 @@ namespace RMuseum.Services.Implementation
                           {
                               ApiKey = Configuration["OpenAIAPIKey"],
                               BaseDomain = Configuration["OpenAIBaseUrl"]
-                          });
+                          }, new System.Net.Http.HttpClient() { Timeout = TimeSpan.FromMinutes(10) });
                           run.RelationService = new GanjoorRelatedPersonService(context, _appUserService, _notificationService);
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
@@ -581,7 +589,7 @@ namespace RMuseum.Services.Implementation
             if (extraction == null)
             {
                 run.PoemsFailed++;
-                run.Log.AppendLine($"{tag}: AI extraction failed");
+                run.Log.AppendLine($"{tag}: AI extraction failed - {run.LastAIError}");
                 return;
             }
             var extracted = _AIMergeExtracted(extraction.People, couplets.Keys);
