@@ -298,6 +298,51 @@
         };
     }
 
+    // An Ancestor (نیا/نواده) edge is only worth drawing when the chart has no other way to get from that
+    // ancestor to the descendant. When a path of two or more Parent/Ancestor edges already connects them
+    // (e.g. Fereydun -> Pashang -> Afrasiyab, while Fereydun -> Afrasiyab is also recorded as an
+    // Ancestor relation because a poem says so), the direct edge adds nothing: the layout treats Ancestor
+    // like Parent, so it made the ancestor a second "parent" of the descendant and drew a long extra line
+    // that hid the real lineage. Only Ancestor edges are dropped, never Parent/Spouse/Sibling ones, and
+    // never when the two people are also linked the other way round (a data cycle) or by a second direct
+    // edge (a book-dependent variant of the same pair, which the chart shows on purpose).
+    function pruneRedundantAncestorEdges(relations) {
+        var out = {}; // ancestorId -> [{ to, idx }] over Parent (0) and Ancestor (3) edges
+        relations.forEach(function (r, i) {
+            if (r.relationType === 0 || r.relationType === 3) {
+                (out[r.person1Id] = out[r.person1Id] || []).push({ to: r.person2Id, idx: i });
+            }
+        });
+
+        // is `to` reachable from `from`? skipIdx (optional) is an edge to ignore; needIntermediate demands
+        // that the path has at least one person in between, i.e. is not a single direct edge
+        function reachable(from, to, skipIdx, needIntermediate) {
+            var seen = {};
+            seen[from] = true;
+            var stack = [from];
+            while (stack.length) {
+                var cur = stack.pop();
+                var list = out[cur] || [];
+                for (var k = 0; k < list.length; k++) {
+                    var e = list[k];
+                    if (e.idx === skipIdx) continue;
+                    if (e.to === to) {
+                        if (!needIntermediate || cur !== from) return true;
+                        continue;
+                    }
+                    if (!seen[e.to]) { seen[e.to] = true; stack.push(e.to); }
+                }
+            }
+            return false;
+        }
+
+        return relations.filter(function (r, i) {
+            if (r.relationType !== 3) return true;
+            if (reachable(r.person2Id, r.person1Id, -1, false)) return true; // cycle: leave it alone
+            return !reachable(r.person1Id, r.person2Id, i, true);
+        });
+    }
+
     // best state among edges linking the two people (any relation type, either direction)
     function pairInfo(edgesByPair, a, b) {
         var list = edgesByPair[Math.min(a, b) + ':' + Math.max(a, b)];
@@ -325,6 +370,9 @@
 
     function renderFamilyTree(containerId, svgId, tooltipId, fullData, requestedRootId, opts) {
         var data = fullData ? applyBookFilter(fullData, requestedRootId, !!(opts && opts.showHidden)) : fullData;
+        if (data && data.relations) {
+            data = { rootId: data.rootId, masterCatId: data.masterCatId, books: data.books, persons: data.persons, relations: pruneRedundantAncestorEdges(data.relations) };
+        }
         var edgesByPair = {};
         if (data && data.relations) data.relations.forEach(function (r) {
             var k = Math.min(r.person1Id, r.person2Id) + ':' + Math.max(r.person1Id, r.person2Id);
