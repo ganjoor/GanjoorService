@@ -79,6 +79,9 @@ namespace RMuseum.Services.Implementation
             public string Key { get; set; }
             public string Loose { get; set; }
             public string[] Tokens { get; set; }
+            public string Aliases { get; set; }
+            public HashSet<string> AliasKeys { get; set; } = new HashSet<string>();
+            public HashSet<string> AliasLoose { get; set; } = new HashSet<string>();
         }
 
         private class AIPeopleRun
@@ -180,11 +183,11 @@ namespace RMuseum.Services.Implementation
                 .ToArray();
         }
 
-        private static AIPersonRec _AIMakePersonRec(int id, string name, string description, string caption)
+        private static AIPersonRec _AIMakePersonRec(int id, string name, string description, string caption, string aliases)
         {
             string key = _AINormName(name);
             string loose = _AILooseName(key);
-            return new AIPersonRec()
+            var rec = new AIPersonRec()
             {
                 Id = id,
                 Name = name,
@@ -193,7 +196,20 @@ namespace RMuseum.Services.Implementation
                 Key = key,
                 Loose = loose.Replace(" ", ""),
                 Tokens = _AITokens(loose),
+                Aliases = aliases,
             };
+            if (!string.IsNullOrWhiteSpace(aliases))
+            {
+                foreach (var alias in aliases.Split(new[] { '،', ',', '؛', ';', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    string aliasKey = _AINormName(alias);
+                    if (aliasKey.Length == 0)
+                        continue;
+                    rec.AliasKeys.Add(aliasKey);
+                    rec.AliasLoose.Add(_AILooseName(aliasKey).Replace(" ", ""));
+                }
+            }
+            return rec;
         }
 
         private static int _AILevenshtein(string a, string b, int max)
@@ -237,13 +253,14 @@ namespace RMuseum.Services.Implementation
                 var tokens = _AITokens(loose);
                 foreach (var p in all)
                 {
-                    if (p.Key == key)
+                    if (p.Key == key || p.AliasKeys.Contains(key))
                     {
                         if (!strongList.Any(x => x.Id == p.Id))
                             strongList.Add(p);
                         continue;
                     }
                     bool isWeak = p.Loose == looseNoSpace
+                        || p.AliasLoose.Contains(looseNoSpace)
                         || (tokens.Length > 0 && p.Tokens.Any(t => tokens.Contains(t)))
                         || (looseNoSpace.Length >= 4 && _AILevenshtein(p.Loose, looseNoSpace, 1) <= 1);
                     if (isWeak && !weakList.Any(x => x.Id == p.Id))
@@ -345,6 +362,19 @@ namespace RMuseum.Services.Implementation
 @"تو یک متخصص ادبیات حماسی فارسی و شاهنامهٔ فردوسی هستی.
 
 در متن زیر از شاهنامه هر بیت با شمارهٔ خودش مشخص شده است. پس از متن، فهرستی از نام‌ها آمده که هر کدام چند نامزد دارد؛ نامزدها شخصیت‌هایی هستند که از پیش در پایگاه داده ثبت شده‌اند و ممکن است با آن نام یکی باشند. برای هر نام با توجه به بیت‌های همان نام و فقط بر پایهٔ همین متن تشخیص بده که کدام نامزد همان شخصیت است. اگر هیچ‌کدام نیست، personId را 0 بگذار. اگر مطمئن نیستی confidence را low و در غیر این صورت high بگذار.
+
+خروجی را فقط به صورت یک JSON معتبر و بدون هیچ متن دیگری بنویس، با این ساختار:
+{""choices"":[{""key"":1,""personId"":123,""confidence"":""high""}]}
+
+متن:
+";
+
+        private const string AIPeopleEpithetPrompt =
+@"تو یک متخصص ادبیات حماسی فارسی و شاهنامهٔ فردوسی هستی.
+
+در متن زیر از شاهنامه هر بیت با شمارهٔ خودش مشخص شده است. پس از متن فهرستی از نام‌هایی آمده که در پایگاه داده با هیچ شخصیتی تطبیق داده نشده‌اند؛ سپس فهرست شخصیت‌های شناخته‌شدهٔ پایگاه داده با شناسه، نام‌های دیگر و توضیحشان آمده است.
+
+برای هر نام تشخیص بده که آیا لقب یا نام دیگرِ یکی از شخصیت‌های فهرست است. فقط زمانی personId را بنویس که خودِ متن (مثلاً ذکر پدر یا ماجرای همان شخص در همان بیت‌ها) یا توضیح و نام‌های دیگرِ همان شخصیت در فهرست این را روشن کند؛ از دانسته‌های بیرونی و حدس استفاده نکن. اگر چنین نشانه‌ای نیست یا مطمئن نیستی personId را 0 بگذار. confidence را فقط وقتی high بنویس که کاملاً مطمئن هستی.
 
 خروجی را فقط به صورت یک JSON معتبر و بدون هیچ متن دیگری بنویس، با این ساختار:
 {""choices"":[{""key"":1,""personId"":123,""confidence"":""high""}]}
@@ -600,8 +630,8 @@ namespace RMuseum.Services.Implementation
             }
 
             // ---- 2. resolution against existing / pending people
-            var all = (await ctx.GanjoorRelatedPersons.AsNoTracking().Select(p => new { p.Id, p.Name, p.Description, p.FamilyTreeCaption }).ToListAsync())
-                .Select(p => _AIMakePersonRec(p.Id, p.Name, p.Description, p.FamilyTreeCaption)).ToList();
+            var all = (await ctx.GanjoorRelatedPersons.AsNoTracking().Select(p => new { p.Id, p.Name, p.Description, p.FamilyTreeCaption, p.Aliases }).ToListAsync())
+                .Select(p => _AIMakePersonRec(p.Id, p.Name, p.Description, p.FamilyTreeCaption, p.Aliases)).ToList();
 
             var pendingLoose = new HashSet<string>();
             var pendingJson = await ctx.GanjoorPoemCorrections.AsNoTracking().Where(c => !c.Reviewed)
@@ -657,7 +687,7 @@ namespace RMuseum.Services.Implementation
                     var r = toAsk[i];
                     sb.AppendLine($"نام شمارهٔ {i + 1}: «{r.Person.Name}» - توضیح: {_AIShort(r.Person.Description, 120)} - بیت‌ها: {string.Join("، ", r.Person.Appearances.Select(a => a.Couplet))}");
                     foreach (var cand in r.Candidates)
-                        sb.AppendLine($"  نامزد {cand.Id}: {cand.Name} - {_AIShort(cand.Description, 100)} {_AIShort(cand.Caption, 60)}");
+                        sb.AppendLine($"  نامزد {cand.Id}: {cand.Name}{(string.IsNullOrWhiteSpace(cand.Aliases) ? "" : " (نام‌های دیگر: " + _AIShort(cand.Aliases, 80) + ")")} - {_AIShort(cand.Description, 100)} {_AIShort(cand.Caption, 60)}");
                 }
                 var answer = await _AIAskJsonAsync<AIChoiceResult>(run, sb.ToString());
                 for (int i = 0; i < toAsk.Count; i++)
@@ -679,6 +709,48 @@ namespace RMuseum.Services.Implementation
                     }
                     else
                         r.Skip = "ambiguous (invalid choice)";
+                }
+            }
+
+            // ---- 2b. names without any lexical candidate may still be an epithet of a well known person
+            // (e.g. «تهمتن» for رستم): show the model the people most tagged in this book, with the
+            // descriptions and other names stored in the database, and let it link a name only when
+            // the poem text or those stored descriptions make it clear
+            var unmatched = resolved.Where(q => q.IsNew && q.Skip == null && q.Candidates.Count == 0).ToList();
+            if (unmatched.Count > 0)
+            {
+                var shortlist = all.Where(a => run.TagCounts.ContainsKey(a.Id))
+                    .OrderByDescending(a => run.TagCounts[a.Id])
+                    .Take(200)
+                    .ToList();
+                if (shortlist.Count > 0)
+                {
+                    var sb2 = new StringBuilder(AIPeopleEpithetPrompt);
+                    sb2.AppendLine(poemText.ToString());
+                    sb2.AppendLine("نام‌های بی‌تطبیق:");
+                    for (int i = 0; i < unmatched.Count; i++)
+                    {
+                        var r = unmatched[i];
+                        sb2.AppendLine($"نام شمارهٔ {i + 1}: «{r.Person.Name}»{(r.Person.Forms.Count > 0 ? " (شکل‌های دیگر: " + string.Join("، ", r.Person.Forms.Take(4)) + ")" : "")} - توضیح: {_AIShort(r.Person.Description, 120)} - بیت‌ها: {string.Join("، ", r.Person.Appearances.Select(a => a.Couplet))}");
+                    }
+                    sb2.AppendLine();
+                    sb2.AppendLine("شخصیت‌های شناخته‌شدهٔ پایگاه داده:");
+                    foreach (var k in shortlist)
+                        sb2.AppendLine($"{k.Id}: {k.Name}{(string.IsNullOrWhiteSpace(k.Aliases) ? "" : " (نام‌های دیگر: " + _AIShort(k.Aliases, 80) + ")")}{(string.IsNullOrWhiteSpace(k.Description) ? "" : " - " + _AIShort(k.Description, 70))}");
+                    var epithetAnswer = await _AIAskJsonAsync<AIChoiceResult>(run, sb2.ToString());
+                    for (int i = 0; i < unmatched.Count; i++)
+                    {
+                        var r = unmatched[i];
+                        var choice = epithetAnswer?.Choices?.FirstOrDefault(c => c.Key == i + 1);
+                        if (choice == null || choice.PersonId == 0 || !string.Equals(choice.Confidence, "high", StringComparison.OrdinalIgnoreCase))
+                            continue;
+                        var picked = shortlist.FirstOrDefault(k => k.Id == choice.PersonId);
+                        if (picked == null)
+                            continue;
+                        r.Existing = picked;
+                        r.IsNew = false;
+                        run.Log.AppendLine($"{tag}: «{r.Person.Name}» -> {picked.Id} {picked.Name} (epithet)");
+                    }
                 }
             }
 
@@ -708,6 +780,8 @@ namespace RMuseum.Services.Implementation
                 var appearances = p.Appearances.OrderBy(a => a.Couplet).ToList();
                 if (r.Existing != null)
                 {
+                    if (_AINormName(p.Name) != r.Existing.Key)
+                        note += " (نام در متن: " + p.Name.Trim() + ")";
                     // only the first couplet of the poem is tagged for each person; a person who already
                     // has a tag (or a pending tag) anywhere in this poem is skipped altogether
                     foreach (var a in appearances.Take(1))
@@ -747,7 +821,7 @@ namespace RMuseum.Services.Implementation
                     {
                         CoupletIndex = first.Couplet,
                         PersonMention = _AIMentionOf(first.Mention),
-                        SuggestedPersonGraphJson = Newtonsoft.Json.JsonConvert.SerializeObject(graph),
+                        SuggestedPersonGraphJson = Newtonsoft.Json.JsonConvert.SerializeObject(graph, new Newtonsoft.Json.JsonSerializerSettings() { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }),
                         SuggestionNote = note,
                     });
                     run.NewPeople++;

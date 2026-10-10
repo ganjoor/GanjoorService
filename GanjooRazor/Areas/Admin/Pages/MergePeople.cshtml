@@ -1,0 +1,123 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.MergePeopleModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "ادغام نامبردگان و نام‌های دیگر";
+}
+
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <div class="up-alert up-alert--danger">@Model.LastMessage</div>
+}
+
+<datalist id="people-list">
+    @foreach (var person in Model.People)
+    {
+        <option value="@person.Name (@person.Id)"></option>
+    }
+</datalist>
+
+<script>
+    function parsePersonId(text) {
+        var m = /\((\d+)\)\s*$/.exec(text || '');
+        if (m) return parseInt(m[1]);
+        var n = parseInt(text);
+        return isNaN(n) ? 0 : n;
+    }
+
+    var aliasesOf = {
+@foreach (var person in Model.People.Where(p => !string.IsNullOrEmpty(p.Aliases)))
+{
+        <text>        @person.Id: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(person.Aliases)),
+</text>
+}
+    };
+
+    async function mergePeople() {
+        var sourceId = parsePersonId(document.getElementById('merge-source').value);
+        var targetId = parsePersonId(document.getElementById('merge-target').value);
+        if (!sourceId || !targetId || sourceId == targetId) {
+            upToast('هر دو شخصیت را از فهرست انتخاب کنید (و یکی نباشند).', 'error');
+            return;
+        }
+        var ok = await upConfirm('شخصیت «' + document.getElementById('merge-source').value + '» در «' + document.getElementById('merge-target').value + '» ادغام و حذف می‌شود. این کار قابل بازگشت نیست. ادامه می‌دهید؟');
+        if (!ok) return;
+        $.ajax({
+            type: "POST",
+            url: '?handler=Merge',
+            data: { sourceId: sourceId, targetId: targetId },
+            error: function (e) {
+                upToast(e.responseText || 'خطا رخ داد.', 'error');
+            },
+            success: function (report) {
+                document.getElementById('merge-report').innerText = report;
+                document.getElementById('merge-source').value = '';
+                upToast('انجام شد!', 'success');
+            },
+        });
+    }
+
+    function loadAliases() {
+        var id = parsePersonId(document.getElementById('alias-person').value);
+        document.getElementById('alias-text').value = (id && aliasesOf[id]) ? aliasesOf[id] : '';
+    }
+
+    function saveAliases() {
+        var id = parsePersonId(document.getElementById('alias-person').value);
+        if (!id) {
+            upToast('شخصیت را از فهرست انتخاب کنید.', 'error');
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: '?handler=Aliases',
+            data: { id: id, aliases: document.getElementById('alias-text').value },
+            error: function (e) {
+                upToast(e.responseText || 'خطا رخ داد.', 'error');
+            },
+            success: function (aliases) {
+                aliasesOf[id] = aliases;
+                document.getElementById('alias-text').value = aliases;
+                upToast('ذخیره شد.', 'success');
+            },
+        });
+    }
+</script>
+
+<h2>ادغام دو شخصیت تکراری</h2>
+<p>همهٔ برچسب‌های شعر، روابط، مستندها و پیشنهادهای در انتظار شخصیت «تکراری» به شخصیت «ماندگار» منتقل می‌شود، نام شخصیت تکراری به نام‌های دیگر شخصیت ماندگار افزوده می‌شود و شخصیت تکراری حذف می‌گردد.</p>
+<table>
+    <tr>
+        <td><span class="inputlabel">شخصیت تکراری (حذف می‌شود)</span></td>
+        <td><input type="text" id="merge-source" list="people-list" size="40" autocomplete="off" /></td>
+    </tr>
+    <tr>
+        <td><span class="inputlabel">شخصیت ماندگار</span></td>
+        <td><input type="text" id="merge-target" list="people-list" size="40" autocomplete="off" /></td>
+    </tr>
+    <tr>
+        <td colspan="2"><p><a role="button" onclick="mergePeople()" class="up-btn up-btn--danger up-btn--sm">ادغام</a></p></td>
+    </tr>
+</table>
+<p id="merge-report"></p>
+
+<h2>نام‌های دیگر یک شخصیت</h2>
+<p>نام‌ها، لقب‌ها و املاهای دیگر را با «،» از هم جدا کنید (مثلاً برای رستم: تهمتن، رستم دستان، پور زال). کار هوش مصنوعی از این نام‌ها برای تشخیص شخصیت استفاده می‌کند.</p>
+<table>
+    <tr>
+        <td><span class="inputlabel">شخصیت</span></td>
+        <td><input type="text" id="alias-person" list="people-list" size="40" autocomplete="off" onchange="loadAliases()" /></td>
+    </tr>
+    <tr>
+        <td><span class="inputlabel">نام‌های دیگر</span></td>
+        <td><textarea id="alias-text" rows="3" cols="60"></textarea></td>
+    </tr>
+    <tr>
+        <td colspan="2"><p><a role="button" onclick="saveAliases()" class="up-btn up-btn--ghost up-btn--sm">ذخیره</a></p></td>
+    </tr>
+</table>

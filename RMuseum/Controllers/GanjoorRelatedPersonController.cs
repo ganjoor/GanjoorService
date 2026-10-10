@@ -394,6 +394,43 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// merge a duplicate person (SourceId) into another one (TargetId) - tags, relations,
+        /// affiliations, pending suggestions and names move to the target, the source is deleted
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>a short report</returns>
+        [HttpPost("merge")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> MergePeopleAsync([FromBody] PersonMergeViewModel model)
+        {
+            Guid userId = new Guid(User.Claims.First(c => c.Type == "UserId").Value);
+            var res = await _personService.MergePeopleAsync(userId, model.SourceId, model.TargetId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// replace the aliases of a person
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPut("{id:int}/aliases")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorRelatedPerson))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> SetPersonAliasesAsync(int id, [FromBody] PersonAliasesViewModel model)
+        {
+            var res = await _personService.SetPersonAliasesAsync(id, model.Aliases);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// person service
         /// </summary>
         private readonly IGanjoorRelatedPersonService _personService;

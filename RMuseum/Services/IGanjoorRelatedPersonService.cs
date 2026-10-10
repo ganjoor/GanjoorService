@@ -184,5 +184,24 @@ namespace RMuseum.Services
         /// <param name="catId"></param>
         /// <returns></returns>
         Task<RServiceResult<GanjoorPersonGraphViewModel>> GetCatPersonGraphAsync(int catId);
+
+        /// <summary>
+        /// merge a duplicate person (source) into another one (target): person tags, relations,
+        /// affiliations (with their evidence), pending suggestions and aliases are moved, then the
+        /// source is deleted. Returns a short report.
+        /// </summary>
+        /// <param name="moderatorUserId"></param>
+        /// <param name="sourceId"></param>
+        /// <param name="targetId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<string>> MergePeopleAsync(Guid moderatorUserId, int sourceId, int targetId);
+
+        /// <summary>
+        /// replace the aliases of a person
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="aliases"></param>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorRelatedPerson>> SetPersonAliasesAsync(int id, string aliases);
     }
 }

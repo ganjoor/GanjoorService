@@ -91,5 +91,13 @@
         /// (see PersonGender and familytree.js's buildLayout()) - defaults to Unknown
         /// </summary>
         public PersonGender Gender { get; set; }
+
+        /// <summary>
+        /// other names this person is known by (epithets, titles, alternative spellings), separated by
+        /// the Persian comma (،) - e.g. for رستم: «تهمتن، رستم دستان، پور زال». Used by the AI tagging
+        /// jobs to match a name in a poem to this person, and filled automatically when two people are
+        /// merged
+        /// </summary>
+        public string Aliases { get; set; }
     }
 }

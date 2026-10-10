@@ -2458,6 +2458,315 @@ namespace RMuseum.Services.Implementation
             _notificationService = notificationService;
         }
 
+        private static readonly char[] AliasSeparators = new[] { '،', ',', '؛', ';', '\n', '\r' };
+
+        private static string _AliasKey(string s)
+        {
+            return (s ?? "").Replace('ي', 'ی').Replace('ك', 'ک').Replace("\u200c", " ").Trim().Replace("  ", " ");
+        }
+
+        /// <summary>
+        /// split, trim and de-duplicate an aliases text, dropping the person's own name
+        /// </summary>
+        private static string _NormalizeAliases(string ownName, params string[] aliasTexts)
+        {
+            var result = new List<string>();
+            var keys = new HashSet<string>();
+            keys.Add(_AliasKey(ownName));
+            foreach (var text in aliasTexts)
+            {
+                if (string.IsNullOrWhiteSpace(text))
+                    continue;
+                foreach (var part in text.Split(AliasSeparators, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    string alias = part.Trim();
+                    if (alias.Length == 0)
+                        continue;
+                    if (keys.Add(_AliasKey(alias)))
+                        result.Add(alias);
+                }
+            }
+            return result.Count == 0 ? null : string.Join("، ", result);
+        }
+
+        /// <summary>
+        /// replace the aliases of a person
+        /// </summary>
+        public async Task<RServiceResult<GanjoorRelatedPerson>> SetPersonAliasesAsync(int id, string aliases)
+        {
+            try
+            {
+                var person = await _context.GanjoorRelatedPersons.Where(p => p.Id == id).SingleOrDefaultAsync();
+                if (person == null)
+                    return new RServiceResult<GanjoorRelatedPerson>(null, "شخصیت پیدا نشد.");
+                person.Aliases = _NormalizeAliases(person.Name, aliases);
+                _context.GanjoorRelatedPersons.Update(person);
+                await _context.SaveChangesAsync();
+                return new RServiceResult<GanjoorRelatedPerson>(person);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorRelatedPerson>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// merge a duplicate person (source) into another one (target)
+        /// </summary>
+        public async Task<RServiceResult<string>> MergePeopleAsync(Guid moderatorUserId, int sourceId, int targetId)
+        {
+            if (sourceId == targetId)
+                return new RServiceResult<string>(null, "شخصیت مبدأ و مقصد یکی است.");
+            //the database context uses a retrying execution strategy, which requires user transactions to run inside it
+            var strategy = _context.Database.CreateExecutionStrategy();
+            return await strategy.ExecuteAsync(async () =>
+            {
+                _context.ChangeTracker.Clear();
+                return await _MergePeopleCoreAsync(sourceId, targetId);
+            });
+        }
+
+        private async Task<RServiceResult<string>> _MergePeopleCoreAsync(int sourceId, int targetId)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var source = await _context.GanjoorRelatedPersons.Where(p => p.Id == sourceId).SingleOrDefaultAsync();
+                    var target = await _context.GanjoorRelatedPersons.Where(p => p.Id == targetId).SingleOrDefaultAsync();
+                    if (source == null || target == null)
+                        return new RServiceResult<string>(null, "شخصیت مبدأ یا مقصد پیدا نشد.");
+
+                    // ---- person tags on poems
+                    var targetTags = await _context.PoemGeoDateTags.Where(t => t.PersonId == targetId).ToListAsync();
+                    var sourceTags = await _context.PoemGeoDateTags.Where(t => t.PersonId == sourceId).ToListAsync();
+                    var replacedTags = new Dictionary<int, int>();
+                    int tagsMoved = 0, tagsDropped = 0;
+                    foreach (var st in sourceTags)
+                    {
+                        var dup = targetTags.FirstOrDefault(t => t.PoemId == st.PoemId && t.CoupletIndex == st.CoupletIndex);
+                        if (dup != null)
+                        {
+                            if (st.PersonMention == PersonMentionKind.Participant)
+                                dup.PersonMention = PersonMentionKind.Participant;
+                            replacedTags[st.Id] = dup.Id;
+                            _context.PoemGeoDateTags.Remove(st);
+                            tagsDropped++;
+                        }
+                        else
+                        {
+                            st.PersonId = targetId;
+                            targetTags.Add(st);
+                            tagsMoved++;
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+
+                    // ---- pending poem corrections that mention the source
+                    int correctionsFixed = 0;
+                    var correctionTags = _context.Set<GanjoorPoemGeoDateTagCorrection>();
+                    var tagsOfSource = await correctionTags.Where(t => t.PersonId == sourceId).ToListAsync();
+                    foreach (var t in tagsOfSource)
+                    {
+                        t.PersonId = targetId;
+                        correctionsFixed++;
+                    }
+                    if (replacedTags.Count > 0)
+                    {
+                        var oldIds = replacedTags.Keys.ToList();
+                        var tagsOfDeleted = await correctionTags.Where(t => t.ExistingTagId != null && oldIds.Contains(t.ExistingTagId.Value)).ToListAsync();
+                        foreach (var t in tagsOfDeleted)
+                        {
+                            t.ExistingTagId = replacedTags[t.ExistingTagId.Value];
+                            correctionsFixed++;
+                        }
+                    }
+                    string sourceIdText = sourceId.ToString();
+                    var withGraph = await correctionTags.Where(t => t.SuggestedPersonGraphJson != null && t.SuggestedPersonGraphJson.Contains(sourceIdText)).ToListAsync();
+                    foreach (var t in withGraph)
+                    {
+                        try
+                        {
+                            var json = Newtonsoft.Json.Linq.JObject.Parse(t.SuggestedPersonGraphJson);
+                            bool changed = false;
+                            foreach (var prop in json.DescendantsAndSelf().OfType<Newtonsoft.Json.Linq.JProperty>()
+                                .Where(pr => string.Equals(pr.Name, "existingPersonId", StringComparison.OrdinalIgnoreCase)).ToList())
+                            {
+                                if (prop.Value.Type == Newtonsoft.Json.Linq.JTokenType.Integer && (int)prop.Value == sourceId)
+                                {
+                                    prop.Value = targetId;
+                                    changed = true;
+                                }
+                            }
+                            if (changed)
+                            {
+                                t.SuggestedPersonGraphJson = json.ToString(Newtonsoft.Json.Formatting.None);
+                                correctionsFixed++;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            //not valid json - leave it
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+
+                    // ---- kinship relations
+                    int relationsMoved = 0, relationsMerged = 0, relationsDropped = 0;
+                    var relations = await _context.GanjoorPersonRelations.Where(r => r.Person1Id == sourceId || r.Person2Id == sourceId).ToListAsync();
+                    foreach (var rel in relations)
+                    {
+                        int p1 = rel.Person1Id == sourceId ? targetId : rel.Person1Id;
+                        int p2 = rel.Person2Id == sourceId ? targetId : rel.Person2Id;
+                        var suggestionsOfRel = await _context.GanjoorPersonRelationEditSuggestions.Where(x => x.ExistingRelationId == rel.Id).ToListAsync();
+                        if (p1 == p2)
+                        {
+                            //the relation was between the two duplicates - meaningless now
+                            foreach (var x in suggestionsOfRel)
+                                x.ExistingRelationId = null;
+                            _context.GanjoorPersonRelations.Remove(rel);
+                            await _context.SaveChangesAsync();
+                            relationsDropped++;
+                            continue;
+                        }
+                        bool symmetric = rel.RelationType == PersonRelationType.Sibling || rel.RelationType == PersonRelationType.Spouse;
+                        var dup = await _context.GanjoorPersonRelations.Where(r => r.Id != rel.Id && r.RelationType == rel.RelationType &&
+                            ((r.Person1Id == p1 && r.Person2Id == p2) || (symmetric && r.Person1Id == p2 && r.Person2Id == p1))).FirstOrDefaultAsync();
+                        if (dup == null)
+                        {
+                            rel.Person1Id = p1;
+                            rel.Person2Id = p2;
+                            await _context.SaveChangesAsync();
+                            relationsMoved++;
+                            continue;
+                        }
+                        var dupCouplets = await _context.GanjoorPersonRelationEvidences.Where(e => e.RelationId == dup.Id).Select(e => new { e.PoemId, e.CoupletIndex }).ToListAsync();
+                        var evidences = await _context.GanjoorPersonRelationEvidences.Where(e => e.RelationId == rel.Id).ToListAsync();
+                        foreach (var e in evidences)
+                        {
+                            if (!dupCouplets.Any(d => d.PoemId == e.PoemId && d.CoupletIndex == e.CoupletIndex))
+                                e.RelationId = dup.Id;
+                        }
+                        if (dup.DegreeHint == null && rel.DegreeHint != null)
+                            dup.DegreeHint = rel.DegreeHint;
+                        if (string.IsNullOrWhiteSpace(dup.Note))
+                            dup.Note = rel.Note;
+                        foreach (var x in suggestionsOfRel)
+                            x.ExistingRelationId = dup.Id;
+                        await _context.SaveChangesAsync();
+                        _context.GanjoorPersonRelations.Remove(rel);
+                        await _context.SaveChangesAsync();
+                        relationsMerged++;
+                    }
+
+                    // ---- non-family affiliations
+                    int affiliationsMoved = 0, affiliationsMerged = 0, affiliationsDropped = 0;
+                    var affiliations = await _context.GanjoorPersonAffiliations.Where(a => a.Person1Id == sourceId || a.Person2Id == sourceId).ToListAsync();
+                    foreach (var aff in affiliations)
+                    {
+                        int p1 = aff.Person1Id == sourceId ? targetId : aff.Person1Id;
+                        int p2 = aff.Person2Id == sourceId ? targetId : aff.Person2Id;
+                        var suggestionsOfAff = await _context.GanjoorPersonRelationEditSuggestions.Where(x => x.ExistingAffiliationId == aff.Id).ToListAsync();
+                        if (p1 == p2)
+                        {
+                            foreach (var x in suggestionsOfAff)
+                                x.ExistingAffiliationId = null;
+                            _context.GanjoorPersonAffiliations.Remove(aff);
+                            await _context.SaveChangesAsync();
+                            affiliationsDropped++;
+                            continue;
+                        }
+                        bool symmetric = aff.AffiliationType == PersonAffiliationType.Ally || aff.AffiliationType == PersonAffiliationType.Rival ||
+                            aff.AffiliationType == PersonAffiliationType.Companion || aff.AffiliationType == PersonAffiliationType.Contemporary;
+                        var dup = await _context.GanjoorPersonAffiliations.Where(a => a.Id != aff.Id && a.AffiliationType == aff.AffiliationType &&
+                            ((a.Person1Id == p1 && a.Person2Id == p2) || (symmetric && a.Person1Id == p2 && a.Person2Id == p1))).FirstOrDefaultAsync();
+                        if (dup == null)
+                        {
+                            aff.Person1Id = p1;
+                            aff.Person2Id = p2;
+                            await _context.SaveChangesAsync();
+                            affiliationsMoved++;
+                            continue;
+                        }
+                        var dupCouplets = await _context.GanjoorPersonAffiliationEvidences.Where(e => e.AffiliationId == dup.Id).Select(e => new { e.PoemId, e.CoupletIndex }).ToListAsync();
+                        var evidences = await _context.GanjoorPersonAffiliationEvidences.Where(e => e.AffiliationId == aff.Id).ToListAsync();
+                        foreach (var e in evidences)
+                        {
+                            if (!dupCouplets.Any(d => d.PoemId == e.PoemId && d.CoupletIndex == e.CoupletIndex))
+                                e.AffiliationId = dup.Id;
+                        }
+                        if (string.IsNullOrWhiteSpace(dup.Note))
+                            dup.Note = aff.Note;
+                        foreach (var x in suggestionsOfAff)
+                            x.ExistingAffiliationId = dup.Id;
+                        await _context.SaveChangesAsync();
+                        _context.GanjoorPersonAffiliations.Remove(aff);
+                        await _context.SaveChangesAsync();
+                        affiliationsMerged++;
+                    }
+
+                    // ---- suggestions that point at the source
+                    var relationSuggestions = await _context.GanjoorPersonRelationEditSuggestions.Where(x => x.Person1Id == sourceId || x.Person2Id == sourceId).ToListAsync();
+                    foreach (var x in relationSuggestions)
+                    {
+                        if (x.Person1Id == sourceId) x.Person1Id = targetId;
+                        if (x.Person2Id == sourceId) x.Person2Id = targetId;
+                    }
+                    var personSuggestions = await _context.GanjoorPersonEditSuggestions.Where(x => x.PersonId == sourceId).ToListAsync();
+                    foreach (var x in personSuggestions)
+                        x.PersonId = targetId;
+                    await _context.SaveChangesAsync();
+
+                    // ---- person fields: fill the blanks of the target, keep its own values otherwise
+                    if (string.IsNullOrWhiteSpace(target.Description)) target.Description = source.Description;
+                    if (string.IsNullOrWhiteSpace(target.WikiUrl)) target.WikiUrl = source.WikiUrl;
+                    if (!target.ValidBirthDate && source.ValidBirthDate)
+                    {
+                        target.ValidBirthDate = true;
+                        target.BirthYearInLHijri = source.BirthYearInLHijri;
+                    }
+                    if (!target.ValidDeathDate && source.ValidDeathDate)
+                    {
+                        target.ValidDeathDate = true;
+                        target.DeathYearInLHijri = source.DeathYearInLHijri;
+                    }
+                    if (target.BirthLocationId == null) target.BirthLocationId = source.BirthLocationId;
+                    if (target.DeathLocationId == null) target.DeathLocationId = source.DeathLocationId;
+                    if (target.Gender == PersonGender.Unknown) target.Gender = source.Gender;
+                    bool captionMoved = false;
+                    if (string.IsNullOrWhiteSpace(target.FamilyTreeCaption) && !string.IsNullOrWhiteSpace(source.FamilyTreeCaption))
+                    {
+                        target.FamilyTreeCaption = source.FamilyTreeCaption;
+                        captionMoved = true;
+                    }
+                    target.Aliases = _NormalizeAliases(target.Name, target.Aliases, source.Name, source.Aliases);
+                    if (captionMoved)
+                    {
+                        source.FamilyTreeCaption = null;
+                        await _context.SaveChangesAsync();
+                    }
+
+                    _context.GanjoorRelatedPersons.Remove(source);
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    string report =
+                        $"«{source.Name}» در «{target.Name}» ادغام شد. " +
+                        $"برچسب شعر: {tagsMoved} منتقل شد، {tagsDropped} تکراری حذف شد؛ " +
+                        $"پیشنهادهای در انتظار اصلاح‌شده: {correctionsFixed}؛ " +
+                        $"روابط خویشاوندی: {relationsMoved} منتقل، {relationsMerged} ادغام با رابطهٔ موجود، {relationsDropped} حذف؛ " +
+                        $"روابط غیرخویشاوندی: {affiliationsMoved} منتقل، {affiliationsMerged} ادغام، {affiliationsDropped} حذف.";
+                    return new RServiceResult<string>(report);
+                }
+                catch (Exception exp)
+                {
+                    await transaction.RollbackAsync();
+                    _context.ChangeTracker.Clear();
+                    return new RServiceResult<string>(null, exp.ToString());
+                }
+            }
+        }
+
         /// <summary>
         /// notify every user holding the Ganjoor:Modify permission that a new suggestion of the
         /// given kind is pending review at reviewPageUrl - shared by both suggestion types below

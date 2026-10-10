@@ -3022,6 +3022,22 @@
             <param name="moderation"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.MergePeopleAsync(RMuseum.Models.Ganjoor.ViewModels.PersonMergeViewModel)">
+            <summary>
+            merge a duplicate person (SourceId) into another one (TargetId) - tags, relations,
+            affiliations, pending suggestions and names move to the target, the source is deleted
+            </summary>
+            <param name="model"></param>
+            <returns>a short report</returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.SetPersonAliasesAsync(System.Int32,RMuseum.Models.Ganjoor.ViewModels.PersonAliasesViewModel)">
+            <summary>
+            replace the aliases of a person
+            </summary>
+            <param name="id"></param>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
         <member name="F:RMuseum.Controllers.GanjoorRelatedPersonController._personService">
             <summary>
             person service
@@ -11696,6 +11712,14 @@
             (see PersonGender and familytree.js's buildLayout()) - defaults to Unknown
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorRelatedPerson.Aliases">
+            <summary>
+            other names this person is known by (epithets, titles, alternative spellings), separated by
+            the Persian comma (،) - e.g. for رستم: «تهمتن، رستم دستان، پور زال». Used by the AI tagging
+            jobs to match a name in a poem to this person, and filled automatically when two people are
+            merged
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.GanjoorSiteBanner">
             <summary>
             ganjoor.net site banner
@@ -15871,6 +15895,31 @@
             suggestion form
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.PersonMergeViewModel">
+            <summary>
+            merge two people: everything attached to SourceId moves to TargetId and SourceId is deleted
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonMergeViewModel.SourceId">
+            <summary>
+            the duplicate person, deleted at the end of the merge
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonMergeViewModel.TargetId">
+            <summary>
+            the person who stays
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.PersonAliasesViewModel">
+            <summary>
+            replace the aliases of a person
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonAliasesViewModel.Aliases">
+            <summary>
+            names separated by ، (Persian comma), a comma or a new line
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PoemMusicTrackViewModel">
             <summary>
             Ganjoor Poem related music track model
@@ -19401,6 +19450,25 @@
             themselves - see GanjoorPersonGraphNode.DirectlyTagged
             </summary>
             <param name="catId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.MergePeopleAsync(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            merge a duplicate person (source) into another one (target): person tags, relations,
+            affiliations (with their evidence), pending suggestions and aliases are moved, then the
+            source is deleted. Returns a short report.
+            </summary>
+            <param name="moderatorUserId"></param>
+            <param name="sourceId"></param>
+            <param name="targetId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.SetPersonAliasesAsync(System.Int32,System.String)">
+            <summary>
+            replace the aliases of a person
+            </summary>
+            <param name="id"></param>
+            <param name="aliases"></param>
             <returns></returns>
         </member>
         <member name="T:RMuseum.Services.IGanjoorService">
@@ -23276,6 +23344,21 @@
             <param name="context"></param>
             <param name="appUserService"></param>
             <param name="notificationService"></param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._NormalizeAliases(System.String,System.String[])">
+            <summary>
+            split, trim and de-duplicate an aliases text, dropping the person's own name
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.SetPersonAliasesAsync(System.Int32,System.String)">
+            <summary>
+            replace the aliases of a person
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.MergePeopleAsync(System.Guid,System.Int32,System.Int32)">
+            <summary>
+            merge a duplicate person (source) into another one (target)
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.NotifyModeratorsOfPendingSuggestionAsync(System.String,System.String)">
             <summary>
