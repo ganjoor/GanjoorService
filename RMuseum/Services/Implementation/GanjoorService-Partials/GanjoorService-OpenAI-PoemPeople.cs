@@ -94,6 +94,8 @@ namespace RMuseum.Services.Implementation
             public GanjoorRelatedPersonService RelationService;
             public StringBuilder Log = new StringBuilder();
             public string LastAIError = "";
+            //loose names of new-person suggestions made earlier in this same run
+            public HashSet<string> NewPersonKeys = new HashSet<string>();
             public Dictionary<int, int> TagCounts = new Dictionary<int, int>();
             public int PoemsDone, PoemsSkipped, PoemsFailed;
             public int TagsCreated, NewPeople, Deferred, Ambiguous;
@@ -338,6 +340,10 @@ namespace RMuseum.Services.Implementation
 
         #region AI people prompts
 
+        private const int AIExtractWindowThreshold = 45;
+        private const int AIExtractWindowSize = 40;
+        private const int AIExtractWindowOverlap = 3;
+
         private const string AIPeopleExtractPrompt =
 @"تو یک متخصص ادبیات حماسی فارسی و شاهنامهٔ فردوسی هستی.
 
@@ -469,7 +475,7 @@ namespace RMuseum.Services.Implementation
                           {
                               ApiKey = Configuration["OpenAIAPIKey"],
                               BaseDomain = Configuration["OpenAIBaseUrl"]
-                          }, new System.Net.Http.HttpClient() { Timeout = TimeSpan.FromMinutes(10) });
+                          }, new System.Net.Http.HttpClient() { Timeout = TimeSpan.FromMinutes(5) });
                           run.RelationService = new GanjoorRelatedPersonService(context, _appUserService, _notificationService);
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
@@ -511,8 +517,10 @@ namespace RMuseum.Services.Implementation
                                   $"{i + 1} از {poems.Count} - {poem.Id} - {poem.Title} (برچسب: {run.TagsCreated}، شخص جدید: {run.NewPeople}، نسبت: {run.RelationsCreated}، مستند: {run.EvidencesCreated})");
                               try
                               {
+                                  int failedBefore = run.PoemsFailed, skippedBefore = run.PoemsSkipped;
                                   await _AIPeopleProcessPoemAsync(run, poem.Id, poem.Title);
-                                  run.PoemsDone++;
+                                  if (run.PoemsFailed == failedBefore && run.PoemsSkipped == skippedBefore)
+                                      run.PoemsDone++;
                               }
                               catch (Exception exp)
                               {
@@ -615,14 +623,40 @@ namespace RMuseum.Services.Implementation
                 poemText.AppendLine($"[{c.Key}] {c.Value}");
 
             // ---- 1. extraction
-            var extraction = await _AIAskJsonAsync<AIExtractionResult>(run, AIPeopleExtractPrompt + poemText);
-            if (extraction == null)
+            // long poems are asked in overlapping windows of couplets: one huge answer can take longer
+            // than any timeout, several smaller ones are quick. The people of all windows are merged by name.
+            var windows = new List<string>();
+            if (orderedCouplets.Count <= AIExtractWindowThreshold)
             {
-                run.PoemsFailed++;
-                run.Log.AppendLine($"{tag}: AI extraction failed - {run.LastAIError}");
-                return;
+                windows.Add(poemText.ToString());
             }
-            var extracted = _AIMergeExtracted(extraction.People, couplets.Keys);
+            else
+            {
+                for (int start = 0; start < orderedCouplets.Count; start += AIExtractWindowSize - AIExtractWindowOverlap)
+                {
+                    var wsb = new StringBuilder();
+                    foreach (var c in orderedCouplets.Skip(start).Take(AIExtractWindowSize))
+                        wsb.AppendLine($"[{c.Key}] {c.Value}");
+                    windows.Add(wsb.ToString());
+                    if (start + AIExtractWindowSize >= orderedCouplets.Count)
+                        break;
+                }
+            }
+            var allExtractedPeople = new List<AIExtractedPerson>();
+            for (int w = 0; w < windows.Count; w++)
+            {
+                var extraction = await _AIAskJsonAsync<AIExtractionResult>(run, AIPeopleExtractPrompt + windows[w]);
+                if (extraction == null)
+                {
+                    run.PoemsFailed++;
+                    string part = windows.Count > 1 ? $" (part {w + 1}/{windows.Count})" : "";
+                    run.Log.AppendLine($"{tag}: AI extraction failed{part} - {run.LastAIError}");
+                    return;
+                }
+                if (extraction.People != null)
+                    allExtractedPeople.AddRange(extraction.People);
+            }
+            var extracted = _AIMergeExtracted(allExtractedPeople, couplets.Keys);
             if (extracted.Count == 0)
             {
                 run.Log.AppendLine($"{tag}: no people found");
@@ -758,7 +792,7 @@ namespace RMuseum.Services.Implementation
             {
                 var keys = new List<string>() { r.Person.Name };
                 keys.AddRange(r.Person.Forms);
-                if (keys.Any(k => pendingLoose.Contains(_AILooseName(_AINormName(k)).Replace(" ", ""))))
+                if (keys.Any(k => pendingLoose.Contains(_AILooseName(_AINormName(k)).Replace(" ", "")) || run.NewPersonKeys.Contains(_AILooseName(_AINormName(k)).Replace(" ", ""))))
                     r.Skip = "deferred (same name is a pending new person suggestion - run again after reviewing it)";
             }
 
@@ -825,6 +859,7 @@ namespace RMuseum.Services.Implementation
                         SuggestionNote = note,
                     });
                     run.NewPeople++;
+                    run.NewPersonKeys.Add(_AILooseName(_AINormName(p.Name)).Replace(" ", ""));
                     run.Log.AppendLine($"{tag}: NEW person «{p.Name}» @ {first.Couplet} ({_AIMentionOf(first.Mention)})");
                 }
             }
