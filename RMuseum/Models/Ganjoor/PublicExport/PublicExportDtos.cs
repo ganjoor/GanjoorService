@@ -12,7 +12,7 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         /// <summary>
         /// bump this whenever a DTO shape changes in a way consumers should know about
         /// </summary>
-        public int SchemaVersion { get; set; } = 1;
+        public int SchemaVersion { get; set; } = 2;
 
         /// <summary>
         /// UTC generation timestamp of this run (informational only — never embed per-file
@@ -23,6 +23,32 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         public int PoetsCount { get; set; }
 
         public int PoemsCount { get; set; }
+
+        /// <summary>
+        /// number of people (people.json)
+        /// </summary>
+        public int PeopleCount { get; set; }
+
+        /// <summary>
+        /// number of places (locations.json)
+        /// </summary>
+        public int LocationsCount { get; set; }
+
+        /// <summary>
+        /// number of couplet-bound place/date tags (geotags.json)
+        /// </summary>
+        public int GeoTagsCount { get; set; }
+
+        /// <summary>
+        /// number of couplet-bound person tags (the sum of all index/person-tags shards)
+        /// </summary>
+        public int PersonTagsCount { get; set; }
+
+        /// <summary>
+        /// number of ids grouped into each index/person-tags shard file: the shard of person X is
+        /// "{X / PersonIndexShardSize}.json"
+        /// </summary>
+        public int PersonIndexShardSize { get; set; }
 
         /// <summary>
         /// number of ids grouped into each id-index shard file (see UrlTemplates.CatIdIndexShard /
@@ -47,6 +73,12 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         public string PoetIdIndex { get; set; } = "index/poets-by-id.json";
         public string CatIdIndexShard { get; set; } = "index/cats-by-id/{bucket}.json";
         public string PoemIdIndexShard { get; set; } = "index/poems-by-id/{bucket}.json";
+        public string Locations { get; set; } = "locations.json";
+        public string People { get; set; } = "people.json";
+        public string PersonRelations { get; set; } = "person-relations.json";
+        public string PersonAffiliations { get; set; } = "person-affiliations.json";
+        public string GeoTags { get; set; } = "geotags.json";
+        public string PersonTagsIndexShard { get; set; } = "index/person-tags/{bucket}.json";
     }
 
     public class PublicExportManifestPoetEntryDto
@@ -134,6 +166,183 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         public MetreRefDto Metre { get; set; }
         public List<PoemSectionPublicDto> Sections { get; set; } = new List<PoemSectionPublicDto>();
         public List<VersePublicDto> Verses { get; set; } = new List<VersePublicDto>();
+
+        /// <summary>
+        /// approved place/date/person tags bound to couplets of this poem, sorted by couplet
+        /// index; left out of the file (null) when the poem has none
+        /// </summary>
+        public List<PoemTagPublicDto> Tags { get; set; }
+    }
+
+    /// <summary>
+    /// an approved tag on one couplet of a poem: a place, a date, a person, or a combination.
+    /// LocationId refers to locations.json and PersonId to people.json. Who suggested or
+    /// approved a tag is deliberately not part of the export.
+    /// </summary>
+    public class PoemTagPublicDto
+    {
+        /// <summary>
+        /// the tagged couplet (VersePublicDto.CoupletIndex)
+        /// </summary>
+        public int CoupletIndex { get; set; }
+        public int? LocationId { get; set; }
+        public int? PersonId { get; set; }
+
+        /// <summary>
+        /// "Participant" or "Allusion" - set only together with PersonId
+        /// </summary>
+        public string PersonMention { get; set; }
+
+        /// <summary>
+        /// lunar Hijri date parts, each optional
+        /// </summary>
+        public int? LunarYear { get; set; }
+        public int? LunarMonth { get; set; }
+        public int? LunarDay { get; set; }
+        public bool VerifiedDate { get; set; }
+
+        /// <summary>
+        /// true when the tag is meant to be left out of the category-level summaries (map, timeline)
+        /// </summary>
+        public bool IgnoreInCategory { get; set; }
+        public bool MachineGenerated { get; set; }
+        public string Note { get; set; }
+    }
+
+    /// <summary>
+    /// locations.json item
+    /// </summary>
+    public class LocationPublicDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public bool MachineGenerated { get; set; }
+    }
+
+    /// <summary>
+    /// people.json item - a person (or legendary figure) who is not necessarily a poet
+    /// </summary>
+    public class PersonPublicDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+
+        /// <summary>
+        /// other names, as stored (separator-delimited text)
+        /// </summary>
+        public string Aliases { get; set; }
+        public string WikiUrl { get; set; }
+
+        /// <summary>
+        /// "Unknown", "Male" or "Female"
+        /// </summary>
+        public string Gender { get; set; }
+
+        /// <summary>
+        /// "Normal", "Important" or "VeryImportant"
+        /// </summary>
+        public string Importance { get; set; }
+        public int BirthYearInLHijri { get; set; }
+        public bool ValidBirthDate { get; set; }
+        public int DeathYearInLHijri { get; set; }
+        public bool ValidDeathDate { get; set; }
+        public int? BirthLocationId { get; set; }
+        public int? DeathLocationId { get; set; }
+        public string FamilyTreeCaption { get; set; }
+        public bool MachineGenerated { get; set; }
+    }
+
+    /// <summary>
+    /// a couplet attesting a relation or affiliation. A relation is considered attested "in a
+    /// book" by the evidence whose MasterCatId is that book's category id - the same person
+    /// pair can be related differently in different books.
+    /// </summary>
+    public class PersonEvidencePublicDto
+    {
+        public int PoemId { get; set; }
+        public int CoupletIndex { get; set; }
+
+        /// <summary>
+        /// category id (see CatPublicDto) of the book this evidence belongs to
+        /// </summary>
+        public int MasterCatId { get; set; }
+
+        /// <summary>
+        /// true only when the evidence was inferred rather than attached by a person
+        /// </summary>
+        public bool? Inferred { get; set; }
+    }
+
+    /// <summary>
+    /// person-relations.json item - kinship. For "Parent" and "Ancestor" Person1Id is the
+    /// parent/ancestor and Person2Id the child/descendant; "Sibling" and "Spouse" are symmetric.
+    /// </summary>
+    public class PersonRelationPublicDto
+    {
+        public int Id { get; set; }
+        public int Person1Id { get; set; }
+        public int Person2Id { get; set; }
+
+        /// <summary>
+        /// "Parent", "Sibling", "Spouse" or "Ancestor"
+        /// </summary>
+        public string RelationType { get; set; }
+
+        /// <summary>
+        /// for "Ancestor": the exact number of generations, when known
+        /// </summary>
+        public int? DegreeHint { get; set; }
+        public string Note { get; set; }
+        public List<PersonEvidencePublicDto> Evidence { get; set; } = new List<PersonEvidencePublicDto>();
+    }
+
+    /// <summary>
+    /// person-affiliations.json item - non-family ties. For directional types (Minister, Advisor,
+    /// Courtier, Patron, ...) Person1Id is the one in the serving role, Person2Id the one served.
+    /// </summary>
+    public class PersonAffiliationPublicDto
+    {
+        public int Id { get; set; }
+        public int Person1Id { get; set; }
+        public int Person2Id { get; set; }
+
+        /// <summary>
+        /// the name of the PersonAffiliationType value, e.g. "Minister", "Panegyrized", "Other"
+        /// </summary>
+        public string AffiliationType { get; set; }
+        public string Note { get; set; }
+        public List<PersonEvidencePublicDto> Evidence { get; set; } = new List<PersonEvidencePublicDto>();
+    }
+
+    /// <summary>
+    /// geotags.json item - a place/date tag, flattened out of the poem files so a map or
+    /// timeline can be built from one file
+    /// </summary>
+    public class GeoTagPublicDto
+    {
+        public int PoemId { get; set; }
+        public int CoupletIndex { get; set; }
+        public int LocationId { get; set; }
+        public int? LunarYear { get; set; }
+        public int? LunarMonth { get; set; }
+        public int? LunarDay { get; set; }
+        public bool VerifiedDate { get; set; }
+        public bool IgnoreInCategory { get; set; }
+        public bool MachineGenerated { get; set; }
+    }
+
+    /// <summary>
+    /// index/person-tags/{bucket}.json item - where a person is tagged, so "all couplets about X"
+    /// doesn't need a scan of every poem file
+    /// </summary>
+    public class PersonTagRefPublicDto
+    {
+        public int PoemId { get; set; }
+        public int CoupletIndex { get; set; }
+        public string PersonMention { get; set; }
     }
 
     public class MetreRefDto

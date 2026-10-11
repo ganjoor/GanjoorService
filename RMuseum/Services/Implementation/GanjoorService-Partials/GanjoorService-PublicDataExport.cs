@@ -27,6 +27,22 @@ namespace RMuseum.Services.Implementation
         private const int IdIndexShardSize = 2000;
 
         /// <summary>
+        /// how many person ids are grouped into each index/person-tags shard (people are far fewer
+        /// than poems, but each person can have thousands of tagged couplets)
+        /// </summary>
+        private const int PersonIndexShardSize = 500;
+
+        /// <summary>
+        /// collects the tag-derived flat files while the per-poem files are being written, so the
+        /// tags only have to be loaded once (per poet) from the database
+        /// </summary>
+        private class PublicExportTagCollector
+        {
+            public List<GeoTagPublicDto> GeoTags { get; } = new List<GeoTagPublicDto>();
+            public Dictionary<int, List<PersonTagRefPublicDto>> PersonTags { get; } = new Dictionary<int, List<PersonTagRefPublicDto>>();
+        }
+
+        /// <summary>
         /// Guards against two runs of the same export job (keyed by job name — "PublicDataExport"
         /// / "TajikPublicDataExport") ever executing concurrently against the same git working
         /// copy. This exists because deleting a job's row on the admin Jobs page only removes its
@@ -129,6 +145,7 @@ namespace RMuseum.Services.Implementation
                                 var poetIdIndex = new Dictionary<int, string>();
                                 var catIdIndex = new Dictionary<int, string>();
                                 var poemIdIndex = new Dictionary<int, string>();
+                                var tagCollector = new PublicExportTagCollector();
 
                                 int poetIndex = 0;
                                 foreach (var poet in poets)
@@ -145,7 +162,7 @@ namespace RMuseum.Services.Implementation
                                     await ExportPoetToJson(context, repoRoot, poet, catPoet);
                                     poetIdIndex[poet.Id] = catPoet.FullUrl;
 
-                                    int poemCount = await ExportPoetContent(context, repoRoot, poet, catPoet, metresById, catIdIndex, poemIdIndex);
+                                    int poemCount = await ExportPoetContent(context, repoRoot, poet, catPoet, metresById, catIdIndex, poemIdIndex, tagCollector);
                                     manifest.PoemsCount += poemCount;
 
                                     manifest.Poets.Add(new PublicExportManifestPoetEntryDto
@@ -158,6 +175,9 @@ namespace RMuseum.Services.Implementation
 
                                 manifest.PoetsCount = manifest.Poets.Count;
 
+                                await jobProgressServiceEF.UpdateJob(job.Id, 97, "Writing people, places and tags");
+                                await ExportPeopleAndTags(context, repoRoot, manifest, poemIdIndex, tagCollector);
+
                                 await jobProgressServiceEF.UpdateJob(job.Id, 98, "Writing id indexes");
                                 await IdIndexWriter.WriteFlatIndexAsync(repoRoot, "index/poets-by-id.json", poetIdIndex);
                                 await IdIndexWriter.WriteShardedIndexAsync(repoRoot, "cats", catIdIndex, IdIndexShardSize);
@@ -168,7 +188,7 @@ namespace RMuseum.Services.Implementation
                                 await TextFileWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "README.md"), BuildReadmeMarkdown(manifest));
 
                                 await jobProgressServiceEF.UpdateJob(job.Id, 99, "Committing and pushing");
-                                int changed = publisher.CommitAndPush($"data: export {manifest.PoetsCount} poets / {manifest.PoemsCount} poems — {DateTime.UtcNow:yyyy-MM-dd}");
+                                int changed = publisher.CommitAndPush($"data: export {manifest.PoetsCount} poets / {manifest.PoemsCount} poems / {manifest.PeopleCount} people / {manifest.PersonTagsCount + manifest.GeoTagsCount} tags — {DateTime.UtcNow:yyyy-MM-dd}");
 
                                 await jobProgressServiceEF.UpdateJob(job.Id, 100, changed == 0 ? "No changes" : $"{changed} files changed", true);
                             }
@@ -276,7 +296,8 @@ namespace RMuseum.Services.Implementation
         /// queries per poem — tens of thousands of round-trips for the full corpus, every run).
         /// </summary>
         private async Task<int> ExportPoetContent(RMuseumDbContext context, string repoRoot, GanjoorPoet poet, GanjoorCat catPoet,
-            Dictionary<int, GanjoorMetre> metresById, Dictionary<int, string> catIdIndex, Dictionary<int, string> poemIdIndex)
+            Dictionary<int, GanjoorMetre> metresById, Dictionary<int, string> catIdIndex, Dictionary<int, string> poemIdIndex,
+            PublicExportTagCollector tagCollector)
         {
             var sectionsByPoem = (await context.GanjoorPoemSections.AsNoTracking()
                                         .Where(s => s.Poem.Cat.PoetId == poet.Id)
@@ -292,7 +313,16 @@ namespace RMuseum.Services.Implementation
                                     .GroupBy(v => v.PoemId)
                                     .ToDictionary(g => g.Key, g => g.ToList());
 
-            return await ExportCatTreeToJson(context, repoRoot, catPoet, metresById, sectionsByPoem, versesByPoem, catIdIndex, poemIdIndex);
+            // approved tags only: pending suggestions live in the correction tables, which this
+            // export never reads
+            var tagsByPoem = (await context.PoemGeoDateTags.AsNoTracking()
+                                        .Where(t => t.Poem.Cat.PoetId == poet.Id)
+                                        .OrderBy(t => t.CoupletIndex).ThenBy(t => t.LocationId).ThenBy(t => t.PersonId).ThenBy(t => t.Id)
+                                        .ToListAsync())
+                                    .GroupBy(t => t.PoemId)
+                                    .ToDictionary(g => g.Key, g => g.ToList());
+
+            return await ExportCatTreeToJson(context, repoRoot, catPoet, metresById, sectionsByPoem, versesByPoem, tagsByPoem, catIdIndex, poemIdIndex, tagCollector);
         }
 
         /// <summary>
@@ -307,7 +337,8 @@ namespace RMuseum.Services.Implementation
         private async Task<int> ExportCatTreeToJson(RMuseumDbContext context, string repoRoot, GanjoorCat cat,
             Dictionary<int, GanjoorMetre> metresById,
             Dictionary<int, List<GanjoorPoemSection>> sectionsByPoem, Dictionary<int, List<GanjoorVerse>> versesByPoem,
-            Dictionary<int, string> catIdIndex, Dictionary<int, string> poemIdIndex)
+            Dictionary<int, List<PoemGeoDateTag>> tagsByPoem,
+            Dictionary<int, string> catIdIndex, Dictionary<int, string> poemIdIndex, PublicExportTagCollector tagCollector)
         {
             var childCats = await context.GanjoorCategories.AsNoTracking()
                                     .Where(c => c.ParentId == cat.Id)
@@ -346,13 +377,16 @@ namespace RMuseum.Services.Implementation
                 versesByPoem.TryGetValue(poem.Id, out var verses);
                 GanjoorMetre metre = poem.GanjoorMetreId != null && metresById.TryGetValue(poem.GanjoorMetreId.Value, out var m) ? m : null;
 
-                await ExportPoemToJson(repoRoot, poem, metre, sections ?? new List<GanjoorPoemSection>(), verses ?? new List<GanjoorVerse>());
+                tagsByPoem.TryGetValue(poem.Id, out var tags);
+
+                await ExportPoemToJson(repoRoot, poem, metre, sections ?? new List<GanjoorPoemSection>(), verses ?? new List<GanjoorVerse>(),
+                    tags ?? new List<PoemGeoDateTag>(), tagCollector);
                 poemIdIndex[poem.Id] = poem.FullUrl;
             }
 
             foreach (var childCat in childCats)
             {
-                poemCount += await ExportCatTreeToJson(context, repoRoot, childCat, metresById, sectionsByPoem, versesByPoem, catIdIndex, poemIdIndex);
+                poemCount += await ExportCatTreeToJson(context, repoRoot, childCat, metresById, sectionsByPoem, versesByPoem, tagsByPoem, catIdIndex, poemIdIndex, tagCollector);
             }
 
             return poemCount;
@@ -363,8 +397,42 @@ namespace RMuseum.Services.Implementation
         /// (see <see cref="ExportPoetContent"/>) instead of queried per poem.
         /// </summary>
         private async Task ExportPoemToJson(string repoRoot, GanjoorPoem poem, GanjoorMetre metre,
-            List<GanjoorPoemSection> sections, List<GanjoorVerse> verses)
+            List<GanjoorPoemSection> sections, List<GanjoorVerse> verses, List<PoemGeoDateTag> tags, PublicExportTagCollector tagCollector)
         {
+            foreach (var tag in tags)
+            {
+                if (tag.LocationId != null)
+                {
+                    tagCollector.GeoTags.Add(new GeoTagPublicDto
+                    {
+                        PoemId = tag.PoemId,
+                        CoupletIndex = tag.CoupletIndex,
+                        LocationId = tag.LocationId.Value,
+                        LunarYear = tag.LunarYear,
+                        LunarMonth = tag.LunarMonth,
+                        LunarDay = tag.LunarDay,
+                        VerifiedDate = tag.VerifiedDate,
+                        IgnoreInCategory = tag.IgnoreInCategory,
+                        MachineGenerated = tag.MachineGenerated,
+                    });
+                }
+
+                if (tag.PersonId != null)
+                {
+                    if (!tagCollector.PersonTags.TryGetValue(tag.PersonId.Value, out var personTags))
+                    {
+                        personTags = new List<PersonTagRefPublicDto>();
+                        tagCollector.PersonTags[tag.PersonId.Value] = personTags;
+                    }
+                    personTags.Add(new PersonTagRefPublicDto
+                    {
+                        PoemId = tag.PoemId,
+                        CoupletIndex = tag.CoupletIndex,
+                        PersonMention = tag.PersonMention.ToString(),
+                    });
+                }
+            }
+
             var dto = new PoemPublicDto
             {
                 Id = poem.Id,
@@ -403,10 +471,147 @@ namespace RMuseum.Services.Implementation
                     SectionIndex4 = v.SectionIndex4,
                     CoupletSummary = v.CoupletSummary,
                 }).ToList(),
+                Tags = tags.Count == 0 ? null : tags.Select(t => new PoemTagPublicDto
+                {
+                    CoupletIndex = t.CoupletIndex,
+                    LocationId = t.LocationId,
+                    PersonId = t.PersonId,
+                    PersonMention = t.PersonId == null ? null : t.PersonMention.ToString(),
+                    LunarYear = t.LunarYear,
+                    LunarMonth = t.LunarMonth,
+                    LunarDay = t.LunarDay,
+                    VerifiedDate = t.VerifiedDate,
+                    IgnoreInCategory = t.IgnoreInCategory,
+                    MachineGenerated = t.MachineGenerated,
+                    Note = t.Note,
+                }).ToList(),
             };
 
             string path = Path.Combine(repoRoot, "poets", TrimLeadingSlash(poem.FullUrl) + ".json");
             await DeterministicJsonWriter.WriteIfChangedAsync(path, dto);
+        }
+
+        /// <summary>
+        /// writes the shared people/place files and the tag-derived flat files: locations.json,
+        /// people.json, person-relations.json, person-affiliations.json, geotags.json and the
+        /// sharded index/person-tags. Runs after all poems are written because relation evidence
+        /// is limited to couplets of poems that are part of the export (poemIdIndex). Who added
+        /// a piece of evidence or when is never exported.
+        /// </summary>
+        private async Task ExportPeopleAndTags(RMuseumDbContext context, string repoRoot, PublicExportManifestDto manifest,
+            Dictionary<int, string> poemIdIndex, PublicExportTagCollector tagCollector)
+        {
+            var locations = await context.GanjoorGeoLocations.AsNoTracking()
+                                .OrderBy(l => l.Id)
+                                .Select(l => new LocationPublicDto
+                                {
+                                    Id = l.Id,
+                                    Name = l.Name,
+                                    Latitude = l.Latitude,
+                                    Longitude = l.Longitude,
+                                    MachineGenerated = l.MachineGenerated,
+                                })
+                                .ToListAsync();
+            await DeterministicJsonWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "locations.json"), locations);
+            manifest.LocationsCount = locations.Count;
+
+            var people = (await context.GanjoorRelatedPersons.AsNoTracking()
+                                .OrderBy(p => p.Id)
+                                .ToListAsync())
+                            .Select(p => new PersonPublicDto
+                            {
+                                Id = p.Id,
+                                Name = p.Name,
+                                Description = p.Description,
+                                Aliases = p.Aliases,
+                                WikiUrl = p.WikiUrl,
+                                Gender = p.Gender.ToString(),
+                                Importance = p.Importance.ToString(),
+                                BirthYearInLHijri = p.BirthYearInLHijri,
+                                ValidBirthDate = p.ValidBirthDate,
+                                DeathYearInLHijri = p.DeathYearInLHijri,
+                                ValidDeathDate = p.ValidDeathDate,
+                                BirthLocationId = p.BirthLocationId,
+                                DeathLocationId = p.DeathLocationId,
+                                FamilyTreeCaption = p.FamilyTreeCaption,
+                                MachineGenerated = p.MachineGenerated,
+                            })
+                            .ToList();
+            await DeterministicJsonWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "people.json"), people);
+            manifest.PeopleCount = people.Count;
+
+            var relationEvidences = (await context.GanjoorPersonRelationEvidences.AsNoTracking()
+                                        .OrderBy(e => e.PoemId).ThenBy(e => e.CoupletIndex).ThenBy(e => e.Id)
+                                        .Select(e => new { e.RelationId, e.PoemId, e.CoupletIndex, e.MasterCatId, e.Inferred })
+                                        .ToListAsync())
+                                    .Where(e => poemIdIndex.ContainsKey(e.PoemId))
+                                    .GroupBy(e => e.RelationId)
+                                    .ToDictionary(g => g.Key, g => g.Select(e => new PersonEvidencePublicDto
+                                    {
+                                        PoemId = e.PoemId,
+                                        CoupletIndex = e.CoupletIndex,
+                                        MasterCatId = e.MasterCatId,
+                                        Inferred = e.Inferred ? true : (bool?)null,
+                                    }).ToList());
+            var relations = (await context.GanjoorPersonRelations.AsNoTracking().OrderBy(r => r.Id).ToListAsync())
+                                .Select(r => new PersonRelationPublicDto
+                                {
+                                    Id = r.Id,
+                                    Person1Id = r.Person1Id,
+                                    Person2Id = r.Person2Id,
+                                    RelationType = r.RelationType.ToString(),
+                                    DegreeHint = r.DegreeHint,
+                                    Note = r.Note,
+                                    Evidence = relationEvidences.TryGetValue(r.Id, out var re) ? re : new List<PersonEvidencePublicDto>(),
+                                })
+                                .ToList();
+            await DeterministicJsonWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "person-relations.json"), relations);
+
+            var affiliationEvidences = (await context.GanjoorPersonAffiliationEvidences.AsNoTracking()
+                                        .OrderBy(e => e.PoemId).ThenBy(e => e.CoupletIndex).ThenBy(e => e.Id)
+                                        .Select(e => new { e.AffiliationId, e.PoemId, e.CoupletIndex, e.MasterCatId })
+                                        .ToListAsync())
+                                    .Where(e => poemIdIndex.ContainsKey(e.PoemId))
+                                    .GroupBy(e => e.AffiliationId)
+                                    .ToDictionary(g => g.Key, g => g.Select(e => new PersonEvidencePublicDto
+                                    {
+                                        PoemId = e.PoemId,
+                                        CoupletIndex = e.CoupletIndex,
+                                        MasterCatId = e.MasterCatId,
+                                    }).ToList());
+            var affiliations = (await context.GanjoorPersonAffiliations.AsNoTracking().OrderBy(a => a.Id).ToListAsync())
+                                .Select(a => new PersonAffiliationPublicDto
+                                {
+                                    Id = a.Id,
+                                    Person1Id = a.Person1Id,
+                                    Person2Id = a.Person2Id,
+                                    AffiliationType = a.AffiliationType.ToString(),
+                                    Note = a.Note,
+                                    Evidence = affiliationEvidences.TryGetValue(a.Id, out var ae) ? ae : new List<PersonEvidencePublicDto>(),
+                                })
+                                .ToList();
+            await DeterministicJsonWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "person-affiliations.json"), affiliations);
+
+            // poets are exported in poet order, not poem order: sort so the file is stable
+            var geoTags = tagCollector.GeoTags
+                            .OrderBy(t => t.PoemId).ThenBy(t => t.CoupletIndex).ThenBy(t => t.LocationId)
+                            .ThenBy(t => t.LunarYear).ThenBy(t => t.LunarMonth).ThenBy(t => t.LunarDay)
+                            .ToList();
+            await DeterministicJsonWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "geotags.json"), geoTags);
+            manifest.GeoTagsCount = geoTags.Count;
+
+            int personTagsCount = 0;
+            foreach (var bucket in tagCollector.PersonTags.GroupBy(kv => kv.Key / PersonIndexShardSize))
+            {
+                var shard = bucket.OrderBy(kv => kv.Key).ToDictionary(
+                    kv => kv.Key.ToString(),
+                    kv => kv.Value.OrderBy(t => t.PoemId).ThenBy(t => t.CoupletIndex).ThenBy(t => t.PersonMention).ToList());
+                personTagsCount += shard.Values.Sum(v => v.Count);
+                await DeterministicJsonWriter.WriteIfChangedAsync(
+                    Path.Combine(repoRoot, "index", "person-tags", $"{bucket.Key}.json"), shard);
+            }
+            manifest.PersonTagsCount = personTagsCount;
+            manifest.PersonIndexShardSize = PersonIndexShardSize;
         }
 
         private static string TrimLeadingSlash(string url)
@@ -450,7 +655,7 @@ file; if they ever disagree, trust `manifest.json`).
 
 - `GET {t.Poet}` — poet biography
 - `GET {t.Category}` — a category/collection: title, description, ordered child categories and poems
-- `GET {t.Poem}` — a poem: metre, rhyme, sections, verses
+- `GET {t.Poem}` — a poem: metre, rhyme, sections, verses, and `Tags` (see below) when it has any
 
 `{{poetSlug}}`/`{{catPath}}`/`{{poemSlug}}` are exactly the path segments of the poem's Ganjoor
 URL, e.g. the poem at ganjoor.net/hafez/ghazal/sh1 is at `poets/hafez/ghazal/sh1.json`.
@@ -467,11 +672,38 @@ guessing a path:
   i.e. `index/poems-by-id/{4321 / manifest.IdIndexShardSize}.json`.
   Each shard maps ids in its range to a `FullUrl` you then fetch with the `{t.Poem}` pattern above.
 
+## People, places and tagged couplets
+
+Couplets are tagged with places, dates and people (the people may be historical or legendary
+figures, not only poets). Only approved tags are exported, with no information about who suggested
+or approved them. A couplet is addressed by its poem id and `CoupletIndex` (the same value as in
+the poem file's `Verses`).
+
+- `GET {t.Locations}` — places: id, name, latitude, longitude
+- `GET {t.People}` — people: names, aliases, description, gender, life dates, birth/death place ids
+- `GET {t.PersonRelations}` — kinship (Parent, Sibling, Spouse, Ancestor). For Parent/Ancestor,
+  `Person1Id` is the parent/ancestor. `Evidence` lists the attesting couplets; `MasterCatId` is
+  the category id of the *book* in which a couplet attests the relation — the same two people can
+  be related differently in different books (e.g. a different father in another recension), so a
+  family tree should be built per book from the evidence, not from the bare relation list.
+- `GET {t.PersonAffiliations}` — non-family ties (minister, patron, panegyrized, ...), same
+  evidence shape
+- `GET {t.GeoTags}` — every place/date tag in one file, for maps and timelines
+- `GET {t.PersonTagsIndexShard}` — where a person is tagged: person id X is in shard
+  `{{X / {PersonIndexShardSize}}}` (integer division) and maps to the list of poem id / couplet index
+  pairs; `PersonMention` is `Participant` (part of what the couplet tells) or `Allusion` (a passing
+  reference)
+- the per-poem file also carries the same tags in its `Tags` list, with `LocationId` / `PersonId`
+  pointing into the files above
+
+Many tags and relations are created with AI assistance and reviewed by a human moderator;
+`MachineGenerated` marks tags and records that were created by the AI.
+
 ## Not included
 
 No comments, bookmarks, reading history, edit/correction history, or any other user-account-linked
 data — see the repo this data set is exported from for details. Only `Published` poets/categories/
-poems are included.
+poems are included. Tags and relations carry no information about who suggested or approved them.
 
 ## Search
 
@@ -494,7 +726,8 @@ $@"# ganjoor-data
 entirely on this data, running client-side in your browser with no server of its own.
 
 Public, git-tracked export of [Ganjoor](https://ganjoor.net)'s poetry content — poets,
-categories, and poems, allowlisted to contain none of the site's user-account-linked data
+categories, and poems — plus the people, places and date/person/place tags attached to couplets —
+allowlisted to contain none of the site's user-account-linked data
 (comments, bookmarks, edit history, etc.). Generated from
 [GanjoorService](https://github.com/ganjoor/GanjoorService); see that repo if you're looking for
 the application this data set is exported from, or want to run your own copy of Ganjoor locally
@@ -507,6 +740,9 @@ Currently tracks **{manifest.PoetsCount} poets** / **{manifest.PoemsCount} poems
 - **[`manifest.json`](manifest.json)** — the full list of poets (id, nickname, and path), plus the
   schema version and URL templates for every other file kind in this repo. This is the list to
   start from if you're building a client and need ""which poets exist and what are their ids"".
+- **[`people.json`](people.json)**, **[`locations.json`](locations.json)**,
+  **[`person-relations.json`](person-relations.json)**, **[`geotags.json`](geotags.json)** — the
+  people, places, family relations (attested per book) and tagged couplets; see `API.md`.
 - **[`API.md`](API.md)** — how to fetch any of this over plain HTTPS (no server needed, via
   jsDelivr), including how to resolve a bare numeric id to its path.
 

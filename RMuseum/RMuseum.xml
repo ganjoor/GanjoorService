@@ -12923,6 +12923,32 @@
             timestamps inside poem/cat files, that would defeat deterministic diffs)
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto.PeopleCount">
+            <summary>
+            number of people (people.json)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto.LocationsCount">
+            <summary>
+            number of places (locations.json)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto.GeoTagsCount">
+            <summary>
+            number of couplet-bound place/date tags (geotags.json)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto.PersonTagsCount">
+            <summary>
+            number of couplet-bound person tags (the sum of all index/person-tags shards)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto.PersonIndexShardSize">
+            <summary>
+            number of ids grouped into each index/person-tags shard file: the shard of person X is
+            "{X / PersonIndexShardSize}.json"
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto.IdIndexShardSize">
             <summary>
             number of ids grouped into each id-index shard file (see UrlTemplates.CatIdIndexShard /
@@ -12960,6 +12986,120 @@
             {poem-slug}.json — the poem text itself. GanjoorPoem/GanjoorVerse/GanjoorPoemSection carry
             no user/account reference in the source schema, so this is a straight field allowlist,
             not a redaction pass.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PoemPublicDto.Tags">
+            <summary>
+            approved place/date/person tags bound to couplets of this poem, sorted by couplet
+            index; left out of the file (null) when the poem has none
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.PoemTagPublicDto">
+            <summary>
+            an approved tag on one couplet of a poem: a place, a date, a person, or a combination.
+            LocationId refers to locations.json and PersonId to people.json. Who suggested or
+            approved a tag is deliberately not part of the export.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PoemTagPublicDto.CoupletIndex">
+            <summary>
+            the tagged couplet (VersePublicDto.CoupletIndex)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PoemTagPublicDto.PersonMention">
+            <summary>
+            "Participant" or "Allusion" - set only together with PersonId
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PoemTagPublicDto.LunarYear">
+            <summary>
+            lunar Hijri date parts, each optional
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PoemTagPublicDto.IgnoreInCategory">
+            <summary>
+            true when the tag is meant to be left out of the category-level summaries (map, timeline)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.LocationPublicDto">
+            <summary>
+            locations.json item
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.PersonPublicDto">
+            <summary>
+            people.json item - a person (or legendary figure) who is not necessarily a poet
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PersonPublicDto.Aliases">
+            <summary>
+            other names, as stored (separator-delimited text)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PersonPublicDto.Gender">
+            <summary>
+            "Unknown", "Male" or "Female"
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PersonPublicDto.Importance">
+            <summary>
+            "Normal", "Important" or "VeryImportant"
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.PersonEvidencePublicDto">
+            <summary>
+            a couplet attesting a relation or affiliation. A relation is considered attested "in a
+            book" by the evidence whose MasterCatId is that book's category id - the same person
+            pair can be related differently in different books.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PersonEvidencePublicDto.MasterCatId">
+            <summary>
+            category id (see CatPublicDto) of the book this evidence belongs to
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PersonEvidencePublicDto.Inferred">
+            <summary>
+            true only when the evidence was inferred rather than attached by a person
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.PersonRelationPublicDto">
+            <summary>
+            person-relations.json item - kinship. For "Parent" and "Ancestor" Person1Id is the
+            parent/ancestor and Person2Id the child/descendant; "Sibling" and "Spouse" are symmetric.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PersonRelationPublicDto.RelationType">
+            <summary>
+            "Parent", "Sibling", "Spouse" or "Ancestor"
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PersonRelationPublicDto.DegreeHint">
+            <summary>
+            for "Ancestor": the exact number of generations, when known
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.PersonAffiliationPublicDto">
+            <summary>
+            person-affiliations.json item - non-family ties. For directional types (Minister, Advisor,
+            Courtier, Patron, ...) Person1Id is the one in the serving role, Person2Id the one served.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PersonAffiliationPublicDto.AffiliationType">
+            <summary>
+            the name of the PersonAffiliationType value, e.g. "Minister", "Panegyrized", "Other"
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.GeoTagPublicDto">
+            <summary>
+            geotags.json item - a place/date tag, flattened out of the poem files so a map or
+            timeline can be built from one file
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.PersonTagRefPublicDto">
+            <summary>
+            index/person-tags/{bucket}.json item - where a person is tagged, so "all couplets about X"
+            doesn't need a scan of every poem file
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PublicExport.VersePublicDto.CoupletSummary">
@@ -24727,6 +24867,18 @@
             current poem count.
             </summary>
         </member>
+        <member name="F:RMuseum.Services.Implementation.GanjoorService.PersonIndexShardSize">
+            <summary>
+            how many person ids are grouped into each index/person-tags shard (people are far fewer
+            than poems, but each person can have thousands of tagged couplets)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Services.Implementation.GanjoorService.PublicExportTagCollector">
+            <summary>
+            collects the tag-derived flat files while the per-poem files are being written, so the
+            tags only have to be loaded once (per poet) from the database
+            </summary>
+        </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorService._publicDataExportRunningLock">
             <summary>
             Guards against two runs of the same export job (keyed by job name — "PublicDataExport"
@@ -24755,7 +24907,7 @@
             of what actually gets written.
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportPoetContent(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorPoet,RMuseum.Models.Ganjoor.GanjoorCat,System.Collections.Generic.Dictionary{System.Int32,RMuseum.Models.Ganjoor.GanjoorMetre},System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.Dictionary{System.Int32,System.String})">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportPoetContent(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorPoet,RMuseum.Models.Ganjoor.GanjoorCat,System.Collections.Generic.Dictionary{System.Int32,RMuseum.Models.Ganjoor.GanjoorMetre},System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.Dictionary{System.Int32,System.String},RMuseum.Services.Implementation.GanjoorService.PublicExportTagCollector)">
             <summary>
             Batch-loads this poet's entire sections/verses in two queries (instead of the
             two-per-poem queries the old per-poem approach ran), then walks the poet's category
@@ -24766,7 +24918,7 @@
             queries per poem — tens of thousands of round-trips for the full corpus, every run).
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportCatTreeToJson(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorCat,System.Collections.Generic.Dictionary{System.Int32,RMuseum.Models.Ganjoor.GanjoorMetre},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorPoemSection}},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse}},System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.Dictionary{System.Int32,System.String})">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportCatTreeToJson(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorCat,System.Collections.Generic.Dictionary{System.Int32,RMuseum.Models.Ganjoor.GanjoorMetre},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorPoemSection}},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse}},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.List{RMuseum.Models.Ganjoor.PoemGeoDateTag}},System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.Dictionary{System.Int32,System.String},RMuseum.Services.Implementation.GanjoorService.PublicExportTagCollector)">
             <summary>
             recursively writes _cat.json for <paramref name="cat"/> and every poem directly
             under it, then recurses into child categories. Returns the number of poems written
@@ -24777,10 +24929,19 @@
             either; every category/poem under a published poet is exported.
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportPoemToJson(System.String,RMuseum.Models.Ganjoor.GanjoorPoem,RMuseum.Models.Ganjoor.GanjoorMetre,System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorPoemSection},System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse})">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportPoemToJson(System.String,RMuseum.Models.Ganjoor.GanjoorPoem,RMuseum.Models.Ganjoor.GanjoorMetre,System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorPoemSection},System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse},System.Collections.Generic.List{RMuseum.Models.Ganjoor.PoemGeoDateTag},RMuseum.Services.Implementation.GanjoorService.PublicExportTagCollector)">
             <summary>
             Pure in-memory write — no DB access. Sections/verses/metre are pre-loaded by the caller
-            (see <see cref="M:RMuseum.Services.Implementation.GanjoorService.ExportPoetContent(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorPoet,RMuseum.Models.Ganjoor.GanjoorCat,System.Collections.Generic.Dictionary{System.Int32,RMuseum.Models.Ganjoor.GanjoorMetre},System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.Dictionary{System.Int32,System.String})"/>) instead of queried per poem.
+            (see <see cref="M:RMuseum.Services.Implementation.GanjoorService.ExportPoetContent(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorPoet,RMuseum.Models.Ganjoor.GanjoorCat,System.Collections.Generic.Dictionary{System.Int32,RMuseum.Models.Ganjoor.GanjoorMetre},System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.Dictionary{System.Int32,System.String},RMuseum.Services.Implementation.GanjoorService.PublicExportTagCollector)"/>) instead of queried per poem.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportPeopleAndTags(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto,System.Collections.Generic.Dictionary{System.Int32,System.String},RMuseum.Services.Implementation.GanjoorService.PublicExportTagCollector)">
+            <summary>
+            writes the shared people/place files and the tag-derived flat files: locations.json,
+            people.json, person-relations.json, person-affiliations.json, geotags.json and the
+            sharded index/person-tags. Runs after all poems are written because relation evidence
+            is limited to couplets of poems that are part of the export (poemIdIndex). Who added
+            a piece of evidence or when is never exported.
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.BuildApiMarkdown(RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto)">
