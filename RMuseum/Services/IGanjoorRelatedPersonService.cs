@@ -70,6 +70,7 @@ namespace RMuseum.Services
         /// enough of its Poem to link to it
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="catId">only tags in poems of this category (and its children); null = all</param>
         /// <returns></returns>
         Task<RServiceResult<PoemGeoDateTag[]>> GetPoemsByPersonAsync(int id, int? catId = null);
 
@@ -97,6 +98,7 @@ namespace RMuseum.Services
         /// <param name="skip"></param>
         /// <param name="take"></param>
         /// <param name="personId">only relations touching this person</param>
+        /// <param name="affiliations">list affiliations instead of kinship relations</param>
         /// <returns></returns>
         Task<RServiceResult<(GanjoorRelationWithoutEvidence[] Rows, int TotalCount)>> GetRelationsWithoutEvidenceAsync(int skip, int take, int? personId, bool affiliations = false);
 
@@ -215,6 +217,18 @@ namespace RMuseum.Services
         /// <param name="targetId"></param>
         /// <returns></returns>
         Task<RServiceResult<string>> MergePeopleAsync(Guid moderatorUserId, int sourceId, int targetId);
+
+        /// <summary>
+        /// split a person who is really two people with the same name: a new person is created and the
+        /// tags (approved and pending), relations/affiliations (through their evidence couplets) and pending
+        /// relation suggestions that lie in the given part of a book move to it. A relation whose evidence is
+        /// partly inside and partly outside the part is copied for the new person (only the inside evidence moves).
+        /// Relations without any evidence cannot be placed and stay with the original.
+        /// </summary>
+        /// <param name="moderatorUserId"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PersonSplitResultViewModel>> SplitPersonAsync(Guid moderatorUserId, PersonSplitViewModel model);
 
         /// <summary>
         /// replace the aliases of a person

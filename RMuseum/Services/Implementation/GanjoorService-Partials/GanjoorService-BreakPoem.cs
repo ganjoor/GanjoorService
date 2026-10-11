@@ -187,25 +187,7 @@ namespace RMuseum.Services.Implementation
                 context.UpdateRange(visits);
 
 
-                var links = await context.GanjoorLinks.Where(l => l.GanjoorPostId == sourcePoem.Id).ToListAsync();
-                for (int i = 0; i < links.Count; i++)
-                {
-                    links[i].GanjoorPostId = targetPoemId;
-                    links[i].GanjoorUrl = $"https://ganjoor.net{targetPoem.FullUrl}";
-                    links[i].GanjoorTitle = targetPoem.FullTitle;
-                }
-                context.UpdateRange(links);
-
-
-                var pinterests = await context.PinterestLinks.Where(l => l.GanjoorPostId == sourcePoem.Id).ToListAsync();
-                for (int i = 0; i < pinterests.Count; i++)
-                {
-                    pinterests[i].GanjoorPostId = targetPoemId;
-                    pinterests[i].GanjoorUrl = $"https://ganjoor.net{targetPoem.FullUrl}";
-                    pinterests[i].GanjoorTitle = targetPoem.FullTitle;
-                }
-                context.UpdateRange(pinterests);
-
+                //the new title must be known before anything that caches it (links ...) is moved
                 string title = sourcePoem.Title;
                 char[] numbers = "0123456789۰۱۲۳۴۵۶۷۸۹".ToArray();
                 int index = title.IndexOfAny(numbers);
@@ -237,6 +219,28 @@ namespace RMuseum.Services.Implementation
                 targetPoem.Title = title;
                 targetPoem.FullTitle = $"{catPage.FullTitle} » {title}";
 
+                var links = await context.GanjoorLinks.Where(l => l.GanjoorPostId == sourcePoem.Id).ToListAsync();
+                for (int i = 0; i < links.Count; i++)
+                {
+                    links[i].GanjoorPostId = targetPoemId;
+                    links[i].GanjoorUrl = $"https://ganjoor.net{targetPoem.FullUrl}";
+                    links[i].GanjoorTitle = targetPoem.FullTitle;
+                }
+                context.UpdateRange(links);
+
+
+                var pinterests = await context.PinterestLinks.Where(l => l.GanjoorPostId == sourcePoem.Id).ToListAsync();
+                for (int i = 0; i < pinterests.Count; i++)
+                {
+                    pinterests[i].GanjoorPostId = targetPoemId;
+                    pinterests[i].GanjoorUrl = $"https://ganjoor.net{targetPoem.FullUrl}";
+                    pinterests[i].GanjoorTitle = targetPoem.FullTitle;
+                }
+                context.UpdateRange(pinterests);
+
+                await _MoveWholePoemAttachmentsAsync(context, sourcePoem.Id, targetPoemId, targetPoem);
+
+
                 //copy everything but url
                 targetPoem.HtmlText = sourcePoem.HtmlText;
                 targetPoem.PlainText = sourcePoem.PlainText;
@@ -247,6 +251,10 @@ namespace RMuseum.Services.Implementation
                 targetPoem.MixedModeOrder = sourcePoem.MixedModeOrder;
                 targetPoem.Published = sourcePoem.Published;
                 targetPoem.Language = sourcePoem.Language;
+                targetPoem.GanjoorMetreId = sourcePoem.GanjoorMetreId;
+                targetPoem.RhymeLetters = sourcePoem.RhymeLetters;
+                targetPoem.PoemSummary = sourcePoem.PoemSummary;
+                targetPoem.ClaimedByMultiplePoets = sourcePoem.ClaimedByMultiplePoets;
                 context.Update(targetPoem);
 
                 var sourcePage = await context.GanjoorPages.AsNoTracking().Where(p => p.Id == sourcePoem.Id).SingleAsync();
@@ -273,6 +281,8 @@ namespace RMuseum.Services.Implementation
 
             var targetPoemVerses = await context.GanjoorVerses.Where(v => v.PoemId == poemId && v.VOrder >= vOrder).OrderBy(v => v.VOrder).ToListAsync();
             var firstCoupletIndex = targetPoemVerses.Any() ? targetPoemVerses.First().CoupletIndex : 0;
+            //everything bound to a couplet (PoemId + CoupletIndex) must follow the moved verses
+            await _MoveCoupletAttachmentsAsync(context, poemId, targetPoemId, vOrder, firstCoupletIndex ?? 0, dbLastTargetPoem);
             for (int i = 0; i < targetPoemVerses.Count; i++)
             {
                 targetPoemVerses[i].VOrder = i + 1;
@@ -361,6 +371,9 @@ namespace RMuseum.Services.Implementation
             dbLastTargetPoem.MixedModeOrder = dbMainPoem.MixedModeOrder;
             dbLastTargetPoem.Published = dbMainPoem.Published;
             dbLastTargetPoem.Language = dbMainPoem.Language;
+            dbLastTargetPoem.GanjoorMetreId = dbMainPoem.GanjoorMetreId;
+            dbLastTargetPoem.RhymeLetters = dbMainPoem.RhymeLetters;
+            dbLastTargetPoem.ClaimedByMultiplePoets = dbMainPoem.ClaimedByMultiplePoets;
             context.Update(dbLastTargetPoem);
 
 
@@ -467,10 +480,15 @@ namespace RMuseum.Services.Implementation
                 Language = dbMainPoem.Language,
                 MixedModeOrder = dbMainPoem.MixedModeOrder,
                 Published = dbMainPoem.Published,
+                GanjoorMetreId = dbMainPoem.GanjoorMetreId,
+                RhymeLetters = dbMainPoem.RhymeLetters,
+                ClaimedByMultiplePoets = dbMainPoem.ClaimedByMultiplePoets,
             };
 
             var targetPoemVerses = await context.GanjoorVerses.Where(v => v.PoemId == poemId && v.VOrder >= vOrder).OrderBy(v => v.VOrder).ToListAsync();
             var firstCoupletIndex = targetPoemVerses.Any() ? targetPoemVerses.First().CoupletIndex : 0;
+            //everything bound to a couplet (PoemId + CoupletIndex) must follow the moved verses
+            await _MoveCoupletAttachmentsAsync(context, poemId, nextPoemId, vOrder, firstCoupletIndex ?? 0, dbLastTargetPoem);
 
             for (int i = 0; i < targetPoemVerses.Count; i++)
             {
@@ -613,10 +631,164 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
-
+            //the changes above (main poem texts, trimmed/removed sections) were never saved
+            await context.SaveChangesAsync();
 
             return new RServiceResult<int>(nextPoemId);
 
+        }
+
+        /// <summary>
+        /// moves everything that is bound to a couplet of <paramref name="fromPoemId"/> and lies in the part
+        /// that is being broken off (verses with VOrder >= <paramref name="vOrder"/>) to the new poem, fixing
+        /// PoemId and CoupletIndex (the first moved couplet becomes couplet 0 of the new poem). Changes are
+        /// only tracked here, the caller saves.
+        /// </summary>
+        private async Task _MoveCoupletAttachmentsAsync(RMuseumDbContext context, int fromPoemId, int toPoemId, int vOrder, int firstCoupletIndex, GanjoorPoem toPoem)
+        {
+            //if the break happens in the middle of a couplet, items of that couplet stay with the first part
+            bool midCouplet = await context.GanjoorVerses.AsNoTracking().AnyAsync(v => v.PoemId == fromPoemId && v.VOrder < vOrder && v.CoupletIndex == firstCoupletIndex);
+            int minIndex = midCouplet ? firstCoupletIndex + 1 : firstCoupletIndex;
+
+            var geoTags = await context.PoemGeoDateTags.Where(t => t.PoemId == fromPoemId && t.CoupletIndex >= minIndex).ToListAsync();
+            foreach (var tag in geoTags)
+            {
+                tag.PoemId = toPoemId;
+                tag.CoupletIndex -= firstCoupletIndex;
+            }
+
+            var comments = await context.GanjoorComments.Where(c => c.PoemId == fromPoemId && c.CoupletIndex != null && c.CoupletIndex >= minIndex).ToListAsync();
+            var movedCommentIds = new HashSet<int>(comments.Select(c => c.Id));
+            foreach (var comment in comments)
+            {
+                comment.PoemId = toPoemId;
+                comment.CoupletIndex -= firstCoupletIndex;
+            }
+            //replies stay in the same poem as the comment they reply to
+            var frontier = movedCommentIds.ToList();
+            while (frontier.Count > 0)
+            {
+                var replies = await context.GanjoorComments.Where(c => c.PoemId == fromPoemId && c.InReplyToId != null && frontier.Contains(c.InReplyToId.Value)).ToListAsync();
+                frontier = new List<int>();
+                foreach (var reply in replies)
+                {
+                    if (!movedCommentIds.Add(reply.Id))
+                        continue;
+                    reply.PoemId = toPoemId;
+                    if (reply.CoupletIndex != null && reply.CoupletIndex >= minIndex)
+                        reply.CoupletIndex -= firstCoupletIndex;
+                    frontier.Add(reply.Id);
+                }
+            }
+            if (movedCommentIds.Count > 0)
+            {
+                var movedIds = movedCommentIds.ToList();
+                var reactions = await context.GanjoorCommentReactions.Where(r => movedIds.Contains(r.GanjoorCommentId)).ToListAsync();
+                foreach (var reaction in reactions)
+                {
+                    reaction.PoemId = toPoemId;
+                }
+            }
+
+            var bookmarks = await context.GanjoorUserBookmarks.Where(b => b.PoemId == fromPoemId && b.CoupletIndex >= minIndex).ToListAsync();
+            foreach (var bookmark in bookmarks)
+            {
+                bookmark.PoemId = toPoemId;
+                bookmark.CoupletIndex -= firstCoupletIndex;
+            }
+
+            var verseNumbers = await context.GanjoorVerseNumbers.Where(n => n.PoemId == fromPoemId && n.CoupletIndex >= minIndex).ToListAsync();
+            foreach (var verseNumber in verseNumbers)
+            {
+                verseNumber.PoemId = toPoemId;
+                verseNumber.CoupletIndex -= firstCoupletIndex;
+            }
+
+            //quotations: this poem can be either side of them
+            var quoted = await context.GanjoorQuotedPoems.Where(q => q.PoemId == fromPoemId && q.CoupletIndex != null && q.CoupletIndex >= minIndex).ToListAsync();
+            foreach (var q in quoted)
+            {
+                q.PoemId = toPoemId;
+                q.CoupletIndex -= firstCoupletIndex;
+            }
+            var quotedRelated = await context.GanjoorQuotedPoems.Where(q => q.RelatedPoemId == fromPoemId && q.RelatedCoupletIndex != null && q.RelatedCoupletIndex >= minIndex).ToListAsync();
+            foreach (var q in quotedRelated)
+            {
+                q.RelatedPoemId = toPoemId;
+                q.RelatedCoupletIndex -= firstCoupletIndex;
+                q.CachedRelatedPoemFullTitle = toPoem.FullTitle;
+                q.CachedRelatedPoemFullUrl = toPoem.FullUrl;
+            }
+
+            //person relation / affiliation evidences quote a couplet
+            var relationEvidences = await context.GanjoorPersonRelationEvidences.Where(e => e.PoemId == fromPoemId && e.CoupletIndex >= minIndex).ToListAsync();
+            foreach (var evidence in relationEvidences)
+            {
+                evidence.PoemId = toPoemId;
+                evidence.CoupletIndex -= firstCoupletIndex;
+            }
+            var affiliationEvidences = await context.GanjoorPersonAffiliationEvidences.Where(e => e.PoemId == fromPoemId && e.CoupletIndex >= minIndex).ToListAsync();
+            foreach (var evidence in affiliationEvidences)
+            {
+                evidence.PoemId = toPoemId;
+                evidence.CoupletIndex -= firstCoupletIndex;
+            }
+        }
+
+        /// <summary>
+        /// when a whole poem is shifted to another poem id: moves the rows referencing it which the caller
+        /// does not handle (couplet indices do not change). Changes are only tracked here, the caller saves.
+        /// </summary>
+        private async Task _MoveWholePoemAttachmentsAsync(RMuseumDbContext context, int fromPoemId, int toPoemId, GanjoorPoem toPoem)
+        {
+            var geoTags = await context.PoemGeoDateTags.Where(t => t.PoemId == fromPoemId).ToListAsync();
+            foreach (var tag in geoTags)
+                tag.PoemId = toPoemId;
+
+            var quoted = await context.GanjoorQuotedPoems.Where(q => q.PoemId == fromPoemId).ToListAsync();
+            foreach (var q in quoted)
+                q.PoemId = toPoemId;
+            var quotedRelated = await context.GanjoorQuotedPoems.Where(q => q.RelatedPoemId == fromPoemId).ToListAsync();
+            foreach (var q in quotedRelated)
+            {
+                q.RelatedPoemId = toPoemId;
+                q.CachedRelatedPoemFullTitle = toPoem.FullTitle;
+                q.CachedRelatedPoemFullUrl = toPoem.FullUrl;
+            }
+
+            var reactions = await context.GanjoorCommentReactions.Where(r => r.PoemId == fromPoemId).ToListAsync();
+            foreach (var reaction in reactions)
+                reaction.PoemId = toPoemId;
+
+            var relationEvidences = await context.GanjoorPersonRelationEvidences.Where(e => e.PoemId == fromPoemId).ToListAsync();
+            foreach (var evidence in relationEvidences)
+                evidence.PoemId = toPoemId;
+            var affiliationEvidences = await context.GanjoorPersonAffiliationEvidences.Where(e => e.PoemId == fromPoemId).ToListAsync();
+            foreach (var evidence in affiliationEvidences)
+                evidence.PoemId = toPoemId;
+
+            var translations = await context.Set<GanjoorPoemTranslation>().Where(t => t.PoemId == fromPoemId).ToListAsync();
+            foreach (var translation in translations)
+                translation.PoemId = toPoemId;
+
+            var cachedRelatedPoems = await context.GanjoorCachedRelatedPoems.Where(c => c.PoemId == fromPoemId).ToListAsync();
+            foreach (var cached in cachedRelatedPoems)
+                cached.PoemId = toPoemId;
+
+            var pdfLinks = await context.PDFGanjoorLinks.Where(l => l.GanjoorPostId == fromPoemId).ToListAsync();
+            foreach (var link in pdfLinks)
+            {
+                link.GanjoorPostId = toPoemId;
+                link.GanjoorUrl = $"https://ganjoor.net{toPoem.FullUrl}";
+                link.GanjoorTitle = toPoem.FullTitle;
+            }
+
+            var queueItems = await context.DiscoverQuotedQueueItems.Where(i => i.PoemId == fromPoemId).ToListAsync();
+            foreach (var item in queueItems)
+                item.PoemId = toPoemId;
+            var queueRelated = await context.DiscoverQuotedQueueItems.Where(i => i.RelatedPoemId == fromPoemId).ToListAsync();
+            foreach (var item in queueRelated)
+                item.RelatedPoemId = toPoemId;
         }
     }
 }

@@ -87,6 +87,7 @@ namespace RMuseum.Services.Implementation
         /// get a person along with all their kinship/affiliation edges
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="evidenceLimit">max evidence rows returned per relation/affiliation (a preview); null = all</param>
         /// <returns></returns>
         public async Task<RServiceResult<GanjoorPersonRelationsViewModel>> GetPersonRelationsAsync(int id, int? evidenceLimit = null)
         {
@@ -303,6 +304,7 @@ namespace RMuseum.Services.Implementation
         /// get the (approved, materialized) poem geo/date tags that name this person
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="catId">only tags in poems of this category (and its children); null = all</param>
         /// <returns></returns>
         public async Task<RServiceResult<PoemGeoDateTag[]>> GetPoemsByPersonAsync(int id, int? catId = null)
         {
@@ -2689,6 +2691,234 @@ namespace RMuseum.Services.Implementation
                 _context.ChangeTracker.Clear();
                 return await _MergePeopleCoreAsync(sourceId, targetId);
             });
+        }
+
+        /// <summary>
+        /// split a person who is really two people with the same name
+        /// </summary>
+        public async Task<RServiceResult<PersonSplitResultViewModel>> SplitPersonAsync(Guid moderatorUserId, PersonSplitViewModel model)
+        {
+            if (model == null || model.PersonId <= 0 || model.FromPoemId <= 0)
+                return new RServiceResult<PersonSplitResultViewModel>(null, "شخصیت و بیت آغاز بخش جدید باید مشخص شود.");
+            //the database context uses a retrying execution strategy, which requires user transactions to run inside it
+            var strategy = _context.Database.CreateExecutionStrategy();
+            return await strategy.ExecuteAsync(async () =>
+            {
+                _context.ChangeTracker.Clear();
+                return await _SplitPersonCoreAsync(model);
+            });
+        }
+
+        private async Task<RServiceResult<PersonSplitResultViewModel>> _SplitPersonCoreAsync(PersonSplitViewModel model)
+        {
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var person = await _context.GanjoorRelatedPersons.Where(p => p.Id == model.PersonId).SingleOrDefaultAsync();
+                    if (person == null)
+                        return new RServiceResult<PersonSplitResultViewModel>(null, "شخصیت پیدا نشد.");
+                    var book = await _GetMasterCatIdAsync(model.FromPoemId);
+                    if (book == null)
+                        return new RServiceResult<PersonSplitResultViewModel>(null, "شعر آغاز پیدا نشد.");
+                    if (model.ToPoemId != null && model.ToPoemId.Value < model.FromPoemId)
+                        return new RServiceResult<PersonSplitResultViewModel>(null, "شعر پایان پیش از شعر آغاز است.");
+
+                    // does (poem, couplet) lie inside the part that goes to the new person? poems of the book are ordered by id
+                    var bookOfPoem = new Dictionary<int, int?>();
+                    async Task<bool> InPartAsync(int poemId, int coupletIndex)
+                    {
+                        if (poemId < model.FromPoemId || (poemId == model.FromPoemId && coupletIndex < model.FromCoupletIndex))
+                            return false;
+                        if (model.ToPoemId != null)
+                        {
+                            if (poemId > model.ToPoemId.Value)
+                                return false;
+                            if (poemId == model.ToPoemId.Value && model.ToCoupletIndex != null && coupletIndex > model.ToCoupletIndex.Value)
+                                return false;
+                        }
+                        if (!bookOfPoem.TryGetValue(poemId, out int? b))
+                        {
+                            b = await _GetMasterCatIdAsync(poemId);
+                            bookOfPoem[poemId] = b;
+                        }
+                        return b == book;
+                    }
+
+                    string newName = string.IsNullOrWhiteSpace(model.NewName) ? person.Name : model.NewName.Trim();
+                    var newPerson = new GanjoorRelatedPerson()
+                    {
+                        Name = newName,
+                        Description = string.IsNullOrWhiteSpace(model.NewDescription) ? null : model.NewDescription.Trim(),
+                        Gender = person.Gender,
+                        Importance = person.Importance,
+                        MachineGenerated = false,
+                    };
+                    _context.GanjoorRelatedPersons.Add(newPerson);
+                    await _context.SaveChangesAsync(); // the id is needed below
+                    int newId = newPerson.Id;
+
+                    // ---- approved person tags
+                    int tagsMoved = 0;
+                    foreach (var t in await _context.PoemGeoDateTags.Where(t => t.PersonId == person.Id).ToListAsync())
+                    {
+                        if (await InPartAsync(t.PoemId, t.CoupletIndex))
+                        {
+                            t.PersonId = newId;
+                            tagsMoved++;
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+
+                    // ---- pending tags inside poem corrections
+                    int pendingTagsMoved = 0;
+                    var pendingTags = await (from c in _context.GanjoorPoemCorrections
+                                             where !c.Reviewed
+                                             from t in c.GeoDateTags
+                                             where t.PersonId == person.Id
+                                             select new { Tag = t, c.PoemId }).ToListAsync();
+                    foreach (var pt in pendingTags)
+                    {
+                        if (await InPartAsync(pt.PoemId, pt.Tag.CoupletIndex ?? 0))
+                        {
+                            pt.Tag.PersonId = newId;
+                            pendingTagsMoved++;
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+
+                    // ---- kinship relations: placed through the couplets of their evidence
+                    int relationsMoved = 0, relationsCopied = 0, relationsWithoutEvidence = 0, evidencesMoved = 0;
+                    var relations = await _context.GanjoorPersonRelations.Where(r => r.Person1Id == person.Id || r.Person2Id == person.Id).ToListAsync();
+                    foreach (var rel in relations)
+                    {
+                        var evidences = await _context.GanjoorPersonRelationEvidences.Where(e => e.RelationId == rel.Id).ToListAsync();
+                        if (evidences.Count == 0)
+                        {
+                            relationsWithoutEvidence++;
+                            continue;
+                        }
+                        var inside = new List<GanjoorPersonRelationEvidence>();
+                        foreach (var e in evidences)
+                        {
+                            if (await InPartAsync(e.PoemId, e.CoupletIndex))
+                                inside.Add(e);
+                        }
+                        if (inside.Count == 0)
+                            continue;
+                        if (inside.Count == evidences.Count)
+                        {
+                            if (rel.Person1Id == person.Id) rel.Person1Id = newId;
+                            if (rel.Person2Id == person.Id) rel.Person2Id = newId;
+                            relationsMoved++;
+                        }
+                        else
+                        {
+                            var copy = new GanjoorPersonRelation()
+                            {
+                                Person1Id = rel.Person1Id == person.Id ? newId : rel.Person1Id,
+                                Person2Id = rel.Person2Id == person.Id ? newId : rel.Person2Id,
+                                RelationType = rel.RelationType,
+                                DegreeHint = rel.DegreeHint,
+                                Note = rel.Note,
+                            };
+                            _context.GanjoorPersonRelations.Add(copy);
+                            await _context.SaveChangesAsync();
+                            foreach (var e in inside)
+                                e.RelationId = copy.Id;
+                            relationsCopied++;
+                        }
+                        evidencesMoved += inside.Count;
+                        await _context.SaveChangesAsync();
+                    }
+
+                    // ---- affiliations, same way
+                    int affiliationsMoved = 0, affiliationsCopied = 0, affiliationsWithoutEvidence = 0;
+                    var affiliations = await _context.GanjoorPersonAffiliations.Where(a => a.Person1Id == person.Id || a.Person2Id == person.Id).ToListAsync();
+                    foreach (var aff in affiliations)
+                    {
+                        var evidences = await _context.GanjoorPersonAffiliationEvidences.Where(e => e.AffiliationId == aff.Id).ToListAsync();
+                        if (evidences.Count == 0)
+                        {
+                            affiliationsWithoutEvidence++;
+                            continue;
+                        }
+                        var inside = new List<GanjoorPersonAffiliationEvidence>();
+                        foreach (var e in evidences)
+                        {
+                            if (await InPartAsync(e.PoemId, e.CoupletIndex))
+                                inside.Add(e);
+                        }
+                        if (inside.Count == 0)
+                            continue;
+                        if (inside.Count == evidences.Count)
+                        {
+                            if (aff.Person1Id == person.Id) aff.Person1Id = newId;
+                            if (aff.Person2Id == person.Id) aff.Person2Id = newId;
+                            affiliationsMoved++;
+                        }
+                        else
+                        {
+                            var copy = new GanjoorPersonAffiliation()
+                            {
+                                Person1Id = aff.Person1Id == person.Id ? newId : aff.Person1Id,
+                                Person2Id = aff.Person2Id == person.Id ? newId : aff.Person2Id,
+                                AffiliationType = aff.AffiliationType,
+                                Note = aff.Note,
+                            };
+                            _context.GanjoorPersonAffiliations.Add(copy);
+                            await _context.SaveChangesAsync();
+                            foreach (var e in inside)
+                                e.AffiliationId = copy.Id;
+                            affiliationsCopied++;
+                        }
+                        evidencesMoved += inside.Count;
+                        await _context.SaveChangesAsync();
+                    }
+
+                    // ---- pending suggestions to add a relation/affiliation, located by their evidence couplet
+                    int suggestionsMoved = 0, suggestionsLeft = 0;
+                    var pendingSuggestions = await _context.GanjoorPersonRelationEditSuggestions
+                        .Where(s => !s.Reviewed && (s.Person1Id == person.Id || s.Person2Id == person.Id)).ToListAsync();
+                    foreach (var s in pendingSuggestions)
+                    {
+                        if (s.Action == PersonRelationSuggestionAction.Add && s.EvidencePoemId != null && await InPartAsync(s.EvidencePoemId.Value, s.EvidenceCoupletIndex ?? 0))
+                        {
+                            if (s.Person1Id == person.Id) s.Person1Id = newId;
+                            if (s.Person2Id == person.Id) s.Person2Id = newId;
+                            suggestionsMoved++;
+                        }
+                        else if (s.ExistingRelationId != null || s.ExistingAffiliationId != null)
+                        {
+                            //refers to an existing relation, which stays where it is (or was split above); check by hand
+                            suggestionsLeft++;
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+
+                    string report =
+                        $"«{person.Name}» ({person.Id}) تقسیم شد" + (model.DryRun ? " (آزمایشی - هیچ تغییری ذخیره نشد)" : $"؛ شخصیت تازه: «{newName}» ({newId})") + ". " +
+                        $"برچسب‌های تأییدشده: {tagsMoved}، برچسب‌های در انتظار: {pendingTagsMoved}؛ " +
+                        $"نسبت‌ها: {relationsMoved} منتقل و {relationsCopied} کپی‌شده (دارای مستند در دو بخش)، {relationsWithoutEvidence} بدون مستند که نزد شخصیت اصلی ماند؛ " +
+                        $"وابستگی‌ها: {affiliationsMoved} منتقل و {affiliationsCopied} کپی‌شده، {affiliationsWithoutEvidence} بدون مستند که ماند؛ " +
+                        $"مستندهای منتقل‌شده: {evidencesMoved}؛ پیشنهادهای نسبت منتقل‌شده: {suggestionsMoved}" +
+                        (suggestionsLeft > 0 ? $"، {suggestionsLeft} پیشنهاد دربارهٔ نسبت‌های موجود که باید دستی بررسی شود" : "") + ".";
+
+                    if (model.DryRun)
+                    {
+                        await transaction.RollbackAsync();
+                        _context.ChangeTracker.Clear();
+                        return new RServiceResult<PersonSplitResultViewModel>(new PersonSplitResultViewModel() { NewPersonId = 0, DryRun = true, Report = report });
+                    }
+
+                    await transaction.CommitAsync();
+                    return new RServiceResult<PersonSplitResultViewModel>(new PersonSplitResultViewModel() { NewPersonId = newId, DryRun = false, Report = report });
+                }
+                catch (Exception exp)
+                {
+                    return new RServiceResult<PersonSplitResultViewModel>(null, exp.ToString());
+                }
+            }
         }
 
         private async Task<RServiceResult<string>> _MergePeopleCoreAsync(int sourceId, int targetId)

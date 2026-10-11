@@ -101,6 +101,7 @@ namespace RMuseum.Controllers
         /// person/family-tree browsing page
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="evidenceLimit">max evidence rows returned per relation/affiliation (a preview); empty or 0 = all</param>
         /// <returns></returns>
         [HttpGet("{id:int}/relations")]
         [AllowAnonymous]
@@ -446,6 +447,25 @@ namespace RMuseum.Controllers
         {
             Guid userId = new Guid(User.Claims.First(c => c.Type == "UserId").Value);
             var res = await _personService.MergePeopleAsync(userId, model.SourceId, model.TargetId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
+        /// split a person who is really two people with the same name (see PersonSplitViewModel);
+        /// use DryRun = true first to see what would move
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("split")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(PersonSplitResultViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> SplitPersonAsync([FromBody] PersonSplitViewModel model)
+        {
+            Guid userId = new Guid(User.Claims.First(c => c.Type == "UserId").Value);
+            var res = await _personService.SplitPersonAsync(userId, model);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

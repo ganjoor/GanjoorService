@@ -75,6 +75,35 @@ namespace GanjooRazor.Areas.Admin.Pages
         }
 
         /// <summary>
+        /// split a person into two (see PersonSplitViewModel)
+        /// </summary>
+        public Task<IActionResult> OnPostSplitAsync(int personId, string newName, string newDescription, int fromPoemId, int fromCoupletIndex, int? toPoemId, int? toCoupletIndex, bool dryRun)
+        {
+            return WithSecureClientAsync(async secureClient =>
+            {
+                var model = new PersonSplitViewModel()
+                {
+                    PersonId = personId,
+                    NewName = newName,
+                    NewDescription = newDescription,
+                    FromPoemId = fromPoemId,
+                    FromCoupletIndex = fromCoupletIndex,
+                    ToPoemId = toPoemId,
+                    ToCoupletIndex = toCoupletIndex,
+                    DryRun = dryRun,
+                };
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+                var response = await secureClient.PostAsync($"{APIRoot.Url}/api/people/split", content);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new BadRequestObjectResult(await ReadErrorMessageAsync(response));
+                }
+                var result = JsonConvert.DeserializeObject<PersonSplitResultViewModel>(await response.Content.ReadAsStringAsync());
+                return new OkObjectResult(result.Report);
+            }, new OkObjectResult(false));
+        }
+
+        /// <summary>
         /// save aliases
         /// </summary>
         /// <param name="id"></param>

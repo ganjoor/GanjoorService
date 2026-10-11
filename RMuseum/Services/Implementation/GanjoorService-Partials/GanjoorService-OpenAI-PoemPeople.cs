@@ -101,6 +101,10 @@ namespace RMuseum.Services.Implementation
             public int PoemsDone, PoemsSkipped, PoemsFailed;
             public int TagsCreated, NewPeople, Deferred, Ambiguous;
             public int RelationsCreated, EvidencesCreated, RelationsSkipped, RelationErrors;
+            //people suggested as a new namesake because the poem's relations contradict the database
+            public int Namesakes;
+            //book (master category) being processed
+            public int MasterCatId;
         }
 
         #endregion
@@ -456,6 +460,10 @@ namespace RMuseum.Services.Implementation
             public string Skip;
             public List<AIPersonRec> Candidates = new List<AIPersonRec>();
             public int StrongCount;
+            //set when an existing person was replaced by a namesake suggestion (see _AIDetectNamesakesAsync)
+            public int HomonymOf;
+            public string HomonymOfName;
+            public List<AIPlannedRelation> HomonymRelations;
         }
 
         /// <summary>
@@ -476,7 +484,7 @@ namespace RMuseum.Services.Implementation
                   {
                       LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                       var job = (await jobProgressServiceEF.NewJob($"OpenAIStartSuggestingPoemPeople - cat: {masterCatId} - from poem: {startPoemId} - count: {count} - dryRun: {dryRun}", "Open AI initialization")).Result;
-                      var run = new AIPeopleRun() { Context = context, DryRun = dryRun };
+                      var run = new AIPeopleRun() { Context = context, DryRun = dryRun, MasterCatId = masterCatId };
                       try
                       {
                           run.Model = Configuration["OpenAIPeopleModel"];
@@ -555,7 +563,7 @@ namespace RMuseum.Services.Implementation
 
                           string summary =
                               $"{(dryRun ? "DRY RUN - " : "")}poems: done {run.PoemsDone}, skipped {run.PoemsSkipped}, failed {run.PoemsFailed}; " +
-                              $"person tags: {run.TagsCreated} (new people: {run.NewPeople}); deferred: {run.Deferred}; ambiguous: {run.Ambiguous}; " +
+                              $"person tags: {run.TagsCreated} (new people: {run.NewPeople}); deferred: {run.Deferred}; ambiguous: {run.Ambiguous}; namesakes: {run.Namesakes}; " +
                               $"relations: {run.RelationsCreated}, evidences: {run.EvidencesCreated}, skipped: {run.RelationsSkipped}, errors: {run.RelationErrors}";
                           string logText = run.Log.ToString();
                           if (logText.Length > 30000)
@@ -821,6 +829,24 @@ namespace RMuseum.Services.Implementation
                     r.Skip = "deferred (same name is a pending new person suggestion - run again after reviewing it)";
             }
 
+            // ---- 2c. relations are planned BEFORE the tags are written: a relation that contradicts the database
+            // (a second father for a person who already has one in this book ...) means the name is a namesake,
+            // and the tag must then become a new-person suggestion instead of a tag on the existing person
+            var peopleInPoem = resolved.Where(r => r.Existing != null && r.Skip == null).Select(r => r.Existing).GroupBy(x => x.Id).Select(g => g.First()).ToList();
+            var plannedRelations = new List<AIPlannedRelation>();
+            if (peopleInPoem.Count >= 2)
+            {
+                plannedRelations = await _AIPlanRelationsAsync(run, tag, poemText.ToString(), couplets, peopleInPoem);
+                await _AIDetectNamesakesAsync(run, tag, resolved, plannedRelations);
+                foreach (var r in resolved.Where(q => q.HomonymOf != 0 && q.Skip == null))
+                {
+                    var keys = new List<string>() { r.Person.Name };
+                    keys.AddRange(r.Person.Forms);
+                    if (keys.Any(k => pendingLoose.Contains(_AILooseName(_AINormName(k)).Replace(" ", "")) || run.NewPersonKeys.Contains(_AILooseName(_AINormName(k)).Replace(" ", ""))))
+                        r.Skip = "deferred (a namesake of the same name is already a pending new person suggestion - run again after reviewing it)";
+                }
+            }
+
             // ---- 3. person tags
             var newTags = new List<GanjoorPoemGeoDateTagCorrection>();
             var seen = new HashSet<(int, int)>();
@@ -845,7 +871,6 @@ namespace RMuseum.Services.Implementation
                     // has a tag (or a pending tag) anywhere in this poem is skipped altogether
                     foreach (var a in appearances.Take(1))
                     {
-                        var key = (r.Existing.Id, a.Couplet.Value);
                         if (existingTags.Any(t => t.Item1 == r.Existing.Id) || pendingTags.Any(t => t.Item1 == r.Existing.Id) || !seen.Add((r.Existing.Id, 0)))
                             continue;
                         newTags.Add(new GanjoorPoemGeoDateTagCorrection()
@@ -862,6 +887,8 @@ namespace RMuseum.Services.Implementation
                 {
                     var first = appearances.First();
                     localKey++;
+                    if (r.HomonymOf != 0)
+                        note += $" (احتمالاً همنامِ «{r.HomonymOfName}» با کد {r.HomonymOf}؛ نسبت‌های این بخش با اطلاعات ثبت‌شده در تناقض بود)";
                     var graph = new PersonGraphSuggestion()
                     {
                         Person = new PersonGraphNode()
@@ -876,6 +903,37 @@ namespace RMuseum.Services.Implementation
                         RelatedPeople = new List<PersonGraphNode>(),
                         Relations = new List<PersonGraphRelationEntry>(),
                     };
+                    if (r.HomonymRelations != null)
+                    {
+                        // the namesake brings along the relations the poem states about him/her
+                        var relatedKeys = new Dictionary<int, string>();
+                        string KeyOf(int id)
+                        {
+                            if (!relatedKeys.TryGetValue(id, out string k))
+                            {
+                                k = "e" + id;
+                                relatedKeys[id] = k;
+                                graph.RelatedPeople.Add(new PersonGraphNode() { LocalKey = k, ExistingPersonId = id });
+                            }
+                            return k;
+                        }
+                        foreach (var x in r.HomonymRelations)
+                        {
+                            bool childIsP1 = x.P1 == r.HomonymOf;
+                            string k1 = childIsP1 ? graph.Person.LocalKey : KeyOf(x.P1);
+                            string k2 = !childIsP1 ? graph.Person.LocalKey : KeyOf(x.P2);
+                            graph.Relations.Add(new PersonGraphRelationEntry()
+                            {
+                                Kind = x.IsAffiliation ? "affiliation" : "family",
+                                Person1 = k1,
+                                Person2 = k2,
+                                RelationType = x.IsAffiliation ? null : x.RelationType.ToString(),
+                                AffiliationType = x.IsAffiliation ? x.AffiliationType.ToString() : null,
+                                DegreeHint = (!x.IsAffiliation && x.RelationType == PersonRelationType.Ancestor && x.Rel.Degree != null && x.Rel.Degree >= 2) ? x.Rel.Degree : null,
+                                Note = $"بیت {x.Rel.Couplet}: «{_AIShort(x.Rel.Quote, 120)}»",
+                            });
+                        }
+                    }
                     newTags.Add(new GanjoorPoemGeoDateTagCorrection()
                     {
                         CoupletIndex = first.Couplet,
@@ -913,15 +971,29 @@ namespace RMuseum.Services.Implementation
                 run.TagCounts[r.Existing.Id] = c + 1;
             }
 
-            // ---- 4. relations and affiliations among people that already exist
-            var peopleInPoem = resolved.Where(r => r.Existing != null && r.Skip == null).Select(r => r.Existing).GroupBy(x => x.Id).Select(g => g.First()).ToList();
-            if (peopleInPoem.Count >= 2)
-                await _AIPeopleRelationsAsync(run, poemId, tag, poemText.ToString(), couplets, peopleInPoem);
+            // ---- 4. relations and affiliations among people that already exist (those planned above)
+            if (plannedRelations.Count > 0)
+                await _AICommitRelationsAsync(run, poemId, tag, plannedRelations, peopleInPoem);
         }
 
-        private async Task _AIPeopleRelationsAsync(AIPeopleRun run, int poemId, string tag, string poemText, Dictionary<int, string> couplets, List<AIPersonRec> people)
+        private class AIPlannedRelation
         {
-            var ctx = run.Context;
+            public AIRelation Rel;
+            public string Label;
+            public bool IsAffiliation;
+            public PersonRelationType RelationType;
+            public PersonAffiliationType AffiliationType;
+            public bool Symmetric;
+            public int P1, P2;
+        }
+
+        /// <summary>
+        /// asks the model for the relations/affiliations of this poem and validates the answer against the text;
+        /// nothing is written here
+        /// </summary>
+        private async Task<List<AIPlannedRelation>> _AIPlanRelationsAsync(AIPeopleRun run, string tag, string poemText, Dictionary<int, string> couplets, List<AIPersonRec> people)
+        {
+            var planned = new List<AIPlannedRelation>();
             var sb = new StringBuilder(AIPeopleRelationsPrompt);
             sb.AppendLine(poemText);
             sb.AppendLine("شخصیت‌ها:");
@@ -930,7 +1002,7 @@ namespace RMuseum.Services.Implementation
 
             var result = await _AIAskJsonAsync<AIRelationResult>(run, sb.ToString());
             if (result?.Relations == null || result.Relations.Count == 0)
-                return;
+                return planned;
 
             var peopleById = people.ToDictionary(p => p.Id);
             var handled = new HashSet<string>();
@@ -980,7 +1052,41 @@ namespace RMuseum.Services.Implementation
                     string handledKey = $"{(isAffiliation ? "A" : "F")}{(isAffiliation ? (int)affiliationType : (int)relationType)}:{(symmetric ? Math.Min(p1, p2) : p1)}:{(symmetric ? Math.Max(p1, p2) : p2)}:{rel.Couplet}";
                     if (!handled.Add(handledKey))
                         continue;
+                    planned.Add(new AIPlannedRelation()
+                    {
+                        Rel = rel, Label = label, IsAffiliation = isAffiliation, RelationType = relationType,
+                        AffiliationType = affiliationType, Symmetric = symmetric, P1 = p1, P2 = p2,
+                    });
+                }
+                catch (Exception exp)
+                {
+                    run.RelationErrors++;
+                    run.Log.AppendLine($"{tag}: relation error {label}: {_AIShort(exp.Message, 250)}");
+                }
+            }
+            return planned;
+        }
 
+        /// <summary>
+        /// registers the planned relations as unreviewed suggestions
+        /// </summary>
+        private async Task _AICommitRelationsAsync(AIPeopleRun run, int poemId, string tag, List<AIPlannedRelation> planned, List<AIPersonRec> people)
+        {
+            var ctx = run.Context;
+            var peopleById = people.ToDictionary(p => p.Id);
+            foreach (var pl in planned)
+            {
+                var rel = pl.Rel;
+                string label = pl.Label;
+                bool isAffiliation = pl.IsAffiliation;
+                var relationType = pl.RelationType;
+                var affiliationType = pl.AffiliationType;
+                bool symmetric = pl.Symmetric;
+                int p1 = pl.P1, p2 = pl.P2;
+                if (!peopleById.ContainsKey(p1) || !peopleById.ContainsKey(p2))
+                    continue;
+                try
+                {
                     string suggestionNote = $"پیشنهاد هوش مصنوعی ({run.Model}) - عبارت: «{_AIShort(rel.Quote, 200)}»";
                     var suggestion = new GanjoorPersonRelationEditSuggestion()
                     {
@@ -1068,6 +1174,87 @@ namespace RMuseum.Services.Implementation
                     run.Log.AppendLine($"{tag}: relation error {label}: {_AIShort(exp.Message, 250)}");
                     ctx.ChangeTracker.Clear();
                 }
+            }
+        }
+
+        /// <summary>
+        /// A Parent relation (P1 is the father/mother of X) that contradicts what the database already says about
+        /// X in this book - X already has another parent of the same gender, or already has two parents - usually
+        /// means the poem speaks about ANOTHER person with the same name as X (e.g. several people named شاپور).
+        /// Such children are turned into "new person" suggestions that carry the contradicting relations, and every
+        /// planned relation touching them is removed from the plan.
+        /// </summary>
+        private async Task _AIDetectNamesakesAsync(AIPeopleRun run, string tag, List<AIResolved> resolved, List<AIPlannedRelation> planned)
+        {
+            var ctx = run.Context;
+            var parentRels = planned.Where(x => !x.IsAffiliation && x.RelationType == PersonRelationType.Parent).ToList();
+            if (parentRels.Count == 0)
+                return;
+
+            var ids = parentRels.SelectMany(x => new[] { x.P1, x.P2 }).Distinct().ToList();
+            var genders = await ctx.GanjoorRelatedPersons.AsNoTracking().Where(p => ids.Contains(p.Id)).Select(p => new { p.Id, p.Gender }).ToDictionaryAsync(p => p.Id, p => p.Gender);
+
+            foreach (var group in parentRels.GroupBy(x => x.P2))
+            {
+                int childId = group.Key;
+                var child = resolved.FirstOrDefault(r => r.Existing != null && r.Existing.Id == childId && r.Skip == null);
+                if (child == null)
+                    continue;
+
+                // parents the database (or a pending suggestion) already gives this child, other than the ones the poem names
+                var namedParents = group.Select(x => x.P1).Distinct().ToList();
+                var liveParents = await ctx.GanjoorPersonRelations.AsNoTracking()
+                    .Where(r => r.RelationType == PersonRelationType.Parent && r.Person2Id == childId && !namedParents.Contains(r.Person1Id))
+                    .Select(r => new { r.Id, r.Person1Id }).ToListAsync();
+                var liveIds = liveParents.Select(r => r.Id).ToList();
+                var evidenceBooks = liveIds.Count == 0 ? new List<(int, int)>() :
+                    (await ctx.GanjoorPersonRelationEvidences.AsNoTracking().Where(e => liveIds.Contains(e.RelationId)).Select(e => new { e.RelationId, e.MasterCatId }).Distinct().ToListAsync())
+                    .Select(e => (e.RelationId, e.MasterCatId)).ToList();
+                // a relation counts when this book attests it, or when nothing attests it at all
+                var otherParentIds = liveParents
+                    .Where(r => !evidenceBooks.Any(e => e.Item1 == r.Id) || evidenceBooks.Any(e => e.Item1 == r.Id && e.Item2 == run.MasterCatId))
+                    .Select(r => r.Person1Id).ToList();
+                var pendingParentIds = await ctx.GanjoorPersonRelationEditSuggestions.AsNoTracking()
+                    .Where(s => !s.Reviewed && s.Action == PersonRelationSuggestionAction.Add && s.Kind == PersonRelationSuggestionKind.Family
+                        && s.SuggestedRelationType == PersonRelationType.Parent && s.Person2Id == childId && !namedParents.Contains(s.Person1Id))
+                    .Select(s => s.Person1Id).ToListAsync();
+                otherParentIds.AddRange(pendingParentIds);
+                otherParentIds = otherParentIds.Distinct().ToList();
+                if (otherParentIds.Count == 0)
+                    continue;
+
+                var otherGenders = await ctx.GanjoorRelatedPersons.AsNoTracking().Where(p => otherParentIds.Contains(p.Id)).Select(p => new { p.Id, p.Gender }).ToDictionaryAsync(p => p.Id, p => p.Gender);
+                string reason = null;
+                foreach (var named in group)
+                {
+                    genders.TryGetValue(named.P1, out var g1);
+                    if (g1 != PersonGender.Unknown)
+                    {
+                        var clash = otherGenders.FirstOrDefault(o => o.Value == g1);
+                        if (clash.Key != 0)
+                        {
+                            reason = $"«{child.Existing.Name}» ({childId}) از پیش پدر/مادر دیگری از همین جنس دارد (کد {clash.Key})، ولی متن شخصی با کد {named.P1} را پدر/مادر او می‌داند";
+                            break;
+                        }
+                    }
+                }
+                if (reason == null && otherParentIds.Count + namedParents.Count > 2)
+                    reason = $"«{child.Existing.Name}» ({childId}) با این نسبت بیش از دو پدر/مادر پیدا می‌کند";
+                if (reason == null)
+                    continue;
+
+                // the child becomes a new-person suggestion that brings along every relation of this poem that touches it
+                var touching = planned.Where(x => x.P1 == childId || x.P2 == childId).ToList();
+                child.HomonymOf = childId;
+                child.HomonymOfName = child.Existing.Name;
+                child.HomonymRelations = touching;
+                child.Existing = null;
+                child.IsNew = true;
+                child.ConfirmedNew = true;
+                foreach (var x in touching)
+                    planned.Remove(x);
+                run.Namesakes++;
+                run.Log.AppendLine($"{tag}: NAMESAKE «{child.Person.Name}» - {reason}; suggested as a new person with {touching.Count} relation(s)");
             }
         }
     }

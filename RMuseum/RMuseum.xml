@@ -2918,6 +2918,7 @@
             person/family-tree browsing page
             </summary>
             <param name="id"></param>
+            <param name="evidenceLimit">max evidence rows returned per relation/affiliation (a preview); empty or 0 = all</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetPoemsByPersonAsync(System.Int32,System.Nullable{System.Int32})">
@@ -3048,6 +3049,14 @@
             </summary>
             <param name="model"></param>
             <returns>a short report</returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.SplitPersonAsync(RMuseum.Models.Ganjoor.ViewModels.PersonSplitViewModel)">
+            <summary>
+            split a person who is really two people with the same name (see PersonSplitViewModel);
+            use DryRun = true first to see what would move
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.SetPersonAliasesAsync(System.Int32,RMuseum.Models.Ganjoor.ViewModels.PersonAliasesViewModel)">
             <summary>
@@ -15980,6 +15989,73 @@
             the person who stays
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.PersonSplitViewModel">
+            <summary>
+            split a person who is really two people with the same name: everything of PersonId located at or after
+            (FromPoemId, FromCoupletIndex) - and at or before (ToPoemId, ToCoupletIndex) when ToPoemId is given - in the
+            book of FromPoemId moves to a new person
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonSplitViewModel.PersonId">
+            <summary>
+            the person to split
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonSplitViewModel.NewName">
+            <summary>
+            name of the new person; empty = same name as the original
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonSplitViewModel.NewDescription">
+            <summary>
+            description of the new person (the description of the original is not copied, it describes the other one)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonSplitViewModel.FromPoemId">
+            <summary>
+            first poem (inclusive) of the part that belongs to the new person
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonSplitViewModel.FromCoupletIndex">
+            <summary>
+            first couplet (inclusive) of FromPoemId that belongs to the new person
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonSplitViewModel.ToPoemId">
+            <summary>
+            last poem (inclusive) of the part that belongs to the new person; null = up to the end of the book
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonSplitViewModel.ToCoupletIndex">
+            <summary>
+            last couplet (inclusive) of ToPoemId; null = the whole poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonSplitViewModel.DryRun">
+            <summary>
+            only report what would be moved, change nothing
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.PersonSplitResultViewModel">
+            <summary>
+            result of splitting a person
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonSplitResultViewModel.NewPersonId">
+            <summary>
+            id of the new person (0 for a dry run)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonSplitResultViewModel.DryRun">
+            <summary>
+            was this a dry run
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.PersonSplitResultViewModel.Report">
+            <summary>
+            what was (or would be) moved
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.PersonAliasesViewModel">
             <summary>
             replace the aliases of a person
@@ -19408,6 +19484,7 @@
             enough of its Poem to link to it
             </summary>
             <param name="id"></param>
+            <param name="catId">only tags in poems of this category (and its children); null = all</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetFamilyTreeAsync(System.Int32,System.Nullable{System.Int32})">
@@ -19435,6 +19512,7 @@
             <param name="skip"></param>
             <param name="take"></param>
             <param name="personId">only relations touching this person</param>
+            <param name="affiliations">list affiliations instead of kinship relations</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.SuggestPersonEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion)">
@@ -19551,6 +19629,18 @@
             <param name="moderatorUserId"></param>
             <param name="sourceId"></param>
             <param name="targetId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.SplitPersonAsync(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PersonSplitViewModel)">
+            <summary>
+            split a person who is really two people with the same name: a new person is created and the
+            tags (approved and pending), relations/affiliations (through their evidence couplets) and pending
+            relation suggestions that lie in the given part of a book move to it. A relation whose evidence is
+            partly inside and partly outside the part is copied for the new person (only the inside evidence moves).
+            Relations without any evidence cannot be placed and stay with the original.
+            </summary>
+            <param name="moderatorUserId"></param>
+            <param name="model"></param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.SetPersonAliasesAsync(System.Int32,System.String)">
@@ -23094,6 +23184,7 @@
             get a person along with all their kinship/affiliation edges
             </summary>
             <param name="id"></param>
+            <param name="evidenceLimit">max evidence rows returned per relation/affiliation (a preview); null = all</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._PickEvidencePreviewIds(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Int32,System.Int32,System.Int32,System.Boolean}},System.Nullable{System.Int32})">
@@ -23118,6 +23209,7 @@
             get the (approved, materialized) poem geo/date tags that name this person
             </summary>
             <param name="id"></param>
+            <param name="catId">only tags in poems of this category (and its children); null = all</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._ComputeBookRelationStates(System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorPersonRelation},System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorRelatedPerson},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.List{System.Int32}},System.Nullable{System.Int32})">
@@ -23467,6 +23559,11 @@
             merge a duplicate person (source) into another one (target)
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.SplitPersonAsync(System.Guid,RMuseum.Models.Ganjoor.ViewModels.PersonSplitViewModel)">
+            <summary>
+            split a person who is really two people with the same name
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.NotifyModeratorsOfPendingSuggestionAsync(System.String,System.String)">
             <summary>
             notify every user holding the Ganjoor:Modify permission that a new suggestion of the
@@ -23686,6 +23783,20 @@
             <param name="name">optional, only books whose name contains this (case-insensitive)</param>
             <param name="poetId">optional, only books belonging to this poet</param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._MoveCoupletAttachmentsAsync(RMuseum.DbContext.RMuseumDbContext,System.Int32,System.Int32,System.Int32,System.Int32,RMuseum.Models.Ganjoor.GanjoorPoem)">
+            <summary>
+            moves everything that is bound to a couplet of <paramref name="fromPoemId"/> and lies in the part
+            that is being broken off (verses with VOrder >= <paramref name="vOrder"/>) to the new poem, fixing
+            PoemId and CoupletIndex (the first moved couplet becomes couplet 0 of the new poem). Changes are
+            only tracked here, the caller saves.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._MoveWholePoemAttachmentsAsync(RMuseum.DbContext.RMuseumDbContext,System.Int32,System.Int32,RMuseum.Models.Ganjoor.GanjoorPoem)">
+            <summary>
+            when a whole poem is shifted to another poem id: moves the rows referencing it which the caller
+            does not handle (couplet indices do not change). Changes are only tracked here, the caller saves.
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryWordCountsAsync(System.Int32,System.String,RSecurityBackend.Models.Generic.PagingParameterModel)">
             <summary>
@@ -24253,6 +24364,26 @@
             <param name="startPoemId">first poem id to process (poems are processed in id order)</param>
             <param name="count">0 = all</param>
             <param name="dryRun">only report in the job log, write nothing</param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._AIPlanRelationsAsync(RMuseum.Services.Implementation.GanjoorService.AIPeopleRun,System.String,System.String,System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIPersonRec})">
+            <summary>
+            asks the model for the relations/affiliations of this poem and validates the answer against the text;
+            nothing is written here
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._AICommitRelationsAsync(RMuseum.Services.Implementation.GanjoorService.AIPeopleRun,System.Int32,System.String,System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIPlannedRelation},System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIPersonRec})">
+            <summary>
+            registers the planned relations as unreviewed suggestions
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._AIDetectNamesakesAsync(RMuseum.Services.Implementation.GanjoorService.AIPeopleRun,System.String,System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIResolved},System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIPlannedRelation})">
+            <summary>
+            A Parent relation (P1 is the father/mother of X) that contradicts what the database already says about
+            X in this book - X already has another parent of the same gender, or already has two parents - usually
+            means the poem speaks about ANOTHER person with the same name as X (e.g. several people named شاپور).
+            Such children are turned into "new person" suggestions that carry the contradicting relations, and every
+            planned relation touching them is removed from the plan.
+            </summary>
         </member>
         <member name="P:RMuseum.Services.Implementation.GanjoorService.OpenAIModel">
             <summary>

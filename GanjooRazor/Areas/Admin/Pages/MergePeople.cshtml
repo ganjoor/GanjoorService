@@ -3,7 +3,7 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_AdminLayout";
-    ViewData["Title"] = "ادغام نامبردگان و نام‌های دیگر";
+    ViewData["Title"] = "ادغام و تقسیم نامبردگان و نام‌های دیگر";
 }
 
 <div class="up-page-header">
@@ -62,6 +62,44 @@
         });
     }
 
+    async function splitPerson(dryRun) {
+        var personId = parsePersonId(document.getElementById('split-person').value);
+        var fromPoemId = parseInt(document.getElementById('split-from-poem').value);
+        var fromCouplet = parseInt(document.getElementById('split-from-couplet').value);
+        var toPoemText = document.getElementById('split-to-poem').value.trim();
+        var toCoupletText = document.getElementById('split-to-couplet').value.trim();
+        if (!personId || isNaN(fromPoemId)) {
+            upToast('شخصیت را از فهرست انتخاب کنید و شمارهٔ شعر آغاز را بنویسید.', 'error');
+            return;
+        }
+        if (!dryRun) {
+            var ok = await upConfirm('شخصیت «' + document.getElementById('split-person').value + '» تقسیم می‌شود و بخشی از برچسب‌ها و نسبت‌هایش به یک شخصیت تازه می‌رود. پیشنهاد می‌شود پیش از این «بررسی بدون تغییر» را اجرا کرده باشید. ادامه می‌دهید؟');
+            if (!ok) return;
+        }
+        var data = {
+            personId: personId,
+            newName: document.getElementById('split-new-name').value,
+            newDescription: document.getElementById('split-new-description').value,
+            fromPoemId: fromPoemId,
+            fromCoupletIndex: isNaN(fromCouplet) ? 0 : fromCouplet,
+            dryRun: dryRun
+        };
+        if (toPoemText) data.toPoemId = parseInt(toPoemText);
+        if (toCoupletText) data.toCoupletIndex = parseInt(toCoupletText);
+        $.ajax({
+            type: "POST",
+            url: '?handler=Split',
+            data: data,
+            error: function (e) {
+                upToast(e.responseText || 'خطا رخ داد.', 'error');
+            },
+            success: function (report) {
+                document.getElementById('split-report').innerText = report;
+                upToast(dryRun ? 'بررسی انجام شد؛ چیزی تغییر نکرد.' : 'انجام شد!', 'success');
+            },
+        });
+    }
+
     function loadAliases() {
         var id = parsePersonId(document.getElementById('alias-person').value);
         document.getElementById('alias-text').value = (id && aliasesOf[id]) ? aliasesOf[id] : '';
@@ -105,6 +143,38 @@
     </tr>
 </table>
 <p id="merge-report"></p>
+
+<h2>تقسیم یک شخصیت به دو نفر همنام</h2>
+<p>وقتی یک شخصیت در واقع دو نفر با یک نام است (مثلاً چند «شاپور» در شاهنامه)، شخصیتی تازه ساخته می‌شود و برچسب‌ها، نسبت‌ها و وابستگی‌های او از «شعر و بیت آغاز» تا «شعر و بیت پایان» (در همان کتاب) به شخصیت تازه می‌رود. اگر پایان را خالی بگذارید تا پایان کتاب است. نسبتی که مستند آن در هر دو بخش است برای شخصیت تازه کپی می‌شود و نسبت بدون مستند نزد شخصیت اصلی می‌ماند. ابتدا «بررسی بدون تغییر» را اجرا کنید.</p>
+<table>
+    <tr>
+        <td><span class="inputlabel">شخصیت</span></td>
+        <td><input type="text" id="split-person" list="people-list" size="40" autocomplete="off" /></td>
+    </tr>
+    <tr>
+        <td><span class="inputlabel">نام شخصیت تازه (خالی = همان نام)</span></td>
+        <td><input type="text" id="split-new-name" size="40" autocomplete="off" /></td>
+    </tr>
+    <tr>
+        <td><span class="inputlabel">توضیح شخصیت تازه</span></td>
+        <td><input type="text" id="split-new-description" size="60" autocomplete="off" /></td>
+    </tr>
+    <tr>
+        <td><span class="inputlabel">آغاز: شمارهٔ شعر و شمارهٔ بیت</span></td>
+        <td><input type="number" id="split-from-poem" style="width:8em" /> <input type="number" id="split-from-couplet" value="0" min="0" style="width:6em" /></td>
+    </tr>
+    <tr>
+        <td><span class="inputlabel">پایان (اختیاری): شمارهٔ شعر و شمارهٔ بیت</span></td>
+        <td><input type="number" id="split-to-poem" style="width:8em" /> <input type="number" id="split-to-couplet" min="0" style="width:6em" /></td>
+    </tr>
+    <tr>
+        <td colspan="2"><p>
+            <a role="button" onclick="splitPerson(true)" class="up-btn up-btn--ghost up-btn--sm">بررسی بدون تغییر</a>
+            <a role="button" onclick="splitPerson(false)" class="up-btn up-btn--danger up-btn--sm">تقسیم</a>
+        </p></td>
+    </tr>
+</table>
+<p id="split-report"></p>
 
 <h2>نام‌های دیگر یک شخصیت</h2>
 <p>نام‌ها، لقب‌ها و املاهای دیگر را با «،» از هم جدا کنید (مثلاً برای رستم: تهمتن، رستم دستان، پور زال). کار هوش مصنوعی از این نام‌ها برای تشخیص شخصیت استفاده می‌کند.</p>
