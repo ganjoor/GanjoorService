@@ -3214,9 +3214,28 @@ namespace RMuseum.Services.Implementation
                                 var job = (await jobProgressServiceEF.NewJob($"Breaking poem {poem.FullTitle}", "Query data")).Result;
                                 try
                                 {
-                                    var res = await _BreakPoemAsync(context, poemId, vOrder, userId, poem, parentPage, poemTitleStaticPart);
+                                    // all or nothing: the job's own progress updates save the very same context, so without
+                                    // a transaction (and a cleared change tracker on failure) a failed break would persist
+                                    // whatever it had changed in memory so far and leave the category half shifted
+                                    var strategy = context.Database.CreateExecutionStrategy();
+                                    var res = await strategy.ExecuteAsync(async () =>
+                                    {
+                                        context.ChangeTracker.Clear();
+                                        using (var transaction = await context.Database.BeginTransactionAsync())
+                                        {
+                                            var breakResult = await _BreakPoemAsync(context, poemId, vOrder, userId, poem, parentPage, poemTitleStaticPart);
+                                            if (!string.IsNullOrEmpty(breakResult.ExceptionString))
+                                            {
+                                                await transaction.RollbackAsync();
+                                                return breakResult;
+                                            }
+                                            await transaction.CommitAsync();
+                                            return breakResult;
+                                        }
+                                    });
                                     if (!string.IsNullOrEmpty(res.ExceptionString))
                                     {
+                                        context.ChangeTracker.Clear();
                                         await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, res.ExceptionString);
                                         return;
                                     }
@@ -3225,6 +3244,7 @@ namespace RMuseum.Services.Implementation
                                 }
                                 catch (Exception exp)
                                 {
+                                    context.ChangeTracker.Clear();
                                     await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, exp.ToString());
                                 }
 
