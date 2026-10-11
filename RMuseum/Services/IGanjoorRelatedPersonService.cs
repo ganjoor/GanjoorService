@@ -138,6 +138,13 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorPersonEditSuggestion>> ModeratePersonEditSuggestionAsync(Guid moderatorUserId, int suggestionId, CorrectionReviewResult result, string reviewNote);
 
         /// <summary>
+        /// what approving a merge/split suggestion would do (a split runs as a dry run), for the moderator
+        /// </summary>
+        /// <param name="suggestionId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<string>> PreviewPersonEditSuggestionAsync(int suggestionId);
+
+        /// <summary>
         /// get a single kinship edge by its own id, with both sides' names resolved - used by
         /// /User/SuggestPersonRelationEdit?relationId={relationId} to show what it's about
         /// </summary>

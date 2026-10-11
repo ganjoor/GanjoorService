@@ -2,6 +2,7 @@
 @model GanjooRazor.Areas.Admin.Pages.ReviewPersonEditsModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @using DNTPersianUtils.Core
+@using RMuseum.Models.Ganjoor
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "بازبینی پیشنهادهای ویرایش نامبردگان";
@@ -46,7 +47,34 @@ else
         }
     </table>
 
-    @if (s.SuggestedForDeletion)
+    @if (s.Operation == PersonSuggestionOperation.Merge || s.Operation == PersonSuggestionOperation.Split)
+    {
+        <div class="up-alert up-alert--danger">
+            <strong>@(s.Operation == PersonSuggestionOperation.Merge ? "این پیشنهاد ادغام «" + p.Name + "» در شخصیتی دیگر است." : "این پیشنهاد تقسیم «" + p.Name + "» به دو نفر همنام است.")</strong>
+            @if (s.Operation == PersonSuggestionOperation.Merge)
+            {
+                <span>شخصیت مقصد: <a role="button" href="javascript:void(0)" onclick="PersonWindow.open(@s.MergeIntoPersonId)" class="up-btn up-btn--ghost up-btn--sm">کد @s.MergeIntoPersonId</a></span>
+            }
+            else
+            {
+                <span>
+                    آغاز: <a href="/?p=@s.SplitFromPoemId" target="_blank">شعر @s.SplitFromPoemId</a> بیت @s.SplitFromCoupletIndex
+                    @if (s.SplitToPoemId != null)
+                    {
+                        <text> — پایان: <a href="/?p=@s.SplitToPoemId" target="_blank">شعر @s.SplitToPoemId</a>@(s.SplitToCoupletIndex != null ? " بیت " + s.SplitToCoupletIndex : "")</text>
+                    }
+                    @if (!string.IsNullOrEmpty(s.SplitNewName)) { <text> — نام شخصیت تازه: @s.SplitNewName</text> }
+                    @if (!string.IsNullOrEmpty(s.SplitNewDescription)) { <text> — توضیح: @s.SplitNewDescription</text> }
+                </span>
+            }
+        </div>
+        @if (!string.IsNullOrEmpty(Model.Preview))
+        {
+            <p><strong>در صورت تأیید:</strong> @Model.Preview</p>
+        }
+        <p class="up-hint">این کار قابل بازگشت نیست؛ تأیید یک ادغام، شخصیت مبدأ را برای همیشه حذف می‌کند.</p>
+    }
+    else if (s.SuggestedForDeletion)
     {
         <div class="up-alert up-alert--danger">
             <strong>این پیشنهاد درخواست حذف کامل نامبردۀ «@p.Name» است.</strong>

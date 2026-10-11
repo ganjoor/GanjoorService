@@ -1113,6 +1113,11 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
+                if (suggestion != null && suggestion.Operation != PersonSuggestionOperation.Edit)
+                {
+                    return await _SuggestMergeOrSplitAsync(suggestion);
+                }
+
                 if (suggestion == null || (!suggestion.SuggestedForDeletion && string.IsNullOrWhiteSpace(suggestion.SuggestedName)))
                 {
                     return new RServiceResult<GanjoorPersonEditSuggestion>(null, "نام شخصیت نمی‌تواند خالی باشد.");
@@ -1176,6 +1181,118 @@ namespace RMuseum.Services.Implementation
             catch (Exception exp)
             {
                 return new RServiceResult<GanjoorPersonEditSuggestion>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
+        /// validates and registers a suggestion to merge a person into another one or to split a person
+        /// </summary>
+        private async Task<RServiceResult<GanjoorPersonEditSuggestion>> _SuggestMergeOrSplitAsync(GanjoorPersonEditSuggestion suggestion)
+        {
+            var person = await _context.GanjoorRelatedPersons.AsNoTracking().Where(p => p.Id == suggestion.PersonId).SingleOrDefaultAsync();
+            if (person == null)
+                return new RServiceResult<GanjoorPersonEditSuggestion>(null, "شخصیت پیدا نشد.");
+            if (string.IsNullOrWhiteSpace(suggestion.SuggestionNote))
+                return new RServiceResult<GanjoorPersonEditSuggestion>(null, "دلیل پیشنهاد را بنویسید؛ بازبین بدون آن نمی‌تواند دربارهٔ ادغام یا تقسیم تصمیم بگیرد.");
+
+            if (await _context.GanjoorPersonEditSuggestions.AnyAsync(s => !s.Reviewed && s.Operation != PersonSuggestionOperation.Edit
+                && (s.PersonId == person.Id || s.MergeIntoPersonId == person.Id)))
+                return new RServiceResult<GanjoorPersonEditSuggestion>(null, "برای این شخصیت پیشنهاد ادغام یا تقسیمِ بررسی‌نشده‌ای وجود دارد. لطفاً تا پایان بررسی آن صبر کنید.");
+
+            string description;
+            if (suggestion.Operation == PersonSuggestionOperation.Merge)
+            {
+                if (suggestion.MergeIntoPersonId == null || suggestion.MergeIntoPersonId.Value == person.Id)
+                    return new RServiceResult<GanjoorPersonEditSuggestion>(null, "شخصیتی که باید با آن ادغام شود را از فهرست انتخاب کنید (و با خودِ شخصیت یکی نباشد).");
+                var target = await _context.GanjoorRelatedPersons.AsNoTracking().Where(p => p.Id == suggestion.MergeIntoPersonId.Value).SingleOrDefaultAsync();
+                if (target == null)
+                    return new RServiceResult<GanjoorPersonEditSuggestion>(null, "شخصیت مقصد ادغام پیدا نشد.");
+                description = $"ادغام «{person.Name}» در «{target.Name}»";
+                suggestion.SplitFromPoemId = suggestion.SplitFromCoupletIndex = suggestion.SplitToPoemId = suggestion.SplitToCoupletIndex = null;
+                suggestion.SplitNewName = suggestion.SplitNewDescription = null;
+            }
+            else
+            {
+                if (suggestion.SplitFromPoemId == null || suggestion.SplitFromPoemId.Value <= 0)
+                    return new RServiceResult<GanjoorPersonEditSuggestion>(null, "شعر آغاز بخش جدید را مشخص کنید.");
+                if (suggestion.SplitToPoemId != null && suggestion.SplitToPoemId.Value < suggestion.SplitFromPoemId.Value)
+                    return new RServiceResult<GanjoorPersonEditSuggestion>(null, "شعر پایان پیش از شعر آغاز است.");
+                if (!await _context.PoemGeoDateTags.AnyAsync(t => t.PersonId == person.Id && t.PoemId == suggestion.SplitFromPoemId.Value))
+                    return new RServiceResult<GanjoorPersonEditSuggestion>(null, "این شخصیت در شعر آغاز برچسبی ندارد؛ شعری را انتخاب کنید که او در آن برچسب خورده است.");
+                suggestion.SplitFromCoupletIndex = Math.Max(suggestion.SplitFromCoupletIndex ?? 0, 0);
+                suggestion.SplitNewName = string.IsNullOrWhiteSpace(suggestion.SplitNewName) ? null : suggestion.SplitNewName.Trim();
+                suggestion.SplitNewDescription = string.IsNullOrWhiteSpace(suggestion.SplitNewDescription) ? null : suggestion.SplitNewDescription.Trim();
+                suggestion.MergeIntoPersonId = null;
+                description = $"تقسیم «{person.Name}»";
+            }
+
+            suggestion.Id = 0;
+            suggestion.Date = DateTime.Now;
+            suggestion.SuggestionNote = suggestion.SuggestionNote.Trim();
+            suggestion.SuggestedForDeletion = false;
+            suggestion.SuggestedName = person.Name;
+            suggestion.Reviewed = false;
+            suggestion.Result = CorrectionReviewResult.NotReviewed;
+            suggestion.ReviewNote = null;
+            suggestion.ReviewerUserId = null;
+            suggestion.ResultReport = null;
+
+            _context.GanjoorPersonEditSuggestions.Add(suggestion);
+            await _context.SaveChangesAsync();
+
+            await NotifyModeratorsOfPendingSuggestionAsync(
+                suggestion.Operation == PersonSuggestionOperation.Merge ? "پیشنهاد ادغام شخصیت" : "پیشنهاد تقسیم شخصیت",
+                $"کاربری پیشنهاد {description} را داده است. لطفاً بخش <a href=\"https://ganjoor.net/Admin/ReviewPersonEdits\">ویرایش‌های پیشنهادی شخصیت‌ها</a> را بررسی فرمایید."
+            );
+
+            return new RServiceResult<GanjoorPersonEditSuggestion>(suggestion);
+        }
+
+        /// <summary>
+        /// what approving a merge/split suggestion would do
+        /// </summary>
+        public async Task<RServiceResult<string>> PreviewPersonEditSuggestionAsync(int suggestionId)
+        {
+            try
+            {
+                var suggestion = await _context.GanjoorPersonEditSuggestions.AsNoTracking().Where(s => s.Id == suggestionId).SingleOrDefaultAsync();
+                if (suggestion == null)
+                    return new RServiceResult<string>(null, "پیشنهاد پیدا نشد.");
+                if (suggestion.Operation == PersonSuggestionOperation.Split)
+                {
+                    var res = await SplitPersonAsync(Guid.Empty, new PersonSplitViewModel()
+                    {
+                        PersonId = suggestion.PersonId,
+                        NewName = suggestion.SplitNewName,
+                        NewDescription = suggestion.SplitNewDescription,
+                        FromPoemId = suggestion.SplitFromPoemId ?? 0,
+                        FromCoupletIndex = suggestion.SplitFromCoupletIndex ?? 0,
+                        ToPoemId = suggestion.SplitToPoemId,
+                        ToCoupletIndex = suggestion.SplitToCoupletIndex,
+                        DryRun = true,
+                    });
+                    if (!string.IsNullOrEmpty(res.ExceptionString))
+                        return new RServiceResult<string>(null, res.ExceptionString);
+                    return new RServiceResult<string>(res.Result.Report);
+                }
+                if (suggestion.Operation == PersonSuggestionOperation.Merge)
+                {
+                    var source = await _context.GanjoorRelatedPersons.AsNoTracking().Where(p => p.Id == suggestion.PersonId).SingleOrDefaultAsync();
+                    var target = await _context.GanjoorRelatedPersons.AsNoTracking().Where(p => p.Id == suggestion.MergeIntoPersonId).SingleOrDefaultAsync();
+                    if (source == null || target == null)
+                        return new RServiceResult<string>(null, "شخصیت مبدأ یا مقصد پیدا نشد.");
+                    int tags = await _context.PoemGeoDateTags.CountAsync(t => t.PersonId == source.Id);
+                    int relations = await _context.GanjoorPersonRelations.CountAsync(r => r.Person1Id == source.Id || r.Person2Id == source.Id);
+                    int affiliations = await _context.GanjoorPersonAffiliations.CountAsync(a => a.Person1Id == source.Id || a.Person2Id == source.Id);
+                    int targetTags = await _context.PoemGeoDateTags.CountAsync(t => t.PersonId == target.Id);
+                    return new RServiceResult<string>(
+                        $"«{source.Name}» ({source.Id}) با {tags} برچسب، {relations} نسبت و {affiliations} وابستگی در «{target.Name}» ({target.Id}، دارای {targetTags} برچسب) ادغام و سپس حذف می‌شود.");
+                }
+                return new RServiceResult<string>("");
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<string>(null, exp.ToString());
             }
         }
 
@@ -1254,7 +1371,49 @@ namespace RMuseum.Services.Implementation
 
                 if (result == CorrectionReviewResult.Approved)
                 {
-                    if (suggestion.SuggestedForDeletion)
+                    if (suggestion.Operation == PersonSuggestionOperation.Merge)
+                    {
+                        if (suggestion.MergeIntoPersonId == null)
+                            return new RServiceResult<GanjoorPersonEditSuggestion>(null, "شخصیت مقصد ادغام مشخص نشده است.");
+                        int sourceId = suggestion.PersonId, targetId = suggestion.MergeIntoPersonId.Value;
+                        // other pending merge/split suggestions about the person that is about to disappear become moot
+                        var moot = await _context.GanjoorPersonEditSuggestions.AsNoTracking()
+                            .Where(s => !s.Reviewed && s.Id != suggestionId && s.Operation != PersonSuggestionOperation.Edit && (s.PersonId == sourceId || s.MergeIntoPersonId == sourceId))
+                            .Select(s => s.Id).ToListAsync();
+                        var merge = await MergePeopleAsync(moderatorUserId, sourceId, targetId);
+                        if (!string.IsNullOrEmpty(merge.ExceptionString))
+                            return new RServiceResult<GanjoorPersonEditSuggestion>(null, merge.ExceptionString);
+                        // the merge works on a cleared change tracker
+                        suggestion = await _context.GanjoorPersonEditSuggestions.Where(s => s.Id == suggestionId).SingleAsync();
+                        suggestion.ResultReport = merge.Result;
+                        foreach (var mootSuggestion in await _context.GanjoorPersonEditSuggestions.Where(s => moot.Contains(s.Id)).ToListAsync())
+                        {
+                            mootSuggestion.Reviewed = true;
+                            mootSuggestion.Result = CorrectionReviewResult.RejectedBecauseUnnecessaryChange;
+                            mootSuggestion.ReviewNote = "شخصیت مورد نظر در ادغامی دیگر از میان رفت.";
+                            mootSuggestion.ReviewDate = DateTime.Now;
+                            mootSuggestion.ReviewerUserId = moderatorUserId;
+                        }
+                    }
+                    else if (suggestion.Operation == PersonSuggestionOperation.Split)
+                    {
+                        var split = await SplitPersonAsync(moderatorUserId, new PersonSplitViewModel()
+                        {
+                            PersonId = suggestion.PersonId,
+                            NewName = suggestion.SplitNewName,
+                            NewDescription = suggestion.SplitNewDescription,
+                            FromPoemId = suggestion.SplitFromPoemId ?? 0,
+                            FromCoupletIndex = suggestion.SplitFromCoupletIndex ?? 0,
+                            ToPoemId = suggestion.SplitToPoemId,
+                            ToCoupletIndex = suggestion.SplitToCoupletIndex,
+                            DryRun = false,
+                        });
+                        if (!string.IsNullOrEmpty(split.ExceptionString))
+                            return new RServiceResult<GanjoorPersonEditSuggestion>(null, split.ExceptionString);
+                        suggestion = await _context.GanjoorPersonEditSuggestions.Where(s => s.Id == suggestionId).SingleAsync();
+                        suggestion.ResultReport = split.Result.Report;
+                    }
+                    else if (suggestion.SuggestedForDeletion)
                     {
                         await DeletePersonAndReferencesAsync(person);
                     }
@@ -1302,7 +1461,29 @@ namespace RMuseum.Services.Implementation
 
                 await _context.SaveChangesAsync();
 
-                if (result == CorrectionReviewResult.Approved)
+                if (suggestion.Operation != PersonSuggestionOperation.Edit)
+                {
+                    string opWhat = suggestion.Operation == PersonSuggestionOperation.Merge ? "ادغام" : "تقسیم";
+                    if (result == CorrectionReviewResult.Approved)
+                    {
+                        await _notificationService.PushNotification(
+                            suggestion.UserId,
+                            $"تأیید پیشنهاد {opWhat} شخصیت",
+                            $"پیشنهاد شما برای {opWhat} شخصیت «{personName}» تأیید و اعمال شد. از این که به تکمیل اطلاعات گنجور کمک کردید سپاسگزاریم."
+                        );
+                    }
+                    else
+                    {
+                        await _notificationService.PushNotification(
+                            suggestion.UserId,
+                            $"رد پیشنهاد {opWhat} شخصیت",
+                            $"پیشنهاد شما برای {opWhat} شخصیت «{personName}» تأیید نشد." +
+                            (string.IsNullOrWhiteSpace(reviewNote) ? "" : $"{Environment.NewLine}یادداشت بازبین: «{reviewNote}»"),
+                            NotificationType.Warning
+                        );
+                    }
+                }
+                else if (result == CorrectionReviewResult.Approved)
                 {
                     await _notificationService.PushNotification(
                         suggestion.UserId,

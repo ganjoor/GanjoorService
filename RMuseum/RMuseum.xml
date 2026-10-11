@@ -2983,6 +2983,13 @@
             <param name="moderation"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.PreviewPersonEditSuggestionAsync(System.Int32)">
+            <summary>
+            what approving a merge/split person suggestion would do
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetRelationEvidenceAsync(System.Int32,System.Int32,System.Int32)">
             <summary>
             evidence rows of one kinship relation (the person window shows a preview and loads the rest from here)
@@ -5207,6 +5214,18 @@
             <inheritdoc />
         </member>
         <member name="M:RMuseum.Migrations.GanjoorRelatedPersonAliasesFieldAdded.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.EditPersonNewFields">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.EditPersonNewFields.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.EditPersonNewFields.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.EditPersonNewFields.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -9823,6 +9842,53 @@
             existing suggest/review UI and permissions are reused as-is.
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.Operation">
+            <summary>
+            what this suggestion asks for. For Merge and Split only the fields below, PersonId and SuggestionNote
+            (the reason, mandatory) matter; the Suggested* fields above are ignored.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.MergeIntoPersonId">
+            <summary>
+            Merge: the person that stays (PersonId is the duplicate that is merged into it and deleted).
+            Deliberately no foreign key, so it never blocks deleting a person.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SplitFromPoemId">
+            <summary>
+            Split: first poem (inclusive) of the part that belongs to the new person
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SplitFromCoupletIndex">
+            <summary>
+            Split: first couplet (inclusive) of SplitFromPoemId that belongs to the new person
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SplitToPoemId">
+            <summary>
+            Split: last poem (inclusive) of the part that belongs to the new person; null = up to the end of the book
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SplitToCoupletIndex">
+            <summary>
+            Split: last couplet (inclusive) of SplitToPoemId; null = the whole poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SplitNewName">
+            <summary>
+            Split: name of the new person (empty = same name)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SplitNewDescription">
+            <summary>
+            Split: description of the new person
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.ResultReport">
+            <summary>
+            Merge/Split: report of what the approved operation did
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestionNote">
             <summary>
             suggester's note to the moderator
@@ -12502,6 +12568,26 @@
             Person1 is a known ancestor of Person2 (directional) but the exact number of generations
             between them is not known/recorded - see GanjoorPersonRelation.DegreeHint for the case
             where the exact degree (e.g. "grandparent") IS known
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PersonSuggestionOperation">
+            <summary>
+            what a GanjoorPersonEditSuggestion asks for (deleting a person is the SuggestedForDeletion flag of an Edit suggestion)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonSuggestionOperation.Edit">
+            <summary>
+            edit the fields of the person (or delete it, see SuggestedForDeletion)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonSuggestionOperation.Merge">
+            <summary>
+            the person is a duplicate of MergeIntoPersonId
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonSuggestionOperation.Split">
+            <summary>
+            the person is really two people with the same name, see the Split* fields
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PoemGeoDateTag">
@@ -19550,6 +19636,13 @@
             <param name="reviewNote"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.PreviewPersonEditSuggestionAsync(System.Int32)">
+            <summary>
+            what approving a merge/split suggestion would do (a split runs as a dry run), for the moderator
+            </summary>
+            <param name="suggestionId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetRelationByIdAsync(System.Int32)">
             <summary>
             get a single kinship edge by its own id, with both sides' names resolved - used by
@@ -23382,6 +23475,16 @@
             </summary>
             <param name="suggestion"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._SuggestMergeOrSplitAsync(RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion)">
+            <summary>
+            validates and registers a suggestion to merge a person into another one or to split a person
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.PreviewPersonEditSuggestionAsync(System.Int32)">
+            <summary>
+            what approving a merge/split suggestion would do
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetNextUnreviewedPersonEditSuggestionAsync(System.Int32)">
             <summary>

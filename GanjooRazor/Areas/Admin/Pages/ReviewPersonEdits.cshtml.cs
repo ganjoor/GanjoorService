@@ -27,6 +27,11 @@ namespace GanjooRazor.Areas.Admin.Pages
         public GanjoorPersonEditSuggestion Suggestion { get; set; }
 
         /// <summary>
+        /// for merge/split suggestions: what approving them would do
+        /// </summary>
+        public string Preview { get; set; }
+
+        /// <summary>
         /// fatal error
         /// </summary>
         public string FatalError { get; set; }
@@ -127,6 +132,14 @@ namespace GanjooRazor.Areas.Admin.Pages
                     }
 
                     Suggestion = JsonConvert.DeserializeObject<GanjoorPersonEditSuggestion>(await nextResponse.Content.ReadAsStringAsync());
+
+                    if (Suggestion != null && Suggestion.Operation != PersonSuggestionOperation.Edit)
+                    {
+                        var previewResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/people/editsuggestions/{Suggestion.Id}/preview");
+                        Preview = previewResponse.IsSuccessStatusCode
+                            ? JsonConvert.DeserializeObject<string>(await previewResponse.Content.ReadAsStringAsync())
+                            : "پیش‌نمایش ممکن نشد: " + await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(previewResponse);
+                    }
 
                     return Page();
                 }

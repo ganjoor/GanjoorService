@@ -1481,11 +1481,20 @@ namespace RMuseum.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("MergeIntoPersonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Operation")
+                        .HasColumnType("int");
+
                     b.Property<int>("PersonId")
                         .HasColumnType("int");
 
                     b.Property<int>("Result")
                         .HasColumnType("int");
+
+                    b.Property<string>("ResultReport")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ReviewDate")
                         .HasColumnType("datetime2");
@@ -1498,6 +1507,24 @@ namespace RMuseum.Migrations
 
                     b.Property<Guid?>("ReviewerUserId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("SplitFromCoupletIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SplitFromPoemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SplitNewDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SplitNewName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SplitToCoupletIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SplitToPoemId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("SuggestedBirthLocationId")
                         .HasColumnType("int");

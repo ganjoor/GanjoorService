@@ -284,6 +284,23 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// what approving a merge/split person suggestion would do
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("editsuggestions/{id:int}/preview")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> PreviewPersonEditSuggestionAsync(int id)
+        {
+            var res = await _personService.PreviewPersonEditSuggestionAsync(id);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// evidence rows of one kinship relation (the person window shows a preview and loads the rest from here)
         /// </summary>
         /// <param name="relationId"></param>

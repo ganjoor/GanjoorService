@@ -139,6 +139,53 @@ namespace RMuseum.Models.Ganjoor
         public bool SuggestedForDeletion { get; set; }
 
         /// <summary>
+        /// what this suggestion asks for. For Merge and Split only the fields below, PersonId and SuggestionNote
+        /// (the reason, mandatory) matter; the Suggested* fields above are ignored.
+        /// </summary>
+        public PersonSuggestionOperation Operation { get; set; }
+
+        /// <summary>
+        /// Merge: the person that stays (PersonId is the duplicate that is merged into it and deleted).
+        /// Deliberately no foreign key, so it never blocks deleting a person.
+        /// </summary>
+        public int? MergeIntoPersonId { get; set; }
+
+        /// <summary>
+        /// Split: first poem (inclusive) of the part that belongs to the new person
+        /// </summary>
+        public int? SplitFromPoemId { get; set; }
+
+        /// <summary>
+        /// Split: first couplet (inclusive) of SplitFromPoemId that belongs to the new person
+        /// </summary>
+        public int? SplitFromCoupletIndex { get; set; }
+
+        /// <summary>
+        /// Split: last poem (inclusive) of the part that belongs to the new person; null = up to the end of the book
+        /// </summary>
+        public int? SplitToPoemId { get; set; }
+
+        /// <summary>
+        /// Split: last couplet (inclusive) of SplitToPoemId; null = the whole poem
+        /// </summary>
+        public int? SplitToCoupletIndex { get; set; }
+
+        /// <summary>
+        /// Split: name of the new person (empty = same name)
+        /// </summary>
+        public string SplitNewName { get; set; }
+
+        /// <summary>
+        /// Split: description of the new person
+        /// </summary>
+        public string SplitNewDescription { get; set; }
+
+        /// <summary>
+        /// Merge/Split: report of what the approved operation did
+        /// </summary>
+        public string ResultReport { get; set; }
+
+        /// <summary>
         /// suggester's note to the moderator
         /// </summary>
         public string SuggestionNote { get; set; }
