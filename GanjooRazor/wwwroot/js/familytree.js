@@ -582,28 +582,100 @@
             tx = svgWidth / 2 - focus.x;
             ty = svgHeight / 2 - focus.y;
         }
-        var dragging = false, lastX = 0, lastY = 0;
+        var dragging = false, lastX = 0, lastY = 0, dragMoved = 0;
+        var pinching = false, pinchStartDist = 1, pinchStartScale = 1;
+        var pointers = {};
+        var MIN_SCALE = 0.2, MAX_SCALE = 3;
+
+        // Pointer Events cover mouse, touch and pen: one finger pans, two fingers pinch-zoom. The graph
+        // handles every gesture itself, so the browser must not scroll/zoom the page underneath it.
+        svg.style.touchAction = 'none';
+        svg.style.userSelect = 'none';
+        svg.style.webkitUserSelect = 'none';
 
         function applyTransform() {
             canvas.setAttribute('transform', 'translate(' + tx + ',' + ty + ') scale(' + scale + ')');
         }
 
-        svg.addEventListener('mousedown', function (e) {
-            dragging = true; lastX = e.clientX; lastY = e.clientY;
-            svg.style.cursor = 'grabbing';
+        // zoom keeping the tree point under (clientX, clientY) where it is
+        function zoomAt(clientX, clientY, newScale) {
+            newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale));
+            var rect = svg.getBoundingClientRect();
+            var px = clientX - rect.left, py = clientY - rect.top;
+            var k = newScale / scale;
+            tx = px - (px - tx) * k;
+            ty = py - (py - ty) * k;
+            scale = newScale;
+            applyTransform();
+        }
+
+        function pointerCount() { return Object.keys(pointers).length; }
+
+        function pinchInfo() {
+            var ids = Object.keys(pointers);
+            var a = pointers[ids[0]], b = pointers[ids[1]];
+            return { dist: Math.max(1, Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y))), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 };
+        }
+
+        svg.addEventListener('pointerdown', function (e) {
+            if (e.pointerType === 'mouse' && e.button !== 0) return;
+            pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
+            if (pointerCount() === 1) {
+                dragging = true; dragMoved = 0; lastX = e.clientX; lastY = e.clientY;
+                svg.style.cursor = 'grabbing';
+            } else if (pointerCount() === 2) {
+                dragging = false;
+                pinching = true;
+                var p = pinchInfo();
+                pinchStartDist = p.dist; pinchStartScale = scale;
+                lastX = p.cx; lastY = p.cy;
+                dragMoved = 100; // a pinch is never a tap on a person box
+            }
         });
-        window.addEventListener('mouseup', function () { dragging = false; svg.style.cursor = 'grab'; });
-        window.addEventListener('mousemove', function (e) {
-            if (!dragging) return;
-            tx += (e.clientX - lastX); ty += (e.clientY - lastY);
+        window.addEventListener('pointermove', function (e) {
+            if (pointers[e.pointerId]) {
+                pointers[e.pointerId].x = e.clientX;
+                pointers[e.pointerId].y = e.clientY;
+            }
+            if (pinching && pointerCount() >= 2) {
+                var pi = pinchInfo();
+                zoomAt(pi.cx, pi.cy, pinchStartScale * pi.dist / pinchStartDist);
+                tx += pi.cx - lastX; ty += pi.cy - lastY;
+                lastX = pi.cx; lastY = pi.cy;
+                applyTransform();
+                return;
+            }
+            if (!dragging || !pointers[e.pointerId]) return;
+            var dx = e.clientX - lastX, dy = e.clientY - lastY;
+            dragMoved += Math.abs(dx) + Math.abs(dy);
+            tx += dx; ty += dy;
             lastX = e.clientX; lastY = e.clientY;
             applyTransform();
         });
+        function endPointer(e) {
+            delete pointers[e.pointerId];
+            if (pointerCount() < 2) pinching = false;
+            if (pointerCount() === 0) {
+                dragging = false;
+                svg.style.cursor = 'grab';
+            } else if (pointerCount() === 1) {
+                // one finger lifted after a pinch: keep panning with the other one
+                var rest = pointers[Object.keys(pointers)[0]];
+                dragging = true; lastX = rest.x; lastY = rest.y;
+            }
+        }
+        window.addEventListener('pointerup', endPointer);
+        window.addEventListener('pointercancel', endPointer);
+
+        // a pan/pinch that happens to end on a person's box is not a tap on it: swallow that click
+        // before it reaches the box (capture phase, so it runs ahead of the box's own handler)
+        svg.addEventListener('click', function (e) {
+            if (dragMoved > 8) { e.stopPropagation(); dragMoved = 0; }
+        }, true);
+
         svg.addEventListener('wheel', function (e) {
             e.preventDefault();
-            var factor = e.deltaY < 0 ? 1.1 : 0.9;
-            scale = Math.min(3, Math.max(0.2, scale * factor));
-            applyTransform();
+            zoomAt(e.clientX, e.clientY, scale * (e.deltaY < 0 ? 1.1 : 0.9));
         }, { passive: false });
         svg.style.cursor = 'grab';
         applyTransform();
