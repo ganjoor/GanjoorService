@@ -1,4 +1,4 @@
-@page "{id:int}"
+﻿@page "{id:int}"
 @model GanjooRazor.Pages.PersonWindowModel
 @using DNTPersianUtils.Core
 @{
@@ -16,6 +16,7 @@ else
             @if (Model.LoggedIn)
             {
                 <a href="/User/SuggestPersonEdit?id=@Model.Person.Id" class="up-icon-btn" title="پیشنهاد ویرایش این نامبرده" aria-label="پیشنهاد ویرایش این نامبرده">✎</a>
+                <a href="/User/SuggestPersonMergeSplit?id=@Model.Person.Id" class="up-icon-btn" title="پیشنهاد ادغام (نامبردهٔ تکراری) یا تقسیم (دو نفر همنام)" aria-label="پیشنهاد ادغام یا تقسیم این نامبرده">⇄</a>
             }
         </h2>
 

@@ -1,0 +1,110 @@
+﻿@page
+@model GanjooRazor.Areas.User.Pages.SuggestPersonMergeSplitModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_UserPanelLayout";
+    ViewData["Title"] = "پیشنهاد ادغام یا تقسیم نامبرده";
+    await GanjooRazor.Utils.GanjoorSessionChecker.ApplyPermissionsToViewData(Request, Response, ViewData);
+}
+@if (!string.IsNullOrEmpty(Model.LastError))
+{
+    <div class="up-alert up-alert--danger">@Model.LastError</div>
+}
+else
+{
+    <div class="up-page-header">
+        <h1>ادغام یا تقسیم: @Model.Person.Name</h1>
+    </div>
+
+    <p class="up-hint">
+        این پیشنهادها مستقیماً اعمال نمی‌شوند؛ مدیران پس از بررسی (و دیدن پیش‌نمایش تغییرات) تصمیم می‌گیرند.
+        نوشتن دلیل برای هر دو پیشنهاد الزامی است.
+    </p>
+
+    @if (!string.IsNullOrEmpty(Model.LastResult))
+    {
+        <p class="up-alert">@Model.LastResult</p>
+    }
+
+    <datalist id="people-list">
+        @foreach (var person in Model.People)
+        {
+            <option value="@person.Name (@person.Id)"></option>
+        }
+    </datalist>
+
+    <div class="up-card">
+        <h2>این نامبرده تکراری است</h2>
+        <p>اگر «@Model.Person.Name» در واقع همان شخصیتی است که با نام یا شکل دیگری ثبت شده، آن شخصیت را انتخاب کنید. همهٔ برچسب‌ها و نسبت‌های این نامبرده به او منتقل و این نامبرده حذف می‌شود.</p>
+        <form method="post" action="/User/SuggestPersonMergeSplit?id=@Model.Person.Id&amp;handler=Merge">
+            @Html.AntiForgeryToken()
+            <table>
+                <tr>
+                    <td>شخصیت ماندگار:</td>
+                    <td><input type="text" name="MergeTarget" list="people-list" size="40" autocomplete="off" /></td>
+                </tr>
+                <tr>
+                    <td>دلیل:</td>
+                    <td><textarea name="Reason" rows="3" cols="60"></textarea></td>
+                </tr>
+            </table>
+            <input type="submit" value="ثبت پیشنهاد ادغام" class="up-btn up-btn--danger" />
+        </form>
+    </div>
+
+    <div class="up-card">
+        <h2>این نامبرده در واقع دو نفر همنام است</h2>
+        @if (Model.Tags.Count == 0)
+        {
+            <p class="up-hint">این نامبرده هنوز در شعری برچسب نخورده است، پس تقسیم او ممکن نیست.</p>
+        }
+        else
+        {
+            <p>نخستین بیتی را انتخاب کنید که دیگر دربارهٔ همین نامبرده نیست و دربارهٔ شخص دیگری است. همهٔ برچسب‌ها، نسبت‌ها و وابستگی‌هایی که از آن بیت به بعد (در همان کتاب) آمده‌اند به شخصیت تازه می‌روند. اگر بخش دوم پیش از پایان کتاب تمام می‌شود، بیت پایان را هم انتخاب کنید.</p>
+            <form method="post" action="/User/SuggestPersonMergeSplit?id=@Model.Person.Id&amp;handler=Split">
+                @Html.AntiForgeryToken()
+                <table>
+                    <tr>
+                        <td>آغاز بخش دوم:</td>
+                        <td>
+                            <select name="SplitFrom">
+                                <option value="">— انتخاب کنید —</option>
+                                @foreach (var tag in Model.Tags)
+                                {
+                                    <option value="@tag.PoemId|@tag.CoupletIndex">@tag.Poem.FullTitle — بیت @(tag.CoupletIndex + 1)@(string.IsNullOrEmpty(tag.CoupletText) ? "" : " — " + (tag.CoupletText.Length > 60 ? tag.CoupletText.Substring(0, 60) + "…" : tag.CoupletText))</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>پایان بخش دوم (اختیاری):</td>
+                        <td>
+                            <select name="SplitTo">
+                                <option value="">تا پایان کتاب</option>
+                                @foreach (var tag in Model.Tags)
+                                {
+                                    <option value="@tag.PoemId|@tag.CoupletIndex">@tag.Poem.FullTitle — بیت @(tag.CoupletIndex + 1)</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>نام شخصیت تازه (اگر متفاوت است):</td>
+                        <td><input type="text" name="SplitNewName" size="40" /></td>
+                    </tr>
+                    <tr>
+                        <td>توضیح شخصیت تازه:</td>
+                        <td><input type="text" name="SplitNewDescription" size="60" /></td>
+                    </tr>
+                    <tr>
+                        <td>دلیل:</td>
+                        <td><textarea name="Reason" rows="3" cols="60"></textarea></td>
+                    </tr>
+                </table>
+                <input type="submit" value="ثبت پیشنهاد تقسیم" class="up-btn up-btn--danger" />
+            </form>
+        }
+    </div>
+
+    <p><a href="javascript:void(0)" onclick="PersonWindow.open(@Model.Person.Id)">بازگشت به اطلاعات @Model.Person.Name</a></p>
+}
