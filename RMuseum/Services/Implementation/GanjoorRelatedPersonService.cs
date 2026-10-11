@@ -1388,6 +1388,23 @@ namespace RMuseum.Services.Implementation
                 tag.PersonId = null;
             }
 
+            // poem-correction person tags (GanjoorPoemGeoDateTagCorrection.PersonId, Restrict FK) that
+            // name this person: a still-undecided tag can no longer be applied, so it is rejected with
+            // a note (this also lets its parent poem correction be moderated, which requires every tag
+            // to have a decision); in all cases the reference is cleared and the row kept for history
+            var tagCorrections = await _context.Set<GanjoorPoemGeoDateTagCorrection>()
+                .Where(t => t.PersonId == person.Id)
+                .ToListAsync();
+            foreach (var tagCorrection in tagCorrections)
+            {
+                if (tagCorrection.Result == CorrectionReviewResult.NotReviewed)
+                {
+                    tagCorrection.Result = CorrectionReviewResult.RejectedBecauseUnnecessaryChange;
+                    tagCorrection.ReviewNote = "این شخصیت حذف شد.";
+                }
+                tagCorrection.PersonId = null;
+            }
+
             // any other still-pending edit suggestion FOR this same person (not the one being
             // approved right now, which the caller updates separately) is moot once the person is
             // gone - same auto-reject treatment
