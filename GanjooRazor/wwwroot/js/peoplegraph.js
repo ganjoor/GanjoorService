@@ -88,7 +88,7 @@
 
         if (!container || !svg || !data || !data.nodes || data.nodes.length === 0) return;
 
-        var W = Math.max(container.clientWidth, 600);
+        var W = Math.max(container.clientWidth, 320);
         var H = Math.max(container.clientHeight, 500);
 
         // --- build simulation state -----------------------------------------------------------
@@ -450,6 +450,8 @@
         nodeEls.forEach(function (item) {
             item.el.addEventListener('click', function (evt) {
                 evt.stopPropagation();
+                // a click that ends a drag of the node is not a selection
+                if (suppressClick) { suppressClick = false; return; }
                 if (focusedIds && focusedIds[item.node.id] && Object.keys(focusedIds).length <= (item.node.degree + 1)) {
                     // clicking an already-focused node again clears the focus (toggle)
                     clearFocus();
@@ -475,10 +477,22 @@
             });
         }
 
-        // --- drag to reposition (pins the node; double-click releases it) ------------------------
-        var draggingNode = null;
+        // --- drag to reposition (pins the node; double-click / double-tap releases it) ---------------
+        // Pointer Events cover mouse, touch and pen with one code path: one finger on the background
+        // pans, two fingers pinch-zoom (and pan), one finger on a node drags it.
+        var draggingNode = null, dragPointerId = null, dragStartX = 0, dragStartY = 0, dragStarted = false;
         var panDragging = false, lastX = 0, lastY = 0;
+        var pinching = false, pinchStartDist = 1, pinchStartScale = 1;
         var scale = 1, tx = 0, ty = 0;
+        var pointers = {};
+        var suppressClick = false;
+        var lastTap = { id: null, t: 0 };
+        var MIN_SCALE = 0.2, MAX_SCALE = 3;
+
+        // the graph handles every gesture itself, so the browser must not scroll/zoom the page under it
+        svg.style.touchAction = 'none';
+        svg.style.userSelect = 'none';
+        svg.style.webkitUserSelect = 'none';
 
         function applyTransform() {
             canvas.setAttribute('transform', 'translate(' + tx + ',' + ty + ') scale(' + scale + ')');
@@ -492,47 +506,135 @@
             };
         }
 
+        // zoom keeping the graph point under (clientX, clientY) where it is
+        function zoomAt(clientX, clientY, newScale) {
+            newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, newScale));
+            var rect = svg.getBoundingClientRect();
+            var px = clientX - rect.left, py = clientY - rect.top;
+            var k = newScale / scale;
+            tx = px - (px - tx) * k;
+            ty = py - (py - ty) * k;
+            scale = newScale;
+            applyTransform();
+        }
+
+        function pointerCount() { return Object.keys(pointers).length; }
+
+        function pinchInfo() {
+            var ids = Object.keys(pointers);
+            var a = pointers[ids[0]], b = pointers[ids[1]];
+            return { dist: Math.max(1, Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y))), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 };
+        }
+
+        function releaseNode(node) {
+            node.fx = null; node.fy = null;
+            alpha = Math.max(alpha, 0.3);
+            ensureRunning();
+        }
+
         nodeEls.forEach(function (item) {
-            item.el.addEventListener('mousedown', function (evt) {
+            item.el.addEventListener('pointerdown', function (evt) {
+                if (evt.pointerType === 'mouse' && evt.button !== 0) return;
+                // a second finger landing on a node while another gesture is under way is part of that gesture
+                if (pointerCount() > 0 || draggingNode) return;
                 evt.stopPropagation();
+                pointers[evt.pointerId] = { x: evt.clientX, y: evt.clientY };
                 draggingNode = item.node;
+                dragPointerId = evt.pointerId;
+                dragStartX = evt.clientX; dragStartY = evt.clientY;
+                dragStarted = false;
             });
             item.el.addEventListener('dblclick', function (evt) {
                 evt.stopPropagation();
-                item.node.fx = null; item.node.fy = null;
-                alpha = Math.max(alpha, 0.3);
-                ensureRunning();
+                releaseNode(item.node);
             });
         });
 
-        svg.addEventListener('mousedown', function (evt) {
+        svg.addEventListener('pointerdown', function (evt) {
+            if (evt.pointerType === 'mouse' && evt.button !== 0) return;
+            pointers[evt.pointerId] = { x: evt.clientX, y: evt.clientY };
             if (draggingNode) return;
-            panDragging = true; lastX = evt.clientX; lastY = evt.clientY;
-            svg.style.cursor = 'grabbing';
+            if (pointerCount() === 1) {
+                panDragging = true; lastX = evt.clientX; lastY = evt.clientY;
+                svg.style.cursor = 'grabbing';
+            } else if (pointerCount() === 2) {
+                panDragging = false;
+                pinching = true;
+                var p = pinchInfo();
+                pinchStartDist = p.dist; pinchStartScale = scale;
+                lastX = p.cx; lastY = p.cy;
+            }
         });
-        window.addEventListener('mousemove', function (evt) {
+
+        window.addEventListener('pointermove', function (evt) {
+            if (pointers[evt.pointerId]) {
+                pointers[evt.pointerId].x = evt.clientX;
+                pointers[evt.pointerId].y = evt.clientY;
+            }
             if (draggingNode) {
+                if (evt.pointerId !== dragPointerId) return;
+                // a finger always jitters a little: only a real movement turns a tap into a drag (and pins the node)
+                if (!dragStarted) {
+                    var mx = evt.clientX - dragStartX, my = evt.clientY - dragStartY;
+                    if (mx * mx + my * my < 36) return;
+                    dragStarted = true;
+                }
                 var p = svgPoint(evt);
                 draggingNode.fx = p.x; draggingNode.fy = p.y;
                 draggingNode.x = p.x; draggingNode.y = p.y;
                 if (alpha < 0.05) { alpha = 0.05; ensureRunning(); }
                 return;
             }
-            if (!panDragging) return;
+            if (pinching && pointerCount() >= 2) {
+                var pi = pinchInfo();
+                zoomAt(pi.cx, pi.cy, pinchStartScale * pi.dist / pinchStartDist);
+                tx += pi.cx - lastX; ty += pi.cy - lastY;
+                lastX = pi.cx; lastY = pi.cy;
+                applyTransform();
+                return;
+            }
+            if (!panDragging || !pointers[evt.pointerId]) return;
             tx += (evt.clientX - lastX); ty += (evt.clientY - lastY);
             lastX = evt.clientX; lastY = evt.clientY;
             applyTransform();
         });
-        window.addEventListener('mouseup', function () {
-            draggingNode = null;
-            panDragging = false;
-            svg.style.cursor = 'grab';
-        });
+
+        function endPointer(evt) {
+            delete pointers[evt.pointerId];
+            if (draggingNode && evt.pointerId === dragPointerId) {
+                if (dragStarted) {
+                    // the click the browser sends after a drag must not select/deselect the node
+                    suppressClick = true;
+                    setTimeout(function () { suppressClick = false; }, 0);
+                } else if (evt.type === 'pointerup') {
+                    // double-tap releases a pinned node (touch screens have no dblclick on SVG nodes)
+                    var now = Date.now();
+                    if (lastTap.id === draggingNode.id && now - lastTap.t < 350) {
+                        releaseNode(draggingNode);
+                        lastTap = { id: null, t: 0 };
+                    } else {
+                        lastTap = { id: draggingNode.id, t: now };
+                    }
+                }
+                draggingNode = null;
+                dragPointerId = null;
+            }
+            if (pointerCount() < 2) pinching = false;
+            if (pointerCount() === 0) {
+                panDragging = false;
+                svg.style.cursor = 'grab';
+            } else if (pointerCount() === 1 && !draggingNode) {
+                // one finger lifted after a pinch: keep panning with the other one
+                var rest = pointers[Object.keys(pointers)[0]];
+                panDragging = true; lastX = rest.x; lastY = rest.y;
+            }
+        }
+        window.addEventListener('pointerup', endPointer);
+        window.addEventListener('pointercancel', endPointer);
+
         svg.addEventListener('wheel', function (evt) {
             evt.preventDefault();
-            var factor = evt.deltaY < 0 ? 1.1 : 0.9;
-            scale = Math.min(3, Math.max(0.2, scale * factor));
-            applyTransform();
+            zoomAt(evt.clientX, evt.clientY, scale * (evt.deltaY < 0 ? 1.1 : 0.9));
         }, { passive: false });
         svg.style.cursor = 'grab';
 
