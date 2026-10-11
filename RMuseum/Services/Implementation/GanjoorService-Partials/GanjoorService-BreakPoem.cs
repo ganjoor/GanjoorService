@@ -767,10 +767,6 @@ namespace RMuseum.Services.Implementation
             foreach (var evidence in affiliationEvidences)
                 evidence.PoemId = toPoemId;
 
-            var translations = await context.Set<GanjoorPoemTranslation>().Where(t => t.PoemId == fromPoemId).ToListAsync();
-            foreach (var translation in translations)
-                translation.PoemId = toPoemId;
-
             var cachedRelatedPoems = await context.GanjoorCachedRelatedPoems.Where(c => c.PoemId == fromPoemId).ToListAsync();
             foreach (var cached in cachedRelatedPoems)
                 cached.PoemId = toPoemId;
