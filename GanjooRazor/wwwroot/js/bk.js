@@ -2917,13 +2917,27 @@ function setupPersonAutocomplete(searchInput, hiddenInput, resultsBox, people, o
         var id = parseInt(hiddenInput.value, 10);
         if (id) PersonWindow.open(id);
     });
+    // and the 🌳 family tree of the picked person, right beside it
+    var treeLink = document.createElement('a');
+    treeLink.href = 'javascript:void(0)';
+    treeLink.className = 'up-icon-btn';
+    treeLink.title = 'مشاهدهٔ شجره‌نامهٔ این شخصیت';
+    treeLink.setAttribute('aria-label', 'مشاهدهٔ شجره‌نامهٔ این شخصیت');
+    treeLink.style.marginRight = '4px';
+    treeLink.textContent = '🌳';
+    treeLink.addEventListener('click', function () {
+        var id = parseInt(hiddenInput.value, 10);
+        if (id) FamilyTreeWindow.open(id);
+    });
     if (searchInput.parentNode) {
         searchInput.parentNode.insertBefore(viewLink, searchInput.nextSibling);
+        searchInput.parentNode.insertBefore(treeLink, viewLink.nextSibling);
     }
 
     function updateViewLink() {
         var id = parseInt(hiddenInput.value, 10);
         viewLink.style.display = id ? 'inline' : 'none';
+        treeLink.style.display = id ? 'inline' : 'none';
     }
     updateViewLink(); // the hidden input may already carry a value set by the server (editing/correcting an existing pick)
 
