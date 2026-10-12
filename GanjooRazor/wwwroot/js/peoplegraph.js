@@ -174,14 +174,29 @@
 
         // --- build simulation state -----------------------------------------------------------
         var nodesById = {};
-        var nodes = data.nodes.map(function (n) {
+        // deterministic start: the best-connected people go first on a sunflower spiral around the centre,
+        // so the same data always settles into the same picture, centred in the view (no Math.random)
+        var order = data.nodes.map(function (n, i) { return i; });
+        var degreeOf = {};
+        (data.edges || []).forEach(function (e) {
+            degreeOf[e.person1Id] = (degreeOf[e.person1Id] || 0) + 1;
+            degreeOf[e.person2Id] = (degreeOf[e.person2Id] || 0) + 1;
+        });
+        order.sort(function (a, b) {
+            var da = degreeOf[data.nodes[a].id] || 0, db = degreeOf[data.nodes[b].id] || 0;
+            return (db - da) || (a - b);
+        });
+        var startRank = {};
+        order.forEach(function (idx, rank) { startRank[idx] = rank; });
+        var nodes = data.nodes.map(function (n, idx) {
+            var rank = startRank[idx];
             var node = {
                 id: n.id, name: n.name, hasFamilyTree: n.hasFamilyTree, importance: n.importance || 0,
                 // absent on the whole-site graph payload (always directly tagged there) - default true
                 directlyTagged: n.directlyTagged !== false,
                 allusionOnly: !!n.allusionOnly,
-                x: W / 2 + (Math.random() - 0.5) * W * 0.6,
-                y: H / 2 + (Math.random() - 0.5) * H * 0.6,
+                x: W / 2 + 22 * Math.sqrt(rank + 0.5) * Math.cos(rank * 2.399963),
+                y: H / 2 + 22 * Math.sqrt(rank + 0.5) * Math.sin(rank * 2.399963),
                 vx: 0, vy: 0, fx: null, fy: null, degree: 0
             };
             nodesById[n.id] = node;
@@ -203,17 +218,20 @@
         var REPULSION = 2600;
         var SPRING_LENGTH = 110;
         var SPRING_K = 0.02;
-        var CENTER_K = 0.01;
+        var CENTER_K = 0.03;
         var DAMPING = 0.82;
         var alpha = 1, alphaDecay = 0.985, alphaMin = 0.005;
+
+        // only what is currently shown takes part in the simulation (filters / "only named" hide the rest)
+        var simNodes = nodes, simEdges = edges;
 
         function tick() {
             if (alpha < alphaMin) return false;
 
             // mutual repulsion - O(n^2), fine for a few hundred nodes
-            for (var i = 0; i < nodes.length; i++) {
-                for (var j = i + 1; j < nodes.length; j++) {
-                    var a = nodes[i], b = nodes[j];
+            for (var i = 0; i < simNodes.length; i++) {
+                for (var j = i + 1; j < simNodes.length; j++) {
+                    var a = simNodes[i], b = simNodes[j];
                     var dx = a.x - b.x, dy = a.y - b.y;
                     var distSq = dx * dx + dy * dy || 0.01;
                     var dist = Math.sqrt(distSq);
@@ -225,7 +243,7 @@
             }
 
             // spring attraction along edges
-            edges.forEach(function (e) {
+            simEdges.forEach(function (e) {
                 var dx = e.target.x - e.source.x, dy = e.target.y - e.source.y;
                 var dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
                 var force = SPRING_K * (dist - SPRING_LENGTH) * alpha;
@@ -235,12 +253,12 @@
             });
 
             // light centering so the whole graph doesn't drift off-canvas
-            nodes.forEach(function (n) {
+            simNodes.forEach(function (n) {
                 n.vx += (W / 2 - n.x) * CENTER_K * alpha;
                 n.vy += (H / 2 - n.y) * CENTER_K * alpha;
             });
 
-            nodes.forEach(function (n) {
+            simNodes.forEach(function (n) {
                 if (n.fx != null) { n.x = n.fx; n.y = n.fy; n.vx = 0; n.vy = 0; return; }
                 n.vx *= DAMPING; n.vy *= DAMPING;
                 n.x += n.vx; n.y += n.vy;
@@ -351,18 +369,72 @@
         }
 
         // --- table + legend ----------------------------------------------------------------------
+        // kinds switched off by the filters ('Relation:0' -> true)
+        var hiddenKinds = {};
+        var usedKeys = {};
+        edges.forEach(function (e) { usedKeys[kindKey(e.raw)] = e.meta; });
+        var legendItems = {};
+
+        function refreshLegendState() {
+            Object.keys(legendItems).forEach(function (k) {
+                var off = !!hiddenKinds[k];
+                legendItems[k].style.opacity = off ? 0.4 : 1;
+                legendItems[k].style.textDecoration = off ? 'line-through' : 'none';
+            });
+        }
+
         function buildLegend() {
             if (!legend) return;
-            var usedKeys = {};
-            edges.forEach(function (e) { usedKeys[kindKey(e.raw)] = e.meta; });
             legend.innerHTML = '';
             Object.keys(usedKeys).forEach(function (k) {
                 var meta = usedKeys[k];
                 var item = document.createElement('span');
                 item.className = 'pg-legend-item';
+                item.style.cursor = 'pointer';
+                item.title = 'نمایش/پنهان‌کردن این نوع ارتباط';
                 item.innerHTML = '<span class="pg-legend-swatch" style="background:' + meta.color + '"></span>' + escapeHtml(meta.label);
+                item.addEventListener('click', function () {
+                    if (hiddenKinds[k]) delete hiddenKinds[k]; else hiddenKinds[k] = true;
+                    refilter();
+                });
                 legend.appendChild(item);
+                legendItems[k] = item;
             });
+
+            // quick groups + re-centre, above the legend
+            if (legend.parentNode) {
+                var old = legend.previousSibling;
+                if (old && old.className === 'pg-filterbar') old.parentNode.removeChild(old);
+                var bar = document.createElement('div');
+                bar.className = 'pg-filterbar';
+                bar.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center;';
+                function mk(label, title, fn) {
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'up-btn up-btn--ghost up-btn--sm';
+                    b.textContent = label;
+                    b.title = title;
+                    b.addEventListener('click', fn);
+                    bar.appendChild(b);
+                }
+                function only(category) {
+                    hiddenKinds = {};
+                    Object.keys(usedKeys).forEach(function (k) {
+                        if (k.indexOf(category + ':') !== 0) hiddenKinds[k] = true;
+                    });
+                    refilter();
+                }
+                mk('همه', 'نمایش همهٔ ارتباط‌ها', function () { hiddenKinds = {}; refilter(); });
+                mk('فقط خویشاوندی', 'پدر/مادر، فرزند، همسر، خواهر/برادر، نیا', function () { only('Relation'); });
+                mk('فقط غیرخویشاوندی', 'وزیر، دوست، دشمن، حامی و ...', function () { only('Affiliation'); });
+                mk('⌖ وسط‌چین', 'قرار دادن نمودار در مرکز و متناسب با قاب', function () { recenter(); fitView(); });
+                var hint = document.createElement('small');
+                hint.style.color = '#888';
+                hint.textContent = 'با کلیک روی هر نوع در راهنما می‌توانید آن را نمایش یا پنهان کنید';
+                bar.appendChild(hint);
+                legend.parentNode.insertBefore(bar, legend);
+            }
+            refreshLegendState();
         }
 
         // --- selected-person bar ------------------------------------------------------------------
@@ -466,6 +538,7 @@
             var set = { };
             set[personId] = true;
             edges.forEach(function (e) {
+                if (e.hidden) return;
                 if (e.source.id === personId) set[e.target.id] = true;
                 if (e.target.id === personId) set[e.source.id] = true;
             });
@@ -495,10 +568,10 @@
         // verses - i.e. the relatives/affiliates drawn only as one-hop context
         var onlyNamedBox = opts.onlyNamedCheckboxId ? document.getElementById(opts.onlyNamedCheckboxId) : null;
         function isHiddenNode(n) {
-            return !!(onlyNamedBox && onlyNamedBox.checked && !n.directlyTagged && !n.allusionOnly);
+            return !!n.kindHidden || !!(onlyNamedBox && onlyNamedBox.checked && !n.directlyTagged && !n.allusionOnly);
         }
         if (onlyNamedBox) {
-            onlyNamedBox.addEventListener('change', function () { applyFocus(); });
+            onlyNamedBox.addEventListener('change', function () { refilter(); });
         }
 
         function applyFocus() {
@@ -510,12 +583,12 @@
             edgeEls.forEach(function (item) {
                 var dim = focusedIds && !(focusedIds[item.edge.source.id] && focusedIds[item.edge.target.id]);
                 item.el.style.opacity = dim ? 0.05 : 0.55;
-                item.el.style.display = (isHiddenNode(item.edge.source) || isHiddenNode(item.edge.target)) ? 'none' : '';
+                item.el.style.display = (item.edge.hidden || isHiddenNode(item.edge.source) || isHiddenNode(item.edge.target)) ? 'none' : '';
             });
             tableRows.forEach(function (tr, idx) {
                 var e = edges[idx];
                 var dim = focusedIds && !(focusedIds[e.source.id] && focusedIds[e.target.id]);
-                tr.style.display = (dim || isHiddenNode(e.source) || isHiddenNode(e.target)) ? 'none' : '';
+                tr.style.display = (dim || e.hidden || isHiddenNode(e.source) || isHiddenNode(e.target)) ? 'none' : '';
             });
             // the people table follows the search/selection: only the searched or clicked people themselves
             // (not their neighbours) stay, so their poem links are right there
@@ -728,7 +801,71 @@
                 // let the layout re-centre itself on the new size
                 alpha = Math.max(alpha, 0.2);
                 ensureRunning();
+                recenter();
+                fitView();
             });
+        }
+
+        // --- deterministic layout helpers ---------------------------------------------------------
+        // run the simulation synchronously so the first paint is already the settled picture
+        function settle(maxTicks) {
+            var cap = simNodes.length > 800 ? 60 : simNodes.length > 400 ? 120 : maxTicks;
+            for (var i = 0; i < cap; i++) { if (!tick()) break; }
+        }
+
+        // move the whole picture so its centre of mass sits in the middle of the canvas
+        function recenter() {
+            if (simNodes.length === 0) return;
+            var sx = 0, sy = 0;
+            simNodes.forEach(function (n) { sx += n.x; sy += n.y; });
+            var dx = W / 2 - sx / simNodes.length, dy = H / 2 - sy / simNodes.length;
+            simNodes.forEach(function (n) {
+                n.x += dx; n.y += dy;
+                if (n.fx != null) { n.fx += dx; n.fy += dy; }
+            });
+            applyPositions();
+        }
+
+        // zoom/pan so every visible node is inside the frame (never zoomed in beyond 1:1)
+        function fitView() {
+            if (simNodes.length === 0) return;
+            var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            simNodes.forEach(function (n) {
+                if (n.x < minX) minX = n.x; if (n.x > maxX) maxX = n.x;
+                if (n.y < minY) minY = n.y; if (n.y > maxY) maxY = n.y;
+            });
+            var margin = 50;
+            var bw = Math.max(maxX - minX, 1) + margin * 2, bh = Math.max(maxY - minY, 1) + margin * 2;
+            var s = Math.min(1, W / bw, H / bh);
+            scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
+            tx = W / 2 - ((minX + maxX) / 2) * scale;
+            ty = H / 2 - ((minY + maxY) / 2) * scale;
+            applyTransform();
+        }
+
+        function rebuildSim() {
+            simNodes = nodes.filter(function (n) { return !isHiddenNode(n); });
+            simEdges = edges.filter(function (e) { return !e.hidden && !isHiddenNode(e.source) && !isHiddenNode(e.target); });
+        }
+
+        // a kind filter / "only named" change: recompute what is visible, re-settle and re-centre
+        function refilter() {
+            var any = Object.keys(hiddenKinds).length > 0;
+            nodes.forEach(function (n) { n.visEdges = 0; });
+            edges.forEach(function (e) {
+                e.hidden = !!hiddenKinds[kindKey(e.raw)];
+                if (!e.hidden) { e.source.visEdges++; e.target.visEdges++; }
+            });
+            nodes.forEach(function (n) { n.kindHidden = any && n.visEdges === 0; });
+            rebuildSim();
+            refreshLegendState();
+            alpha = 0.8;
+            settle(250);
+            recenter();
+            fitView();
+            applyFocus();
+            applyPositions();
+            ensureRunning();
         }
 
         // --- animation loop -----------------------------------------------------------------------
@@ -751,6 +888,12 @@
         buildLegend();
         buildTable();
         buildPeopleTable();
+        // first paint = settled, centred and fitted picture; the same data gives the same picture
+        rebuildSim();
+        alpha = 1;
+        settle(300);
+        recenter();
+        fitView();
         applyFocus();
         applyPositions();
         ensureRunning();
