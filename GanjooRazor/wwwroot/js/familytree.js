@@ -110,6 +110,54 @@
             if (sorted.length > 2) extraParentsOf[childId] = sorted.slice(2);
         });
 
+        // The recorded Parent/Ancestor edges are NOT guaranteed to be acyclic: a legendary person who is
+        // really two namesakes merged into one (a Kayanid and a Sasanian "Kavad", say), or one wrong
+        // Ancestor edge, closes a loop (A -> ... -> A). Everything below walks parent -> child and used to
+        // recurse forever, and since the chart shows the whole connected component, one such loop broke
+        // the chart for every person connected to it. Each loop is cut at one edge: Ancestor edges (a
+        // looser claim than Parent) are cut in preference, then the lowest child id for determinism. The
+        // child of the cut edge becomes a chart root of its own, and every parent recorded for it is still
+        // drawn, as a plain connector (see unattachedSecondaryParents), so no relation silently disappears.
+        var ancestorOnlyEdge = {}; // 'parent:child' -> true when every recorded edge in that direction is an Ancestor one
+        (data.relations || []).forEach(function (r) {
+            if (r.relationType !== 0 && r.relationType !== 3) return;
+            var k = r.person1Id + ':' + r.person2Id;
+            if (r.relationType === 3) { if (ancestorOnlyEdge[k] === undefined) ancestorOnlyEdge[k] = true; }
+            else ancestorOnlyEdge[k] = false;
+        });
+        var cutLinks = []; // [{parentId, childId}] - drawn later as plain connectors
+        (function breakParentCycles() {
+            var state = {}; // undefined = unseen, 1 = on the current walk, 2 = done
+            allIds.forEach(function (startId) {
+                var path = [];
+                var cur = startId;
+                while (cur !== undefined && state[cur] === undefined) {
+                    state[cur] = 1;
+                    path.push(cur);
+                    cur = primaryParentOf[cur];
+                }
+                if (cur !== undefined && state[cur] === 1) {
+                    var members = path.slice(path.indexOf(cur));
+                    var best = null;
+                    members.forEach(function (m) {
+                        var anc = ancestorOnlyEdge[primaryParentOf[m] + ':' + m] === true ? 0 : 1;
+                        if (best === null || anc < best.anc || (anc === best.anc && m < best.childId)) {
+                            best = { childId: m, anc: anc };
+                        }
+                    });
+                    var c = best.childId;
+                    cutLinks.push({ parentId: primaryParentOf[c], childId: c });
+                    if (secondaryParentOf[c] !== undefined) cutLinks.push({ parentId: secondaryParentOf[c], childId: c });
+                    (extraParentsOf[c] || []).forEach(function (pid) { cutLinks.push({ parentId: pid, childId: c }); });
+                    delete primaryParentOf[c];
+                    delete secondaryParentOf[c];
+                    delete extraParentsOf[c];
+                    isRoot[c] = true;
+                }
+                path.forEach(function (p) { state[p] = 2; });
+            });
+        })();
+
         var hasOwnChildren = {};
         Object.keys(primaryParentOf).forEach(function (childId) {
             hasOwnChildren[primaryParentOf[childId]] = true;
@@ -164,6 +212,7 @@
                 }
             });
         });
+        cutLinks.forEach(function (l) { unattachedSecondaryParents.push(l); });
         Object.keys(spouseOf).forEach(function (a) {
             spouseOf[a].forEach(function (b) {
                 if (attachedTo[a] !== undefined || attachedTo[b] !== undefined) return;
@@ -216,9 +265,17 @@
         // lineages this data tends to have
         var xCounter = 0;
         var nodeX = {}, nodeDepth = {};
+        // Only a child's PRIMARY parent lays it out. The old version walked every recorded child of every
+        // parent, so a person with two parents was laid out once per parent, and a person reachable by
+        // many paths (common once Ancestor edges join the lineages) many times over; on a cycle it never
+        // returned. Secondary parents are drawn as connectors afterwards instead.
+        var laidOut = {};
         function layout(id, depth) {
+            laidOut[id] = true;
             nodeDepth[id] = depth;
-            var kids = dedup(childrenOf[id] || []).sort(function (a, b) { return a - b; });
+            var kids = dedup(childrenOf[id] || []).filter(function (k) {
+                return primaryParentOf[k] === id && !laidOut[k];
+            }).sort(function (a, b) { return a - b; });
             if (kids.length === 0) {
                 nodeX[id] = xCounter++;
             } else {
@@ -227,7 +284,12 @@
                 nodeX[id] = (Math.min.apply(null, xs) + Math.max.apply(null, xs)) / 2;
             }
         }
-        topLevelRoots.forEach(function (r) { layout(r, 0); });
+        topLevelRoots.forEach(function (r) { if (!laidOut[r]) layout(r, 0); });
+        // safety net: whoever is still unplaced (a shape this function did not foresee) becomes a root of
+        // its own instead of silently vanishing from the chart or breaking it
+        allIds.forEach(function (id) {
+            if (!laidOut[id] && attachedTo[id] === undefined) { topLevelRoots.push(id); layout(id, 0); }
+        });
 
         return {
             persons: persons,
@@ -401,7 +463,17 @@
         var tooltip = document.getElementById(tooltipId);
         if (!container || !svg || !data || !data.persons || data.persons.length === 0) return;
 
-        var layoutInfo = buildLayout(data, requestedRootId);
+        var layoutInfo;
+        try {
+            layoutInfo = buildLayout(data, requestedRootId);
+        } catch (err) {
+            if (window.console && console.error) console.error('family tree layout failed', err);
+            while (svg.firstChild) svg.removeChild(svg.firstChild);
+            var msg = el('text', { x: 20, y: 40, direction: 'rtl' });
+            msg.textContent = 'نمایش این درخت خانوادگی ممکن نشد.';
+            svg.appendChild(msg);
+            return;
+        }
 
         var COL_WIDTH = 220;
         var ROW_HEIGHT = 130;
