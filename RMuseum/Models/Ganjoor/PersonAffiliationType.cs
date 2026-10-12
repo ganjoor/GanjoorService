@@ -106,6 +106,13 @@ namespace RMuseum.Models.Ganjoor
         Killer = 14,
 
         /// <summary>
+        /// Person1 and Person2 were lovers (دلداده، عاشق و معشوق) without being married to each other -
+        /// symmetric, direction doesn't matter (e.g. Farhad and Shirin, who was married to Khosrow).
+        /// Use the Spouse relation instead when they were married; use Note for the story
+        /// </summary>
+        Lover = 15,
+
+        /// <summary>
         /// doesn't fit any of the above - rely on Note for what the tie actually is
         /// </summary>
         Other = 99,

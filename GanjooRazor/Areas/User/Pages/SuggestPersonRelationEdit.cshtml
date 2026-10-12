@@ -24,6 +24,7 @@
         (PersonAffiliationType.Ally, "«{a}» و «{b}» متحد/هم‌پیمان‌اند"),
         (PersonAffiliationType.Rival, "«{a}» و «{b}» رقیب/دشمن یکدیگرند"),
         (PersonAffiliationType.Companion, "«{a}» و «{b}» همراه/همدم یکدیگرند"),
+        (PersonAffiliationType.Lover, "«{a}» و «{b}» دلداده/عاشق و معشوق‌اند (بدون ازدواج)"),
         (PersonAffiliationType.Contemporary, "«{a}» و «{b}» هم‌عصرند (بدون نسبت دیگر)"),
         (PersonAffiliationType.Killer, "«{a}» «{b}» را کشته است"),
         (PersonAffiliationType.Other, "نوع دیگر (در یادداشت توضیح دهید)"),
@@ -196,7 +197,7 @@ else
             var name2 = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Person2Name));
             var isAffiliation = @(isAffiliation ? "true" : "false");
             // symmetric types: Sibling, Spouse (family) / Ally, Rival, Companion, Contemporary (affiliation) - reversing makes no sense
-            var symmetric = isAffiliation ? [4, 5, 7, 13] : [1, 2];
+            var symmetric = isAffiliation ? [4, 5, 7, 13, 15] : [1, 2];
             var select = document.getElementById('edgeTypeSelect');
             var reverse = document.getElementById('reverseDirection');
             var row = document.getElementById('reverseRow');

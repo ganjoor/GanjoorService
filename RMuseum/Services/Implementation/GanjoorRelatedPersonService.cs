@@ -514,7 +514,7 @@ namespace RMuseum.Services.Implementation
             PersonAffiliationType.Patron, PersonAffiliationType.Ally, PersonAffiliationType.Rival,
             PersonAffiliationType.Servant, PersonAffiliationType.Companion, PersonAffiliationType.Panegyrized,
             PersonAffiliationType.MilitaryCommander, PersonAffiliationType.Champion,
-            PersonAffiliationType.Contemporary, PersonAffiliationType.Killer,
+            PersonAffiliationType.Contemporary, PersonAffiliationType.Killer, PersonAffiliationType.Lover,
             // satire is assumed to target a living contemporary, like panegyrics; Successor is sent
             // too, but the client only treats it as an overlap when the viewer's assumption is on
             PersonAffiliationType.Satirized, PersonAffiliationType.Successor,
@@ -1385,6 +1385,7 @@ namespace RMuseum.Services.Implementation
             PersonAffiliationType.Rival,
             PersonAffiliationType.Companion,
             PersonAffiliationType.Contemporary,
+            PersonAffiliationType.Lover,
         };
 
         /// <summary>
@@ -3549,7 +3550,8 @@ namespace RMuseum.Services.Implementation
                             continue;
                         }
                         bool symmetric = aff.AffiliationType == PersonAffiliationType.Ally || aff.AffiliationType == PersonAffiliationType.Rival ||
-                            aff.AffiliationType == PersonAffiliationType.Companion || aff.AffiliationType == PersonAffiliationType.Contemporary;
+                            aff.AffiliationType == PersonAffiliationType.Companion || aff.AffiliationType == PersonAffiliationType.Contemporary ||
+                            aff.AffiliationType == PersonAffiliationType.Lover;
                         var dup = await _context.GanjoorPersonAffiliations.Where(a => a.Id != aff.Id && a.AffiliationType == aff.AffiliationType &&
                             ((a.Person1Id == p1 && a.Person2Id == p2) || (symmetric && a.Person1Id == p2 && a.Person2Id == p1))).FirstOrDefaultAsync();
                         if (dup == null)
