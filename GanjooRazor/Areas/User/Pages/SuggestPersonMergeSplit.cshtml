@@ -23,7 +23,7 @@ else
 
     @if (!string.IsNullOrEmpty(Model.LastResult))
     {
-        <p class="up-alert">@Model.LastResult</p>
+        <div class="up-alert @(Model.Saved ? "up-alert--success" : "up-alert--danger")" role="alert"><strong>@(Model.Saved ? "✔ " : "✖ پیشنهاد ثبت نشد: ")</strong>@Model.LastResult</div>
     }
 
     <datalist id="people-list">

@@ -40,6 +40,11 @@ namespace GanjooRazor.Areas.User.Pages
         public string LastResult { get; set; }
 
         /// <summary>
+        /// true when the last submission was stored by the API
+        /// </summary>
+        public bool Saved { get; set; }
+
+        /// <summary>
         /// the person
         /// </summary>
         public GanjoorRelatedPerson Person { get; set; }
@@ -151,9 +156,10 @@ namespace GanjooRazor.Areas.User.Pages
                     new StringContent(JsonConvert.SerializeObject(suggestion), Encoding.UTF8, "application/json"));
                 if (!response.IsSuccessStatusCode)
                 {
-                    LastResult = System.Net.WebUtility.HtmlEncode(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
+                    LastResult = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response);
                     return Page();
                 }
+                Saved = true;
                 LastResult = "پیشنهاد شما ثبت شد و پس از بررسی توسط مدیران اعمال خواهد شد.";
                 Reason = MergeTarget = SplitFrom = SplitTo = SplitNewName = SplitNewDescription = null;
                 ModelState.Clear();
