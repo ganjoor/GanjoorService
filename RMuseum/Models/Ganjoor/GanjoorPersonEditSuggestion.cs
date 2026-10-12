@@ -119,6 +119,14 @@ namespace RMuseum.Models.Ganjoor
         public bool ConfirmedDuplicateFamilyTreeCaption { get; set; }
 
         /// <summary>
+        /// suggested other names (GanjoorRelatedPerson.Aliases) separated by «،». null = this suggestion
+        /// says nothing about them (aliases stay as they are); the contributor's form is pre-filled
+        /// with the current aliases, so emptying the box entirely is also read as "no change" -
+        /// removing every alias is a moderator-only action (Admin/MergePeople)
+        /// </summary>
+        public string SuggestedAliases { get; set; }
+
+        /// <summary>
         /// suggested importance (see GanjoorRelatedPerson.Importance)
         /// </summary>
         public PersonImportance SuggestedImportance { get; set; }

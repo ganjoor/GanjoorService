@@ -55,6 +55,13 @@ else
                     <td><input asp-for="Suggestion.SuggestedName" size="40" /></td>
                 </tr>
                 <tr>
+                    <td>
+                        نام‌های دیگر:
+                        <p class="up-hint"><small>لقب‌ها و املاهای دیگر را با «،» از هم جدا کنید (مثلاً برای رستم: تهمتن، رستم دستان).</small></p>
+                    </td>
+                    <td><textarea asp-for="Suggestion.SuggestedAliases" rows="2" cols="60"></textarea></td>
+                </tr>
+                <tr>
                     <td>نشانی ویکی‌پدیا:</td>
                     <td><input style="text-align:left;direction:ltr;" asp-for="Suggestion.SuggestedWikiUrl" size="60" /></td>
                 </tr>

@@ -87,6 +87,7 @@ else
             var diffRows = new List<(string Label, string Old, string New, bool WordDiff)>
             {
                 ("نام", p.Name, s.SuggestedName, true),
+                ("نام‌های دیگر", p.Aliases, s.SuggestedAliases ?? p.Aliases, true),
                 ("نشانی ویکی‌پدیا", p.WikiUrl, s.SuggestedWikiUrl, true),
                 ("سال تولد (قمری)", p.BirthYearInLHijri == 0 ? "" : p.BirthYearInLHijri.ToPersianNumbers(), s.SuggestedBirthYearInLHijri == 0 ? "" : s.SuggestedBirthYearInLHijri.ToPersianNumbers(), false),
                 ("تاریخ تولد مستند است", p.ValidBirthDate ? "بله" : "خیر", s.SuggestedValidBirthDate ? "بله" : "خیر", false),

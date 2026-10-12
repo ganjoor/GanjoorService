@@ -30,6 +30,25 @@
         return isNaN(n) ? 0 : n;
     }
 
+    // 👁 / 🌳 icons next to every person lookup, for whoever is currently chosen in it
+    function refreshPersonIcons(input) {
+        var box = document.querySelector('.person-icons[data-for="' + input.id + '"]');
+        if (!box) return;
+        var id = parsePersonId(input.value);
+        box.innerHTML = id
+            ? '<a href="javascript:void(0)" onclick="PersonWindow.open(' + id + ')" class="up-icon-btn" title="مشاهدهٔ اطلاعات این شخصیت" aria-label="مشاهدهٔ اطلاعات این شخصیت">👁</a> ' +
+              '<a href="javascript:void(0)" onclick="FamilyTreeWindow.open(' + id + ')" class="up-icon-btn" title="مشاهدهٔ شجره‌نامهٔ این شخصیت" aria-label="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>'
+            : '';
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.person-icons').forEach(function (box) {
+            var input = document.getElementById(box.getAttribute('data-for'));
+            if (!input) return;
+            input.addEventListener('input', function () { refreshPersonIcons(input); });
+            input.addEventListener('change', function () { refreshPersonIcons(input); });
+        });
+    });
+
     var aliasesOf = {
 @foreach (var person in Model.People.Where(p => !string.IsNullOrEmpty(p.Aliases)))
 {
@@ -132,11 +151,11 @@
 <table>
     <tr>
         <td><span class="inputlabel">شخصیت تکراری (حذف می‌شود)</span></td>
-        <td><input type="text" id="merge-source" list="people-list" size="40" autocomplete="off" /></td>
+        <td><input type="text" id="merge-source" list="people-list" size="40" autocomplete="off" /> <span class="person-icons" data-for="merge-source"></span></td>
     </tr>
     <tr>
         <td><span class="inputlabel">شخصیت ماندگار</span></td>
-        <td><input type="text" id="merge-target" list="people-list" size="40" autocomplete="off" /></td>
+        <td><input type="text" id="merge-target" list="people-list" size="40" autocomplete="off" /> <span class="person-icons" data-for="merge-target"></span></td>
     </tr>
     <tr>
         <td colspan="2"><p><a role="button" onclick="mergePeople()" class="up-btn up-btn--danger up-btn--sm">ادغام</a></p></td>
@@ -149,7 +168,7 @@
 <table>
     <tr>
         <td><span class="inputlabel">شخصیت</span></td>
-        <td><input type="text" id="split-person" list="people-list" size="40" autocomplete="off" /></td>
+        <td><input type="text" id="split-person" list="people-list" size="40" autocomplete="off" /> <span class="person-icons" data-for="split-person"></span></td>
     </tr>
     <tr>
         <td><span class="inputlabel">نام شخصیت تازه (خالی = همان نام)</span></td>
@@ -181,7 +200,7 @@
 <table>
     <tr>
         <td><span class="inputlabel">شخصیت</span></td>
-        <td><input type="text" id="alias-person" list="people-list" size="40" autocomplete="off" onchange="loadAliases()" /></td>
+        <td><input type="text" id="alias-person" list="people-list" size="40" autocomplete="off" onchange="loadAliases()" /> <span class="person-icons" data-for="alias-person"></span></td>
     </tr>
     <tr>
         <td><span class="inputlabel">نام‌های دیگر</span></td>

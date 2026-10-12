@@ -91,6 +91,7 @@ namespace GanjooRazor.Areas.User.Pages
                 SuggestedFamilyTreeCaption = Person.FamilyTreeCaption,
                 SuggestedImportance = Person.Importance,
                 SuggestedGender = Person.Gender,
+                SuggestedAliases = Person.Aliases,
             };
         }
 

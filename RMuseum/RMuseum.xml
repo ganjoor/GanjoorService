@@ -5236,6 +5236,18 @@
         <member name="M:RMuseum.Migrations.EditPersonNewFields.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
+        <member name="T:RMuseum.Migrations.GanjoorPersonEditSuggestionsNewField">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.GanjoorPersonEditSuggestionsNewField.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.GanjoorPersonEditSuggestionsNewField.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.GanjoorPersonEditSuggestionsNewField.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
             <summary>
             donation expenditures
@@ -9830,6 +9842,14 @@
             used alternate names for the same dynasty/family) to approve it anyway.
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedAliases">
+            <summary>
+            suggested other names (GanjoorRelatedPerson.Aliases) separated by «،». null = this suggestion
+            says nothing about them (aliases stay as they are); the contributor's form is pre-filled
+            with the current aliases, so emptying the box entirely is also read as "no change" -
+            removing every alias is a moderator-only action (Admin/MergePeople)
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion.SuggestedImportance">
             <summary>
             suggested importance (see GanjoorRelatedPerson.Importance)
@@ -12429,6 +12449,13 @@
             itself mean the two were ongoing enemies/rivals beforehand - they could have been allies,
             kin-by-marriage, or strangers. Use Rival instead (additionally, if applicable) when there
             was a standing enmity, and Note for how/why the killing happened
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Lover">
+            <summary>
+            Person1 and Person2 were lovers (دلداده، عاشق و معشوق) without being married to each other -
+            symmetric, direction doesn't matter (e.g. Farhad and Shirin, who was married to Khosrow).
+            Use the Spouse relation instead when they were married; use Note for the story
             </summary>
         </member>
         <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Other">

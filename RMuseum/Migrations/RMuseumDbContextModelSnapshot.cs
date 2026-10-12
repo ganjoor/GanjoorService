@@ -1526,6 +1526,9 @@ namespace RMuseum.Migrations
                     b.Property<int?>("SplitToPoemId")
                         .HasColumnType("int");
 
+                    b.Property<string>("SuggestedAliases")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("SuggestedBirthLocationId")
                         .HasColumnType("int");
 

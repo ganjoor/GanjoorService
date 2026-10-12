@@ -1432,6 +1432,10 @@ namespace RMuseum.Services.Implementation
                 suggestion.SuggestedDescription = string.IsNullOrWhiteSpace(suggestion.SuggestedDescription) ? null : suggestion.SuggestedDescription.Trim();
                 suggestion.SuggestedWikiUrl = string.IsNullOrWhiteSpace(suggestion.SuggestedWikiUrl) ? null : suggestion.SuggestedWikiUrl.Trim();
                 suggestion.SuggestedFamilyTreeCaption = string.IsNullOrWhiteSpace(suggestion.SuggestedFamilyTreeCaption) ? null : suggestion.SuggestedFamilyTreeCaption.Trim();
+                // other names: split, trim, de-duplicate and drop the person's own name; null = not touched
+                suggestion.SuggestedAliases = string.IsNullOrWhiteSpace(suggestion.SuggestedAliases)
+                    ? null
+                    : _NormalizeAliases(suggestion.SuggestedName, suggestion.SuggestedAliases);
                 // an edit that changes nothing is pointless for the moderator (it is what a contributor
                 // gets by opening the edit form and submitting it untouched) - reject it. A deletion
                 // request is never a no-op, so it is exempt.
@@ -1450,7 +1454,9 @@ namespace RMuseum.Services.Implementation
                         && suggestion.SuggestedDeathLocationId == person.DeathLocationId
                         && Norm(suggestion.SuggestedFamilyTreeCaption) == Norm(person.FamilyTreeCaption)
                         && suggestion.SuggestedImportance == person.Importance
-                        && suggestion.SuggestedGender == person.Gender;
+                        && suggestion.SuggestedGender == person.Gender
+                        && (suggestion.SuggestedAliases == null
+                            || (_NormalizeAliases(person.Name, suggestion.SuggestedAliases) ?? "") == (_NormalizeAliases(person.Name, person.Aliases) ?? ""));
                     if (unchanged)
                     {
                         return new RServiceResult<GanjoorPersonEditSuggestion>(null, "در این پیشنهاد چیزی تغییر نکرده است.");
@@ -1746,6 +1752,10 @@ namespace RMuseum.Services.Implementation
                         person.FamilyTreeCaption = suggestion.SuggestedFamilyTreeCaption;
                         person.Importance = suggestion.SuggestedImportance;
                         person.Gender = suggestion.SuggestedGender;
+                        if (suggestion.SuggestedAliases != null)
+                        {
+                            person.Aliases = _NormalizeAliases(person.Name, suggestion.SuggestedAliases);
+                        }
                         // Id and MachineGenerated on the person are intentionally left untouched
                     }
                 }
