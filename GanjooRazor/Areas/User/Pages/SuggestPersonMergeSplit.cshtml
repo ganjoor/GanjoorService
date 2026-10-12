@@ -13,7 +13,7 @@
 else
 {
     <div class="up-page-header">
-        <h1>ادغام یا تقسیم: @Model.Person.Name</h1>
+        <h1>ادغام یا تقسیم: @Model.Person.Name <a href="javascript:void(0)" onclick="FamilyTreeWindow.open(@Model.Person.Id)" class="up-icon-btn" title="مشاهدهٔ شجره‌نامهٔ این شخصیت" aria-label="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a></h1>
     </div>
 
     <p class="up-hint">
@@ -29,46 +29,9 @@ else
     <datalist id="people-list">
         @foreach (var person in Model.People)
         {
-            <option value="@person.Name (@person.Id)" label="@(string.IsNullOrWhiteSpace(person.Description) ? "" : (person.Description.Length > 80 ? person.Description.Substring(0, 80) + "…" : person.Description))"></option>
+            <option value="@person.Name (@person.Id)"></option>
         }
     </datalist>
-
-    <div class="up-card">
-        <h2>این نامبرده را بشناسید</h2>
-        <p>
-            «@Model.Person.Name» (کد @Model.Person.Id)
-            @if (!string.IsNullOrWhiteSpace(Model.Person.Description)) { <text> — @Model.Person.Description</text> }
-            <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.Person.Id)" class="up-btn up-btn--ghost up-btn--sm">👁 اطلاعات</a>
-            <a href="javascript:void(0)" onclick="FamilyTreeWindow.open(@Model.Person.Id)" class="up-btn up-btn--ghost up-btn--sm">🌳 شجره‌نامه</a>
-        </p>
-    </div>
-
-    var sameName = Model.People
-            .Where(x => x.Id != Model.Person.Id && !string.IsNullOrWhiteSpace(x.Name) &&
-                (x.Name.Trim() == Model.Person.Name.Trim() || (Model.Person.Name.Trim().Length >= 3 && (x.Name.Contains(Model.Person.Name.Trim()) || Model.Person.Name.Contains(x.Name.Trim())))))
-            .OrderBy(x => x.Name.Trim() == Model.Person.Name.Trim() ? 0 : 1).ThenBy(x => x.Id)
-            .Take(30).ToList();
-    @if (sameName.Count > 0)
-    {
-        <div class="up-card">
-            <h2>نامبردگان همنام یا نزدیک به این نام</h2>
-            <p class="up-hint">برای تشخیص این‌که کدام یک همان شخص است، اطلاعات و شجره‌نامهٔ هر کدام را ببینید؛ سپس «انتخاب برای ادغام» را بزنید.</p>
-            <table class="up-table">
-                @foreach (var x in sameName)
-                {
-                    <tr>
-                        <td>@x.Name (کد @x.Id)</td>
-                        <td>@x.Description</td>
-                        <td>
-                            <a href="javascript:void(0)" onclick="PersonWindow.open(@x.Id)" class="up-btn up-btn--ghost up-btn--sm">👁 اطلاعات</a>
-                            <a href="javascript:void(0)" onclick="FamilyTreeWindow.open(@x.Id)" class="up-btn up-btn--ghost up-btn--sm">🌳 شجره‌نامه</a>
-                            <a href="javascript:void(0)" class="up-btn up-btn--sm pick-merge-target" data-value="@x.Name (@x.Id)">انتخاب برای ادغام</a>
-                        </td>
-                    </tr>
-                }
-            </table>
-        </div>
-    }
 
     <div class="up-card">
         <h2>این نامبرده تکراری است</h2>
@@ -80,7 +43,7 @@ else
                     <td>شخصیت ماندگار:</td>
                     <td>
                         <input type="text" id="merge-target" name="MergeTarget" list="people-list" size="40" autocomplete="off" />
-                        <div id="merge-target-preview" class="up-hint"></div>
+                        <span id="merge-target-preview"></span>
                     </td>
                 </tr>
                 <tr>
@@ -153,26 +116,16 @@ else
             var input = document.getElementById('merge-target');
             var box = document.getElementById('merge-target-preview');
             if (!input || !box) return;
-            function esc(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
             function refresh() {
                 var m = /\((\d+)\)\s*$/.exec(input.value || '');
                 if (!m) { box.innerHTML = ''; return; }
-                var id = m[1], label = '';
-                var opts = document.querySelectorAll('#people-list option');
-                for (var i = 0; i < opts.length; i++) { if (opts[i].value === input.value) { label = opts[i].getAttribute('label') || ''; break; } }
-                box.innerHTML = (label ? esc(label) + ' ' : '') +
-                    '<a href="javascript:void(0)" onclick="PersonWindow.open(' + id + ')">👁 اطلاعات</a> ' +
-                    '<a href="javascript:void(0)" onclick="FamilyTreeWindow.open(' + id + ')">🌳 شجره‌نامه</a>';
+                var id = m[1];
+                box.innerHTML =
+                    '<a href="javascript:void(0)" onclick="PersonWindow.open(' + id + ')" class="up-icon-btn" title="مشاهدهٔ اطلاعات این شخصیت" aria-label="مشاهدهٔ اطلاعات این شخصیت">👁</a> ' +
+                    '<a href="javascript:void(0)" onclick="FamilyTreeWindow.open(' + id + ')" class="up-icon-btn" title="مشاهدهٔ شجره‌نامهٔ این شخصیت" aria-label="مشاهدهٔ شجره‌نامهٔ این شخصیت">🌳</a>';
             }
             input.addEventListener('input', refresh);
             input.addEventListener('change', refresh);
-            document.querySelectorAll('.pick-merge-target').forEach(function (a) {
-                a.addEventListener('click', function () {
-                    input.value = a.getAttribute('data-value');
-                    refresh();
-                    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                });
-            });
         })();
     </script>
 }
