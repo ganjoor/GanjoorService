@@ -1,0 +1,129 @@
+@page
+@model GanjooRazor.Areas.Admin.Pages.RelationProblemsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using DNTPersianUtils.Core
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+@using RMuseum.Models.Ganjoor
+@using RMuseum.Models.Ganjoor.ViewModels
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "مشکلات نسبت‌های خویشاوندی و وابستگی‌ها";
+    var problems = Model.Problems;
+
+    string ParentKindName(RelationParentProblemKind k)
+    {
+        switch (k)
+        {
+            case RelationParentProblemKind.TooManyParentsInBook: return "بیش از دو والد در یک کتاب";
+            case RelationParentProblemKind.SameGenderParentsInBook: return "دو والد هم‌جنس در یک کتاب";
+            default: return "بیش از دو والد در مجموع کتاب‌ها (اگر کتاب‌ها اختلاف‌نظر دارند طبیعی است)";
+        }
+    }
+
+    string PairKindName(RelationPairConflictKind k)
+    {
+        switch (k)
+        {
+            case RelationPairConflictKind.ParentInBothDirections: return "هر دو پدر/مادر یکدیگر ثبت شده‌اند";
+            case RelationPairConflictKind.ParentAndSibling: return "هم پدر/مادر و فرزند و هم خواهر/برادر ثبت شده‌اند";
+            case RelationPairConflictKind.ParentAndSpouse: return "هم پدر/مادر و فرزند و هم همسر ثبت شده‌اند";
+            default: return "هم خواهر/برادر و هم همسر ثبت شده‌اند";
+        }
+    }
+}
+
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+<p><a href="/Admin/ReviewPersonRelationEdits">بازگشت به بازبینی نسبت‌ها</a> | <a href="/Admin/MergePeople">ادغام و تقسیم نامبردگان</a></p>
+
+@if (!string.IsNullOrEmpty(Model.FatalError) || problems == null)
+{
+    <div class="up-alert up-alert--danger">@Model.FatalError</div>
+}
+else
+{
+    <p>
+        @problems.RelationsChecked.ToPersianNumbers() نسبت خویشاوندی و @problems.AffiliationsChecked.ToPersianNumbers() وابستگی بررسی شد:
+        @problems.Cycles.Count.ToPersianNumbers() گروه دارای حلقه در نیا/فرزندی،
+        @problems.ParentProblems.Count.ToPersianNumbers() مورد والد مشکوک،
+        @problems.Duplicates.Count.ToPersianNumbers() مورد تکراری،
+        @problems.PairConflicts.Count.ToPersianNumbers() مورد ناسازگار،
+        @problems.SelfRelations.Count.ToPersianNumbers() مورد نسبت با خود.
+    </p>
+    <p><small>این فهرست فقط‌خواندنی است. با کلیک بر نام هر شخصیت پنجرهٔ او باز می‌شود و از آنجا می‌توان نسبت را اصلاح یا حذف پیشنهاد داد؛ اگر یک شخصیت در واقع دو نفر همنام است از «تقسیم» در صفحهٔ ادغام و تقسیم استفاده کنید.</small></p>
+
+    <h2>۱. حلقه در نیا/فرزندی</h2>
+    <p><small>نمودار درخت خانوادگی نمی‌تواند چنین گروهی را به شکل درخت بکشد (حلقه‌ها در نمودار در یک یال بریده می‌شوند). معمولاً یا یک نسبت «نیا» اشتباه است یا یک شخصیت در واقع دو نفر همنام است. ردیف زردرنگ، نسبت «نیا»ی کم‌مدرک‌تر است و بهترین نقطهٔ شروع بازبینی.</small></p>
+    @if (problems.Cycles.Count == 0)
+    {
+        <p>موردی نیست.</p>
+    }
+    @foreach (var cycle in problems.Cycles)
+    {
+        var cycleViewData = new ViewDataDictionary(ViewData);
+        cycleViewData["SuggestedId"] = cycle.SuggestedRelationId;
+        <div class="related-images-frame">
+            <p><b>@cycle.People.Count.ToPersianNumbers() نفر:</b>
+                @for (int i = 0; i < cycle.People.Count; i++)
+                {
+                    <a href="javascript:void(0)" onclick="PersonWindow.open(@cycle.People[i].Id)">@cycle.People[i].Name</a>@(i < cycle.People.Count - 1 ? "، " : "")
+                }
+            </p>
+            <partial name="~/Areas/Admin/Pages/_RelationProblemEdgesPartial.cshtml" model="cycle.Edges" view-data="cycleViewData" />
+        </div>
+    }
+
+    <h2>۲. والدهای مشکوک</h2>
+    <p><small>قاعدهٔ سامانه حداکثر دو والد برای هر شخص در هر کتاب است. دو والد هم‌جنس در یک کتاب معمولاً نشانهٔ یک نامبردهٔ همنام و ادغام‌شده است.</small></p>
+    @if (problems.ParentProblems.Count == 0)
+    {
+        <p>موردی نیست.</p>
+    }
+    @foreach (var item in problems.ParentProblems)
+    {
+        <div class="related-images-frame">
+            <p>
+                <b><a href="javascript:void(0)" onclick="PersonWindow.open(@item.Child.Id)">@item.Child.Name</a></b>
+                — @ParentKindName(item.Kind)@if (item.Book != null) { <text> — کتاب: @(string.IsNullOrEmpty(item.Book.Title) ? "#" + item.Book.Id : item.Book.Title)</text> }
+            </p>
+            <partial name="~/Areas/Admin/Pages/_RelationProblemEdgesPartial.cshtml" model="item.ParentEdges" />
+        </div>
+    }
+
+    <h2>۳. نسبت‌های ناسازگار میان دو نفر</h2>
+    @if (problems.PairConflicts.Count == 0)
+    {
+        <p>موردی نیست.</p>
+    }
+    @foreach (var item in problems.PairConflicts)
+    {
+        <div class="related-images-frame">
+            <p><b>@PairKindName(item.Kind)</b></p>
+            <partial name="~/Areas/Admin/Pages/_RelationProblemEdgesPartial.cshtml" model="item.Edges" />
+        </div>
+    }
+
+    <h2>۴. ردیف‌های تکراری</h2>
+    @if (problems.Duplicates.Count == 0)
+    {
+        <p>موردی نیست.</p>
+    }
+    @foreach (var item in problems.Duplicates)
+    {
+        <div class="related-images-frame">
+            <partial name="~/Areas/Admin/Pages/_RelationProblemEdgesPartial.cshtml" model="item.Edges" />
+        </div>
+    }
+
+    <h2>۵. نسبت یک شخص با خودش</h2>
+    @if (problems.SelfRelations.Count == 0)
+    {
+        <p>موردی نیست.</p>
+    }
+    else
+    {
+        <partial name="~/Areas/Admin/Pages/_RelationProblemEdgesPartial.cshtml" model="problems.SelfRelations" />
+    }
+}

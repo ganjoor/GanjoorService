@@ -1,0 +1,63 @@
+@using DNTPersianUtils.Core
+@using RMuseum.Models.Ganjoor
+@using RMuseum.Models.Ganjoor.ViewModels
+@model System.Collections.Generic.List<GanjoorRelationProblemEdge>
+@{
+    int? suggestedId = ViewData["SuggestedId"] as int?;
+
+    string RelationTypeName(PersonRelationType t)
+    {
+        switch (t)
+        {
+            case PersonRelationType.Parent: return "پدر/مادر ← فرزند";
+            case PersonRelationType.Sibling: return "خواهر/برادر";
+            case PersonRelationType.Spouse: return "همسر";
+            case PersonRelationType.Ancestor: return "نیا ← نواده";
+            default: return t.ToString();
+        }
+    }
+
+    string EdgeTypeName(GanjoorRelationProblemEdge e)
+    {
+        if (e.IsAffiliation)
+            return "وابستگی: " + e.AffiliationType;
+        var name = RelationTypeName(e.RelationType.Value);
+        if (e.RelationType == PersonRelationType.Ancestor && e.DegreeHint.HasValue)
+            name += " (" + e.DegreeHint.Value.ToPersianNumbers() + " پشت)";
+        return name;
+    }
+}
+<table class="up-table" style="width:100%;">
+    <thead>
+        <tr>
+            <th>شناسه</th>
+            <th>نسبت</th>
+            <th>از</th>
+            <th>به</th>
+            <th>مستندات</th>
+            <th>یادداشت</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var e in Model)
+        {
+            <tr style="@(suggestedId == e.RelationId && !e.IsAffiliation ? "background:#fff4d6" : "")">
+                <td>@e.RelationId.ToPersianNumbers()@(e.IsAffiliation ? " (وابستگی)" : "")</td>
+                <td>@EdgeTypeName(e)@if (suggestedId == e.RelationId && !e.IsAffiliation) { <br /><small><b>نخستین گزینهٔ بازبینی</b></small> }</td>
+                <td><a href="javascript:void(0)" onclick="PersonWindow.open(@e.Person1Id)">@e.Person1Name</a></td>
+                <td><a href="javascript:void(0)" onclick="PersonWindow.open(@e.Person2Id)">@e.Person2Name</a></td>
+                <td>
+                    @if (e.EvidenceCount == 0)
+                    {
+                        <small>بدون شاهد</small>
+                    }
+                    else
+                    {
+                        <small>@e.EvidenceCount.ToPersianNumbers() شاهد در: @string.Join("، ", e.Books.Select(b => string.IsNullOrEmpty(b.Title) ? "#" + b.Id : b.Title))</small>
+                    }
+                </td>
+                <td><small>@e.Note</small></td>
+            </tr>
+        }
+    </tbody>
+</table>

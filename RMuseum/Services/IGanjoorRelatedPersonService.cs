@@ -103,6 +103,14 @@ namespace RMuseum.Services
         Task<RServiceResult<(GanjoorRelationWithoutEvidence[] Rows, int TotalCount)>> GetRelationsWithoutEvidenceAsync(int skip, int take, int? personId, bool affiliations = false);
 
         /// <summary>
+        /// scan all kinship relations and affiliations for data problems: loops in the Parent/Ancestor graph
+        /// (which the family tree chart cannot draw), suspicious parents, duplicate rows, incompatible
+        /// relations between the same two people and self relations. Read-only.
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<GanjoorRelationProblemsViewModel>> GetRelationProblemsAsync();
+
+        /// <summary>
         /// submit a suggested edit to an already-approved person's own fields - goes into the
         /// pending queue, does not change the person itself until a moderator approves it
         /// </summary>

@@ -794,6 +794,302 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// strongly connected components of a directed graph (iterative Tarjan, so a long chain cannot
+        /// overflow the stack). A component with more than one node is a loop.
+        /// </summary>
+        private static List<List<int>> _FindStronglyConnectedComponents(IEnumerable<int> nodes, Dictionary<int, List<int>> adjacency)
+        {
+            int counter = 0;
+            var indexOf = new Dictionary<int, int>();
+            var lowLink = new Dictionary<int, int>();
+            var onStack = new HashSet<int>();
+            var stack = new Stack<int>();
+            var result = new List<List<int>>();
+
+            foreach (var start in nodes)
+            {
+                if (indexOf.ContainsKey(start))
+                    continue;
+
+                var work = new Stack<(int Node, int NextChild)>();
+                indexOf[start] = lowLink[start] = counter++;
+                stack.Push(start);
+                onStack.Add(start);
+                work.Push((start, 0));
+
+                while (work.Count > 0)
+                {
+                    var (v, i) = work.Pop();
+                    adjacency.TryGetValue(v, out var children);
+                    if (children != null && i < children.Count)
+                    {
+                        work.Push((v, i + 1));
+                        int w = children[i];
+                        if (!indexOf.ContainsKey(w))
+                        {
+                            indexOf[w] = lowLink[w] = counter++;
+                            stack.Push(w);
+                            onStack.Add(w);
+                            work.Push((w, 0));
+                        }
+                        else if (onStack.Contains(w))
+                        {
+                            lowLink[v] = Math.Min(lowLink[v], indexOf[w]);
+                        }
+                    }
+                    else
+                    {
+                        if (lowLink[v] == indexOf[v])
+                        {
+                            var component = new List<int>();
+                            int w;
+                            do
+                            {
+                                w = stack.Pop();
+                                onStack.Remove(w);
+                                component.Add(w);
+                            } while (w != v);
+                            result.Add(component);
+                        }
+                        if (work.Count > 0)
+                        {
+                            int parent = work.Peek().Node;
+                            lowLink[parent] = Math.Min(lowLink[parent], lowLink[v]);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// scan all kinship relations and affiliations for data problems - see GanjoorRelationProblemsViewModel
+        /// </summary>
+        public async Task<RServiceResult<GanjoorRelationProblemsViewModel>> GetRelationProblemsAsync()
+        {
+            try
+            {
+                var people = await _context.GanjoorRelatedPersons.AsNoTracking()
+                    .Select(p => new { p.Id, p.Name, p.Gender })
+                    .ToDictionaryAsync(p => p.Id);
+                string NameOf(int id) => people.TryGetValue(id, out var p) ? p.Name : "#" + id;
+                GanjoorRelationProblemPerson PersonOf(int id) => new GanjoorRelationProblemPerson() { Id = id, Name = NameOf(id) };
+
+                var relations = await _context.GanjoorPersonRelations.AsNoTracking().OrderBy(r => r.Id).ToListAsync();
+                var affiliations = await _context.GanjoorPersonAffiliations.AsNoTracking().OrderBy(a => a.Id).ToListAsync();
+                var relationEvidences = (await _context.GanjoorPersonRelationEvidences.AsNoTracking()
+                        .Where(e => !e.Inferred)
+                        .Select(e => new { e.RelationId, e.MasterCatId })
+                        .ToListAsync())
+                    .GroupBy(e => e.RelationId)
+                    .ToDictionary(g => g.Key, g => g.Select(e => e.MasterCatId).ToList());
+                var affiliationEvidences = (await _context.GanjoorPersonAffiliationEvidences.AsNoTracking()
+                        .Select(e => new { e.AffiliationId, e.MasterCatId })
+                        .ToListAsync())
+                    .GroupBy(e => e.AffiliationId)
+                    .ToDictionary(g => g.Key, g => g.Select(e => e.MasterCatId).ToList());
+
+                var bookIds = relationEvidences.Values.SelectMany(v => v)
+                    .Concat(affiliationEvidences.Values.SelectMany(v => v))
+                    .Distinct().ToList();
+                var bookTitles = await _context.GanjoorCategories.AsNoTracking()
+                    .Where(c => bookIds.Contains(c.Id))
+                    .Select(c => new { c.Id, c.Title })
+                    .ToDictionaryAsync(c => c.Id, c => c.Title);
+                GanjoorRelationProblemBook BookOf(int id) => new GanjoorRelationProblemBook() { Id = id, Title = bookTitles.TryGetValue(id, out var t) ? t : null };
+
+                GanjoorRelationProblemEdge RelationEdge(GanjoorPersonRelation r)
+                {
+                    relationEvidences.TryGetValue(r.Id, out var books);
+                    return new GanjoorRelationProblemEdge()
+                    {
+                        RelationId = r.Id,
+                        Person1Id = r.Person1Id,
+                        Person1Name = NameOf(r.Person1Id),
+                        Person2Id = r.Person2Id,
+                        Person2Name = NameOf(r.Person2Id),
+                        RelationType = r.RelationType,
+                        DegreeHint = r.DegreeHint,
+                        Note = r.Note,
+                        EvidenceCount = books?.Count ?? 0,
+                        Books = (books ?? new List<int>()).Distinct().OrderBy(b => b).Select(BookOf).ToList(),
+                    };
+                }
+                GanjoorRelationProblemEdge AffiliationEdge(GanjoorPersonAffiliation a)
+                {
+                    affiliationEvidences.TryGetValue(a.Id, out var books);
+                    return new GanjoorRelationProblemEdge()
+                    {
+                        RelationId = a.Id,
+                        IsAffiliation = true,
+                        Person1Id = a.Person1Id,
+                        Person1Name = NameOf(a.Person1Id),
+                        Person2Id = a.Person2Id,
+                        Person2Name = NameOf(a.Person2Id),
+                        AffiliationType = a.AffiliationType,
+                        Note = a.Note,
+                        EvidenceCount = books?.Count ?? 0,
+                        Books = (books ?? new List<int>()).Distinct().OrderBy(b => b).Select(BookOf).ToList(),
+                    };
+                }
+
+                var model = new GanjoorRelationProblemsViewModel()
+                {
+                    RelationsChecked = relations.Count,
+                    AffiliationsChecked = affiliations.Count,
+                };
+
+                // 1) self relations
+                model.SelfRelations.AddRange(relations.Where(r => r.Person1Id == r.Person2Id).Select(RelationEdge));
+                model.SelfRelations.AddRange(affiliations.Where(a => a.Person1Id == a.Person2Id).Select(AffiliationEdge));
+
+                // 2) loops in the Parent/Ancestor graph
+                var directional = relations.Where(r => (r.RelationType == PersonRelationType.Parent || r.RelationType == PersonRelationType.Ancestor) && r.Person1Id != r.Person2Id).ToList();
+                var adjacency = new Dictionary<int, List<int>>();
+                foreach (var r in directional)
+                {
+                    if (!adjacency.TryGetValue(r.Person1Id, out var list))
+                    {
+                        list = new List<int>();
+                        adjacency[r.Person1Id] = list;
+                    }
+                    list.Add(r.Person2Id);
+                }
+                var allNodes = directional.SelectMany(r => new[] { r.Person1Id, r.Person2Id }).Distinct().OrderBy(id => id).ToList();
+                foreach (var component in _FindStronglyConnectedComponents(allNodes, adjacency).Where(c => c.Count > 1))
+                {
+                    var members = new HashSet<int>(component);
+                    var edges = directional.Where(r => members.Contains(r.Person1Id) && members.Contains(r.Person2Id)).Select(RelationEdge).ToList();
+                    var suggested = edges
+                        .OrderBy(e => e.RelationType == PersonRelationType.Ancestor ? 0 : 1)
+                        .ThenBy(e => e.EvidenceCount)
+                        .ThenByDescending(e => e.RelationId)
+                        .FirstOrDefault();
+                    model.Cycles.Add(new GanjoorRelationCycleProblem()
+                    {
+                        People = component.OrderBy(id => id).Select(PersonOf).ToList(),
+                        Edges = edges,
+                        SuggestedRelationId = suggested?.RelationId,
+                    });
+                }
+                model.Cycles = model.Cycles.OrderByDescending(c => c.People.Count).ToList();
+
+                // 3) suspicious parents: the two-parents rule is per book, so group by the books that attest each Parent edge
+                foreach (var childGroup in relations.Where(r => r.RelationType == PersonRelationType.Parent && r.Person1Id != r.Person2Id).GroupBy(r => r.Person2Id).OrderBy(g => g.Key))
+                {
+                    var parentEdges = childGroup.ToList();
+                    if (parentEdges.Select(r => r.Person1Id).Distinct().Count() < 2)
+                        continue;
+
+                    var byBook = new Dictionary<int, List<GanjoorPersonRelation>>();
+                    foreach (var r in parentEdges)
+                    {
+                        if (!relationEvidences.TryGetValue(r.Id, out var books))
+                            continue;
+                        foreach (var book in books.Distinct())
+                        {
+                            if (!byBook.TryGetValue(book, out var list))
+                            {
+                                list = new List<GanjoorPersonRelation>();
+                                byBook[book] = list;
+                            }
+                            list.Add(r);
+                        }
+                    }
+
+                    bool reported = false;
+                    foreach (var book in byBook.OrderBy(b => b.Key))
+                    {
+                        var distinctParents = book.Value.GroupBy(r => r.Person1Id).Select(g => g.First()).ToList();
+                        if (distinctParents.Count > 2)
+                        {
+                            model.ParentProblems.Add(new GanjoorRelationParentsProblem()
+                            {
+                                Kind = RelationParentProblemKind.TooManyParentsInBook,
+                                Child = PersonOf(childGroup.Key),
+                                Book = BookOf(book.Key),
+                                ParentEdges = distinctParents.Select(RelationEdge).ToList(),
+                            });
+                            reported = true;
+                            continue;
+                        }
+                        foreach (var gender in new[] { PersonGender.Male, PersonGender.Female })
+                        {
+                            var sameGender = distinctParents.Where(r => people.TryGetValue(r.Person1Id, out var p) && p.Gender == gender).ToList();
+                            if (sameGender.Count >= 2)
+                            {
+                                model.ParentProblems.Add(new GanjoorRelationParentsProblem()
+                                {
+                                    Kind = RelationParentProblemKind.SameGenderParentsInBook,
+                                    Child = PersonOf(childGroup.Key),
+                                    Book = BookOf(book.Key),
+                                    ParentEdges = sameGender.Select(RelationEdge).ToList(),
+                                });
+                                reported = true;
+                            }
+                        }
+                    }
+
+                    if (!reported && parentEdges.Select(r => r.Person1Id).Distinct().Count() > 2)
+                    {
+                        model.ParentProblems.Add(new GanjoorRelationParentsProblem()
+                        {
+                            Kind = RelationParentProblemKind.ManyParentsAcrossBooks,
+                            Child = PersonOf(childGroup.Key),
+                            ParentEdges = parentEdges.GroupBy(r => r.Person1Id).Select(g => RelationEdge(g.First())).ToList(),
+                        });
+                    }
+                }
+
+                // 4) identical rows (a symmetric kinship type is the same row whichever way round it is written)
+                string RelationKey(GanjoorPersonRelation r)
+                {
+                    bool symmetric = r.RelationType == PersonRelationType.Sibling || r.RelationType == PersonRelationType.Spouse;
+                    int a = symmetric ? Math.Min(r.Person1Id, r.Person2Id) : r.Person1Id;
+                    int b = symmetric ? Math.Max(r.Person1Id, r.Person2Id) : r.Person2Id;
+                    return $"{(int)r.RelationType}:{a}:{b}";
+                }
+                foreach (var group in relations.Where(r => r.Person1Id != r.Person2Id).GroupBy(RelationKey).Where(g => g.Count() > 1).OrderBy(g => g.Min(r => r.Id)))
+                {
+                    model.Duplicates.Add(new GanjoorRelationDuplicateProblem() { Edges = group.Select(RelationEdge).ToList() });
+                }
+                foreach (var group in affiliations.Where(a => a.Person1Id != a.Person2Id).GroupBy(a => $"{(int)a.AffiliationType}:{a.Person1Id}:{a.Person2Id}").Where(g => g.Count() > 1).OrderBy(g => g.Min(a => a.Id)))
+                {
+                    model.Duplicates.Add(new GanjoorRelationDuplicateProblem() { Edges = group.Select(AffiliationEdge).ToList() });
+                }
+
+                // 5) incompatible relations between the same two people
+                foreach (var pair in relations.Where(r => r.Person1Id != r.Person2Id).GroupBy(r => (Math.Min(r.Person1Id, r.Person2Id), Math.Max(r.Person1Id, r.Person2Id))).OrderBy(g => g.Key))
+                {
+                    var rows = pair.ToList();
+                    var parentRows = rows.Where(r => r.RelationType == PersonRelationType.Parent).ToList();
+                    bool hasSibling = rows.Any(r => r.RelationType == PersonRelationType.Sibling);
+                    bool hasSpouse = rows.Any(r => r.RelationType == PersonRelationType.Spouse);
+
+                    void Add(RelationPairConflictKind kind, IEnumerable<GanjoorPersonRelation> involved)
+                    {
+                        model.PairConflicts.Add(new GanjoorRelationPairConflictProblem() { Kind = kind, Edges = involved.Select(RelationEdge).ToList() });
+                    }
+
+                    if (parentRows.Select(r => r.Person1Id).Distinct().Count() > 1)
+                        Add(RelationPairConflictKind.ParentInBothDirections, parentRows);
+                    if (parentRows.Count > 0 && hasSibling)
+                        Add(RelationPairConflictKind.ParentAndSibling, rows.Where(r => r.RelationType == PersonRelationType.Parent || r.RelationType == PersonRelationType.Sibling));
+                    if (parentRows.Count > 0 && hasSpouse)
+                        Add(RelationPairConflictKind.ParentAndSpouse, rows.Where(r => r.RelationType == PersonRelationType.Parent || r.RelationType == PersonRelationType.Spouse));
+                    if (hasSibling && hasSpouse)
+                        Add(RelationPairConflictKind.SiblingAndSpouse, rows.Where(r => r.RelationType == PersonRelationType.Sibling || r.RelationType == PersonRelationType.Spouse));
+                }
+
+                return new RServiceResult<GanjoorRelationProblemsViewModel>(model);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorRelationProblemsViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// true if adding a directed ancestor-type edge ancestorId -&gt; descendantId (ancestorId
         /// becomes a parent/ancestor of descendantId) would create a cycle in the kinship graph -
         /// i.e. descendantId is already (directly or transitively) an ancestor of ancestorId, or

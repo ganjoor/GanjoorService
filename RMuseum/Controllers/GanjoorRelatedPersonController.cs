@@ -188,6 +188,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// data problems in the kinship relations and affiliations: loops in the Parent/Ancestor graph,
+        /// suspicious parents, duplicate rows, incompatible relations between the same two people, self
+        /// relations - the worklist for cleaning the family-tree data
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("relations/problems")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorRelationProblemsViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetRelationProblemsAsync()
+        {
+            var res = await _personService.GetRelationProblemsAsync();
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// people connected to this person by kinship or by an overlap-implying affiliation, with those
         /// ties, for the "who could have been alive at the same time" view
         /// </summary>

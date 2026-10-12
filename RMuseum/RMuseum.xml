@@ -2949,6 +2949,14 @@
             <param name="affiliations">true to list non-family affiliations without evidence instead</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetRelationProblemsAsync">
+            <summary>
+            data problems in the kinship relations and affiliations: loops in the Parent/Ancestor graph,
+            suspicious parents, duplicate rows, incompatible relations between the same two people, self
+            relations - the worklist for cleaning the family-tree data
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetContemporaryGraphAsync(System.Int32)">
             <summary>
             people connected to this person by kinship or by an overlap-implying affiliation, with those
@@ -15868,6 +15876,260 @@
             suggested by
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemBook">
+            <summary>
+            a book (master category) that attests a relation or affiliation
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemBook.Id">
+            <summary>
+            category id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemBook.Title">
+            <summary>
+            category title, when it could be found
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemPerson">
+            <summary>
+            a person named in a problem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemPerson.Id">
+            <summary>
+            person id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemPerson.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemEdge">
+            <summary>
+            one relation (or affiliation) row taking part in a problem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemEdge.RelationId">
+            <summary>
+            relation or affiliation id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemEdge.IsAffiliation">
+            <summary>
+            true for a non-family affiliation row
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemEdge.Person1Id">
+            <summary>
+            first person (the parent/ancestor for directional kinship types)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemEdge.Person1Name">
+            <summary>
+            first person's name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemEdge.Person2Id">
+            <summary>
+            second person (the child/descendant for directional kinship types)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemEdge.Person2Name">
+            <summary>
+            second person's name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemEdge.RelationType">
+            <summary>
+            kinship type (not an affiliation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemEdge.AffiliationType">
+            <summary>
+            affiliation type (not a kinship relation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemEdge.DegreeHint">
+            <summary>
+            exact generations for an Ancestor relation, when known
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemEdge.Note">
+            <summary>
+            free-text note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemEdge.EvidenceCount">
+            <summary>
+            number of human-attached evidence couplets
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemEdge.Books">
+            <summary>
+            books attesting it
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationCycleProblem">
+            <summary>
+            a loop in the Parent/Ancestor graph (a strongly connected group of people): the family tree
+            chart cannot lay such a group out as a tree
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationCycleProblem.People">
+            <summary>
+            people on the loop(s)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationCycleProblem.Edges">
+            <summary>
+            all Parent/Ancestor relations between those people
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationCycleProblem.SuggestedRelationId">
+            <summary>
+            the relation that is the best first candidate for removal or correction: an Ancestor one
+            (a looser claim than Parent) with the fewest evidence couplets. Removing it may not break every
+            loop of a large group.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.RelationParentProblemKind">
+            <summary>
+            what is wrong with a person's recorded parents
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.ViewModels.RelationParentProblemKind.TooManyParentsInBook">
+            <summary>
+            more than two different parents attested by the same book
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.ViewModels.RelationParentProblemKind.SameGenderParentsInBook">
+            <summary>
+            two parents of the same (known) gender attested by the same book
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.ViewModels.RelationParentProblemKind.ManyParentsAcrossBooks">
+            <summary>
+            more than two parents overall, no single book has more than two: legitimate when the books
+            disagree, worth a look when they do not
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationParentsProblem">
+            <summary>
+            a person whose recorded parents look wrong
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationParentsProblem.Kind">
+            <summary>
+            what is wrong
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationParentsProblem.Child">
+            <summary>
+            the child
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationParentsProblem.Book">
+            <summary>
+            the book the problem is within (null for ManyParentsAcrossBooks)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationParentsProblem.ParentEdges">
+            <summary>
+            the Parent relations involved
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationDuplicateProblem">
+            <summary>
+            the same relation recorded more than once
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationDuplicateProblem.Edges">
+            <summary>
+            the identical rows
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.RelationPairConflictKind">
+            <summary>
+            kinds of incompatible relations between the same two people
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.ViewModels.RelationPairConflictKind.ParentInBothDirections">
+            <summary>
+            each is recorded as a parent of the other
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.ViewModels.RelationPairConflictKind.ParentAndSibling">
+            <summary>
+            recorded as parent/child and as siblings
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.ViewModels.RelationPairConflictKind.ParentAndSpouse">
+            <summary>
+            recorded as parent/child and as spouses
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.ViewModels.RelationPairConflictKind.SiblingAndSpouse">
+            <summary>
+            recorded as siblings and as spouses
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationPairConflictProblem">
+            <summary>
+            two people linked by relations that cannot all be true
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationPairConflictProblem.Kind">
+            <summary>
+            what is wrong
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationPairConflictProblem.Edges">
+            <summary>
+            the relations involved
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemsViewModel">
+            <summary>
+            everything the relation checker found
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemsViewModel.RelationsChecked">
+            <summary>
+            number of kinship relations checked
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemsViewModel.AffiliationsChecked">
+            <summary>
+            number of affiliations checked
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemsViewModel.Cycles">
+            <summary>
+            loops in the Parent/Ancestor graph
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemsViewModel.ParentProblems">
+            <summary>
+            suspicious parents
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemsViewModel.Duplicates">
+            <summary>
+            identical rows
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemsViewModel.PairConflicts">
+            <summary>
+            incompatible relations between the same two people
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorRelationProblemsViewModel.SelfRelations">
+            <summary>
+            rows relating a person to themselves
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorSearchVerseViewModel">
             <summary>
             Ganjoor Verse View Model
@@ -19741,6 +20003,14 @@
             <param name="affiliations">list affiliations instead of kinship relations</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetRelationProblemsAsync">
+            <summary>
+            scan all kinship relations and affiliations for data problems: loops in the Parent/Ancestor graph
+            (which the family tree chart cannot draw), suspicious parents, duplicate rows, incompatible
+            relations between the same two people and self relations. Read-only.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.SuggestPersonEditAsync(RMuseum.Models.Ganjoor.GanjoorPersonEditSuggestion)">
             <summary>
             submit a suggested edit to an already-approved person's own fields - goes into the
@@ -23511,6 +23781,17 @@
             Person1 = ancestor, Person2 = descendant) currently in the live graph, optionally
             excluding one relation row by id (used so a Modify suggestion can be checked against
             every OTHER edge without tripping on the very row it's about to replace)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._FindStronglyConnectedComponents(System.Collections.Generic.IEnumerable{System.Int32},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.List{System.Int32}})">
+            <summary>
+            strongly connected components of a directed graph (iterative Tarjan, so a long chain cannot
+            overflow the stack). A component with more than one node is a loop.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetRelationProblemsAsync">
+            <summary>
+            scan all kinship relations and affiliations for data problems - see GanjoorRelationProblemsViewModel
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._WouldCreateAncestryCycleAsync(System.Int32,System.Int32,System.Nullable{System.Int32})">
