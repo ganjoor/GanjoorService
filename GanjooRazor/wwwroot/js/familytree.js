@@ -679,6 +679,16 @@
         }, { passive: false });
         svg.style.cursor = 'grab';
         applyTransform();
+
+        // full-screen button (defined in peoplegraph.js, which every layout loads): the tree is hard to
+        // use in a small box on a phone
+        if (window.GanjoorChartFullscreen) {
+            window.GanjoorChartFullscreen.attach(container, svg, function (w, h) {
+                svgWidth = w; svgHeight = h;
+                svg.setAttribute('width', w);
+                svg.setAttribute('height', h);
+            });
+        }
     }
 
     window.GanjoorFamilyTree = { render: renderFamilyTree };

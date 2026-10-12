@@ -77,6 +77,87 @@
         return e;
     }
 
+    // --- full-screen toggle shared by the people graph and the family tree ---------------------------
+    // GanjoorChartFullscreen.attach(container, svg, onResize) puts a round button in the corner of the
+    // chart container. Entering moves the container itself to <body> and pins it over the whole screen
+    // (so it also works from inside the modal windows, and on iPhones, which have no Fullscreen API for
+    // ordinary elements); where the browser does support the Fullscreen API it is requested as well, so
+    // the browser's own bars disappear. onResize(width, height) is called after every size change so
+    // the chart can resize its SVG. Safe to call again for the same container (the chart is re-rendered
+    // in place by some pages): only the callback is replaced.
+    window.GanjoorChartFullscreen = (function () {
+        function attach(container, svg, onResize) {
+            if (!container) return;
+            var st = container._gcfs;
+            if (st) { st.onResize = onResize; return; }
+            st = container._gcfs = { onResize: onResize, active: false, home: null, next: null, style: null, bodyOverflow: '' };
+
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'gcfs-btn';
+            btn.style.cssText = 'position:absolute;top:8px;left:8px;z-index:20;width:40px;height:40px;border-radius:50%;' +
+                'border:1px solid #c9bda4;background:rgba(255,255,255,0.92);color:#5b4a2e;font-size:20px;line-height:1;' +
+                'cursor:pointer;padding:0;box-shadow:0 1px 4px rgba(0,0,0,0.25);touch-action:manipulation;';
+            container.appendChild(btn);
+
+            function fire() {
+                setTimeout(function () {
+                    if (st.onResize) st.onResize(container.clientWidth, container.clientHeight);
+                }, 60);
+            }
+            function paint() {
+                btn.textContent = st.active ? '✕' : '⛶';
+                var label = st.active ? 'خروج از تمام‌صفحه' : 'تمام‌صفحه';
+                btn.title = label;
+                btn.setAttribute('aria-label', label);
+            }
+            function enter() {
+                if (st.active) return;
+                st.active = true;
+                st.home = container.parentNode;
+                st.next = container.nextSibling;
+                st.style = container.getAttribute('style');
+                st.bodyOverflow = document.body.style.overflow;
+                document.body.appendChild(container);
+                container.style.cssText = (st.style || '') + ';position:fixed;left:0;top:0;width:100vw;height:100vh;height:100dvh;' +
+                    'z-index:2147483000;border:0;border-radius:0;';
+                document.body.style.overflow = 'hidden';
+                if (container.requestFullscreen) {
+                    try { var pr = container.requestFullscreen(); if (pr && pr.catch) pr.catch(function () { }); } catch (e) { }
+                }
+                paint();
+                fire();
+            }
+            function exit() {
+                if (!st.active) return;
+                st.active = false;
+                if (document.fullscreenElement === container && document.exitFullscreen) {
+                    try { var pr = document.exitFullscreen(); if (pr && pr.catch) pr.catch(function () { }); } catch (e) { }
+                }
+                document.body.style.overflow = st.bodyOverflow;
+                if (st.style == null) container.removeAttribute('style'); else container.setAttribute('style', st.style);
+                if (st.home && st.home.isConnected) {
+                    st.home.insertBefore(container, st.next && st.next.parentNode === st.home ? st.next : null);
+                } else if (container.parentNode) {
+                    // the page/modal the chart belonged to was closed while it was full screen
+                    container.parentNode.removeChild(container);
+                }
+                paint();
+                fire();
+            }
+            btn.addEventListener('click', function (e) { e.stopPropagation(); if (st.active) exit(); else enter(); });
+            // pointer events on the button must not start a pan of the chart underneath
+            btn.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && st.active && !document.fullscreenElement) exit(); });
+            // leaving native full screen with the browser's own gesture (Esc, swipe) leaves our state behind
+            document.addEventListener('fullscreenchange', function () { if (st.active && !document.fullscreenElement) exit(); });
+            window.addEventListener('resize', function () { if (st.active) fire(); });
+            window.addEventListener('orientationchange', function () { if (st.active) fire(); });
+            paint();
+        }
+        return { attach: attach };
+    })();
+
     function renderPeopleGraph(opts) {
         var container = document.getElementById(opts.containerId);
         var svg = document.getElementById(opts.svgId);
@@ -637,6 +718,18 @@
             zoomAt(evt.clientX, evt.clientY, scale * (evt.deltaY < 0 ? 1.1 : 0.9));
         }, { passive: false });
         svg.style.cursor = 'grab';
+
+        // full-screen button: on a phone the 55vh box is too small to work in
+        if (window.GanjoorChartFullscreen) {
+            window.GanjoorChartFullscreen.attach(container, svg, function (w, h) {
+                W = Math.max(w, 320); H = Math.max(h, 200);
+                svg.setAttribute('width', W);
+                svg.setAttribute('height', H);
+                // let the layout re-centre itself on the new size
+                alpha = Math.max(alpha, 0.2);
+                ensureRunning();
+            });
+        }
 
         // --- animation loop -----------------------------------------------------------------------
         var running = false;
