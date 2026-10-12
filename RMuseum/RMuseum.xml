@@ -2957,6 +2957,15 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetPresenceTimelineAsync(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            who is mentioned in the same stretch of a book as this person: the sections of the book are
+            the columns, every tagged person has the sections in which they are mentioned
+            </summary>
+            <param name="id"></param>
+            <param name="masterCatId">the book (optional - default: the book with most of the person's tags)</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorRelatedPersonController.GetContemporaryGraphAsync(System.Int32)">
             <summary>
             people connected to this person by kinship or by an overlap-implying affiliation, with those
@@ -12453,9 +12462,10 @@
         </member>
         <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Lover">
             <summary>
-            Person1 and Person2 were lovers (دلداده، عاشق و معشوق) without being married to each other -
-            symmetric, direction doesn't matter (e.g. Farhad and Shirin, who was married to Khosrow).
-            Use the Spouse relation instead when they were married; use Note for the story
+            Person1 was in love with Person2 (عاشق و معشوق) - directional: love is not necessarily
+            mutual (Farhad loved Shirin, who was married to Khosrow). When both loved each other record
+            two edges, one in each direction. Use the Spouse relation when they were married; use Note
+            for the story
             </summary>
         </member>
         <member name="F:RMuseum.Models.Ganjoor.PersonAffiliationType.Other">
@@ -15698,6 +15708,105 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPostReportCommentViewModel.ReasonText">
             <summary>
             some explanotory text provided by reporter
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresenceTimelineViewModel">
+            <summary>
+            the "who is mentioned in the same stretch of the book" view of one person: the sections of a book
+            (its direct sub-categories - in the Shahnameh the reigns) are the columns, and every tagged person
+            has a presence span from the first to the last section in which they are mentioned. Uses only the
+            poem tags and the book's structure - no birth/death years and no assumed lifespans.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresenceTimelineViewModel.RootId">
+            <summary>
+            the person the view was opened for
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresenceTimelineViewModel.RootName">
+            <summary>
+            name of the person the view was opened for
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresenceTimelineViewModel.Books">
+            <summary>
+            the books (master categories) in which this person is tagged, most tagged first
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresenceTimelineViewModel.MasterCatId">
+            <summary>
+            the book shown (null when the person is not tagged anywhere)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresenceTimelineViewModel.Columns">
+            <summary>
+            the sections of the shown book, in book order
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresenceTimelineViewModel.People">
+            <summary>
+            everyone tagged in the shown book
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresenceBook">
+            <summary>
+            a book in which the person is tagged
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresenceBook.MasterCatId">
+            <summary>
+            master category id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresenceBook.Title">
+            <summary>
+            title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresenceBook.TagCount">
+            <summary>
+            number of the person's tags in it
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresenceColumn">
+            <summary>
+            a section (column)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresenceColumn.CatId">
+            <summary>
+            category id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresenceColumn.Title">
+            <summary>
+            title
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresencePerson">
+            <summary>
+            a person and the columns (indexes into Columns) in which they are tagged
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresencePerson.Id">
+            <summary>
+            person id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresencePerson.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresencePerson.Columns">
+            <summary>
+            sorted column indexes
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPresencePerson.Related">
+            <summary>
+            directly related to the chart's person by a recorded kinship or affiliation
+            (listed even when the two never share a section, e.g. father and son in successive reigns)
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.ViewModels.GanjoorQuotedPoemModerationViewModel">
@@ -20020,6 +20129,11 @@
             <param name="rootId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetPresenceTimelineAsync(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            who is mentioned in the same stretch of a book as this person (sections as columns)
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorRelatedPersonService.GetRelationsWithoutEvidenceAsync(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean)">
             <summary>
             kinship relations with no human-attached evidence couplet - the worklist for adding evidence
@@ -23981,6 +24095,15 @@
             </summary>
             <param name="affiliationId"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService.GetPresenceTimelineAsync(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            the "same stretch of the book" view: the sections (direct sub-categories) of a book are the
+            columns and every person tagged in the book gets the set of sections in which they are
+            mentioned. Only tags and book structure are used - no dates, no assumed lifespans. The book
+            shown is masterCatId if the person is tagged in it, else the book with most of their tags.
+            Sections are ordered by category id (the order in which they were created, i.e. book order).
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorRelatedPersonService._GetMasterCatIdAsync(System.Int32)">
             <summary>

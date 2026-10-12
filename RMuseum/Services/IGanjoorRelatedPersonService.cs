@@ -93,6 +93,11 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorContemporaryGraphViewModel>> GetContemporaryGraphAsync(int rootId);
 
         /// <summary>
+        /// who is mentioned in the same stretch of a book as this person (sections as columns)
+        /// </summary>
+        Task<RServiceResult<GanjoorPresenceTimelineViewModel>> GetPresenceTimelineAsync(int rootId, int? masterCatId);
+
+        /// <summary>
         /// kinship relations with no human-attached evidence couplet - the worklist for adding evidence
         /// </summary>
         /// <param name="skip"></param>

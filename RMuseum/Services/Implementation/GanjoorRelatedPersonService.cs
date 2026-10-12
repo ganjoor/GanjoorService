@@ -2025,6 +2025,121 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// the "same stretch of the book" view: the sections (direct sub-categories) of a book are the
+        /// columns and every person tagged in the book gets the set of sections in which they are
+        /// mentioned. Only tags and book structure are used - no dates, no assumed lifespans. The book
+        /// shown is masterCatId if the person is tagged in it, else the book with most of their tags.
+        /// Sections are ordered by category id (the order in which they were created, i.e. book order).
+        /// </summary>
+        public async Task<RServiceResult<GanjoorPresenceTimelineViewModel>> GetPresenceTimelineAsync(int rootId, int? masterCatId)
+        {
+            try
+            {
+                var root = await _context.GanjoorRelatedPersons.AsNoTracking().Where(p => p.Id == rootId).Select(p => new { p.Id, p.Name }).SingleOrDefaultAsync();
+                if (root == null)
+                    return new RServiceResult<GanjoorPresenceTimelineViewModel>(null, "شخصیت پیدا نشد.");
+
+                var cats = await _context.GanjoorCategories.AsNoTracking()
+                    .Select(c => new { c.Id, c.ParentId, c.CatType, c.Title, c.PoetId }).ToListAsync();
+                var catById = cats.ToDictionary(c => c.Id);
+
+                // (book, section) of a category: the section is the category directly below the book
+                // (the book itself for poems placed directly in it)
+                var located = new Dictionary<int, (int Master, int Section)>();
+                (int Master, int Section) Locate(int catId)
+                {
+                    if (located.TryGetValue(catId, out var known))
+                        return known;
+                    int below = catId, cur = catId;
+                    (int, int) result = (catId, catId);
+                    for (int guard = 0; guard < 100; guard++)
+                    {
+                        if (!catById.TryGetValue(cur, out var c))
+                            break;
+                        if (c.CatType == GanjoorCatType.Book || c.ParentId == null)
+                        {
+                            result = (c.Id, cur == catId ? c.Id : below);
+                            break;
+                        }
+                        below = cur;
+                        cur = c.ParentId.Value;
+                    }
+                    located[catId] = result;
+                    return result;
+                }
+
+                var model = new GanjoorPresenceTimelineViewModel() { RootId = root.Id, RootName = root.Name };
+
+                var rootCatIds = await _context.PoemGeoDateTags.AsNoTracking()
+                    .Where(t => t.PersonId == rootId && t.PersonMention == PersonMentionKind.Participant)
+                    .Select(t => t.Poem.CatId).ToListAsync();
+                var books = rootCatIds.GroupBy(c => Locate(c).Master)
+                    .Select(g => new GanjoorPresenceBook()
+                    {
+                        MasterCatId = g.Key,
+                        Title = catById.TryGetValue(g.Key, out var bc) ? bc.Title : g.Key.ToString(),
+                        TagCount = g.Count()
+                    })
+                    .OrderByDescending(b => b.TagCount).ToList();
+                model.Books = books;
+                if (books.Count == 0)
+                    return new RServiceResult<GanjoorPresenceTimelineViewModel>(model);
+
+                int chosen = (masterCatId != null && books.Any(b => b.MasterCatId == masterCatId.Value)) ? masterCatId.Value : books[0].MasterCatId;
+                model.MasterCatId = chosen;
+                int poetId = catById[chosen].PoetId;
+
+                var tagRows = (await _context.PoemGeoDateTags.AsNoTracking()
+                    .Where(t => t.PersonId != null && t.PersonMention == PersonMentionKind.Participant && t.Poem.Cat.PoetId == poetId)
+                    .Select(t => new { PersonId = t.PersonId.Value, CatId = t.Poem.CatId }).ToListAsync())
+                    .Where(t => Locate(t.CatId).Master == chosen)
+                    .ToList();
+
+                var sectionIds = tagRows.Select(t => Locate(t.CatId).Section).Distinct()
+                    .OrderBy(id => id == chosen ? int.MinValue : id).ToList();
+                var sectionIndex = new Dictionary<int, int>();
+                for (int i = 0; i < sectionIds.Count; i++) sectionIndex[sectionIds[i]] = i;
+                model.Columns = sectionIds.Select(id => new GanjoorPresenceColumn()
+                {
+                    CatId = id,
+                    Title = catById.TryGetValue(id, out var sc) ? sc.Title : id.ToString()
+                }).ToList();
+
+                var perPerson = new Dictionary<int, SortedSet<int>>();
+                foreach (var t in tagRows)
+                {
+                    if (!perPerson.TryGetValue(t.PersonId, out var set)) { set = new SortedSet<int>(); perPerson[t.PersonId] = set; }
+                    set.Add(sectionIndex[Locate(t.CatId).Section]);
+                }
+
+                var names = (await _context.GanjoorRelatedPersons.AsNoTracking().Select(p => new { p.Id, p.Name }).ToListAsync())
+                    .ToDictionary(p => p.Id, p => p.Name);
+                var related = new HashSet<int>();
+                foreach (var r in await _context.GanjoorPersonRelations.AsNoTracking()
+                    .Where(r => r.Person1Id == rootId || r.Person2Id == rootId)
+                    .Select(r => new { r.Person1Id, r.Person2Id }).ToListAsync())
+                    related.Add(r.Person1Id == rootId ? r.Person2Id : r.Person1Id);
+                foreach (var a in await _context.GanjoorPersonAffiliations.AsNoTracking()
+                    .Where(a => a.Person1Id == rootId || a.Person2Id == rootId)
+                    .Select(a => new { a.Person1Id, a.Person2Id }).ToListAsync())
+                    related.Add(a.Person1Id == rootId ? a.Person2Id : a.Person1Id);
+                model.People = perPerson.Select(kv => new GanjoorPresencePerson()
+                {
+                    Related = related.Contains(kv.Key),
+                    Id = kv.Key,
+                    Name = names.TryGetValue(kv.Key, out var nm) ? nm : kv.Key.ToString(),
+                    Columns = kv.Value.ToList()
+                }).OrderBy(p => p.Columns[0]).ThenBy(p => p.Columns[p.Columns.Count - 1]).ThenBy(p => p.Id).ToList();
+
+                return new RServiceResult<GanjoorPresenceTimelineViewModel>(model);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<GanjoorPresenceTimelineViewModel>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// the "master category" of a poem: walking up from the poem's own category, the first
         /// category whose CatType is Book, or the topmost category (ParentId == null) when none is -
         /// the label under which relation evidence from this poem is grouped. Null if the poem is unknown.

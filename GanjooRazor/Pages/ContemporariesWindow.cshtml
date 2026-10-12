@@ -1,4 +1,4 @@
-@page "{id:int}"
+﻿@page "{id:int}"
 @model GanjooRazor.Pages.ContemporariesWindowModel
 @{
     Layout = null;
@@ -14,37 +14,46 @@ else
             هم‌عصران @(string.IsNullOrEmpty(Model.RootPerson.FamilyTreeCaption) ? Model.RootPerson.Name : Model.RootPerson.FamilyTreeCaption)
             <a href="javascript:void(0)" onclick="PersonWindow.open(@Model.RootPerson.Id)" class="up-btn up-btn--ghost up-btn--sm">مشاهدهٔ اطلاعات این شخصیت</a>
         </h2>
-        <p class="up-hint"><small>
-            این نمودار بدون استفاده از سال تولد و مرگ، فقط از روی روابط خانوادگی و پیوندهای ثبت‌شده (رقیب، متحد، وزیر، قاتل، ...) برآورد می‌کند چه کسانی می‌توانسته‌اند هم‌زمان با این شخصیت زنده باشند.
-            نوار پررنگ یعنی «حتماً زنده»، نوار کم‌رنگ یعنی «بازهٔ ممکن». نتیجه به فرض‌های زیر بستگی دارد و تاریخ واقعی نیست.
-        </small></p>
 
         <div class="ct-controls">
-            <label>حداکثر عمر (سال): <input type="number" id="ctw-max-life" value="100" min="20" max="2000" style="width:80px" /></label>
-            <label>حداقل سن والد هنگام تولد فرزند: <input type="number" id="ctw-min-age" value="15" min="1" max="100" style="width:70px" /></label>
-            <label><input type="checkbox" id="ctw-show-impossible" /> نمایش کسانی که هم‌عصر نبوده‌اند</label>
-            <label><input type="checkbox" id="ctw-posthumous" /> فرزند ممکن است پس از مرگ والد متولد شده باشد</label>
-            <label><input type="checkbox" id="ctw-successor" checked="checked" /> جانشین با پیشین خود هم‌عصر بوده است</label>
+            @if (Model.Timeline != null && Model.Timeline.Books != null && Model.Timeline.Books.Count > 1)
+            {
+                <select id="ctw-book" onchange="ContemporariesWindow.open(@Model.RootPerson.Id, this.value)">
+                    @foreach (var b in Model.Timeline.Books)
+                    {
+                        <option value="@b.MasterCatId" selected="@(b.MasterCatId == Model.Timeline.MasterCatId)">@b.Title</option>
+                    }
+                </select>
+            }
+            <label><input type="checkbox" id="ctw-all" /> نمایش همهٔ شخصیت‌های این کتاب</label>
             <span id="ctw-note" class="ct-note"></span>
         </div>
-        <div class="ct-legend">
-            <span><i style="background:#7a4a2a"></i> این شخصیت</span>
-            <span><i style="background:#3d6b35"></i> قطعاً هم‌عصر</span>
-            <span><i style="background:#2f6fb0"></i> احتمالاً هم‌عصر</span>
-            <span><i style="background:#b5b5b5"></i> هم‌عصر نبوده</span>
-        </div>
 
-        <div id="ctw-container" style="width:100%;max-height:65vh;overflow:auto;border:1px solid #d8cdb8;border-radius:6px;background:#faf7f0;"></div>
+        <div id="ctw-container" class="ct-scroll"></div>
 
         <style>
             .ct-controls { margin: 8px 0; font-size: 13px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
             .ct-note { color: #7a6a50; }
-            .ct-legend { margin: 4px 0 8px 0; font-size: 12px; }
-            .ct-legend span { margin-left: 14px; white-space: nowrap; }
-            .ct-legend i { display: inline-block; width: 22px; height: 8px; border-radius: 4px; margin-left: 4px; vertical-align: middle; }
+            .ct-scroll { width: 100%; max-height: 70vh; overflow: auto; border: 1px solid #d8cdb8; border-radius: 6px; background: #faf7f0; box-sizing: border-box; -webkit-overflow-scrolling: touch; }
+            table.ct-table { border-collapse: separate; border-spacing: 0; font-size: 12px; }
+            .ct-table th, .ct-table td { padding: 0; border-bottom: 1px solid #efe6d2; }
+            .ct-table thead th { position: sticky; top: 0; z-index: 2; background: #f1e9d6; height: 110px; min-width: 30px; width: 30px; vertical-align: bottom; border-left: 1px solid #e0d5bc; }
+            .ct-table thead th span { display: block; writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; margin: 4px auto; font-weight: 700; color: #5b4a2e; max-height: 100px; overflow: hidden; }
+            .ct-table th.ct-name, .ct-table td.ct-name { position: sticky; right: 0; z-index: 3; background: #faf7f0; min-width: 120px; max-width: 160px; padding: 3px 8px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 1px solid #e0d5bc; }
+            .ct-table thead th.ct-name { background: #f1e9d6; z-index: 4; }
+            .ct-table td.ct-cell { min-width: 30px; width: 30px; height: 26px; position: relative; border-left: 1px solid #f3ecdb; }
+            .ct-table td.ct-cell.band { background: #f4ead0; }
+            .ct-table td.ct-cell i { position: absolute; left: 0; right: 0; top: 50%; border-top: 3px solid transparent; transform: translateY(-50%); }
+            .ct-table td.ct-cell.on i { border-top: 4px solid var(--c); }
+            .ct-table td.ct-cell.on i::after { content: ''; position: absolute; top: -6px; width: 8px; height: 8px; border-radius: 50%; background: var(--c); right: calc(50% - 4px); }
+            .ct-table td.ct-cell.gap i { border-top: 2px dashed var(--c); opacity: .6; }
+            .ct-table td.ct-cell.end-left i { left: 50%; }
+            .ct-table td.ct-cell.start-right i { right: 50%; }
+            .ct-table tr.focus td.ct-name { font-weight: 700; }
+            .ct-tree { text-decoration: none; margin-right: 4px; cursor: pointer; }
         </style>
 
-        <script type="application/json" id="ctw-data">@Html.Raw(Model.GraphDataJson)</script>
+        <script type="application/json" id="ctw-data">@Html.Raw(Model.TimelineJson)</script>
         <input type="hidden" id="ctw-root-id" value="@Model.RootPerson.Id" />
     </div>
 }

@@ -206,6 +206,25 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// who is mentioned in the same stretch of a book as this person: the sections of the book are
+        /// the columns, every tagged person has the sections in which they are mentioned
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="masterCatId">the book (optional - default: the book with most of the person's tags)</param>
+        /// <returns></returns>
+        [HttpGet("{id:int}/presence")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(GanjoorPresenceTimelineViewModel))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetPresenceTimelineAsync(int id, int? masterCatId = null)
+        {
+            var res = await _personService.GetPresenceTimelineAsync(id, masterCatId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// people connected to this person by kinship or by an overlap-implying affiliation, with those
         /// ties, for the "who could have been alive at the same time" view
         /// </summary>

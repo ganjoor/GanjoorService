@@ -1,4 +1,4 @@
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -9,10 +9,9 @@ using RMuseum.Models.Ganjoor.ViewModels;
 namespace GanjooRazor.Pages
 {
     /// <summary>
-    /// "who could have been alive at the same time" modal - fetches the person's kinship/affiliation
-    /// component from GET api/people/{id}/contemporaries and hands it to contemporaries.js, which does
-    /// the timing reasoning client-side (see that file's header). Bare fragment (Layout = null), opened
-    /// via ContemporariesWindow.open(id) in personwindow.js - same pattern as FamilyTreeWindow.
+    /// "presence chart" modal: book sections as columns, persons as rows, a person's span running from the
+    /// first to the last section where he/she is tagged. Data comes from GET api/people/{id}/presence and
+    /// is drawn by contemporaries.js. Bare fragment (Layout = null), opened via ContemporariesWindow.open(id, masterCatId).
     /// </summary>
     public class ContemporariesWindowModel : LoginPartialEnabledPageModel
     {
@@ -24,24 +23,15 @@ namespace GanjooRazor.Pages
 
         public GanjoorRelatedPerson RootPerson { get; set; }
 
-        public GanjoorContemporaryGraphViewModel Graph { get; set; }
+        public GanjoorPresenceTimelineViewModel Timeline { get; set; }
 
-        /// <summary>
-        /// Graph with an explicit camelCase contract, so contemporaries.js has a predictable shape
-        /// </summary>
-        public string GraphDataJson =>
+        public string TimelineJson =>
             JsonConvert.SerializeObject(
-                new
-                {
-                    rootId = Graph.RootId,
-                    persons = Graph.Persons,
-                    kin = Graph.Kin,
-                    affiliations = Graph.Affiliations
-                },
+                Timeline,
                 new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver() }
             );
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int id, int? masterCatId = null)
         {
             InitializeCommonPageState();
 
@@ -58,13 +48,13 @@ namespace GanjooRazor.Pages
                 return Page();
             }
 
-            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/people/{id}/contemporaries");
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/people/{id}/presence" + (masterCatId != null ? $"?masterCatId={masterCatId}" : ""));
             if (!response.IsSuccessStatusCode)
             {
                 LastError = await ReadErrorMessageAsync(response);
                 return Page();
             }
-            Graph = JsonConvert.DeserializeObject<GanjoorContemporaryGraphViewModel>(await response.Content.ReadAsStringAsync());
+            Timeline = JsonConvert.DeserializeObject<GanjoorPresenceTimelineViewModel>(await response.Content.ReadAsStringAsync());
 
             return Page();
         }

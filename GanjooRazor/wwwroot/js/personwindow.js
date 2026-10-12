@@ -141,44 +141,23 @@
         });
     }
 
-    function openContemporaries(id) {
+    function openContemporaries(id, masterCatId) {
         openModal(true);
         function show() {
-            loadInto('/ContemporariesWindow/' + String(id), function () {
+            loadInto('/ContemporariesWindow/' + String(id) + (masterCatId ? '?masterCatId=' + String(masterCatId) : ''), function () {
                 var dataEl = document.getElementById('ctw-data');
                 var rootIdEl = document.getElementById('ctw-root-id');
                 if (!dataEl || !rootIdEl || !window.GanjoorContemporaries) return;
                 var graph = JSON.parse(dataEl.textContent);
                 var rootId = parseInt(rootIdEl.value, 10);
-                var life = document.getElementById('ctw-max-life');
-                var age = document.getElementById('ctw-min-age');
-                var imp = document.getElementById('ctw-show-impossible');
-                var post = document.getElementById('ctw-posthumous');
-                var succ = document.getElementById('ctw-successor');
-                var timer = null;
-                function draw() {
-                    GanjoorContemporaries.render('ctw-container', 'ctw-note', graph, rootId, {
-                        maxLifespan: Math.max(parseInt(life.value, 10) || 100, 1),
-                        minParentAge: Math.max(parseInt(age.value, 10) || 15, 1),
-                        showImpossible: imp.checked,
-                        allowPosthumous: post.checked,
-                        successorsOverlap: succ.checked
-                    });
-                }
-                function later() { clearTimeout(timer); timer = setTimeout(draw, 350); }
-                life.addEventListener('input', later);
-                age.addEventListener('input', later);
-                imp.addEventListener('change', draw);
-                post.addEventListener('change', draw);
-                succ.addEventListener('change', draw);
-                draw();
+                GanjoorContemporaries.render('ctw-container', 'ctw-note', 'ctw-all', graph, rootId);
             });
         }
         if (window.GanjoorContemporaries) {
             show();
         } else {
             // loaded on first use, so no layout needs another script tag
-            $.getScript('/js/contemporaries.js?v=1').done(show).fail(function () {
+            $.getScript('/js/contemporaries.js?v=4').done(show).fail(function () {
                 if (body) body.innerHTML = '<p>خطا در بارگذاری اطلاعات.</p>';
             });
         }
