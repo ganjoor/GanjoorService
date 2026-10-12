@@ -430,6 +430,11 @@
                     refilter();
                 }
                 mk('همه', 'نمایش همهٔ ارتباط‌ها', function () { hiddenKinds = {}; refilter(); });
+                mk('هیچکدام', 'پنهان‌کردن همهٔ ارتباط‌ها؛ سپس نوع دلخواه را از راهنما روشن کنید', function () {
+                    hiddenKinds = {};
+                    Object.keys(usedKeys).forEach(function (k) { hiddenKinds[k] = true; });
+                    refilter();
+                });
                 mk('فقط خویشاوندی', 'پدر/مادر، فرزند، همسر، خواهر/برادر، نیا', function () { only('Relation'); });
                 mk('فقط غیرخویشاوندی', 'وزیر، دوست، دشمن، حامی و ...', function () { only('Affiliation'); });
                 mk('⌖ وسط‌چین', 'قرار دادن نمودار در مرکز و متناسب با قاب', function () { autoFit = true; recenter(); fitView(); ensureRunning(); });
