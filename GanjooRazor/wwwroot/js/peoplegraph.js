@@ -195,8 +195,8 @@
                 // absent on the whole-site graph payload (always directly tagged there) - default true
                 directlyTagged: n.directlyTagged !== false,
                 allusionOnly: !!n.allusionOnly,
-                x: W / 2 + 22 * Math.sqrt(rank + 0.5) * Math.cos(rank * 2.399963),
-                y: H / 2 + 22 * Math.sqrt(rank + 0.5) * Math.sin(rank * 2.399963),
+                x: W / 2 + 30 * Math.sqrt(rank + 0.5) * Math.cos(rank * 2.399963),
+                y: H / 2 + 30 * Math.sqrt(rank + 0.5) * Math.sin(rank * 2.399963),
                 vx: 0, vy: 0, fx: null, fy: null, degree: 0
             };
             nodesById[n.id] = node;
@@ -220,6 +220,7 @@
         var SPRING_K = 0.02;
         var CENTER_K = 0.03;
         var DAMPING = 0.82;
+        var MAX_SPEED = 25;
         var alpha = 1, alphaDecay = 0.985, alphaMin = 0.005;
 
         // only what is currently shown takes part in the simulation (filters / "only named" hide the rest)
@@ -233,7 +234,7 @@
                 for (var j = i + 1; j < simNodes.length; j++) {
                     var a = simNodes[i], b = simNodes[j];
                     var dx = a.x - b.x, dy = a.y - b.y;
-                    var distSq = dx * dx + dy * dy || 0.01;
+                    var distSq = Math.max(dx * dx + dy * dy, 144); // floor: nodes almost on top of each other must not get a huge kick
                     var dist = Math.sqrt(distSq);
                     var force = (REPULSION / distSq) * alpha;
                     var fx = (dx / dist) * force, fy = (dy / dist) * force;
@@ -261,6 +262,9 @@
             simNodes.forEach(function (n) {
                 if (n.fx != null) { n.x = n.fx; n.y = n.fy; n.vx = 0; n.vy = 0; return; }
                 n.vx *= DAMPING; n.vy *= DAMPING;
+                // speed limit: with thousands of nodes the summed repulsion otherwise catapults them away
+                var sp = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
+                if (sp > MAX_SPEED) { n.vx *= MAX_SPEED / sp; n.vy *= MAX_SPEED / sp; }
                 n.x += n.vx; n.y += n.vy;
             });
 
@@ -427,7 +431,7 @@
                 mk('همه', 'نمایش همهٔ ارتباط‌ها', function () { hiddenKinds = {}; refilter(); });
                 mk('فقط خویشاوندی', 'پدر/مادر، فرزند، همسر، خواهر/برادر، نیا', function () { only('Relation'); });
                 mk('فقط غیرخویشاوندی', 'وزیر، دوست، دشمن، حامی و ...', function () { only('Affiliation'); });
-                mk('⌖ وسط‌چین', 'قرار دادن نمودار در مرکز و متناسب با قاب', function () { recenter(); fitView(); });
+                mk('⌖ وسط‌چین', 'قرار دادن نمودار در مرکز و متناسب با قاب', function () { autoFit = true; recenter(); fitView(); ensureRunning(); });
                 var hint = document.createElement('small');
                 hint.style.color = '#888';
                 hint.textContent = 'با کلیک روی هر نوع در راهنما می‌توانید آن را نمایش یا پنهان کنید';
@@ -641,7 +645,7 @@
         var pointers = {};
         var suppressClick = false;
         var lastTap = { id: null, t: 0 };
-        var MIN_SCALE = 0.2, MAX_SCALE = 3;
+        var MIN_SCALE = 0.04, MAX_SCALE = 3;
 
         // the graph handles every gesture itself, so the browser must not scroll/zoom the page under it
         svg.style.touchAction = 'none';
@@ -800,11 +804,17 @@
                 svg.setAttribute('height', H);
                 // let the layout re-centre itself on the new size
                 alpha = Math.max(alpha, 0.2);
+                autoFit = true;
                 ensureRunning();
                 recenter();
                 fitView();
             });
         }
+
+        // keep the picture framed while it settles, until the user pans/zooms/drags by hand
+        var autoFit = true;
+        svg.addEventListener('pointerdown', function () { autoFit = false; }, true);
+        svg.addEventListener('wheel', function () { autoFit = false; }, true);
 
         // --- deterministic layout helpers ---------------------------------------------------------
         // run the simulation synchronously so the first paint is already the settled picture
@@ -829,11 +839,13 @@
         // zoom/pan so every visible node is inside the frame (never zoomed in beyond 1:1)
         function fitView() {
             if (simNodes.length === 0) return;
-            var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-            simNodes.forEach(function (n) {
-                if (n.x < minX) minX = n.x; if (n.x > maxX) maxX = n.x;
-                if (n.y < minY) minY = n.y; if (n.y > maxY) maxY = n.y;
-            });
+            // frame the bulk of the picture: with many nodes the extreme 2% on each side (stray, loosely
+            // connected people drifting outward) must not shrink everyone else to dots
+            var xs = simNodes.map(function (n) { return n.x; }).sort(function (a, b) { return a - b; });
+            var ys = simNodes.map(function (n) { return n.y; }).sort(function (a, b) { return a - b; });
+            var cut = simNodes.length > 50 ? Math.floor(simNodes.length * 0.02) : 0;
+            var minX = xs[cut], maxX = xs[xs.length - 1 - cut], minY = ys[cut], maxY = ys[ys.length - 1 - cut];
+            if (!isFinite(minX) || !isFinite(maxX) || !isFinite(minY) || !isFinite(maxY)) return;
             var margin = 50;
             var bw = Math.max(maxX - minX, 1) + margin * 2, bh = Math.max(maxY - minY, 1) + margin * 2;
             var s = Math.min(1, W / bw, H / bh);
@@ -859,6 +871,7 @@
             nodes.forEach(function (n) { n.kindHidden = any && n.visEdges === 0; });
             rebuildSim();
             refreshLegendState();
+            autoFit = true;
             alpha = 0.8;
             settle(250);
             recenter();
@@ -877,6 +890,8 @@
         }
         function step() {
             var keepGoing = tick();
+            // while the layout is still moving and the user hasn't taken over, keep it framed
+            if (autoFit) { recenter(); fitView(); }
             applyPositions();
             if (keepGoing) {
                 requestAnimationFrame(step);
