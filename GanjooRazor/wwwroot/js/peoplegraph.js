@@ -437,7 +437,8 @@
                 });
                 mk('فقط خویشاوندی', 'پدر/مادر، فرزند، همسر، خواهر/برادر، نیا', function () { only('Relation'); });
                 mk('فقط غیرخویشاوندی', 'وزیر، دوست، دشمن، حامی و ...', function () { only('Affiliation'); });
-                mk('⌖ وسط‌چین', 'قرار دادن نمودار در مرکز و متناسب با قاب', function () { autoFit = true; recenter(); fitView(); ensureRunning(); });
+                mk('فاصله ＋', 'دورکردن گره‌ها از یکدیگر (برای کلیک‌کردن راحت‌تر)', function () { changeSpacing(1.3); });
+                mk('فاصله －', 'نزدیک‌کردن گره‌ها به یکدیگر', function () { changeSpacing(1 / 1.3); });
                 var hint = document.createElement('small');
                 hint.style.color = '#888';
                 hint.textContent = 'با کلیک روی هر نوع در راهنما می‌توانید آن را نمایش یا پنهان کنید';
@@ -815,6 +816,33 @@
                 recenter();
                 fitView();
             });
+        }
+
+        // distance between nodes: scales the repulsion and the spring length of the simulation, and
+        // spreads the current picture around its centre of mass right away (the view is left as it is,
+        // so the nodes visibly move apart instead of the whole picture merely being zoomed out)
+        var spacing = 1;
+        function changeSpacing(factor) {
+            var next = Math.min(4, Math.max(0.4, spacing * factor));
+            factor = next / spacing;
+            if (factor === 1) return;
+            spacing = next;
+            REPULSION = 2600 * spacing * spacing;
+            SPRING_LENGTH = 110 * spacing;
+            autoFit = false;
+            if (simNodes.length > 0) {
+                var cx = 0, cy = 0;
+                simNodes.forEach(function (n) { cx += n.x; cy += n.y; });
+                cx /= simNodes.length; cy /= simNodes.length;
+                simNodes.forEach(function (n) {
+                    n.x = cx + (n.x - cx) * factor;
+                    n.y = cy + (n.y - cy) * factor;
+                    if (n.fx != null) { n.fx = n.x; n.fy = n.y; }
+                });
+            }
+            alpha = Math.max(alpha, 0.25);
+            applyPositions();
+            ensureRunning();
         }
 
         // keep the picture framed while it settles, until the user pans/zooms/drags by hand
