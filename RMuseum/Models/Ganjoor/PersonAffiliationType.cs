@@ -106,9 +106,10 @@ namespace RMuseum.Models.Ganjoor
         Killer = 14,
 
         /// <summary>
-        /// Person1 and Person2 were lovers (دلداده، عاشق و معشوق) without being married to each other -
-        /// symmetric, direction doesn't matter (e.g. Farhad and Shirin, who was married to Khosrow).
-        /// Use the Spouse relation instead when they were married; use Note for the story
+        /// Person1 was in love with Person2 (عاشق و معشوق) - directional: love is not necessarily
+        /// mutual (Farhad loved Shirin, who was married to Khosrow). When both loved each other record
+        /// two edges, one in each direction. Use the Spouse relation when they were married; use Note
+        /// for the story
         /// </summary>
         Lover = 15,
 

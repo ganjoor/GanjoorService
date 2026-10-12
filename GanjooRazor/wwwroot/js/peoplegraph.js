@@ -56,7 +56,7 @@
         'Affiliation:12': { label: 'پهلوان', color: '#a56e3a', directional: true },
         'Affiliation:13': { label: 'هم‌عصر', color: '#6a8a6a', directional: false },
         'Affiliation:14': { label: 'قاتل', color: '#8a1a1a', directional: true },
-        'Affiliation:15': { label: 'دلداده', color: '#d6336c', directional: false },
+        'Affiliation:15': { label: 'عاشق (به معشوق)', color: '#d6336c', directional: true },
         'Affiliation:99': { label: 'سایر', color: '#888888', directional: false }
     };
 

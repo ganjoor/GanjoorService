@@ -181,13 +181,13 @@ namespace GanjooRazor.Pages
                 { PersonAffiliationType.Champion, "پهلوانِ" },
                 { PersonAffiliationType.Contemporary, "هم‌عصرِ" },
                 { PersonAffiliationType.Killer, "قاتلِ" },
-                { PersonAffiliationType.Lover, "دلدادهٔ" },
+                { PersonAffiliationType.Lover, "عاشقِ" },
                 { PersonAffiliationType.Other, "دارای نسبتی (به یادداشت نگاه کنید) با" },
             };
 
         private static bool IsSymmetricAffiliation(PersonAffiliationType t) =>
             t == PersonAffiliationType.Ally || t == PersonAffiliationType.Rival ||
-            t == PersonAffiliationType.Companion || t == PersonAffiliationType.Contemporary || t == PersonAffiliationType.Lover ||
+            t == PersonAffiliationType.Companion || t == PersonAffiliationType.Contemporary ||
             t == PersonAffiliationType.Other;
 
         /// <summary>

@@ -198,7 +198,7 @@ namespace GanjooRazor.Areas.User.Pages
                 // value's own doc comment defines (Minister/Advisor/Courtier/Servant/MilitaryCommander/
                 // Champion: Person1 is the subordinate one; Patron/Successor: Person1 is the
                 // patron/later one; Panegyrized/Satirized: Person1 is the poet; Killer: Person1 is the
-                // one who did the killing; Ally/Rival/Companion/Lover/Contemporary/Other: symmetric,
+                // one who did the killing; Lover: Person1 is the one in love; Ally/Rival/Companion/Contemporary/Other: symmetric,
                 // direction doesn't matter)
                 switch (AffiliationKind)
                 {
@@ -317,7 +317,12 @@ namespace GanjooRazor.Areas.User.Pages
                         suggestion.Person2Id = OtherPersonId;
                         suggestion.SuggestedAffiliationType = PersonAffiliationType.Companion;
                         break;
-                    case "Lover": // symmetric - lovers who were not married to each other
+                    case "Lover_Other": // the other person loved this one
+                        suggestion.Person1Id = OtherPersonId;
+                        suggestion.Person2Id = personId;
+                        suggestion.SuggestedAffiliationType = PersonAffiliationType.Lover;
+                        break;
+                    case "Lover_Subject": // this person loved the other one
                         suggestion.Person1Id = personId;
                         suggestion.Person2Id = OtherPersonId;
                         suggestion.SuggestedAffiliationType = PersonAffiliationType.Lover;

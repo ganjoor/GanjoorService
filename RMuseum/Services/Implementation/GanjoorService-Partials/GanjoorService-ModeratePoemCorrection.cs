@@ -1008,8 +1008,7 @@ namespace RMuseum.Services.Implementation
                         // an identical affiliation (same type; either order for the symmetric
                         // types) already live, or already added earlier in this same batch
                         bool symmetricAffiliation = affiliationType == PersonAffiliationType.Ally || affiliationType == PersonAffiliationType.Rival ||
-                            affiliationType == PersonAffiliationType.Companion || affiliationType == PersonAffiliationType.Contemporary ||
-                            affiliationType == PersonAffiliationType.Lover;
+                            affiliationType == PersonAffiliationType.Companion || affiliationType == PersonAffiliationType.Contemporary;
                         var duplicateAffiliationLive = await _context.GanjoorPersonAffiliations
                             .Where(a => a.AffiliationType == affiliationType &&
                                 ((a.Person1Id == person1Id && a.Person2Id == person2Id) ||
