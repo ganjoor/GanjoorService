@@ -647,14 +647,8 @@ namespace GanjooRazor.Pages
             BuildTitleAndBreadCrumbs(breadCrumbList);
             ViewData["BrearCrumpList"] = breadCrumbList.ToString();
 
-            if (IsCatPage || IsPoetPage)
-            {
-                var geoTagsResult = await LoadCategoryGeoTagsAsync();
-                if (geoTagsResult != null)
-                {
-                    return geoTagsResult;
-                }
-            }
+            // the category/poet map's geo tags are NOT loaded here: _CategoryMapPartial fetches them
+            // after the page is shown (OnGetCategoryGeoTagsAsync), so a big book never delays its page
 
             return Page();
         }
@@ -929,15 +923,22 @@ namespace GanjooRazor.Pages
             breadCrumbList.AddItem(GanjoorPage.Title, GanjoorPage.FullUrl, "https://i.ganjoor.net/cat.png");
         }
 
-        private async Task<IActionResult> LoadCategoryGeoTagsAsync()
+        /// <summary>
+        /// geo tags (only those with a location) of a category/poet page's map, as JSON - requested by
+        /// _CategoryMapPartial once the page is displayed
+        /// </summary>
+        public async Task<IActionResult> OnGetCategoryGeoTagsAsync(int catId)
         {
-            var tagsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{GanjoorPage.PoetOrCat.Cat.Id}/geotag");
-            if (await CaptureErrorIfFailedAsync(tagsResponse))
+            var tagsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{catId}/geotag?onlyWithLocation=true");
+            if (!tagsResponse.IsSuccessStatusCode)
             {
-                return Page();
+                return Content("[]", "application/json");
             }
-            CategoryPoemGeoDateTags = JsonConvert.DeserializeObject<PoemGeoDateTag[]>(await tagsResponse.Content.ReadAsStringAsync());
-            return null;
+            Response.Headers["Cache-Control"] = "public, max-age=300";
+            // re-serialized with Newtonsoft's default (PascalCase) names, exactly what the map script
+            // received when the tags used to be embedded in the page, whatever casing the API uses
+            var tags = JsonConvert.DeserializeObject<PoemGeoDateTag[]>(await tagsResponse.Content.ReadAsStringAsync());
+            return Content(JsonConvert.SerializeObject(tags), "application/json");
         }
 
         public async Task<IActionResult> OnGetBNumPartialAsync(int poemId, int coupletIndex)

@@ -1,0 +1,119 @@
+﻿@model GanjoorPageModel
+@* Category/poet map of poem geo tags, loaded AFTER the page has been shown: the tags come from a separate
+   request (?handler=CategoryGeoTags), and leaflet, its plugins, the world outline and the map tiles are only
+   fetched when there is at least one located tag AND the map is about to scroll into view. Nothing here
+   delays the page itself, however many tags (or person tags) the category has. *@
+@if (!Model.OfflineMode)
+{
+    <style>
+        .leaflet-container { background-color: #c5e8ff; }
+        .leaflet-popup-content { font-family: 'Vazirmatn' }
+    </style>
+    <div id="catmap-holder"></div>
+    <script>
+        (function () {
+            var catId = @Model.GanjoorPage.PoetOrCat.Cat.Id;
+
+            function loadCss(href) {
+                var l = document.createElement('link');
+                l.rel = 'stylesheet';
+                l.href = href;
+                document.head.appendChild(l);
+            }
+
+            function loadScripts(list, done) {
+                if (list.length === 0) { done(); return; }
+                var s = document.createElement('script');
+                s.src = list[0];
+                s.onload = function () { loadScripts(list.slice(1), done); };
+                document.head.appendChild(s);
+            }
+
+            function buildMap(poemGeoTags) {
+                fetch('/json/world.json').then(function (r) { return r.json(); }).then(function (data) {
+                    var map = L.map('catmap').setView([34, 53.6880], 4);
+                    L.geoJson(data, {
+                        clickable: false,
+                        style: { stroke: true, weight: 1, color: '#300' }
+                    }).addTo(map);
+
+                    L.tileLayer.provider('OpenStreetMap').addTo(map);
+
+                    var oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true });
+                    var layerGroup = L.layerGroup().addTo(map);
+
+                    var popup = new L.Popup();
+                    oms.addListener('click', function (marker) {
+                        var markOrder = '';
+                        if (marker.poemGeoTag.LunarYear != null) {
+                            markOrder = marker.order + ' - ';
+                        }
+                        // the location's own coordinates are embedded as literal numbers, not as a
+                        // "marker.poemGeoTag...." lookup - that onclick string runs later in global scope
+                        var poemDesc = markOrder + '<a class="actionlink" onclick="viewLocation(' + marker.poemGeoTag.Location.Latitude + ', ' + marker.poemGeoTag.Location.Longitude + ')">' + marker.poemGeoTag.Location.Name + '</a> <br> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
+                        if (marker.poemGeoTag.LunarYear != null) {
+                            poemDesc += '<br> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
+                        }
+                        popup.setContent(poemDesc);
+                        popup.setLatLng(marker.getLatLng());
+                        map.openPopup(popup);
+                    });
+
+                    var path = [];
+                    for (var j = 0; j < poemGeoTags.length; j++) {
+                        if (poemGeoTags[j].LunarYear != null) {
+                            path.push([poemGeoTags[j].Location.Latitude, poemGeoTags[j].Location.Longitude]);
+                        }
+                    }
+                    L.polyline(path).addTo(map);
+
+                    for (var i = 0; i < poemGeoTags.length; i++) {
+                        var poemGeoTag = poemGeoTags[i];
+                        var marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
+                        marker.poemGeoTag = poemGeoTag;
+                        marker.order = persianizeNumerals((i + 1).toString());
+                        marker.addTo(layerGroup);
+                        oms.addMarker(marker);
+                    }
+                });
+            }
+
+            function showMap(poemGeoTags) {
+                var holder = document.getElementById('catmap-holder');
+                if (!holder) return;
+                holder.innerHTML = '<div id="catmap"></div>';
+                var started = false;
+                function start() {
+                    if (started) return;
+                    started = true;
+                    loadCss('/css/leaflet.css?version=2');
+                    loadScripts(['/js/leaflet.js', '/js/leaflet-providers.js', '/js/oms.min.js'], function () { buildMap(poemGeoTags); });
+                }
+                if ('IntersectionObserver' in window) {
+                    var io = new IntersectionObserver(function (entries) {
+                        if (entries.some(function (e) { return e.isIntersecting; })) { io.disconnect(); start(); }
+                    }, { rootMargin: '400px' });
+                    io.observe(document.getElementById('catmap'));
+                } else {
+                    start();
+                }
+            }
+
+            function loadTags() {
+                fetch('?handler=CategoryGeoTags&catId=' + catId)
+                    .then(function (r) { return r.ok ? r.json() : []; })
+                    .then(function (tags) {
+                        tags = (tags || []).filter(function (t) { return t.Location; });
+                        if (tags.length > 0) showMap(tags);
+                    })
+                    .catch(function () { });
+            }
+
+            // after the page is shown and the browser is idle
+            window.addEventListener('load', function () {
+                if ('requestIdleCallback' in window) requestIdleCallback(loadTags, { timeout: 3000 });
+                else setTimeout(loadTags, 500);
+            });
+        })();
+    </script>
+}

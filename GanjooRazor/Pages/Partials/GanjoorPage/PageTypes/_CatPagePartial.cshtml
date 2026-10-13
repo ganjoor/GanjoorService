@@ -104,14 +104,7 @@
         <div id="topvisits-placeholder"></div>
     </div>
 
-    @* Map - only when at least one tag actually carries a Location; person tags (added alongside
-       geo/date tags on the same CategoryPoemGeoDateTags array) never have one, so a category whose
-       tags are all person tags would otherwise still pass a plain "array not empty" check below and
-       render an empty map with nothing to pin. *@
-    @if (!Model.OfflineMode && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Any(t => t.Location != null))
-    {
-        <div id="catmap"></div>
-    }
+    <partial name="~/Pages/Partials/GanjoorPage/_CategoryMapPartial.cshtml" model="Model" />
 </div>
 
 @* Navigation *@
@@ -147,74 +140,4 @@
             <a role="button" href="/Admin/ModifyPage?id=@Model.GanjoorPage.Id" class="pagebutton">ویرایش مستقیم</a>
         </p>
     </div>
-}
-
-@if (!Model.OfflineMode && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Any(t => t.Location != null))
-{
-    <script>
-        var poemGeoTags = [];
-        var map;
-        var oms;
-        var layerGroup;
-        var myGeoJSONPath = '/json/world.json';
-        var myCustomStyle = {
-            stroke: true,
-            weight: 1,
-            color: '#300',
-        }
-
-        $.getJSON(myGeoJSONPath, function(data) {
-            var map = L.map('catmap').setView([34, 53.6880], 4);
-            L.geoJson(data, {
-                clickable: false,
-                style: myCustomStyle
-            }).addTo(map);
-
-            L.tileLayer.provider('OpenStreetMap').addTo(map);
-
-            oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true });
-            layerGroup = L.layerGroup().addTo(map);
-            poemGeoTags = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CategoryPoemGeoDateTags.Where(t => t.Location != null).ToArray(), Newtonsoft.Json.Formatting.Indented)));
-
-            var popup = new L.Popup();
-            oms.addListener('click', function(marker) {
-                var markOrder = '';
-                if (marker.poemGeoTag.LunarYear != null) {
-                    markOrder = marker.order + ' - ';
-                }
-                // the location's own coordinates are embedded here as literal numbers, not as a
-                // "marker.poemGeoTag...." lookup - that onclick string is parsed and executed later,
-                // when the rendered link is actually clicked, in global scope, where "marker" would
-                // otherwise resolve to the shared/leaked loop variable below (whichever marker was
-                // built LAST), making every popup's link open the same one location regardless of
-                // which marker was actually clicked
-                var poemDesc = markOrder + '<a class="actionlink" onclick="viewLocation(' + marker.poemGeoTag.Location.Latitude + ', ' + marker.poemGeoTag.Location.Longitude + ')">' + marker.poemGeoTag.Location.Name + '</a> <br> <a href="' + marker.poemGeoTag.Poem.FullUrl + '">' + marker.poemGeoTag.Poem.FullTitle + '</a>';
-                if (marker.poemGeoTag.LunarYear != null) {
-                    poemDesc += '<br> سال ' + persianizeNumerals(marker.poemGeoTag.LunarYear.toString()) + ' قمری';
-                }
-                popup.setContent(poemDesc);
-                popup.setLatLng(marker.getLatLng());
-                map.openPopup(popup);
-            });
-
-            var polygon = L.polyline([
-                        @foreach (var poemGeoTag in Model.CategoryPoemGeoDateTags.Where(t => t.Location != null && t.LunarYear != null).ToArray())
-                {
-                    @($"[{poemGeoTag.Location.Latitude},{poemGeoTag.Location.Longitude}],")
-                }
-                    ]).addTo(map);
-
-            for (var i = 0; i < poemGeoTags.length; i++) {
-                var poemGeoTag = poemGeoTags[i];
-                // declared with "var" so it's local to this closure instead of leaking as an
-                // implicit global that every iteration overwrites (see the onclick fix above for
-                // why that leak was the actual user-visible bug)
-                var marker = L.marker([poemGeoTag.Location.Latitude, poemGeoTag.Location.Longitude]);
-                marker.poemGeoTag = poemGeoTag
-                marker.order = persianizeNumerals((i + 1).toString());
-                marker.addTo(layerGroup);
-                oms.addMarker(marker);
-            }
-        });
-    </script>
 }

@@ -3859,6 +3859,7 @@ namespace RMuseum.Controllers
         /// get a categoty poem tags
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="onlyWithLocation">leave out tags without a location (person tags share this table) - what a map needs</param>
         /// <returns></returns>
 
         [HttpGet]
@@ -3867,10 +3868,10 @@ namespace RMuseum.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<PoemGeoDateTag>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetCatPoemGeoDateTagsAsync(int id)
+        public async Task<IActionResult> GetCatPoemGeoDateTagsAsync(int id, bool onlyWithLocation = false)
         {
             var res =
-                await _ganjoorService.GetCatPoemGeoDateTagsAsync(id);
+                await _ganjoorService.GetCatPoemGeoDateTagsAsync(id, false, onlyWithLocation);
 
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);

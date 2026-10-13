@@ -151,15 +151,34 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         /// <param name="catId"></param>
         /// <param name="ignoreSumup"></param>
+        /// <param name="onlyWithLocation">leave out tags without a location (person tags live in the same table and
+        /// can be thousands for a big book) - what a map needs</param>
         /// <returns></returns>
-        public async Task<RServiceResult<PoemGeoDateTag[]>> GetCatPoemGeoDateTagsAsync(int catId, bool ignoreSumup = false)
+        public async Task<RServiceResult<PoemGeoDateTag[]>> GetCatPoemGeoDateTagsAsync(int catId, bool ignoreSumup = false, bool onlyWithLocation = false)
         {
             try
             {
                 var cat = await _context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).SingleAsync();
 
+                var catIds = new List<int>() { catId };
+                if (cat.SumUpSubsGeoLocations && !ignoreSumup)
+                {
+                    // descendants level by level: one light query per tree level instead of loading
+                    // every sub-category with its children and querying the tags category by category
+                    var frontier = new List<int>() { catId };
+                    while (frontier.Count > 0)
+                    {
+                        var parents = frontier;
+                        frontier = await _context.GanjoorCategories.AsNoTracking()
+                            .Where(c => c.ParentId != null && parents.Contains(c.ParentId.Value))
+                            .Select(c => c.Id).ToListAsync();
+                        catIds.AddRange(frontier);
+                    }
+                }
+
                 var tags = await _context.PoemGeoDateTags.AsNoTracking().Include(t => t.Location).Include(t => t.Poem)
-                                .Where(t => t.Poem.CatId == catId && t.MachineGenerated == false && t.IgnoreInCategory == false)
+                                .Where(t => catIds.Contains(t.Poem.CatId) && t.MachineGenerated == false && t.IgnoreInCategory == false
+                                        && (!onlyWithLocation || t.LocationId != null))
                                 .OrderBy(t => t.LunarDateTotalNumber)
                                 .ThenBy(t => t.PoemId)
                                 .ToArrayAsync();
@@ -169,32 +188,7 @@ namespace RMuseum.Services.Implementation
                     tag.Poem.PlainText = "";
                 }
 
-                if(cat.SumUpSubsGeoLocations && !ignoreSumup)
-                {
-                    List<PoemGeoDateTag> summedTags = new List<PoemGeoDateTag>(tags);
-                    List<int> catIdList = new List<int>();
-                    await _populateCategoryChildren(_context, catId, catIdList);
-
-                    foreach (var childCatId in catIdList)
-                    {
-                        var childCatRes = await GetCatPoemGeoDateTagsAsync(childCatId, true);
-                        if (!string.IsNullOrEmpty(childCatRes.ExceptionString))
-                        {
-                            return new RServiceResult<PoemGeoDateTag[]>(null, childCatRes.ExceptionString);
-                        }
-                        if(childCatRes.Result.Length > 0)
-                        {
-                            summedTags.AddRange(childCatRes.Result);
-                        }
-                    }
-                    
-                    return new RServiceResult<PoemGeoDateTag[]>(summedTags.OrderBy(t => t.LunarDateTotalNumber).ThenBy(t => t.PoemId).ToArray());
-                }
-                else
-                {
-                    return new RServiceResult<PoemGeoDateTag[]>(tags);
-                }
-                
+                return new RServiceResult<PoemGeoDateTag[]>(tags);
             }
             catch (Exception exp)
             {

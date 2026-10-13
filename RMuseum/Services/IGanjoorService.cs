@@ -1286,7 +1286,7 @@ namespace RMuseum.Services
         /// <param name="catId"></param>
         /// <param name="ignoreSumup"></param>
         /// <returns></returns>
-        Task<RServiceResult<PoemGeoDateTag[]>> GetCatPoemGeoDateTagsAsync(int catId, bool ignoreSumup = false);
+        Task<RServiceResult<PoemGeoDateTag[]>> GetCatPoemGeoDateTagsAsync(int catId, bool ignoreSumup = false, bool onlyWithLocation = false);
 
 
         /// <summary>

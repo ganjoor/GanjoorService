@@ -47,26 +47,6 @@
         </script>
     }
 
-    @if ((Model.IsCatPage || Model.IsPoetPage) && Model.CategoryPoemGeoDateTags != null && Model.CategoryPoemGeoDateTags.Length > 0)
-    {
-        <link rel="stylesheet" href="/css/leaflet.css?version=2">
-        <style>
-            .leaflet-container {
-                background-color: #c5e8ff;
-            }
-
-            .leaflet-popup-content {
-                font-family: 'Vazirmatn'
-            }
-        </style>
-        <script src="~/js/leaflet.js"></script>
-        <script src="~/js/leaflet-providers.js"></script>
-        @if (!Model.OfflineMode)
-        {
-            <script src="~/js/oms.min.js" asp-append-version="true"></script>
-        }
-    }
-
     @if (Model.IsPoemPage && Model.GanjoorPage.Poem.GeoDateTags.Length > 0)
     {
         <link rel="stylesheet" href="/css/leaflet.css?version=2">
