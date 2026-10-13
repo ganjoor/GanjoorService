@@ -61,7 +61,25 @@
     };
 
     function kindKey(edge) { return edge.category + ':' + edge.typeValue; }
-    function kindMeta(edge) { return KIND_META[kindKey(edge)] || { label: edge.category, color: '#888888', directional: false }; }
+    // edge/legend colours are tuned for a light background; on a dark theme they are mixed towards white
+    function isDarkTheme() {
+        try { return getComputedStyle(document.documentElement).colorScheme === 'dark'; } catch (e) { return false; }
+    }
+    function lighten(hex) {
+        var m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
+        if (!m) return hex;
+        var out = '#';
+        for (var i = 1; i <= 3; i++) {
+            var v = parseInt(m[i], 16);
+            v = Math.round(v + (255 - v) * 0.45);
+            out += (v < 16 ? '0' : '') + v.toString(16);
+        }
+        return out;
+    }
+    function kindMeta(edge) {
+        var m = KIND_META[kindKey(edge)] || { label: edge.category, color: '#888888', directional: false };
+        return isDarkTheme() ? { label: m.label, color: lighten(m.color), directional: m.directional } : m;
+    }
 
     function escapeHtml(s) {
         var d = document.createElement('div');
@@ -97,7 +115,7 @@
             btn.type = 'button';
             btn.className = 'gcfs-btn';
             btn.style.cssText = 'position:absolute;top:8px;left:8px;z-index:20;width:40px;height:40px;border-radius:50%;' +
-                'border:1px solid #c9bda4;background:rgba(255,255,255,0.92);color:#5b4a2e;font-size:20px;line-height:1;' +
+                'border:1px solid var(--pw-line);background:var(--pw-paper);color:var(--pw-ink);font-size:20px;line-height:1;' +
                 'cursor:pointer;padding:0;box-shadow:0 1px 4px rgba(0,0,0,0.25);touch-action:manipulation;';
             container.appendChild(btn);
 
@@ -440,7 +458,7 @@
                 mk('فاصله ＋', 'دورکردن گره‌ها از یکدیگر (برای کلیک‌کردن راحت‌تر)', function () { changeSpacing(1.3); });
                 mk('فاصله －', 'نزدیک‌کردن گره‌ها به یکدیگر', function () { changeSpacing(1 / 1.3); });
                 var hint = document.createElement('small');
-                hint.style.color = '#888';
+                hint.style.color = 'var(--pw-muted)';
                 hint.textContent = 'با کلیک روی هر نوع در راهنما می‌توانید آن را نمایش یا پنهان کنید';
                 bar.appendChild(hint);
                 legend.parentNode.insertBefore(bar, legend);
@@ -458,7 +476,7 @@
             if (tableEl && tableEl.parentNode) {
                 selectedBar = document.createElement('div');
                 selectedBar.className = 'pg-selected-bar';
-                selectedBar.style.cssText = 'display:none;margin:6px 0;padding:6px 10px;border:1px solid #d8cdb8;border-radius:6px;background:#faf7f0;';
+                selectedBar.style.cssText = 'display:none;margin:6px 0;padding:6px 10px;border:1px solid var(--pw-line);border-radius:6px;background:var(--pw-panel);';
                 tableEl.parentNode.insertBefore(selectedBar, tableEl);
             }
         }

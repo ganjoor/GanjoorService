@@ -60,49 +60,49 @@ else
             </div>
         }
 
-        <div id="familytree-container" style="position:relative;width:100%;height:65vh;border:1px solid #d8cdb8;border-radius:6px;overflow:hidden;background:#faf7f0;">
+        <div id="familytree-container" style="position:relative;width:100%;height:65vh;border:1px solid var(--pw-line);border-radius:6px;overflow:hidden;background:var(--pw-panel);">
             <svg id="familytree-svg" width="100%" height="100%"></svg>
             <div id="familytree-tooltip" class="ft-tooltip-panel" style="display:none;"></div>
         </div>
 
         <style>
-            .ft-box { fill: #fdf6e6; stroke: #8b6b4a; stroke-width: 1.5; }
-            .ft-box-current { fill: #f3e2b8; stroke: #7a4a2a; stroke-width: 2.5; }
-            .ft-box-text { font-size: 14px; fill: #4a3520; font-family: inherit; }
-            .ft-heart { font-size: 13px; fill: #a0455c; }
-            .ft-line { fill: none; stroke: #a99a7c; stroke-width: 1.5; }
+            .ft-box { fill: var(--pw-box); stroke: var(--pw-stroke); stroke-width: 1.5; }
+            .ft-box-current { fill: var(--pw-box-current); stroke: var(--pw-accent); stroke-width: 2.5; }
+            .ft-box-text { font-size: 14px; fill: var(--pw-ink); font-family: inherit; }
+            .ft-heart { font-size: 13px; fill: var(--pw-heart); }
+            .ft-line { fill: none; stroke: var(--pw-line-neutral); stroke-width: 1.5; }
             .ft-line-spouse { stroke-dasharray: 3,3; }
             /* sibling relation with no recorded shared parent - deliberately plainer than the
                spouse dashing (finer dots, lighter/grayer) and gets no heart icon, so it doesn't
                read as a marriage or as a confirmed shared-parent claim */
-            .ft-line-sibling { stroke-dasharray: 1,3; stroke: #a0a0a0; }
+            .ft-line-sibling { stroke-dasharray: 1,3; stroke: var(--pw-grey); }
             /* real recorded parent (e.g. a mother) who could not be placed as an
                attached spouse-box because she has her own independent position in
                the tree (her own recorded ancestry). Drawn as an extra connector to
                wherever she actually ended up - distinct dash/color from both the
                spouse line (marriage) and the sibling line (unspecified shared
                parent), since this one *is* a confirmed parent-child relation. */
-            .ft-line-second-parent { stroke-dasharray: 6,2; stroke: #a0455c; stroke-width: 1.25; }
+            .ft-line-second-parent { stroke-dasharray: 6,2; stroke: var(--pw-heart); stroke-width: 1.25; }
             .ft-book-bar { margin: 6px 0; font-size: 13px; }
             .ft-legend { margin-right: 16px; }
-            .ft-caption { margin: 4px 0; font-weight: bold; color: #4a3520; }
+            .ft-caption { margin: 4px 0; font-weight: bold; color: var(--pw-ink); }
             /* unfiltered view: the same two people are related differently in different books */
             .ft-line.ft-variant { stroke: #d08a1c; stroke-width: 2; stroke-dasharray: 5,3; }
             .ft-legend-item { margin-left: 12px; white-space: nowrap; }
             /* relation states in book view - declared after (and compounded with .ft-line) so they
                override the spouse/sibling/second-parent dash styles */
-            .ft-line.ft-state-attested { stroke: #3d6b35; stroke-width: 2.5; stroke-dasharray: none; }
-            .ft-line.ft-state-otherbook { stroke: #2f6fb0; stroke-width: 1.75; stroke-dasharray: 7,4; }
-            .ft-line.ft-state-unattested { stroke: #b5b5b5; stroke-width: 1.25; stroke-dasharray: 2,4; }
+            .ft-line.ft-state-attested { stroke: var(--pw-green); stroke-width: 2.5; stroke-dasharray: none; }
+            .ft-line.ft-state-otherbook { stroke: var(--pw-blue); stroke-width: 1.75; stroke-dasharray: 7,4; }
+            .ft-line.ft-state-unattested { stroke: var(--pw-grey); stroke-width: 1.25; stroke-dasharray: 2,4; }
             .ft-line.ft-state-contradicted { stroke: #c0392b; stroke-width: 1; stroke-dasharray: 4,3; opacity: .8; }
             .ft-tooltip-panel {
                 position: absolute; top: 10px; left: 10px; max-width: 300px;
-                background: #fffdf7; border: 1px solid #8b6b4a; border-radius: 8px;
+                background: var(--pw-paper); color: var(--ink-black); border: 1px solid var(--pw-stroke); border-radius: 8px;
                 padding: 12px 16px; box-shadow: 0 2px 10px rgba(0,0,0,.25); z-index: 10;
                 direction: rtl; text-align: right;
             }
             .ft-tooltip-close {
-                float: left; border: none; background: none; font-size: 18px; cursor: pointer; color: #7a4a2a;
+                float: left; border: none; background: none; font-size: 18px; cursor: pointer; color: var(--pw-accent);
             }
         </style>
 

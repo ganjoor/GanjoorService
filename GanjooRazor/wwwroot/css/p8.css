@@ -60,6 +60,26 @@
     --accent-bg:      var(--card-inner);
     --accent-border:  var(--border-gold);
     --accent-text:    var(--lapis);
+
+    /* person windows / family tree / contemporaries / people graph */
+    --pw-paper:       #fffdf7;
+    --pw-panel:       #faf7f0;
+    --pw-panel2:      #f1e9d6;
+    --pw-band:        #f4ead0;
+    --pw-line:        #d8cdb8;
+    --pw-line-soft:   #e9dfc9;
+    --pw-ink:         #4a3520;
+    --pw-muted:       #7a6a50;
+    --pw-accent:      #7a4a2a;
+    --pw-stroke:      #8b6b4a;
+    --pw-box:         #fdf6e6;
+    --pw-box-current: #f3e2b8;
+    --pw-link:        #1a4fb5;
+    --pw-green:       #3d6b35;
+    --pw-blue:        #2f6fb0;
+    --pw-grey:        #8a8a8a;
+    --pw-heart:       #a0455c;
+    --pw-line-neutral:#a99a7c;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -86,6 +106,25 @@
         --accent-bg:      var(--card-inner);
         --accent-border:  var(--border-gold);
         --accent-text:    var(--lapis);
+
+        --pw-paper:       #1f1b16;
+        --pw-panel:       #17140f;
+        --pw-panel2:      #2a241b;
+        --pw-band:        #352c1c;
+        --pw-line:        #4a3f31;
+        --pw-line-soft:   #2f281d;
+        --pw-ink:         #e7ded0;
+        --pw-muted:       #a79a88;
+        --pw-accent:      #d9a679;
+        --pw-stroke:      #b8975f;
+        --pw-box:         #2d2619;
+        --pw-box-current: #54401c;
+        --pw-link:        #7db4ff;
+        --pw-green:       #86c477;
+        --pw-blue:        #6fb0ee;
+        --pw-grey:        #a3a3a3;
+        --pw-heart:       #e07a95;
+        --pw-line-neutral:#8c7e63;
     }
 }
 

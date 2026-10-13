@@ -31,11 +31,13 @@
             '.up-modal-overlay{position:fixed;inset:0;background:rgba(30,20,10,.55);z-index:9000;' +
             'display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:5vh 16px;}' +
             '.up-modal-overlay--open{display:flex;}' +
-            '.up-modal{position:relative;background:#fffdf7;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.35);' +
+            '.up-modal{position:relative;background:var(--pw-paper,#fffdf7);color:var(--ink-black,#17130f);border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.35);' +
             'padding:20px 24px;max-width:640px;width:100%;max-height:90vh;overflow-y:auto;direction:rtl;text-align:right;}' +
             '.up-modal--lg{max-width:900px;}' +
             '.up-modal-close{position:absolute;left:12px;top:10px;border:none;background:none;font-size:22px;' +
-            'line-height:1;cursor:pointer;color:#7a4a2a;}' +
+            'line-height:1;cursor:pointer;color:var(--pw-accent,#7a4a2a);}' +
+            '.up-modal a:not([class]){color:var(--pw-link,#1a4fb5);}' +
+            ':where(.up-modal) :where(select,input,textarea){background:var(--pw-panel,#faf7f0);color:inherit;border-color:var(--pw-line,#d8cdb8);}' +
             '.up-modal-loading{text-align:center;padding:30px 0;}' +
             'body.up-modal-noscroll{overflow:hidden;}';
         document.head.appendChild(style);
@@ -157,7 +159,7 @@
             show();
         } else {
             // loaded on first use, so no layout needs another script tag
-            $.getScript('/js/contemporaries.js?v=4').done(show).fail(function () {
+            $.getScript('/js/contemporaries.js?v=5').done(show).fail(function () {
                 if (body) body.innerHTML = '<p>خطا در بارگذاری اطلاعات.</p>';
             });
         }

@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    var BROWN = '#7a4a2a', GREEN = '#3d6b35', BLUE = '#2f6fb0', GREY = '#8a8a8a';
+    var BROWN = 'var(--pw-accent)', GREEN = 'var(--pw-green)', BLUE = 'var(--pw-blue)', GREY = 'var(--pw-grey)';
 
     function esc(s) {
         return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
