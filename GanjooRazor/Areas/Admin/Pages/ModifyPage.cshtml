@@ -227,25 +227,8 @@
         <div class="up-form-actions">
             <a role="button" onclick="defaultHtmlText()" class="up-btn up-btn--ghost up-btn--sm" title="چینش پیش‌فرض ابیات">چینش پیش‌فرض ابیات</a>
             <a role="button" onclick="cleanCache(@Model.PageInformation.Id)" class="up-btn up-btn--ghost up-btn--sm" title="حذف کش صفحه">حذف کش صفحه</a>
-            <a role="button" onclick="rebuildSitemap()" class="up-btn up-btn--ghost up-btn--sm" title="بازسازی نقشهٔ سایت">بازسازی نقشهٔ سایت</a>
-            <a role="button" onclick="rebuildTajikSitemap()" class="up-btn up-btn--ghost up-btn--sm" title="بازسازی نقشهٔ سایت">بازسازی نقشهٔ سایت تاجیکی</a>
-            <a role="button" onclick="refillCoupletCounts()" class="up-btn up-btn--ghost up-btn--sm">بازشماری تعداد ابیات قطعات</a>
-            <a role="button" onclick="rebuildStats()" class="up-btn up-btn--ghost up-btn--sm" title="بازسازی صفحات آمار و اوزان عروضی">بازسازی صفحات آمار و اوزان عروضی</a>
-            <a role="button" onclick="rebuildRelatedPages()" class="up-btn up-btn--ghost up-btn--sm" title="بازسازی صفحات استقبالها">بازسازی صفحات استقبالها</a>
-            <a role="button" onclick="rebuildDigitalSourcesStats()" class="up-btn up-btn--ghost up-btn--sm" title="بازسازی آمار منابع دیجیتال">بازسازی آمار منابع دیجیتال</a>
-            <a role="button" onclick="regeneratePublicData()" class="up-btn up-btn--ghost up-btn--sm" title="بازسازی و ارسال دادهٔ عمومی گنجور">بازسازی دادهٔ عمومی</a>
-            <a role="button" onclick="regenerateTajikPublicData()" class="up-btn up-btn--ghost up-btn--sm" title="بازسازی و ارسال دادهٔ عمومی تاجیکی">بازسازی دادهٔ عمومی تاجیکی</a>
-            <a role="button" onclick="transilerate()" class="up-btn up-btn--ghost up-btn--sm" title="برگردان تاجیکی">برگردان تاجیکی</a>
+            <a role="button" href="/Admin/SiteTools@(Model.PageInformation.PoetOrCat != null ? "?poetId=" + Model.PageInformation.PoetOrCat.Poet.Id : "")" class="up-btn up-btn--ghost up-btn--sm" title="ابزارهای نگهداری سایت">ابزارهای نگهداری سایت</a>
         </div>
-
-        @if (Model.PageInformation.PoetOrCat != null)
-        {
-            <div class="up-form-actions" style="margin-top:var(--up-space-2);">
-                <a role="button" onclick="rebuildRebuildWordCounts(@Model.PageInformation.PoetOrCat.Poet.Id)" class="up-btn up-btn--ghost up-btn--sm" title="شمارش واژگان">شمارش واژگان</a>
-                <a role="button" onclick="discoverNaskbanPaperSources(@Model.PageInformation.PoetOrCat.Poet.Id)" class="up-btn up-btn--ghost up-btn--sm" title="فهرست کردن کتابهای نسکبان">فهرست کردن کتابهای نسکبان</a>
-                <a role="button" onclick="discoverMusuemPaperSources(@Model.PageInformation.PoetOrCat.Poet.Id)" class="up-btn up-btn--ghost up-btn--sm" title="فهرست کردن کتابهای گنجینه">فهرست کردن کتابهای گنجینه</a>
-            </div>
-        }
     </div>
 
     <div class="up-form-actions">

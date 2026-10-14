@@ -2248,11 +2248,12 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.GetCatPoemGeoDateTagsAsync(System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.GetCatPoemGeoDateTagsAsync(System.Int32,System.Boolean)">
             <summary>
             get a categoty poem tags
             </summary>
             <param name="id"></param>
+            <param name="onlyWithLocation">leave out tags without a location (person tags share this table) - what a map needs</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetCatPersonGraphAsync(System.Int32)">
@@ -21552,7 +21553,7 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetCatPoemGeoDateTagsAsync(System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetCatPoemGeoDateTagsAsync(System.Int32,System.Boolean,System.Boolean)">
             <summary>
             get a categoty poem tags
             </summary>
@@ -25187,12 +25188,14 @@
             <param name="poemId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatPoemGeoDateTagsAsync(System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCatPoemGeoDateTagsAsync(System.Int32,System.Boolean,System.Boolean)">
             <summary>
             get a categoty poem tags
             </summary>
             <param name="catId"></param>
             <param name="ignoreSumup"></param>
+            <param name="onlyWithLocation">leave out tags without a location (person tags live in the same table and
+            can be thousands for a big book) - what a map needs</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.StartFillingSectionsPoemFormats">

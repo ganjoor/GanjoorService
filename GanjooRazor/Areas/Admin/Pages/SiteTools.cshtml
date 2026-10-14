@@ -1,0 +1,187 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.SiteToolsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "ابزارهای نگهداری سایت";
+}
+
+<style>
+    .st-toolbar { display: flex; gap: var(--up-space-3); align-items: center; flex-wrap: wrap; margin-bottom: var(--up-space-4); }
+    .st-toolbar input[type=search] { flex: 1 1 220px; max-width: 360px; padding: 8px 12px; border: 1px solid var(--up-border); border-radius: var(--up-radius); background: var(--up-surface); color: var(--up-text); }
+    .st-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: var(--up-space-4); align-items: start; }
+    @@media (max-width: 480px) { .st-grid { grid-template-columns: 1fr; } }
+    .st-group-head { display: flex; align-items: center; gap: var(--up-space-2); margin-bottom: var(--up-space-3); }
+    .st-group-head .material-icons { font-size: 26px; color: var(--up-primary); }
+    .st-group-head h2 { margin: 0; font-size: 1.1rem; }
+    .st-tool { display: flex; align-items: center; gap: var(--up-space-3); padding: var(--up-space-3) 0; border-top: 1px solid var(--up-border); }
+    .st-tool:first-of-type { border-top: 0; }
+    .st-tool > .material-icons { font-size: 22px; color: var(--up-text-muted); flex: 0 0 auto; }
+    .st-tool__body { flex: 1 1 auto; min-width: 0; }
+    .st-tool__title { font-weight: 600; }
+    .st-tool__desc { color: var(--up-text-muted); font-size: .85rem; margin-top: 2px; }
+    .st-badge { display: inline-block; font-size: .7rem; padding: 1px 8px; border-radius: 999px; background: var(--up-surface-alt); border: 1px solid var(--up-border); color: var(--up-text-muted); margin-inline-start: 6px; vertical-align: middle; }
+    .st-tool .up-btn { display: inline-flex; align-items: center; gap: 4px; flex: 0 0 auto; }
+    .st-tool .up-btn .material-icons { font-size: 18px; }
+    .st-poet-select { width: 100%; padding: 8px 12px; border: 1px solid var(--up-border); border-radius: var(--up-radius); background: var(--up-surface); color: var(--up-text); margin-bottom: var(--up-space-3); }
+    .st-cred { display: none; gap: var(--up-space-2); padding: var(--up-space-3) 0; flex-wrap: wrap; }
+    .st-cred.open { display: flex; }
+    .st-cred input { flex: 1 1 140px; padding: 8px 12px; border: 1px solid var(--up-border); border-radius: var(--up-radius); background: var(--up-surface); color: var(--up-text); }
+    .st-hidden { display: none !important; }
+    .st-empty { display: none; color: var(--up-text-muted); }
+</style>
+
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+    <a class="up-btn up-btn--ghost up-btn--sm" asp-area="Admin" asp-page="LongRunningJobs"><span class="material-icons" style="font-size:18px">schedule</span> کارها</a>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <div class="up-alert up-alert--info">@Model.LastMessage</div>
+}
+
+<div class="st-toolbar">
+    <input type="search" id="st-filter" placeholder="جستجو در ابزارها" autocomplete="off" />
+</div>
+
+<div class="st-grid" id="st-grid">
+    <section class="up-card st-group">
+        <div class="st-group-head"><span class="material-icons">travel_explore</span><h2>نقشهٔ سایت</h2></div>
+        <div class="st-tool" data-search="بازسازی نقشهٔ سایت ساخت دوبارهٔ فایل‌های sitemap گنجور">
+            <span class="material-icons">map</span>
+            <div class="st-tool__body"><div class="st-tool__title">بازسازی نقشهٔ سایت</div><div class="st-tool__desc">ساخت دوبارهٔ فایل‌های sitemap گنجور</div></div>
+            <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="rebuildSitemap()"><span class="material-icons">play_arrow</span>اجرا</a>
+        </div>
+    </section>
+    <section class="up-card st-group">
+        <div class="st-group-head"><span class="material-icons">insights</span><h2>آمار و شمارش</h2></div>
+        <div class="st-tool" data-search="صفحات آمار و اوزان عروضی بازسازی صفحات آمار">
+            <span class="material-icons">bar_chart</span>
+            <div class="st-tool__body"><div class="st-tool__title">صفحات آمار و اوزان عروضی<span class="st-badge">سنگین</span></div><div class="st-tool__desc">بازسازی صفحات آمار</div></div>
+            <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="rebuildStats()"><span class="material-icons">play_arrow</span>اجرا</a>
+        </div>
+        <div class="st-tool" data-search="تعداد ابیات قطعات بازشماری تعداد ابیات هر قطعه">
+            <span class="material-icons">format_list_numbered</span>
+            <div class="st-tool__body"><div class="st-tool__title">تعداد ابیات قطعات</div><div class="st-tool__desc">بازشماری تعداد ابیات هر قطعه</div></div>
+            <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="refillCoupletCounts()"><span class="material-icons">play_arrow</span>اجرا</a>
+        </div>
+        <div class="st-tool" data-search="آمار منابع دیجیتال بازسازی آمار منابع دیجیتال">
+            <span class="material-icons">inventory_2</span>
+            <div class="st-tool__body"><div class="st-tool__title">آمار منابع دیجیتال</div><div class="st-tool__desc">بازسازی آمار منابع دیجیتال</div></div>
+            <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="rebuildDigitalSourcesStats()"><span class="material-icons">play_arrow</span>اجرا</a>
+        </div>
+        <div class="st-tool" data-search="صفحات استقبال‌ها بازسازی صفحات استقبال‌ها">
+            <span class="material-icons">reply</span>
+            <div class="st-tool__body"><div class="st-tool__title">صفحات استقبال‌ها</div><div class="st-tool__desc">بازسازی صفحات استقبال‌ها</div></div>
+            <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="rebuildRelatedPages()"><span class="material-icons">play_arrow</span>اجرا</a>
+        </div>
+    </section>
+    <section class="up-card st-group">
+        <div class="st-group-head"><span class="material-icons">cloud_upload</span><h2>دادهٔ عمومی</h2></div>
+        <div class="st-tool" data-search="بازسازی و ارسال دادهٔ عمومی تولید و ارسال دادهٔ عمومی گنجور">
+            <span class="material-icons">public</span>
+            <div class="st-tool__body"><div class="st-tool__title">بازسازی و ارسال دادهٔ عمومی<span class="st-badge">سنگین</span></div><div class="st-tool__desc">تولید و ارسال دادهٔ عمومی گنجور</div></div>
+            <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="regeneratePublicData()"><span class="material-icons">play_arrow</span>اجرا</a>
+        </div>
+    </section>
+    <section class="up-card st-group">
+        <div class="st-group-head"><span class="material-icons">translate</span><h2>گنجور تاجیکی</h2></div>
+        <div class="st-tool" data-search="برگردان تاجیکی برگردان متن‌ها به خط تاجیکی">
+            <span class="material-icons">translate</span>
+            <div class="st-tool__body"><div class="st-tool__title">برگردان تاجیکی<span class="st-badge">سنگین</span></div><div class="st-tool__desc">برگردان متن‌ها به خط تاجیکی</div></div>
+            <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="transilerate()"><span class="material-icons">play_arrow</span>اجرا</a>
+        </div>
+        <div class="st-tool" data-search="نقشهٔ سایت تاجیکی بازسازی sitemap تاجیکی">
+            <span class="material-icons">map</span>
+            <div class="st-tool__body"><div class="st-tool__title">نقشهٔ سایت تاجیکی</div><div class="st-tool__desc">بازسازی sitemap تاجیکی</div></div>
+            <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="rebuildTajikSitemap()"><span class="material-icons">play_arrow</span>اجرا</a>
+        </div>
+        <div class="st-tool" data-search="دادهٔ عمومی تاجیکی بازسازی و ارسال دادهٔ عمومی تاجیکی">
+            <span class="material-icons">cloud_upload</span>
+            <div class="st-tool__body"><div class="st-tool__title">دادهٔ عمومی تاجیکی<span class="st-badge">سنگین</span></div><div class="st-tool__desc">بازسازی و ارسال دادهٔ عمومی تاجیکی</div></div>
+            <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="regenerateTajikPublicData()"><span class="material-icons">play_arrow</span>اجرا</a>
+        </div>
+    </section>
+    <section class="up-card st-group">
+        <div class="st-group-head"><span class="material-icons">person</span><h2>عملیات روی یک سخنور</h2></div>
+        <select id="st-poet" class="st-poet-select" aria-label="سخنور">
+            @foreach (var poet in Model.Poets)
+            {
+                <option value="@poet.Id" selected="@(poet.Id == Model.PoetId)">@poet.Name</option>
+            }
+        </select>
+        <div class="st-tool" data-search="شمارش واژگان برای سخنور برگزیده؛ یا همهٔ سخنوران">
+            <span class="material-icons">sort_by_alpha</span>
+            <div class="st-tool__body"><div class="st-tool__title">شمارش واژگان</div><div class="st-tool__desc">برای سخنور برگزیده؛ یا همهٔ سخنوران</div></div>
+            <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="stWordCounts(false)"><span class="material-icons">play_arrow</span>اجرا</a>
+        </div>
+        <div class="st-tool" data-search="شمارش واژگان همهٔ سخنوران">
+            <span class="material-icons">sort_by_alpha</span>
+            <div class="st-tool__body"><div class="st-tool__title">شمارش واژگان همهٔ سخنوران<span class="st-badge">سنگین</span></div></div>
+            <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="stWordCounts(true)"><span class="material-icons">play_arrow</span>اجرا</a>
+        </div>
+        <div class="st-tool" data-search="کتاب‌های نسکبان فهرست کردن کتاب‌های سخنور از نسکبان">
+            <span class="material-icons">menu_book</span>
+            <div class="st-tool__body"><div class="st-tool__title">کتاب‌های نسکبان</div><div class="st-tool__desc">فهرست کردن کتاب‌های سخنور از نسکبان</div></div>
+            <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="stToggleCred()"><span class="material-icons">lock</span>ورود…</a>
+        </div>
+        <div class="st-cred" id="st-cred">
+            <input type="text" id="st-nb-user" placeholder="نام کاربری" autocomplete="off" dir="ltr" />
+            <input type="password" id="st-nb-pass" placeholder="گذرواژه" autocomplete="new-password" dir="ltr" />
+            <a role="button" class="up-btn up-btn--primary up-btn--sm" onclick="stNaskban()">شروع</a>
+        </div>
+        <div class="st-tool" data-search="کتاب‌های گنجینه فهرست کردن کتاب‌های سخنور از گنجینه">
+            <span class="material-icons">library_books</span>
+            <div class="st-tool__body"><div class="st-tool__title">کتاب‌های گنجینه</div><div class="st-tool__desc">فهرست کردن کتاب‌های سخنور از گنجینه</div></div>
+            <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="stMuseum()"><span class="material-icons">play_arrow</span>اجرا</a>
+        </div>
+    </section>
+    <div class="st-empty" id="st-empty">ابزاری یافت نشد.</div>
+</div>
+
+<script>
+    function stPoetId() { return parseInt(document.getElementById('st-poet').value) || 0; }
+    function stPost(handler, data, okMsg) {
+        $.ajax({
+            type: "POST",
+            url: '?handler=' + handler,
+            data: data,
+            error: function () { upToast('خطا رخ داد.', 'error'); },
+            success: function () { upToast(okMsg || 'فرایند شروع شد.', 'success'); }
+        });
+    }
+    async function stWordCounts(all) {
+        var id = all ? 0 : stPoetId();
+        var ok = await upConfirm(all ? 'شمارش واژگان برای همهٔ سخنوران؟' : 'شمارش واژگان برای سخنور برگزیده؟');
+        if (!ok) return;
+        stPost('RebuildWordCounts', { poetId: id });
+    }
+    function stToggleCred() { document.getElementById('st-cred').classList.toggle('open'); }
+    function stNaskban() {
+        var u = document.getElementById('st-nb-user').value, p = document.getElementById('st-nb-pass').value;
+        if (!u || !p) { upToast('نام کاربری و گذرواژه لازم است.', 'error'); return; }
+        stPost('ImportNaskbanPaperSources', { poetId: stPoetId(), username: u, password: p });
+        document.getElementById('st-nb-pass').value = '';
+    }
+    async function stMuseum() {
+        var ok = await upConfirm('فهرست کردن کتاب‌های گنجینه برای سخنور برگزیده؟');
+        if (!ok) return;
+        stPost('ImportMuseumPaperSources', { poetId: stPoetId() });
+    }
+    document.getElementById('st-filter').addEventListener('input', function () {
+        var q = this.value.trim();
+        var any = false;
+        document.querySelectorAll('.st-group').forEach(function (g) {
+            var vis = 0;
+            g.querySelectorAll('.st-tool').forEach(function (t) {
+                var m = !q || (t.getAttribute('data-search') || '').indexOf(q) >= 0;
+                t.classList.toggle('st-hidden', !m);
+                if (m) vis++;
+            });
+            g.classList.toggle('st-hidden', vis === 0 && !!q);
+            if (vis || !q) any = true;
+        });
+        document.getElementById('st-empty').style.display = any ? 'none' : 'block';
+    });
+</script>
