@@ -3599,3 +3599,51 @@ mark {
         display: none;
     }
 }
+
+/* icons of the poem page content navigation tabs (matched by target, no markup changes):
+   a small round badge placed after the label; no icon resembles a latin letter */
+.poemtablinks a[href^="#"]::before {
+    order: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    margin-block: -3px;
+    margin-right: 10px; /* physical: the pseudo element itself is direction:ltr */
+    border-radius: 50%;
+    background-color: var(--gold-subtle);
+    background-color: color-mix(in srgb, var(--brand) 14%, transparent);
+    color: var(--brand);
+    -webkit-text-fill-color: var(--brand);
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.poemtablinks.active a[href^="#"]::before,
+.poemtablinks a[href^="#"]:hover::before {
+    background-color: var(--brand);
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+}
+.poemtablinks a[href="#pretab"]::before { content: "description"; }
+.poemtablinks a[href="#words"]::before { content: "menu_book"; }
+.poemtablinks a[href="#manuscripts"]::before { content: "photo_library"; }
+.poemtablinks a[href="#recitations"]::before { content: "headphones"; }
+.poemtablinks a[href="#commentaries"]::before { content: "record_voice_over"; }
+.poemtablinks a[href="#qpoems"]::before { content: "format_quote"; }
+.poemtablinks a[href="#rpoems"]::before { content: "queue_music"; }
+.poemtablinks a[href="#songs"]::before { content: "library_music"; }
+.poemtablinks a[href="#7daysvisits"]::before { content: "trending_up"; }
+.poemtablinks a[href="#discussions"]::before { content: "forum"; }
