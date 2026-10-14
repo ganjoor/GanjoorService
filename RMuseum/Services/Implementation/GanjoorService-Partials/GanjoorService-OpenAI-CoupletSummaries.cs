@@ -473,9 +473,10 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// geo tag poems using AI
         /// </summary>
-        /// <param name="startFrom"></param>
-        /// <param name="count"></param>
-        public void OpenAIStartFillingGeoLocations(int startFrom, int count)
+        /// <param name="startFrom">offset after the resume point</param>
+        /// <param name="count">0 = all</param>
+        /// <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
+        public void OpenAIStartFillingGeoLocations(int startFrom, int count, bool restart = false)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
               (
@@ -484,7 +485,7 @@ namespace RMuseum.Services.Implementation
                   using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>())) //this is long running job, so _context might be already been freed/collected by GC
                   {
                       LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                      var job = (await jobProgressServiceEF.NewJob($"OpenAIStartFillingGeoLocations - start: {startFrom} - count: {count}", "Open AI initialization")).Result;
+                      var job = (await jobProgressServiceEF.NewJob($"OpenAIStartFillingGeoLocations - start: {startFrom} - count: {count} - restart: {restart}", "Open AI initialization")).Result;
                       try
                       {
 
@@ -496,25 +497,23 @@ namespace RMuseum.Services.Implementation
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
 
-                          var poems =
-                            count == 0 ?
-                            startFrom == 0 ?
-                            await context.GanjoorPoems.AsNoTracking()
-                                .ToListAsync()
-                                :
-                                await context.GanjoorPoems.AsNoTracking()
-                                .Skip(startFrom)
-                                .ToListAsync()
-                                :
-                            await context.GanjoorPoems.AsNoTracking()
-                                .Skip(startFrom)
-                                .Take(count)
-                                .ToListAsync();
+                          string checkpointName = _AICheckpointNameFor("PoemGeo", 0);
+                          if (restart)
+                              await _AISetCheckpointAsync(context, checkpointName, 0);
+                          int lastSafeId = await _AIGetCheckpointAsync(context, checkpointName);
+
+                          var poemsQuery = context.GanjoorPoems.AsNoTracking().Where(p => p.Id > lastSafeId).OrderBy(p => p.Id);
+                          var pagedPoemsQuery = startFrom > 0 ? poemsQuery.Skip(startFrom) : poemsQuery;
+                          var poems = count > 0 ? await pagedPoemsQuery.Take(count).ToListAsync() : await pagedPoemsQuery.ToListAsync();
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Poems count = {poems.Count}");
 
+                          int consecutiveFailures = 0, sinceSave = 0;
+                          bool failedSeen = false, aborted = false;
                           for (var i = 0; i < poems.Count; i++)
                           {
                               var poem = poems[i];
+                              try
+                              {
 
                               if (true == await context.PoemGeoDateTags.AsNoTracking().Where(p => p.PoemId == poem.Id && p.MachineGenerated == false).AnyAsync())
                               {
@@ -547,7 +546,9 @@ namespace RMuseum.Services.Implementation
                                         },
                                       Model = OpenAIModel,
                                   });
-                                  if (completionResult.Successful)
+                                  if (!completionResult.Successful)
+                                      throw new InvalidOperationException(completionResult.Error?.Message ?? "Open AI request failed");
+                                  consecutiveFailures = 0;
                                   {
                                       string aiResponse = completionResult.Choices.First().Message.Content;
                                       if (aiResponse.Contains("اکتبر"))
@@ -603,8 +604,36 @@ namespace RMuseum.Services.Implementation
                                   }
 
                               }
+                              }
+                              catch (Exception exp)
+                              {
+                                  failedSeen = true; //the checkpoint stays before this poem, so it is retried on the next run
+                                  context.ChangeTracker.Clear();
+                                  if (++consecutiveFailures >= AIMaxConsecutiveFailures)
+                                  {
+                                      aborted = true;
+                                      await jobProgressServiceEF.UpdateJob(job.Id, i, $"متوقف شد پس از {AIMaxConsecutiveFailures} خطای پیاپی در شعر {poem.Id}", false, exp.ToString());
+                                  }
+                              }
+                              finally
+                              {
+                                  if (!failedSeen)
+                                  {
+                                      lastSafeId = poem.Id;
+                                      if (++sinceSave >= 10)
+                                      {
+                                          sinceSave = 0;
+                                          await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                                      }
+                                  }
+                              }
+                              if (aborted)
+                                  break;
                           }
-                          await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                          if (lastSafeId > 0)
+                              await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                          if (!aborted)
+                              await jobProgressServiceEF.UpdateJob(job.Id, 100, $"آخرین شعر پردازش‌شده: {lastSafeId}", true);
                       }
                       catch (Exception exp)
                       {

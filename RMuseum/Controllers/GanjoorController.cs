@@ -4833,18 +4833,19 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// geo tag poems using AI
+        /// geo tag poems using AI (all poems, resumable)
         /// </summary>
         /// <param name="startFrom"></param>
-        /// <param name="count"></param>
+        /// <param name="count">0 = all</param>
+        /// <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
         /// <returns></returns>
         [HttpPut("ai/generate/poem/geo")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult OpenAIStartFillingGeoLocations(int startFrom = 0, int count = 0)
+        public IActionResult OpenAIStartFillingGeoLocations(int startFrom = 0, int count = 0, bool restart = false)
         {
-            _ganjoorService.OpenAIStartFillingGeoLocations(startFrom, count);
+            _ganjoorService.OpenAIStartFillingGeoLocations(startFrom, count, restart);
             return Ok();
         }
 
@@ -4852,37 +4853,39 @@ namespace RMuseum.Controllers
         /// suggest titles for bare "بخش n" poems of a book (e.g. Shahnameh = 33) using AI;
         /// results are registered as unreviewed poem edit suggestions of the given user
         /// </summary>
-        /// <param name="masterCatId"></param>
+        /// <param name="masterCatId">0 = all poems</param>
         /// <param name="startFrom"></param>
         /// <param name="count">0 = all</param>
+        /// <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
         /// <returns></returns>
         [HttpPut("ai/generate/poem/titles")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult OpenAIStartSuggestingPoemTitles(int masterCatId = 33, int startFrom = 0, int count = 0)
+        public IActionResult OpenAIStartSuggestingPoemTitles(int masterCatId = 0, int startFrom = 0, int count = 0, bool restart = false)
         {
-            _ganjoorService.OpenAIStartSuggestingPoemTitles(masterCatId, startFrom, count);
+            _ganjoorService.OpenAIStartSuggestingPoemTitles(masterCatId, startFrom, count, restart);
             return Ok();
         }
 
         /// <summary>
-        /// tag people in the poems of a book (e.g. Shahnameh = 33) starting from a poem id and suggest relations/affiliations
+        /// tag people in the poems of a book (e.g. Shahnameh = 33; 0 = every poem) starting from a poem id and suggest relations/affiliations
         /// with couplet evidence using AI; everything is registered as unreviewed suggestions of the configured user.
         /// Run it again after reviewing: people approved in the meantime are then linked and the remaining tags/relations are added.
         /// </summary>
-        /// <param name="masterCatId"></param>
+        /// <param name="masterCatId">0 = all poems</param>
         /// <param name="startPoemId"></param>
         /// <param name="count">0 = all</param>
         /// <param name="dryRun">true: write nothing, only report in the job log</param>
+        /// <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
         /// <returns></returns>
         [HttpPut("ai/generate/poem/people")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult OpenAIStartSuggestingPoemPeople(int masterCatId = 33, int startPoemId = 0, int count = 0, bool dryRun = false)
+        public IActionResult OpenAIStartSuggestingPoemPeople(int masterCatId = 0, int startPoemId = 0, int count = 0, bool dryRun = false, bool restart = false)
         {
-            _ganjoorService.OpenAIStartSuggestingPoemPeople(masterCatId, startPoemId, count, dryRun);
+            _ganjoorService.OpenAIStartSuggestingPoemPeople(masterCatId, startPoemId, count, dryRun, restart);
             return Ok();
         }
 

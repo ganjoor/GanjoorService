@@ -1660,7 +1660,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="startFrom"></param>
         /// <param name="count"></param>
-        void OpenAIStartFillingGeoLocations(int startFrom, int count);
+        void OpenAIStartFillingGeoLocations(int startFrom, int count, bool restart = false);
 
         /// <summary>
         /// suggest titles for bare "بخش n" poems under a category using AI (registered as unreviewed edit suggestions)
@@ -1668,7 +1668,8 @@ namespace RMuseum.Services
         /// <param name="masterCatId"></param>
         /// <param name="startFrom"></param>
         /// <param name="count"></param>
-        void OpenAIStartSuggestingPoemTitles(int masterCatId, int startFrom, int count);
+        /// <param name="restart">true: ignore the saved resume point</param>
+        void OpenAIStartSuggestingPoemTitles(int masterCatId, int startFrom, int count, bool restart = false);
 
         /// <summary>
         /// tag people in poems of a book and suggest their relations/affiliations (with couplet evidence) using AI
@@ -1677,7 +1678,8 @@ namespace RMuseum.Services
         /// <param name="startPoemId"></param>
         /// <param name="count"></param>
         /// <param name="dryRun"></param>
-        void OpenAIStartSuggestingPoemPeople(int masterCatId, int startPoemId, int count, bool dryRun);
+        /// <param name="restart">true: ignore the saved resume point</param>
+        void OpenAIStartSuggestingPoemPeople(int masterCatId, int startPoemId, int count, bool dryRun, bool restart = false);
 
         /// <summary>
         /// send cat correction

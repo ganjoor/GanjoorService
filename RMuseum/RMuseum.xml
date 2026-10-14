@@ -2578,7 +2578,7 @@
             <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32,System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             fill couplet summaries using open ai
             </summary>
@@ -2586,9 +2586,10 @@
             <param name="count">0 means all</param>
             <param name="masterCatId">0 means the whole set</param>
             <param name="regenerateAI">false: only missing summaries; true: also regenerate AI generated ones</param>
+            <param name="restart">false: resume after the last processed item of the previous run; true: start from the beginning</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32,System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             fill poem summaries using open ai
             </summary>
@@ -2596,36 +2597,40 @@
             <param name="count">0 means all</param>
             <param name="masterCatId">0 means the whole set</param>
             <param name="regenerateAI">false: only missing summaries; true: also regenerate AI generated ones</param>
+            <param name="restart">false: resume after the last processed item of the previous run; true: start from the beginning</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingGeoLocations(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartFillingGeoLocations(System.Int32,System.Int32,System.Boolean)">
             <summary>
-            geo tag poems using AI
+            geo tag poems using AI (all poems, resumable)
             </summary>
             <param name="startFrom"></param>
-            <param name="count"></param>
+            <param name="count">0 = all</param>
+            <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartSuggestingPoemTitles(System.Int32,System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartSuggestingPoemTitles(System.Int32,System.Int32,System.Int32,System.Boolean)">
             <summary>
             suggest titles for bare "بخش n" poems of a book (e.g. Shahnameh = 33) using AI;
             results are registered as unreviewed poem edit suggestions of the given user
             </summary>
-            <param name="masterCatId"></param>
+            <param name="masterCatId">0 = all poems</param>
             <param name="startFrom"></param>
             <param name="count">0 = all</param>
+            <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartSuggestingPoemPeople(System.Int32,System.Int32,System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartSuggestingPoemPeople(System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
             <summary>
-            tag people in the poems of a book (e.g. Shahnameh = 33) starting from a poem id and suggest relations/affiliations
+            tag people in the poems of a book (e.g. Shahnameh = 33; 0 = every poem) starting from a poem id and suggest relations/affiliations
             with couplet evidence using AI; everything is registered as unreviewed suggestions of the configured user.
             Run it again after reviewing: people approved in the meantime are then linked and the remaining tags/relations are added.
             </summary>
-            <param name="masterCatId"></param>
+            <param name="masterCatId">0 = all poems</param>
             <param name="startPoemId"></param>
             <param name="count">0 = all</param>
             <param name="dryRun">true: write nothing, only report in the job log</param>
+            <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.SuggestCatCorrectionAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel)">
@@ -21903,7 +21908,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean,System.Boolean)">
             <summary>
             fill couplet summaries using open ai
             </summary>
@@ -21912,7 +21917,7 @@
             <param name="masterCatId">null or 0 means the whole set</param>
             <param name="regenerateAI">false: only missing; true: also regenerate summaries starting with the AI prefix</param>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean,System.Boolean)">
             <summary>
             fill poem summaries using open ai
             </summary>
@@ -21921,22 +21926,23 @@
             <param name="masterCatId">null or 0 means the whole set</param>
             <param name="regenerateAI">false: only missing; true: also regenerate summaries starting with the AI prefix</param>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingGeoLocations(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingGeoLocations(System.Int32,System.Int32,System.Boolean)">
             <summary>
             geo tag poems using AI
             </summary>
             <param name="startFrom"></param>
             <param name="count"></param>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartSuggestingPoemTitles(System.Int32,System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartSuggestingPoemTitles(System.Int32,System.Int32,System.Int32,System.Boolean)">
             <summary>
             suggest titles for bare "بخش n" poems under a category using AI (registered as unreviewed edit suggestions)
             </summary>
             <param name="masterCatId"></param>
             <param name="startFrom"></param>
             <param name="count"></param>
+            <param name="restart">true: ignore the saved resume point</param>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartSuggestingPoemPeople(System.Int32,System.Int32,System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartSuggestingPoemPeople(System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             tag people in poems of a book and suggest their relations/affiliations (with couplet evidence) using AI
             </summary>
@@ -21944,6 +21950,7 @@
             <param name="startPoemId"></param>
             <param name="count"></param>
             <param name="dryRun"></param>
+            <param name="restart">true: ignore the saved resume point</param>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.SuggestCatCorrectionAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel)">
             <summary>
@@ -25000,7 +25007,12 @@
             "اکتبر" garbage), mostly Latin or overly long answers. Returns null when the answer must not be used.
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._AIGetCheckpointAsync(RMuseum.DbContext.RMuseumDbContext,System.String)">
+            <summary>
+            last processed id of a resumable AI job (stored in the generic options table), 0 if none
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean,System.Boolean)">
             <summary>
             fill (or regenerate) couplet summaries using open ai
             </summary>
@@ -25008,8 +25020,9 @@
             <param name="count">0 = all</param>
             <param name="masterCatId">only couplets of poems under this category (0 or null = the whole set)</param>
             <param name="regenerateAI">false: only couplets without any summary; true: also couplets whose summary starts with «هوش مصنوعی:» (human written summaries are never touched)</param>
+            <param name="restart">false: resume after the last processed couplet of the previous run (same category and regenerateAI); true: start from the beginning</param>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean,System.Boolean)">
             <summary>
             fill (or regenerate) poem summaries using open ai
             </summary>
@@ -25017,28 +25030,31 @@
             <param name="count">0 = all</param>
             <param name="masterCatId">only poems under this category (0 or null = the whole set)</param>
             <param name="regenerateAI">false: only poems without any summary; true: also poems whose summary starts with «هوش مصنوعی:» (human written summaries are never touched)</param>
+            <param name="restart">false: resume after the last processed poem of the previous run (same category and regenerateAI); true: start from the beginning</param>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingGeoLocations(System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingGeoLocations(System.Int32,System.Int32,System.Boolean)">
             <summary>
             geo tag poems using AI
             </summary>
-            <param name="startFrom"></param>
-            <param name="count"></param>
+            <param name="startFrom">offset after the resume point</param>
+            <param name="count">0 = all</param>
+            <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._AIFindCandidates(System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIPersonRec},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.Dictionary{System.Int32,System.Int32},System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIPersonRec}@,System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIPersonRec}@)">
             <summary>
             strong = exact (normalized) name match, weak = spelling variant / shared name token
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartSuggestingPoemPeople(System.Int32,System.Int32,System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartSuggestingPoemPeople(System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             tag people in poems of a book (and suggest relations/affiliations with evidence) using AI;
             everything is registered as unreviewed suggestions of the configured user
             </summary>
-            <param name="masterCatId">book category id (33 = Shahnameh)</param>
-            <param name="startPoemId">first poem id to process (poems are processed in id order)</param>
+            <param name="masterCatId">book category id (33 = Shahnameh); 0 = all poems</param>
+            <param name="startPoemId">first poem id to process (poems are processed in id order); the resume point wins when it is greater</param>
             <param name="count">0 = all</param>
-            <param name="dryRun">only report in the job log, write nothing</param>
+            <param name="dryRun">only report in the job log, write nothing (the resume point is neither read-reset nor advanced)</param>
+            <param name="restart">false: resume after the last processed poem of the previous run (same masterCatId); true: start from the beginning</param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._AIPlanRelationsAsync(RMuseum.Services.Implementation.GanjoorService.AIPeopleRun,System.String,System.String,System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIPersonRec})">
             <summary>
@@ -25065,14 +25081,15 @@
             AI model used by the summary/geo jobs (OpenAIModel in configuration, gpt-4o-mini if not set)
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartSuggestingPoemTitles(System.Int32,System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartSuggestingPoemTitles(System.Int32,System.Int32,System.Int32,System.Boolean)">
             <summary>
             complete bare "بخش n" titles of poems under a category (e.g. Shahnameh) using AI and
             submit the results as ordinary (unreviewed) poem edit suggestions of the given user
             </summary>
-            <param name="masterCatId">book category id (33 = Shahnameh)</param>
-            <param name="startFrom"></param>
+            <param name="masterCatId">book category id (33 = Shahnameh); 0 = all poems</param>
+            <param name="startFrom">offset after the resume point</param>
             <param name="count">0 = all</param>
+            <param name="restart">false: resume after the last processed poem of the previous run (same masterCatId); true: start from the beginning</param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetCategoryPaperSourcesAsync(System.Int32)">
             <summary>

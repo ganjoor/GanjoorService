@@ -470,11 +470,12 @@ namespace RMuseum.Services.Implementation
         /// tag people in poems of a book (and suggest relations/affiliations with evidence) using AI;
         /// everything is registered as unreviewed suggestions of the configured user
         /// </summary>
-        /// <param name="masterCatId">book category id (33 = Shahnameh)</param>
-        /// <param name="startPoemId">first poem id to process (poems are processed in id order)</param>
+        /// <param name="masterCatId">book category id (33 = Shahnameh); 0 = all poems</param>
+        /// <param name="startPoemId">first poem id to process (poems are processed in id order); the resume point wins when it is greater</param>
         /// <param name="count">0 = all</param>
-        /// <param name="dryRun">only report in the job log, write nothing</param>
-        public void OpenAIStartSuggestingPoemPeople(int masterCatId, int startPoemId, int count, bool dryRun)
+        /// <param name="dryRun">only report in the job log, write nothing (the resume point is neither read-reset nor advanced)</param>
+        /// <param name="restart">false: resume after the last processed poem of the previous run (same masterCatId); true: start from the beginning</param>
+        public void OpenAIStartSuggestingPoemPeople(int masterCatId, int startPoemId, int count, bool dryRun, bool restart = false)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
               (
@@ -483,7 +484,7 @@ namespace RMuseum.Services.Implementation
                   using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                   {
                       LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                      var job = (await jobProgressServiceEF.NewJob($"OpenAIStartSuggestingPoemPeople - cat: {masterCatId} - from poem: {startPoemId} - count: {count} - dryRun: {dryRun}", "Open AI initialization")).Result;
+                      var job = (await jobProgressServiceEF.NewJob($"OpenAIStartSuggestingPoemPeople - cat: {masterCatId} - from poem: {startPoemId} - count: {count} - dryRun: {dryRun} - restart: {restart}", "Open AI initialization")).Result;
                       var run = new AIPeopleRun() { Context = context, DryRun = dryRun, MasterCatId = masterCatId };
                       try
                       {
@@ -511,39 +512,57 @@ namespace RMuseum.Services.Implementation
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
 
-                          var allCats = await context.GanjoorCategories.AsNoTracking().Select(c => new { c.Id, c.ParentId }).ToListAsync();
-                          var catIds = new HashSet<int> { masterCatId };
-                          bool added = true;
-                          while (added)
-                          {
-                              added = false;
-                              foreach (var c in allCats)
-                              {
-                                  if (c.ParentId != null && catIds.Contains(c.ParentId.Value) && catIds.Add(c.Id))
-                                      added = true;
-                              }
-                          }
-                          var catIdList = catIds.ToList();
+                          bool wholeSet = masterCatId <= 0;
+                          var catIdList = wholeSet ? new List<int>() : await _AIGetCategoryTreeIdsAsync(context, masterCatId);
 
-                          var counts = await (from t in context.PoemGeoDateTags.AsNoTracking()
-                                              join p in context.GanjoorPoems.AsNoTracking() on t.PoemId equals p.Id
-                                              where t.PersonId != null && catIdList.Contains(p.CatId)
-                                              group t by t.PersonId.Value into g
-                                              select new { PersonId = g.Key, Count = g.Count() }).ToListAsync();
-                          foreach (var c in counts)
+                          //master category (book) of every category, needed when the whole set is processed
+                          var allCats = wholeSet ? await context.GanjoorCategories.AsNoTracking().Select(c => new { c.Id, c.ParentId, c.CatType }).ToDictionaryAsync(c => c.Id) : null;
+                          var masterOfCat = new Dictionary<int, int>();
+                          int masterOf(int catId)
+                          {
+                              if (masterOfCat.TryGetValue(catId, out int known))
+                                  return known;
+                              int current = catId, result = catId;
+                              for (int guard = 0; guard < 100 && allCats.TryGetValue(current, out var cat); guard++)
+                              {
+                                  result = cat.Id;
+                                  if (cat.CatType == GanjoorCatType.Book || cat.ParentId == null)
+                                      break;
+                                  current = cat.ParentId.Value;
+                              }
+                              masterOfCat[catId] = result;
+                              return result;
+                          }
+
+                          var countsQuery = from t in context.PoemGeoDateTags.AsNoTracking()
+                                            join p in context.GanjoorPoems.AsNoTracking() on t.PoemId equals p.Id
+                                            where t.PersonId != null && (wholeSet || catIdList.Contains(p.CatId))
+                                            group t by t.PersonId.Value into g
+                                            select new { PersonId = g.Key, Count = g.Count() };
+                          foreach (var c in await countsQuery.ToListAsync())
                               run.TagCounts[c.PersonId] = c.Count;
 
-                          var poemsQuery = context.GanjoorPoems.AsNoTracking()
-                              .Where(p => catIdList.Contains(p.CatId) && p.Id >= startPoemId)
-                              .OrderBy(p => p.Id)
-                              .Select(p => new { p.Id, p.Title });
-                          var poems = count > 0 ? await poemsQuery.Take(count).ToListAsync() : await poemsQuery.ToListAsync();
+                          string checkpointName = _AICheckpointNameFor("PoemPeople", masterCatId);
+                          if (restart && !dryRun)
+                              await _AISetCheckpointAsync(context, checkpointName, 0);
+                          int lastSafeId = restart ? 0 : await _AIGetCheckpointAsync(context, checkpointName);
+                          int afterId = Math.Max(startPoemId - 1, lastSafeId);
+
+                          var poemsQuery = context.GanjoorPoems.AsNoTracking().Where(p => p.Id > afterId);
+                          if (!wholeSet)
+                              poemsQuery = poemsQuery.Where(p => catIdList.Contains(p.CatId));
+                          var orderedPoemsQuery = poemsQuery.OrderBy(p => p.Id).Select(p => new { p.Id, p.Title, p.CatId });
+                          var poems = count > 0 ? await orderedPoemsQuery.Take(count).ToListAsync() : await orderedPoemsQuery.ToListAsync();
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Poem count = {poems.Count}");
 
+                          int consecutiveFailures = 0, sinceSave = 0;
+                          bool failedSeen = false, aborted = false;
                           for (int i = 0; i < poems.Count; i++)
                           {
                               var poem = poems[i];
+                              run.MasterCatId = wholeSet ? masterOf(poem.CatId) : masterCatId;
+                              bool poemFailed = false;
                               await jobProgressServiceEF.UpdateJob(job.Id, (int)(100.0 * i / Math.Max(1, poems.Count)),
                                   $"{i + 1} از {poems.Count} - {poem.Id} - {poem.Title} (برچسب: {run.TagsCreated}، شخص جدید: {run.NewPeople}، نسبت: {run.RelationsCreated}، مستند: {run.EvidencesCreated})");
                               try
@@ -552,23 +571,54 @@ namespace RMuseum.Services.Implementation
                                   await _AIPeopleProcessPoemAsync(run, poem.Id, poem.Title);
                                   if (run.PoemsFailed == failedBefore && run.PoemsSkipped == skippedBefore)
                                       run.PoemsDone++;
+                                  poemFailed = run.PoemsFailed > failedBefore;
                               }
                               catch (Exception exp)
                               {
                                   run.PoemsFailed++;
+                                  poemFailed = true;
                                   run.Log.AppendLine($"[{poem.Id}] {poem.Title}: ERROR {_AIShort(exp.Message, 300)}");
                                   context.ChangeTracker.Clear();
                               }
+
+                              if (poemFailed)
+                              {
+                                  failedSeen = true; //the resume point stays before this poem, so it is retried on the next run
+                                  if (++consecutiveFailures >= AIMaxConsecutiveFailures)
+                                  {
+                                      aborted = true;
+                                      break;
+                                  }
+                              }
+                              else
+                              {
+                                  consecutiveFailures = 0;
+                                  if (!failedSeen && !dryRun)
+                                  {
+                                      lastSafeId = poem.Id;
+                                      if (++sinceSave >= 10)
+                                      {
+                                          sinceSave = 0;
+                                          await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                                      }
+                                  }
+                              }
                           }
 
+                          if (!dryRun && lastSafeId > 0)
+                              await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+
                           string summary =
-                              $"{(dryRun ? "DRY RUN - " : "")}poems: done {run.PoemsDone}, skipped {run.PoemsSkipped}, failed {run.PoemsFailed}; " +
+                              $"{(dryRun ? "DRY RUN - " : "")}{(aborted ? $"STOPPED after {AIMaxConsecutiveFailures} consecutive failures - " : "")}last processed poem: {lastSafeId}; poems: done {run.PoemsDone}, skipped {run.PoemsSkipped}, failed {run.PoemsFailed}; " +
                               $"person tags: {run.TagsCreated} (new people: {run.NewPeople}); deferred: {run.Deferred}; ambiguous: {run.Ambiguous}; namesakes: {run.Namesakes}; " +
                               $"relations: {run.RelationsCreated}, evidences: {run.EvidencesCreated}, skipped: {run.RelationsSkipped}, errors: {run.RelationErrors}";
                           string logText = run.Log.ToString();
                           if (logText.Length > 30000)
                               logText = logText.Substring(logText.Length - 30000);
-                          await jobProgressServiceEF.UpdateJob(job.Id, 100, summary + Environment.NewLine + logText, true);
+                          if (aborted)
+                              await jobProgressServiceEF.UpdateJob(job.Id, 100, summary + Environment.NewLine + logText, false, run.LastAIError);
+                          else
+                              await jobProgressServiceEF.UpdateJob(job.Id, 100, summary + Environment.NewLine + logText, true);
                       }
                       catch (Exception exp)
                       {

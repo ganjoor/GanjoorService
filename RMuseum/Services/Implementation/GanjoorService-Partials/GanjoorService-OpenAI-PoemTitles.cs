@@ -49,16 +49,22 @@ namespace RMuseum.Services.Implementation
 
 ";
 
+        private static string _AICheckpointNameFor(string job, int masterCatId)
+        {
+            return $"AI{job}LastId-cat{masterCatId}";
+        }
+
         private static readonly Regex AITitleBareSectionRegex = new Regex(@"^\s*بخش\s*[0-9۰-۹٠-٩]+\s*$", RegexOptions.Compiled);
 
         /// <summary>
         /// complete bare "بخش n" titles of poems under a category (e.g. Shahnameh) using AI and
         /// submit the results as ordinary (unreviewed) poem edit suggestions of the given user
         /// </summary>
-        /// <param name="masterCatId">book category id (33 = Shahnameh)</param>
-        /// <param name="startFrom"></param>
+        /// <param name="masterCatId">book category id (33 = Shahnameh); 0 = all poems</param>
+        /// <param name="startFrom">offset after the resume point</param>
         /// <param name="count">0 = all</param>
-        public void OpenAIStartSuggestingPoemTitles(int masterCatId, int startFrom, int count)
+        /// <param name="restart">false: resume after the last processed poem of the previous run (same masterCatId); true: start from the beginning</param>
+        public void OpenAIStartSuggestingPoemTitles(int masterCatId, int startFrom, int count, bool restart = false)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
               (
@@ -67,7 +73,7 @@ namespace RMuseum.Services.Implementation
                   using (RMuseumDbContext context = new RMuseumDbContext(new DbContextOptions<RMuseumDbContext>()))
                   {
                       LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
-                      var job = (await jobProgressServiceEF.NewJob($"OpenAIStartSuggestingPoemTitles - cat: {masterCatId} - start: {startFrom} - count: {count}", "Open AI initialization")).Result;
+                      var job = (await jobProgressServiceEF.NewJob($"OpenAIStartSuggestingPoemTitles - cat: {masterCatId} - start: {startFrom} - count: {count} - restart: {restart}", "Open AI initialization")).Result;
                       try
                       {
                           string model = Configuration["OpenAITitleModel"];
@@ -91,22 +97,20 @@ namespace RMuseum.Services.Implementation
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, "Query data");
 
-                          //category tree under the master category
-                          var allCats = await context.GanjoorCategories.AsNoTracking().Select(c => new { c.Id, c.ParentId }).ToListAsync();
-                          var catIds = new HashSet<int> { masterCatId };
-                          bool added = true;
-                          while (added)
+                          string checkpointName = _AICheckpointNameFor("PoemTitles", masterCatId);
+                          if (restart)
+                              await _AISetCheckpointAsync(context, checkpointName, 0);
+                          int lastSafeId = await _AIGetCheckpointAsync(context, checkpointName);
+
+                          var titlesQuery = context.GanjoorPoems.AsNoTracking().Where(p => p.Id > lastSafeId && p.Title.StartsWith("بخش"));
+                          if (masterCatId > 0)
                           {
-                              added = false;
-                              foreach (var c in allCats)
-                              {
-                                  if (c.ParentId != null && catIds.Contains(c.ParentId.Value) && catIds.Add(c.Id))
-                                      added = true;
-                              }
+                              //category tree under the master category
+                              var catIds = new HashSet<int>(await _AIGetCategoryTreeIdsAsync(context, masterCatId));
+                              titlesQuery = titlesQuery.Where(p => catIds.Contains(p.CatId));
                           }
 
-                          var candidates = (await context.GanjoorPoems.AsNoTracking()
-                              .Where(p => catIds.Contains(p.CatId) && p.Title.StartsWith("بخش"))
+                          var candidates = (await titlesQuery
                               .Select(p => new { p.Id, p.Title })
                               .ToListAsync())
                               .Where(p => AITitleBareSectionRegex.IsMatch(p.Title))
@@ -118,7 +122,8 @@ namespace RMuseum.Services.Implementation
 
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Poem count = {candidates.Count}");
 
-                          int created = 0, skipped = 0, failed = 0;
+                          int created = 0, skipped = 0, failed = 0, consecutiveFailures = 0, sinceSave = 0;
+                          bool failedSeen = false, aborted = false;
                           for (int i = 0; i < candidates.Count; i++)
                           {
                               var poem = candidates[i];
@@ -150,10 +155,8 @@ namespace RMuseum.Services.Implementation
                                       Model = model,
                                   });
                                   if (!completionResult.Successful)
-                                  {
-                                      failed++;
-                                      continue;
-                                  }
+                                      throw new InvalidOperationException(completionResult.Error?.Message ?? "Open AI request failed");
+                                  consecutiveFailures = 0;
 
                                   string generated = _CleanAIPoemTitle(completionResult.Choices.First().Message.Content);
                                   if (string.IsNullOrEmpty(generated))
@@ -178,14 +181,37 @@ namespace RMuseum.Services.Implementation
                                   await context.SaveChangesAsync();
                                   created++;
                               }
-                              catch (Exception)
+                              catch (Exception exp)
                               {
                                   failed++;
+                                  failedSeen = true; //the checkpoint stays before this poem, so it is retried on the next run
                                   context.ChangeTracker.Clear();
+                                  if (++consecutiveFailures >= AIMaxConsecutiveFailures)
+                                  {
+                                      aborted = true;
+                                      await jobProgressServiceEF.UpdateJob(job.Id, i, $"متوقف شد پس از {AIMaxConsecutiveFailures} خطای پیاپی در شعر {poem.Id}", false, exp.ToString());
+                                  }
                               }
+                              finally
+                              {
+                                  if (!failedSeen)
+                                  {
+                                      lastSafeId = poem.Id;
+                                      if (++sinceSave >= 10)
+                                      {
+                                          sinceSave = 0;
+                                          await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                                      }
+                                  }
+                              }
+                              if (aborted)
+                                  break;
                           }
 
-                          await jobProgressServiceEF.UpdateJob(job.Id, 100, $"ایجاد: {created}، ردشده: {skipped}، خطا: {failed}", true);
+                          if (lastSafeId > 0)
+                              await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                          if (!aborted)
+                              await jobProgressServiceEF.UpdateJob(job.Id, 100, $"ایجاد: {created}، ردشده: {skipped}، خطا: {failed} - آخرین شعر پردازش‌شده: {lastSafeId}", true);
                       }
                       catch (Exception exp)
                       {
