@@ -14,6 +14,20 @@
     <link href="~/css/p8.css" asp-append-version="true" rel="stylesheet" type="text/css" />
     <link href="~/css/user-panel.css" asp-append-version="true" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="/css/leaflet.css?version=2">
+    <style>
+        /* the top menu follows the theme tokens (user-panel.css) instead of bootstrap's fixed light utilities */
+        .admin-nav { background-color: var(--up-surface); border-bottom-color: var(--up-border) !important; }
+        .admin-nav .nav-link, .admin-nav .navbar-brand { color: var(--up-text); background: none; border: 0; cursor: pointer; }
+        .admin-nav .nav-link:hover, .admin-nav .nav-link:focus, .admin-nav .nav-item.show > .nav-link { color: var(--up-primary); }
+        .admin-nav .nav-link svg { fill: currentColor; vertical-align: middle; }
+        .admin-nav .dropdown-menu { background-color: var(--up-surface); border-color: var(--up-border); }
+        .admin-nav .dropdown-item { color: var(--up-text); }
+        .admin-nav .dropdown-item:hover, .admin-nav .dropdown-item:focus { background-color: var(--up-surface-alt); color: var(--up-primary); }
+        .admin-nav .dropdown-divider { border-top-color: var(--up-border); }
+        .admin-nav .navbar-toggler { border-color: var(--up-border); color: var(--up-text); }
+        .admin-nav .navbar-toggler-icon { background-image: none; display: inline-flex; align-items: center; justify-content: center; width: 1.5em; height: 1.5em; }
+        .admin-nav .navbar-toggler-icon::before { content: "\2630"; font-size: 1.3rem; line-height: 1; color: var(--up-text); }
+    </style>
     <link rel="shortcut icon" href="/favicon.ico?version=1" type="image/x-icon" />
     <link rel="search" type="application/opensearchdescription+xml" title="گنجور" href="https://ganjoor.net/search.xml" />
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -84,7 +98,7 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm admin-nav border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-page="/Index" title="گنجور"><img src="/image/gdapk.png" alt="گنجور" style="width:auto;margin:auto;" /></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -103,19 +117,19 @@
                     }
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-page="/Index">خانه</a>
+                            <a class="nav-link" asp-area="User" asp-page="/Index">خانه</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-page="/Notifications">اعلان‌‌های من</a>
+                            <a class="nav-link" asp-area="User" asp-page="/Notifications">اعلان‌‌های من</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="User" asp-page="/MySessions">نشست‌های من</a>
+                            <a class="nav-link" asp-area="User" asp-page="/MySessions">نشست‌های من</a>
                         </li>
 
                         <li class="nav-item dropdown">
-                            <a class="nav-link text-dark dropdown-toggle" href="#" id="upContribsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">مشارکت‌های من</a>
+                            <a class="nav-link dropdown-toggle" href="#" id="upContribsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">مشارکت‌های من</a>
                             <div class="dropdown-menu" aria-labelledby="upContribsDropdown">
                                 <a class="dropdown-item" asp-area="User" asp-page="/Edits">ویرایش‌‌های من</a>
                                 <a class="dropdown-item" asp-area="User" asp-page="/SectionEdits">ویرایش‌‌های قطعات من</a>
@@ -126,7 +140,7 @@
                         </li>
 
                         <li class="nav-item dropdown">
-                            <a class="nav-link text-dark dropdown-toggle" href="#" id="upEngagementDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">تعامل من</a>
+                            <a class="nav-link dropdown-toggle" href="#" id="upEngagementDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">تعامل من</a>
                             <div class="dropdown-menu" aria-labelledby="upEngagementDropdown">
                                 <a class="dropdown-item" asp-area="User" asp-page="/MyComments">حاشیه‌های من</a>
                                 <a class="dropdown-item" asp-area="User" asp-page="/MyBookmarks">نشان‌شده‌های من</a>
@@ -138,7 +152,7 @@
                         @if (hasModerationTools)
                         {
                             <li class="nav-item dropdown">
-                                <a class="nav-link text-dark dropdown-toggle" href="#" id="upModerationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle" href="#" id="upModerationDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     ابزارهای مدیریت
                                     <span class="up-badge up-badge--primary">ویژه</span>
                                 </a>
@@ -180,7 +194,7 @@
                         }
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="javascript:toggleColorScheme();" title="تغییر پوسته">
+                            <a class="nav-link" href="javascript:toggleColorScheme();" title="تغییر پوسته">
                                 <span id="icon-sun"><svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M440-760v-160h80v160h-80Zm266 110-55-55 112-115 56 57-113 113Zm54 210v-80h160v80H760ZM440-40v-160h80v160h-80ZM254-652 140-763l57-56 113 113-56 54Zm508 512L651-255l54-54 114 110-57 59ZM40-440v-80h160v80H40Zm157 300-56-57 112-112 29 27 29 28-114 114Zm283-100q-100 0-170-70t-70-170q0-100 70-170t170-70q100 0 170 70t70 170q0 100-70 170t-170 70Z" /></svg></span>
                                 <span id="icon-moon"><svg height="24px" viewBox="0 -960 960 960" width="24px"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z" /></svg></span>
                             </a>
@@ -189,7 +203,7 @@
                         <li class="nav-item">
                             <form method="post" action="/login?handler=Logout">
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="nav-link text-dark" title="خروج از حساب کاربری">خروج</button>
+                                <button type="submit" class="nav-link" title="خروج از حساب کاربری">خروج</button>
                             </form>
                         </li>
                     </ul>
