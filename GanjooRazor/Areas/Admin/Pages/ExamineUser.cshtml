@@ -41,8 +41,31 @@ else
     </tr>
     <tr>
         <td colspan="2">
+            <a role="button" class="up-btn up-btn--ghost" style="display:block" onclick="unlockUser('@Model.UserInfo.Id')">🔓 رفع قفل کاربر</a>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
             <a role="button" style="cursor:pointer;width:100%;color:white;background-color:red;display:block" href="/Admin/KickoutUser?id=@Model.UserInfo.Id">حذف حساب کاربری</a>
         </td>
     </tr>
 </table>
 }
+
+<script>
+    async function unlockUser(userId) {
+        var ok = await upConfirm('قفل این کاربر باز شود؟', { danger: false });
+        if (!ok) return;
+        $.ajax({
+            type: "POST",
+            url: '?handler=Unlock',
+            data: { id: userId },
+            error: function (e) {
+                upToast(e.responseText || String(e), 'error');
+            },
+            success: function () {
+                upToast('قفل کاربر باز شد.');
+            }
+        });
+    }
+</script>

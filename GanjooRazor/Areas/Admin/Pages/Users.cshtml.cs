@@ -257,5 +257,24 @@ namespace GanjooRazor.Areas.Admin.Pages
                 return new JsonResult(true);
             }
         }
+
+        /// <summary>
+        /// unlock a locked out user - ?handler=Unlock
+        /// </summary>
+        public async Task<IActionResult> OnPostUnlockAsync(Guid id)
+        {
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
+            {
+                if (!await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                    return BadRequest("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+
+                var response = await secureClient.PutAsync($"{APIRoot.Url}/api/users/unlock/{id}", null);
+                if (!response.IsSuccessStatusCode)
+                    return BadRequest(await response.Content.ReadAsStringAsync());
+
+                return new JsonResult(true);
+            }
+        }
+
     }
 }

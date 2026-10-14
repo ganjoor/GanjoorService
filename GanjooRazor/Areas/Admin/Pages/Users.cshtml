@@ -150,6 +150,22 @@
         });
     }
 
+    async function unlockUser(userId) {
+        var ok = await upConfirm('قفل این کاربر باز شود؟', { danger: false });
+        if (!ok) return;
+        $.ajax({
+            type: "POST",
+            url: '?handler=Unlock',
+            data: { id: userId },
+            error: function (e) {
+                upToast(e.responseText || String(e), 'error');
+            },
+            success: function () {
+                upToast('قفل کاربر باز شد.');
+            }
+        });
+    }
+
     function toggleUserStatus(userId, checkbox) {
         var active = checkbox.checked;
         checkbox.disabled = true;
@@ -199,6 +215,7 @@
                 <td>
                     <a role="button" onclick="toggleUserRow('@user.Id')" class="up-icon-btn" title="نقش‌ها" aria-label="مدیریت نقش‌های این کاربر">🎭</a>
                     <a role="button" href="/Admin/ExamineUser?id=@user.Id" class="up-icon-btn" title="مشاهده" aria-label="مشاهدهٔ این کاربر">👁️</a>
+                    <a role="button" onclick="unlockUser('@user.Id')" class="up-icon-btn" title="رفع قفل" aria-label="رفع قفل این کاربر">🔓</a>
                 </td>
             </tr>
             <tr id="roles-row-@user.Id" style="display:none">
