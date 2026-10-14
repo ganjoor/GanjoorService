@@ -1285,6 +1285,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="catId"></param>
         /// <param name="ignoreSumup"></param>
+        /// <param name="onlyWithLocation">only tags that have a location</param>
         /// <returns></returns>
         Task<RServiceResult<PoemGeoDateTag[]>> GetCatPoemGeoDateTagsAsync(int catId, bool ignoreSumup = false, bool onlyWithLocation = false);
 
@@ -1643,6 +1644,7 @@ namespace RMuseum.Services
         /// <param name="count">0 means all</param>
         /// <param name="masterCatId">null or 0 means the whole set</param>
         /// <param name="regenerateAI">false: only missing; true: also regenerate summaries starting with the AI prefix</param>
+        /// <param name="restart">true: ignore the saved resume point and start from the beginning</param>
         void OpenAIStartFillingCoupletSummaries(int startFrom, int count, int? masterCatId, bool regenerateAI, bool restart = false);
 
 
@@ -1653,6 +1655,7 @@ namespace RMuseum.Services
         /// <param name="count">0 means all</param>
         /// <param name="masterCatId">null or 0 means the whole set</param>
         /// <param name="regenerateAI">false: only missing; true: also regenerate summaries starting with the AI prefix</param>
+        /// <param name="restart">true: ignore the saved resume point and start from the beginning</param>
         void OpenAIStartFillingPoemSummaries(int startFrom, int count, int? masterCatId, bool regenerateAI, bool restart = false);
 
         /// <summary>
@@ -1660,6 +1663,7 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="startFrom"></param>
         /// <param name="count"></param>
+        /// <param name="restart">true: ignore the saved resume point and start from the beginning</param>
         void OpenAIStartFillingGeoLocations(int startFrom, int count, bool restart = false);
 
         /// <summary>

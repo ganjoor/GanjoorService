@@ -298,5 +298,55 @@ namespace GanjooRazor.Areas.Admin.Pages
             return new OkObjectResult(false);
         }
 
+
+        /// <summary>
+        /// starts one of the (resumable) open ai jobs
+        /// </summary>
+        public async Task<IActionResult> OnPostRunAiJobAsync(string job, int masterCatId, int startFrom, int count, bool regenerateAI, bool restart, bool dryRun)
+        {
+            string query;
+            string common = $"count={count}&restart={restart.ToString().ToLowerInvariant()}";
+            string path;
+            switch (job)
+            {
+                case "couplet-summaries":
+                    path = "ai/generate/summaries";
+                    query = $"startFrom={startFrom}&masterCatId={masterCatId}&regenerateAI={regenerateAI.ToString().ToLowerInvariant()}&{common}";
+                    break;
+                case "poem-summaries":
+                    path = "ai/generate/poem/summaries";
+                    query = $"startFrom={startFrom}&masterCatId={masterCatId}&regenerateAI={regenerateAI.ToString().ToLowerInvariant()}&{common}";
+                    break;
+                case "geo":
+                    path = "ai/generate/poem/geo";
+                    query = $"startFrom={startFrom}&{common}";
+                    break;
+                case "titles":
+                    path = "ai/generate/poem/titles";
+                    query = $"masterCatId={masterCatId}&startFrom={startFrom}&{common}";
+                    break;
+                case "people":
+                    path = "ai/generate/poem/people";
+                    query = $"masterCatId={masterCatId}&startPoemId={startFrom}&dryRun={dryRun.ToString().ToLowerInvariant()}&{common}";
+                    break;
+                default:
+                    return BadRequest("unknown job");
+            }
+
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    HttpResponseMessage response = await secureClient.PutAsync($"{APIRoot.Url}/api/ganjoor/{path}?{query}", null);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return BadRequest(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
+                    }
+                    return new OkObjectResult(true);
+                }
+            }
+            return new OkObjectResult(false);
+        }
+
     }
 }

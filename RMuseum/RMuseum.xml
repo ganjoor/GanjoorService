@@ -21564,6 +21564,7 @@
             </summary>
             <param name="catId"></param>
             <param name="ignoreSumup"></param>
+            <param name="onlyWithLocation">only tags that have a location</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.SynchronizeNaskbanLinks(System.Guid,System.String,System.String)">
@@ -21916,6 +21917,7 @@
             <param name="count">0 means all</param>
             <param name="masterCatId">null or 0 means the whole set</param>
             <param name="regenerateAI">false: only missing; true: also regenerate summaries starting with the AI prefix</param>
+            <param name="restart">true: ignore the saved resume point and start from the beginning</param>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean,System.Boolean)">
             <summary>
@@ -21925,6 +21927,7 @@
             <param name="count">0 means all</param>
             <param name="masterCatId">null or 0 means the whole set</param>
             <param name="regenerateAI">false: only missing; true: also regenerate summaries starting with the AI prefix</param>
+            <param name="restart">true: ignore the saved resume point and start from the beginning</param>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartFillingGeoLocations(System.Int32,System.Int32,System.Boolean)">
             <summary>
@@ -21932,6 +21935,7 @@
             </summary>
             <param name="startFrom"></param>
             <param name="count"></param>
+            <param name="restart">true: ignore the saved resume point and start from the beginning</param>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartSuggestingPoemTitles(System.Int32,System.Int32,System.Int32,System.Boolean)">
             <summary>

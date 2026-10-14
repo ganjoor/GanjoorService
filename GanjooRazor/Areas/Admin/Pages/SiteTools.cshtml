@@ -27,6 +27,20 @@
     .st-cred { display: none; gap: var(--up-space-2); padding: var(--up-space-3) 0; flex-wrap: wrap; }
     .st-cred.open { display: flex; }
     .st-cred input { flex: 1 1 140px; padding: 8px 12px; border: 1px solid var(--up-border); border-radius: var(--up-radius); background: var(--up-surface); color: var(--up-text); }
+    .st-ai { grid-column: 1 / -1; }
+    .st-ai-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--up-space-3); }
+    .st-ai-job { border: 1px solid var(--up-border); border-radius: var(--up-radius); padding: var(--up-space-3); background: var(--up-surface-alt); display: flex; flex-direction: column; gap: var(--up-space-2); }
+    .st-ai-job__head { display: flex; align-items: center; gap: var(--up-space-2); }
+    .st-ai-job__head .material-icons { color: var(--up-primary); }
+    .st-ai-job__title { font-weight: 600; flex: 1 1 auto; }
+    .st-ai-job__desc { color: var(--up-text-muted); font-size: .85rem; }
+    .st-ai-fields { display: flex; gap: var(--up-space-2); flex-wrap: wrap; }
+    .st-ai-fields label { display: flex; flex-direction: column; gap: 2px; font-size: .75rem; color: var(--up-text-muted); flex: 1 1 80px; }
+    .st-ai-fields input[type=number] { padding: 6px 8px; border: 1px solid var(--up-border); border-radius: var(--up-radius); background: var(--up-surface); color: var(--up-text); width: 100%; }
+    .st-ai-checks { display: flex; gap: var(--up-space-3); flex-wrap: wrap; font-size: .85rem; }
+    .st-ai-checks label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+    a.up-btn.up-btn--primary, a.up-btn.up-btn--primary:link, a.up-btn.up-btn--primary:visited { background-color: var(--up-primary); color: var(--up-on-primary); }
+    a.up-btn.up-btn--primary:hover { background-color: var(--up-primary-hover); color: var(--up-on-primary); }
     .st-hidden { display: none !important; }
     .st-empty { display: none; color: var(--up-text-muted); }
 </style>
@@ -137,6 +151,78 @@
             <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="stMuseum()"><span class="material-icons">play_arrow</span>اجرا</a>
         </div>
     </section>
+    <section class="up-card st-group st-ai">
+        <div class="st-group-head"><span class="material-icons">auto_awesome</span><h2>هوش مصنوعی</h2></div>
+        <div class="st-ai-grid">
+        <div class="st-ai-job st-tool-ai" data-job="couplet-summaries" data-search="معنی ابیات ساخت یا بازسازی معنی بیت‌ها هوش مصنوعی">
+            <div class="st-ai-job__head"><span class="material-icons">menu_book</span><span class="st-ai-job__title">معنی ابیات</span><span class="st-badge">قابل ادامه</span></div>
+            <div class="st-ai-job__desc">ساخت یا بازسازی معنی بیت‌ها</div>
+            <div class="st-ai-fields">
+                <label>دستهٔ کتاب (۰ = همه)<input type="number" min="0" value="0" data-f="cat" /></label>
+                <label>از بیتِ شمارهٔ<input type="number" min="0" value="0" data-f="start" /></label>
+                <label>تعداد (۰ = همه)<input type="number" min="0" value="0" data-f="count" /></label>
+            </div>
+            <div class="st-ai-checks">
+                <label><input type="checkbox" data-f="regen" /> بازسازی موارد هوش مصنوعی</label>
+                <label><input type="checkbox" data-f="restart" /> شروع از ابتدا</label>
+            </div>
+            <div><a role="button" class="up-btn up-btn--primary up-btn--sm" onclick="stRunAi(this)"><span class="material-icons">play_arrow</span>اجرا</a></div>
+        </div>
+        <div class="st-ai-job st-tool-ai" data-job="poem-summaries" data-search="خلاصهٔ شعرها ساخت یا بازسازی خلاصهٔ شعرها هوش مصنوعی">
+            <div class="st-ai-job__head"><span class="material-icons">article</span><span class="st-ai-job__title">خلاصهٔ شعرها</span><span class="st-badge">قابل ادامه</span></div>
+            <div class="st-ai-job__desc">ساخت یا بازسازی خلاصهٔ شعرها</div>
+            <div class="st-ai-fields">
+                <label>دستهٔ کتاب (۰ = همه)<input type="number" min="0" value="0" data-f="cat" /></label>
+                <label>از شعرِ شمارهٔ<input type="number" min="0" value="0" data-f="start" /></label>
+                <label>تعداد (۰ = همه)<input type="number" min="0" value="0" data-f="count" /></label>
+            </div>
+            <div class="st-ai-checks">
+                <label><input type="checkbox" data-f="regen" /> بازسازی موارد هوش مصنوعی</label>
+                <label><input type="checkbox" data-f="restart" /> شروع از ابتدا</label>
+            </div>
+            <div><a role="button" class="up-btn up-btn--primary up-btn--sm" onclick="stRunAi(this)"><span class="material-icons">play_arrow</span>اجرا</a></div>
+        </div>
+        <div class="st-ai-job st-tool-ai" data-job="titles" data-search="عنوان شعرها پیشنهاد عنوان برای شعرهای «بخش n»؛ پیشنهاد بررسی‌نشده ثبت می‌شود هوش مصنوعی">
+            <div class="st-ai-job__head"><span class="material-icons">title</span><span class="st-ai-job__title">عنوان شعرها</span><span class="st-badge">قابل ادامه</span></div>
+            <div class="st-ai-job__desc">پیشنهاد عنوان برای شعرهای «بخش n»؛ پیشنهاد بررسی‌نشده ثبت می‌شود</div>
+            <div class="st-ai-fields">
+                <label>دستهٔ کتاب (۰ = همه)<input type="number" min="0" value="0" data-f="cat" /></label>
+                <label>از شعرِ شمارهٔ<input type="number" min="0" value="0" data-f="start" /></label>
+                <label>تعداد (۰ = همه)<input type="number" min="0" value="0" data-f="count" /></label>
+            </div>
+            <div class="st-ai-checks">
+                <label><input type="checkbox" data-f="restart" /> شروع از ابتدا</label>
+            </div>
+            <div><a role="button" class="up-btn up-btn--primary up-btn--sm" onclick="stRunAi(this)"><span class="material-icons">play_arrow</span>اجرا</a></div>
+        </div>
+        <div class="st-ai-job st-tool-ai" data-job="people" data-search="اشخاص شعرها برچسب‌زدن اشخاص و پیشنهاد نسبت‌ها با بیت مستند هوش مصنوعی">
+            <div class="st-ai-job__head"><span class="material-icons">groups</span><span class="st-ai-job__title">اشخاص شعرها</span><span class="st-badge">قابل ادامه</span></div>
+            <div class="st-ai-job__desc">برچسب‌زدن اشخاص و پیشنهاد نسبت‌ها با بیت مستند</div>
+            <div class="st-ai-fields">
+                <label>دستهٔ کتاب (۰ = همه)<input type="number" min="0" value="0" data-f="cat" /></label>
+                <label>از شناسهٔ شعر<input type="number" min="0" value="0" data-f="start" /></label>
+                <label>تعداد (۰ = همه)<input type="number" min="0" value="0" data-f="count" /></label>
+            </div>
+            <div class="st-ai-checks">
+                <label><input type="checkbox" data-f="dry" /> اجرای آزمایشی (بدون ثبت)</label>
+                <label><input type="checkbox" data-f="restart" /> شروع از ابتدا</label>
+            </div>
+            <div><a role="button" class="up-btn up-btn--primary up-btn--sm" onclick="stRunAi(this)"><span class="material-icons">play_arrow</span>اجرا</a></div>
+        </div>
+        <div class="st-ai-job st-tool-ai" data-job="geo" data-search="مکان‌های جغرافیایی برچسب‌زدن مکان‌های شعرها هوش مصنوعی">
+            <div class="st-ai-job__head"><span class="material-icons">place</span><span class="st-ai-job__title">مکان‌های جغرافیایی</span><span class="st-badge">قابل ادامه</span></div>
+            <div class="st-ai-job__desc">برچسب‌زدن مکان‌های شعرها</div>
+            <div class="st-ai-fields">
+                <label>از شعرِ شمارهٔ<input type="number" min="0" value="0" data-f="start" /></label>
+                <label>تعداد (۰ = همه)<input type="number" min="0" value="0" data-f="count" /></label>
+            </div>
+            <div class="st-ai-checks">
+                <label><input type="checkbox" data-f="restart" /> شروع از ابتدا</label>
+            </div>
+            <div><a role="button" class="up-btn up-btn--primary up-btn--sm" onclick="stRunAi(this)"><span class="material-icons">play_arrow</span>اجرا</a></div>
+        </div>
+        </div>
+    </section>
     <div class="st-empty" id="st-empty">ابزاری یافت نشد.</div>
 </div>
 
@@ -157,6 +243,19 @@
         if (!ok) return;
         stPost('RebuildWordCounts', { poetId: id });
     }
+    async function stRunAi(btn) {
+        var box = btn.closest('.st-ai-job');
+        var g = function (f) { return box.querySelector('[data-f="' + f + '"]'); };
+        var num = function (f) { var e = g(f); return e ? (parseInt(e.value) || 0) : 0; };
+        var chk = function (f) { var e = g(f); return !!(e && e.checked); };
+        var restart = chk('restart'), dry = chk('dry');
+        var title = box.querySelector('.st-ai-job__title').textContent;
+        var cat = num('cat'), start = num('start'), count = num('count');
+        var msg = title + (cat ? ' - دسته ' + cat : ' - همه') + (restart ? ' - از ابتدا' : ' - ادامه از آخرین نقطه') + (dry ? ' - آزمایشی' : '') + '. شروع شود؟';
+        var ok = await upConfirm(msg, { danger: false });
+        if (!ok) return;
+        stPost('RunAiJob', { job: box.getAttribute('data-job'), masterCatId: cat, startFrom: start, count: count, regenerateAI: chk('regen'), restart: restart, dryRun: dry }, 'کار شروع شد؛ پیشرفت را در «کارها» ببین.');
+    }
     function stToggleCred() { document.getElementById('st-cred').classList.toggle('open'); }
     function stNaskban() {
         var u = document.getElementById('st-nb-user').value, p = document.getElementById('st-nb-pass').value;
@@ -174,7 +273,7 @@
         var any = false;
         document.querySelectorAll('.st-group').forEach(function (g) {
             var vis = 0;
-            g.querySelectorAll('.st-tool').forEach(function (t) {
+            g.querySelectorAll('.st-tool, .st-tool-ai').forEach(function (t) {
                 var m = !q || (t.getAttribute('data-search') || '').indexOf(q) >= 0;
                 t.classList.toggle('st-hidden', !m);
                 if (m) vis++;
