@@ -4801,14 +4801,15 @@ namespace RMuseum.Controllers
         /// <param name="count">0 means all</param>
         /// <param name="masterCatId">0 means the whole set</param>
         /// <param name="regenerateAI">false: only missing summaries; true: also regenerate AI generated ones</param>
+        /// <param name="restart">false: resume after the last processed item of the previous run; true: start from the beginning</param>
         /// <returns></returns>
         [HttpPut("ai/generate/summaries")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult OpenAIStartFillingCoupletSummaries(int startFrom = 0, int count = 0, int masterCatId = 0, bool regenerateAI = false)
+        public IActionResult OpenAIStartFillingCoupletSummaries(int startFrom = 0, int count = 0, int masterCatId = 0, bool regenerateAI = false, bool restart = false)
         {
-            _ganjoorService.OpenAIStartFillingCoupletSummaries(startFrom, count, masterCatId > 0 ? masterCatId : null, regenerateAI);
+            _ganjoorService.OpenAIStartFillingCoupletSummaries(startFrom, count, masterCatId > 0 ? masterCatId : null, regenerateAI, restart);
             return Ok();
         }
 
@@ -4819,14 +4820,15 @@ namespace RMuseum.Controllers
         /// <param name="count">0 means all</param>
         /// <param name="masterCatId">0 means the whole set</param>
         /// <param name="regenerateAI">false: only missing summaries; true: also regenerate AI generated ones</param>
+        /// <param name="restart">false: resume after the last processed item of the previous run; true: start from the beginning</param>
         /// <returns></returns>
         [HttpPut("ai/generate/poem/summaries")]
         [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public IActionResult OpenAIStartFillingPoemSummaries(int startFrom = 0, int count = 0, int masterCatId = 0, bool regenerateAI = false)
+        public IActionResult OpenAIStartFillingPoemSummaries(int startFrom = 0, int count = 0, int masterCatId = 0, bool regenerateAI = false, bool restart = false)
         {
-            _ganjoorService.OpenAIStartFillingPoemSummaries(startFrom, count, masterCatId > 0 ? masterCatId : null, regenerateAI);
+            _ganjoorService.OpenAIStartFillingPoemSummaries(startFrom, count, masterCatId > 0 ? masterCatId : null, regenerateAI, restart);
             return Ok();
         }
 

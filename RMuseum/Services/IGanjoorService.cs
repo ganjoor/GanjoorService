@@ -1643,7 +1643,7 @@ namespace RMuseum.Services
         /// <param name="count">0 means all</param>
         /// <param name="masterCatId">null or 0 means the whole set</param>
         /// <param name="regenerateAI">false: only missing; true: also regenerate summaries starting with the AI prefix</param>
-        void OpenAIStartFillingCoupletSummaries(int startFrom, int count, int? masterCatId, bool regenerateAI);
+        void OpenAIStartFillingCoupletSummaries(int startFrom, int count, int? masterCatId, bool regenerateAI, bool restart = false);
 
 
         /// <summary>
@@ -1653,7 +1653,7 @@ namespace RMuseum.Services
         /// <param name="count">0 means all</param>
         /// <param name="masterCatId">null or 0 means the whole set</param>
         /// <param name="regenerateAI">false: only missing; true: also regenerate summaries starting with the AI prefix</param>
-        void OpenAIStartFillingPoemSummaries(int startFrom, int count, int? masterCatId, bool regenerateAI);
+        void OpenAIStartFillingPoemSummaries(int startFrom, int count, int? masterCatId, bool regenerateAI, bool restart = false);
 
         /// <summary>
         /// geo tag poems using AI
