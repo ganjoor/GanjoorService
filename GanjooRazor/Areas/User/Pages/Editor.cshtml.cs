@@ -187,6 +187,130 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public PoemGeoDateTag[] PoemGeoDateTags { get; set; }
 
+        /// <summary>
+        /// approved literary devices (آرایه‌ها) with their slots
+        /// </summary>
+        public LiteraryDevice[] LiteraryDevices { get; set; }
+
+        /// <summary>
+        /// approved literary tags of this poem
+        /// </summary>
+        public PoemLiteraryTag[] PoemLiteraryTags { get; set; }
+
+        /// <summary>
+        /// the poem's literary annotation is marked complete
+        /// </summary>
+        public bool LiteraryAnnotationCompleted { get; set; }
+
+        private static JsonSerializerSettings LiteraryJsonSettings =>
+            new JsonSerializerSettings
+            {
+                ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver(),
+                NullValueHandling = NullValueHandling.Ignore,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+
+        /// <summary>
+        /// camelCase JSON of LiteraryDevices (pre-serialized for the same reason as MyLastEditGeoDateTagsJson)
+        /// </summary>
+        public string LiteraryDevicesJson =>
+            JsonConvert.SerializeObject(LiteraryDevices ?? Array.Empty<LiteraryDevice>(), LiteraryJsonSettings);
+
+        /// <summary>
+        /// camelCase JSON of PoemLiteraryTags
+        /// </summary>
+        public string LiteraryExistingTagsJson =>
+            JsonConvert.SerializeObject(
+                (PoemLiteraryTags ?? Array.Empty<PoemLiteraryTag>()).Select(t => new
+                {
+                    t.Id,
+                    t.CoupletIndex,
+                    t.DeviceId,
+                    t.Uncertain,
+                    t.Note,
+                    Parts = (t.Parts ?? new List<PoemLiteraryTagPart>()).Select(p => new
+                    {
+                        p.SlotId,
+                        p.CoupletIndex,
+                        p.Misra,
+                        p.WordStart,
+                        p.WordEnd,
+                        p.ConceptId,
+                        ConceptName = p.Concept?.Name,
+                        p.Text
+                    })
+                }), LiteraryJsonSettings);
+
+        /// <summary>
+        /// camelCase JSON of MyLastEdit.LiteraryTags (the unsubmitted/pending suggestions of this user)
+        /// </summary>
+        public string MyLastEditLiteraryTagsJson =>
+            JsonConvert.SerializeObject(
+                (MyLastEdit?.LiteraryTags ?? Array.Empty<GanjoorPoemLiteraryTagCorrection>()).Select(t => new
+                {
+                    t.CoupletIndex,
+                    t.DeviceId,
+                    t.Uncertain,
+                    t.PartsJson,
+                    t.SuggestionNote,
+                    t.MarkForDelete,
+                    t.ExistingTagId
+                }), LiteraryJsonSettings);
+
+        /// <summary>
+        /// couplets split into hemistichs ({n: 1-based couplet number, m1, m2}[]) for the word picker of the
+        /// literary tag form; numbering is the same as Couplets (+1)
+        /// </summary>
+        public string LiteraryCoupletsJson
+        {
+            get
+            {
+                var list = new List<object>();
+                var verses = PageInformation?.Poem?.Verses ?? Array.Empty<GanjoorVerseViewModel>();
+                int n = 0;
+                string m1 = null, m2 = null;
+                bool open = false;
+                void Flush()
+                {
+                    if (open)
+                        list.Add(new { n, m1, m2 });
+                    open = false;
+                    m1 = null;
+                    m2 = null;
+                }
+                foreach (var v in verses)
+                {
+                    switch (v.VersePosition)
+                    {
+                        case VersePosition.Comment:
+                            break;
+                        case VersePosition.Paragraph:
+                        case VersePosition.Single:
+                            Flush();
+                            n++;
+                            m1 = v.Text;
+                            open = true;
+                            Flush();
+                            break;
+                        case VersePosition.Right:
+                        case VersePosition.CenteredVerse1:
+                            Flush();
+                            n++;
+                            m1 = v.Text;
+                            open = true;
+                            break;
+                        case VersePosition.Left:
+                        case VersePosition.CenteredVerse2:
+                            if (open)
+                                m2 = v.Text;
+                            break;
+                    }
+                }
+                Flush();
+                return JsonConvert.SerializeObject(list, LiteraryJsonSettings);
+            }
+        }
+
         public GanjoorLanguage[] Languages { get; set; }
 
         private async Task ReadLanguagesAsync(HttpClient secureClient)
@@ -420,6 +544,28 @@ namespace GanjooRazor.Areas.User.Pages
                     }
 
                     PoemGeoDateTags = JsonConvert.DeserializeObject<PoemGeoDateTag[]>(await tagsResponse.Content.ReadAsStringAsync());
+
+                    //literary devices (آرایه‌ها): never fatal for the editor - the section is just empty if the API can't answer
+                    LiteraryDevices = Array.Empty<LiteraryDevice>();
+                    PoemLiteraryTags = Array.Empty<PoemLiteraryTag>();
+                    try
+                    {
+                        var devicesResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/devices");
+                        if (devicesResponse.IsSuccessStatusCode)
+                            LiteraryDevices = JsonConvert.DeserializeObject<LiteraryDevice[]>(await devicesResponse.Content.ReadAsStringAsync()) ?? Array.Empty<LiteraryDevice>();
+
+                        var literaryTagsResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/poem/{PageInformation.Id}/tags");
+                        if (literaryTagsResponse.IsSuccessStatusCode)
+                            PoemLiteraryTags = JsonConvert.DeserializeObject<PoemLiteraryTag[]>(await literaryTagsResponse.Content.ReadAsStringAsync()) ?? Array.Empty<PoemLiteraryTag>();
+
+                        var completeResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/poem/{PageInformation.Id}/complete");
+                        if (completeResponse.IsSuccessStatusCode)
+                            LiteraryAnnotationCompleted = JsonConvert.DeserializeObject<bool>(await completeResponse.Content.ReadAsStringAsync());
+                    }
+                    catch (Exception)
+                    {
+                        // keep the empty defaults
+                    }
                 }
                 else
                 {
@@ -479,6 +625,8 @@ namespace GanjooRazor.Areas.User.Pages
             public string note { get; set; }
             public bool hideMyName { get; set; }
             public RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection[] geoDateTags { get; set; }
+            public RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection[] literaryTags { get; set; }
+            public bool? literaryAnnotationCompleted { get; set; }
         }
 
         public async Task<IActionResult> OnPostSendPoemCorrectionsAsync([FromBody] PoemCorrectionStructure pcs)
@@ -607,7 +755,7 @@ namespace GanjooRazor.Areas.User.Pages
                             }
                         }
 
-                        if (title == null && poemSummary == null && vOrderTexts.Count == 0 && pcs.rhythm == null && pcs.rhythm2 == null && pcs.rhyme == null && pcs.format == null && (pcs.geoDateTags == null || pcs.geoDateTags.Length == 0))
+                        if (title == null && poemSummary == null && vOrderTexts.Count == 0 && pcs.rhythm == null && pcs.rhythm2 == null && pcs.rhyme == null && pcs.format == null && (pcs.geoDateTags == null || pcs.geoDateTags.Length == 0) && (pcs.literaryTags == null || pcs.literaryTags.Length == 0) && pcs.literaryAnnotationCompleted == null)
                             return new BadRequestObjectResult("شما هیچ تغییری در اطلاعات نداده‌اید!");
 
                         if (pcs.rhythm == "null")
@@ -636,7 +784,9 @@ namespace GanjooRazor.Areas.User.Pages
                             PoemSummary = poemSummary,
                             Note = pcs.note,
                             HideMyName = pcs.hideMyName,
-                            GeoDateTags = pcs.geoDateTags
+                            GeoDateTags = pcs.geoDateTags,
+                            LiteraryTags = pcs.literaryTags,
+                            LiteraryAnnotationCompleted = pcs.literaryAnnotationCompleted
                         };
 
                         HttpResponseMessage response = await secureClient.PostAsync(
@@ -663,6 +813,51 @@ namespace GanjooRazor.Areas.User.Pages
             
         }
 
+
+        /// <summary>
+        /// concept autocomplete for the literary tag form (proxy to the API so the browser never talks to it directly)
+        /// </summary>
+        public async Task<IActionResult> OnGetLiteraryConceptsAsync(string query)
+        {
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/concepts?query={Uri.EscapeDataString(query ?? "")}&take=12");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
+                    }
+                    var concepts = JsonConvert.DeserializeObject<LiteraryConcept[]>(await response.Content.ReadAsStringAsync());
+                    return new OkObjectResult(concepts.Select(c => new { id = c.Id, name = c.Name, aliases = c.Aliases }).ToArray());
+                }
+                return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+            }
+        }
+
+        /// <summary>
+        /// suggests a new literary device (it joins the selectable list only after a moderator approves it)
+        /// </summary>
+        public async Task<IActionResult> OnPostSuggestLiteraryDeviceAsync([FromBody] LiteraryDevice device)
+        {
+            if (device == null)
+                return new BadRequestObjectResult("اطلاعات آرایه دریافت نشد.");
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.PostAsync(
+                        $"{APIRoot.Url}/api/ganjoor/literary/device",
+                        new StringContent(JsonConvert.SerializeObject(device), Encoding.UTF8, "application/json"));
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
+                    }
+                    return new OkObjectResult(true);
+                }
+                return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+            }
+        }
 
         public async Task<IActionResult> OnPostBreakPoemAsync(int poemId, int vOrder)
         {

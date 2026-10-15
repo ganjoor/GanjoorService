@@ -1026,7 +1026,13 @@
             scrollToPendingPersonTags();
         }
 
-        if (verseOrderText.length == 0 && verseOrderSummaries.length == 0 && geoDateTagSuggestions.length == 0) {
+        // a half-filled literary tag form is staged too (and blocks saving when it is invalid)
+        if (!litCollectForSave()) {
+            return;
+        }
+        var litCompleted = litCompletedForSave();
+
+        if (verseOrderText.length == 0 && verseOrderSummaries.length == 0 && geoDateTagSuggestions.length == 0 && litSuggestions.length == 0 && litCompleted == null) {
             if (rhythm_new == null && rhythm_new2 == null && rhyme_letters == null && section_format == null) {
                 upToast('شما هیچ تغییری در اطلاعات نداده‌اید!', 'error');
                 return;
@@ -1050,6 +1056,8 @@
         pcs.note = $('#note').val();
         pcs.hideMyName = $('#hide-my-name').is(":checked");
         pcs.geoDateTags = geoDateTagSuggestions;
+        pcs.literaryTags = litSuggestionsForSave();
+        pcs.literaryAnnotationCompleted = litCompleted;
 
         var url = '?handler=SendPoemCorrections';
 
@@ -1728,6 +1736,19 @@ else
                         </td>
                     </tr>
                 }
+            }
+            @if ((Model.MyLastEdit.LiteraryTags != null && Model.MyLastEdit.LiteraryTags.Length > 0) || Model.MyLastEdit.LiteraryAnnotationCompleted != null)
+            {
+                <tr>
+                    <td colspan="2">
+                        آرایه‌های ادبی پیشنهادی
+                        @if (Model.MyLastEdit.LiteraryAnnotationCompleted != null)
+                        {
+                            <p class="up-hint">@(Model.MyLastEdit.LiteraryAnnotationCompleted.Value ? "علامت‌گذاری شعر به‌عنوان «آرایه‌های کامل ثبت شده»" : "برداشتن علامت «آرایه‌های کامل ثبت شده»")</p>
+                        }
+                        <div id="lit-lastedit"></div>
+                    </td>
+                </tr>
             }
             @if (!string.IsNullOrEmpty(Model.MyLastEdit.Note))
             {
@@ -2791,6 +2812,532 @@ else
 
         <a role="button" class="up-btn up-btn--ghost" onclick="addPersonTagSuggestion()">➕ افزودن به فهرست پیشنهادها</a>
     </div>
+
+    @* آرایه‌های ادبی: برچسب‌ها با «آرایه» (تشبیه، استعاره، ...) و جایگاه‌های آن تعریف می‌شوند؛ پیشنهادها با دکمهٔ ذخیرهٔ بالا همراه بقیهٔ تغییرات ارسال می‌شوند (pcs.literaryTags). *@
+    <style>
+        .lit-slot { border: 1px solid var(--up-border); border-radius: var(--up-radius-sm); padding: var(--up-space-2) var(--up-space-3); margin-bottom: var(--up-space-2); background: var(--up-surface-alt); }
+        .lit-inst { padding: var(--up-space-2) 0; border-bottom: 1px dashed var(--up-border); }
+        .lit-inst:last-of-type { border-bottom: none; }
+        .lit-misra { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0; }
+        .lit-word { padding: 2px 8px; border: 1px solid var(--up-border); border-radius: var(--up-radius-sm); cursor: pointer; background: var(--up-surface); }
+        .lit-word:hover { border-color: var(--up-primary); }
+        .lit-word--sel { background: var(--up-primary); color: var(--up-on-primary); border-color: var(--up-primary); }
+        .lit-badge { font-size: 0.8rem; color: var(--up-text-muted); }
+        .lit-device-form-slot { display: flex; flex-wrap: wrap; gap: var(--up-space-2); align-items: center; margin-bottom: var(--up-space-2); }
+    </style>
+    <div class="up-card" id="literary-section">
+        <h2 class="up-card__title">🎨 آرایه‌های ادبی (پیشنهادی)</h2>
+        <p class="up-hint">می‌توانید آرایه‌های به‌کاررفته در این شعر (تشبیه، استعاره، کنایه، جناس و ...) را همراه با جای دقیقشان در متن پیشنهاد دهید. پیشنهادهای شما پس از بررسی ناظران اعمال خواهد شد. با دکمهٔ «ذخیره» بالا همراه با بقیهٔ تغییرات ثبت می‌شود.</p>
+
+        <div id="lit-existing"></div>
+        <div id="lit-pending"></div>
+
+        <div class="up-field">
+            <label for="lit-couplet">بیت</label>
+            <select id="lit-couplet">
+                <option value="0">— کل شعر / تعیین‌نشده —</option>
+                @foreach (var couplet in Model.Couplets)
+                {
+                    <option value="@(couplet.Item1 + 1)">@($"{(couplet.Item1 + 1).ToPersianNumbers()} - {couplet.Item2}")</option>
+                }
+            </select>
+        </div>
+
+        <div class="up-field">
+            <label for="lit-device">آرایه</label>
+            <select id="lit-device" onchange="litOnDeviceChange()"></select>
+            <p class="up-hint" id="lit-device-help"></p>
+        </div>
+
+        <div id="lit-slots"></div>
+
+        <div class="up-check-row">
+            <input type="checkbox" id="lit-uncertain" />
+            <label for="lit-uncertain">مطمئن نیستم</label>
+        </div>
+
+        <div class="up-field">
+            <label for="lit-note">توضیح (اختیاری)</label>
+            <textarea id="lit-note" rows="2"></textarea>
+        </div>
+
+        <a role="button" class="up-btn up-btn--ghost" onclick="litAddSuggestion(false)">➕ افزودن به فهرست پیشنهادها</a>
+
+        <hr />
+        <div class="up-check-row">
+            <input type="checkbox" id="lit-complete" />
+            <label for="lit-complete">همهٔ آرایه‌های این شعر ثبت شده است (فقط شعرهای تکمیل‌شده در آمار حساب می‌شوند)</label>
+        </div>
+
+        <hr />
+        <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="litToggleDeviceForm()">🆕 آرایه‌ام در فهرست نیست</a>
+        <div id="lit-device-form" style="display:none;">
+            <p class="up-hint">نام و تعریف آرایه و جایگاه‌های آن را بنویسید (مثلاً در تشبیه: «مشبّه» و «مشبّه‌به»). پس از تأیید ناظر، آرایه برای همه قابل انتخاب می‌شود.</p>
+            <div class="up-field">
+                <label for="litdev-name">نام آرایه</label>
+                <input type="text" id="litdev-name" />
+            </div>
+            <div class="up-field">
+                <label for="litdev-category">دسته</label>
+                <select id="litdev-category">
+                    <option value="0">بیان</option>
+                    <option value="1">بدیع لفظی</option>
+                    <option value="2">بدیع معنوی</option>
+                    <option value="3">ساختار</option>
+                    <option value="4" selected>سایر</option>
+                </select>
+            </div>
+            <div class="up-field">
+                <label for="litdev-definition">تعریف</label>
+                <textarea id="litdev-definition" rows="3"></textarea>
+            </div>
+            <div class="up-field">
+                <label for="litdev-example">نمونه (اختیاری)</label>
+                <input type="text" id="litdev-example" />
+            </div>
+            <div class="up-field">
+                <label for="litdev-source">منبع (اختیاری، مثلاً نام کتاب)</label>
+                <input type="text" id="litdev-source" />
+            </div>
+            <div id="litdev-slots"></div>
+            <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="litDevAddSlot()">➕ جایگاه</a>
+            <a role="button" class="up-btn up-btn--success" onclick="litDevSubmit()">📨 ارسال پیشنهاد آرایه</a>
+        </div>
+    </div>
+    <script>
+        var litDevices = @Html.Raw(Model.LiteraryDevicesJson);
+        var litExistingTags = @Html.Raw(Model.LiteraryExistingTagsJson);
+        var litCouplets = @Html.Raw(Model.LiteraryCoupletsJson);
+        var litSuggestions = @Html.Raw(Model.MyLastEditLiteraryTagsJson);
+        var litCompletedInitial = @(Model.LiteraryAnnotationCompleted ? "true" : "false");
+        var litCompletedDraft = @(Model.MyLastEdit != null && Model.MyLastEdit.LiteraryAnnotationCompleted != null ? (Model.MyLastEdit.LiteraryAnnotationCompleted.Value ? "true" : "false") : "null");
+        var litCategoryNames = ['بیان', 'بدیع لفظی', 'بدیع معنوی', 'ساختار', 'سایر'];
+        var litForm = { deviceId: null, slots: {} };
+        var litConceptResults = {};
+        var litConceptTimers = {};
+        var litConceptNames = {};
+        litExistingTags.forEach(function (t) { (t.parts || []).forEach(function (p) { if (p.conceptId && p.conceptName) litConceptNames[p.conceptId] = p.conceptName; }); });
+
+        function litEsc(s) {
+            return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function litDevice(id) {
+            return litDevices.filter(function (d) { return d.id === id; })[0] || null;
+        }
+
+        function litCouplet(n) {
+            return litCouplets.filter(function (c) { return c.n === n; })[0] || null;
+        }
+
+        function litWords(text) {
+            return String(text || '').split(/\s+/).filter(function (w) { return w.length > 0; });
+        }
+
+        function litSpanText(coupletIndex, misra, ws, we) {
+            var c = litCouplet(coupletIndex);
+            if (!c || ws == null || we == null) return '';
+            var words = litWords(misra === 1 ? c.m1 : c.m2);
+            return words.slice(ws - 1, we).join(' ');
+        }
+
+        function litNewInst() {
+            var main = parseInt($('#lit-couplet').val() || '0', 10);
+            return { couplet: main, misra: 0, ws: null, we: null, stage: 0, conceptId: null, conceptName: '', text: '' };
+        }
+
+        function litInst(slotId, i) {
+            return litForm.slots[slotId][i];
+        }
+
+        function litInit() {
+            var sel = $('#lit-device');
+            var html = '<option value="">— انتخاب آرایه —</option>';
+            for (var cat = 0; cat < litCategoryNames.length; cat++) {
+                var ds = litDevices.filter(function (d) { return d.category === cat; });
+                if (ds.length === 0) continue;
+                html += '<optgroup label="' + litCategoryNames[cat] + '">';
+                for (var i = 0; i < ds.length; i++) html += '<option value="' + ds[i].id + '">' + litEsc(ds[i].name) + '</option>';
+                html += '</optgroup>';
+            }
+            sel.html(html);
+            var completed = litCompletedDraft != null ? litCompletedDraft : litCompletedInitial;
+            $('#lit-complete').prop('checked', completed);
+            litRenderExisting();
+            litRenderPending();
+            litDevAddSlot();
+        }
+
+        function litOnDeviceChange() {
+            var id = parseInt($('#lit-device').val() || '0', 10);
+            litForm = { deviceId: id || null, slots: {} };
+            var d = litDevice(id);
+            var help = '';
+            if (d) {
+                help = d.definition || '';
+                if (d.example) help += ' — نمونه: ' + d.example;
+                for (var i = 0; i < d.slots.length; i++) {
+                    var s = d.slots[i];
+                    litForm.slots[s.id] = s.required ? [litNewInst()] : [];
+                }
+            }
+            $('#lit-device-help').text(help);
+            litRenderSlots();
+        }
+
+        function litRenderSlots() {
+            var d = litDevice(litForm.deviceId);
+            var box = document.getElementById('lit-slots');
+            if (!d) { box.innerHTML = ''; return; }
+            var html = '';
+            for (var si = 0; si < d.slots.length; si++) {
+                var s = d.slots[si];
+                var insts = litForm.slots[s.id];
+                html += '<div class="lit-slot"><label><b>' + litEsc(s.name) + '</b>' + (s.required ? ' *' : '') + '</label>';
+                for (var i = 0; i < insts.length; i++) {
+                    html += litRenderInst(s, i, insts[i], insts.length);
+                }
+                if (insts.length === 0 || s.allowMultiple) {
+                    html += '<a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="litAddInst(' + s.id + ')">➕ ' + (insts.length === 0 ? 'افزودن «' + litEsc(s.name) + '»' : 'یکی دیگر') + '</a>';
+                }
+                html += '</div>';
+            }
+            box.innerHTML = html;
+        }
+
+        function litRenderInst(s, i, inst, count) {
+            var k = s.id + '-' + i;
+            var html = '<div class="lit-inst">';
+            var hasSpan = s.kind === 0 || s.kind === 1;
+            var hasConcept = s.kind === 1 || s.kind === 2;
+            if (hasSpan) {
+                html += '<select onchange="litSetCouplet(' + s.id + ',' + i + ',this.value)"><option value="0">— بیت را انتخاب کنید —</option>';
+                for (var c = 0; c < litCouplets.length; c++) {
+                    var cp = litCouplets[c];
+                    html += '<option value="' + cp.n + '"' + (cp.n === inst.couplet ? ' selected' : '') + '>' + litEsc(cp.n + ' - ' + (cp.m1 || '') + (cp.m2 ? ' - ' + cp.m2 : '')) + '</option>';
+                }
+                html += '</select>';
+                var cpl = litCouplet(inst.couplet);
+                if (cpl) {
+                    for (var m = 1; m <= 2; m++) {
+                        var mt = m === 1 ? cpl.m1 : cpl.m2;
+                        if (!mt) continue;
+                        var ws = litWords(mt);
+                        html += '<div class="lit-misra">';
+                        for (var w = 1; w <= ws.length; w++) {
+                            var sel = inst.misra === m && inst.ws != null && w >= inst.ws && w <= inst.we;
+                            html += '<span class="lit-word' + (sel ? ' lit-word--sel' : '') + '" onclick="litPickWord(' + s.id + ',' + i + ',' + m + ',' + w + ')">' + litEsc(ws[w - 1]) + '</span>';
+                        }
+                        html += '</div>';
+                    }
+                    html += '<p class="up-hint">' + (inst.ws != null ? 'انتخاب‌شده: «' + litEsc(litSpanText(inst.couplet, inst.misra, inst.ws, inst.we)) + '»' : 'روی نخستین و سپس واپسین واژه بزنید (برای یک واژه، دو بار روی همان واژه).') + '</p>';
+                }
+            }
+            if (hasConcept) {
+                html += '<div class="up-autocomplete-wrap"><input type="text" id="lit-c-' + k + '" autocomplete="off" placeholder="مفهوم (مثلاً معشوق، ماه، شمع)" value="' + litEsc(inst.conceptName) + '" oninput="litConceptInput(' + s.id + ',' + i + ',this.value)" />';
+                html += '<div id="lit-cr-' + k + '" class="up-autocomplete-results" style="display:none;"></div></div>';
+                html += '<span class="lit-badge" id="lit-cb-' + k + '">' + litConceptBadge(inst) + '</span>';
+            }
+            if (s.kind === 3) {
+                html += '<input type="text" value="' + litEsc(inst.text) + '" oninput="litInst(' + s.id + ',' + i + ').text=this.value" />';
+            }
+            var minCount = s.required ? 1 : 0;
+            if (count > minCount) {
+                html += '<a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="litRemoveInst(' + s.id + ',' + i + ')">✕ حذف</a>';
+            }
+            return html + '</div>';
+        }
+
+        function litConceptBadge(inst) {
+            if (inst.conceptId) return '✓ مفهوم موجود';
+            if (inst.conceptName && inst.conceptName.trim().length > 0) return 'مفهوم جدید (پس از تأیید ناظر به فهرست اضافه می‌شود)';
+            return '';
+        }
+
+        function litAddInst(slotId) { litForm.slots[slotId].push(litNewInst()); litRenderSlots(); }
+        function litRemoveInst(slotId, i) { litForm.slots[slotId].splice(i, 1); litRenderSlots(); }
+        function litSetCouplet(slotId, i, v) {
+            var inst = litInst(slotId, i);
+            inst.couplet = parseInt(v || '0', 10);
+            inst.misra = 0; inst.ws = null; inst.we = null; inst.stage = 0;
+            litRenderSlots();
+        }
+
+        function litPickWord(slotId, i, misra, w) {
+            var inst = litInst(slotId, i);
+            if (inst.stage === 1 && inst.misra === misra) {
+                var a = inst.ws;
+                inst.ws = Math.min(a, w);
+                inst.we = Math.max(a, w);
+                inst.stage = 2;
+            } else {
+                inst.misra = misra; inst.ws = w; inst.we = w; inst.stage = 1;
+            }
+            litRenderSlots();
+        }
+
+        function litConceptInput(slotId, i, value) {
+            var inst = litInst(slotId, i);
+            inst.conceptId = null;
+            inst.conceptName = value;
+            var k = slotId + '-' + i;
+            document.getElementById('lit-cb-' + k).textContent = litConceptBadge(inst);
+            clearTimeout(litConceptTimers[k]);
+            var q = (value || '').trim();
+            var box = document.getElementById('lit-cr-' + k);
+            if (q.length === 0) { box.style.display = 'none'; return; }
+            litConceptTimers[k] = setTimeout(function () {
+                $.ajax({
+                    type: 'GET',
+                    url: '?handler=LiteraryConcepts',
+                    data: { query: q },
+                    success: function (res) {
+                        litConceptResults[k] = res;
+                        var html = '';
+                        for (var r = 0; r < res.length; r++) {
+                            html += '<div class="up-autocomplete-item" onclick="litPickConcept(' + slotId + ',' + i + ',' + r + ')">' + litEsc(res[r].name) + '</div>';
+                        }
+                        if (res.length === 0) html = '<div class="up-autocomplete-item up-autocomplete-item--empty">مفهومی با این نام نیست؛ به‌عنوان مفهوم جدید ثبت می‌شود.</div>';
+                        box.innerHTML = html;
+                        box.style.display = 'block';
+                    }
+                });
+            }, 250);
+        }
+
+        function litPickConcept(slotId, i, r) {
+            var k = slotId + '-' + i;
+            var c = litConceptResults[k][r];
+            var inst = litInst(slotId, i);
+            inst.conceptId = c.id;
+            inst.conceptName = c.name;
+            litConceptNames[c.id] = c.name;
+            document.getElementById('lit-c-' + k).value = c.name;
+            document.getElementById('lit-cb-' + k).textContent = litConceptBadge(inst);
+            document.getElementById('lit-cr-' + k).style.display = 'none';
+        }
+
+        function litHasUnstaged() {
+            var d = litDevice(litForm.deviceId);
+            if (!d) return false;
+            for (var si = 0; si < d.slots.length; si++) {
+                var insts = litForm.slots[d.slots[si].id] || [];
+                for (var i = 0; i < insts.length; i++) {
+                    var x = insts[i];
+                    if (x.ws != null || (x.conceptName && x.conceptName.trim()) || (x.text && x.text.trim())) return true;
+                }
+            }
+            return false;
+        }
+
+        function litBuildParts(d) {
+            var parts = [];
+            for (var si = 0; si < d.slots.length; si++) {
+                var s = d.slots[si];
+                var insts = litForm.slots[s.id] || [];
+                if (s.required && insts.length === 0) { upToast('جایگاه «' + s.name + '» پر نشده است.', 'error'); return null; }
+                for (var i = 0; i < insts.length; i++) {
+                    var x = insts[i];
+                    var p = { slotId: s.id, coupletIndex: 0, misra: 0, wordStart: null, wordEnd: null, conceptId: null, suggestedConceptName: null, text: null };
+                    if (s.kind === 0 || s.kind === 1) {
+                        if (x.ws == null) { upToast('جای «' + s.name + '» را در متن مشخص کنید.', 'error'); return null; }
+                        p.coupletIndex = x.couplet; p.misra = x.misra; p.wordStart = x.ws; p.wordEnd = x.we;
+                    }
+                    if (s.kind === 1 || s.kind === 2) {
+                        var nm = (x.conceptName || '').trim();
+                        if (!x.conceptId && nm.length === 0) { upToast('مفهوم «' + s.name + '» را بنویسید.', 'error'); return null; }
+                        if (x.conceptId) p.conceptId = x.conceptId; else p.suggestedConceptName = nm;
+                    }
+                    if (s.kind === 3) {
+                        if (!x.text || !x.text.trim()) { upToast('متن «' + s.name + '» را بنویسید.', 'error'); return null; }
+                        p.text = x.text.trim();
+                    }
+                    parts.push(p);
+                }
+            }
+            return parts;
+        }
+
+        // returns true when something was staged (or when the form was empty and nothing was required)
+        function litAddSuggestion(silentIfEmpty) {
+            var d = litDevice(litForm.deviceId);
+            if (!d) {
+                if (silentIfEmpty) return true;
+                upToast('آرایه را انتخاب کنید.', 'error');
+                return false;
+            }
+            if (silentIfEmpty && !litHasUnstaged()) return true;
+            var parts = litBuildParts(d);
+            if (parts == null) return false;
+            var main = parseInt($('#lit-couplet').val() || '0', 10);
+            if (main === 0) {
+                var withSpan = parts.filter(function (p) { return p.coupletIndex > 0; })[0];
+                if (withSpan) main = withSpan.coupletIndex;
+            }
+            litSuggestions.push({
+                coupletIndex: main,
+                deviceId: d.id,
+                uncertain: $('#lit-uncertain').is(':checked'),
+                partsJson: JSON.stringify(parts),
+                suggestionNote: $('#lit-note').val() || null,
+                markForDelete: false,
+                existingTagId: null
+            });
+            $('#lit-uncertain').prop('checked', false);
+            $('#lit-note').val('');
+            litOnDeviceChange();
+            litRenderPending();
+            litRenderExisting();
+            return true;
+        }
+
+        function litPartsSummary(deviceId, parts) {
+            var d = litDevice(deviceId);
+            var out = [];
+            for (var i = 0; i < parts.length; i++) {
+                var p = parts[i];
+                var slot = d ? d.slots.filter(function (s) { return s.id === p.slotId; })[0] : null;
+                var val = [];
+                if (p.wordStart != null) val.push('«' + litSpanText(p.coupletIndex, p.misra, p.wordStart, p.wordEnd) + '»');
+                var cn = p.conceptName || p.suggestedConceptName || (p.conceptId ? (litConceptNames[p.conceptId] || ('مفهوم #' + p.conceptId)) : '');
+                if (cn) val.push(cn);
+                if (p.text) val.push(p.text);
+                out.push((slot ? slot.name : '?') + ': ' + val.join(' ← '));
+            }
+            return out.join(' ، ');
+        }
+
+        function litCoupletLabel(n) {
+            var c = litCouplet(n);
+            return c ? (n + ' - ' + (c.m1 || '')) : '— کل شعر —';
+        }
+
+        function litRenderExisting() {
+            var box = document.getElementById('lit-existing');
+            if (litExistingTags.length === 0) { box.innerHTML = ''; return; }
+            var html = '<p><b>آرایه‌های ثبت‌شده</b></p><table><tr><th>بیت</th><th>آرایه</th><th>جزئیات</th><th>#</th></tr>';
+            for (var i = 0; i < litExistingTags.length; i++) {
+                var t = litExistingTags[i];
+                var d = litDevice(t.deviceId);
+                var requested = litSuggestions.some(function (s) { return s.markForDelete && s.existingTagId === t.id; });
+                html += '<tr><td>' + litEsc(litCoupletLabel(t.coupletIndex)) + '</td><td>' + litEsc(d ? d.name : '?') + (t.uncertain ? ' (نامطمئن)' : '') + '</td><td>' + litEsc(litPartsSummary(t.deviceId, t.parts || [])) + '</td><td>' +
+                    (requested ? 'درخواست حذف ثبت شد' : '<a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="litRequestDelete(' + t.id + ')">🗑️ درخواست حذف</a>') + '</td></tr>';
+            }
+            box.innerHTML = html + '</table>';
+        }
+
+        function litRequestDelete(tagId) {
+            var t = litExistingTags.filter(function (x) { return x.id === tagId; })[0];
+            litSuggestions.push({ coupletIndex: t.coupletIndex, deviceId: t.deviceId, uncertain: false, partsJson: null, suggestionNote: null, markForDelete: true, existingTagId: tagId });
+            litRenderPending();
+            litRenderExisting();
+        }
+
+        function litRemoveSuggestion(i) {
+            litSuggestions.splice(i, 1);
+            litRenderPending();
+            litRenderExisting();
+        }
+
+        function litPendingRowsHtml() {
+            var html = '';
+            for (var i = 0; i < litSuggestions.length; i++) {
+                var s = litSuggestions[i];
+                var d = litDevice(s.deviceId);
+                var parts = [];
+                if (!s.markForDelete && s.partsJson) { try { parts = JSON.parse(s.partsJson); } catch (e) { parts = []; } }
+                html += '<tr><td>' + (s.markForDelete ? '🗑️ درخواست حذف' : '➕ پیشنهاد جدید') + '</td><td>' + litEsc(litCoupletLabel(s.coupletIndex)) + '</td><td>' + litEsc(d ? d.name : '?') + (s.uncertain ? ' (نامطمئن)' : '') + '</td><td>' + litEsc(s.markForDelete ? '' : litPartsSummary(s.deviceId, parts)) + '</td>' +
+                    '<td><a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="litRemoveSuggestion(' + i + ')">✕ حذف از فهرست</a></td></tr>';
+            }
+            return html;
+        }
+
+        function litRenderPending() {
+            var box = document.getElementById('lit-pending');
+            if (litSuggestions.length === 0) { box.innerHTML = ''; }
+            else {
+                box.innerHTML = '<p><b>پیشنهادهای در انتظار ذخیره</b></p><table><tr><th>وضعیت</th><th>بیت</th><th>آرایه</th><th>جزئیات</th><th>#</th></tr>' + litPendingRowsHtml() + '</table>';
+            }
+            var last = document.getElementById('lit-lastedit');
+            if (last) last.innerHTML = litSuggestions.length === 0 ? '' : '<table><tr><th>وضعیت</th><th>بیت</th><th>آرایه</th><th>جزئیات</th></tr>' + litPendingRowsHtml().replace(/<td><a role="button"[^]*?<\/a><\/td>/g, '') + '</table>';
+        }
+
+        // called by savePoemCorrections: returns false when the half-filled form is invalid
+        function litCollectForSave() {
+            if (!litAddSuggestion(true)) return false;
+            return true;
+        }
+
+        function litCompletedForSave() {
+            var now = $('#lit-complete').is(':checked');
+            return now !== litCompletedInitial ? now : null;
+        }
+
+        function litSuggestionsForSave() {
+            return litSuggestions.map(function (s) {
+                return { id: 0, coupletIndex: s.coupletIndex, deviceId: s.deviceId, uncertain: !!s.uncertain, partsJson: s.partsJson, suggestionNote: s.suggestionNote, markForDelete: !!s.markForDelete, existingTagId: s.existingTagId };
+            });
+        }
+
+        // ----- suggesting a new device -----
+        var litDevSlotCount = 0;
+        function litToggleDeviceForm() {
+            $('#lit-device-form').toggle();
+        }
+
+        function litDevAddSlot() {
+            var id = litDevSlotCount++;
+            var html = '<div class="lit-device-form-slot" id="litdev-slot-' + id + '">' +
+                '<input type="text" class="litdev-slot-name" placeholder="نام جایگاه (مثلاً مشبّه)" />' +
+                '<select class="litdev-slot-kind"><option value="0">بخشی از متن</option><option value="1">بخشی از متن + مفهوم</option><option value="2">فقط مفهوم</option><option value="3">متن آزاد</option></select>' +
+                '<label><input type="checkbox" class="litdev-slot-required" checked /> الزامی</label>' +
+                '<label><input type="checkbox" class="litdev-slot-multiple" /> چندبار</label>' +
+                '<a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="$(\'#litdev-slot-' + id + '\').remove()">✕</a></div>';
+            $('#litdev-slots').append(html);
+        }
+
+        function litDevSubmit() {
+            var slots = [];
+            $('#litdev-slots .lit-device-form-slot').each(function (idx) {
+                var name = $(this).find('.litdev-slot-name').val();
+                if (!name || !name.trim()) return;
+                slots.push({
+                    name: name.trim(),
+                    kind: parseInt($(this).find('.litdev-slot-kind').val(), 10),
+                    required: $(this).find('.litdev-slot-required').is(':checked'),
+                    allowMultiple: $(this).find('.litdev-slot-multiple').is(':checked'),
+                    order: slots.length
+                });
+            });
+            var device = {
+                name: $('#litdev-name').val(),
+                category: parseInt($('#litdev-category').val(), 10),
+                definition: $('#litdev-definition').val(),
+                example: $('#litdev-example').val(),
+                source: $('#litdev-source').val(),
+                slots: slots
+            };
+            $.ajax({
+                type: 'POST',
+                url: '?handler=SuggestLiteraryDevice',
+                data: JSON.stringify(device),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function () {
+                    upToast('پیشنهاد آرایه ثبت شد و پس از تأیید ناظر در فهرست قرار می‌گیرد.', 'success');
+                    $('#lit-device-form').hide();
+                    $('#litdev-name, #litdev-definition, #litdev-example, #litdev-source').val('');
+                    $('#litdev-slots').empty();
+                    litDevAddSlot();
+                },
+                error: function (e) {
+                    upShowError(e.responseText || String(e));
+                }
+            });
+        }
+
+        $(document).ready(function () { litInit(); });
+    </script>
 
     <div class="up-card">
         <div class="up-check-row">
