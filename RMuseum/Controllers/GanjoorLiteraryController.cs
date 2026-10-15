@@ -102,6 +102,23 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// import literary tags from an annotated corpus file (dryRun=true only reports what would happen)
+        /// </summary>
+        [HttpPost]
+        [Route("import/corpus")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [RequestSizeLimit(100_000_000)]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(LiteraryCorpusImportResult))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> ImportCorpus([FromBody] LiteraryCorpusImportFile file, string urlPrefix = "/hafez/ghazal/", bool dryRun = true)
+        {
+            var res = await _ganjoorService.ImportLiteraryCorpusAsync(file, urlPrefix, dryRun);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// search approved concepts
         /// </summary>
         [HttpGet]

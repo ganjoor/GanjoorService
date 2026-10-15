@@ -41,6 +41,24 @@
 </div>
 
 <div class="up-card">
+    <h2 class="up-card__title">درون‌ریزی آرایه‌های یک پیکرهٔ دانشگاهی</h2>
+    <p class="up-hint">فایل JSON آماده‌شده از پیکرهٔ حافظ را انتخاب کنید. ابتدا «بررسی» را بزنید (چیزی ذخیره نمی‌شود)، سپس در صورت مناسب‌بودن گزارش «درون‌ریزی». تکرار درون‌ریزی برای شعرهایی که قبلاً درون‌ریزی شده‌اند اثری ندارد. آرایه‌های پایه باید از پیش افزوده شده باشند.</p>
+    <div class="up-field">
+        <label for="ld-import-file">فایل</label>
+        <input type="file" id="ld-import-file" accept=".json,application/json" />
+    </div>
+    <div class="up-field">
+        <label for="ld-import-prefix">پیشوند نشانی شعرها</label>
+        <input type="text" id="ld-import-prefix" value="/hafez/ghazal/" dir="ltr" />
+    </div>
+    <div class="up-form-actions">
+        <a role="button" class="up-btn up-btn--ghost" onclick="ldImport(true)">بررسی (بدون ذخیره)</a>
+        <a role="button" class="up-btn up-btn--success" onclick="ldImport(false)">درون‌ریزی</a>
+    </div>
+    <pre id="ld-import-report" class="ld-muted" style="white-space:pre-wrap;"></pre>
+</div>
+
+<div class="up-card">
     <h2 class="up-card__title">مفاهیم</h2>
     <p class="up-hint">نام‌های دیگر را با « | » جدا کنید. برای یکی‌کردن دو مفهوم تکراری از «ادغام در ...» استفاده کنید: همهٔ برچسب‌های مفهوم مبدأ به مقصد منتقل می‌شود و نام مبدأ به نام‌های دیگر مقصد افزوده می‌شود.</p>
     <div class="up-field">
@@ -183,6 +201,42 @@
             success: function (n) { upToast(n + ' آرایه افزوده شد.'); if (n > 0) location.reload(true); },
             error: function (e) { upShowError(e.responseText || String(e)); }
         });
+    }
+
+    // ----- corpus import -----
+    function ldImport(dryRun) {
+        var input = document.getElementById('ld-import-file');
+        if (!input.files || input.files.length === 0) { upToast('فایل را انتخاب کنید.', 'error'); return; }
+        var reader = new FileReader();
+        reader.onload = async function () {
+            if (!dryRun) {
+                var ok = await upConfirm('آرایه‌ها در پایگاه داده ذخیره شوند؟');
+                if (!ok) return;
+            }
+            $('#ld-import-report').text('در حال پردازش ...');
+            $.ajax({
+                type: 'POST',
+                url: '?handler=ImportCorpus&dryRun=' + dryRun + '&urlPrefix=' + encodeURIComponent($('#ld-import-prefix').val()),
+                data: reader.result,
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (r) {
+                    var lines = [
+                        (r.dryRun ? 'گزارش بررسی (چیزی ذخیره نشد)' : 'درون‌ریزی انجام شد'),
+                        'بیت‌های فایل: ' + r.items,
+                        'پیداشده: ' + r.matchedItems + ' - پیدانشده: ' + r.unmatchedItems + ' - مبهم: ' + r.ambiguousItems,
+                        'شعرهای ردشده چون قبلاً درون‌ریزی شده‌اند: ' + r.skippedExistingPoems,
+                        'برچسب: ' + r.tagsCreated,
+                        'جای دقیق واژه‌ها: ' + r.partsLocated + ' - فقط در سطح بیت: ' + r.partsUnlocated,
+                        'مفاهیم جدید: ' + r.conceptsCreated
+                    ];
+                    if (r.messages && r.messages.length) { lines.push(''); lines = lines.concat(r.messages); }
+                    $('#ld-import-report').text(lines.join('\n'));
+                },
+                error: function (e) { $('#ld-import-report').text(''); upShowError(e.responseText || String(e)); }
+            });
+        };
+        reader.readAsText(input.files[0], 'utf-8');
     }
 
     // ----- concepts -----

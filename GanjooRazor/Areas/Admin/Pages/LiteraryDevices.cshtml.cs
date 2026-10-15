@@ -106,6 +106,27 @@ namespace GanjooRazor.Areas.Admin.Pages
         }
 
         /// <summary>
+        /// imports literary tags from a corpus file (dryRun only reports)
+        /// </summary>
+        public async Task<IActionResult> OnPostImportCorpusAsync([FromBody] LiteraryCorpusImportFile file, string urlPrefix, bool dryRun)
+        {
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    secureClient.Timeout = TimeSpan.FromMinutes(10);
+                    var response = await secureClient.PostAsync(
+                        $"{APIRoot.Url}/api/ganjoor/literary/import/corpus?urlPrefix={Uri.EscapeDataString(urlPrefix ?? "/hafez/ghazal/")}&dryRun={dryRun.ToString().ToLowerInvariant()}",
+                        new StringContent(JsonConvert.SerializeObject(file), Encoding.UTF8, "application/json"));
+                    if (!response.IsSuccessStatusCode)
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
+                    return Content(await response.Content.ReadAsStringAsync(), "application/json");
+                }
+            }
+            return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+        }
+
+        /// <summary>
         /// concept search (with parent names)
         /// </summary>
         public async Task<IActionResult> OnGetConceptsAsync(string query)

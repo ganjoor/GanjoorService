@@ -1792,6 +1792,15 @@ namespace RMuseum.Services
         Task<RServiceResult<int>> SeedCoreLiteraryDevicesAsync();
 
         /// <summary>
+        /// imports literary tags from an annotated corpus file
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="urlPrefix"></param>
+        /// <param name="dryRun"></param>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryCorpusImportResult>> ImportLiteraryCorpusAsync(LiteraryCorpusImportFile file, string urlPrefix, bool dryRun);
+
+        /// <summary>
         /// concepts by ids
         /// </summary>
         /// <param name="ids"></param>

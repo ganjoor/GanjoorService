@@ -2788,6 +2788,11 @@
             add the core devices of the initial list (those missing)
             </summary>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.ImportCorpus(RMuseum.Models.Ganjoor.LiteraryCorpusImportFile,System.String,System.Boolean)">
+            <summary>
+            import literary tags from an annotated corpus file (dryRun=true only reports what would happen)
+            </summary>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorLiteraryController.SearchConcepts(System.String,System.Int32)">
             <summary>
             search approved concepts
@@ -12643,6 +12648,167 @@
         <member name="P:RMuseum.Models.Ganjoor.LiteraryConcept.CreateDate">
             <summary>
             creation date
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryCorpusImportFile">
+            <summary>
+            file format for importing literary tags from an academic corpus (see GanjoorService.ImportLiteraryCorpusAsync)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportFile.Source">
+            <summary>
+            where the data comes from (attribution)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportFile.Ref">
+            <summary>
+            stored on every imported tag as OriginRef, also used to make the import idempotent
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportFile.Items">
+            <summary>
+            couplets with tags
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryCorpusImportItem">
+            <summary>
+            a couplet of the corpus with its tags
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportItem.GhazalId">
+            <summary>
+            poem number in the corpus (used only to tell apart identical couplets)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportItem.BaytId">
+            <summary>
+            couplet number in the corpus poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportItem.M1">
+            <summary>
+            first hemistich
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportItem.M2">
+            <summary>
+            second hemistich
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportItem.Tags">
+            <summary>
+            tags
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryCorpusImportTag">
+            <summary>
+            a tag of an imported couplet
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportTag.Device">
+            <summary>
+            device key (LiteraryDevice.Key)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportTag.Parts">
+            <summary>
+            slot values
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryCorpusImportPart">
+            <summary>
+            a slot value of an imported tag; Misra/WordStart/WordEnd are relative to the corpus text and are
+            only used if the poem's text has exactly the same words
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportPart.Slot">
+            <summary>
+            slot key (LiteraryDeviceSlot.Key)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportPart.Misra">
+            <summary>
+            hemistich (1 or 2)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportPart.WordStart">
+            <summary>
+            first word (1 based)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportPart.WordEnd">
+            <summary>
+            last word (1 based, inclusive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportPart.Concept">
+            <summary>
+            concept name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportPart.Text">
+            <summary>
+            free text
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult">
+            <summary>
+            outcome of a corpus import
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.DryRun">
+            <summary>
+            nothing was written
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.Items">
+            <summary>
+            couplets in the file
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.MatchedItems">
+            <summary>
+            couplets found in the database
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.UnmatchedItems">
+            <summary>
+            couplets not found
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.AmbiguousItems">
+            <summary>
+            couplets found more than once and not decidable
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.SkippedExistingPoems">
+            <summary>
+            poems skipped because they already have tags from this import
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.TagsCreated">
+            <summary>
+            tags created (or to be created in a dry run)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.PartsLocated">
+            <summary>
+            span slot values placed on exact words
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.PartsUnlocated">
+            <summary>
+            span slot values kept at couplet level only (phrase not found in the corpus text, or the poem's words differ)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.ConceptsCreated">
+            <summary>
+            concepts created (or to be created)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.Messages">
+            <summary>
+            first problems: unmatched couplets etc.
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.LiteraryEntityStatus">
@@ -22727,6 +22893,15 @@
             </summary>
             <returns>number of added devices</returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ImportLiteraryCorpusAsync(RMuseum.Models.Ganjoor.LiteraryCorpusImportFile,System.String,System.Boolean)">
+            <summary>
+            imports literary tags from an annotated corpus file
+            </summary>
+            <param name="file"></param>
+            <param name="urlPrefix"></param>
+            <param name="dryRun"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryConceptsByIdsAsync(System.Int32[])">
             <summary>
             concepts by ids
@@ -25136,6 +25311,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -25424,6 +25602,25 @@
             </summary>
             <param name="catId"></param>
             <param name="destCatId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._CorpusNormalizeWord(System.String)">
+            <summary>
+            word normalization used to compare corpus text with the poem text (same rules as the converter that
+            produced the import file): letter forms, diacritics, ZWNJ and punctuation are ignored
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportLiteraryCorpusAsync(RMuseum.Models.Ganjoor.LiteraryCorpusImportFile,System.String,System.Boolean)">
+            <summary>
+            imports literary tags from an annotated corpus file (e.g. the MIT licensed "A Corpus of Persian Literary Text",
+            Hafez ghazals): couplets are matched with the poems under <paramref name="urlPrefix"/> by their normalized text;
+            tags get Origin = AcademicCorpus and OriginRef = file.Ref. A poem that already has tags with the same OriginRef
+            is skipped, so the import can be repeated. Positions of words are only used if the poem's hemistich has exactly
+            the same words as the corpus's, otherwise the value stays at couplet level.
+            </summary>
+            <param name="file"></param>
+            <param name="urlPrefix">e.g. /hafez/ghazal/</param>
+            <param name="dryRun">only report</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._NormalizeConceptName(System.String)">
