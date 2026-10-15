@@ -2758,6 +2758,77 @@
             <param name="configuration"></param>
             <param name="personService"></param>
         </member>
+        <member name="T:RMuseum.Controllers.GanjoorLiteraryController">
+            <summary>
+            literary devices (آرایه‌های ادبی), concepts and poem literary tags
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.GetDevices">
+            <summary>
+            approved devices with their slots
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.GetSuggestedDevices">
+            <summary>
+            suggested (not yet reviewed) devices
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.SuggestDevice(RMuseum.Models.Ganjoor.LiteraryDevice)">
+            <summary>
+            suggest a new device
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.ModerateDevice(RMuseum.Models.Ganjoor.LiteraryDevice)">
+            <summary>
+            approve (with edits) or reject a suggested device: Status of the posted device is the decision
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.SeedCoreDevices">
+            <summary>
+            add the core devices of the initial list (those missing)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.SearchConcepts(System.String,System.Int32)">
+            <summary>
+            search approved concepts
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.UpdateConcept(RMuseum.Models.Ganjoor.LiteraryConcept)">
+            <summary>
+            edit a concept (name, aliases, parent)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.MergeConcepts(System.Int32,System.Int32)">
+            <summary>
+            merge a concept into another
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.GetPoemTags(System.Int32)">
+            <summary>
+            approved literary tags of a poem
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.GetPoemAnnotationCompleted(System.Int32)">
+            <summary>
+            whether the poem's literary annotation is marked complete
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.DeleteTag(System.Int32)">
+            <summary>
+            delete a literary tag directly (moderators; ordinary users suggest a deletion in the poem editor)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Controllers.GanjoorLiteraryController._ganjoorService">
+            <summary>
+            Ganjoor Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.#ctor(RMuseum.Services.IGanjoorService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="ganjoorService"></param>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.GetPoetSuggestedPhotosAsync(System.Int32)">
             <summary>
             returns list of suggested photos for a poet
@@ -4211,6 +4282,41 @@
             PoemGeoDateTags
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.LiteraryDevices">
+            <summary>
+            literary devices (آرایه‌های ادبی)
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.LiteraryDeviceSlots">
+            <summary>
+            slots of literary devices
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.LiteraryConcepts">
+            <summary>
+            normalized concepts used as slot values
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.PoemLiteraryTags">
+            <summary>
+            literary tags of poems
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.PoemLiteraryTagParts">
+            <summary>
+            slot values of literary tags
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorPoemLiteraryTagCorrections">
+            <summary>
+            suggested literary tags (children of poem corrections)
+            </summary>
+        </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.PoemLiteraryAnnotationStatuses">
+            <summary>
+            poems whose literary annotation is complete
+            </summary>
+        </member>
         <member name="P:RMuseum.DbContext.RMuseumDbContext.GanjoorRelatedPersons">
             <summary>
             People tags
@@ -5261,6 +5367,18 @@
             <inheritdoc />
         </member>
         <member name="M:RMuseum.Migrations.GanjoorPersonEditSuggestionsNewField.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.LiteraryDevicesModels">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.LiteraryDevicesModels.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.LiteraryDevicesModels.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.LiteraryDevicesModels.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -10429,6 +10547,17 @@
             suggested geo/date tags
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.LiteraryTags">
+            <summary>
+            suggested literary device tags
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.LiteraryAnnotationCompleted">
+            <summary>
+            null: no opinion; true/false: the contributor says the poem's literary annotation is complete / not complete
+            (applied when the correction is approved)
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemCorrection.Title">
             <summary>
             title
@@ -10892,6 +11021,114 @@
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.ReviewNote">
+            <summary>
+            reviewer's note
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryTagPartSuggestion">
+            <summary>
+            one slot value inside GanjoorPoemLiteraryTagCorrection.PartsJson
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagPartSuggestion.SlotId">
+            <summary>
+            slot id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagPartSuggestion.CoupletIndex">
+            <summary>
+            couplet index (1 based, 0 = not located)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagPartSuggestion.Misra">
+            <summary>
+            hemistich: 0 = not specified, 1, 2
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagPartSuggestion.WordStart">
+            <summary>
+            first word (1 based)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagPartSuggestion.WordEnd">
+            <summary>
+            last word (1 based, inclusive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagPartSuggestion.ConceptId">
+            <summary>
+            an existing, approved concept - set this OR SuggestedConceptName
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagPartSuggestion.SuggestedConceptName">
+            <summary>
+            name of a concept that is not in the list yet; when the tag is approved the concept is
+            created (or an approved concept with the same normalized name/alias is used)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagPartSuggestion.Text">
+            <summary>
+            free text
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection">
+            <summary>
+            suggested literary tag for a poem, pending moderation as part of a GanjoorPoemCorrection
+            (same pattern as GanjoorPoemGeoDateTagCorrection)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection.Id">
+            <summary>
+            record id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection.CoupletIndex">
+            <summary>
+            main couplet index (0 = whole poem)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection.DeviceId">
+            <summary>
+            device id (must be an approved device)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection.Device">
+            <summary>
+            device (navigation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection.Uncertain">
+            <summary>
+            the contributor was not sure
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection.PartsJson">
+            <summary>
+            slot values, serialized List of LiteraryTagPartSuggestion (stored as JSON because the parts of one
+            suggestion are only meaningful together and may carry concepts that do not exist yet)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection.SuggestionNote">
+            <summary>
+            contributor's reasoning
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection.MarkForDelete">
+            <summary>
+            true if this suggestion is for removing an existing PoemLiteraryTag
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection.ExistingTagId">
+            <summary>
+            the existing tag to remove (MarkForDelete), or - after approval of an addition - the tag it created
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection.Result">
+            <summary>
+            review result
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection.ReviewNote">
             <summary>
             reviewer's note
             </summary>
@@ -12361,6 +12598,240 @@
             summary review result
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryConcept">
+            <summary>
+            a normalized concept (مفهوم) used as a slot value: e.g. «معشوق», «پروانه», «شمع». It is what makes
+            aggregate statistics possible ("how many times is the beloved compared to the moon?"): «لب معشوق»
+            is a concept whose parent is «معشوق», so counts can be rolled up.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConcept.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConcept.Name">
+            <summary>
+            normalized name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConcept.Aliases">
+            <summary>
+            other spellings/names, separated by « | »
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConcept.ParentId">
+            <summary>
+            the broader concept (e.g. «معشوق» for «لب معشوق»)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConcept.Status">
+            <summary>
+            status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConcept.CreatedByUserId">
+            <summary>
+            the user whose approved tag introduced it (null for imported ones)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConcept.CreateDate">
+            <summary>
+            creation date
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryEntityStatus">
+            <summary>
+            status of an entity (device, concept) that users can suggest and moderators approve
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryEntityStatus.Suggested">
+            <summary>
+            suggested by a user, waiting for a moderator
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryEntityStatus.Approved">
+            <summary>
+            approved and selectable by everyone
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryEntityStatus.Rejected">
+            <summary>
+            rejected by a moderator
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryDeviceCategory">
+            <summary>
+            broad group of a literary device, as books on rhetoric group them
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryDeviceCategory.Bayan">
+            <summary>
+            بیان
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryDeviceCategory.BadiLafzi">
+            <summary>
+            بدیع لفظی
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryDeviceCategory.BadiManavi">
+            <summary>
+            بدیع معنوی
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryDeviceCategory.Structure">
+            <summary>
+            ساختار و موسیقی شعر (ردیف، قافیه و ...)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryDeviceCategory.Other">
+            <summary>
+            anything else
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryDevice">
+            <summary>
+            a literary device (آرایهٔ ادبی), e.g. تشبیه. Devices are data, not code: the core list is
+            seeded, and users can suggest new ones (with their slots) which become selectable for
+            everyone once a moderator approves them.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDevice.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDevice.Key">
+            <summary>
+            optional stable code for devices the program refers to by name (e.g. "tashbih"); null for user suggested ones
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDevice.Name">
+            <summary>
+            Persian name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDevice.Category">
+            <summary>
+            group
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDevice.Definition">
+            <summary>
+            operational definition: when exactly may this tag be used
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDevice.Example">
+            <summary>
+            an example and/or boundary note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDevice.Source">
+            <summary>
+            the book or reference the definition comes from
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDevice.IsCore">
+            <summary>
+            part of the initial core list (as opposed to extension)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDevice.Status">
+            <summary>
+            status
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDevice.SuggestedByUserId">
+            <summary>
+            suggesting user (null for the seeded core list)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDevice.CreateDate">
+            <summary>
+            suggestion date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDevice.ReviewNote">
+            <summary>
+            moderator note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDevice.Slots">
+            <summary>
+            slots (positions) of the device
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryDeviceSlotKind">
+            <summary>
+            what a slot of a device holds
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryDeviceSlotKind.Span">
+            <summary>
+            a stretch of words of the poem (e.g. ادات in a simile)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryDeviceSlotKind.SpanConcept">
+            <summary>
+            a stretch of words of the poem plus the concept it stands for (e.g. مشبّه: «رخ» ← «چهرهٔ معشوق»)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryDeviceSlotKind.Concept">
+            <summary>
+            only a concept that is not literally in the poem (e.g. مستعارٌله)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryDeviceSlotKind.Text">
+            <summary>
+            free text (e.g. a meaning of an ایهام)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryDeviceSlot">
+            <summary>
+            a slot (position) of a device: e.g. مشبّه، مشبّه‌به، وجه شبه، ادات for تشبیه
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDeviceSlot.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDeviceSlot.DeviceId">
+            <summary>
+            device id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDeviceSlot.Key">
+            <summary>
+            optional stable code (e.g. "tenor", "vehicle")
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDeviceSlot.Name">
+            <summary>
+            Persian name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDeviceSlot.Kind">
+            <summary>
+            kind
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDeviceSlot.Required">
+            <summary>
+            the slot has to be filled for the tag to be valid
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDeviceSlot.AllowMultiple">
+            <summary>
+            the slot can be filled more than once in one tag (e.g. the meanings of an ایهام)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryDeviceSlot.Order">
+            <summary>
+            display order
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.PersonAffiliationType">
             <summary>
             the kind of non-family tie a GanjoorPersonAffiliation represents between two people - e.g.
@@ -12739,6 +13210,193 @@
             the tagged couplet's own text (both مصرع of the verse at PoemId/CoupletIndex),
             filled in on read by whichever service method needs to show it (e.g.
             GanjoorRelatedPersonService.GetPoemsByPersonAsync) - not a mapped database column
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryTagOrigin">
+            <summary>
+            where a tag comes from
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryTagOrigin.Editor">
+            <summary>
+            a user suggestion approved by a moderator
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryTagOrigin.AcademicCorpus">
+            <summary>
+            imported from an academic corpus (OriginRef names it)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryTagOrigin.Algorithm">
+            <summary>
+            produced by an algorithm
+            </summary>
+        </member>
+        <member name="F:RMuseum.Models.Ganjoor.LiteraryTagOrigin.AI">
+            <summary>
+            produced by AI
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PoemLiteraryTag">
+            <summary>
+            a literary device tag on a poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.Poem">
+            <summary>
+            poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.CoupletIndex">
+            <summary>
+            main couplet index (same convention as PoemGeoDateTag.CoupletIndex: 0 = whole poem)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.DeviceId">
+            <summary>
+            device id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.Device">
+            <summary>
+            device
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.Uncertain">
+            <summary>
+            the tagger was not sure (counts can be reported with or without these)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.Note">
+            <summary>
+            note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.Origin">
+            <summary>
+            origin
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.OriginRef">
+            <summary>
+            for imported tags: which corpus/run (e.g. "persian-literary-corpus-1.0.0 (MIT)")
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.CreatedByUserId">
+            <summary>
+            the user who suggested it
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.CreateDate">
+            <summary>
+            creation date
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.Parts">
+            <summary>
+            slot values
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PoemLiteraryTagPart">
+            <summary>
+            the value of one slot of a tag. Positions are exact: a couplet, a hemistich and a range of words,
+            because a word can occur several times in one couplet.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTagPart.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTagPart.TagId">
+            <summary>
+            tag id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTagPart.SlotId">
+            <summary>
+            slot id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTagPart.CoupletIndex">
+            <summary>
+            couplet index (1 based, 0 = not located in a particular couplet)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTagPart.Misra">
+            <summary>
+            hemistich in the couplet: 0 = not specified, 1 = first, 2 = second
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTagPart.WordStart">
+            <summary>
+            first word (1 based, counted by spaces in the hemistich), null when the part is not located in the text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTagPart.WordEnd">
+            <summary>
+            last word (1 based, inclusive)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTagPart.ConceptId">
+            <summary>
+            concept
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTagPart.Concept">
+            <summary>
+            concept (navigation)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTagPart.Text">
+            <summary>
+            free text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTagPart.Order">
+            <summary>
+            order among the parts of the tag
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PoemLiteraryAnnotationStatus">
+            <summary>
+            whether all literary devices of a poem have been tagged: only poems marked complete count in the
+            statistics (a missing tag in an incomplete poem does not mean the device is absent)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryAnnotationStatus.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryAnnotationStatus.PoemId">
+            <summary>
+            poem id (unique)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryAnnotationStatus.Completed">
+            <summary>
+            the annotation is complete
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryAnnotationStatus.UserId">
+            <summary>
+            the user whose approved correction set this
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryAnnotationStatus.Date">
+            <summary>
+            date
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PoemMusicTrack">
@@ -14978,6 +15636,16 @@
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.GeoDateTags">
             <summary>
             suggested geo/date tags
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.LiteraryTags">
+            <summary>
+            suggested literary device tags
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.LiteraryAnnotationCompleted">
+            <summary>
+            null: no opinion; true/false: the contributor marks the literary annotation complete / not complete
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.ViewModels.GanjoorPoemCorrectionViewModel.Title">
@@ -22025,6 +22693,79 @@
             <param name="moderation"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryDevicesAsync(System.Nullable{RMuseum.Models.Ganjoor.LiteraryEntityStatus})">
+            <summary>
+            get literary devices with their slots
+            </summary>
+            <param name="status">null: all</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SuggestLiteraryDeviceAsync(System.Guid,RMuseum.Models.Ganjoor.LiteraryDevice)">
+            <summary>
+            a user suggests a new literary device
+            </summary>
+            <param name="userId"></param>
+            <param name="device"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.ModerateLiteraryDeviceAsync(System.Guid,RMuseum.Models.Ganjoor.LiteraryDevice)">
+            <summary>
+            approve (with edits) or reject a suggested device
+            </summary>
+            <param name="moderatorId"></param>
+            <param name="moderated"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SeedCoreLiteraryDevicesAsync">
+            <summary>
+            add the core devices of the initial list
+            </summary>
+            <returns>number of added devices</returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SearchLiteraryConceptsAsync(System.String,System.Int32)">
+            <summary>
+            search approved concepts by name or alias
+            </summary>
+            <param name="query"></param>
+            <param name="take"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.UpdateLiteraryConceptAsync(RMuseum.Models.Ganjoor.LiteraryConcept)">
+            <summary>
+            edit a concept
+            </summary>
+            <param name="concept"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.MergeLiteraryConceptsAsync(System.Int32,System.Int32)">
+            <summary>
+            merge a concept into another one
+            </summary>
+            <param name="sourceId"></param>
+            <param name="targetId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemLiteraryTagsAsync(System.Int32)">
+            <summary>
+            approved literary tags of a poem
+            </summary>
+            <param name="poemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetPoemLiteraryAnnotationCompletedAsync(System.Int32)">
+            <summary>
+            is the literary annotation of the poem complete
+            </summary>
+            <param name="poemId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeletePoemLiteraryTagAsync(System.Int32)">
+            <summary>
+            delete a literary tag
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -24380,6 +25121,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -24669,6 +25413,77 @@
             <param name="catId"></param>
             <param name="destCatId"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._NormalizeConceptName(System.String)">
+            <summary>
+            normalizes a concept name: Arabic letter forms, extra spaces
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryDevicesAsync(System.Nullable{RMuseum.Models.Ganjoor.LiteraryEntityStatus})">
+            <summary>
+            get literary devices with their slots
+            </summary>
+            <param name="status">null: all statuses</param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestLiteraryDeviceAsync(System.Guid,RMuseum.Models.Ganjoor.LiteraryDevice)">
+            <summary>
+            a user suggests a new literary device (it becomes selectable for everyone after a moderator approves it)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ModerateLiteraryDeviceAsync(System.Guid,RMuseum.Models.Ganjoor.LiteraryDevice)">
+            <summary>
+            moderate a suggested device: moderated.Status must be Approved or Rejected; the moderator may edit the
+            fields (and, while the device is still a suggestion, its slots) before approving
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SeedCoreLiteraryDevicesAsync">
+            <summary>
+            inserts the core devices of the initial list (see the draft list document) if they are not there yet
+            </summary>
+            <returns>number of added devices</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SearchLiteraryConceptsAsync(System.String,System.Int32)">
+            <summary>
+            search approved concepts by name or alias
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.UpdateLiteraryConceptAsync(RMuseum.Models.Ganjoor.LiteraryConcept)">
+            <summary>
+            moderator edit of a concept: name, aliases and parent
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.MergeLiteraryConceptsAsync(System.Int32,System.Int32)">
+            <summary>
+            merge a concept into another one: all tag parts and child concepts move to the target and the
+            source name becomes an alias of the target
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemLiteraryTagsAsync(System.Int32)">
+            <summary>
+            approved literary tags of a poem (with their parts and concept names)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetPoemLiteraryAnnotationCompletedAsync(System.Int32)">
+            <summary>
+            whether a poem's literary annotation is complete
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeletePoemLiteraryTagAsync(System.Int32)">
+            <summary>
+            delete a tag directly (moderators)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._ValidateLiteraryTagCorrectionsAsync(RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection[])">
+            <summary>
+            checks the literary tag suggestions of a poem correction at submission time
+            </summary>
+            <returns>an error message, or null if all is fine</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._ApplyApprovedLiteraryTagAsync(RMuseum.Models.Ganjoor.GanjoorPoemCorrection,RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection)">
+            <summary>
+            applies an approved literary tag suggestion to the live data (called by ModeratePoemCorrection)
+            </summary>
+            <returns>an error message, or null if applied</returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.FindCategoryPoemsRhythms(System.Int32,System.Boolean,System.String)">
             <summary>

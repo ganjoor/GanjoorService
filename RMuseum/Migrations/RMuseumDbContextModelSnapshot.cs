@@ -1868,6 +1868,9 @@ namespace RMuseum.Migrations
                     b.Property<int>("LanguageReviewResult")
                         .HasColumnType("int");
 
+                    b.Property<bool?>("LiteraryAnnotationCompleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
@@ -2049,6 +2052,53 @@ namespace RMuseum.Migrations
                     b.HasIndex("PersonId");
 
                     b.ToTable("GanjoorPoemGeoDateTagCorrection");
+                });
+
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CoupletIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DeviceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ExistingTagId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GanjoorPoemCorrectionId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("MarkForDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PartsJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Result")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReviewNote")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SuggestionNote")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Uncertain")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeviceId");
+
+                    b.HasIndex("GanjoorPoemCorrectionId");
+
+                    b.ToTable("GanjoorPoemLiteraryTagCorrections");
                 });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemProbableMetre", b =>
@@ -2966,6 +3016,125 @@ namespace RMuseum.Migrations
                     b.ToTable("GanjoorVerseVOrderText");
                 });
 
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.LiteraryConcept", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Aliases")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("LiteraryConcepts");
+                });
+
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.LiteraryDevice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Definition")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Example")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCore")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ReviewNote")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Source")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("SuggestedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name");
+
+                    b.ToTable("LiteraryDevices");
+                });
+
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.LiteraryDeviceSlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AllowMultiple")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("DeviceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Required")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeviceId");
+
+                    b.ToTable("LiteraryDeviceSlots");
+                });
+
             modelBuilder.Entity("RMuseum.Models.Ganjoor.PoemGeoDateTag", b =>
                 {
                     b.Property<int>("Id")
@@ -3022,6 +3191,124 @@ namespace RMuseum.Migrations
                     b.HasIndex("PoemId");
 
                     b.ToTable("PoemGeoDateTags");
+                });
+
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.PoemLiteraryAnnotationStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Completed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PoemId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PoemId")
+                        .IsUnique();
+
+                    b.ToTable("PoemLiteraryAnnotationStatuses");
+                });
+
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.PoemLiteraryTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CoupletIndex")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DeviceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Origin")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OriginRef")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PoemId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Uncertain")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeviceId");
+
+                    b.HasIndex("PoemId", "CoupletIndex");
+
+                    b.ToTable("PoemLiteraryTags");
+                });
+
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.PoemLiteraryTagPart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ConceptId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CoupletIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Misra")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SlotId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("WordEnd")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WordStart")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConceptId");
+
+                    b.HasIndex("SlotId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("PoemLiteraryTagParts");
                 });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.PoemMusicTrack", b =>
@@ -5812,6 +6099,21 @@ namespace RMuseum.Migrations
                     b.Navigation("Person");
                 });
 
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection", b =>
+                {
+                    b.HasOne("RMuseum.Models.Ganjoor.LiteraryDevice", "Device")
+                        .WithMany()
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoemCorrection", null)
+                        .WithMany("LiteraryTags")
+                        .HasForeignKey("GanjoorPoemCorrectionId");
+
+                    b.Navigation("Device");
+                });
+
             modelBuilder.Entity("RMuseum.Models.Ganjoor.GanjoorPoemProbableMetre", b =>
                 {
                     b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
@@ -6074,6 +6376,15 @@ namespace RMuseum.Migrations
                         .HasForeignKey("GanjoorPoemCorrectionId");
                 });
 
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.LiteraryDeviceSlot", b =>
+                {
+                    b.HasOne("RMuseum.Models.Ganjoor.LiteraryDevice", null)
+                        .WithMany("Slots")
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("RMuseum.Models.Ganjoor.PoemGeoDateTag", b =>
                 {
                     b.HasOne("RMuseum.Models.Ganjoor.GanjoorGeoLocation", "Location")
@@ -6095,6 +6406,46 @@ namespace RMuseum.Migrations
                     b.Navigation("Person");
 
                     b.Navigation("Poem");
+                });
+
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.PoemLiteraryTag", b =>
+                {
+                    b.HasOne("RMuseum.Models.Ganjoor.LiteraryDevice", "Device")
+                        .WithMany()
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RMuseum.Models.Ganjoor.GanjoorPoem", "Poem")
+                        .WithMany()
+                        .HasForeignKey("PoemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Device");
+
+                    b.Navigation("Poem");
+                });
+
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.PoemLiteraryTagPart", b =>
+                {
+                    b.HasOne("RMuseum.Models.Ganjoor.LiteraryConcept", "Concept")
+                        .WithMany()
+                        .HasForeignKey("ConceptId");
+
+                    b.HasOne("RMuseum.Models.Ganjoor.LiteraryDeviceSlot", null)
+                        .WithMany()
+                        .HasForeignKey("SlotId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RMuseum.Models.Ganjoor.PoemLiteraryTag", null)
+                        .WithMany("Parts")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Concept");
                 });
 
             modelBuilder.Entity("RMuseum.Models.Ganjoor.PoemMusicTrack", b =>
@@ -6722,7 +7073,19 @@ namespace RMuseum.Migrations
                 {
                     b.Navigation("GeoDateTags");
 
+                    b.Navigation("LiteraryTags");
+
                     b.Navigation("VerseOrderText");
+                });
+
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.LiteraryDevice", b =>
+                {
+                    b.Navigation("Slots");
+                });
+
+            modelBuilder.Entity("RMuseum.Models.Ganjoor.PoemLiteraryTag", b =>
+                {
+                    b.Navigation("Parts");
                 });
 
             modelBuilder.Entity("RMuseum.Models.MusicCatalogue.GanjoorAlbum", b =>

@@ -35,6 +35,17 @@ namespace RMuseum.Models.Ganjoor
         public ICollection<GanjoorPoemGeoDateTagCorrection> GeoDateTags { get; set; }
 
         /// <summary>
+        /// suggested literary device tags
+        /// </summary>
+        public ICollection<GanjoorPoemLiteraryTagCorrection> LiteraryTags { get; set; }
+
+        /// <summary>
+        /// null: no opinion; true/false: the contributor says the poem's literary annotation is complete / not complete
+        /// (applied when the correction is approved)
+        /// </summary>
+        public bool? LiteraryAnnotationCompleted { get; set; }
+
+        /// <summary>
         /// title
         /// </summary>
         public string Title { get; set; }

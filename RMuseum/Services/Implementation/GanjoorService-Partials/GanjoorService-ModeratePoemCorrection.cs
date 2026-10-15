@@ -31,7 +31,7 @@ namespace RMuseum.Services.Implementation
         {
             try
             {
-                var dbCorrection = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Include(c => c.GeoDateTags).Include(c => c.User)
+                var dbCorrection = await _context.GanjoorPoemCorrections.Include(c => c.VerseOrderText).Include(c => c.LiteraryTags).Include(c => c.GeoDateTags).Include(c => c.User)
                 .Where(c => c.Id == moderation.Id)
                 .FirstOrDefaultAsync();
 
@@ -779,6 +779,42 @@ namespace RMuseum.Services.Implementation
                                 dbGeoDateTag.ExistingTagId = newTag.Id;
                             }
                         }
+                    }
+                }
+
+                if (dbCorrection.LiteraryTags != null && dbCorrection.LiteraryTags.Any())
+                {
+                    foreach (var dbLiteraryTag in dbCorrection.LiteraryTags)
+                    {
+                        var moderatedLiteraryTag = moderation.LiteraryTags?.FirstOrDefault(g => g.Id == dbLiteraryTag.Id);
+                        if (moderatedLiteraryTag == null || moderatedLiteraryTag.Result == CorrectionReviewResult.NotReviewed)
+                        {
+                            return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, "همهٔ برچسب‌های آرایه‌های ادبی پیشنهادی باید بررسی شوند.");
+                        }
+
+                        dbLiteraryTag.Result = moderatedLiteraryTag.Result;
+                        dbLiteraryTag.ReviewNote = moderatedLiteraryTag.ReviewNote;
+
+                        if (moderatedLiteraryTag.Result == CorrectionReviewResult.Approved)
+                        {
+                            dbCorrection.AffectedThePoem = true;
+                            string literaryError = await _ApplyApprovedLiteraryTagAsync(dbCorrection, dbLiteraryTag);
+                            if (literaryError != null)
+                            {
+                                return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, literaryError);
+                            }
+                        }
+                    }
+                }
+
+                if (dbCorrection.LiteraryAnnotationCompleted != null)
+                {
+                    //the completeness claim stands with the correction unless its literary tags were all turned down
+                    bool anyLiteraryTagApproved = dbCorrection.LiteraryTags != null && dbCorrection.LiteraryTags.Any(l => l.Result == CorrectionReviewResult.Approved);
+                    bool hadLiteraryTags = dbCorrection.LiteraryTags != null && dbCorrection.LiteraryTags.Any();
+                    if (!hadLiteraryTags || anyLiteraryTagApproved)
+                    {
+                        await _ApplyLiteraryAnnotationStatusAsync(dbCorrection.PoemId, (bool)dbCorrection.LiteraryAnnotationCompleted, userId);
                     }
                 }
 

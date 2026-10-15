@@ -28,6 +28,16 @@ namespace RMuseum.Models.Ganjoor.ViewModels
         public GanjoorPoemGeoDateTagCorrection[] GeoDateTags { get; set; }
 
         /// <summary>
+        /// suggested literary device tags
+        /// </summary>
+        public GanjoorPoemLiteraryTagCorrection[] LiteraryTags { get; set; }
+
+        /// <summary>
+        /// null: no opinion; true/false: the contributor marks the literary annotation complete / not complete
+        /// </summary>
+        public bool? LiteraryAnnotationCompleted { get; set; }
+
+        /// <summary>
         /// title
         /// </summary>
         public string Title { get; set; }

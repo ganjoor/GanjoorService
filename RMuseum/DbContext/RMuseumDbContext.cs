@@ -46,6 +46,22 @@ namespace RMuseum.DbContext
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<LiteraryDevice>().HasIndex(d => d.Name);
+            builder.Entity<LiteraryDeviceSlot>().HasIndex(s => s.DeviceId);
+            builder.Entity<LiteraryConcept>().HasIndex(c => c.Name);
+            builder.Entity<LiteraryConcept>().HasIndex(c => c.ParentId);
+            builder.Entity<PoemLiteraryTag>().HasIndex(t => new { t.PoemId, t.CoupletIndex });
+            builder.Entity<PoemLiteraryTag>().HasIndex(t => t.DeviceId);
+            builder.Entity<PoemLiteraryTagPart>().HasIndex(p => p.TagId);
+            builder.Entity<PoemLiteraryTagPart>().HasIndex(p => p.ConceptId);
+            builder.Entity<PoemLiteraryAnnotationStatus>().HasIndex(s => s.PoemId).IsUnique();
+            builder.Entity<LiteraryDevice>().HasMany(d => d.Slots).WithOne().HasForeignKey(s => s.DeviceId);
+            builder.Entity<PoemLiteraryTag>().HasMany(t => t.Parts).WithOne().HasForeignKey(p => p.TagId);
+            //restrict: a device and its slots can reach tag parts along two paths (SQL Server rejects multiple cascade paths)
+            builder.Entity<PoemLiteraryTagPart>().HasOne<LiteraryDeviceSlot>().WithMany().HasForeignKey(p => p.SlotId).OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<PoemLiteraryTag>().HasOne(t => t.Device).WithMany().HasForeignKey(t => t.DeviceId).OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<GanjoorPoemLiteraryTagCorrection>().HasOne(t => t.Device).WithMany().HasForeignKey(t => t.DeviceId).OnDelete(DeleteBehavior.Restrict);
+
             builder.Entity<RArtifactMasterRecord>()
                 .HasIndex(m => m.FriendlyUrl)
                 .IsUnique();
@@ -662,6 +678,41 @@ namespace RMuseum.DbContext
         /// PoemGeoDateTags
         /// </summary>
         public DbSet<PoemGeoDateTag> PoemGeoDateTags { get; set; }
+
+        /// <summary>
+        /// literary devices (آرایه‌های ادبی)
+        /// </summary>
+        public DbSet<LiteraryDevice> LiteraryDevices { get; set; }
+
+        /// <summary>
+        /// slots of literary devices
+        /// </summary>
+        public DbSet<LiteraryDeviceSlot> LiteraryDeviceSlots { get; set; }
+
+        /// <summary>
+        /// normalized concepts used as slot values
+        /// </summary>
+        public DbSet<LiteraryConcept> LiteraryConcepts { get; set; }
+
+        /// <summary>
+        /// literary tags of poems
+        /// </summary>
+        public DbSet<PoemLiteraryTag> PoemLiteraryTags { get; set; }
+
+        /// <summary>
+        /// slot values of literary tags
+        /// </summary>
+        public DbSet<PoemLiteraryTagPart> PoemLiteraryTagParts { get; set; }
+
+        /// <summary>
+        /// suggested literary tags (children of poem corrections)
+        /// </summary>
+        public DbSet<GanjoorPoemLiteraryTagCorrection> GanjoorPoemLiteraryTagCorrections { get; set; }
+
+        /// <summary>
+        /// poems whose literary annotation is complete
+        /// </summary>
+        public DbSet<PoemLiteraryAnnotationStatus> PoemLiteraryAnnotationStatuses { get; set; }
 
         /// <summary>
         /// People tags

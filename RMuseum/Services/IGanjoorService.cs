@@ -1762,6 +1762,79 @@ namespace RMuseum.Services
         Task<RServiceResult<GanjoorCatCorrectionViewModel>> ModerateCatCorrectionAsync(Guid userId,
             GanjoorCatCorrectionViewModel moderation);
 
+        /// <summary>
+        /// get literary devices with their slots
+        /// </summary>
+        /// <param name="status">null: all</param>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryDevice[]>> GetLiteraryDevicesAsync(LiteraryEntityStatus? status);
+
+        /// <summary>
+        /// a user suggests a new literary device
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="device"></param>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryDevice>> SuggestLiteraryDeviceAsync(Guid userId, LiteraryDevice device);
+
+        /// <summary>
+        /// approve (with edits) or reject a suggested device
+        /// </summary>
+        /// <param name="moderatorId"></param>
+        /// <param name="moderated"></param>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryDevice>> ModerateLiteraryDeviceAsync(Guid moderatorId, LiteraryDevice moderated);
+
+        /// <summary>
+        /// add the core devices of the initial list
+        /// </summary>
+        /// <returns>number of added devices</returns>
+        Task<RServiceResult<int>> SeedCoreLiteraryDevicesAsync();
+
+        /// <summary>
+        /// search approved concepts by name or alias
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="take"></param>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryConcept[]>> SearchLiteraryConceptsAsync(string query, int take);
+
+        /// <summary>
+        /// edit a concept
+        /// </summary>
+        /// <param name="concept"></param>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryConcept>> UpdateLiteraryConceptAsync(LiteraryConcept concept);
+
+        /// <summary>
+        /// merge a concept into another one
+        /// </summary>
+        /// <param name="sourceId"></param>
+        /// <param name="targetId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> MergeLiteraryConceptsAsync(int sourceId, int targetId);
+
+        /// <summary>
+        /// approved literary tags of a poem
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<PoemLiteraryTag[]>> GetPoemLiteraryTagsAsync(int poemId);
+
+        /// <summary>
+        /// is the literary annotation of the poem complete
+        /// </summary>
+        /// <param name="poemId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> GetPoemLiteraryAnnotationCompletedAsync(int poemId);
+
+        /// <summary>
+        /// delete a literary tag
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeletePoemLiteraryTagAsync(int id);
+
 
     }
 }
