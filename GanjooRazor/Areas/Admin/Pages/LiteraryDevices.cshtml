@@ -1,0 +1,303 @@
+﻿@page
+@model GanjooRazor.Areas.Admin.Pages.LiteraryDevicesModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "آرایه‌ها و مفاهیم ادبی";
+}
+
+<style>
+    .ld-slot { display: flex; flex-wrap: wrap; gap: var(--up-space-2); align-items: center; margin-bottom: var(--up-space-2); }
+    .ld-slot input[type=text] { flex: 1 1 160px; }
+    .ld-concept { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: var(--up-space-2); align-items: center; padding: var(--up-space-2) 0; border-top: 1px solid var(--up-border); }
+    @@media (max-width: 720px) { .ld-concept { grid-template-columns: 1fr; } }
+    .ld-pick-results { border: 1px solid var(--up-border); border-radius: var(--up-radius-sm); background: var(--up-surface); max-height: 200px; overflow-y: auto; }
+    .ld-pick-results div { padding: 6px 10px; cursor: pointer; border-bottom: 1px solid var(--up-border); }
+    .ld-pick-results div:hover { background: var(--up-bg); }
+    .ld-muted { color: var(--up-text-muted); font-size: .85rem; }
+</style>
+
+<div class="up-page-header">
+    <h1>@ViewData["Title"]</h1>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.LastMessage))
+{
+    <div class="up-alert up-alert--info">@Model.LastMessage</div>
+}
+
+<div class="up-card">
+    <h2 class="up-card__title">آرایه‌های پیشنهادی در انتظار بررسی</h2>
+    <p class="up-hint">پیش از تأیید می‌توانید نام، تعریف و جایگاه‌ها را اصلاح کنید. پس از تأیید، جایگاه‌ها دیگر قابل تغییر نیستند، چون برچسب‌ها به آن‌ها وابسته می‌شوند.</p>
+    <div id="ld-suggested"></div>
+</div>
+
+<div class="up-card">
+    <h2 class="up-card__title">آرایه‌های تأییدشده</h2>
+    <div class="up-form-actions">
+        <a role="button" class="up-btn up-btn--ghost up-btn--sm" onclick="ldSeedCore()"><span class="material-icons" style="font-size:18px">playlist_add</span> افزودن آرایه‌های پایهٔ جاافتاده</a>
+    </div>
+    <div id="ld-approved"></div>
+</div>
+
+<div class="up-card">
+    <h2 class="up-card__title">مفاهیم</h2>
+    <p class="up-hint">نام‌های دیگر را با « | » جدا کنید. برای یکی‌کردن دو مفهوم تکراری از «ادغام در ...» استفاده کنید: همهٔ برچسب‌های مفهوم مبدأ به مقصد منتقل می‌شود و نام مبدأ به نام‌های دیگر مقصد افزوده می‌شود.</p>
+    <div class="up-field">
+        <input type="text" id="ld-concept-query" placeholder="جستجوی مفهوم" oninput="ldConceptSearch()" autocomplete="off" />
+    </div>
+    <div id="ld-concepts"></div>
+    <div id="ld-picker" style="display:none;">
+        <p id="ld-picker-title"></p>
+        <input type="text" id="ld-picker-query" oninput="ldPickerSearch()" autocomplete="off" />
+        <div id="ld-picker-results" class="ld-pick-results"></div>
+        <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="ldPickerClose()">انصراف</a>
+    </div>
+</div>
+
+<script>
+    var ldSuggested = @Html.Raw(Model.SuggestedDevicesJson);
+    var ldApproved = @Html.Raw(Model.ApprovedDevicesJson);
+    var ldCategories = ['بیان', 'بدیع لفظی', 'بدیع معنوی', 'ساختار', 'سایر'];
+    var ldKinds = ['بخشی از متن', 'بخشی از متن + مفهوم', 'فقط مفهوم', 'متن آزاد'];
+    var ldConcepts = [];
+    var ldTimer = null;
+    var ldPickerCallback = null;
+    var ldPickerTimer = null;
+
+    function ldEsc(s) {
+        return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function ldCategorySelect(id, value) {
+        var h = '<select id="' + id + '">';
+        for (var i = 0; i < ldCategories.length; i++) h += '<option value="' + i + '"' + (i === value ? ' selected' : '') + '>' + ldCategories[i] + '</option>';
+        return h + '</select>';
+    }
+
+    function ldSlotRow(s) {
+        var h = '<div class="ld-slot"><input type="text" class="ld-slot-name" value="' + ldEsc(s ? s.name : '') + '" placeholder="نام جایگاه" />';
+        h += '<select class="ld-slot-kind">';
+        for (var i = 0; i < ldKinds.length; i++) h += '<option value="' + i + '"' + (s && s.kind === i ? ' selected' : '') + '>' + ldKinds[i] + '</option>';
+        h += '</select>';
+        h += '<label><input type="checkbox" class="ld-slot-required"' + (!s || s.required ? ' checked' : '') + ' /> الزامی</label>';
+        h += '<label><input type="checkbox" class="ld-slot-multiple"' + (s && s.allowMultiple ? ' checked' : '') + ' /> چندبار</label>';
+        h += '<a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="$(this).closest(\'.ld-slot\').remove()"><span class="material-icons" style="font-size:18px">close</span></a></div>';
+        return h;
+    }
+
+    function ldRenderSuggested() {
+        var box = $('#ld-suggested');
+        if (ldSuggested.length === 0) { box.html('<p class="ld-muted">پیشنهادی در انتظار بررسی نیست.</p>'); return; }
+        var h = '';
+        for (var i = 0; i < ldSuggested.length; i++) {
+            var d = ldSuggested[i];
+            h += '<div class="up-card" id="sd' + d.id + '">';
+            h += '<div class="up-field"><label>نام</label><input type="text" class="ld-name" value="' + ldEsc(d.name) + '" /></div>';
+            h += '<div class="up-field"><label>دسته</label>' + ldCategorySelect('sd' + d.id + '-cat', d.category) + '</div>';
+            h += '<div class="up-field"><label>تعریف</label><textarea class="ld-def" rows="3">' + ldEsc(d.definition) + '</textarea></div>';
+            h += '<div class="up-field"><label>نمونه</label><input type="text" class="ld-example" value="' + ldEsc(d.example) + '" /></div>';
+            h += '<div class="up-field"><label>منبع</label><input type="text" class="ld-source" value="' + ldEsc(d.source) + '" /></div>';
+            h += '<div class="ld-slots"><p><b>جایگاه‌ها</b></p>';
+            for (var s = 0; s < (d.slots || []).length; s++) h += ldSlotRow(d.slots[s]);
+            h += '</div><a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="$(\'#sd' + d.id + ' .ld-slots\').append(ldSlotRow(null))">➕ جایگاه</a>';
+            h += '<div class="up-field"><label>یادداشت بررسی (برای پیشنهاددهنده فرستاده می‌شود)</label><input type="text" class="ld-note" /></div>';
+            h += '<div class="up-form-actions"><a role="button" class="up-btn up-btn--success" onclick="ldModerate(' + d.id + ', 1)">تأیید</a> ';
+            h += '<a role="button" class="up-btn up-btn--danger" onclick="ldModerate(' + d.id + ', 2)">رد</a></div></div>';
+        }
+        box.html(h);
+    }
+
+    function ldCollect(card, id, status, isCore) {
+        var slots = [];
+        card.find('.ld-slot').each(function () {
+            var name = $(this).find('.ld-slot-name').val();
+            if (!name || !name.trim()) return;
+            slots.push({
+                name: name.trim(),
+                kind: parseInt($(this).find('.ld-slot-kind').val(), 10),
+                required: $(this).find('.ld-slot-required').is(':checked'),
+                allowMultiple: $(this).find('.ld-slot-multiple').is(':checked'),
+                order: slots.length
+            });
+        });
+        return {
+            id: id,
+            name: card.find('.ld-name').val(),
+            category: parseInt(card.find('select[id$="-cat"]').val(), 10),
+            definition: card.find('.ld-def').val(),
+            example: card.find('.ld-example').val(),
+            source: card.find('.ld-source').val(),
+            isCore: !!isCore,
+            status: status,
+            reviewNote: card.find('.ld-note').val() || null,
+            slots: slots
+        };
+    }
+
+    function ldPost(device, done) {
+        $.ajax({
+            type: 'POST',
+            url: '?handler=ModerateDevice',
+            data: JSON.stringify(device),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: done,
+            error: function (e) { upShowError(e.responseText || String(e)); }
+        });
+    }
+
+    function ldModerate(id, status) {
+        ldPost(ldCollect($('#sd' + id), id, status, false), function () { location.reload(true); });
+    }
+
+    function ldRenderApproved() {
+        var box = $('#ld-approved');
+        if (ldApproved.length === 0) { box.html('<p class="ld-muted">هنوز آرایه‌ای تأیید نشده است. با دکمهٔ بالا آرایه‌های پایه را اضافه کنید.</p>'); return; }
+        var h = '';
+        for (var i = 0; i < ldApproved.length; i++) {
+            var d = ldApproved[i];
+            var slotNames = (d.slots || []).map(function (s) { return s.name + (s.required ? '' : ' (اختیاری)'); }).join('، ');
+            h += '<details id="ad' + d.id + '" class="up-card"><summary><b>' + ldEsc(d.name) + '</b> <span class="ld-muted">' + ldCategories[d.category] + ' - ' + ldEsc(slotNames) + '</span></summary>';
+            h += '<div class="up-field"><label>نام</label><input type="text" class="ld-name" value="' + ldEsc(d.name) + '" /></div>';
+            h += '<div class="up-field"><label>دسته</label>' + ldCategorySelect('ad' + d.id + '-cat', d.category) + '</div>';
+            h += '<div class="up-field"><label>تعریف</label><textarea class="ld-def" rows="3">' + ldEsc(d.definition) + '</textarea></div>';
+            h += '<div class="up-field"><label>نمونه</label><input type="text" class="ld-example" value="' + ldEsc(d.example) + '" /></div>';
+            h += '<div class="up-field"><label>منبع</label><input type="text" class="ld-source" value="' + ldEsc(d.source) + '" /></div>';
+            h += '<a role="button" class="up-btn up-btn--success up-btn--sm" onclick="ldSaveApproved(' + d.id + ', ' + (d.isCore ? 'true' : 'false') + ')">💾 ذخیره</a></details>';
+        }
+        box.html(h);
+    }
+
+    function ldSaveApproved(id, isCore) {
+        // the slots of an approved device cannot change; the stored ones are sent back only to pass validation
+        var device = ldCollect($('#ad' + id), id, 1, isCore);
+        device.slots = ldApproved.filter(function (d) { return d.id === id; })[0].slots;
+        ldPost(device, function () { upToast('ذخیره شد.'); });
+    }
+
+    function ldSeedCore() {
+        $.ajax({
+            type: 'POST',
+            url: '?handler=SeedCore',
+            success: function (n) { upToast(n + ' آرایه افزوده شد.'); if (n > 0) location.reload(true); },
+            error: function (e) { upShowError(e.responseText || String(e)); }
+        });
+    }
+
+    // ----- concepts -----
+    function ldConceptSearch() {
+        clearTimeout(ldTimer);
+        ldTimer = setTimeout(function () {
+            $.ajax({
+                type: 'GET',
+                url: '?handler=Concepts',
+                data: { query: $('#ld-concept-query').val() },
+                success: function (res) { ldConcepts = res; ldRenderConcepts(); },
+                error: function (e) { upShowError(e.responseText || String(e)); }
+            });
+        }, 250);
+    }
+
+    function ldRenderConcepts() {
+        var h = '';
+        for (var i = 0; i < ldConcepts.length; i++) {
+            var c = ldConcepts[i];
+            h += '<div class="ld-concept" id="lc' + c.id + '">';
+            h += '<input type="text" class="lc-name" value="' + ldEsc(c.name) + '" />';
+            h += '<input type="text" class="lc-aliases" value="' + ldEsc(c.aliases) + '" placeholder="نام‌های دیگر" />';
+            h += '<div><span class="ld-muted lc-parent-name">' + (c.parentName ? 'والد: ' + ldEsc(c.parentName) : 'بدون والد') + '</span> ';
+            h += '<a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="ldPickParent(' + i + ')">تغییر والد</a>';
+            if (c.parentId) h += ' <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="ldClearParent(' + i + ')">حذف والد</a>';
+            h += '</div><div>';
+            h += '<a role="button" class="up-btn up-btn--sm up-btn--success" onclick="ldSaveConcept(' + i + ')">💾</a> ';
+            h += '<a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="ldPickMerge(' + i + ')">ادغام در ...</a></div></div>';
+        }
+        $('#ld-concepts').html(h || '<p class="ld-muted">مفهومی پیدا نشد.</p>');
+    }
+
+    function ldSaveConcept(i) {
+        var c = ldConcepts[i];
+        var row = $('#lc' + c.id);
+        var body = { id: c.id, name: row.find('.lc-name').val(), aliases: row.find('.lc-aliases').val() || null, parentId: c.parentId || null };
+        $.ajax({
+            type: 'PUT',
+            url: '?handler=Concept',
+            data: JSON.stringify(body),
+            contentType: 'application/json; charset=utf-8',
+            success: function () { upToast('ذخیره شد.'); ldConceptSearch(); },
+            error: function (e) { upShowError(e.responseText || String(e)); }
+        });
+    }
+
+    function ldClearParent(i) {
+        ldConcepts[i].parentId = null;
+        ldConcepts[i].parentName = null;
+        ldSaveConcept(i);
+    }
+
+    function ldPickParent(i) {
+        ldPickerOpen('والد «' + ldConcepts[i].name + '» را جست‌وجو کنید', function (picked) {
+            if (picked.id === ldConcepts[i].id) { upToast('مفهوم نمی‌تواند والد خودش باشد.', 'error'); return; }
+            ldConcepts[i].parentId = picked.id;
+            ldConcepts[i].parentName = picked.name;
+            ldSaveConcept(i);
+        });
+    }
+
+    function ldPickMerge(i) {
+        ldPickerOpen('«' + ldConcepts[i].name + '» در کدام مفهوم ادغام شود؟', async function (picked) {
+            if (picked.id === ldConcepts[i].id) { upToast('مبدأ و مقصد یکی است.', 'error'); return; }
+            var ok = await upConfirm('«' + ldConcepts[i].name + '» در «' + picked.name + '» ادغام شود؟ این کار برگشت‌پذیر نیست.');
+            if (!ok) return;
+            $.ajax({
+                type: 'POST',
+                url: '?handler=Merge',
+                data: { sourceId: ldConcepts[i].id, targetId: picked.id },
+                success: function () { upToast('ادغام شد.'); ldConceptSearch(); },
+                error: function (e) { upShowError(e.responseText || String(e)); }
+            });
+        });
+    }
+
+    function ldPickerOpen(title, callback) {
+        ldPickerCallback = callback;
+        $('#ld-picker-title').text(title);
+        $('#ld-picker-query').val('');
+        $('#ld-picker-results').empty();
+        $('#ld-picker').show();
+        $('#ld-picker-query').focus();
+    }
+
+    function ldPickerClose() { $('#ld-picker').hide(); ldPickerCallback = null; }
+
+    function ldPickerSearch() {
+        clearTimeout(ldPickerTimer);
+        ldPickerTimer = setTimeout(function () {
+            $.ajax({
+                type: 'GET',
+                url: '?handler=Concepts',
+                data: { query: $('#ld-picker-query').val() },
+                success: function (res) {
+                    var h = '';
+                    for (var i = 0; i < res.length; i++) h += '<div onclick="ldPickerChoose(' + res[i].id + ', ' + i + ')">' + ldEsc(res[i].name) + '</div>';
+                    $('#ld-picker-results').html(h);
+                    window.ldPickerLast = res;
+                }
+            });
+        }, 250);
+    }
+
+    function ldPickerChoose(id, i) {
+        var picked = window.ldPickerLast[i];
+        var cb = ldPickerCallback;
+        ldPickerClose();
+        if (cb) cb(picked);
+    }
+
+    $(document).ready(function () {
+        ldRenderSuggested();
+        ldRenderApproved();
+        ldConceptSearch();
+    });
+</script>
