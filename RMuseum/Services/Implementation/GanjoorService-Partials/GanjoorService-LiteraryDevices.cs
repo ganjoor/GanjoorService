@@ -303,6 +303,25 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
+        /// concepts by ids (names for displaying suggestions that refer to existing concepts)
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public async Task<RServiceResult<LiteraryConcept[]>> GetLiteraryConceptsByIdsAsync(int[] ids)
+        {
+            try
+            {
+                ids = (ids ?? Array.Empty<int>()).Distinct().Take(500).ToArray();
+                var concepts = await _context.LiteraryConcepts.AsNoTracking().Where(c => ids.Contains(c.Id)).ToArrayAsync();
+                return new RServiceResult<LiteraryConcept[]>(concepts);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<LiteraryConcept[]>(null, exp.ToString());
+            }
+        }
+
+        /// <summary>
         /// search approved concepts by name or alias
         /// </summary>
         public async Task<RServiceResult<LiteraryConcept[]>> SearchLiteraryConceptsAsync(string query, int take)

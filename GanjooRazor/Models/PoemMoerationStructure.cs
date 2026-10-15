@@ -44,5 +44,10 @@
         /// dates, etc.) require rejecting and asking the contributor to resubmit
         /// </summary>
         public string[] geoTagPersonName { get; set; }
+        /// <summary>
+        /// review result of each suggested literary tag (آرایه ادبی)
+        /// </summary>
+        public string[] literaryReviewResult { get; set; }
+        public string[] literaryReviewNotes { get; set; }
     }
 }

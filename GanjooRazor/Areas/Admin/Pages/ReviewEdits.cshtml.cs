@@ -63,6 +63,200 @@ namespace GanjooRazor.Areas.Admin.Pages
         public Tuple<int, string>[] Couplets { get; set; }
 
         /// <summary>
+        /// one line of a literary tag shown to the moderator
+        /// </summary>
+        public class LiteraryReviewLine
+        {
+            public string Slot { get; set; }
+            public string Value { get; set; }
+            public bool NewConcept { get; set; }
+            public string Similar { get; set; }
+        }
+
+        /// <summary>
+        /// a suggested literary tag (or a request to delete one) prepared for display
+        /// </summary>
+        public class LiteraryReviewItem
+        {
+            public string DeviceName { get; set; }
+            public string Couplet { get; set; }
+            public int CoupletNumber { get; set; }
+            public bool Delete { get; set; }
+            public bool Uncertain { get; set; }
+            public string Note { get; set; }
+            public List<LiteraryReviewLine> Lines { get; set; } = new List<LiteraryReviewLine>();
+        }
+
+        public List<LiteraryReviewItem> LiteraryReviewItems { get; set; } = new List<LiteraryReviewItem>();
+
+        private static Dictionary<int, Tuple<string, string>> GetHemistichs(GanjoorVerseViewModel[] verses)
+        {
+            var res = new Dictionary<int, Tuple<string, string>>();
+            int n = 0;
+            string m1 = null;
+            foreach (var v in verses)
+            {
+                switch (v.VersePosition)
+                {
+                    case VersePosition.Paragraph:
+                    case VersePosition.Single:
+                        n++;
+                        res[n] = new Tuple<string, string>(v.Text, null);
+                        m1 = null;
+                        break;
+                    case VersePosition.Right:
+                    case VersePosition.CenteredVerse1:
+                        n++;
+                        m1 = v.Text;
+                        res[n] = new Tuple<string, string>(m1, null);
+                        break;
+                    case VersePosition.Left:
+                    case VersePosition.CenteredVerse2:
+                        if (m1 != null)
+                            res[n] = new Tuple<string, string>(m1, v.Text);
+                        break;
+                }
+            }
+            return res;
+        }
+
+        private async Task PrepareLiteraryReviewAsync(HttpClient secureClient)
+        {
+            LiteraryReviewItems = new List<LiteraryReviewItem>();
+            if (Correction.LiteraryTags == null || Correction.LiteraryTags.Length == 0)
+                return;
+            try
+            {
+                var devicesResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/devices");
+                var devices = devicesResponse.IsSuccessStatusCode
+                    ? JsonConvert.DeserializeObject<LiteraryDevice[]>(await devicesResponse.Content.ReadAsStringAsync())
+                    : Array.Empty<LiteraryDevice>();
+
+                var tagsResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/poem/{Correction.PoemId}/tags");
+                var existingTags = tagsResponse.IsSuccessStatusCode
+                    ? JsonConvert.DeserializeObject<PoemLiteraryTag[]>(await tagsResponse.Content.ReadAsStringAsync())
+                    : Array.Empty<PoemLiteraryTag>();
+
+                var hemistichs = GetHemistichs(PageInformation.Poem.Verses);
+                var parsed = new List<List<LiteraryTagPartSuggestion>>();
+                var conceptIds = new HashSet<int>();
+                foreach (var t in Correction.LiteraryTags)
+                {
+                    List<LiteraryTagPartSuggestion> parts = new List<LiteraryTagPartSuggestion>();
+                    if (!t.MarkForDelete && !string.IsNullOrEmpty(t.PartsJson))
+                    {
+                        try { parts = JsonConvert.DeserializeObject<List<LiteraryTagPartSuggestion>>(t.PartsJson) ?? parts; } catch (JsonException) { }
+                    }
+                    parsed.Add(parts);
+                    foreach (var p in parts.Where(p => p.ConceptId != null))
+                        conceptIds.Add(p.ConceptId.Value);
+                }
+
+                var conceptNames = new Dictionary<int, string>();
+                if (conceptIds.Count > 0)
+                {
+                    var cr = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/concepts/by-ids?ids={string.Join(",", conceptIds)}");
+                    if (cr.IsSuccessStatusCode)
+                        foreach (var c in JsonConvert.DeserializeObject<LiteraryConcept[]>(await cr.Content.ReadAsStringAsync()))
+                            conceptNames[c.Id] = c.Name;
+                }
+
+                var similarCache = new Dictionary<string, string>();
+
+                string SpanText(LiteraryTagPartSuggestion p)
+                {
+                    if (p.WordStart == null || p.WordEnd == null || !hemistichs.ContainsKey(p.CoupletIndex))
+                        return null;
+                    var h = hemistichs[p.CoupletIndex];
+                    var words = (p.Misra == 1 ? h.Item1 : h.Item2 ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    return string.Join(" ", words.Skip(p.WordStart.Value - 1).Take(p.WordEnd.Value - p.WordStart.Value + 1));
+                }
+
+                string CoupletLabel(int n)
+                {
+                    return n > 0 && hemistichs.ContainsKey(n) ? hemistichs[n].Item1 : null;
+                }
+
+                for (int i = 0; i < Correction.LiteraryTags.Length; i++)
+                {
+                    var t = Correction.LiteraryTags[i];
+                    var item = new LiteraryReviewItem()
+                    {
+                        Delete = t.MarkForDelete,
+                        CoupletNumber = t.CoupletIndex,
+                        Couplet = CoupletLabel(t.CoupletIndex),
+                        Uncertain = t.Uncertain,
+                        Note = t.SuggestionNote
+                    };
+
+                    if (t.MarkForDelete)
+                    {
+                        var ex = existingTags.FirstOrDefault(x => x.Id == t.ExistingTagId);
+                        if (ex == null)
+                        {
+                            item.DeviceName = "(برچسب دیگر وجود ندارد)";
+                        }
+                        else
+                        {
+                            var dev = devices.FirstOrDefault(d => d.Id == ex.DeviceId);
+                            item.DeviceName = dev?.Name ?? $"#{ex.DeviceId}";
+                            item.CoupletNumber = ex.CoupletIndex;
+                            item.Couplet = CoupletLabel(ex.CoupletIndex);
+                            item.Uncertain = ex.Uncertain;
+                            foreach (var p in ex.Parts)
+                            {
+                                var sp = new LiteraryTagPartSuggestion() { CoupletIndex = p.CoupletIndex, Misra = p.Misra, WordStart = p.WordStart, WordEnd = p.WordEnd };
+                                var vals = new List<string>();
+                                var st = SpanText(sp);
+                                if (st != null) vals.Add($"«{st}»");
+                                if (p.Concept != null) vals.Add(p.Concept.Name);
+                                if (!string.IsNullOrEmpty(p.Text)) vals.Add(p.Text);
+                                item.Lines.Add(new LiteraryReviewLine() { Slot = dev?.Slots.FirstOrDefault(s => s.Id == p.SlotId)?.Name ?? "?", Value = string.Join(" ← ", vals) });
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var dev = devices.FirstOrDefault(d => d.Id == t.DeviceId);
+                        item.DeviceName = dev?.Name ?? t.Device?.Name ?? $"#{t.DeviceId}";
+                        foreach (var p in parsed[i])
+                        {
+                            var vals = new List<string>();
+                            var st = SpanText(p);
+                            if (st != null) vals.Add($"«{st}»");
+                            var line = new LiteraryReviewLine() { Slot = dev?.Slots.FirstOrDefault(s => s.Id == p.SlotId)?.Name ?? "?" };
+                            if (p.ConceptId != null)
+                            {
+                                vals.Add(conceptNames.ContainsKey(p.ConceptId.Value) ? conceptNames[p.ConceptId.Value] : $"مفهوم #{p.ConceptId}");
+                            }
+                            else if (!string.IsNullOrWhiteSpace(p.SuggestedConceptName))
+                            {
+                                vals.Add(p.SuggestedConceptName);
+                                line.NewConcept = true;
+                                if (!similarCache.ContainsKey(p.SuggestedConceptName))
+                                {
+                                    var sr = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/concepts?query={Uri.EscapeDataString(p.SuggestedConceptName)}&take=4");
+                                    similarCache[p.SuggestedConceptName] = sr.IsSuccessStatusCode
+                                        ? string.Join("، ", JsonConvert.DeserializeObject<LiteraryConcept[]>(await sr.Content.ReadAsStringAsync()).Select(c => c.Name))
+                                        : "";
+                                }
+                                line.Similar = similarCache[p.SuggestedConceptName];
+                            }
+                            if (!string.IsNullOrEmpty(p.Text)) vals.Add(p.Text);
+                            line.Value = string.Join(" ← ", vals);
+                            item.Lines.Add(line);
+                        }
+                    }
+                    LiteraryReviewItems.Add(item);
+                }
+            }
+            catch (Exception exp)
+            {
+                FatalError = "خطا در آماده‌سازی آرایه‌های ادبی پیشنهادی: " + exp.Message;
+            }
+        }
+
+        /// <summary>
         /// full location catalog, offered as an alternative to a user's new-location suggestion so the
         /// moderator can correct a mistyped/duplicate name by linking it to the existing entry instead
         /// </summary>
@@ -210,6 +404,8 @@ namespace GanjooRazor.Areas.Admin.Pages
                         PageInformation = JObject.Parse(await pageQuery.Content.ReadAsStringAsync()).ToObject<GanjoorPageCompleteViewModel>();
 
                         Couplets = GetCouplets(PageInformation.Poem.Verses);
+
+                        await PrepareLiteraryReviewAsync(secureClient);
 
                         if (Correction.GeoDateTags != null && Correction.GeoDateTags.Any())
                         {
@@ -520,6 +716,20 @@ namespace GanjooRazor.Areas.Admin.Pages
                                 Correction.GeoDateTags[i].Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.geoTagReviewResult[i]);
                                 Correction.GeoDateTags[i].ReviewNote = (pms.geoTagReviewNotes != null && i < pms.geoTagReviewNotes.Length) ? pms.geoTagReviewNotes[i] : null;
                             }
+                        }
+                    }
+
+                    if (Correction.LiteraryTags != null && Correction.LiteraryTags.Length > 0)
+                    {
+                        if (pms.literaryReviewResult == null || pms.literaryReviewResult.Length != Correction.LiteraryTags.Length || pms.literaryReviewResult.Any(r => r == null))
+                        {
+                            return new BadRequestObjectResult("لطفاً تکلیف بررسی تمام آرایه‌های ادبی پیشنهادی را مشخص کنید.");
+                        }
+                        for (int i = 0; i < Correction.LiteraryTags.Length; i++)
+                        {
+                            Correction.LiteraryTags[i].Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.literaryReviewResult[i]);
+                            Correction.LiteraryTags[i].ReviewNote = (pms.literaryReviewNotes != null && i < pms.literaryReviewNotes.Length) ? pms.literaryReviewNotes[i] : null;
+                            Correction.LiteraryTags[i].Device = null;
                         }
                     }
 

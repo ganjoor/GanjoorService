@@ -1792,6 +1792,13 @@ namespace RMuseum.Services
         Task<RServiceResult<int>> SeedCoreLiteraryDevicesAsync();
 
         /// <summary>
+        /// concepts by ids
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryConcept[]>> GetLiteraryConceptsByIdsAsync(int[] ids);
+
+        /// <summary>
         /// search approved concepts by name or alias
         /// </summary>
         /// <param name="query"></param>

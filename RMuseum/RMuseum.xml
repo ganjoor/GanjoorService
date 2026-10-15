@@ -2793,6 +2793,11 @@
             search approved concepts
             </summary>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.GetConceptsByIds(System.String)">
+            <summary>
+            concepts by ids (comma separated)
+            </summary>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorLiteraryController.UpdateConcept(RMuseum.Models.Ganjoor.LiteraryConcept)">
             <summary>
             edit a concept (name, aliases, parent)
@@ -22722,6 +22727,13 @@
             </summary>
             <returns>number of added devices</returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryConceptsByIdsAsync(System.Int32[])">
+            <summary>
+            concepts by ids
+            </summary>
+            <param name="ids"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.SearchLiteraryConceptsAsync(System.String,System.Int32)">
             <summary>
             search approved concepts by name or alias
@@ -25441,6 +25453,13 @@
             inserts the core devices of the initial list (see the draft list document) if they are not there yet
             </summary>
             <returns>number of added devices</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryConceptsByIdsAsync(System.Int32[])">
+            <summary>
+            concepts by ids (names for displaying suggestions that refer to existing concepts)
+            </summary>
+            <param name="ids"></param>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SearchLiteraryConceptsAsync(System.String,System.Int32)">
             <summary>

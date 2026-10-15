@@ -118,6 +118,24 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// concepts by ids (comma separated)
+        /// </summary>
+        [HttpGet]
+        [Route("concepts/by-ids")]
+        [AllowAnonymous]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(LiteraryConcept[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetConceptsByIds(string ids = "")
+        {
+            var list = (ids ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(x => int.TryParse(x, out int v) ? v : 0).Where(v => v > 0).ToArray();
+            var res = await _ganjoorService.GetLiteraryConceptsByIdsAsync(list);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// edit a concept (name, aliases, parent)
         /// </summary>
         [HttpPut]
