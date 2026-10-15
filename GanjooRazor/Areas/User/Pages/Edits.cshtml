@@ -397,6 +397,62 @@ else
                         <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
                     }
 
+                @if (correction.LiteraryTags != null && correction.LiteraryTags.Length > 0)
+                {
+                    @foreach (var litTag in correction.LiteraryTags)
+                    {
+                        var litDisplay = Model.LiteraryContext.Describe(correction.PoemId, litTag);
+                        <tr>
+                            <td colspan="3">
+                                آرایهٔ ادبی@(string.IsNullOrEmpty(litDisplay.DeviceName) ? "" : ": " + litDisplay.DeviceName) -
+                                @if (litTag.CoupletIndex <= 0)
+                                {
+                                    <text>کل شعر</text>
+                                }
+                                else
+                                {
+                                    <a href="/?p=@correction.PoemId#bn@(litTag.CoupletIndex)" target="_blank">بیت @(litTag.CoupletIndex.ToPersianNumbers())</a>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p style="color:red">@(litTag.MarkForDelete ? "درخواست حذف برچسب موجود" + (litDisplay.Lines.Count == 0 ? " (#" + litTag.ExistingTagId + ")" : "") : "-")</p>
+                            </td>
+                            <td>
+                                @if (litTag.MarkForDelete && litDisplay.Lines.Count == 0)
+                                {
+                                    <p style="color:green">حذف شود</p>
+                                }
+                                @foreach (var litLine in litDisplay.Lines)
+                                {
+                                    <p style="color:green">@litLine.Slot: @litLine.Value</p>
+                                }
+                            </td>
+                            <td>
+                                <partial name="_ReviewResultBadge" model="litTag.Result" />
+                            </td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(litTag.SuggestionNote))
+                        {
+                            <tr>
+                                <td colspan="3">
+                                    <p>یادداشت من: @litTag.SuggestionNote</p>
+                                </td>
+                            </tr>
+                        }
+                        @if (!string.IsNullOrEmpty(litTag.ReviewNote))
+                        {
+                            <tr>
+                                <td colspan="3">
+                                    <p>@litTag.ReviewNote</p>
+                                </td>
+                            </tr>
+                        }
+                        <tr><td colspan="3" style="background-color:black">&nbsp;</td></tr>
+                    }
+                }
+
                 @if (correction.VerseOrderText != null && correction.VerseOrderText.Length > 0)
                     @foreach (var verse in correction.VerseOrderText)
                     {

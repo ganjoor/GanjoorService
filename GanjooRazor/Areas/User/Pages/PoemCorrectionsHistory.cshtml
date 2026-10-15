@@ -261,6 +261,41 @@ else
                                 </tr>
                             }
                         }
+                    @if (correction.LiteraryTags != null && correction.LiteraryTags.Any(t => t.Result == CorrectionReviewResult.Approved))
+                    {
+                        @foreach (var litTag in correction.LiteraryTags.Where(t => t.Result == CorrectionReviewResult.Approved))
+                        {
+                            var litDisplay = Model.LiteraryContext.Describe(correction.PoemId, litTag);
+                            <tr>
+                                <td colspan="2">
+                                    آرایهٔ ادبی@(string.IsNullOrEmpty(litDisplay.DeviceName) ? "" : ": " + litDisplay.DeviceName) -
+                                    @if (litTag.CoupletIndex <= 0)
+                                    {
+                                        <text>کل شعر</text>
+                                    }
+                                    else
+                                    {
+                                        <a href="/?p=@correction.PoemId#bn@(litTag.CoupletIndex)" target="_blank">بیت @(litTag.CoupletIndex.ToPersianNumbers())</a>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p class="red-color">@(litTag.MarkForDelete ? "برچسب موجود" : "-")</p>
+                                </td>
+                                <td>
+                                    @if (litTag.MarkForDelete)
+                                    {
+                                        <p class="red-color">حذف شد</p>
+                                    }
+                                    @foreach (var litLine in litDisplay.Lines)
+                                    {
+                                        <p class="@(litTag.MarkForDelete ? "red-color" : "green-color")">@litLine.Slot: @litLine.Value</p>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
                     @if (correction.VerseOrderText != null)
                         @foreach (var verse in correction.VerseOrderText)
                         {

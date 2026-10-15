@@ -52,6 +52,11 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public List<GanjoorPoemCorrectionViewModel> Corrections { get; set; }
 
+        /// <summary>
+        /// names/texts for displaying literary tags of Corrections
+        /// </summary>
+        public GanjooRazor.Utils.LiteraryDisplayContext LiteraryContext { get; set; } = new GanjooRazor.Utils.LiteraryDisplayContext();
+
         public GanjoorLanguage[] Languages { get; set; }
 
         private async Task ReadLanguagesAsync(HttpClient secureClient)
@@ -111,6 +116,7 @@ namespace GanjooRazor.Areas.User.Pages
                         }
 
                         Corrections = JArray.Parse(await response.Content.ReadAsStringAsync()).ToObject<List<GanjoorPoemCorrectionViewModel>>();
+                        LiteraryContext = await GanjooRazor.Utils.LiteraryDisplayContext.LoadAsync(secureClient, Corrections);
 
                         string paginnationMetadata = response.Headers.GetValues("paging-headers").FirstOrDefault();
                         if (!string.IsNullOrEmpty(paginnationMetadata))
@@ -340,6 +346,48 @@ namespace GanjooRazor.Areas.User.Pages
                         if (geoDateTagsRollback.Count > 0)
                         {
                             correction.GeoDateTags = geoDateTagsRollback.ToArray();
+                        }
+                    }
+
+                    if (currentCorrection.LiteraryTags != null)
+                    {
+                        var literaryRollback = new List<GanjoorPoemLiteraryTagCorrection>();
+                        foreach (var litTag in currentCorrection.LiteraryTags.Where(t => t.Result == CorrectionReviewResult.Approved))
+                        {
+                            if (litTag.MarkForDelete)
+                            {
+                                // the original request deleted a tag - undo that by re-adding it from the snapshot
+                                // (device, couplet, slot values) saved on this record when the deletion was approved
+                                if (litTag.DeviceId > 0 && !string.IsNullOrEmpty(litTag.PartsJson))
+                                {
+                                    literaryRollback.Add(new GanjoorPoemLiteraryTagCorrection()
+                                    {
+                                        CoupletIndex = litTag.CoupletIndex,
+                                        DeviceId = litTag.DeviceId,
+                                        Uncertain = litTag.Uncertain,
+                                        PartsJson = litTag.PartsJson,
+                                        MarkForDelete = false,
+                                        SuggestionNote = $"برگشت حذف آرایهٔ ادبی با کد {correctionId}"
+                                    });
+                                }
+                            }
+                            else if (litTag.ExistingTagId != null)
+                            {
+                                // the original request added a tag - undo that by requesting deletion of the live tag
+                                // it produced (its id was recorded onto ExistingTagId when approved)
+                                literaryRollback.Add(new GanjoorPoemLiteraryTagCorrection()
+                                {
+                                    CoupletIndex = litTag.CoupletIndex,
+                                    DeviceId = litTag.DeviceId,
+                                    MarkForDelete = true,
+                                    ExistingTagId = litTag.ExistingTagId,
+                                    SuggestionNote = $"برگشت افزودن آرایهٔ ادبی با کد {correctionId}"
+                                });
+                            }
+                        }
+                        if (literaryRollback.Count > 0)
+                        {
+                            correction.LiteraryTags = literaryRollback.ToArray();
                         }
                     }
 
