@@ -43,6 +43,7 @@
             {
                 <div class="lit-tag" data-spans="@tag.Spans" tabindex="0" role="button">
                     <span class="lit-dev" title="@tag.Definition">@tag.DeviceName</span>
+                    <a class="lit-stat" href="/literary?device=@tag.DeviceId" title="مشاهدهٔ همهٔ نمونه‌ها و آمار «@tag.DeviceName»" onclick="event.stopPropagation();">آمار</a>
                     @if (tag.Uncertain)
                     {
                         <span class="lit-unc">(نامطمئن)</span>

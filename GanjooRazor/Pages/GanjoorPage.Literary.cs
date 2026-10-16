@@ -35,6 +35,7 @@ namespace GanjooRazor.Pages
     /// </summary>
     public class LiteraryTagView
     {
+        public int DeviceId { get; set; }
         public string DeviceName { get; set; }
         public string Definition { get; set; }
         public bool Uncertain { get; set; }
@@ -183,6 +184,7 @@ namespace GanjooRazor.Pages
                             continue;
                         var view = new LiteraryTagView()
                         {
+                            DeviceId = device.Id,
                             DeviceName = device.Name,
                             Definition = device.Definition,
                             Uncertain = tag.Uncertain,
