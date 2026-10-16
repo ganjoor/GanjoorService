@@ -180,12 +180,21 @@ namespace RMuseum.Services.Implementation
                 var result = new LiteraryCorpusImportResult() { DryRun = dryRun, Items = file.Items.Count };
 
                 var devices = await _context.LiteraryDevices.AsNoTracking().Include(d => d.Slots)
-                    .Where(d => d.Status == LiteraryEntityStatus.Approved && d.Key != null).ToListAsync();
-                var deviceByKey = devices.ToDictionary(d => d.Key, d => d);
+                    .Where(d => d.Status == LiteraryEntityStatus.Approved).ToListAsync();
+                //a device is referred to by its key (core devices) or by its name (approved suggested devices have no key)
+                var deviceByKey = new Dictionary<string, LiteraryDevice>();
+                foreach (var d in devices.Where(d => d.Key != null))
+                    deviceByKey[d.Key] = d;
+                foreach (var d in devices)
+                {
+                    string deviceName = d.Name?.Trim();
+                    if (!string.IsNullOrEmpty(deviceName) && !deviceByKey.ContainsKey(deviceName))
+                        deviceByKey[deviceName] = d;
+                }
                 var neededKeys = file.Items.SelectMany(i => i.Tags ?? new List<LiteraryCorpusImportTag>()).Select(t => t.Device).Distinct().ToList();
                 var missing = neededKeys.Where(k => !deviceByKey.ContainsKey(k)).ToList();
                 if (missing.Count > 0)
-                    return new RServiceResult<LiteraryCorpusImportResult>(null, "آرایه‌های پایهٔ زیر وجود ندارد (ابتدا seed-core را اجرا کنید): " + string.Join("، ", missing));
+                    return new RServiceResult<LiteraryCorpusImportResult>(null, "آرایه‌های زیر وجود ندارند یا هنوز تأیید نشده‌اند (برای آرایه‌های پایه seed-core را اجرا کنید و آرایه‌های پیشنهادی را با نام دقیق بنویسید): " + string.Join("، ", missing));
 
                 var poems = await _context.GanjoorPoems.AsNoTracking()
                     .Where(p => p.FullUrl.StartsWith(urlPrefix))
@@ -329,7 +338,7 @@ namespace RMuseum.Services.Implementation
                         bool valid = true;
                         foreach (var part in tag.Parts ?? new List<LiteraryCorpusImportPart>())
                         {
-                            var slot = device.Slots.FirstOrDefault(s => s.Key == part.Slot);
+                            var slot = device.Slots.FirstOrDefault(s => s.Key == part.Slot) ?? device.Slots.FirstOrDefault(s => s.Name != null && s.Name.Trim() == part.Slot?.Trim());
                             if (slot == null)
                             {
                                 valid = false;
