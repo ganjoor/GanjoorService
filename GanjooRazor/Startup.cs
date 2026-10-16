@@ -38,12 +38,10 @@ namespace GanjooRazor
             services.AddResponseCompression(options =>
             {
                 options.EnableForHttps = true;
-                options.Providers.Add<BrotliCompressionProvider>();
+                // Brotli is intentionally not registered: with IIS in front of Kestrel/in-process,
+                // logged-in (no-store, chunked) pages came out with 'Content-Encoding: br' but a body
+                // browsers could not decode. Gzip gives nearly the same saving on HTML.
                 options.Providers.Add<GzipCompressionProvider>();
-            });
-            services.Configure<BrotliCompressionProviderOptions>(options =>
-            {
-                options.Level = CompressionLevel.Fastest;
             });
             services.Configure<GzipCompressionProviderOptions>(options =>
             {
