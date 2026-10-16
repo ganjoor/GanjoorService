@@ -807,16 +807,7 @@ namespace RMuseum.Services.Implementation
                     }
                 }
 
-                if (dbCorrection.LiteraryAnnotationCompleted != null)
-                {
-                    //the completeness claim stands with the correction unless its literary tags were all turned down
-                    bool anyLiteraryTagApproved = dbCorrection.LiteraryTags != null && dbCorrection.LiteraryTags.Any(l => l.Result == CorrectionReviewResult.Approved);
-                    bool hadLiteraryTags = dbCorrection.LiteraryTags != null && dbCorrection.LiteraryTags.Any();
-                    if (!hadLiteraryTags || anyLiteraryTagApproved)
-                    {
-                        await _ApplyLiteraryAnnotationStatusAsync(dbCorrection.PoemId, (bool)dbCorrection.LiteraryAnnotationCompleted, userId);
-                    }
-                }
+                //the old 'literary annotation is complete' claim (LiteraryAnnotationCompleted) is intentionally not applied any more
 
                 if (updatePoem)
                 {

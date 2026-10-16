@@ -1030,9 +1030,8 @@
         if (!litCollectForSave()) {
             return;
         }
-        var litCompleted = litCompletedForSave();
 
-        if (verseOrderText.length == 0 && verseOrderSummaries.length == 0 && geoDateTagSuggestions.length == 0 && litSuggestions.length == 0 && litCompleted == null) {
+        if (verseOrderText.length == 0 && verseOrderSummaries.length == 0 && geoDateTagSuggestions.length == 0 && litSuggestions.length == 0) {
             if (rhythm_new == null && rhythm_new2 == null && rhyme_letters == null && section_format == null) {
                 upToast('شما هیچ تغییری در اطلاعات نداده‌اید!', 'error');
                 return;
@@ -1057,7 +1056,6 @@
         pcs.hideMyName = $('#hide-my-name').is(":checked");
         pcs.geoDateTags = geoDateTagSuggestions;
         pcs.literaryTags = litSuggestionsForSave();
-        pcs.literaryAnnotationCompleted = litCompleted;
 
         var url = '?handler=SendPoemCorrections';
 
@@ -1737,15 +1735,11 @@ else
                     </tr>
                 }
             }
-            @if ((Model.MyLastEdit.LiteraryTags != null && Model.MyLastEdit.LiteraryTags.Length > 0) || Model.MyLastEdit.LiteraryAnnotationCompleted != null)
+            @if (Model.MyLastEdit.LiteraryTags != null && Model.MyLastEdit.LiteraryTags.Length > 0)
             {
                 <tr>
                     <td colspan="2">
                         آرایه‌های ادبی پیشنهادی
-                        @if (Model.MyLastEdit.LiteraryAnnotationCompleted != null)
-                        {
-                            <p class="up-hint">@(Model.MyLastEdit.LiteraryAnnotationCompleted.Value ? "علامت‌گذاری شعر به‌عنوان «آرایه‌های کامل ثبت شده»" : "برداشتن علامت «آرایه‌های کامل ثبت شده»")</p>
-                        }
                         <div id="lit-lastedit"></div>
                     </td>
                 </tr>
@@ -2865,12 +2859,6 @@ else
         <a role="button" class="up-btn up-btn--ghost" onclick="litAddSuggestion(false)">➕ افزودن به فهرست پیشنهادها</a>
 
         <hr />
-        <div class="up-check-row">
-            <input type="checkbox" id="lit-complete" />
-            <label for="lit-complete">همهٔ آرایه‌های این شعر ثبت شده است (فقط شعرهای تکمیل‌شده در آمار حساب می‌شوند)</label>
-        </div>
-
-        <hr />
         <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="litToggleDeviceForm()">🆕 آرایه‌ام در فهرست نیست</a>
         <div id="lit-device-form" style="display:none;">
             <p class="up-hint">نام و تعریف آرایه و جایگاه‌های آن را بنویسید (مثلاً در تشبیه: «مشبّه» و «مشبّه‌به»). پس از تأیید ناظر، آرایه برای همه قابل انتخاب می‌شود.</p>
@@ -2910,8 +2898,6 @@ else
         var litExistingTags = @Html.Raw(Model.LiteraryExistingTagsJson);
         var litCouplets = @Html.Raw(Model.LiteraryCoupletsJson);
         var litSuggestions = @Html.Raw(Model.MyLastEditLiteraryTagsJson);
-        var litCompletedInitial = @(Model.LiteraryAnnotationCompleted ? "true" : "false");
-        var litCompletedDraft = @(Model.MyLastEdit != null && Model.MyLastEdit.LiteraryAnnotationCompleted != null ? (Model.MyLastEdit.LiteraryAnnotationCompleted.Value ? "true" : "false") : "null");
         var litCategoryNames = ['بیان', 'بدیع لفظی', 'بدیع معنوی', 'ساختار', 'سایر'];
         var litForm = { deviceId: null, slots: {} };
         var litConceptResults = {};
@@ -2962,8 +2948,6 @@ else
                 html += '</optgroup>';
             }
             sel.html(html);
-            var completed = litCompletedDraft != null ? litCompletedDraft : litCompletedInitial;
-            $('#lit-complete').prop('checked', completed);
             litRenderExisting();
             litRenderPending();
             litDevAddSlot();
@@ -3267,11 +3251,6 @@ else
         function litCollectForSave() {
             if (!litAddSuggestion(true)) return false;
             return true;
-        }
-
-        function litCompletedForSave() {
-            var now = $('#lit-complete').is(':checked');
-            return now !== litCompletedInitial ? now : null;
         }
 
         function litSuggestionsForSave() {

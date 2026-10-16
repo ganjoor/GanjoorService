@@ -43,7 +43,6 @@
             {
                 <div class="lit-tag" data-spans="@tag.Spans" tabindex="0" role="button">
                     <span class="lit-dev" title="@tag.Definition">@tag.DeviceName</span>
-                    <a class="lit-stat" href="/literary?device=@tag.DeviceId" title="مشاهدهٔ همهٔ نمونه‌ها و آمار «@tag.DeviceName»" onclick="event.stopPropagation();">آمار</a>
                     @if (tag.Uncertain)
                     {
                         <span class="lit-unc">(نامطمئن)</span>
@@ -66,11 +65,8 @@
             }
         </div>
     }
-    @if (!Model.Completed)
-    {
-        <p class="lit-hint">آرایه‌گذاری این شعر هنوز کامل نشده؛ ممکن است آرایه‌های دیگری هم در آن باشد.
-            <a href="/User/Editor?id=@Model.PoemId#literary-section">پیشنهاد آرایه</a></p>
-    }
+    <p class="lit-hint">آرایه‌گذاری این شعر کامل نیست و ممکن است آرایه‌های دیگری هم در آن باشد.
+        <a href="/User/Editor?id=@Model.PoemId#literary-section">پیشنهاد آرایه</a></p>
     @foreach (var source in Model.Sources)
     {
         <p class="lit-hint">بخشی از آرایه‌ها از «<a href="javascript:void(0)" data-src="@source.Key" onclick="LiteraryTagSourceWindow.open(this.getAttribute('data-src')); return false;">@source.Title</a>» برگرفته شده است.</p>

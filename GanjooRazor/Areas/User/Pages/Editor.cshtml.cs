@@ -197,11 +197,6 @@ namespace GanjooRazor.Areas.User.Pages
         /// </summary>
         public PoemLiteraryTag[] PoemLiteraryTags { get; set; }
 
-        /// <summary>
-        /// the poem's literary annotation is marked complete
-        /// </summary>
-        public bool LiteraryAnnotationCompleted { get; set; }
-
         private static JsonSerializerSettings LiteraryJsonSettings =>
             new JsonSerializerSettings
             {
@@ -566,10 +561,6 @@ namespace GanjooRazor.Areas.User.Pages
                         var literaryTagsResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/poem/{PageInformation.Id}/tags");
                         if (literaryTagsResponse.IsSuccessStatusCode)
                             PoemLiteraryTags = JsonConvert.DeserializeObject<PoemLiteraryTag[]>(await literaryTagsResponse.Content.ReadAsStringAsync()) ?? Array.Empty<PoemLiteraryTag>();
-
-                        var completeResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/poem/{PageInformation.Id}/complete");
-                        if (completeResponse.IsSuccessStatusCode)
-                            LiteraryAnnotationCompleted = JsonConvert.DeserializeObject<bool>(await completeResponse.Content.ReadAsStringAsync());
                     }
                     catch (Exception)
                     {
@@ -635,7 +626,6 @@ namespace GanjooRazor.Areas.User.Pages
             public bool hideMyName { get; set; }
             public RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection[] geoDateTags { get; set; }
             public RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection[] literaryTags { get; set; }
-            public bool? literaryAnnotationCompleted { get; set; }
         }
 
         public async Task<IActionResult> OnPostSendPoemCorrectionsAsync([FromBody] PoemCorrectionStructure pcs)
@@ -764,7 +754,7 @@ namespace GanjooRazor.Areas.User.Pages
                             }
                         }
 
-                        if (title == null && poemSummary == null && vOrderTexts.Count == 0 && pcs.rhythm == null && pcs.rhythm2 == null && pcs.rhyme == null && pcs.format == null && (pcs.geoDateTags == null || pcs.geoDateTags.Length == 0) && (pcs.literaryTags == null || pcs.literaryTags.Length == 0) && pcs.literaryAnnotationCompleted == null)
+                        if (title == null && poemSummary == null && vOrderTexts.Count == 0 && pcs.rhythm == null && pcs.rhythm2 == null && pcs.rhyme == null && pcs.format == null && (pcs.geoDateTags == null || pcs.geoDateTags.Length == 0) && (pcs.literaryTags == null || pcs.literaryTags.Length == 0))
                             return new BadRequestObjectResult("شما هیچ تغییری در اطلاعات نداده‌اید!");
 
                         if (pcs.rhythm == "null")
@@ -794,8 +784,7 @@ namespace GanjooRazor.Areas.User.Pages
                             Note = pcs.note,
                             HideMyName = pcs.hideMyName,
                             GeoDateTags = pcs.geoDateTags,
-                            LiteraryTags = pcs.literaryTags,
-                            LiteraryAnnotationCompleted = pcs.literaryAnnotationCompleted
+                            LiteraryTags = pcs.literaryTags
                         };
 
                         HttpResponseMessage response = await secureClient.PostAsync(

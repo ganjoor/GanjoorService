@@ -35,7 +35,6 @@ namespace GanjooRazor.Pages
     /// </summary>
     public class LiteraryTagView
     {
-        public int DeviceId { get; set; }
         public string DeviceName { get; set; }
         public string Definition { get; set; }
         public bool Uncertain { get; set; }
@@ -67,7 +66,6 @@ namespace GanjooRazor.Pages
     {
         public int PoemId { get; set; }
         public bool Failed { get; set; }
-        public bool Completed { get; set; }
         public List<LiteraryCoupletView> Couplets { get; set; } = new List<LiteraryCoupletView>();
         /// <summary>
         /// the sources of the tags shown (distinct)
@@ -146,10 +144,6 @@ namespace GanjooRazor.Pages
                 if (tags == null || tags.Length == 0)
                     return Partial("~/Pages/Partials/GanjoorPage/_LiteraryTagsPartial.cshtml", model);
 
-                var completedResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/poem/{poemId}/complete");
-                if (completedResponse.IsSuccessStatusCode)
-                    model.Completed = JsonConvert.DeserializeObject<bool>(await completedResponse.Content.ReadAsStringAsync());
-
                 // hemistichs of couplets, numbered like the editor does
                 var hemistichs = new Dictionary<int, Tuple<string, string>>();
                 if (!string.IsNullOrEmpty(url))
@@ -184,7 +178,6 @@ namespace GanjooRazor.Pages
                             continue;
                         var view = new LiteraryTagView()
                         {
-                            DeviceId = device.Id,
                             DeviceName = device.Name,
                             Definition = device.Definition,
                             Uncertain = tag.Uncertain,

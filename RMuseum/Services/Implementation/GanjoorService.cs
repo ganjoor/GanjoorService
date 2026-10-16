@@ -2306,7 +2306,7 @@ namespace RMuseum.Services.Implementation
                 HideMyName = correction.HideMyName,
                 GeoDateTags = correction.GeoDateTags,
                 LiteraryTags = correction.LiteraryTags,
-                LiteraryAnnotationCompleted = correction.LiteraryAnnotationCompleted,
+                LiteraryAnnotationCompleted = null, //the 'annotation is complete' claim is no longer collected or applied
 
             };
             _context.GanjoorPoemCorrections.Add(dbCorrection);

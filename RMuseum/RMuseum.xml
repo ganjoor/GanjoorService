@@ -2801,6 +2801,11 @@
             approved devices with their slots
             </summary>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryController.GetMyPendingDevices">
+            <summary>
+            the not yet reviewed devices suggested by the current user (selectable by that user in the editor)
+            </summary>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorLiteraryController.GetSuggestedDevices">
             <summary>
             suggested (not yet reviewed) devices
@@ -23351,6 +23356,14 @@
             <param name="status">null: all</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetMyPendingLiteraryDevicesAsync(System.Guid)">
+            <summary>
+            the devices a user has suggested which are still waiting for a moderator (the suggester may already use them in
+            his/her own edits; a moderator must approve the device before approving such an edit)
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.SuggestLiteraryDeviceAsync(System.Guid,RMuseum.Models.Ganjoor.LiteraryDevice)">
             <summary>
             a user suggests a new literary device
@@ -26229,6 +26242,11 @@
             </summary>
             <param name="status">null: all statuses</param>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetMyPendingLiteraryDevicesAsync(System.Guid)">
+            <summary>
+            devices suggested by the user which are not reviewed yet, with their slots
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SuggestLiteraryDeviceAsync(System.Guid,RMuseum.Models.Ganjoor.LiteraryDevice)">
             <summary>
             a user suggests a new literary device (it becomes selectable for everyone after a moderator approves it)
@@ -26290,7 +26308,7 @@
             delete a tag directly (moderators)
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService._ValidateLiteraryTagCorrectionsAsync(RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection[])">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._ValidateLiteraryTagCorrectionsAsync(System.Guid,RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection[])">
             <summary>
             checks the literary tag suggestions of a poem correction at submission time
             </summary>
