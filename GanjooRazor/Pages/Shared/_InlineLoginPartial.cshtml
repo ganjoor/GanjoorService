@@ -122,7 +122,7 @@ else
               class="close" title="بستن">&times;</span>
 
         <!-- Modal Content -->
-        <form class="modal-content animate" method="post" action="?handler=Login">
+        <form class="modal-content animate" method="post" action="?handler=Login" onsubmit="return submitInlineLogin(this)">
             @Html.AntiForgeryToken()
             <div class="imgcontainer">
                 <img src="/image/login.png" alt="گنجور" class="avatar">
@@ -188,6 +188,28 @@ else
         </form>
 
     </div>
+    <script>
+        // The page this form lives in may be served from the output cache, and its antiforgery token then belongs to
+        // whoever rendered the page first (the POST would fail with 400): get a token that fits this visitor's cookie.
+        function submitInlineLogin(form) {
+            if (form.getAttribute('data-token-ready') === '1')
+                return true;
+            fetch('/auth/antiforgery', { credentials: 'same-origin', cache: 'no-store' })
+                .then(function (r) { return r.ok ? r.text() : ''; })
+                .then(function (token) {
+                    var field = form.querySelector('input[name="__RequestVerificationToken"]');
+                    if (field && token)
+                        field.value = token;
+                })
+                .catch(function () { })
+                .then(function () {
+                    form.setAttribute('data-token-ready', '1');
+                    // the submit button is named "submit", which hides form.submit()
+                    HTMLFormElement.prototype.submit.call(form);
+                });
+            return false;
+        }
+    </script>
 }
 
 <div id="navbarhelp" class="modal">

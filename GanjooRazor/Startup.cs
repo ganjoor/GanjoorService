@@ -1,4 +1,5 @@
 using GanjooRazor.Utils;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -198,6 +199,18 @@ namespace GanjooRazor
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+
+                // A fresh antiforgery request token (and its cookie) for forms that live in output-cached pages.
+                // A cached page carries the token that was generated for whoever rendered it first, which is
+                // useless (HTTP 400 on POST) for any other visitor, so the inline login form of the cached pages
+                // asks for its token here when it is submitted. This endpoint is deliberately not output-cached.
+                endpoints.MapGet("/auth/antiforgery", async context =>
+                {
+                    var tokens = context.RequestServices.GetRequiredService<IAntiforgery>().GetAndStoreTokens(context);
+                    context.Response.Headers[HeaderNames.CacheControl] = "no-store";
+                    context.Response.ContentType = "text/plain; charset=utf-8";
+                    await context.Response.WriteAsync(tokens.RequestToken ?? "");
+                });
             });
         }
     }
