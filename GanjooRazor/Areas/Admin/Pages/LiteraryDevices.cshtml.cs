@@ -161,6 +161,42 @@ namespace GanjooRazor.Areas.Admin.Pages
             return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
         }
 
+        /// <summary>
+        /// a page of concepts with usage counts (for the management list)
+        /// </summary>
+        public async Task<IActionResult> OnGetConceptsPageAsync(string query, string sort, int skip)
+        {
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/concepts-admin/page?query={Uri.EscapeDataString(query ?? "")}&sort={Uri.EscapeDataString(sort ?? "name")}&skip={skip}&take=50");
+                    if (!response.IsSuccessStatusCode)
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
+                    return Content(await response.Content.ReadAsStringAsync(), "application/json");
+                }
+            }
+            return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+        }
+
+        /// <summary>
+        /// groups of probably duplicate concepts
+        /// </summary>
+        public async Task<IActionResult> OnGetConceptDuplicatesAsync()
+        {
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
+            {
+                if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
+                {
+                    var response = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/concepts-admin/duplicates?maxGroups=100");
+                    if (!response.IsSuccessStatusCode)
+                        return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
+                    return Content(await response.Content.ReadAsStringAsync(), "application/json");
+                }
+            }
+            return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
+        }
+
         public async Task<IActionResult> OnPutConceptAsync([FromBody] LiteraryConcept concept)
         {
             using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))

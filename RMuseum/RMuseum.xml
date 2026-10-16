@@ -2758,6 +2758,39 @@
             <param name="configuration"></param>
             <param name="personService"></param>
         </member>
+        <member name="T:RMuseum.Controllers.GanjoorLiteraryConceptAdminController">
+            <summary>
+            management lists of literary concepts: paging with usage counts and probable duplicates
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryConceptAdminController.GetConceptsPage(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            a page of approved concepts with usage counts
+            </summary>
+            <param name="query">name filter</param>
+            <param name="sort">name, usage-desc or usage-asc</param>
+            <param name="skip"></param>
+            <param name="take"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryConceptAdminController.GetDuplicateGroups(System.Int32)">
+            <summary>
+            groups of concepts which are probably duplicates
+            </summary>
+            <param name="maxGroups"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Controllers.GanjoorLiteraryConceptAdminController._ganjoorService">
+            <summary>
+            Ganjoor Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryConceptAdminController.#ctor(RMuseum.Services.IGanjoorService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="ganjoorService"></param>
+        </member>
         <member name="T:RMuseum.Controllers.GanjoorLiteraryController">
             <summary>
             literary devices (آرایه‌های ادبی), concepts and poem literary tags
@@ -12696,6 +12729,76 @@
         <member name="P:RMuseum.Models.Ganjoor.LiteraryConcept.CreateDate">
             <summary>
             creation date
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryConceptListItem">
+            <summary>
+            a concept row in the management list: the concept with its usage and parent name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConceptListItem.Id">
+            <summary>
+            id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConceptListItem.Name">
+            <summary>
+            name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConceptListItem.Aliases">
+            <summary>
+            other names, separated by « | »
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConceptListItem.ParentId">
+            <summary>
+            parent concept id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConceptListItem.ParentName">
+            <summary>
+            parent concept name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConceptListItem.UsageCount">
+            <summary>
+            number of tag parts which use this concept
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConceptListItem.ChildCount">
+            <summary>
+            number of child concepts
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryConceptListPage">
+            <summary>
+            a page of the concept list
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConceptListPage.Total">
+            <summary>
+            total number of matching concepts
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConceptListPage.Items">
+            <summary>
+            concepts of the requested page
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryConceptDuplicateGroup">
+            <summary>
+            concepts whose names are the same after normalization (letter forms, ZWNJ, spaces, simple plural endings)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConceptDuplicateGroup.Key">
+            <summary>
+            the normalized key shared by all members
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryConceptDuplicateGroup.Items">
+            <summary>
+            members, the most used first
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.LiteraryCorpusImportFile">
@@ -23042,6 +23145,23 @@
             <param name="targetId"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryConceptsPageAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            a page of approved concepts for management, with usage counts
+            </summary>
+            <param name="query"></param>
+            <param name="sort">name, usage-desc or usage-asc</param>
+            <param name="skip"></param>
+            <param name="take"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryConceptDuplicateGroupsAsync(System.Int32)">
+            <summary>
+            groups of probably duplicate concepts
+            </summary>
+            <param name="maxGroups"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemLiteraryTagsAsync(System.Int32)">
             <summary>
             approved literary tags of a poem
@@ -25447,6 +25567,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -25736,6 +25859,27 @@
             <param name="catId"></param>
             <param name="destCatId"></param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._ConceptDuplicateKey(System.String)">
+            <summary>
+            a comparison key for finding duplicate concepts: unifies Arabic/Persian letter forms, removes
+            diacritics, tatweel, ZWNJ, spaces and hyphens and strips simple plural endings (ها، های، ان)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryConceptsPageAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            a page of approved concepts for management: filtered by name/alias, with usage counts
+            </summary>
+            <param name="query">name filter (empty: all)</param>
+            <param name="sort">name (default), usage-desc or usage-asc</param>
+            <param name="skip"></param>
+            <param name="take"></param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryConceptDuplicateGroupsAsync(System.Int32)">
+            <summary>
+            groups of approved concepts which are probably the same (see _ConceptDuplicateKey), the most used groups first
+            </summary>
+            <param name="maxGroups"></param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._CorpusNormalizeWord(System.String)">
             <summary>

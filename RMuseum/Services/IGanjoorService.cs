@@ -1831,6 +1831,23 @@ namespace RMuseum.Services
         Task<RServiceResult<bool>> MergeLiteraryConceptsAsync(int sourceId, int targetId);
 
         /// <summary>
+        /// a page of approved concepts for management, with usage counts
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="sort">name, usage-desc or usage-asc</param>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryConceptListPage>> GetLiteraryConceptsPageAsync(string query, string sort, int skip, int take);
+
+        /// <summary>
+        /// groups of probably duplicate concepts
+        /// </summary>
+        /// <param name="maxGroups"></param>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryConceptDuplicateGroup[]>> GetLiteraryConceptDuplicateGroupsAsync(int maxGroups);
+
+        /// <summary>
         /// approved literary tags of a poem
         /// </summary>
         /// <param name="poemId"></param>

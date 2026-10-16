@@ -9,6 +9,11 @@
 <style>
     .ld-slot { display: flex; flex-wrap: wrap; gap: var(--up-space-2); align-items: center; margin-bottom: var(--up-space-2); }
     .ld-slot input[type=text] { flex: 1 1 160px; }
+    .ld-concept-tools { display: flex; gap: var(--up-space-2); margin: var(--up-space-2) 0; }
+    .ld-concept-tools input { flex: 1; }
+    .ld-pager { display: flex; gap: var(--up-space-2); align-items: center; margin: var(--up-space-2) 0; }
+    .ld-dup-group { border: 1px solid var(--up-border); border-radius: 8px; padding: var(--up-space-2); margin: var(--up-space-2) 0; }
+    .ld-dup-item { display: flex; gap: var(--up-space-2); align-items: center; justify-content: space-between; padding: 4px 0; }
     .ld-concept { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: var(--up-space-2); align-items: center; padding: var(--up-space-2) 0; border-top: 1px solid var(--up-border); }
     @@media (max-width: 720px) { .ld-concept { grid-template-columns: 1fr; } }
     .ld-pick-results { border: 1px solid var(--up-border); border-radius: var(--up-radius-sm); background: var(--up-surface); max-height: 200px; overflow-y: auto; }
@@ -61,10 +66,27 @@
 <div class="up-card">
     <h2 class="up-card__title">مفاهیم</h2>
     <p class="up-hint">نام‌های دیگر را با « | » جدا کنید. برای یکی‌کردن دو مفهوم تکراری از «ادغام در ...» استفاده کنید: همهٔ برچسب‌های مفهوم مبدأ به مقصد منتقل می‌شود و نام مبدأ به نام‌های دیگر مقصد افزوده می‌شود.</p>
-    <div class="up-field">
-        <input type="text" id="ld-concept-query" placeholder="جستجوی مفهوم" oninput="ldConceptSearch()" autocomplete="off" />
+    <div class="up-form-actions">
+        <a role="button" class="up-btn up-btn--sm up-btn--success" id="ld-tab-all" onclick="ldShowTab('all')">همهٔ مفاهیم</a>
+        <a role="button" class="up-btn up-btn--sm up-btn--ghost" id="ld-tab-dups" onclick="ldShowTab('dups')">تکراری‌های احتمالی</a>
     </div>
-    <div id="ld-concepts"></div>
+    <div id="ld-all-box">
+        <div class="ld-concept-tools">
+            <input type="text" id="ld-concept-query" placeholder="جستجوی مفهوم" oninput="ldConceptSearch()" autocomplete="off" />
+            <select id="ld-concept-sort" onchange="ldConceptSearch()">
+                <option value="name">الفبایی</option>
+                <option value="usage-desc">پرکاربردترین</option>
+                <option value="usage-asc">کم‌کاربردترین</option>
+            </select>
+        </div>
+        <div class="ld-pager" id="ld-pager-top"></div>
+        <div id="ld-concepts"></div>
+        <div class="ld-pager" id="ld-pager-bottom"></div>
+    </div>
+    <div id="ld-dups-box" style="display:none;">
+        <p class="up-hint">مفاهیمی که پس از یکسان‌سازی حروف، نیم‌فاصله، فاصله و جمع‌های ساده («ها»، «ان») یکی می‌شوند. روی «نگه‌دار» بزنید تا بقیهٔ اعضای همان گروه در آن ادغام شوند. اگر گروهی واقعاً تکراری نیست، آن را نادیده بگیرید.</p>
+        <div id="ld-dups"></div>
+    </div>
     <div id="ld-picker" style="display:none;">
         <p id="ld-picker-title"></p>
         <input type="text" id="ld-picker-query" oninput="ldPickerSearch()" autocomplete="off" />
@@ -240,17 +262,50 @@
     }
 
     // ----- concepts -----
+    var ldConceptSkip = 0;
+    var ldConceptTotal = 0;
+    var ldConceptPageSize = 50;
+
+    // a new search/sort: back to the first page
     function ldConceptSearch() {
         clearTimeout(ldTimer);
-        ldTimer = setTimeout(function () {
-            $.ajax({
-                type: 'GET',
-                url: '?handler=Concepts',
-                data: { query: $('#ld-concept-query').val() },
-                success: function (res) { ldConcepts = res; ldRenderConcepts(); },
-                error: function (e) { upShowError(e.responseText || String(e)); }
-            });
-        }, 250);
+        ldTimer = setTimeout(function () { ldConceptSkip = 0; ldConceptLoad(); }, 250);
+    }
+
+    // loads the current page
+    function ldConceptLoad() {
+        $.ajax({
+            type: 'GET',
+            url: '?handler=ConceptsPage',
+            data: { query: $('#ld-concept-query').val(), sort: $('#ld-concept-sort').val(), skip: ldConceptSkip },
+            success: function (res) {
+                ldConcepts = res.items || [];
+                ldConceptTotal = res.total || 0;
+                if (ldConcepts.length === 0 && ldConceptSkip > 0) { // the last item of the last page was merged away
+                    ldConceptSkip = Math.max(0, ldConceptSkip - ldConceptPageSize);
+                    ldConceptLoad();
+                    return;
+                }
+                ldRenderConcepts();
+                ldRenderPager();
+            },
+            error: function (e) { upShowError(e.responseText || String(e)); }
+        });
+    }
+
+    function ldRenderPager() {
+        var from = ldConceptTotal === 0 ? 0 : ldConceptSkip + 1;
+        var to = Math.min(ldConceptSkip + ldConceptPageSize, ldConceptTotal);
+        var h = '<a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="ldConceptPage(-1)"' + (ldConceptSkip <= 0 ? ' style="visibility:hidden"' : '') + '>« قبلی</a>';
+        h += '<span class="ld-muted">' + from + '–' + to + ' از ' + ldConceptTotal + '</span>';
+        h += '<a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="ldConceptPage(1)"' + (to >= ldConceptTotal ? ' style="visibility:hidden"' : '') + '>بعدی »</a>';
+        $('#ld-pager-top, #ld-pager-bottom').html(h);
+    }
+
+    function ldConceptPage(direction) {
+        ldConceptSkip = Math.max(0, ldConceptSkip + direction * ldConceptPageSize);
+        ldConceptLoad();
+        document.getElementById('ld-concept-query').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function ldRenderConcepts() {
@@ -261,6 +316,7 @@
             h += '<input type="text" class="lc-name" value="' + ldEsc(c.name) + '" />';
             h += '<input type="text" class="lc-aliases" value="' + ldEsc(c.aliases) + '" placeholder="نام‌های دیگر" />';
             h += '<div><span class="ld-muted lc-parent-name">' + (c.parentName ? 'والد: ' + ldEsc(c.parentName) : 'بدون والد') + '</span> ';
+            h += '<span class="ld-muted">· کاربرد: ' + (c.usageCount || 0) + (c.childCount ? ' · زیرمفهوم: ' + c.childCount : '') + '</span> ';
             h += '<a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="ldPickParent(' + i + ')">تغییر والد</a>';
             if (c.parentId) h += ' <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="ldClearParent(' + i + ')">حذف والد</a>';
             h += '</div><div>';
@@ -268,6 +324,62 @@
             h += '<a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="ldPickMerge(' + i + ')">ادغام در ...</a></div></div>';
         }
         $('#ld-concepts').html(h || '<p class="ld-muted">مفهومی پیدا نشد.</p>');
+    }
+
+    // ----- tabs and probable duplicates -----
+    var ldDupGroups = [];
+
+    function ldShowTab(tab) {
+        var dups = tab === 'dups';
+        $('#ld-all-box').toggle(!dups);
+        $('#ld-dups-box').toggle(dups);
+        $('#ld-tab-all').toggleClass('up-btn--success', !dups).toggleClass('up-btn--ghost', dups);
+        $('#ld-tab-dups').toggleClass('up-btn--success', dups).toggleClass('up-btn--ghost', !dups);
+        if (dups) ldLoadDuplicates();
+    }
+
+    function ldLoadDuplicates() {
+        $('#ld-dups').html('<p class="ld-muted">در حال بارگذاری...</p>');
+        $.ajax({
+            type: 'GET',
+            url: '?handler=ConceptDuplicates',
+            success: function (res) { ldDupGroups = res || []; ldRenderDuplicates(); },
+            error: function (e) { $('#ld-dups').empty(); upShowError(e.responseText || String(e)); }
+        });
+    }
+
+    function ldRenderDuplicates() {
+        var h = '';
+        for (var g = 0; g < ldDupGroups.length; g++) {
+            var items = ldDupGroups[g].items;
+            h += '<div class="ld-dup-group" id="dg' + g + '">';
+            for (var k = 0; k < items.length; k++) {
+                var it = items[k];
+                h += '<div class="ld-dup-item"><span>' + ldEsc(it.name) + ' <span class="ld-muted">· کاربرد: ' + it.usageCount +
+                    (it.childCount ? ' · زیرمفهوم: ' + it.childCount : '') + (it.parentName ? ' · والد: ' + ldEsc(it.parentName) : '') + '</span></span>';
+                h += '<a role="button" class="up-btn up-btn--sm up-btn--success" onclick="ldKeepInGroup(' + g + ', ' + k + ')">نگه‌دار</a></div>';
+            }
+            h += '<a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="$(\'#dg' + g + '\').remove()">نادیده</a></div>';
+        }
+        $('#ld-dups').html(h || '<p class="ld-muted">مورد تکراری احتمالی پیدا نشد.</p>');
+    }
+
+    async function ldKeepInGroup(g, keepIndex) {
+        var items = ldDupGroups[g].items;
+        var keep = items[keepIndex];
+        var others = items.filter(function (_, i) { return i !== keepIndex; });
+        var ok = await upConfirm('بقیهٔ مفاهیم این گروه (' + others.map(function (o) { return '«' + o.name + '»'; }).join('، ') + ') در «' + keep.name + '» ادغام شوند؟ این کار برگشت‌پذیر نیست.');
+        if (!ok) return;
+        for (var i = 0; i < others.length; i++) {
+            try {
+                await $.ajax({ type: 'POST', url: '?handler=Merge', data: { sourceId: others[i].id, targetId: keep.id } });
+            } catch (e) {
+                upShowError((e && e.responseText) || String(e));
+                return;
+            }
+        }
+        upToast('ادغام شد.');
+        $('#dg' + g).remove();
     }
 
     function ldSaveConcept(i) {
@@ -279,7 +391,7 @@
             url: '?handler=Concept',
             data: JSON.stringify(body),
             contentType: 'application/json; charset=utf-8',
-            success: function () { upToast('ذخیره شد.'); ldConceptSearch(); },
+            success: function () { upToast('ذخیره شد.'); ldConceptLoad(); },
             error: function (e) { upShowError(e.responseText || String(e)); }
         });
     }
@@ -308,7 +420,7 @@
                 type: 'POST',
                 url: '?handler=Merge',
                 data: { sourceId: ldConcepts[i].id, targetId: picked.id },
-                success: function () { upToast('ادغام شد.'); ldConceptSearch(); },
+                success: function () { upToast('ادغام شد.'); ldConceptLoad(); },
                 error: function (e) { upShowError(e.responseText || String(e)); }
             });
         });
@@ -352,6 +464,6 @@
     $(document).ready(function () {
         ldRenderSuggested();
         ldRenderApproved();
-        ldConceptSearch();
+        ldConceptLoad();
     });
 </script>
