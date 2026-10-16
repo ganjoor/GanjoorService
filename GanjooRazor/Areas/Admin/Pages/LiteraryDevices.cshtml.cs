@@ -110,11 +110,10 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// </summary>
         public async Task<IActionResult> OnPostImportCorpusAsync([FromBody] LiteraryCorpusImportFile file, string urlPrefix, bool dryRun)
         {
-            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)))
+            using (HttpClient secureClient = new HttpClient(new GanjoorReloginHandler(Request, Response)) { Timeout = TimeSpan.FromMinutes(10) })
             {
                 if (await GanjoorSessionChecker.PrepareClient(secureClient, Request, Response))
                 {
-                    secureClient.Timeout = TimeSpan.FromMinutes(10);
                     var response = await secureClient.PostAsync(
                         $"{APIRoot.Url}/api/ganjoor/literary/import/corpus?urlPrefix={Uri.EscapeDataString(urlPrefix ?? "/hafez/ghazal/")}&dryRun={dryRun.ToString().ToLowerInvariant()}",
                         new StringContent(JsonConvert.SerializeObject(file), Encoding.UTF8, "application/json"));
