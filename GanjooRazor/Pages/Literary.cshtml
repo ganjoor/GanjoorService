@@ -1,0 +1,217 @@
+﻿@page "/literary"
+@model GanjooRazor.Pages.LiteraryModel
+@{
+    Layout = "_Layout";
+}
+@if (!string.IsNullOrEmpty(Model.LastError))
+{
+    @Model.LastError
+}
+else
+{
+<partial name="_SearchHeaderPartial" model="@(new _SearchHeaderPartialModel(){ Poets = Model.Poets, SelectedPoetId = 0 })" />
+
+        <div id="fa">
+
+            <partial name="_InlineLoginPartial" model="Model" />
+
+            <div id="maincnt">
+                <div class="poem">
+
+                    <style>
+                        .lit-st-nav { margin: 8px 0 14px; font-size: 90%; }
+                        .lit-st-nav a { margin-left: 10px; }
+                        .lit-st-filter { margin: 8px 0 14px; }
+                        .lit-st-table { border-collapse: collapse; width: 100%; max-width: 640px; }
+                        .lit-st-table th, .lit-st-table td { border-bottom: 1px solid rgba(128,128,128,.25); padding: 5px 8px; text-align: right; }
+                        .lit-st-table td.num { text-align: center; width: 90px; }
+                        .lit-st-concepts { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+                        .lit-st-concepts li span { opacity: .65; font-size: 85%; }
+                        .lit-st-item { border-top: 1px solid rgba(128,128,128,.25); padding: 10px 0; }
+                        .lit-st-verse { font-size: 110%; line-height: 2; }
+                        .lit-st-verse mark { background: rgba(255,200,0,.35); color: inherit; padding: 0 2px; border-radius: 3px; }
+                        .lit-st-meta { font-size: 85%; opacity: .8; }
+                        .lit-st-parts { font-size: 90%; margin-top: 4px; }
+                        .lit-st-pager { margin: 14px 0; display: flex; gap: 14px; align-items: center; }
+                    </style>
+
+                    <h2>@ViewData["Title"]</h2>
+
+                    <div class="lit-st-nav">
+                        @if (Model.DeviceId > 0 || Model.ConceptId > 0)
+                        {
+                            <a href="@Model.Link(device: 0, concept: 0, page: 1)">« همهٔ آرایه‌ها</a>
+                        }
+                        @if (Model.DeviceId > 0 && Model.ConceptId > 0)
+                        {
+                            <a href="@Model.Link(concept: 0, page: 1)">« همهٔ مفهوم‌های @Model.Device.Name</a>
+                        }
+                    </div>
+
+                    @if (Model.Overview != null && Model.Overview.Poets != null && Model.Overview.Poets.Length > 0)
+                    {
+                        <div class="lit-st-filter">
+                            شاعر:
+                            @if (Model.PoetId == 0)
+                            {
+                                <b>همه</b>
+                            }
+                            else
+                            {
+                                <a href="@Model.Link(poet: 0, page: 1)">همه</a>
+                            }
+                            @foreach (var p in Model.Overview.Poets.Take(12))
+                            {
+                                <text> · </text>
+                                @if (p.PoetId == Model.PoetId)
+                                {
+                                    <b>@p.Name</b>
+                                }
+                                else
+                                {
+                                    <a href="@Model.Link(poet: p.PoetId, page: 1)">@p.Name</a>
+                                }
+                                <span class="lit-st-meta">(@p.TagCount.ToString("N0"))</span>
+                            }
+                        </div>
+                    }
+
+                    @if (Model.Tags == null)
+                    {
+                        <p>
+                            @Model.Overview.TotalTags.ToString("N0") آرایه در @Model.Overview.TotalPoems.ToString("N0") شعر@(Model.PoetName != null ? " از " + Model.PoetName : "") برچسب‌گذاری شده است.
+                        </p>
+
+                        <table class="lit-st-table">
+                            <tr><th>آرایه</th><th class="num">تعداد</th><th class="num">شعر</th></tr>
+                            @foreach (var d in Model.Overview.Devices)
+                            {
+                                @if (Model.DevicesById.TryGetValue(d.DeviceId, out var dev))
+                                {
+                                    <tr>
+                                        <td><a href="@Model.Link(device: d.DeviceId, page: 1)" title="@dev.Definition">@dev.Name</a></td>
+                                        <td class="num">@d.TagCount.ToString("N0")</td>
+                                        <td class="num">@d.PoemCount.ToString("N0")</td>
+                                    </tr>
+                                }
+                            }
+                        </table>
+
+                        @if (Model.Overview.TopConcepts != null && Model.Overview.TopConcepts.Length > 0)
+                        {
+                            <h3>پرکاربردترین مفهوم‌ها</h3>
+                            <ul class="lit-st-concepts">
+                                @foreach (var c in Model.Overview.TopConcepts)
+                                {
+                                    <li><a href="@Model.Link(concept: c.ConceptId, page: 1)">@c.Name</a> <span>@c.UsageCount.ToString("N0")</span></li>
+                                }
+                            </ul>
+                        }
+                    }
+                    else
+                    {
+                        @if (Model.Device != null && !string.IsNullOrEmpty(Model.Device.Definition))
+                        {
+                            <p>@Model.Device.Definition</p>
+                        }
+
+                        @if (Model.DeviceTopConcepts.Length > 0 && Model.ConceptId == 0)
+                        {
+                            <h3>پرکاربردترین مفهوم‌ها در «@Model.Device.Name»</h3>
+                            <ul class="lit-st-concepts">
+                                @foreach (var c in Model.DeviceTopConcepts)
+                                {
+                                    <li><a href="@Model.Link(concept: c.ConceptId, page: 1)">@c.Name</a> <span>@c.UsageCount.ToString("N0")</span></li>
+                                }
+                            </ul>
+                        }
+
+                        <p class="lit-st-meta">@Model.Tags.Total.ToString("N0") مورد</p>
+
+                        @foreach (var item in Model.Tags.Items)
+                        {
+                            <div class="lit-st-item">
+                                <div class="lit-st-meta">
+                                    <a href="@item.PoemFullUrl">@item.PoemFullTitle</a>
+                                    @if (item.CoupletIndex > 0)
+                                    {
+                                        <text> · بیت @item.CoupletIndex</text>
+                                    }
+                                    @if (Model.Device == null && Model.DevicesById.TryGetValue(item.DeviceId, out var itemDevice))
+                                    {
+                                        <text> · </text><a href="@Model.Link(device: item.DeviceId, page: 1)">@itemDevice.Name</a>
+                                    }
+                                    @if (item.Uncertain)
+                                    {
+                                        <text> · نامطمئن</text>
+                                    }
+                                </div>
+                                @if (!string.IsNullOrEmpty(item.Hemistich1))
+                                {
+                                    <div class="lit-st-verse">
+                                        @Html.Raw(Model.MarkedHemistich(item, 1))
+                                        @if (!string.IsNullOrEmpty(item.Hemistich2))
+                                        {
+                                            <text> — </text>@Html.Raw(Model.MarkedHemistich(item, 2))
+                                        }
+                                    </div>
+                                }
+                                @if (item.Parts != null && item.Parts.Length > 0)
+                                {
+                                    <div class="lit-st-parts">
+                                        @foreach (var part in item.Parts)
+                                        {
+                                            <span>
+                                                @part.SlotName:
+                                                @if (!string.IsNullOrEmpty(part.Words) && part.Words != part.ConceptName)
+                                                {
+                                                    @part.Words
+                                                }
+                                                @if (part.ConceptId != null && !string.IsNullOrEmpty(part.ConceptName))
+                                                {
+                                                    @if (!string.IsNullOrEmpty(part.Words) && part.Words != part.ConceptName)
+                                                    {
+                                                        <text> ← </text>
+                                                    }
+                                                    <a href="@Model.Link(concept: part.ConceptId.Value, page: 1)">@part.ConceptName</a>
+                                                }
+                                            </span>
+                                            <text>&nbsp;&nbsp;</text>
+                                        }
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(item.Note))
+                                {
+                                    <div class="lit-st-parts lit-st-meta">@item.Note</div>
+                                }
+                            </div>
+                        }
+
+                        @if (Model.PageCount > 1)
+                        {
+                            <div class="lit-st-pager">
+                                @if (Model.PageNumber > 1)
+                                {
+                                    <a href="@Model.Link(page: Model.PageNumber - 1)">« قبلی</a>
+                                }
+                                <span>صفحهٔ @Model.PageNumber از @Model.PageCount</span>
+                                @if (Model.PageNumber < Model.PageCount)
+                                {
+                                    <a href="@Model.Link(page: Model.PageNumber + 1)">بعدی »</a>
+                                }
+                            </div>
+                        }
+                    }
+
+                </div>
+            </div>
+
+            <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true}) />
+
+        </div>
+
+        @if (ViewData["TrackingScript"] != null && !string.IsNullOrEmpty(ViewData["TrackingScript"].ToString()))
+        {
+            @Html.Raw(ViewData["TrackingScript"])
+        }
+}

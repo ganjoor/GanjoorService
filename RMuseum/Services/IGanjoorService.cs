@@ -1848,6 +1848,33 @@ namespace RMuseum.Services
         Task<RServiceResult<LiteraryConceptDuplicateGroup[]>> GetLiteraryConceptDuplicateGroupsAsync(int maxGroups);
 
         /// <summary>
+        /// summary statistics of literary tags (optionally only for one poet)
+        /// </summary>
+        /// <param name="poetId">0 = all poets</param>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryStatsOverview>> GetLiteraryStatsOverviewAsync(int poetId);
+
+        /// <summary>
+        /// the most used concepts of one device
+        /// </summary>
+        /// <param name="deviceId"></param>
+        /// <param name="poetId"></param>
+        /// <param name="take"></param>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryStatsConcept[]>> GetLiteraryDeviceTopConceptsAsync(int deviceId, int poetId, int take);
+
+        /// <summary>
+        /// tags of a device and/or a concept (with its descendants), with their couplets
+        /// </summary>
+        /// <param name="deviceId">0 = any</param>
+        /// <param name="conceptId">0 = any</param>
+        /// <param name="poetId">0 = all poets</param>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryStatsTagPage>> GetLiteraryStatsTagsAsync(int deviceId, int conceptId, int poetId, int skip, int take);
+
+        /// <summary>
         /// approved literary tags of a poem
         /// </summary>
         /// <param name="poemId"></param>

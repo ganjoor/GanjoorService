@@ -2872,6 +2872,49 @@
             </summary>
             <param name="ganjoorService"></param>
         </member>
+        <member name="T:RMuseum.Controllers.GanjoorLiteraryStatsController">
+            <summary>
+            public statistics and browsing of literary tags
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryStatsController.GetOverview(System.Int32)">
+            <summary>
+            summary statistics (devices, most used concepts, poets)
+            </summary>
+            <param name="poetId">0 = all poets</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryStatsController.GetDeviceTopConcepts(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            the most used concepts of a device
+            </summary>
+            <param name="deviceId"></param>
+            <param name="poetId"></param>
+            <param name="take"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryStatsController.GetTags(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            tags of a device and/or a concept (with its descendants), a page at a time
+            </summary>
+            <param name="deviceId">0 = any</param>
+            <param name="conceptId">0 = any</param>
+            <param name="poetId">0 = all poets</param>
+            <param name="skip"></param>
+            <param name="take"></param>
+            <returns></returns>
+        </member>
+        <member name="F:RMuseum.Controllers.GanjoorLiteraryStatsController._ganjoorService">
+            <summary>
+            Ganjoor Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryStatsController.#ctor(RMuseum.Services.IGanjoorService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="ganjoorService"></param>
+        </member>
         <member name="T:RMuseum.Controllers.GanjoorLiteraryTagSourceController">
             <summary>
             sources of imported literary tags (academic corpora, books, ...)
@@ -13170,6 +13213,216 @@
             display order
             </summary>
         </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryStatsDevice">
+            <summary>
+            how many tags/poems a device has
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsDevice.DeviceId">
+            <summary>
+            device id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsDevice.TagCount">
+            <summary>
+            number of tags
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsDevice.PoemCount">
+            <summary>
+            number of distinct poems
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryStatsConcept">
+            <summary>
+            how many times a concept is used
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsConcept.ConceptId">
+            <summary>
+            concept id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsConcept.Name">
+            <summary>
+            concept name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsConcept.UsageCount">
+            <summary>
+            number of tag parts which use it
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryStatsPoet">
+            <summary>
+            how many tags a poet's poems have
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsPoet.PoetId">
+            <summary>
+            poet id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsPoet.Name">
+            <summary>
+            poet name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsPoet.TagCount">
+            <summary>
+            number of tags
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryStatsOverview">
+            <summary>
+            summary statistics of literary tags (optionally for one poet)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsOverview.TotalTags">
+            <summary>
+            total tags
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsOverview.TotalPoems">
+            <summary>
+            total distinct poems with tags
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsOverview.Devices">
+            <summary>
+            per device counts, the most used first
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsOverview.TopConcepts">
+            <summary>
+            the most used concepts
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsOverview.Poets">
+            <summary>
+            poets with tags (not filtered by the requested poet, for a filter list)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryStatsTagPart">
+            <summary>
+            one slot value of a listed tag
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagPart.SlotName">
+            <summary>
+            slot name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagPart.Words">
+            <summary>
+            the located words (when the part is located in the couplet) or the free text
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagPart.ConceptName">
+            <summary>
+            concept name (if any)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagPart.ConceptId">
+            <summary>
+            concept id (if any)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagPart.Misra">
+            <summary>
+            1 or 2 when located in a hemistich
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagPart.WordStart">
+            <summary>
+            first word of the located range (1 based)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagPart.WordEnd">
+            <summary>
+            last word of the located range (1 based)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryStatsTagItem">
+            <summary>
+            a tag in a listing: where it is, its couplet and its parts
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.TagId">
+            <summary>
+            tag id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.DeviceId">
+            <summary>
+            device id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.PoemId">
+            <summary>
+            poem id
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.PoemFullTitle">
+            <summary>
+            poem full title
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.PoemFullUrl">
+            <summary>
+            poem url
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.PoetName">
+            <summary>
+            poet name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.CoupletIndex">
+            <summary>
+            couplet number (1 based as in the editor), 0 = whole poem
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.Hemistich1">
+            <summary>
+            first hemistich of the couplet
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.Hemistich2">
+            <summary>
+            second hemistich of the couplet
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.Uncertain">
+            <summary>
+            not certain
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.Note">
+            <summary>
+            note
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.Parts">
+            <summary>
+            parts
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryStatsTagPage">
+            <summary>
+            a page of listed tags
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagPage.Total">
+            <summary>
+            total matching tags
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagPage.Items">
+            <summary>
+            items of the page
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.LiteraryTagSource">
             <summary>
             where a set of imported literary tags comes from (an academic corpus, a book, ...). Tags point to it
@@ -23162,6 +23415,33 @@
             <param name="maxGroups"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryStatsOverviewAsync(System.Int32)">
+            <summary>
+            summary statistics of literary tags (optionally only for one poet)
+            </summary>
+            <param name="poetId">0 = all poets</param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryDeviceTopConceptsAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            the most used concepts of one device
+            </summary>
+            <param name="deviceId"></param>
+            <param name="poetId"></param>
+            <param name="take"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryStatsTagsAsync(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            tags of a device and/or a concept (with its descendants), with their couplets
+            </summary>
+            <param name="deviceId">0 = any</param>
+            <param name="conceptId">0 = any</param>
+            <param name="poetId">0 = all poets</param>
+            <param name="skip"></param>
+            <param name="take"></param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemLiteraryTagsAsync(System.Int32)">
             <summary>
             approved literary tags of a poem
@@ -25570,6 +25850,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -25994,6 +26277,32 @@
             applies an approved literary tag suggestion to the live data (called by ModeratePoemCorrection)
             </summary>
             <returns>an error message, or null if applied</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryStatsOverviewAsync(System.Int32)">
+            <summary>
+            summary statistics of literary tags (optionally only for one poet)
+            </summary>
+            <param name="poetId">0 = all poets</param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryDeviceTopConceptsAsync(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            the most used concepts of one device (optionally for one poet)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._LiteraryConceptWithDescendantsAsync(System.Int32)">
+            <summary>
+            ids of a concept and all its descendants
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryStatsTagsAsync(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            tags of a device (or of a concept and its descendants), with the couplets, a page at a time
+            </summary>
+            <param name="deviceId">0 = any device</param>
+            <param name="conceptId">0 = any concept</param>
+            <param name="poetId">0 = all poets</param>
+            <param name="skip"></param>
+            <param name="take"></param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryTagSourcesAsync">
             <summary>
