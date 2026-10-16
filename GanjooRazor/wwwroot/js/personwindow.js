@@ -1,4 +1,4 @@
-// Generic inline-modal shell, loaded on every page (see _Layout.cshtml / _AdminLayout.cshtml),
+﻿// Generic inline-modal shell, loaded on every page (see _Layout.cshtml / _AdminLayout.cshtml),
 // used to replace what used to be four standalone pages: Person.cshtml (a person's profile),
 // People.cshtml (family-tree-roots index), PeopleGraph.cshtml (whole-site relationship graph) and
 // FamilyTree.cshtml (one person's family-tree chart). Those pages had no independent purpose of
@@ -228,6 +228,13 @@
         });
     }
 
+    // the source (corpus, book, ...) of imported literary tags; key is the tags' OriginRef
+    function openLiteraryTagSource(key) {
+        openModal(false);
+        loadInto('/LiteraryTagSourceWindow?key=' + encodeURIComponent(key));
+    }
+
+    window.LiteraryTagSourceWindow = { open: openLiteraryTagSource, close: closeModal };
     window.PersonWindow = { open: openPerson, close: closeModal, filterBook: filterBook, loadAllEvidence: loadAllEvidence };
     window.PeopleExplorer = { open: openExplorer, close: closeModal };
     window.FamilyTreeWindow = { open: openFamilyTree, close: closeModal };

@@ -39,7 +39,11 @@ namespace GanjooRazor.Pages
         public string Definition { get; set; }
         public bool Uncertain { get; set; }
         public string Note { get; set; }
-        public bool FromCorpus { get; set; }
+        /// <summary>
+        /// the source of an imported tag (null for tags added by editors or without a registered source)
+        /// </summary>
+        public string SourceKey { get; set; }
+        public string SourceName { get; set; }
         /// <summary>
         /// located words as "misra:start-end" separated by spaces (used by the page script to highlight them)
         /// </summary>
@@ -64,7 +68,10 @@ namespace GanjooRazor.Pages
         public bool Failed { get; set; }
         public bool Completed { get; set; }
         public List<LiteraryCoupletView> Couplets { get; set; } = new List<LiteraryCoupletView>();
-        public bool AnyFromCorpus { get; set; }
+        /// <summary>
+        /// the sources of the tags shown (distinct)
+        /// </summary>
+        public List<LiteraryTagSource> Sources { get; set; } = new List<LiteraryTagSource>();
     }
 
     public partial class GanjoorPageModel
@@ -90,6 +97,28 @@ namespace GanjooRazor.Pages
                 _literaryDevicesCacheTime = DateTime.Now;
             }
             return devices;
+        }
+
+        private static LiteraryTagSource[] _literarySourcesCache;
+        private static DateTime _literarySourcesCacheTime = DateTime.MinValue;
+
+        private async Task<LiteraryTagSource[]> GetLiterarySourcesCachedAsync()
+        {
+            lock (_literaryDevicesLock)
+            {
+                if (_literarySourcesCache != null && DateTime.Now - _literarySourcesCacheTime < TimeSpan.FromMinutes(10))
+                    return _literarySourcesCache;
+            }
+            var response = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/sources");
+            if (!response.IsSuccessStatusCode)
+                return Array.Empty<LiteraryTagSource>();
+            var sources = JsonConvert.DeserializeObject<LiteraryTagSource[]>(await response.Content.ReadAsStringAsync());
+            lock (_literaryDevicesLock)
+            {
+                _literarySourcesCache = sources;
+                _literarySourcesCacheTime = DateTime.Now;
+            }
+            return sources;
         }
 
         private static string[] LiteraryWords(string text)
@@ -134,6 +163,7 @@ namespace GanjooRazor.Pages
                     }
                 }
 
+                var sourceByKey = (await GetLiterarySourcesCachedAsync()).GroupBy(x => x.Key).ToDictionary(g => g.Key, g => g.First());
                 var deviceById = devices.ToDictionary(d => d.Id);
                 foreach (var group in tags.GroupBy(t => t.CoupletIndex).OrderBy(g => g.Key))
                 {
@@ -157,8 +187,15 @@ namespace GanjooRazor.Pages
                             Definition = device.Definition,
                             Uncertain = tag.Uncertain,
                             Note = tag.Note,
-                            FromCorpus = tag.Origin == LiteraryTagOrigin.AcademicCorpus
+                            SourceKey = null
                         };
+                        if (!string.IsNullOrEmpty(tag.OriginRef) && sourceByKey.TryGetValue(tag.OriginRef, out var tagSource))
+                        {
+                            view.SourceKey = tagSource.Key;
+                            view.SourceName = tagSource.Name;
+                            if (!model.Sources.Any(x => x.Key == tagSource.Key))
+                                model.Sources.Add(tagSource);
+                        }
                         var spans = new List<string>();
                         foreach (var part in (tag.Parts ?? new List<PoemLiteraryTagPart>()).OrderBy(p => p.Order))
                         {
@@ -201,8 +238,6 @@ namespace GanjooRazor.Pages
                                 view.Lines.Add(new LiteraryLineView() { Slot = slot.Name, Value = value });
                         }
                         view.Spans = string.Join(" ", spans);
-                        if (view.FromCorpus)
-                            model.AnyFromCorpus = true;
                         couplet.Tags.Add(view);
                     }
                     if (couplet.Tags.Count > 0)

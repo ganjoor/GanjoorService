@@ -2839,6 +2839,37 @@
             </summary>
             <param name="ganjoorService"></param>
         </member>
+        <member name="T:RMuseum.Controllers.GanjoorLiteraryTagSourceController">
+            <summary>
+            sources of imported literary tags (academic corpora, books, ...)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryTagSourceController.GetSources">
+            <summary>
+            all sources
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryTagSourceController.SaveSource(RMuseum.Models.Ganjoor.LiteraryTagSource)">
+            <summary>
+            add (Id = 0) or update a source
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryTagSourceController.DeleteSource(System.Int32)">
+            <summary>
+            delete a source
+            </summary>
+        </member>
+        <member name="F:RMuseum.Controllers.GanjoorLiteraryTagSourceController._ganjoorService">
+            <summary>
+            Ganjoor Service
+            </summary>
+        </member>
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryTagSourceController.#ctor(RMuseum.Services.IGanjoorService)">
+            <summary>
+            constructor
+            </summary>
+            <param name="ganjoorService"></param>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorPoetSuggestedPhotosController.GetPoetSuggestedPhotosAsync(System.Int32)">
             <summary>
             returns list of suggested photos for a poet
@@ -4479,6 +4510,11 @@
             comment reactions
             </summary>
         </member>
+        <member name="P:RMuseum.DbContext.RMuseumDbContext.LiteraryTagSources">
+            <summary>
+            literary tag sources
+            </summary>
+        </member>
         <member name="T:RMuseum.Migrations.PictureFileExtUrl">
             <inheritdoc />
         </member>
@@ -5389,6 +5425,18 @@
             <inheritdoc />
         </member>
         <member name="M:RMuseum.Migrations.LiteraryDevicesModels.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:RMuseum.Migrations.AddLiterarySource">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddLiterarySource.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddLiterarySource.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:RMuseum.Migrations.AddLiterarySource.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
             <inheritdoc />
         </member>
         <member name="T:RMuseum.Models.Accounting.DonationExpenditure">
@@ -13017,6 +13065,52 @@
         <member name="P:RMuseum.Models.Ganjoor.LiteraryDeviceSlot.Order">
             <summary>
             display order
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.LiteraryTagSource">
+            <summary>
+            where a set of imported literary tags comes from (an academic corpus, a book, ...). Tags point to it
+            through PoemLiteraryTag.OriginRef == Key, so a new source needs a row here, not new code.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagSource.Key">
+            <summary>
+            the OriginRef value used by the tags of this source (unique)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagSource.Name">
+            <summary>
+            short name shown next to a tag (e.g. «پیکره»)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagSource.Title">
+            <summary>
+            full title of the work
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagSource.Authors">
+            <summary>
+            authors, one per line
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagSource.Url">
+            <summary>
+            link to the work (DOI, publisher page, ...)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagSource.Description">
+            <summary>
+            paragraphs describing the work and Ganjoor's use of it, separated by blank lines
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagSource.License">
+            <summary>
+            license name (e.g. MIT)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryTagSource.LicenseText">
+            <summary>
+            full license/permission text, shown as is
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PersonAffiliationType">
@@ -22969,6 +23063,26 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryTagSourcesAsync">
+            <summary>
+            literary tag sources
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.SaveLiteraryTagSourceAsync(RMuseum.Models.Ganjoor.LiteraryTagSource)">
+            <summary>
+            save literary tag source
+            </summary>
+            <param name="source"></param>
+            <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.IGanjoorService.DeleteLiteraryTagSourceAsync(System.Int32)">
+            <summary>
+            delete literary tag source
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="T:RMuseum.Services.IGanjoorTranslationService">
             <summary>
             translation service implementation
@@ -25330,6 +25444,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -25733,6 +25850,21 @@
             applies an approved literary tag suggestion to the live data (called by ModeratePoemCorrection)
             </summary>
             <returns>an error message, or null if applied</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryTagSourcesAsync">
+            <summary>
+            sources of imported literary tags
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.SaveLiteraryTagSourceAsync(RMuseum.Models.Ganjoor.LiteraryTagSource)">
+            <summary>
+            adds (Id = 0) or updates a source
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.DeleteLiteraryTagSourceAsync(System.Int32)">
+            <summary>
+            deletes a source (the tags that refer to it stay)
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.FindCategoryPoemsRhythms(System.Int32,System.Boolean,System.String)">
             <summary>

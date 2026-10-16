@@ -1851,6 +1851,26 @@ namespace RMuseum.Services
         /// <returns></returns>
         Task<RServiceResult<bool>> DeletePoemLiteraryTagAsync(int id);
 
+        /// <summary>
+        /// literary tag sources
+        /// </summary>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryTagSource[]>> GetLiteraryTagSourcesAsync();
+
+        /// <summary>
+        /// save literary tag source
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryTagSource>> SaveLiteraryTagSourceAsync(LiteraryTagSource source);
+
+        /// <summary>
+        /// delete literary tag source
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<RServiceResult<bool>> DeleteLiteraryTagSourceAsync(int id);
+
 
     }
 }

@@ -47,9 +47,9 @@
                     {
                         <span class="lit-unc">(نامطمئن)</span>
                     }
-                    @if (tag.FromCorpus)
+                    @if (!string.IsNullOrEmpty(tag.SourceKey))
                     {
-                        <a class="lit-src" href="/literary-corpus" title="برگرفته از پیکرهٔ متون ادبی فارسی" onclick="event.stopPropagation()">پیکره</a>
+                        <a class="lit-src" href="javascript:void(0)" title="منبع این آرایه" data-src="@tag.SourceKey" onclick="event.stopPropagation(); LiteraryTagSourceWindow.open(this.getAttribute('data-src')); return false;">@tag.SourceName</a>
                     }
                     <div class="lit-lines">
                         @foreach (var line in tag.Lines)
@@ -70,8 +70,8 @@
         <p class="lit-hint">آرایه‌گذاری این شعر هنوز کامل نشده؛ ممکن است آرایه‌های دیگری هم در آن باشد.
             <a href="/User/Editor?id=@Model.PoemId#literary-section">پیشنهاد آرایه</a></p>
     }
-    @if (Model.AnyFromCorpus)
+    @foreach (var source in Model.Sources)
     {
-        <p class="lit-hint">بخشی از آرایه‌ها از <a href="/literary-corpus">پیکرهٔ متون ادبی فارسی</a> برگرفته شده است.</p>
+        <p class="lit-hint">بخشی از آرایه‌ها از «<a href="javascript:void(0)" data-src="@source.Key" onclick="LiteraryTagSourceWindow.open(this.getAttribute('data-src')); return false;">@source.Title</a>» برگرفته شده است.</p>
     }
 </div>

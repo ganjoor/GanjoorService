@@ -370,6 +370,9 @@ namespace RMuseum.DbContext
             builder.Entity<GanjoorComment>()
                .HasIndex(i => new { i.PoemId, i.CommentDate });
 
+
+            builder.Entity<LiteraryTagSource>().HasIndex(s => s.Key).IsUnique();
+
         }
 
 
@@ -866,6 +869,11 @@ namespace RMuseum.DbContext
         /// comment reactions
         /// </summary>
         public DbSet<GanjoorCommentReaction> GanjoorCommentReactions { get; set; }
+
+        /// <summary>
+        /// literary tag sources
+        /// </summary>
+        public DbSet<LiteraryTagSource> LiteraryTagSources { get; set; }
 
     }
 }
