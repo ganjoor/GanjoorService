@@ -851,7 +851,8 @@ namespace GanjooRazor.Areas.User.Pages
                     {
                         return new BadRequestObjectResult(await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(response));
                     }
-                    return new OkObjectResult(true);
+                    //the created device (with its slot ids), so the editor can offer it to its suggester at once
+                    return Content(await response.Content.ReadAsStringAsync(), "application/json");
                 }
                 return new BadRequestObjectResult("لطفاً از گنجور خارج و مجددا به آن وارد شوید.");
             }

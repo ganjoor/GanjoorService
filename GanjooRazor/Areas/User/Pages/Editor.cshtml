@@ -2844,24 +2844,8 @@ else
             <p class="up-hint" id="lit-device-help"></p>
         </div>
 
-        <div id="lit-slots"></div>
-
-        <div class="up-check-row">
-            <input type="checkbox" id="lit-uncertain" />
-            <label for="lit-uncertain">مطمئن نیستم</label>
-        </div>
-
-        <div class="up-field">
-            <label for="lit-note">توضیح (اختیاری)</label>
-            <textarea id="lit-note" rows="2"></textarea>
-        </div>
-
-        <a role="button" class="up-btn up-btn--ghost" onclick="litAddSuggestion(false)">➕ افزودن به فهرست پیشنهادها</a>
-
-        <hr />
-        <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="litToggleDeviceForm()">🆕 آرایه‌ام در فهرست نیست</a>
         <div id="lit-device-form" style="display:none;">
-            <p class="up-hint">نام و تعریف آرایه و جایگاه‌های آن را بنویسید (مثلاً در تشبیه: «مشبّه» و «مشبّه‌به»). پس از تأیید ناظر، آرایه برای همه قابل انتخاب می‌شود.</p>
+            <p class="up-hint">نام و تعریف آرایه و جایگاه‌های آن را بنویسید (مثلاً در تشبیه: «مشبّه» و «مشبّه‌به»). بعد از ارسال، خودتان می‌توانید بلافاصله از آرایه استفاده کنید؛ پس از تأیید ناظر برای همه قابل انتخاب می‌شود.</p>
             <div class="up-field">
                 <label for="litdev-name">نام آرایه</label>
                 <input type="text" id="litdev-name" />
@@ -2892,6 +2876,23 @@ else
             <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="litDevAddSlot()">➕ جایگاه</a>
             <a role="button" class="up-btn up-btn--success" onclick="litDevSubmit()">📨 ارسال پیشنهاد آرایه</a>
         </div>
+
+        <div id="lit-tag-fields">
+        <div id="lit-slots"></div>
+
+        <div class="up-check-row">
+            <input type="checkbox" id="lit-uncertain" />
+            <label for="lit-uncertain">مطمئن نیستم</label>
+        </div>
+
+        <div class="up-field">
+            <label for="lit-note">توضیح (اختیاری)</label>
+            <textarea id="lit-note" rows="2"></textarea>
+        </div>
+
+        <a role="button" class="up-btn up-btn--ghost" onclick="litAddSuggestion(false)">➕ افزودن به فهرست پیشنهادها</a>
+        </div>
+
     </div>
     <script>
         var litDevices = @Html.Raw(Model.LiteraryDevicesJson);
@@ -2938,7 +2939,14 @@ else
         }
 
         function litInit() {
-            var sel = $('#lit-device');
+            litBuildDeviceOptions(null);
+            litRenderExisting();
+            litRenderPending();
+            litDevAddSlot();
+        }
+
+        // the device combo: a group per category, and as its last item the way to define a device that is not listed
+        function litBuildDeviceOptions(selectedId) {
             var html = '<option value="">— انتخاب آرایه —</option>';
             for (var cat = 0; cat < litCategoryNames.length; cat++) {
                 var ds = litDevices.filter(function (d) { return d.category === cat; });
@@ -2947,13 +2955,20 @@ else
                 for (var i = 0; i < ds.length; i++) html += '<option value="' + ds[i].id + '">' + litEsc(ds[i].name) + (ds[i].status === 0 ? ' (پیشنهاد شما، در انتظار تأیید)' : '') + '</option>';
                 html += '</optgroup>';
             }
-            sel.html(html);
-            litRenderExisting();
-            litRenderPending();
-            litDevAddSlot();
+            html += '<option value="new">➕ تعریف آرایهٔ جدید…</option>';
+            $('#lit-device').html(html).val(selectedId ? String(selectedId) : '');
         }
 
         function litOnDeviceChange() {
+            var isNew = $('#lit-device').val() === 'new';
+            $('#lit-device-form').toggle(isNew);
+            $('#lit-tag-fields').toggle(!isNew);
+            if (isNew) {
+                litForm = { deviceId: null, slots: {} };
+                $('#lit-device-help').text('آرایه‌ای که در فهرست نیست را در کادر زیر تعریف کنید.');
+                litRenderSlots();
+                return;
+            }
             var id = parseInt($('#lit-device').val() || '0', 10);
             litForm = { deviceId: id || null, slots: {} };
             var d = litDevice(id);
@@ -3261,10 +3276,6 @@ else
 
         // ----- suggesting a new device -----
         var litDevSlotCount = 0;
-        function litToggleDeviceForm() {
-            $('#lit-device-form').toggle();
-        }
-
         function litDevAddSlot() {
             var id = litDevSlotCount++;
             var html = '<div class="lit-device-form-slot" id="litdev-slot-' + id + '">' +
@@ -3303,12 +3314,18 @@ else
                 data: JSON.stringify(device),
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
-                success: function () {
-                    upToast('پیشنهاد آرایه ثبت شد و پس از تأیید ناظر در فهرست قرار می‌گیرد.', 'success');
-                    $('#lit-device-form').hide();
+                success: function (created) {
+                    upToast('پیشنهاد آرایه ثبت شد. می‌توانید همین حالا از آن استفاده کنید؛ پس از تأیید ناظر برای همه در فهرست قرار می‌گیرد.', 'success');
                     $('#litdev-name, #litdev-definition, #litdev-example, #litdev-source').val('');
                     $('#litdev-slots').empty();
                     litDevAddSlot();
+                    if (created && created.id) {
+                        litDevices.push(created);
+                        litBuildDeviceOptions(created.id);
+                    } else {
+                        litBuildDeviceOptions(null);
+                    }
+                    litOnDeviceChange();
                 },
                 error: function (e) {
                     upShowError(e.responseText || String(e));
