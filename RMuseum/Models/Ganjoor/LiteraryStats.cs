@@ -91,6 +91,11 @@ namespace RMuseum.Models.Ganjoor
         public LiteraryStatsConcept[] TopConcepts { get; set; }
 
         /// <summary>
+        /// total number of concept uses in the counted tags (the base of the concepts' percentages)
+        /// </summary>
+        public int TotalConceptUses { get; set; }
+
+        /// <summary>
         /// poets with tags (not filtered by the requested poet, for a filter list)
         /// </summary>
         public LiteraryStatsPoet[] Poets { get; set; }

@@ -13302,6 +13302,11 @@
             the most used concepts
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsOverview.TotalConceptUses">
+            <summary>
+            total number of concept uses in the counted tags (the base of the concepts' percentages)
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsOverview.Poets">
             <summary>
             poets with tags (not filtered by the requested poet, for a filter list)
@@ -23440,6 +23445,7 @@
             <param name="deviceId"></param>
             <param name="poetId"></param>
             <param name="take"></param>
+            <param name="catId">0 = no category restriction</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryStatsTagsAsync(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
@@ -23451,6 +23457,7 @@
             <param name="poetId">0 = all poets</param>
             <param name="skip"></param>
             <param name="take"></param>
+            <param name="catId">0 = no category restriction</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.GetPoemLiteraryTagsAsync(System.Int32)">

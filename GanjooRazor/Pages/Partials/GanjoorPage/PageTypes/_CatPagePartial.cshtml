@@ -160,7 +160,11 @@
         function load() {
             fetch('?Handler=LiteraryStats&catId=@Model.GanjoorPage.PoetOrCat.Cat.Id')
                 .then(function (r) { return r.ok ? r.text() : ''; })
-                .then(function (html) { box.innerHTML = html; })
+                .then(function (html) {
+                    box.innerHTML = html;
+                    if (typeof plotChart === 'function')
+                        box.querySelectorAll('table.stats').forEach(function (table) { plotChart(table.id); });
+                })
                 .catch(function () { });
         }
         load();

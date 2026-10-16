@@ -1862,6 +1862,7 @@ namespace RMuseum.Services
         /// <param name="deviceId"></param>
         /// <param name="poetId"></param>
         /// <param name="take"></param>
+        /// <param name="catId">0 = no category restriction</param>
         /// <returns></returns>
         Task<RServiceResult<LiteraryStatsConcept[]>> GetLiteraryDeviceTopConceptsAsync(int deviceId, int poetId, int take, int catId = 0);
 
@@ -1873,6 +1874,7 @@ namespace RMuseum.Services
         /// <param name="poetId">0 = all poets</param>
         /// <param name="skip"></param>
         /// <param name="take"></param>
+        /// <param name="catId">0 = no category restriction</param>
         /// <returns></returns>
         Task<RServiceResult<LiteraryStatsTagPage>> GetLiteraryStatsTagsAsync(int deviceId, int conceptId, int poetId, int skip, int take, int catId = 0);
 

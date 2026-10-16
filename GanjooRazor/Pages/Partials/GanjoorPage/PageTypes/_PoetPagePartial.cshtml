@@ -45,7 +45,18 @@
         @Html.Raw(Model.GanjoorPage.HtmlText)
     </article>
 
-    @* Poet Tabs *@
+    @{
+        // The generated text of a poet's page already carries its own statistics section (with the tab bar) and,
+        // when the poet has quoted poems, the quoted-poems section. Repeating them here duplicated the ids
+        // "stats" and "quoteds" and showed an empty second "آمار" frame, so they are only a fallback now.
+        var pageText = Model.GanjoorPage.HtmlText ?? "";
+        bool pageHasStats = pageText.Contains("id=\"stats-section\"");
+        bool pageHasQuotes = pageText.Contains("id=\"quoteds\"");
+    }
+
+    @if (!pageHasStats)
+    {
+    @* Poet Tabs (fallback) *@
     <div class="poempretab" id="stats"></div>
     <div class="poemtab">
         <div class="poemtablinks active"><a href="#pretab">آمار</a></div>
@@ -63,7 +74,10 @@
         <p>آمار و اطلاعات مربوط به @Model.GanjoorPage.PoetOrCat.Poet.Nickname</p>
         <div id="literary-stats-placeholder"></div>
     </div>
+    }
 
+    @if (!pageHasQuotes)
+    {
     @* Quoted Poems Section *@
     <div class="poempretab" id="quoteds"></div>
     <div class="poemtab">
@@ -79,6 +93,7 @@
     <div class="related-images-frame poemtabcontent">
         <p>مشق‌های شعر از @Model.GanjoorPage.PoetOrCat.Poet.Nickname</p>
     </div>
+    }
 
     @* Word Counts Section *@
     <div class="poempretab" id="words"></div>
@@ -288,20 +303,24 @@
 <script>
     (function () {
         var box = document.getElementById('literary-stats-placeholder');
-        if (!box) return;
         // the statistics of this page are generated into #stats-section: the literary devices belong at its end
         var section = document.getElementById('stats-section');
-        if (section && !section.contains(box)) {
+        if (section && (!box || !section.contains(box))) {
             var moved = document.createElement('div');
             moved.id = 'literary-stats-placeholder';
             section.appendChild(moved);
-            box.parentNode.removeChild(box);
+            if (box) box.parentNode.removeChild(box);
             box = moved;
         }
+        if (!box) return;
         function load() {
             fetch('?Handler=LiteraryStats&poetId=@Model.GanjoorPage.PoetOrCat.Poet.Id')
                 .then(function (r) { return r.ok ? r.text() : ''; })
-                .then(function (html) { box.innerHTML = html; })
+                .then(function (html) {
+                    box.innerHTML = html;
+                    if (typeof plotChart === 'function')
+                        box.querySelectorAll('table.stats').forEach(function (table) { plotChart(table.id); });
+                })
                 .catch(function () { });
         }
         load();

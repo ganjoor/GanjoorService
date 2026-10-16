@@ -1,5 +1,11 @@
 ﻿@model GanjooRazor.Pages._LiteraryStatsPartialModel
+@using System.Globalization
 @using DNTPersianUtils.Core
+@{
+    string Pct(int part, int whole) => whole <= 0 ? "" : (part * 100.0 / whole).ToString("N2", new CultureInfo("fa-IR")).ToPersianNumbers();
+    string Fmt(int n) => RMuseum.Services.Implementation.LanguageUtils.FormatMoney(n);
+    string scopeText = Model.CatId > 0 ? "این بخش" : Model.PoetId > 0 ? "این سخنور" : "گنجور";
+}
 @if (Model.Failed || Model.Overview == null)
 {
     @if (!Model.Scoped)
@@ -12,50 +18,62 @@
 {
     @if (!Model.Scoped)
     {
-        <div id="literary-stats-section">
-            <h2>آرایه‌های ادبی</h2>
-            <p>هنوز آرایه‌ای ثبت نشده است.</p>
-        </div>
+        <p>هنوز آرایه‌ای ادبی در گنجور برچسب‌گذاری نشده است.</p>
     }
     return;
 }
-<div id="literary-stats-section" class="lit-stats-section">
-    @if (Model.Scoped)
+<p>آمار آرایه‌های ادبی برچسب‌گذاری‌شدهٔ @scopeText (@Fmt(Model.Overview.TotalTags) مورد در @Fmt(Model.Overview.TotalPoems) شعر) به تفکیک نوع آرایه به شرح زیر است:</p>
+<table class="stats" id="literary-devices-stats" data-chart-sort="value-desc">
+<thead>
+<tr class="h">
+<td class="c1">ردیف</td>
+<td class="c2">آرایه</td>
+<td class="c3">تعداد</td>
+<td class="c4">درصد از کل</td>
+</tr>
+</thead>
+<tbody>
+@{
+    int row = 0;
+}
+@foreach (var d in Model.Overview.Devices)
+{
+    @if (Model.DevicesById.TryGetValue(d.DeviceId, out var device))
     {
-        <h3>آرایه‌های ادبی</h3>
+        <tr class="@(row % 2 == 0 ? "e" : "")">
+<td class="c1">@((row + 1).ToPersianNumbers())</td>
+<td class="c2"><a href="/literary?device=@d.DeviceId@Model.FilterQuery" title="@device.Definition">@device.Name</a></td>
+<td class="c3">@Fmt(d.TagCount)</td>
+<td class="c4">@Pct(d.TagCount, Model.Overview.TotalTags)</td>
+</tr>
+        row++;
     }
-    else
-    {
-        <h2>آرایه‌های ادبی</h2>
-    }
-    <p>
-        تاکنون @Model.Overview.TotalTags.ToPersianNumbers() آرایه در @Model.Overview.TotalPoems.ToPersianNumbers() شعر برچسب‌گذاری شده است.
-        روی نام هر آرایه یا مفهوم بزنید تا نمونه‌هایش را ببینید.
-    </p>
-
-    <table class="lit-stats-table">
-        <tr><th>آرایه</th><th>تعداد</th><th>شعر</th></tr>
-        @foreach (var d in Model.Overview.Devices)
-        {
-            @if (Model.DevicesById.TryGetValue(d.DeviceId, out var device))
-            {
-                <tr>
-                    <td><a href="/literary?device=@d.DeviceId@Model.FilterQuery" title="@device.Definition">@device.Name</a></td>
-                    <td>@d.TagCount.ToPersianNumbers()</td>
-                    <td>@d.PoemCount.ToPersianNumbers()</td>
-                </tr>
-            }
-        }
-    </table>
-
-    @if (Model.Overview.TopConcepts != null && Model.Overview.TopConcepts.Length > 0)
-    {
-        <h3>پرکاربردترین مفهوم‌ها</h3>
-        <ul class="lit-stats-concepts">
-            @foreach (var c in Model.Overview.TopConcepts)
-            {
-                <li><a href="/literary?concept=@c.ConceptId@Model.FilterQuery">@c.Name</a> <span>@c.UsageCount.ToPersianNumbers()</span></li>
-            }
-        </ul>
-    }
-</div>
+}
+</tbody>
+</table>
+@if (Model.Overview.TopConcepts != null && Model.Overview.TopConcepts.Length > 0)
+{
+    <p>پرکاربردترین مفهوم‌هایی که در آرایه‌های ادبی @scopeText به کار رفته‌اند به شرح زیر است:</p>
+    <table class="stats" id="literary-concepts-stats" data-chart-sort="value-desc">
+<thead>
+<tr class="h">
+<td class="c1">ردیف</td>
+<td class="c2">مفهوم</td>
+<td class="c3">تعداد</td>
+<td class="c4">درصد از کل</td>
+</tr>
+</thead>
+<tbody>
+@for (int i = 0; i < Model.Overview.TopConcepts.Length; i++)
+{
+    var c = Model.Overview.TopConcepts[i];
+    <tr class="@(i % 2 == 0 ? "e" : "")">
+<td class="c1">@((i + 1).ToPersianNumbers())</td>
+<td class="c2"><a href="/literary?concept=@c.ConceptId@Model.FilterQuery">@c.Name</a></td>
+<td class="c3">@Fmt(c.UsageCount)</td>
+<td class="c4">@Pct(c.UsageCount, Model.Overview.TotalConceptUses)</td>
+</tr>
+}
+</tbody>
+</table>
+}

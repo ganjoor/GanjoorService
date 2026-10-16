@@ -1,0 +1,6 @@
+﻿<Project>
+  <PropertyGroup>
+    <!-- audit only directly referenced packages for known vulnerabilities (hides NU1902/NU1903 of transitive packages) -->
+    <NuGetAuditMode>direct</NuGetAuditMode>
+  </PropertyGroup>
+</Project>

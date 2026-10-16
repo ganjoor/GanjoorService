@@ -152,7 +152,10 @@
                 type: 'GET',
                 url: '?Handler=LiteraryStats',
                 error: function () { box.innerHTML = '<p>در دریافت آمار آرایه‌های ادبی خطایی رخ داد.</p>'; },
-                success: function (data) { box.innerHTML = data; }
+                success: function (data) {
+                    box.innerHTML = data;
+                    box.querySelectorAll('table.stats').forEach(function (table) { plotChart(table.id); });
+                }
             });
         }
         (function () {

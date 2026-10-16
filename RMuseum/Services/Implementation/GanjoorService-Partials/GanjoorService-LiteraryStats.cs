@@ -77,6 +77,10 @@ namespace RMuseum.Services.Implementation
                     })
                     .ToListAsync()).OrderByDescending(d => d.TagCount).ToArray();
                 overview.TopConcepts = await _TopLiteraryConceptsAsync(tags, 40);
+                overview.TotalConceptUses = await _context.PoemLiteraryTagParts.AsNoTracking()
+                    .Where(p => p.ConceptId != null)
+                    .Join(tags, p => p.TagId, t => t.Id, (p, t) => p.ConceptId.Value)
+                    .CountAsync();
 
                 if (!includePoets || overview.TotalTags == 0)
                 {
