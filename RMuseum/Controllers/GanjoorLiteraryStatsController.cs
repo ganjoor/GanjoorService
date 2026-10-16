@@ -18,15 +18,17 @@ namespace RMuseum.Controllers
         /// summary statistics (devices, most used concepts, poets)
         /// </summary>
         /// <param name="poetId">0 = all poets</param>
+        /// <param name="catId">0 = no category restriction (a category includes its subcategories)</param>
+        /// <param name="includePoets">whether the list of poets having tags is needed</param>
         /// <returns></returns>
         [HttpGet]
         [Route("overview")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(LiteraryStatsOverview))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetOverview(int poetId = 0)
+        public async Task<IActionResult> GetOverview(int poetId = 0, int catId = 0, bool includePoets = true)
         {
-            var res = await _ganjoorService.GetLiteraryStatsOverviewAsync(poetId);
+            var res = await _ganjoorService.GetLiteraryStatsOverviewAsync(poetId, catId, includePoets);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -38,15 +40,16 @@ namespace RMuseum.Controllers
         /// <param name="deviceId"></param>
         /// <param name="poetId"></param>
         /// <param name="take"></param>
+        /// <param name="catId"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("device/{deviceId}/top-concepts")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(LiteraryStatsConcept[]))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetDeviceTopConcepts(int deviceId, int poetId = 0, int take = 30)
+        public async Task<IActionResult> GetDeviceTopConcepts(int deviceId, int poetId = 0, int take = 30, int catId = 0)
         {
-            var res = await _ganjoorService.GetLiteraryDeviceTopConceptsAsync(deviceId, poetId, take);
+            var res = await _ganjoorService.GetLiteraryDeviceTopConceptsAsync(deviceId, poetId, take, catId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
@@ -60,15 +63,16 @@ namespace RMuseum.Controllers
         /// <param name="poetId">0 = all poets</param>
         /// <param name="skip"></param>
         /// <param name="take"></param>
+        /// <param name="catId">0 = no category restriction</param>
         /// <returns></returns>
         [HttpGet]
         [Route("tags")]
         [AllowAnonymous]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(LiteraryStatsTagPage))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> GetTags(int deviceId = 0, int conceptId = 0, int poetId = 0, int skip = 0, int take = 20)
+        public async Task<IActionResult> GetTags(int deviceId = 0, int conceptId = 0, int poetId = 0, int skip = 0, int take = 20, int catId = 0)
         {
-            var res = await _ganjoorService.GetLiteraryStatsTagsAsync(deviceId, conceptId, poetId, skip, take);
+            var res = await _ganjoorService.GetLiteraryStatsTagsAsync(deviceId, conceptId, poetId, skip, take, catId);
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);

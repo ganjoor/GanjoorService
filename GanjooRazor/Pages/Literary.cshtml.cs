@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RMuseum.Models.Ganjoor;
 using RMuseum.Models.Ganjoor.ViewModels;
 using System;
@@ -16,7 +17,7 @@ namespace GanjooRazor.Pages
 {
     /// <summary>
     /// statistics and browsing of literary devices (آرایه‌های ادبی):
-    /// /literary (overview), /literary?device=ID, /literary?concept=ID (optionally with &amp;poet=ID and &amp;page=N)
+    /// /literary (overview), /literary?device=ID, /literary?concept=ID (optionally with &amp;poet=ID or &amp;cat=ID, and &amp;page=N)
     /// </summary>
     [OutputCache(PolicyName = "GanjoorPublicPage")]
     public class LiteraryModel : LoginPartialEnabledPageModel
@@ -55,14 +56,34 @@ namespace GanjooRazor.Pages
 
         public int PoetId { get; set; }
 
+        /// <summary>
+        /// category filter (the category and its subcategories)
+        /// </summary>
+        public int CatId { get; set; }
+
+        /// <summary>
+        /// title of the filtering category
+        /// </summary>
+        public string CatTitle { get; set; }
+
+        /// <summary>
+        /// address of the filtering category's page
+        /// </summary>
+        public string CatFullUrl { get; set; }
+
         public int PageNumber { get; set; } = 1;
 
-        public string PoetName => PoetId > 0 ? Overview?.Poets?.FirstOrDefault(p => p.PoetId == PoetId)?.Name : null;
+        public string PoetName => PoetId > 0 && CatId == 0 ? Overview?.Poets?.FirstOrDefault(p => p.PoetId == PoetId)?.Name : null;
 
         /// <summary>
         /// the pager markup (same circled numbers as the search and hashieha pages)
         /// </summary>
         public string PagingToolsHtml { get; set; }
+
+        /// <summary>
+        /// the name of what the list is restricted to (a category or a poet), if any
+        /// </summary>
+        public string FilterName => CatId > 0 ? CatTitle : PoetName;
 
         /// <summary>
         /// the poet of a listed tag (with image and page address), if known
@@ -100,13 +121,18 @@ namespace GanjooRazor.Pages
         /// <summary>
         /// a link to this page with some of the filters changed (0 clears a filter)
         /// </summary>
-        public string Link(int? device = null, int? concept = null, int? poet = null, int? page = null)
+        public string Link(int? device = null, int? concept = null, int? poet = null, int? page = null, int? cat = null)
         {
-            int d = device ?? DeviceId, c = concept ?? ConceptId, p = poet ?? PoetId, n = page ?? 1;
+            int d = device ?? DeviceId, c = concept ?? ConceptId, p = poet ?? PoetId, k = cat ?? CatId, n = page ?? 1;
+            if (poet.HasValue && poet.Value > 0 && !cat.HasValue)
+                k = 0;
+            if (cat.HasValue && cat.Value > 0 && !poet.HasValue)
+                p = 0;
             var parts = new List<string>();
             if (d > 0) parts.Add("device=" + d);
             if (c > 0) parts.Add("concept=" + c);
             if (p > 0) parts.Add("poet=" + p);
+            if (k > 0) parts.Add("cat=" + k);
             if (n > 1) parts.Add("page=" + n);
             return "/literary" + (parts.Count > 0 ? "?" + string.Join("&", parts) : "");
         }
@@ -139,17 +165,24 @@ namespace GanjooRazor.Pages
             return sb.ToString();
         }
 
-        public async Task<IActionResult> OnGetAsync(int device = 0, int concept = 0, int poet = 0, int page = 1)
+        public async Task<IActionResult> OnGetAsync(int device = 0, int concept = 0, int poet = 0, int page = 1, int cat = 0)
         {
             var maintenanceResult = TryGetMaintenanceModeResult();
             if (maintenanceResult != null)
                 return maintenanceResult;
+
+            // the overall overview lives in the /vazn page; this page lists the verses of a device or concept
+            if (device <= 0 && concept <= 0 && poet <= 0 && cat <= 0)
+                return Redirect("/vazn#literary-stats-tab-items");
 
             InitializeCommonPageState();
 
             DeviceId = Math.Max(0, device);
             ConceptId = Math.Max(0, concept);
             PoetId = Math.Max(0, poet);
+            CatId = Math.Max(0, cat);
+            if (CatId > 0)
+                PoetId = 0;
             PageNumber = Math.Max(1, Math.Min(page, 100000));
             ViewData["Title"] = "آرایه‌های ادبی";
 
@@ -171,13 +204,26 @@ namespace GanjooRazor.Pages
                 }
                 DevicesById = JsonConvert.DeserializeObject<LiteraryDevice[]>(await devicesResponse.Content.ReadAsStringAsync()).ToDictionary(d => d.Id);
 
-                var overviewResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/stats/overview?poetId={PoetId}");
+                var overviewResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/stats/overview?poetId={PoetId}&catId={CatId}&includePoets={(PoetId > 0 ? "true" : "false")}");
                 if (!overviewResponse.IsSuccessStatusCode)
                 {
                     LastError = await ReadErrorMessageAsync(overviewResponse);
                     return Page();
                 }
                 Overview = JsonConvert.DeserializeObject<LiteraryStatsOverview>(await overviewResponse.Content.ReadAsStringAsync());
+
+                if (CatId > 0)
+                {
+                    var catResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/cat/{CatId}?poems=false&mainSections=false");
+                    if (!catResponse.IsSuccessStatusCode)
+                    {
+                        LastError = await ReadErrorMessageAsync(catResponse);
+                        return Page();
+                    }
+                    var catInfo = JObject.Parse(await catResponse.Content.ReadAsStringAsync()).ToObject<GanjoorPoetCompleteViewModel>();
+                    CatTitle = catInfo.Cat.Title;
+                    CatFullUrl = catInfo.Cat.FullUrl;
+                }
 
                 if (DeviceId > 0)
                 {
@@ -206,11 +252,11 @@ namespace GanjooRazor.Pages
                 {
                     if (DeviceId > 0)
                     {
-                        var topResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/stats/device/{DeviceId}/top-concepts?poetId={PoetId}&take=30");
+                        var topResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/stats/device/{DeviceId}/top-concepts?poetId={PoetId}&catId={CatId}&take=30");
                         if (topResponse.IsSuccessStatusCode)
                             DeviceTopConcepts = JsonConvert.DeserializeObject<LiteraryStatsConcept[]>(await topResponse.Content.ReadAsStringAsync());
                     }
-                    var tagsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/stats/tags?deviceId={DeviceId}&conceptId={ConceptId}&poetId={PoetId}&skip={(PageNumber - 1) * PageSize}&take={PageSize}");
+                    var tagsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/stats/tags?deviceId={DeviceId}&conceptId={ConceptId}&poetId={PoetId}&catId={CatId}&skip={(PageNumber - 1) * PageSize}&take={PageSize}");
                     if (!tagsResponse.IsSuccessStatusCode)
                     {
                         LastError = await ReadErrorMessageAsync(tagsResponse);
@@ -228,8 +274,8 @@ namespace GanjooRazor.Pages
                     title = $"آرایه‌های ادبی - مفهوم {Concept.Name}";
                 else
                     title = "آرایه‌های ادبی";
-                if (PoetName != null)
-                    title += " - " + PoetName;
+                if (FilterName != null)
+                    title += " - " + FilterName;
                 ViewData["Title"] = title;
                 if (Tags != null)
                     PagingToolsHtml = GeneratePagingBarHtml();

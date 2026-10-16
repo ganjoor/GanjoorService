@@ -3682,7 +3682,8 @@ mark {
 .lit-stats-table th:not(:first-child), .lit-stats-table td:not(:first-child) { text-align: center; width: 90px; }
 .lit-stats-concepts { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; }
 .lit-stats-concepts li span { opacity: .65; font-size: 85%; }
-.lit-stats-poets { margin: 8px 0; }
+.lit-stats-section { margin: 12px 0; }
+.lit-stats-section h3 { margin: 12px 0 6px; }
 
 /* literary devices browsing page (/literary) */
 .lit-st-nav { margin: 8px 0 14px; font-size: 90%; }

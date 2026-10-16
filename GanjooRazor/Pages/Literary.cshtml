@@ -32,38 +32,18 @@ else
                         }
                     </div>
 
-                    @if (Model.Overview != null && Model.Overview.Poets != null && Model.Overview.Poets.Length > 0)
+                    @if (Model.FilterName != null)
                     {
                         <div class="lit-st-filter">
-                            شاعر:
-                            @if (Model.PoetId == 0)
-                            {
-                                <b>همه</b>
-                            }
-                            else
-                            {
-                                <a href="@Model.Link(poet: 0, page: 1)">همه</a>
-                            }
-                            @foreach (var p in Model.Overview.Poets.Take(12))
-                            {
-                                <text> · </text>
-                                @if (p.PoetId == Model.PoetId)
-                                {
-                                    <b>@p.Name</b>
-                                }
-                                else
-                                {
-                                    <a href="@Model.Link(poet: p.PoetId, page: 1)">@p.Name</a>
-                                }
-                                <span class="lit-st-meta">(@p.TagCount.ToPersianNumbers())</span>
-                            }
+                            فقط آثار «@Model.FilterName»
+                            · <a href="@Model.Link(poet: 0, cat: 0, page: 1)">نمایش همه</a>
                         </div>
                     }
 
                     @if (Model.Tags == null)
                     {
                         <p>
-                            @Model.Overview.TotalTags.ToPersianNumbers() آرایه در @Model.Overview.TotalPoems.ToPersianNumbers() شعر@(Model.PoetName != null ? " از " + Model.PoetName : "") برچسب‌گذاری شده است.
+                            @Model.Overview.TotalTags.ToPersianNumbers() آرایه در @Model.Overview.TotalPoems.ToPersianNumbers() شعر@(Model.FilterName != null ? " از " + Model.FilterName : "") برچسب‌گذاری شده است.
                         </p>
 
                         <table class="lit-st-table">

@@ -1851,8 +1851,10 @@ namespace RMuseum.Services
         /// summary statistics of literary tags (optionally only for one poet)
         /// </summary>
         /// <param name="poetId">0 = all poets</param>
+        /// <param name="catId">0 = no category restriction (includes subcategories)</param>
+        /// <param name="includePoets">whether the list of poets having tags is needed</param>
         /// <returns></returns>
-        Task<RServiceResult<LiteraryStatsOverview>> GetLiteraryStatsOverviewAsync(int poetId);
+        Task<RServiceResult<LiteraryStatsOverview>> GetLiteraryStatsOverviewAsync(int poetId, int catId = 0, bool includePoets = true);
 
         /// <summary>
         /// the most used concepts of one device
@@ -1861,7 +1863,7 @@ namespace RMuseum.Services
         /// <param name="poetId"></param>
         /// <param name="take"></param>
         /// <returns></returns>
-        Task<RServiceResult<LiteraryStatsConcept[]>> GetLiteraryDeviceTopConceptsAsync(int deviceId, int poetId, int take);
+        Task<RServiceResult<LiteraryStatsConcept[]>> GetLiteraryDeviceTopConceptsAsync(int deviceId, int poetId, int take, int catId = 0);
 
         /// <summary>
         /// tags of a device and/or a concept (with its descendants), with their couplets
@@ -1872,7 +1874,7 @@ namespace RMuseum.Services
         /// <param name="skip"></param>
         /// <param name="take"></param>
         /// <returns></returns>
-        Task<RServiceResult<LiteraryStatsTagPage>> GetLiteraryStatsTagsAsync(int deviceId, int conceptId, int poetId, int skip, int take);
+        Task<RServiceResult<LiteraryStatsTagPage>> GetLiteraryStatsTagsAsync(int deviceId, int conceptId, int poetId, int skip, int take, int catId = 0);
 
         /// <summary>
         /// approved literary tags of a poem

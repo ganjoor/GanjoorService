@@ -61,6 +61,7 @@
     @* Stats Section *@
     <div class="related-images-frame poemtabcontent">
         <p>آمار و اطلاعات مربوط به @Model.GanjoorPage.PoetOrCat.Poet.Nickname</p>
+        <div id="literary-stats-placeholder"></div>
     </div>
 
     @* Quoted Poems Section *@
@@ -282,3 +283,28 @@
         </p>
     </div>
 }
+
+@* literary devices statistics: loaded when this section scrolls into view; nothing is displayed if no poem is tagged. *@
+<script>
+    (function () {
+        var box = document.getElementById('literary-stats-placeholder');
+        if (!box) return;
+        function load() {
+            fetch('?Handler=LiteraryStats&poetId=@Model.GanjoorPage.PoetOrCat.Poet.Id')
+                .then(function (r) { return r.ok ? r.text() : ''; })
+                .then(function (html) { box.innerHTML = html; })
+                .catch(function () { });
+        }
+        if ('IntersectionObserver' in window) {
+            var io = new IntersectionObserver(function (entries) {
+                if (entries.some(function (e) { return e.isIntersecting; })) {
+                    io.disconnect();
+                    load();
+                }
+            }, { rootMargin: '300px' });
+            io.observe(box);
+        } else {
+            load();
+        }
+    })();
+</script>

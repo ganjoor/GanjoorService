@@ -13,11 +13,22 @@ namespace RMuseum.Services.Implementation
     /// </summary>
     public partial class GanjoorService : IGanjoorService
     {
-        private IQueryable<PoemLiteraryTag> _LiteraryTagsOfPoet(int poetId)
+        /// <summary>
+        /// tags of a poet and/or of a category with all its subcategories (0 = no restriction)
+        /// </summary>
+        private async Task<IQueryable<PoemLiteraryTag>> _LiteraryTagsOfAsync(int poetId, int catId)
         {
             var tags = _context.PoemLiteraryTags.AsNoTracking().AsQueryable();
             if (poetId > 0)
                 tags = tags.Where(t => t.Poem.Cat.PoetId == poetId);
+            if (catId > 0)
+            {
+                string catUrl = await _context.GanjoorCategories.AsNoTracking().Where(c => c.Id == catId).Select(c => c.FullUrl).FirstOrDefaultAsync();
+                if (string.IsNullOrEmpty(catUrl))
+                    return tags.Where(t => false);
+                string prefix = catUrl + "/";
+                tags = tags.Where(t => t.Poem.Cat.FullUrl == catUrl || t.Poem.Cat.FullUrl.StartsWith(prefix));
+            }
             return tags;
         }
 
@@ -45,11 +56,13 @@ namespace RMuseum.Services.Implementation
         /// summary statistics of literary tags (optionally only for one poet)
         /// </summary>
         /// <param name="poetId">0 = all poets</param>
-        public async Task<RServiceResult<LiteraryStatsOverview>> GetLiteraryStatsOverviewAsync(int poetId)
+        /// <param name="catId">0 = no category restriction (a category includes its subcategories)</param>
+        /// <param name="includePoets">whether the list of poets having tags is needed</param>
+        public async Task<RServiceResult<LiteraryStatsOverview>> GetLiteraryStatsOverviewAsync(int poetId, int catId = 0, bool includePoets = true)
         {
             try
             {
-                var tags = _LiteraryTagsOfPoet(poetId);
+                var tags = await _LiteraryTagsOfAsync(poetId, catId);
                 var overview = new LiteraryStatsOverview
                 {
                     TotalTags = await tags.CountAsync(),
@@ -64,6 +77,12 @@ namespace RMuseum.Services.Implementation
                     })
                     .ToListAsync()).OrderByDescending(d => d.TagCount).ToArray();
                 overview.TopConcepts = await _TopLiteraryConceptsAsync(tags, 40);
+
+                if (!includePoets || overview.TotalTags == 0)
+                {
+                    overview.Poets = Array.Empty<LiteraryStatsPoet>();
+                    return new RServiceResult<LiteraryStatsOverview>(overview);
+                }
 
                 var poetCounts = await _context.PoemLiteraryTags.AsNoTracking()
                     .GroupBy(t => t.Poem.Cat.PoetId)
@@ -85,13 +104,13 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// the most used concepts of one device (optionally for one poet)
         /// </summary>
-        public async Task<RServiceResult<LiteraryStatsConcept[]>> GetLiteraryDeviceTopConceptsAsync(int deviceId, int poetId, int take)
+        public async Task<RServiceResult<LiteraryStatsConcept[]>> GetLiteraryDeviceTopConceptsAsync(int deviceId, int poetId, int take, int catId = 0)
         {
             try
             {
                 if (take <= 0 || take > 100)
                     take = 30;
-                var tags = _LiteraryTagsOfPoet(poetId).Where(t => t.DeviceId == deviceId);
+                var tags = (await _LiteraryTagsOfAsync(poetId, catId)).Where(t => t.DeviceId == deviceId);
                 return new RServiceResult<LiteraryStatsConcept[]>(await _TopLiteraryConceptsAsync(tags, take));
             }
             catch (Exception exp)
@@ -130,7 +149,8 @@ namespace RMuseum.Services.Implementation
         /// <param name="poetId">0 = all poets</param>
         /// <param name="skip"></param>
         /// <param name="take"></param>
-        public async Task<RServiceResult<LiteraryStatsTagPage>> GetLiteraryStatsTagsAsync(int deviceId, int conceptId, int poetId, int skip, int take)
+        /// <param name="catId">0 = no category restriction</param>
+        public async Task<RServiceResult<LiteraryStatsTagPage>> GetLiteraryStatsTagsAsync(int deviceId, int conceptId, int poetId, int skip, int take, int catId = 0)
         {
             try
             {
@@ -141,7 +161,7 @@ namespace RMuseum.Services.Implementation
                 if (skip < 0)
                     skip = 0;
 
-                var tags = _LiteraryTagsOfPoet(poetId);
+                var tags = await _LiteraryTagsOfAsync(poetId, catId);
                 if (deviceId > 0)
                     tags = tags.Where(t => t.DeviceId == deviceId);
                 if (conceptId > 0)

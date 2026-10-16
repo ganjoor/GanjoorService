@@ -144,13 +144,13 @@
 
         // literary devices statistics: loaded when their section scrolls into view (or at once for an old browser).
         // Keep the query of this request free of the letter "v": /vazn?v... is redirected to /simi.
-        function loadLiteraryStats(poetId) {
+        function loadLiteraryStats() {
             var box = document.getElementById('literary-stats-placeholder');
             if (!box) return;
             box.innerHTML = '<div class="bnumdiv"><img src="/image/loading.gif" alt="بارگذاری"/></div>';
             $.ajax({
                 type: 'GET',
-                url: '?Handler=LiteraryStats&poetId=' + String(poetId || 0),
+                url: '?Handler=LiteraryStats',
                 error: function () { box.innerHTML = '<p>در دریافت آمار آرایه‌های ادبی خطایی رخ داد.</p>'; },
                 success: function (data) { box.innerHTML = data; }
             });
@@ -162,12 +162,12 @@
                 var io = new IntersectionObserver(function (entries) {
                     if (entries.some(function (e) { return e.isIntersecting; })) {
                         io.disconnect();
-                        loadLiteraryStats(0);
+                        loadLiteraryStats();
                     }
                 }, { rootMargin: '300px' });
                 io.observe(box);
             } else {
-                loadLiteraryStats(0);
+                loadLiteraryStats();
             }
         })();
     </script>
