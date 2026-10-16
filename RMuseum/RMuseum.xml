@@ -26240,6 +26240,12 @@
             fields (and, while the device is still a suggestion, its slots) before approving
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._UnavailableLiteraryDeviceMessageAsync(System.Int32)">
+            <summary>
+            the reason a tag cannot be applied because its device is not usable: when the device is still only a
+            suggestion the moderator is told to approve it first
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SeedCoreLiteraryDevicesAsync">
             <summary>
             inserts the core devices of the initial list (see the draft list document) if they are not there yet

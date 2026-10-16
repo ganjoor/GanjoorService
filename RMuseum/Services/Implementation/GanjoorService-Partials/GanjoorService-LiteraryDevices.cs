@@ -200,6 +200,25 @@ namespace RMuseum.Services.Implementation
                         _context.LiteraryDeviceSlots.RemoveRange(dbDevice.Slots);
                         dbDevice.Slots = _CleanSlots(moderated.Slots);
                     }
+                    else
+                    {
+                        //an approved device's slots may only be changed while nothing refers to them (no tag, no pending suggestion);
+                        //the slots of core devices are referred to by key from the corpus import, so they are never changed
+                        var newSlots = _CleanSlots(moderated.Slots);
+                        var oldSlots = dbDevice.Slots.OrderBy(s => s.Order).ToList();
+                        bool same = newSlots.Count == oldSlots.Count
+                            && newSlots.Zip(oldSlots, (a, b) => a.Name == b.Name && a.Kind == b.Kind && a.Required == b.Required && a.AllowMultiple == b.AllowMultiple).All(x => x);
+                        if (!same)
+                        {
+                            if (dbDevice.IsCore)
+                                return new RServiceResult<LiteraryDevice>(null, "جایگاه‌های آرایه‌های پایه قابل تغییر نیست.");
+                            if (await _context.PoemLiteraryTags.AsNoTracking().AnyAsync(x => x.DeviceId == dbDevice.Id)
+                                || await _context.GanjoorPoemLiteraryTagCorrections.AsNoTracking().AnyAsync(x => x.DeviceId == dbDevice.Id))
+                                return new RServiceResult<LiteraryDevice>(null, "برای این آرایه پیش‌تر برچسب یا پیشنهاد برچسب ثبت شده است و جایگاه‌هایش دیگر قابل تغییر نیست.");
+                            _context.LiteraryDeviceSlots.RemoveRange(dbDevice.Slots);
+                            dbDevice.Slots = newSlots;
+                        }
+                    }
                 }
                 else if (!wasSuggestion)
                 {

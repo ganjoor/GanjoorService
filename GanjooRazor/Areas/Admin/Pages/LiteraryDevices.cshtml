@@ -204,15 +204,24 @@
             h += '<div class="up-field"><label>تعریف</label><textarea class="ld-def" rows="3">' + ldEsc(d.definition) + '</textarea></div>';
             h += '<div class="up-field"><label>نمونه</label><input type="text" class="ld-example" value="' + ldEsc(d.example) + '" /></div>';
             h += '<div class="up-field"><label>منبع</label><input type="text" class="ld-source" value="' + ldEsc(d.source) + '" /></div>';
+            if (d.isCore) {
+                h += '<p class="ld-muted">جایگاه‌های آرایه‌های پایه قابل تغییر نیست.</p>';
+            } else {
+                h += '<div class="ld-slots"><p><b>جایگاه‌ها</b> <span class="ld-muted">(تا وقتی برای این آرایه برچسبی ثبت نشده قابل تغییرند)</span></p>';
+                for (var s = 0; s < (d.slots || []).length; s++) h += ldSlotRow(d.slots[s]);
+                h += '</div><a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="$(\'#ad' + d.id + ' .ld-slots\').append(ldSlotRow(null))">➕ جایگاه</a> ';
+            }
             h += '<a role="button" class="up-btn up-btn--success up-btn--sm" onclick="ldSaveApproved(' + d.id + ', ' + (d.isCore ? 'true' : 'false') + ')">💾 ذخیره</a></details>';
         }
         box.html(h);
     }
 
     function ldSaveApproved(id, isCore) {
-        // the slots of an approved device cannot change; the stored ones are sent back only to pass validation
+        // the slots of a core device cannot change (the stored ones are sent back only to pass validation); the others
+        // are sent as edited and the server refuses the change if tags already refer to them
         var device = ldCollect($('#ad' + id), id, 1, isCore);
-        device.slots = ldApproved.filter(function (d) { return d.id === id; })[0].slots;
+        if (isCore)
+            device.slots = ldApproved.filter(function (d) { return d.id === id; })[0].slots;
         ldPost(device, function () { upToast('ذخیره شد.'); });
     }
 
