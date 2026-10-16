@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using RMuseum.Models.Auth.Memory;
 using RMuseum.Models.Ganjoor;
+using RSecurityBackend.Models.Auth.Memory;
 using RSecurityBackend.Models.Generic;
+using RSecurityBackend.Models.Notification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -124,6 +127,31 @@ namespace RMuseum.Services.Implementation
                 };
                 _context.LiteraryDevices.Add(dbDevice);
                 await _context.SaveChangesAsync();
+
+                //let the moderators know: nothing else shows them that a suggestion is waiting
+                try
+                {
+                    var moderators = await _appUserService.GetUsersHavingPermission(RMuseumSecurableItem.GanjoorEntityShortName, SecurableItem.ModifyOperationShortName);
+                    if (string.IsNullOrEmpty(moderators.ExceptionString)) //if not, do nothing!
+                    {
+                        foreach (var moderator in moderators.Result)
+                        {
+                            await _notificationService.PushNotification
+                                (
+                                    (Guid)moderator.Id,
+                                    "آرایهٔ ادبی پیشنهادی",
+                                    $"آرایهٔ «{dbDevice.Name}» پیشنهاد شده است. لطفاً در بخش <a href=\"https://ganjoor.net/Admin/LiteraryDevices\">آرایه‌ها و مفاهیم ادبی</a> آن را بررسی کنید. تا زمانی که تأیید نشود در فهرست آرایه‌های ویرایشگر دیده نمی‌شود.<br />" +
+                                    "توجه فرمایید که اگر مدیر دیگری پیش از شما به آن رسیدگی کرده باشد، آرایه دیگر در فهرست پیشنهادها نیست.",
+                                    NotificationType.ActionRequired
+                                );
+                        }
+                    }
+                }
+                catch
+                {
+                    //a failed notification must not fail the suggestion itself
+                }
+
                 return new RServiceResult<LiteraryDevice>(dbDevice);
             }
             catch (Exception exp)
@@ -198,6 +226,20 @@ namespace RMuseum.Services.Implementation
             {
                 return new RServiceResult<LiteraryDevice>(null, exp.ToString());
             }
+        }
+
+        /// <summary>
+        /// the reason a tag cannot be applied because its device is not usable: when the device is still only a
+        /// suggestion the moderator is told to approve it first
+        /// </summary>
+        private async Task<string> _UnavailableLiteraryDeviceMessageAsync(int deviceId)
+        {
+            var pending = await _context.LiteraryDevices.AsNoTracking()
+                .Where(d => d.Id == deviceId && d.Status == LiteraryEntityStatus.Suggested)
+                .Select(d => d.Name).SingleOrDefaultAsync();
+            if (pending != null)
+                return $"آرایهٔ «{pending}» هنوز تأیید نشده است. ابتدا آن را در بخش «آرایه‌ها و مفاهیم ادبی» مدیریت تأیید کنید و سپس این ویرایش را بررسی کنید.";
+            return "آرایهٔ مربوط به این برچسب وجود ندارد یا رد شده است.";
         }
 
         private static LiteraryDeviceSlot _Slot(string key, string name, LiteraryDeviceSlotKind kind, bool required, bool multiple = false)
@@ -522,7 +564,7 @@ namespace RMuseum.Services.Implementation
                 var device = await _context.LiteraryDevices.AsNoTracking().Include(d => d.Slots)
                     .Where(d => d.Id == tag.DeviceId && d.Status == LiteraryEntityStatus.Approved).SingleOrDefaultAsync();
                 if (device == null)
-                    return "آرایهٔ انتخاب‌شده وجود ندارد یا هنوز تأیید نشده است.";
+                    return await _UnavailableLiteraryDeviceMessageAsync(tag.DeviceId);
 
                 List<LiteraryTagPartSuggestion> parts;
                 try
@@ -633,7 +675,7 @@ namespace RMuseum.Services.Implementation
             var device = await _context.LiteraryDevices.AsNoTracking().Include(d => d.Slots)
                 .Where(d => d.Id == suggestion.DeviceId && d.Status == LiteraryEntityStatus.Approved).SingleOrDefaultAsync();
             if (device == null)
-                return "آرایهٔ مربوط به این برچسب دیگر در دسترس نیست.";
+                return await _UnavailableLiteraryDeviceMessageAsync(suggestion.DeviceId);
 
             List<LiteraryTagPartSuggestion> parts;
             try
