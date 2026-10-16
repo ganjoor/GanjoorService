@@ -1,5 +1,6 @@
 ﻿@page "/literary"
 @model GanjooRazor.Pages.LiteraryModel
+@using DNTPersianUtils.Core
 @{
     Layout = "_Layout";
 }
@@ -16,9 +17,8 @@ else
             <partial name="_InlineLoginPartial" model="Model" />
 
             <div id="maincnt">
+
                 <div class="poem">
-
-
                     <h2>@ViewData["Title"]</h2>
 
                     <div class="lit-st-nav">
@@ -55,7 +55,7 @@ else
                                 {
                                     <a href="@Model.Link(poet: p.PoetId, page: 1)">@p.Name</a>
                                 }
-                                <span class="lit-st-meta">(@p.TagCount.ToString("N0"))</span>
+                                <span class="lit-st-meta">(@p.TagCount.ToPersianNumbers())</span>
                             }
                         </div>
                     }
@@ -63,7 +63,7 @@ else
                     @if (Model.Tags == null)
                     {
                         <p>
-                            @Model.Overview.TotalTags.ToString("N0") آرایه در @Model.Overview.TotalPoems.ToString("N0") شعر@(Model.PoetName != null ? " از " + Model.PoetName : "") برچسب‌گذاری شده است.
+                            @Model.Overview.TotalTags.ToPersianNumbers() آرایه در @Model.Overview.TotalPoems.ToPersianNumbers() شعر@(Model.PoetName != null ? " از " + Model.PoetName : "") برچسب‌گذاری شده است.
                         </p>
 
                         <table class="lit-st-table">
@@ -74,8 +74,8 @@ else
                                 {
                                     <tr>
                                         <td><a href="@Model.Link(device: d.DeviceId, page: 1)" title="@dev.Definition">@dev.Name</a></td>
-                                        <td class="num">@d.TagCount.ToString("N0")</td>
-                                        <td class="num">@d.PoemCount.ToString("N0")</td>
+                                        <td class="num">@d.TagCount.ToPersianNumbers()</td>
+                                        <td class="num">@d.PoemCount.ToPersianNumbers()</td>
                                     </tr>
                                 }
                             }
@@ -87,7 +87,7 @@ else
                             <ul class="lit-st-concepts">
                                 @foreach (var c in Model.Overview.TopConcepts)
                                 {
-                                    <li><a href="@Model.Link(concept: c.ConceptId, page: 1)">@c.Name</a> <span>@c.UsageCount.ToString("N0")</span></li>
+                                    <li><a href="@Model.Link(concept: c.ConceptId, page: 1)">@c.Name</a> <span>@c.UsageCount.ToPersianNumbers()</span></li>
                                 }
                             </ul>
                         }
@@ -105,31 +105,50 @@ else
                             <ul class="lit-st-concepts">
                                 @foreach (var c in Model.DeviceTopConcepts)
                                 {
-                                    <li><a href="@Model.Link(concept: c.ConceptId, page: 1)">@c.Name</a> <span>@c.UsageCount.ToString("N0")</span></li>
+                                    <li><a href="@Model.Link(concept: c.ConceptId, page: 1)">@c.Name</a> <span>@c.UsageCount.ToPersianNumbers()</span></li>
                                 }
                             </ul>
                         }
 
-                        <p class="lit-st-meta">@Model.Tags.Total.ToString("N0") مورد</p>
+                        <p class="lit-st-meta">@Model.Tags.Total.ToPersianNumbers() مورد</p>
+                    }
+                </div>
 
-                        @foreach (var item in Model.Tags.Items)
-                        {
-                            <div class="lit-st-item">
-                                <div class="lit-st-meta">
-                                    <a href="@item.PoemFullUrl">@item.PoemFullTitle</a>
-                                    @if (item.CoupletIndex > 0)
-                                    {
-                                        <text> · بیت @item.CoupletIndex</text>
-                                    }
-                                    @if (Model.Device == null && Model.DevicesById.TryGetValue(item.DeviceId, out var itemDevice))
-                                    {
-                                        <text> · </text><a href="@Model.Link(device: item.DeviceId, page: 1)">@itemDevice.Name</a>
-                                    }
-                                    @if (item.Uncertain)
-                                    {
-                                        <text> · نامطمئن</text>
-                                    }
-                                </div>
+                @if (Model.Tags != null)
+                {
+                    @if (!string.IsNullOrEmpty(Model.PagingToolsHtml))
+                    {
+                        @Html.Raw(Model.PagingToolsHtml)
+                        <div class="spacer">&nbsp;</div>
+                    }
+
+                    @for (int itemIndex = 0; itemIndex < Model.Tags.Items.Length; itemIndex++)
+                    {
+                        var item = Model.Tags.Items[itemIndex];
+                        var poet = Model.PoetOf(item.PoetId);
+
+                        <div class="sitem">
+                            <div class="circled-number-diff">@(((Model.PageNumber - 1) * GanjooRazor.Pages.LiteraryModel.PageSize + itemIndex + 1).ToPersianNumbers())</div>
+
+                            <h2>
+                                <a href="@item.PoemFullUrl">@item.PoemFullTitle</a>
+                            </h2>
+                            <div class="lit-st-meta">
+                                @if (item.CoupletIndex > 0)
+                                {
+                                    <text>بیت @item.CoupletIndex.ToPersianNumbers()</text>
+                                }
+                                @if (Model.Device == null && Model.DevicesById.TryGetValue(item.DeviceId, out var itemDevice))
+                                {
+                                    <text> · </text><a href="@Model.Link(device: item.DeviceId, page: 1)">@itemDevice.Name</a>
+                                }
+                                @if (item.Uncertain)
+                                {
+                                    <text> · نامطمئن</text>
+                                }
+                            </div>
+                            <div class="spacer">&nbsp;</div>
+                            <div class="sit">
                                 @if (!string.IsNullOrEmpty(item.Hemistich1))
                                 {
                                     <div class="lit-st-verse">
@@ -169,25 +188,26 @@ else
                                     <div class="lit-st-parts lit-st-meta">@item.Note</div>
                                 }
                             </div>
-                        }
 
-                        @if (Model.PageCount > 1)
-                        {
-                            <div class="lit-st-pager">
-                                @if (Model.PageNumber > 1)
-                                {
-                                    <a href="@Model.Link(page: Model.PageNumber - 1)">« قبلی</a>
-                                }
-                                <span>صفحهٔ @Model.PageNumber از @Model.PageCount</span>
-                                @if (Model.PageNumber < Model.PageCount)
-                                {
-                                    <a href="@Model.Link(page: Model.PageNumber + 1)">بعدی »</a>
-                                }
-                            </div>
-                        }
+                            @if (poet != null)
+                            {
+                                <div class="poet">
+                                    <img src="@($"{GanjooRazor.APIRoot.InternetUrl}{poet.ImageUrl}")" alt="@poet.Nickname" />
+                                </div>
+                            }
+
+                            <div class="spacer">&nbsp;</div>
+                        </div>
                     }
 
-                </div>
+                    @if (!string.IsNullOrEmpty(Model.PagingToolsHtml))
+                    {
+                        <div class="spacer">&nbsp;</div>
+                        @Html.Raw(Model.PagingToolsHtml)
+                        <div class="spacer">&nbsp;</div>
+                    }
+                }
+
             </div>
 
             <partial name="_FooterPartial" model=@(new _FooterPartialModel(){StickyEnabled = true}) />

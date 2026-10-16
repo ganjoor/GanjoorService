@@ -164,6 +164,7 @@ namespace RMuseum.Services.Implementation
                         t.Note,
                         PoemFullTitle = t.Poem.FullTitle,
                         PoemFullUrl = t.Poem.FullUrl,
+                        PoetId = t.Poem.Cat.PoetId,
                         PoetName = t.Poem.Cat.Poet.Name
                     })
                     .ToListAsync();
@@ -255,6 +256,7 @@ namespace RMuseum.Services.Implementation
                         PoemId = t.PoemId,
                         PoemFullTitle = t.PoemFullTitle,
                         PoemFullUrl = t.PoemFullUrl,
+                        PoetId = t.PoetId,
                         PoetName = t.PoetName,
                         CoupletIndex = t.CoupletIndex,
                         Hemistich1 = hemistichs?.Item1,

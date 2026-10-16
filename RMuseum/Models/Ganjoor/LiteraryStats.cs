@@ -168,6 +168,11 @@ namespace RMuseum.Models.Ganjoor
         public string PoemFullUrl { get; set; }
 
         /// <summary>
+        /// poet id
+        /// </summary>
+        public int PoetId { get; set; }
+
+        /// <summary>
         /// poet name
         /// </summary>
         public string PoetName { get; set; }

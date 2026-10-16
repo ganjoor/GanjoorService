@@ -1,4 +1,5 @@
-﻿using GanjooRazor.Utils;
+﻿using DNTPersianUtils.Core;
+using GanjooRazor.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.Extensions.Configuration;
@@ -58,6 +59,42 @@ namespace GanjooRazor.Pages
 
         public string PoetName => PoetId > 0 ? Overview?.Poets?.FirstOrDefault(p => p.PoetId == PoetId)?.Name : null;
 
+        /// <summary>
+        /// the pager markup (same circled numbers as the search and hashieha pages)
+        /// </summary>
+        public string PagingToolsHtml { get; set; }
+
+        /// <summary>
+        /// the poet of a listed tag (with image and page address), if known
+        /// </summary>
+        public GanjoorPoetViewModel PoetOf(int poetId)
+        {
+            return Poets?.FirstOrDefault(p => p.Id == poetId);
+        }
+
+        private string GeneratePagingBarHtml()
+        {
+            string html = $"<div>{Environment.NewLine}";
+            if (PageCount > 1)
+            {
+                if (PageNumber > 3)
+                    html += $"<a href=\"{Link(page: 1).Replace("&", "&amp;")}\"><div class=\"circled-number\">{1.ToPersianNumbers()}</div></a>{Environment.NewLine} …";
+                for (int i = PageNumber - 2; i <= PageNumber + 2; i++)
+                {
+                    if (i < 1 || i > PageCount)
+                        continue;
+                    if (i == PageNumber)
+                        html += $"<div class=\"circled-number-diff\">{i.ToPersianNumbers()}</div>{Environment.NewLine}";
+                    else
+                        html += $"<a href=\"{Link(page: i).Replace("&", "&amp;")}\"><div class=\"circled-number\">{i.ToPersianNumbers()}</div></a>{Environment.NewLine}";
+                }
+                if (PageCount > PageNumber + 2)
+                    html += $"… <a href=\"{Link(page: PageCount).Replace("&", "&amp;")}\"><div class=\"circled-number\">{PageCount.ToPersianNumbers()}</div></a>{Environment.NewLine}";
+            }
+            html += $"</div>{Environment.NewLine}";
+            return html;
+        }
+
         public int PageCount => Tags == null ? 0 : (Tags.Total + PageSize - 1) / PageSize;
 
         /// <summary>
@@ -107,10 +144,6 @@ namespace GanjooRazor.Pages
             var maintenanceResult = TryGetMaintenanceModeResult();
             if (maintenanceResult != null)
                 return maintenanceResult;
-
-            // the overview lives in the /vazn page now; this page lists the verses of a device or concept
-            if (device <= 0 && concept <= 0 && poet <= 0)
-                return Redirect("/vazn#literary-stats-tab-items");
 
             InitializeCommonPageState();
 
@@ -186,14 +219,20 @@ namespace GanjooRazor.Pages
                     Tags = JsonConvert.DeserializeObject<LiteraryStatsTagPage>(await tagsResponse.Content.ReadAsStringAsync());
                 }
 
-                string title = "آرایه‌های ادبی";
-                if (Device != null)
+                string title;
+                if (Device != null && Concept != null)
+                    title = $"{Device.Name} - مفهوم {Concept.Name}";
+                else if (Device != null)
                     title = Device.Name;
-                if (Concept != null)
-                    title += (Device != null ? " - " : "مفهوم ") + Concept.Name;
+                else if (Concept != null)
+                    title = $"آرایه‌های ادبی - مفهوم {Concept.Name}";
+                else
+                    title = "آرایه‌های ادبی";
                 if (PoetName != null)
                     title += " - " + PoetName;
                 ViewData["Title"] = title;
+                if (Tags != null)
+                    PagingToolsHtml = GeneratePagingBarHtml();
             }
             catch (Exception exp)
             {
