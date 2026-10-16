@@ -1,0 +1,77 @@
+﻿@model GanjooRazor.Pages._LiteraryTagsPartialModel
+@if (Model.Failed)
+{
+    <p data-lit-failed="1">در دریافت آرایه‌ها خطایی رخ داد.</p>
+    return;
+}
+@if (Model.Couplets.Count == 0)
+{
+    <p data-lit-empty="1">برای این شعر هنوز آرایه‌ای ثبت نشده است. اگر آرایه‌ای در آن می‌بینید می‌توانید از
+        <a href="/User/Editor?id=@Model.PoemId#literary-section">ویرایشگر</a> پیشنهاد دهید.</p>
+    return;
+}
+<div class="lit-reader" id="lit-reader-@Model.PoemId">
+    @foreach (var couplet in Model.Couplets)
+    {
+        <div class="lit-couplet">
+            @if (couplet.Number > 0)
+            {
+                <div class="lit-text">
+                    <a href="#bn@(couplet.Number)" class="lit-num">@couplet.Number</a>
+                    @if (couplet.Words1.Count > 0)
+                    {
+                        <span class="lit-m">
+                            @foreach (var w in couplet.Words1)
+                            {
+                                <span class="lit-w" data-m="1" data-i="@w.Index">@w.Text</span>@:&#32;
+                            }
+                        </span>
+                        <span class="lit-m">
+                            @foreach (var w in couplet.Words2)
+                            {
+                                <span class="lit-w" data-m="2" data-i="@w.Index">@w.Text</span>@:&#32;
+                            }
+                        </span>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="lit-text"><strong>کل شعر</strong></div>
+            }
+            @foreach (var tag in couplet.Tags)
+            {
+                <div class="lit-tag" data-spans="@tag.Spans" tabindex="0" role="button">
+                    <span class="lit-dev" title="@tag.Definition">@tag.DeviceName</span>
+                    @if (tag.Uncertain)
+                    {
+                        <span class="lit-unc">(نامطمئن)</span>
+                    }
+                    @if (tag.FromCorpus)
+                    {
+                        <a class="lit-src" href="/literary-corpus" title="برگرفته از پیکرهٔ متون ادبی فارسی" onclick="event.stopPropagation()">پیکره</a>
+                    }
+                    <div class="lit-lines">
+                        @foreach (var line in tag.Lines)
+                        {
+                            <div><span class="lit-slot">@line.Slot:</span> @line.Value</div>
+                        }
+                        @if (!string.IsNullOrEmpty(tag.Note))
+                        {
+                            <div class="lit-note">@tag.Note</div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    @if (!Model.Completed)
+    {
+        <p class="lit-hint">آرایه‌گذاری این شعر هنوز کامل نشده؛ ممکن است آرایه‌های دیگری هم در آن باشد.
+            <a href="/User/Editor?id=@Model.PoemId#literary-section">پیشنهاد آرایه</a></p>
+    }
+    @if (Model.AnyFromCorpus)
+    {
+        <p class="lit-hint">بخشی از آرایه‌ها از <a href="/literary-corpus">پیکرهٔ متون ادبی فارسی</a> برگرفته شده است.</p>
+    }
+</div>

@@ -373,6 +373,84 @@
                     </div>
                 }
 
+                <div class="notice" id="poem-literary" data-nosnippet style="display:none" data-poem-id="@Model.GanjoorPage.Id" data-url="@Model.GanjoorPage.FullUrl" data-logged-in="@(Model.LoggedIn ? "1" : "0")">
+                    <div class="century">آرایه‌های ادبی</div>
+                    <div id="literary-tags-placeholder"></div>
+                </div>
+                <style>
+                    .lit-couplet { margin: .8em 0; padding: .6em .8em; border: 1px solid rgba(128,128,128,.35); border-radius: 8px; }
+                    .lit-text { margin-bottom: .4em; }
+                    .lit-num { margin-left: .5em; font-size: .85em; opacity: .7; }
+                    .lit-m { display: inline-block; margin-left: 1.2em; }
+                    .lit-w { border-radius: 3px; padding: 0 1px; }
+                    .lit-w.lit-on { background: rgba(255,190,0,.45); }
+                    .lit-tag { cursor: pointer; padding: .3em .5em; border-radius: 6px; }
+                    .lit-tag:hover, .lit-tag.lit-sel { background: rgba(128,128,128,.15); }
+                    .lit-dev { font-weight: bold; }
+                    .lit-unc, .lit-note, .lit-hint { font-size: .85em; opacity: .8; }
+                    .lit-src { font-size: .75em; margin-right: .5em; padding: 0 .4em; border: 1px solid rgba(128,128,128,.5); border-radius: 4px; }
+                    .lit-lines { margin-top: .2em; }
+                    .lit-slot { opacity: .75; }
+                </style>
+                <script>
+                    function loadLiteraryTags() {
+                        var box = document.getElementById('poem-literary');
+                        var holder = document.getElementById('literary-tags-placeholder');
+                        if (!box || !holder || box.getAttribute('data-loaded') === '1') {
+                            return;
+                        }
+                        box.setAttribute('data-loaded', '1');
+                        $.ajax({
+                            type: 'GET',
+                            url: '?Handler=LiteraryTags&poemId=' + box.getAttribute('data-poem-id') + '&url=' + encodeURIComponent(box.getAttribute('data-url')),
+                            success: function (data) {
+                                holder.innerHTML = data;
+                                var empty = holder.querySelector('[data-lit-empty]');
+                                var failed = holder.querySelector('[data-lit-failed]');
+                                // poems without tags show nothing, except a suggestion link for logged in users
+                                if (failed || (empty && box.getAttribute('data-logged-in') !== '1')) {
+                                    return;
+                                }
+                                box.style.display = '';
+                            }
+                        });
+                    }
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var box = document.getElementById('poem-literary');
+                        if (!box) { return; }
+                        if ('IntersectionObserver' in window) {
+                            // the block sits below the poem: load a little before it scrolls into view
+                            var io = new IntersectionObserver(function (entries) {
+                                if (entries.some(function (e) { return e.isIntersecting; })) {
+                                    io.disconnect();
+                                    loadLiteraryTags();
+                                }
+                            }, { rootMargin: '600px' });
+                            io.observe(box.parentNode.firstElementChild || box);
+                        } else {
+                            loadLiteraryTags();
+                        }
+                    });
+                    document.addEventListener('click', function (e) {
+                        var tag = e.target.closest ? e.target.closest('.lit-tag') : null;
+                        if (!tag) { return; }
+                        var root = tag.closest('.lit-couplet');
+                        var wasSel = tag.classList.contains('lit-sel');
+                        root.querySelectorAll('.lit-sel').forEach(function (t) { t.classList.remove('lit-sel'); });
+                        root.querySelectorAll('.lit-on').forEach(function (w) { w.classList.remove('lit-on'); });
+                        if (wasSel) { return; }
+                        tag.classList.add('lit-sel');
+                        (tag.getAttribute('data-spans') || '').split(' ').forEach(function (sp) {
+                            var m = /^(\d+):(\d+)-(\d+)$/.exec(sp);
+                            if (!m) { return; }
+                            root.querySelectorAll('.lit-w[data-m="' + m[1] + '"]').forEach(function (w) {
+                                var i = parseInt(w.getAttribute('data-i'), 10);
+                                if (i >= parseInt(m[2], 10) && i <= parseInt(m[3], 10)) { w.classList.add('lit-on'); }
+                            });
+                        });
+                    });
+                </script>
+
                 @if (!string.IsNullOrEmpty(Model.GanjoorPage.Poem.PoemSummary))
                 {
                     <div class="notice" id="summary" data-nosnippet>
