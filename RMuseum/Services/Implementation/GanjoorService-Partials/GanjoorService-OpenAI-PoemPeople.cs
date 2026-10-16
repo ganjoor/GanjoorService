@@ -547,8 +547,12 @@ namespace RMuseum.Services.Implementation
                               await _AISetCheckpointAsync(context, checkpointName, 0);
                           int lastSafeId = restart ? 0 : await _AIGetCheckpointAsync(context, checkpointName);
                           int afterId = Math.Max(startPoemId - 1, lastSafeId);
+                          var failedIds = await _AIGetFailedIdsAsync(context, checkpointName);
+                          if (restart)
+                              failedIds.Clear();
+                          var failedIdList = failedIds.ToList();
 
-                          var poemsQuery = context.GanjoorPoems.AsNoTracking().Where(p => p.Id > afterId);
+                          var poemsQuery = context.GanjoorPoems.AsNoTracking().Where(p => p.Id > afterId || failedIdList.Contains(p.Id));
                           if (!wholeSet)
                               poemsQuery = poemsQuery.Where(p => catIdList.Contains(p.CatId));
                           var orderedPoemsQuery = poemsQuery.OrderBy(p => p.Id).Select(p => new { p.Id, p.Title, p.CatId });
@@ -557,7 +561,7 @@ namespace RMuseum.Services.Implementation
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Poem count = {poems.Count}");
 
                           int consecutiveFailures = 0, sinceSave = 0;
-                          bool failedSeen = false, aborted = false;
+                          bool aborted = false;
                           for (int i = 0; i < poems.Count; i++)
                           {
                               var poem = poems[i];
@@ -581,9 +585,24 @@ namespace RMuseum.Services.Implementation
                                   context.ChangeTracker.Clear();
                               }
 
+                              if (!dryRun)
+                              {
+                                  //a failed poem is remembered and retried by the next run; the resume point itself keeps moving
+                                  if (poemFailed)
+                                      failedIds.Add(poem.Id);
+                                  else
+                                      failedIds.Remove(poem.Id);
+                                  lastSafeId = Math.Max(lastSafeId, poem.Id);
+                                  if (++sinceSave >= 10)
+                                  {
+                                      sinceSave = 0;
+                                      await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                                      await _AISetFailedIdsAsync(context, checkpointName, failedIds);
+                                  }
+                              }
+
                               if (poemFailed)
                               {
-                                  failedSeen = true; //the resume point stays before this poem, so it is retried on the next run
                                   if (++consecutiveFailures >= AIMaxConsecutiveFailures)
                                   {
                                       aborted = true;
@@ -593,23 +612,18 @@ namespace RMuseum.Services.Implementation
                               else
                               {
                                   consecutiveFailures = 0;
-                                  if (!failedSeen && !dryRun)
-                                  {
-                                      lastSafeId = poem.Id;
-                                      if (++sinceSave >= 10)
-                                      {
-                                          sinceSave = 0;
-                                          await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
-                                      }
-                                  }
                               }
                           }
 
-                          if (!dryRun && lastSafeId > 0)
-                              await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                          if (!dryRun)
+                          {
+                              if (lastSafeId > 0)
+                                  await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                              await _AISetFailedIdsAsync(context, checkpointName, failedIds);
+                          }
 
                           string summary =
-                              $"{(dryRun ? "DRY RUN - " : "")}{(aborted ? $"STOPPED after {AIMaxConsecutiveFailures} consecutive failures - " : "")}last processed poem: {lastSafeId}; poems: done {run.PoemsDone}, skipped {run.PoemsSkipped}, failed {run.PoemsFailed}; " +
+                              $"{(dryRun ? "DRY RUN - " : "")}{(aborted ? $"STOPPED after {AIMaxConsecutiveFailures} consecutive failures - " : "")}last processed poem: {lastSafeId}; poems waiting for a retry: {failedIds.Count}; poems: done {run.PoemsDone}, skipped {run.PoemsSkipped}, failed {run.PoemsFailed}; " +
                               $"person tags: {run.TagsCreated} (new people: {run.NewPeople}); deferred: {run.Deferred}; ambiguous: {run.Ambiguous}; namesakes: {run.Namesakes}; " +
                               $"relations: {run.RelationsCreated}, evidences: {run.EvidencesCreated}, skipped: {run.RelationsSkipped}, errors: {run.RelationErrors}";
                           string logText = run.Log.ToString();

@@ -578,16 +578,21 @@ namespace RMuseum.Services.Implementation
                           if (restart)
                               await _AISetCheckpointAsync(context, checkpointName, 0);
                           int lastSafeId = await _AIGetCheckpointAsync(context, checkpointName);
+                          var failedIds = await _AIGetFailedIdsAsync(context, checkpointName);
+                          if (restart)
+                              failedIds.Clear();
+                          var failedIdList = failedIds.ToList();
 
-                          var poemsQuery = context.GanjoorPoems.AsNoTracking().Where(p => p.Id > lastSafeId && p.Id >= startFrom).OrderBy(p => p.Id);
+                          var poemsQuery = context.GanjoorPoems.AsNoTracking().Where(p => (p.Id > lastSafeId && p.Id >= startFrom) || failedIdList.Contains(p.Id)).OrderBy(p => p.Id);
                           var poems = count > 0 ? await poemsQuery.Take(count).ToListAsync() : await poemsQuery.ToListAsync();
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Poems count = {poems.Count}");
 
                           int consecutiveFailures = 0, sinceSave = 0;
-                          bool failedSeen = false, aborted = false;
+                          bool aborted = false;
                           for (var i = 0; i < poems.Count; i++)
                           {
                               var poem = poems[i];
+                              bool itemFailed = false;
                               try
                               {
 
@@ -683,7 +688,7 @@ namespace RMuseum.Services.Implementation
                               }
                               catch (Exception exp)
                               {
-                                  failedSeen = true; //the checkpoint stays before this poem, so it is retried on the next run
+                                  itemFailed = true; //remembered and retried by the next run; the checkpoint itself keeps moving
                                   context.ChangeTracker.Clear();
                                   if (++consecutiveFailures >= AIMaxConsecutiveFailures)
                                   {
@@ -693,14 +698,16 @@ namespace RMuseum.Services.Implementation
                               }
                               finally
                               {
-                                  if (!failedSeen)
+                                  if (itemFailed)
+                                      failedIds.Add(poem.Id);
+                                  else
+                                      failedIds.Remove(poem.Id);
+                                  lastSafeId = Math.Max(lastSafeId, poem.Id);
+                                  if (++sinceSave >= 10)
                                   {
-                                      lastSafeId = poem.Id;
-                                      if (++sinceSave >= 10)
-                                      {
-                                          sinceSave = 0;
-                                          await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
-                                      }
+                                      sinceSave = 0;
+                                      await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                                      await _AISetFailedIdsAsync(context, checkpointName, failedIds);
                                   }
                               }
                               if (aborted)
@@ -708,8 +715,9 @@ namespace RMuseum.Services.Implementation
                           }
                           if (lastSafeId > 0)
                               await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                          await _AISetFailedIdsAsync(context, checkpointName, failedIds);
                           if (!aborted)
-                              await jobProgressServiceEF.UpdateJob(job.Id, 100, $"آخرین شعر پردازش‌شده: {lastSafeId}", true);
+                              await jobProgressServiceEF.UpdateJob(job.Id, 100, $"آخرین شعر پردازش‌شده: {lastSafeId} (شعرهای در انتظار تلاش دوباره: {failedIds.Count})", true);
                       }
                       catch (Exception exp)
                       {

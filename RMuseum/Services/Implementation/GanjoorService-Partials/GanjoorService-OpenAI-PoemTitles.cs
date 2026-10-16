@@ -101,8 +101,12 @@ namespace RMuseum.Services.Implementation
                           if (restart)
                               await _AISetCheckpointAsync(context, checkpointName, 0);
                           int lastSafeId = await _AIGetCheckpointAsync(context, checkpointName);
+                          var failedIds = await _AIGetFailedIdsAsync(context, checkpointName);
+                          if (restart)
+                              failedIds.Clear();
+                          var failedIdList = failedIds.ToList();
 
-                          var titlesQuery = context.GanjoorPoems.AsNoTracking().Where(p => p.Id > lastSafeId && p.Id >= startFrom && p.Title.StartsWith("بخش"));
+                          var titlesQuery = context.GanjoorPoems.AsNoTracking().Where(p => ((p.Id > lastSafeId && p.Id >= startFrom) || failedIdList.Contains(p.Id)) && p.Title.StartsWith("بخش"));
                           if (masterCatId > 0)
                           {
                               //category tree under the master category
@@ -122,10 +126,11 @@ namespace RMuseum.Services.Implementation
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Poem count = {candidates.Count}");
 
                           int created = 0, skipped = 0, failed = 0, consecutiveFailures = 0, sinceSave = 0;
-                          bool failedSeen = false, aborted = false;
+                          bool aborted = false;
                           for (int i = 0; i < candidates.Count; i++)
                           {
                               var poem = candidates[i];
+                              bool itemFailed = false;
                               try
                               {
                                   //never clobber an existing pending suggestion of this user for the poem
@@ -183,7 +188,7 @@ namespace RMuseum.Services.Implementation
                               catch (Exception exp)
                               {
                                   failed++;
-                                  failedSeen = true; //the checkpoint stays before this poem, so it is retried on the next run
+                                  itemFailed = true; //remembered and retried by the next run; the checkpoint itself keeps moving
                                   context.ChangeTracker.Clear();
                                   if (++consecutiveFailures >= AIMaxConsecutiveFailures)
                                   {
@@ -193,14 +198,16 @@ namespace RMuseum.Services.Implementation
                               }
                               finally
                               {
-                                  if (!failedSeen)
+                                  if (itemFailed)
+                                      failedIds.Add(poem.Id);
+                                  else
+                                      failedIds.Remove(poem.Id);
+                                  lastSafeId = Math.Max(lastSafeId, poem.Id);
+                                  if (++sinceSave >= 10)
                                   {
-                                      lastSafeId = poem.Id;
-                                      if (++sinceSave >= 10)
-                                      {
-                                          sinceSave = 0;
-                                          await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
-                                      }
+                                      sinceSave = 0;
+                                      await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                                      await _AISetFailedIdsAsync(context, checkpointName, failedIds);
                                   }
                               }
                               if (aborted)
@@ -209,8 +216,9 @@ namespace RMuseum.Services.Implementation
 
                           if (lastSafeId > 0)
                               await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                          await _AISetFailedIdsAsync(context, checkpointName, failedIds);
                           if (!aborted)
-                              await jobProgressServiceEF.UpdateJob(job.Id, 100, $"ایجاد: {created}، ردشده: {skipped}، خطا: {failed} - آخرین شعر پردازش‌شده: {lastSafeId}", true);
+                              await jobProgressServiceEF.UpdateJob(job.Id, 100, $"ایجاد: {created}، ردشده: {skipped}، خطا: {failed} (در انتظار تلاش دوباره: {failedIds.Count}) - آخرین شعر پردازش‌شده: {lastSafeId}", true);
                       }
                       catch (Exception exp)
                       {
