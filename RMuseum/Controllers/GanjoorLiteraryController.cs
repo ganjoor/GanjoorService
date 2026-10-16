@@ -36,6 +36,23 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// the not yet reviewed devices suggested by the current user (selectable by that user in the editor)
+        /// </summary>
+        [HttpGet]
+        [Route("devices/mine")]
+        [Authorize]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(LiteraryDevice[]))]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public async Task<IActionResult> GetMyPendingDevices()
+        {
+            Guid userId = new Guid(User.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
+            var res = await _ganjoorService.GetMyPendingLiteraryDevicesAsync(userId);
+            if (!string.IsNullOrEmpty(res.ExceptionString))
+                return BadRequest(res.ExceptionString);
+            return Ok(res.Result);
+        }
+
+        /// <summary>
         /// suggested (not yet reviewed) devices
         /// </summary>
         [HttpGet]

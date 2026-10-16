@@ -63,6 +63,28 @@ namespace RMuseum.Services.Implementation
             }
         }
 
+        /// <summary>
+        /// devices suggested by the user which are not reviewed yet, with their slots
+        /// </summary>
+        public async Task<RServiceResult<LiteraryDevice[]>> GetMyPendingLiteraryDevicesAsync(Guid userId)
+        {
+            try
+            {
+                var devices = await _context.LiteraryDevices.AsNoTracking().Include(d => d.Slots)
+                    .Where(d => d.Status == LiteraryEntityStatus.Suggested && d.SuggestedByUserId == userId)
+                    .OrderBy(d => d.Category).ThenBy(d => d.Id).ToArrayAsync();
+                foreach (var device in devices)
+                {
+                    device.Slots = device.Slots.OrderBy(s => s.Order).ToList();
+                }
+                return new RServiceResult<LiteraryDevice[]>(devices);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<LiteraryDevice[]>(null, exp.ToString());
+            }
+        }
+
         private static string _ValidateDeviceFields(LiteraryDevice device)
         {
             if (string.IsNullOrWhiteSpace(device.Name))
@@ -561,7 +583,7 @@ namespace RMuseum.Services.Implementation
         /// checks the literary tag suggestions of a poem correction at submission time
         /// </summary>
         /// <returns>an error message, or null if all is fine</returns>
-        private async Task<string> _ValidateLiteraryTagCorrectionsAsync(GanjoorPoemLiteraryTagCorrection[] tags)
+        private async Task<string> _ValidateLiteraryTagCorrectionsAsync(Guid userId, GanjoorPoemLiteraryTagCorrection[] tags)
         {
             if (tags == null)
                 return null;
@@ -580,8 +602,13 @@ namespace RMuseum.Services.Implementation
                     continue;
                 }
 
+                //an approved device, or one the submitting user suggested and which is still waiting for a moderator
+                //(moderation of the edit then asks the moderator to approve the device first)
                 var device = await _context.LiteraryDevices.AsNoTracking().Include(d => d.Slots)
-                    .Where(d => d.Id == tag.DeviceId && d.Status == LiteraryEntityStatus.Approved).SingleOrDefaultAsync();
+                    .Where(d => d.Id == tag.DeviceId
+                        && (d.Status == LiteraryEntityStatus.Approved
+                            || (d.Status == LiteraryEntityStatus.Suggested && d.SuggestedByUserId == userId)))
+                    .SingleOrDefaultAsync();
                 if (device == null)
                     return await _UnavailableLiteraryDeviceMessageAsync(tag.DeviceId);
 

@@ -2276,7 +2276,7 @@ namespace RMuseum.Services.Implementation
                     literaryTag.Id = 0;
                     literaryTag.Device = null;
                 }
-                string literaryError = await _ValidateLiteraryTagCorrectionsAsync(correction.LiteraryTags);
+                string literaryError = await _ValidateLiteraryTagCorrectionsAsync(correction.UserId, correction.LiteraryTags);
                 if (literaryError != null)
                     return new RServiceResult<GanjoorPoemCorrectionViewModel>(null, literaryError);
             }

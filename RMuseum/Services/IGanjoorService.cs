@@ -1770,6 +1770,14 @@ namespace RMuseum.Services
         Task<RServiceResult<LiteraryDevice[]>> GetLiteraryDevicesAsync(LiteraryEntityStatus? status);
 
         /// <summary>
+        /// the devices a user has suggested which are still waiting for a moderator (the suggester may already use them in
+        /// his/her own edits; a moderator must approve the device before approving such an edit)
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<RServiceResult<LiteraryDevice[]>> GetMyPendingLiteraryDevicesAsync(Guid userId);
+
+        /// <summary>
         /// a user suggests a new literary device
         /// </summary>
         /// <param name="userId"></param>

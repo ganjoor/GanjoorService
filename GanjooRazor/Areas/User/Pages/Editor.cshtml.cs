@@ -554,6 +554,15 @@ namespace GanjooRazor.Areas.User.Pages
                         if (devicesResponse.IsSuccessStatusCode)
                             LiteraryDevices = JsonConvert.DeserializeObject<LiteraryDevice[]>(await devicesResponse.Content.ReadAsStringAsync()) ?? Array.Empty<LiteraryDevice>();
 
+                        //the user's own suggestions still waiting for a moderator are selectable too (marked as pending in the list)
+                        var myPendingResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/devices/mine");
+                        if (myPendingResponse.IsSuccessStatusCode)
+                        {
+                            var myPending = JsonConvert.DeserializeObject<LiteraryDevice[]>(await myPendingResponse.Content.ReadAsStringAsync());
+                            if (myPending != null && myPending.Length > 0)
+                                LiteraryDevices = LiteraryDevices.Concat(myPending).ToArray();
+                        }
+
                         var literaryTagsResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/poem/{PageInformation.Id}/tags");
                         if (literaryTagsResponse.IsSuccessStatusCode)
                             PoemLiteraryTags = JsonConvert.DeserializeObject<PoemLiteraryTag[]>(await literaryTagsResponse.Content.ReadAsStringAsync()) ?? Array.Empty<PoemLiteraryTag>();

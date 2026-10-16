@@ -132,6 +132,15 @@ namespace GanjooRazor.Areas.Admin.Pages
                     ? JsonConvert.DeserializeObject<LiteraryDevice[]>(await devicesResponse.Content.ReadAsStringAsync())
                     : Array.Empty<LiteraryDevice>();
 
+                //devices still waiting for approval, so a tag using one is shown by name (and marked as pending)
+                var pendingDevicesResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/devices/suggested");
+                if (pendingDevicesResponse.IsSuccessStatusCode)
+                {
+                    var pendingDevices = JsonConvert.DeserializeObject<LiteraryDevice[]>(await pendingDevicesResponse.Content.ReadAsStringAsync());
+                    if (pendingDevices != null && pendingDevices.Length > 0)
+                        devices = devices.Concat(pendingDevices).ToArray();
+                }
+
                 var tagsResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/poem/{Correction.PoemId}/tags");
                 var existingTags = tagsResponse.IsSuccessStatusCode
                     ? JsonConvert.DeserializeObject<PoemLiteraryTag[]>(await tagsResponse.Content.ReadAsStringAsync())
@@ -218,7 +227,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                     else
                     {
                         var dev = devices.FirstOrDefault(d => d.Id == t.DeviceId);
-                        item.DeviceName = dev?.Name ?? t.Device?.Name ?? $"#{t.DeviceId}";
+                        item.DeviceName = (dev?.Name ?? t.Device?.Name ?? $"#{t.DeviceId}") + (dev != null && dev.Status == LiteraryEntityStatus.Suggested ? " (آرایهٔ تأییدنشده؛ ابتدا آن را تأیید کنید)" : "");
                         foreach (var p in parsed[i])
                         {
                             var vals = new List<string>();

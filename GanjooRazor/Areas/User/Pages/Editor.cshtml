@@ -2958,7 +2958,7 @@ else
                 var ds = litDevices.filter(function (d) { return d.category === cat; });
                 if (ds.length === 0) continue;
                 html += '<optgroup label="' + litCategoryNames[cat] + '">';
-                for (var i = 0; i < ds.length; i++) html += '<option value="' + ds[i].id + '">' + litEsc(ds[i].name) + '</option>';
+                for (var i = 0; i < ds.length; i++) html += '<option value="' + ds[i].id + '">' + litEsc(ds[i].name) + (ds[i].status === 0 ? ' (پیشنهاد شما، در انتظار تأیید)' : '') + '</option>';
                 html += '</optgroup>';
             }
             sel.html(html);
