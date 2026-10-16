@@ -3647,3 +3647,55 @@ mark {
 .poemtablinks a[href="#songs"]::before { content: "library_music"; }
 .poemtablinks a[href="#7daysvisits"]::before { content: "trending_up"; }
 .poemtablinks a[href="#discussions"]::before { content: "forum"; }
+
+/* icons of the remaining content navigation tabs: poet/category pages and the /vazn statistics page (the ones above cover the poem page) */
+.poemtablinks a[href="#quoteds"]::before { content: "edit_note"; }
+.poemtablinks a[href="#photos"]::before { content: "face"; }
+.poemtablinks a[href="#papersources"]::before { content: "auto_stories"; }
+.poemtablinks a[href="#persongraph"]::before { content: "account_tree"; }
+.poemtablinks a[href="#topvisits"]::before { content: "leaderboard"; }
+.poemtablinks a[href="#langs-stats-tab-items"]::before { content: "language"; }
+.poemtablinks a[href="#formats-stats-tab-items"]::before { content: "view_agenda"; }
+.poemtablinks a[href="#rhyhtms-stats-tab-items"]::before { content: "graphic_eq"; }
+.poemtablinks a[href="#couplets-stats-tab-items"]::before { content: "format_list_numbered"; }
+.poemtablinks a[href="#wordcounts-placeholder-tab-items"]::before { content: "bar_chart"; }
+.poemtablinks a[href="#literary-stats-tab-items"]::before { content: "palette"; }
+
+/* literary devices of a poem (reader section of the poem page) */
+.lit-couplet { margin: .8em 0; padding: .6em .8em; border: 1px solid rgba(128,128,128,.35); border-radius: 8px; }
+.lit-text { margin-bottom: .4em; }
+.lit-num { margin-left: .5em; font-size: .85em; opacity: .7; }
+.lit-m { display: inline-block; margin-left: 1.2em; }
+.lit-w { border-radius: 3px; padding: 0 1px; }
+.lit-w.lit-on { background: rgba(255,190,0,.45); }
+.lit-tag { cursor: pointer; padding: .3em .5em; border-radius: 6px; }
+.lit-tag:hover, .lit-tag.lit-sel { background: rgba(128,128,128,.15); }
+.lit-dev { font-weight: bold; }
+.lit-unc, .lit-note, .lit-hint { font-size: .85em; opacity: .8; }
+.lit-src, .lit-stat { font-size: .75em; margin-right: .5em; padding: 0 .4em; border: 1px solid rgba(128,128,128,.5); border-radius: 4px; }
+.lit-lines { margin-top: .2em; }
+.lit-slot { opacity: .75; }
+
+/* literary devices statistics on the /vazn page */
+.lit-stats-table { border-collapse: collapse; width: 100%; max-width: 560px; margin: 8px auto; }
+.lit-stats-table th, .lit-stats-table td { border-bottom: 1px solid rgba(128,128,128,.25); padding: 5px 8px; text-align: right; }
+.lit-stats-table th:not(:first-child), .lit-stats-table td:not(:first-child) { text-align: center; width: 90px; }
+.lit-stats-concepts { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.lit-stats-concepts li span { opacity: .65; font-size: 85%; }
+.lit-stats-poets { margin: 8px 0; }
+
+/* literary devices browsing page (/literary) */
+.lit-st-nav { margin: 8px 0 14px; font-size: 90%; }
+.lit-st-nav a { margin-left: 10px; }
+.lit-st-filter { margin: 8px 0 14px; }
+.lit-st-table { border-collapse: collapse; width: 100%; max-width: 640px; }
+.lit-st-table th, .lit-st-table td { border-bottom: 1px solid rgba(128,128,128,.25); padding: 5px 8px; text-align: right; }
+.lit-st-table td.num { text-align: center; width: 90px; }
+.lit-st-concepts { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.lit-st-concepts li span { opacity: .65; font-size: 85%; }
+.lit-st-item { border-top: 1px solid rgba(128,128,128,.25); padding: 10px 0; }
+.lit-st-verse { font-size: 110%; line-height: 2; }
+.lit-st-verse mark { background: rgba(255,200,0,.35); color: inherit; padding: 0 2px; border-radius: 3px; }
+.lit-st-meta { font-size: 85%; opacity: .8; }
+.lit-st-parts { font-size: 90%; margin-top: 4px; }
+.lit-st-pager { margin: 14px 0; display: flex; gap: 14px; align-items: center; }
