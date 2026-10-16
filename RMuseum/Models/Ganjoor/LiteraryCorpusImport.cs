@@ -128,6 +128,22 @@ namespace RMuseum.Models.Ganjoor
         public int MatchedItems { get; set; }
 
         /// <summary>
+        /// couplets found by poem number and couplet number (the usual way: the corpus is a few years older than the
+        /// text but the order and number of couplets are the same)
+        /// </summary>
+        public int MatchedByPosition { get; set; }
+
+        /// <summary>
+        /// couplets found by exact text because the positional candidate was too different
+        /// </summary>
+        public int MatchedByText { get; set; }
+
+        /// <summary>
+        /// couplets whose positional candidate had a text too different from the corpus text (not imported)
+        /// </summary>
+        public int RejectedLowSimilarity { get; set; }
+
+        /// <summary>
         /// couplets not found
         /// </summary>
         public int UnmatchedItems { get; set; }

@@ -12771,6 +12771,22 @@
             couplets found in the database
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.MatchedByPosition">
+            <summary>
+            couplets found by poem number and couplet number (the usual way: the corpus is a few years older than the
+            text but the order and number of couplets are the same)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.MatchedByText">
+            <summary>
+            couplets found by exact text because the positional candidate was too different
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.RejectedLowSimilarity">
+            <summary>
+            couplets whose positional candidate had a text too different from the corpus text (not imported)
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.LiteraryCorpusImportResult.UnmatchedItems">
             <summary>
             couplets not found
@@ -25610,13 +25626,30 @@
             produced the import file): letter forms, diacritics, ZWNJ and punctuation are ignored
             </summary>
         </member>
+        <member name="T:RMuseum.Services.Implementation.GanjoorService.CorpusLetterMap">
+            <summary>
+            the letters of a text (normalized, without spaces/ZWNJ/punctuation) and where each whitespace separated
+            token starts and ends in them
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._CorpusAlign(System.String,System.String,System.Int32@)">
+            <summary>
+            Levenshtein alignment; result[i] is the index in b aligned with a[i] (substitutions count as aligned), -1 if a[i] was deleted
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._CorpusMapRange(RMuseum.Services.Implementation.GanjoorService.CorpusLetterMap,RMuseum.Services.Implementation.GanjoorService.CorpusLetterMap,System.Int32,System.Int32,System.Int32@,System.Int32@)">
+            <summary>
+            moves a word range of the corpus text to the current text of the same hemistich by aligning their letters,
+            so typo fixes, different spacing and new punctuation do not matter. Returns false if the hemistich changed too much.
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportLiteraryCorpusAsync(RMuseum.Models.Ganjoor.LiteraryCorpusImportFile,System.String,System.Boolean)">
             <summary>
             imports literary tags from an annotated corpus file (e.g. the MIT licensed "A Corpus of Persian Literary Text",
-            Hafez ghazals): couplets are matched with the poems under <paramref name="urlPrefix"/> by their normalized text;
+            Hafez ghazals): couplets are matched with the poems under <paramref name="urlPrefix"/> by poem number (…/shN) and couplet number, checked by letter similarity, with exact text as fallback;
             tags get Origin = AcademicCorpus and OriginRef = file.Ref. A poem that already has tags with the same OriginRef
-            is skipped, so the import can be repeated. Positions of words are only used if the poem's hemistich has exactly
-            the same words as the corpus's, otherwise the value stays at couplet level.
+            is skipped, so the import can be repeated. Positions of words are moved to the current text by aligning the letters
+            of the hemistichs (typo fixes, spacing and punctuation changes are tolerated); if a hemistich changed too much the value stays at couplet level.
             </summary>
             <param name="file"></param>
             <param name="urlPrefix">e.g. /hafez/ghazal/</param>

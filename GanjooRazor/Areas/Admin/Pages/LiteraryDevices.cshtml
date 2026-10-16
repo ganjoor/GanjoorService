@@ -224,7 +224,7 @@
                     var lines = [
                         (r.dryRun ? 'گزارش بررسی (چیزی ذخیره نشد)' : 'درون‌ریزی انجام شد'),
                         'بیت‌های فایل: ' + r.items,
-                        'پیداشده: ' + r.matchedItems + ' - پیدانشده: ' + r.unmatchedItems + ' - مبهم: ' + r.ambiguousItems,
+                        'پیداشده: ' + r.matchedItems + ' (با جایگاه: ' + r.matchedByPosition + '، با متن: ' + r.matchedByText + ') - پیدانشده: ' + r.unmatchedItems + ' (که ' + r.rejectedLowSimilarity + ' مورد به‌علت شباهت کم ردشد)',
                         'شعرهای ردشده چون قبلاً درون‌ریزی شده‌اند: ' + r.skippedExistingPoems,
                         'برچسب: ' + r.tagsCreated,
                         'جای دقیق واژه‌ها: ' + r.partsLocated + ' - فقط در سطح بیت: ' + r.partsUnlocated,

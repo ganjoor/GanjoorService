@@ -39,6 +39,113 @@ namespace RMuseum.Services.Implementation
             return string.Join(" ", _CorpusTokens(m1).Where(t => t != "")) + "|" + string.Join(" ", _CorpusTokens(m2).Where(t => t != ""));
         }
 
+        /// <summary>
+        /// the letters of a text (normalized, without spaces/ZWNJ/punctuation) and where each whitespace separated
+        /// token starts and ends in them
+        /// </summary>
+        private class CorpusLetterMap
+        {
+            public string Letters { get; set; }
+            public List<int> TokenStart { get; set; } = new List<int>();
+            public List<int> TokenEnd { get; set; } = new List<int>();
+        }
+
+        private static CorpusLetterMap _CorpusBuildLetterMap(string text)
+        {
+            var map = new CorpusLetterMap();
+            var sb = new System.Text.StringBuilder();
+            foreach (var token in (text ?? "").Split((char[])null, StringSplitOptions.RemoveEmptyEntries))
+            {
+                map.TokenStart.Add(sb.Length);
+                sb.Append(_CorpusNormalizeWord(token));
+                map.TokenEnd.Add(sb.Length);
+            }
+            map.Letters = sb.ToString();
+            return map;
+        }
+
+        /// <summary>
+        /// Levenshtein alignment; result[i] is the index in b aligned with a[i] (substitutions count as aligned), -1 if a[i] was deleted
+        /// </summary>
+        private static int[] _CorpusAlign(string a, string b, out int distance)
+        {
+            int n = a.Length, m = b.Length;
+            var d = new int[n + 1, m + 1];
+            for (int i = 0; i <= n; i++) d[i, 0] = i;
+            for (int j = 0; j <= m; j++) d[0, j] = j;
+            for (int i = 1; i <= n; i++)
+                for (int j = 1; j <= m; j++)
+                    d[i, j] = Math.Min(Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1), d[i - 1, j - 1] + (a[i - 1] == b[j - 1] ? 0 : 1));
+            distance = d[n, m];
+            var res = new int[n];
+            for (int i = 0; i < n; i++) res[i] = -1;
+            int x = n, y = m;
+            while (x > 0 || y > 0)
+            {
+                if (x > 0 && y > 0 && d[x, y] == d[x - 1, y - 1] + (a[x - 1] == b[y - 1] ? 0 : 1))
+                {
+                    res[x - 1] = y - 1;
+                    x--; y--;
+                }
+                else if (x > 0 && d[x, y] == d[x - 1, y] + 1)
+                {
+                    x--;
+                }
+                else
+                {
+                    y--;
+                }
+            }
+            return res;
+        }
+
+        private static double _CorpusSimilarity(string a, string b)
+        {
+            int max = Math.Max(a.Length, b.Length);
+            if (max == 0) return 1;
+            _CorpusAlign(a, b, out int distance);
+            return 1.0 - (double)distance / max;
+        }
+
+        /// <summary>
+        /// moves a word range of the corpus text to the current text of the same hemistich by aligning their letters,
+        /// so typo fixes, different spacing and new punctuation do not matter. Returns false if the hemistich changed too much.
+        /// </summary>
+        private static bool _CorpusMapRange(CorpusLetterMap corpus, CorpusLetterMap current, int wordStart, int wordEnd, out int newStart, out int newEnd)
+        {
+            newStart = newEnd = 0;
+            if (wordStart < 1 || wordEnd < wordStart || wordEnd > corpus.TokenStart.Count)
+                return false;
+            int cs = corpus.TokenStart[wordStart - 1];
+            int ce = corpus.TokenEnd[wordEnd - 1];
+            if (ce <= cs || current.Letters.Length == 0)
+                return false;
+            var map = _CorpusAlign(corpus.Letters, current.Letters, out int distance);
+            if (1.0 - (double)distance / Math.Max(corpus.Letters.Length, current.Letters.Length) < 0.7)
+                return false;
+            int first = -1, last = -1;
+            for (int k = cs; k < ce; k++)
+            {
+                if (map[k] < 0) continue;
+                if (first < 0) first = map[k];
+                last = map[k];
+            }
+            if (first < 0)
+                return false;
+            int s = -1, e = -1;
+            for (int t = 0; t < current.TokenStart.Count; t++)
+            {
+                if (current.TokenEnd[t] <= current.TokenStart[t]) continue;
+                if (s < 0 && first >= current.TokenStart[t] && first < current.TokenEnd[t]) s = t;
+                if (last >= current.TokenStart[t] && last < current.TokenEnd[t]) e = t;
+            }
+            if (s < 0 || e < s)
+                return false;
+            newStart = s + 1;
+            newEnd = e + 1;
+            return true;
+        }
+
         private class CorpusCouplet
         {
             public int PoemId { get; set; }
@@ -50,10 +157,10 @@ namespace RMuseum.Services.Implementation
 
         /// <summary>
         /// imports literary tags from an annotated corpus file (e.g. the MIT licensed "A Corpus of Persian Literary Text",
-        /// Hafez ghazals): couplets are matched with the poems under <paramref name="urlPrefix"/> by their normalized text;
+        /// Hafez ghazals): couplets are matched with the poems under <paramref name="urlPrefix"/> by poem number (…/shN) and couplet number, checked by letter similarity, with exact text as fallback;
         /// tags get Origin = AcademicCorpus and OriginRef = file.Ref. A poem that already has tags with the same OriginRef
-        /// is skipped, so the import can be repeated. Positions of words are only used if the poem's hemistich has exactly
-        /// the same words as the corpus's, otherwise the value stays at couplet level.
+        /// is skipped, so the import can be repeated. Positions of words are moved to the current text by aligning the letters
+        /// of the hemistichs (typo fixes, spacing and punctuation changes are tolerated); if a hemistich changed too much the value stays at couplet level.
         /// </summary>
         /// <param name="file"></param>
         /// <param name="urlPrefix">e.g. /hafez/ghazal/</param>
@@ -124,6 +231,15 @@ namespace RMuseum.Services.Implementation
                 }
                 var index = couplets.Where(c => c.M2 != null).GroupBy(c => _CorpusCoupletKey(c.M1, c.M2)).ToDictionary(g => g.Key, g => g.ToList());
 
+                //poem number (…/sh12) and couplet number: the corpus is older than the text, but order and number of couplets are the same
+                var coupletByPosition = new Dictionary<string, CorpusCouplet>();
+                foreach (var c in couplets)
+                {
+                    var m = Regex.Match(c.PoemUrl.TrimEnd('/'), @"/sh(\d+)$");
+                    if (m.Success)
+                        coupletByPosition[m.Groups[1].Value + "/" + c.Number] = c;
+                }
+
                 var alreadyImportedPoems = new HashSet<int>(await _context.PoemLiteraryTags.AsNoTracking()
                     .Where(t => t.Origin == LiteraryTagOrigin.AcademicCorpus && t.OriginRef == file.Ref && poemIds.Contains(t.PoemId))
                     .Select(t => t.PoemId).Distinct().ToListAsync());
@@ -149,28 +265,39 @@ namespace RMuseum.Services.Implementation
                 {
                     if (item.Tags == null || item.Tags.Count == 0)
                         continue;
-                    string key = _CorpusCoupletKey(item.M1, item.M2);
-                    if (!index.TryGetValue(key, out var candidates))
-                    {
-                        result.UnmatchedItems++;
-                        if (result.Messages.Count < 40)
-                            result.Messages.Add($"یافت نشد: غزل {item.GhazalId} بیت {item.BaytId}: {item.M1}");
-                        continue;
-                    }
+                    string corpusText1 = string.Join("", _CorpusTokens(item.M1));
+                    string corpusText2 = string.Join("", _CorpusTokens(item.M2));
                     CorpusCouplet found = null;
-                    if (candidates.Count == 1)
-                        found = candidates[0];
-                    else
+                    bool rejectedHere = false;
+                    if (coupletByPosition.TryGetValue(item.GhazalId + "/" + item.BaytId, out var byPosition) && byPosition.M2 != null)
                     {
-                        var byNumber = candidates.Where(c => c.PoemUrl.TrimEnd('/').EndsWith("/sh" + item.GhazalId)).ToList();
-                        if (byNumber.Count == 1)
-                            found = byNumber[0];
+                        double similarity = _CorpusSimilarity(corpusText1 + corpusText2, string.Join("", _CorpusTokens(byPosition.M1)) + string.Join("", _CorpusTokens(byPosition.M2)));
+                        if (similarity >= 0.7)
+                        {
+                            found = byPosition;
+                            result.MatchedByPosition++;
+                        }
+                        else
+                        {
+                            rejectedHere = true;
+                            if (result.Messages.Count < 40)
+                                result.Messages.Add($"شباهت کم ({similarity:0.00}) در غزل {item.GhazalId} بیت {item.BaytId}: «{item.M1}» ≠ «{byPosition.M1}»");
+                        }
                     }
                     if (found == null)
                     {
-                        result.AmbiguousItems++;
-                        if (result.Messages.Count < 40)
-                            result.Messages.Add($"چندمعنایی: غزل {item.GhazalId} بیت {item.BaytId}: {item.M1}");
+                        //fall back to the exact text
+                        if (index.TryGetValue(_CorpusCoupletKey(item.M1, item.M2), out var candidates) && candidates.Count == 1)
+                        {
+                            found = candidates[0];
+                            result.MatchedByText++;
+                        }
+                    }
+                    if (found == null)
+                    {
+                        result.UnmatchedItems++;
+                        if (rejectedHere)
+                            result.RejectedLowSimilarity++;
                         continue;
                     }
                     result.MatchedItems++;
@@ -180,11 +307,10 @@ namespace RMuseum.Services.Implementation
                         continue;
                     }
 
-                    //words must be exactly those of the corpus, else positions mean nothing
-                    string[] raw1 = (found.M1 ?? "").Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
-                    string[] raw2 = (found.M2 ?? "").Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
-                    bool sameWords1 = _CorpusTokens(found.M1).SequenceEqual(_CorpusTokens(item.M1));
-                    bool sameWords2 = _CorpusTokens(found.M2).SequenceEqual(_CorpusTokens(item.M2));
+                    var corpusMap1 = _CorpusBuildLetterMap(item.M1);
+                    var corpusMap2 = _CorpusBuildLetterMap(item.M2);
+                    var currentMap1 = _CorpusBuildLetterMap(found.M1);
+                    var currentMap2 = _CorpusBuildLetterMap(found.M2);
 
                     foreach (var tag in item.Tags)
                     {
@@ -214,14 +340,19 @@ namespace RMuseum.Services.Implementation
                             bool isSpan = slot.Kind == LiteraryDeviceSlotKind.Span || slot.Kind == LiteraryDeviceSlotKind.SpanConcept;
                             if (isSpan)
                             {
-                                bool located = part.Misra != null && part.WordStart != null && part.WordEnd != null
-                                    && part.WordStart >= 1 && part.WordEnd >= part.WordStart
-                                    && ((part.Misra == 1 && sameWords1 && part.WordEnd <= raw1.Length) || (part.Misra == 2 && sameWords2 && part.WordEnd <= raw2.Length));
+                                bool located = false;
+                                int newStart = 0, newEnd = 0;
+                                if ((part.Misra == 1 || part.Misra == 2) && part.WordStart != null && part.WordEnd != null)
+                                {
+                                    located = part.Misra == 1
+                                        ? _CorpusMapRange(corpusMap1, currentMap1, part.WordStart.Value, part.WordEnd.Value, out newStart, out newEnd)
+                                        : _CorpusMapRange(corpusMap2, currentMap2, part.WordStart.Value, part.WordEnd.Value, out newStart, out newEnd);
+                                }
                                 if (located)
                                 {
                                     dbPart.Misra = part.Misra.Value;
-                                    dbPart.WordStart = part.WordStart;
-                                    dbPart.WordEnd = part.WordEnd;
+                                    dbPart.WordStart = newStart;
+                                    dbPart.WordEnd = newEnd;
                                     result.PartsLocated++;
                                 }
                                 else
