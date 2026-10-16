@@ -108,6 +108,10 @@ namespace GanjooRazor.Pages
             if (maintenanceResult != null)
                 return maintenanceResult;
 
+            // the overview lives in the /vazn page now; this page lists the verses of a device or concept
+            if (device <= 0 && concept <= 0 && poet <= 0)
+                return Redirect("/vazn#literary-stats-tab-items");
+
             InitializeCommonPageState();
 
             DeviceId = Math.Max(0, device);

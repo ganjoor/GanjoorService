@@ -68,6 +68,7 @@
                 <div class="poemtablinks"><a href="#rhyhtms-stats-tab-items">وزن‌ها</a></div>
                 <div class="poemtablinks"><a href="#couplets-stats-tab-items">تعداد ابیات</a></div>
                 <div class="poemtablinks active"><a href="#wordcounts-placeholder-tab-items">بسامد واژگان</a></div>
+                <div class="poemtablinks"><a href="#literary-stats-tab-items">آرایه‌های ادبی</a></div>
             </div>
 
             <div id="wordcounts-placeholder">
@@ -76,6 +77,27 @@
                     <partial name="~/Pages/Partials/GanjoorPage/_CategoryWordsCountPartial.cshtml" model="Model.CategoryWordsCounts" />
                 }
             </div>
+
+            <div class="poempretab" id="literary-stats-tab-items"></div>
+            <div class="poemtab">
+                <div class="poemtablinks"><a href="#pretab">سخنوران</a></div>
+                <div class="poemtablinks"><a href="#langs-stats-tab-items">زبان‌ها</a></div>
+                <div class="poemtablinks"><a href="#formats-stats-tab-items">قالب‌ها</a></div>
+                <div class="poemtablinks"><a href="#rhyhtms-stats-tab-items">وزن‌ها</a></div>
+                <div class="poemtablinks"><a href="#couplets-stats-tab-items">تعداد ابیات</a></div>
+                <div class="poemtablinks"><a href="#wordcounts-placeholder-tab-items">بسامد واژگان</a></div>
+                <div class="poemtablinks active"><a href="#literary-stats-tab-items">آرایه‌های ادبی</a></div>
+            </div>
+
+            <style>
+                .lit-stats-table { border-collapse: collapse; width: 100%; max-width: 560px; margin: 8px auto; }
+                .lit-stats-table th, .lit-stats-table td { border-bottom: 1px solid rgba(128,128,128,.25); padding: 5px 8px; text-align: right; }
+                .lit-stats-table th:not(:first-child), .lit-stats-table td:not(:first-child) { text-align: center; width: 90px; }
+                .lit-stats-concepts { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+                .lit-stats-concepts li span { opacity: .65; font-size: 85%; }
+                .lit-stats-poets { margin: 8px 0; }
+            </style>
+            <div id="literary-stats-placeholder"></div>
         }
     </article>
 
@@ -127,5 +149,34 @@
         }
 
         asyncStartupLoadWordCounts();
+
+        // literary devices statistics: loaded when their section scrolls into view (or at once for an old browser).
+        // Keep the query of this request free of the letter "v": /vazn?v... is redirected to /simi.
+        function loadLiteraryStats(poetId) {
+            var box = document.getElementById('literary-stats-placeholder');
+            if (!box) return;
+            box.innerHTML = '<div class="bnumdiv"><img src="/image/loading.gif" alt="بارگذاری"/></div>';
+            $.ajax({
+                type: 'GET',
+                url: '?Handler=LiteraryStats&poetId=' + String(poetId || 0),
+                error: function () { box.innerHTML = '<p>در دریافت آمار آرایه‌های ادبی خطایی رخ داد.</p>'; },
+                success: function (data) { box.innerHTML = data; }
+            });
+        }
+        (function () {
+            var box = document.getElementById('literary-stats-placeholder');
+            if (!box) return;
+            if ('IntersectionObserver' in window) {
+                var io = new IntersectionObserver(function (entries) {
+                    if (entries.some(function (e) { return e.isIntersecting; })) {
+                        io.disconnect();
+                        loadLiteraryStats(0);
+                    }
+                }, { rootMargin: '300px' });
+                io.observe(box);
+            } else {
+                loadLiteraryStats(0);
+            }
+        })();
     </script>
 }

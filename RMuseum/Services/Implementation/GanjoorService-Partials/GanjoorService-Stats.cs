@@ -1000,6 +1000,7 @@ namespace RMuseum.Services.Implementation
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#rhyhtms-stats-tab-items\">وزن‌ها</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#couplets-stats-tab-items\">تعداد ابیات</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#wordcounts-placeholder-tab-items\">بسامد واژگان</a></div>{Environment.NewLine}";
+                                        htmlText += $"  <div class=\"poemtablinks\"><a href=\"#literary-stats-tab-items\">آرایه‌های ادبی</a></div>{Environment.NewLine}";
                                         htmlText += $"</div>{Environment.NewLine}";
                                         htmlText +=
                                         $"<p>تا تاریخ {LanguageUtils.FormatDate(DateTime.Now)} مجموعاً {LanguageUtils.FormatMoney(sumPoetsCouplets)} بیت شعر از طریق سایت گنجور در دسترس قرار گرفته است. در جدول زیر که سخنوران در آنها بر اساس تعداد ابیات اشعارشان به صورت نزولی مرتب شده‌اند با کلیک بر روی نام هر سخنور می‌توانید آمار اوزان اشعار او را مشاهده کنید.</p>{Environment.NewLine}";
@@ -1037,6 +1038,7 @@ namespace RMuseum.Services.Implementation
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#rhyhtms-stats-tab-items\">وزن‌ها</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#couplets-stats-tab-items\">تعداد ابیات</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#wordcounts-placeholder-tab-items\">بسامد واژگان</a></div>{Environment.NewLine}";
+                                        htmlText += $"  <div class=\"poemtablinks\"><a href=\"#literary-stats-tab-items\">آرایه‌های ادبی</a></div>{Environment.NewLine}";
                                         htmlText += $"</div>{Environment.NewLine}";
 
 
@@ -1078,6 +1080,7 @@ namespace RMuseum.Services.Implementation
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#rhyhtms-stats-tab-items\">وزن‌ها</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#couplets-stats-tab-items\">تعداد ابیات</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#wordcounts-placeholder-tab-items\">بسامد واژگان</a></div>{Environment.NewLine}";
+                                        htmlText += $"  <div class=\"poemtablinks\"><a href=\"#literary-stats-tab-items\">آرایه‌های ادبی</a></div>{Environment.NewLine}";
                                         htmlText += $"</div>{Environment.NewLine}";
 
 
@@ -1116,6 +1119,7 @@ namespace RMuseum.Services.Implementation
                                         htmlText += $"  <div class=\"poemtablinks active\"><a href=\"#rhyhtms-stats-tab-items\">وزن‌ها</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#couplets-stats-tab-items\">تعداد ابیات</a></div>{Environment.NewLine}";
                                         htmlText += $"  <div class=\"poemtablinks\"><a href=\"#wordcounts-placeholder-tab-items\">بسامد واژگان</a></div>{Environment.NewLine}";
+                                        htmlText += $"  <div class=\"poemtablinks\"><a href=\"#literary-stats-tab-items\">آرایه‌های ادبی</a></div>{Environment.NewLine}";
                                         htmlText += $"</div>{Environment.NewLine}";
 
 
@@ -1176,6 +1180,7 @@ namespace RMuseum.Services.Implementation
                                             htmlText += $"  <div class=\"poemtablinks\"><a href=\"#rhyhtms-stats-tab-items\">وزن‌ها</a></div>{Environment.NewLine}";
                                             htmlText += $"  <div class=\"poemtablinks active\"><a href=\"#couplets-stats-tab-items\">تعداد ابیات</a></div>{Environment.NewLine}";
                                             htmlText += $"  <div class=\"poemtablinks\"><a href=\"#wordcounts-placeholder-tab-items\">بسامد واژگان</a></div>{Environment.NewLine}";
+                                            htmlText += $"  <div class=\"poemtablinks\"><a href=\"#literary-stats-tab-items\">آرایه‌های ادبی</a></div>{Environment.NewLine}";
                                             htmlText += $"</div>{Environment.NewLine}";
 
                                             htmlText += $"<p>آمار فراوانی تعداد ابیات اشعار به شرح زیر است:</p>{Environment.NewLine}";

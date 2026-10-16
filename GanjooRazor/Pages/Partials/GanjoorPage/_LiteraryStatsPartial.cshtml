@@ -1,0 +1,71 @@
+﻿@model GanjooRazor.Pages._LiteraryStatsPartialModel
+@if (Model.Failed || Model.Overview == null)
+{
+    <p>در دریافت آمار آرایه‌های ادبی خطایی رخ داد.</p>
+    return;
+}
+<div id="literary-stats-section">
+    <h2>آرایه‌های ادبی</h2>
+    @if (Model.Overview.TotalTags == 0)
+    {
+        <p>هنوز آرایه‌ای ثبت نشده است.</p>
+        return;
+    }
+    <p>
+        تاکنون @RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Overview.TotalTags) آرایه در @RMuseum.Services.Implementation.LanguageUtils.FormatMoney(Model.Overview.TotalPoems) شعر@(Model.PoetName != null ? " از " + Model.PoetName : "") برچسب‌گذاری شده است.
+        روی نام هر آرایه یا مفهوم بزنید تا نمونه‌هایش را ببینید.
+    </p>
+
+    @if (Model.Overview.Poets != null && Model.Overview.Poets.Length > 1)
+    {
+        <p class="lit-stats-poets">
+            شاعر:
+            @if (Model.PoetId == 0)
+            {
+                <b>همه</b>
+            }
+            else
+            {
+                <a href="javascript:void(0)" onclick="loadLiteraryStats(0); return false;">همه</a>
+            }
+            @foreach (var p in Model.Overview.Poets.Take(12))
+            {
+                <text> · </text>
+                @if (p.PoetId == Model.PoetId)
+                {
+                    <b>@p.Name</b>
+                }
+                else
+                {
+                    <a href="javascript:void(0)" onclick="loadLiteraryStats(@p.PoetId); return false;">@p.Name</a>
+                }
+            }
+        </p>
+    }
+
+    <table class="lit-stats-table">
+        <tr><th>آرایه</th><th>تعداد</th><th>شعر</th></tr>
+        @foreach (var d in Model.Overview.Devices)
+        {
+            @if (Model.DevicesById.TryGetValue(d.DeviceId, out var device))
+            {
+                <tr>
+                    <td><a href="/literary?device=@d.DeviceId@(Model.PoetId > 0 ? "&poet=" + Model.PoetId : "")" title="@device.Definition">@device.Name</a></td>
+                    <td>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(d.TagCount)</td>
+                    <td>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(d.PoemCount)</td>
+                </tr>
+            }
+        }
+    </table>
+
+    @if (Model.Overview.TopConcepts != null && Model.Overview.TopConcepts.Length > 0)
+    {
+        <h3>پرکاربردترین مفهوم‌ها</h3>
+        <ul class="lit-stats-concepts">
+            @foreach (var c in Model.Overview.TopConcepts)
+            {
+                <li><a href="/literary?concept=@c.ConceptId@(Model.PoetId > 0 ? "&poet=" + Model.PoetId : "")">@c.Name</a> <span>@RMuseum.Services.Implementation.LanguageUtils.FormatMoney(c.UsageCount)</span></li>
+            }
+        </ul>
+    }
+</div>
