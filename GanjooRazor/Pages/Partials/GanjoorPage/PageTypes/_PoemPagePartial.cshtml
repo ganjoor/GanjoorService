@@ -373,7 +373,7 @@
                     </div>
                 }
 
-                <div class="notice" id="poem-literary" data-nosnippet style="display:none" data-poem-id="@Model.GanjoorPage.Id" data-url="@Model.GanjoorPage.FullUrl" data-logged-in="@(Model.LoggedIn ? "1" : "0")">
+                <div class="notice" id="poem-literary" data-nosnippet style="display:none" data-poem-id="@Model.GanjoorPage.Id" data-url="@Model.GanjoorPage.FullUrl">
                     <div class="century">آرایه‌های ادبی</div>
                     <div id="literary-tags-placeholder"></div>
                 </div>
@@ -407,8 +407,8 @@
                                 holder.innerHTML = data;
                                 var empty = holder.querySelector('[data-lit-empty]');
                                 var failed = holder.querySelector('[data-lit-failed]');
-                                // poems without tags show nothing, except a suggestion link for logged in users
-                                if (failed || (empty && box.getAttribute('data-logged-in') !== '1')) {
+                                // poems without tags (or when loading fails) show no section at all
+                                if (failed || empty) {
                                     return;
                                 }
                                 box.style.display = '';

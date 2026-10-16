@@ -61,7 +61,7 @@ namespace RMuseum.Services.Implementation
         /// submit the results as ordinary (unreviewed) poem edit suggestions of the given user
         /// </summary>
         /// <param name="masterCatId">book category id (33 = Shahnameh); 0 = all poems</param>
-        /// <param name="startFrom">offset after the resume point</param>
+        /// <param name="startFrom">id of the first poem to process (the resume point wins when it is greater)</param>
         /// <param name="count">0 = all</param>
         /// <param name="restart">false: resume after the last processed poem of the previous run (same masterCatId); true: start from the beginning</param>
         public void OpenAIStartSuggestingPoemTitles(int masterCatId, int startFrom, int count, bool restart = false)
@@ -102,7 +102,7 @@ namespace RMuseum.Services.Implementation
                               await _AISetCheckpointAsync(context, checkpointName, 0);
                           int lastSafeId = await _AIGetCheckpointAsync(context, checkpointName);
 
-                          var titlesQuery = context.GanjoorPoems.AsNoTracking().Where(p => p.Id > lastSafeId && p.Title.StartsWith("بخش"));
+                          var titlesQuery = context.GanjoorPoems.AsNoTracking().Where(p => p.Id > lastSafeId && p.Id >= startFrom && p.Title.StartsWith("بخش"));
                           if (masterCatId > 0)
                           {
                               //category tree under the master category
@@ -115,7 +115,6 @@ namespace RMuseum.Services.Implementation
                               .ToListAsync())
                               .Where(p => AITitleBareSectionRegex.IsMatch(p.Title))
                               .OrderBy(p => p.Id)
-                              .Skip(startFrom)
                               .ToList();
                           if (count > 0)
                               candidates = candidates.Take(count).ToList();

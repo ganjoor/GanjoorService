@@ -26212,22 +26212,28 @@
             last processed id of a resumable AI job (stored in the generic options table), 0 if none
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._AIGetFailedIdsAsync(RMuseum.DbContext.RMuseumDbContext,System.String)">
+            <summary>
+            ids that failed (an exception, not a rejected answer) in earlier runs of a resumable AI job; they are retried
+            by the next run while the checkpoint itself keeps moving forward
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingCoupletSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean,System.Boolean)">
             <summary>
             fill (or regenerate) couplet summaries using open ai
             </summary>
-            <param name="startFrom">offset in the list of couplets to process (the list is ordered by verse id, so with regenerateAI it is stable and can be used to resume)</param>
-            <param name="count">0 = all</param>
+            <param name="startFrom">id of the first poem to process (poems are processed in id order; the resume point wins when it is greater)</param>
+            <param name="count">number of poems to process, 0 = all</param>
             <param name="masterCatId">only couplets of poems under this category (0 or null = the whole set)</param>
             <param name="regenerateAI">false: only couplets without any summary; true: also couplets whose summary starts with «هوش مصنوعی:» (human written summaries are never touched)</param>
-            <param name="restart">false: resume after the last processed couplet of the previous run (same category and regenerateAI); true: start from the beginning</param>
+            <param name="restart">false: resume after the last processed poem of the previous run (same category and regenerateAI); true: start from the beginning</param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartFillingPoemSummaries(System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean,System.Boolean)">
             <summary>
             fill (or regenerate) poem summaries using open ai
             </summary>
-            <param name="startFrom">offset in the list of poems to process (ordered by poem id, so with regenerateAI it is stable and can be used to resume)</param>
-            <param name="count">0 = all</param>
+            <param name="startFrom">id of the first poem to process (poems are processed in id order; the resume point wins when it is greater)</param>
+            <param name="count">number of poems to process, 0 = all</param>
             <param name="masterCatId">only poems under this category (0 or null = the whole set)</param>
             <param name="regenerateAI">false: only poems without any summary; true: also poems whose summary starts with «هوش مصنوعی:» (human written summaries are never touched)</param>
             <param name="restart">false: resume after the last processed poem of the previous run (same category and regenerateAI); true: start from the beginning</param>
@@ -26236,7 +26242,7 @@
             <summary>
             geo tag poems using AI
             </summary>
-            <param name="startFrom">offset after the resume point</param>
+            <param name="startFrom">id of the first poem to process (the resume point wins when it is greater)</param>
             <param name="count">0 = all</param>
             <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
         </member>
@@ -26287,7 +26293,7 @@
             submit the results as ordinary (unreviewed) poem edit suggestions of the given user
             </summary>
             <param name="masterCatId">book category id (33 = Shahnameh); 0 = all poems</param>
-            <param name="startFrom">offset after the resume point</param>
+            <param name="startFrom">id of the first poem to process (the resume point wins when it is greater)</param>
             <param name="count">0 = all</param>
             <param name="restart">false: resume after the last processed poem of the previous run (same masterCatId); true: start from the beginning</param>
         </member>

@@ -147,6 +147,38 @@ namespace RMuseum.Services.Implementation
             await context.SaveChangesAsync();
         }
 
+        private const int AIMaxRememberedFailures = 1000;
+
+        /// <summary>
+        /// ids that failed (an exception, not a rejected answer) in earlier runs of a resumable AI job; they are retried
+        /// by the next run while the checkpoint itself keeps moving forward
+        /// </summary>
+        private static async Task<HashSet<int>> _AIGetFailedIdsAsync(RMuseumDbContext context, string name)
+        {
+            var value = await context.Options.AsNoTracking().Where(o => o.Name == name + "-failed" && o.RAppUserId == null).Select(o => o.Value).SingleOrDefaultAsync();
+            var res = new HashSet<int>();
+            foreach (var part in (value ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries))
+                if (int.TryParse(part, out int id))
+                    res.Add(id);
+            return res;
+        }
+
+        private static async Task _AISetFailedIdsAsync(RMuseumDbContext context, string name, HashSet<int> ids)
+        {
+            string value = string.Join(",", ids.OrderBy(i => i).Take(AIMaxRememberedFailures));
+            var option = await context.Options.Where(o => o.Name == name + "-failed" && o.RAppUserId == null).SingleOrDefaultAsync();
+            if (option == null)
+            {
+                context.Options.Add(new RSecurityBackend.Models.Generic.Db.RGenericOption { Name = name + "-failed", Value = value, RAppUserId = null });
+            }
+            else
+            {
+                option.Value = value;
+                context.Options.Update(option);
+            }
+            await context.SaveChangesAsync();
+        }
+
         private class AIPoemCoupletCache
         {
             public int PoemId;
@@ -157,11 +189,11 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// fill (or regenerate) couplet summaries using open ai
         /// </summary>
-        /// <param name="startFrom">offset in the list of couplets to process (the list is ordered by verse id, so with regenerateAI it is stable and can be used to resume)</param>
-        /// <param name="count">0 = all</param>
+        /// <param name="startFrom">id of the first poem to process (poems are processed in id order; the resume point wins when it is greater)</param>
+        /// <param name="count">number of poems to process, 0 = all</param>
         /// <param name="masterCatId">only couplets of poems under this category (0 or null = the whole set)</param>
         /// <param name="regenerateAI">false: only couplets without any summary; true: also couplets whose summary starts with «هوش مصنوعی:» (human written summaries are never touched)</param>
-        /// <param name="restart">false: resume after the last processed couplet of the previous run (same category and regenerateAI); true: start from the beginning</param>
+        /// <param name="restart">false: resume after the last processed poem of the previous run (same category and regenerateAI); true: start from the beginning</param>
         public void OpenAIStartFillingCoupletSummaries(int startFrom, int count, int? masterCatId, bool regenerateAI, bool restart = false)
         {
             _backgroundTaskQueue.QueueBackgroundWorkItem
@@ -205,26 +237,61 @@ namespace RMuseum.Services.Implementation
                                       (regenerateAI && v.CoupletSummary.StartsWith(AISummaryPrefix))
                                       )
                               );
-                          string checkpointName = _AICheckpointName("Couplet", masterCatId, regenerateAI);
+                          //the resume point is a POEM id (all poems up to it are done); a poem interrupted in the middle is processed again
+                          //from its first couplet, which is harmless: couplets that already have a summary are skipped unless regenerateAI is set
+                          string checkpointName = _AICheckpointName("CoupletPoem", masterCatId, regenerateAI);
                           if (restart)
                               await _AISetCheckpointAsync(context, checkpointName, 0);
                           int lastSafeId = await _AIGetCheckpointAsync(context, checkpointName);
-                          if (lastSafeId > 0)
-                              versesQuery = versesQuery.Where(v => v.Id > lastSafeId);
+                          var failedIds = await _AIGetFailedIdsAsync(context, checkpointName); //poem ids
+                          if (restart)
+                              failedIds.Clear();
+                          var failedIdList = failedIds.ToList();
+                          int fromPoemId = Math.Max(startFrom, 1);
+                          versesQuery = versesQuery.Where(v => (v.PoemId > lastSafeId && v.PoemId >= fromPoemId) || failedIdList.Contains(v.PoemId));
                           if (catIds != null)
                               versesQuery = versesQuery.Where(v => context.GanjoorPoems.Any(p => p.Id == v.PoemId && catIds.Contains(p.CatId)));
+                          if (count > 0)
+                          {
+                              var runPoemIds = await versesQuery.Select(v => v.PoemId).Distinct().OrderBy(id => id).Take(count).ToListAsync();
+                              int maxPoemId = runPoemIds.Count == 0 ? 0 : runPoemIds.Max();
+                              versesQuery = versesQuery.Where(v => v.PoemId <= maxPoemId);
+                          }
 
-                          var orderedQuery = versesQuery.OrderBy(v => v.Id).Select(v => new { v.Id, v.PoemId, v.CoupletIndex, v.VersePosition });
-                          var pagedQuery = startFrom > 0 ? orderedQuery.Skip(startFrom) : orderedQuery;
-                          var verses = count > 0 ? await pagedQuery.Take(count).ToListAsync() : await pagedQuery.ToListAsync();
+                          var verses = await versesQuery.OrderBy(v => v.PoemId).ThenBy(v => v.Id)
+                              .Select(v => new { v.Id, v.PoemId, v.CoupletIndex, v.VersePosition }).ToListAsync();
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Verse count = {verses.Count}");
 
                           AIPoemCoupletCache cache = null;
                           int done = 0, rejected = 0, consecutiveFailures = 0, sinceSave = 0;
-                          bool failedSeen = false, aborted = false;
+                          bool aborted = false;
+                          int currentPoemId = 0;
+                          bool currentPoemFailed = false;
+                          async Task FinishPoemAsync(int poemId, bool failedHere)
+                          {
+                              if (failedHere)
+                                  failedIds.Add(poemId);
+                              else
+                                  failedIds.Remove(poemId);
+                              lastSafeId = Math.Max(lastSafeId, poemId);
+                              if (++sinceSave >= 10)
+                              {
+                                  sinceSave = 0;
+                                  await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                                  await _AISetFailedIdsAsync(context, checkpointName, failedIds);
+                              }
+                          }
                           for (var i = 0; i < verses.Count; i++)
                           {
                               var verse = verses[i];
+                              if (verse.PoemId != currentPoemId)
+                              {
+                                  if (currentPoemId != 0)
+                                      await FinishPoemAsync(currentPoemId, currentPoemFailed);
+                                  currentPoemId = verse.PoemId;
+                                  currentPoemFailed = false;
+                              }
+                              bool itemFailed = false;
                               try
                               {
                                   var editableVerse = await context.GanjoorVerses.Where(v => v.Id == verse.Id).SingleAsync();
@@ -294,34 +361,38 @@ namespace RMuseum.Services.Implementation
                               catch (Exception exp)
                               {
                                   rejected++;
-                                  failedSeen = true; //the checkpoint stays before this item, so it is retried on the next run
+                                  itemFailed = true; //remembered and retried by the next run; the checkpoint itself keeps moving
                                   context.ChangeTracker.Clear();
                                   if (++consecutiveFailures >= AIMaxConsecutiveFailures)
                                   {
                                       aborted = true;
-                                      await jobProgressServiceEF.UpdateJob(job.Id, (int)(100.0 * i / Math.Max(1, verses.Count)), $"متوقف شد پس از {AIMaxConsecutiveFailures} خطای پیاپی در بیت {verse.Id}", false, exp.ToString());
+                                      await jobProgressServiceEF.UpdateJob(job.Id, (int)(100.0 * i / Math.Max(1, verses.Count)), $"متوقف شد پس از {AIMaxConsecutiveFailures} خطای پیاپی در بیت {verse.Id} (شعر {verse.PoemId})", false, exp.ToString());
                                   }
                               }
                               finally
                               {
-                                  if (!failedSeen)
-                                  {
-                                      lastSafeId = verse.Id;
-                                      if (++sinceSave >= 10)
-                                      {
-                                          sinceSave = 0;
-                                          await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
-                                      }
-                                  }
+                                  if (itemFailed)
+                                      currentPoemFailed = true;
                               }
                               if (aborted)
                                   break;
                           }
+                          if (currentPoemId != 0)
+                          {
+                              if (aborted)
+                              {
+                                  if (currentPoemFailed)
+                                      failedIds.Add(currentPoemId); //the poem itself is processed again by the next run
+                              }
+                              else
+                                  await FinishPoemAsync(currentPoemId, currentPoemFailed);
+                          }
 
                           if (lastSafeId > 0)
                               await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                          await _AISetFailedIdsAsync(context, checkpointName, failedIds);
                           if (!aborted)
-                              await jobProgressServiceEF.UpdateJob(job.Id, 100, $"ایجاد: {done}، ردشده یا ناموفق: {rejected} - آخرین بیت پردازش‌شده: {lastSafeId}", true);
+                              await jobProgressServiceEF.UpdateJob(job.Id, 100, $"ایجاد: {done}، ردشده یا ناموفق: {rejected} (شعرهای در انتظار تلاش دوباره: {failedIds.Count}) - آخرین شعر پردازش‌شده: {lastSafeId}", true);
                       }
                       catch (Exception exp)
                       {
@@ -336,8 +407,8 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// fill (or regenerate) poem summaries using open ai
         /// </summary>
-        /// <param name="startFrom">offset in the list of poems to process (ordered by poem id, so with regenerateAI it is stable and can be used to resume)</param>
-        /// <param name="count">0 = all</param>
+        /// <param name="startFrom">id of the first poem to process (poems are processed in id order; the resume point wins when it is greater)</param>
+        /// <param name="count">number of poems to process, 0 = all</param>
         /// <param name="masterCatId">only poems under this category (0 or null = the whole set)</param>
         /// <param name="regenerateAI">false: only poems without any summary; true: also poems whose summary starts with «هوش مصنوعی:» (human written summaries are never touched)</param>
         /// <param name="restart">false: resume after the last processed poem of the previous run (same category and regenerateAI); true: start from the beginning</param>
@@ -372,21 +443,24 @@ namespace RMuseum.Services.Implementation
                           if (restart)
                               await _AISetCheckpointAsync(context, checkpointName, 0);
                           int lastSafeId = await _AIGetCheckpointAsync(context, checkpointName);
-                          if (lastSafeId > 0)
-                              poemsQuery = poemsQuery.Where(p => p.Id > lastSafeId);
+                          var failedIds = await _AIGetFailedIdsAsync(context, checkpointName);
+                          if (restart)
+                              failedIds.Clear();
+                          var failedIdList = failedIds.ToList();
+                          poemsQuery = poemsQuery.Where(p => (p.Id > lastSafeId && p.Id >= startFrom) || failedIdList.Contains(p.Id));
                           if (catIds != null)
                               poemsQuery = poemsQuery.Where(p => catIds.Contains(p.CatId));
 
                           var orderedQuery = poemsQuery.OrderBy(p => p.Id).Select(p => new { p.Id, p.FullTitle });
-                          var pagedQuery = startFrom > 0 ? orderedQuery.Skip(startFrom) : orderedQuery;
-                          var poems = count > 0 ? await pagedQuery.Take(count).ToListAsync() : await pagedQuery.ToListAsync();
+                          var poems = count > 0 ? await orderedQuery.Take(count).ToListAsync() : await orderedQuery.ToListAsync();
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Poems count = {poems.Count}");
 
                           int done = 0, rejected = 0, consecutiveFailures = 0, sinceSave = 0;
-                          bool failedSeen = false, aborted = false;
+                          bool aborted = false;
                           for (var i = 0; i < poems.Count; i++)
                           {
                               var poem = poems[i];
+                              bool itemFailed = false;
                               try
                               {
                                   var editablePoem = await context.GanjoorPoems.Where(p => p.Id == poem.Id).SingleAsync();
@@ -431,7 +505,7 @@ namespace RMuseum.Services.Implementation
                               catch (Exception exp)
                               {
                                   rejected++;
-                                  failedSeen = true; //the checkpoint stays before this item, so it is retried on the next run
+                                  itemFailed = true; //remembered and retried by the next run; the checkpoint itself keeps moving
                                   context.ChangeTracker.Clear();
                                   if (++consecutiveFailures >= AIMaxConsecutiveFailures)
                                   {
@@ -441,14 +515,16 @@ namespace RMuseum.Services.Implementation
                               }
                               finally
                               {
-                                  if (!failedSeen)
+                                  if (itemFailed)
+                                      failedIds.Add(poem.Id);
+                                  else
+                                      failedIds.Remove(poem.Id);
+                                  lastSafeId = Math.Max(lastSafeId, poem.Id);
+                                  if (++sinceSave >= 10)
                                   {
-                                      lastSafeId = poem.Id;
-                                      if (++sinceSave >= 10)
-                                      {
-                                          sinceSave = 0;
-                                          await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
-                                      }
+                                      sinceSave = 0;
+                                      await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                                      await _AISetFailedIdsAsync(context, checkpointName, failedIds);
                                   }
                               }
                               if (aborted)
@@ -457,8 +533,9 @@ namespace RMuseum.Services.Implementation
 
                           if (lastSafeId > 0)
                               await _AISetCheckpointAsync(context, checkpointName, lastSafeId);
+                          await _AISetFailedIdsAsync(context, checkpointName, failedIds);
                           if (!aborted)
-                              await jobProgressServiceEF.UpdateJob(job.Id, 100, $"ایجاد: {done}، ردشده یا ناموفق: {rejected} - آخرین شعر پردازش‌شده: {lastSafeId}", true);
+                              await jobProgressServiceEF.UpdateJob(job.Id, 100, $"ایجاد: {done}، ردشده یا ناموفق: {rejected} (در انتظار تلاش دوباره: {failedIds.Count}) - آخرین شعر پردازش‌شده: {lastSafeId}", true);
                       }
                       catch (Exception exp)
                       {
@@ -473,7 +550,7 @@ namespace RMuseum.Services.Implementation
         /// <summary>
         /// geo tag poems using AI
         /// </summary>
-        /// <param name="startFrom">offset after the resume point</param>
+        /// <param name="startFrom">id of the first poem to process (the resume point wins when it is greater)</param>
         /// <param name="count">0 = all</param>
         /// <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
         public void OpenAIStartFillingGeoLocations(int startFrom, int count, bool restart = false)
@@ -502,9 +579,8 @@ namespace RMuseum.Services.Implementation
                               await _AISetCheckpointAsync(context, checkpointName, 0);
                           int lastSafeId = await _AIGetCheckpointAsync(context, checkpointName);
 
-                          var poemsQuery = context.GanjoorPoems.AsNoTracking().Where(p => p.Id > lastSafeId).OrderBy(p => p.Id);
-                          var pagedPoemsQuery = startFrom > 0 ? poemsQuery.Skip(startFrom) : poemsQuery;
-                          var poems = count > 0 ? await pagedPoemsQuery.Take(count).ToListAsync() : await pagedPoemsQuery.ToListAsync();
+                          var poemsQuery = context.GanjoorPoems.AsNoTracking().Where(p => p.Id > lastSafeId && p.Id >= startFrom).OrderBy(p => p.Id);
+                          var poems = count > 0 ? await poemsQuery.Take(count).ToListAsync() : await poemsQuery.ToListAsync();
                           await jobProgressServiceEF.UpdateJob(job.Id, 0, $"Poems count = {poems.Count}");
 
                           int consecutiveFailures = 0, sinceSave = 0;
