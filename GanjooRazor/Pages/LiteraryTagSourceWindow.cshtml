@@ -1,0 +1,54 @@
+﻿@page "/LiteraryTagSourceWindow"
+@model GanjooRazor.Pages.LiteraryTagSourceWindowModel
+@{
+    Layout = null;
+}
+@if (!string.IsNullOrEmpty(Model.LastError))
+{
+    <p>@Model.LastError</p>
+}
+else
+{
+    var source = Model.Source;
+    <div class="up-modal-person">
+        <h2>@source.Title</h2>
+
+        @if (!string.IsNullOrWhiteSpace(source.Authors))
+        {
+            <p><b>پدیدآورندگان</b>:</p>
+            <ul dir="ltr" style="text-align:left">
+                @foreach (var author in source.Authors.Split('\n', System.StringSplitOptions.RemoveEmptyEntries | System.StringSplitOptions.TrimEntries))
+                {
+                    <li>@author</li>
+                }
+            </ul>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(source.Url))
+        {
+            <p><b>نشانی</b>: <a href="@source.Url" target="_blank" rel="noopener" dir="ltr">@source.Url</a></p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(source.Description))
+        {
+            @foreach (var paragraph in source.Description.Replace("\r", "").Split("\n\n", System.StringSplitOptions.RemoveEmptyEntries | System.StringSplitOptions.TrimEntries))
+            {
+                <p>@paragraph</p>
+            }
+        }
+
+        @if (!string.IsNullOrWhiteSpace(source.License) || !string.IsNullOrWhiteSpace(source.LicenseText))
+        {
+            <p><b>مجوز</b>: <span dir="ltr">@source.License</span></p>
+            @if (!string.IsNullOrWhiteSpace(source.LicenseText))
+            {
+                <blockquote dir="ltr" style="text-align:left">
+                    @foreach (var paragraph in source.LicenseText.Replace("\r", "").Split("\n\n", System.StringSplitOptions.RemoveEmptyEntries | System.StringSplitOptions.TrimEntries))
+                    {
+                        <p>@paragraph</p>
+                    }
+                </blockquote>
+            }
+        }
+    </div>
+}
