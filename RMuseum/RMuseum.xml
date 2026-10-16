@@ -2877,23 +2877,26 @@
             public statistics and browsing of literary tags
             </summary>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorLiteraryStatsController.GetOverview(System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryStatsController.GetOverview(System.Int32,System.Int32,System.Boolean)">
             <summary>
             summary statistics (devices, most used concepts, poets)
             </summary>
             <param name="poetId">0 = all poets</param>
+            <param name="catId">0 = no category restriction (a category includes its subcategories)</param>
+            <param name="includePoets">whether the list of poets having tags is needed</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorLiteraryStatsController.GetDeviceTopConcepts(System.Int32,System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryStatsController.GetDeviceTopConcepts(System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
             the most used concepts of a device
             </summary>
             <param name="deviceId"></param>
             <param name="poetId"></param>
             <param name="take"></param>
+            <param name="catId"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Controllers.GanjoorLiteraryStatsController.GetTags(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:RMuseum.Controllers.GanjoorLiteraryStatsController.GetTags(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
             tags of a device and/or a concept (with its descendants), a page at a time
             </summary>
@@ -2902,6 +2905,7 @@
             <param name="poetId">0 = all poets</param>
             <param name="skip"></param>
             <param name="take"></param>
+            <param name="catId">0 = no category restriction</param>
             <returns></returns>
         </member>
         <member name="F:RMuseum.Controllers.GanjoorLiteraryStatsController._ganjoorService">
@@ -13373,6 +13377,11 @@
             poem url
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.PoetId">
+            <summary>
+            poet id
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.PoetName">
             <summary>
             poet name
@@ -23415,14 +23424,16 @@
             <param name="maxGroups"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryStatsOverviewAsync(System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryStatsOverviewAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
             summary statistics of literary tags (optionally only for one poet)
             </summary>
             <param name="poetId">0 = all poets</param>
+            <param name="catId">0 = no category restriction (includes subcategories)</param>
+            <param name="includePoets">whether the list of poets having tags is needed</param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryDeviceTopConceptsAsync(System.Int32,System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryDeviceTopConceptsAsync(System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
             the most used concepts of one device
             </summary>
@@ -23431,7 +23442,7 @@
             <param name="take"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryStatsTagsAsync(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.IGanjoorService.GetLiteraryStatsTagsAsync(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
             tags of a device and/or a concept (with its descendants), with their couplets
             </summary>
@@ -26278,13 +26289,20 @@
             </summary>
             <returns>an error message, or null if applied</returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryStatsOverviewAsync(System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._LiteraryTagsOfAsync(System.Int32,System.Int32)">
+            <summary>
+            tags of a poet and/or of a category with all its subcategories (0 = no restriction)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryStatsOverviewAsync(System.Int32,System.Int32,System.Boolean)">
             <summary>
             summary statistics of literary tags (optionally only for one poet)
             </summary>
             <param name="poetId">0 = all poets</param>
+            <param name="catId">0 = no category restriction (a category includes its subcategories)</param>
+            <param name="includePoets">whether the list of poets having tags is needed</param>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryDeviceTopConceptsAsync(System.Int32,System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryDeviceTopConceptsAsync(System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
             the most used concepts of one device (optionally for one poet)
             </summary>
@@ -26294,7 +26312,7 @@
             ids of a concept and all its descendants
             </summary>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryStatsTagsAsync(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryStatsTagsAsync(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
             tags of a device (or of a concept and its descendants), with the couplets, a page at a time
             </summary>
@@ -26303,6 +26321,7 @@
             <param name="poetId">0 = all poets</param>
             <param name="skip"></param>
             <param name="take"></param>
+            <param name="catId">0 = no category restriction</param>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetLiteraryTagSourcesAsync">
             <summary>

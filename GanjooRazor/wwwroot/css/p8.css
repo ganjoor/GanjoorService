@@ -3698,3 +3698,57 @@ mark {
 .lit-st-verse mark { background: rgba(255,200,0,.35); color: inherit; padding: 0 2px; border-radius: 3px; }
 .lit-st-meta { font-size: 85%; opacity: .8; }
 .lit-st-parts { font-size: 90%; margin-top: 4px; }
+
+/* searchable drop-down panel of the poet / category lists in the search box (selectsearch.js) */
+.ss-panel {
+    display: none;
+    position: absolute;
+    z-index: 10000;
+    box-sizing: border-box;
+    background: var(--card-paper);
+    border: 2px solid var(--accent-border);
+    border-radius: 6px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
+    padding: 4px;
+    font-family: 'Vazirmatn';
+    font-weight: 300;
+    font-size: .85em;
+    line-height: normal;
+}
+
+.ss-panel .ss-filter {
+    box-sizing: border-box;
+    width: 100%;
+    height: 30px;
+    margin: 0 0 4px;
+    padding: 4px 8px;
+    float: none;
+    font-size: 1em;
+}
+
+.ss-list {
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.ss-item {
+    padding: 5px 8px;
+    cursor: pointer;
+    text-align: right;
+    color: var(--ink-black);
+    border-radius: 4px;
+}
+
+.ss-item.ss-selected {
+    font-weight: 600;
+}
+
+.ss-item.ss-active, .ss-item:hover {
+    background: var(--card-nested);
+}
+
+.ss-empty {
+    padding: 8px;
+    text-align: center;
+    color: var(--text-muted);
+}
