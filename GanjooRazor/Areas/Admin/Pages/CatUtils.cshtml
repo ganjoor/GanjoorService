@@ -24,7 +24,7 @@
                 url: targetUrl
             },
             error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
             success: function () {
                 upToast('انجام شد!', 'success')
@@ -53,7 +53,7 @@
                 dryRun: dryRun
             },
             error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
             success: function () {
                 upToast('کار در صف قرار گرفت. پیشرفت را در فهرست کارهای طولانی ببینید.', 'success')
@@ -74,7 +74,7 @@
                 id: catId
             },
            error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
             success: function () {
                 upToast('انجام شد!', 'success')
@@ -96,7 +96,7 @@
                 id: catId
             },
            error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
             success: function () {
                 upToast('کار تولید مجدد فهرست همهٔ زیربخشهای بخش شروع شد.', 'success')
@@ -118,7 +118,7 @@
                 id: catId
             },
             error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
             success: function () {
                 upToast('کار قافیه‌یابی بخش شروع شد.', 'success')
@@ -141,7 +141,7 @@
                 rhythm: $('#rhythm').val()
             },
             error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
             success: function () {
                 upToast('کار وزن‌یابی یا وزن‌گذاری بخش شروع شد.', 'success')
@@ -163,7 +163,7 @@
                 id: catId,
             },
             error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
             success: function () {
                 upToast('کار بازسازی قطعات مرتبط بخش شروع شد.', 'success')
@@ -188,7 +188,7 @@
                     language: lang
                 },
                 error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
                 success: function () {
                     upToast('انجام شد.', 'success')
@@ -212,7 +212,7 @@
                     format: format
                 },
                 error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
                 success: function () {
                     upToast('انجام شد.', 'success')
@@ -244,7 +244,7 @@
                         id: dataValue
                     },
                     error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
                     success: function () {
                         var poemBlockId = '#tr-' + dataValue;
@@ -273,7 +273,7 @@
                 name: name
             },
             error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
             success: function () {
                 upToast('انجام شد.', 'success')
@@ -510,7 +510,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <label><input type="checkbox" id="ai-dryrun" /> اجرای آزمایشی برای برچسب‌گذاری شخص‌ها (بدون ثبت پیشنهاد)</label>
+                <label><input type="checkbox" id="ai-dryrun" /> اجرای آزمایشی برای برچسب‌گذاری شخص‌ها و آرایه‌ها (بدون ثبت پیشنهاد)</label>
             </td>
         </tr>
         <tr>
@@ -518,7 +518,8 @@
                 <p><a role="button" onclick="startAIJob(@Model.Cat.Cat.Id, 'coupletSummaries', 'خلاصهٔ ابیات')" class="up-btn up-btn--ghost up-btn--sm">خلاصهٔ ابیات</a>
                 <a role="button" onclick="startAIJob(@Model.Cat.Cat.Id, 'poemSummaries', 'خلاصهٔ اشعار')" class="up-btn up-btn--ghost up-btn--sm">خلاصهٔ اشعار</a>
                 <a role="button" onclick="startAIJob(@Model.Cat.Cat.Id, 'titles', 'پیشنهاد عنوان اشعار')" class="up-btn up-btn--ghost up-btn--sm">پیشنهاد عنوان</a>
-                <a role="button" onclick="startAIJob(@Model.Cat.Cat.Id, 'people', 'برچسب‌گذاری شخص‌ها و روابط')" class="up-btn up-btn--ghost up-btn--sm">برچسب‌گذاری شخص‌ها و روابط</a></p>
+                <a role="button" onclick="startAIJob(@Model.Cat.Cat.Id, 'people', 'برچسب‌گذاری شخص‌ها و روابط')" class="up-btn up-btn--ghost up-btn--sm">برچسب‌گذاری شخص‌ها و روابط</a>
+                <a role="button" onclick="startAIJob(@Model.Cat.Cat.Id, 'literary', 'پیشنهاد آرایه‌های ادبی')" class="up-btn up-btn--ghost up-btn--sm">پیشنهاد آرایه‌های ادبی</a></p>
             </td>
         </tr>
     </table>
@@ -603,7 +604,7 @@
                 id: itemId
             },
              error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
             success: function () {
                 location.reload();
@@ -625,7 +626,7 @@
                 id: itemId
             },
             error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
             success: function () {
                 upToast('شمارش مجدد شروع شد.', 'success')
@@ -644,7 +645,7 @@
             type: "POST",
             url: url,
              error: function (e) {
-                upToast(e.responseText || 'خطا رخ داد.', 'error');
+                upShowError(e.responseText || 'خطا رخ داد.');
             },
             success: function () {
                 upToast('تولید الگوهای شماره‌گذاری ناموجود شروع شد.', 'success')

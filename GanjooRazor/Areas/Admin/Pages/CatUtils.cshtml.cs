@@ -455,6 +455,9 @@ namespace GanjooRazor.Areas.Admin.Pages
                 case "people":
                     path = $"ai/generate/poem/people?masterCatId={id}&startPoemId={startFrom}&count={count}&dryRun={dryRun.ToString().ToLower()}";
                     break;
+                case "literary":
+                    path = $"ai/generate/poem/literary?masterCatId={id}&startPoemId={startFrom}&count={count}&dryRun={dryRun.ToString().ToLower()}";
+                    break;
                 default:
                     return Task.FromResult<IActionResult>(new BadRequestObjectResult("کار نامعتبر"));
             }

@@ -14360,9 +14360,29 @@
             poet.json — biographical data only, no account/user linkage exists on GanjoorPoet at all
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PoetPublicDto.BirthLocationId">
+            <summary>
+            id of an entry of locations.json
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PoetPublicDto.PinOrder">
+            <summary>
+            order of the poet among pinned poets (0 = not pinned)
+            </summary>
+        </member>
         <member name="T:RMuseum.Models.Ganjoor.PublicExport.CatPublicDto">
             <summary>
             _cat.json — one per category/collection folder
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.CatPublicDto.CatType">
+            <summary>
+            Default, Book or BookPart
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.CatPublicDto.TableOfContentsStyle">
+            <summary>
+            GanjoorTOC name
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PublicExport.CatPublicDto.ChildCats">
@@ -14567,6 +14587,11 @@
         <member name="T:RMuseum.Models.Ganjoor.PublicExport.LiteraryTagIndexEntryPublicDto">
             <summary>
             an entry of index/literary-tags/{deviceId}.json
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PoemSectionPublicDto.MetreId">
+            <summary>
+            the section's own metre (id of metres.json); a poem can have sections of several metres
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PublicExport.VersePublicDto.CoupletSummary">
@@ -27300,6 +27325,11 @@
             their ids can differ) and what was added
             </summary>
         </member>
+        <member name="F:RMuseum.Services.Implementation.GanjoorService.PublicImportContext.MetreIds">
+            <summary>
+            metre ids of the export => local metre ids
+            </summary>
+        </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorService.PublicImportContext.BackfillGeoTags">
             <summary>
             the database had no tags of this kind when the import started, so poems that already exist
@@ -27318,6 +27348,12 @@
             place before the poems are imported. Existing rows are never touched: places and people are matched by id,
             literary devices by key (or name) and concepts by name, because a database may have its own core devices
             with other ids
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.EnsurePublicDataMetreAsync(RMuseum.DbContext.RMuseumDbContext,RMuseum.Services.Implementation.GanjoorService.PublicImportContext,RMuseum.Models.Ganjoor.PublicExport.MetreRefDto)">
+            <summary>
+            local id of the metre a poem refers to. The metre is normally already known from metres.json; for an export
+            without that file (or a metre missing in it) it is created from the poem's own reference
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportPoemTagsFromPublicData(RMuseum.DbContext.RMuseumDbContext,System.Int32,RMuseum.Models.Ganjoor.PublicExport.PoemPublicDto,RMuseum.Services.Implementation.GanjoorService.PublicImportContext,System.Boolean)">
