@@ -3676,8 +3676,6 @@ mark {
 .lit-src, .lit-stat { font-size: .75em; margin-right: .5em; padding: 0 .4em; border: 1px solid rgba(128,128,128,.5); border-radius: 4px; }
 .lit-lines { margin-top: .2em; }
 .lit-slot { opacity: .75; }
-.lit-guide { font-size: .95em; line-height: 1.9; }
-.lit-guide ol { margin: .4em 0 .6em 0; padding-right: 1.6em; }
 
 /* literary devices statistics on the /vazn page */
 .lit-stats-table { border-collapse: collapse; width: 100%; max-width: 560px; margin: 8px auto; }
