@@ -216,29 +216,46 @@ namespace RMuseum.Services.Implementation
                     dbDevice.Source = _TrimOrNull(moderated.Source);
                     dbDevice.IsCore = moderated.IsCore;
 
-                    if (wasSuggestion)
+                    //the slots of a device are referred to by id from tags and also from pending suggestions of poem corrections
+                    //(a suggester may use the device in his/her own edits before it is approved), so rows are kept whenever possible:
+                    //  - nothing changed: keep them (ids stay valid)
+                    //  - changed, nothing refers to them: replace
+                    //  - changed, referred to, a suggested device with the same number of slots: edit the rows in place
+                    //  - anything else: refuse
+                    var newSlots = _CleanSlots(moderated.Slots);
+                    var oldSlots = dbDevice.Slots.OrderBy(s => s.Order).ToList();
+                    bool same = newSlots.Count == oldSlots.Count
+                        && newSlots.Zip(oldSlots, (a, b) => a.Name == b.Name && a.Kind == b.Kind && a.Required == b.Required && a.AllowMultiple == b.AllowMultiple).All(x => x);
+                    if (!same)
                     {
-                        //nothing refers to the slots of a device that has not been approved yet
-                        _context.LiteraryDeviceSlots.RemoveRange(dbDevice.Slots);
-                        dbDevice.Slots = _CleanSlots(moderated.Slots);
-                    }
-                    else
-                    {
-                        //an approved device's slots may only be changed while nothing refers to them (no tag, no pending suggestion);
                         //the slots of core devices are referred to by key from the corpus import, so they are never changed
-                        var newSlots = _CleanSlots(moderated.Slots);
-                        var oldSlots = dbDevice.Slots.OrderBy(s => s.Order).ToList();
-                        bool same = newSlots.Count == oldSlots.Count
-                            && newSlots.Zip(oldSlots, (a, b) => a.Name == b.Name && a.Kind == b.Kind && a.Required == b.Required && a.AllowMultiple == b.AllowMultiple).All(x => x);
-                        if (!same)
+                        if (!wasSuggestion && dbDevice.IsCore)
+                            return new RServiceResult<LiteraryDevice>(null, "جایگاه‌های آرایه‌های پایه قابل تغییر نیست.");
+                        bool referred = await _context.PoemLiteraryTags.AsNoTracking().AnyAsync(x => x.DeviceId == dbDevice.Id)
+                            || await _context.GanjoorPoemLiteraryTagCorrections.AsNoTracking().AnyAsync(x => x.DeviceId == dbDevice.Id);
+                        if (!referred)
                         {
-                            if (dbDevice.IsCore)
-                                return new RServiceResult<LiteraryDevice>(null, "جایگاه‌های آرایه‌های پایه قابل تغییر نیست.");
-                            if (await _context.PoemLiteraryTags.AsNoTracking().AnyAsync(x => x.DeviceId == dbDevice.Id)
-                                || await _context.GanjoorPoemLiteraryTagCorrections.AsNoTracking().AnyAsync(x => x.DeviceId == dbDevice.Id))
-                                return new RServiceResult<LiteraryDevice>(null, "برای این آرایه پیش‌تر برچسب یا پیشنهاد برچسب ثبت شده است و جایگاه‌هایش دیگر قابل تغییر نیست.");
                             _context.LiteraryDeviceSlots.RemoveRange(dbDevice.Slots);
                             dbDevice.Slots = newSlots;
+                        }
+                        else if (wasSuggestion && newSlots.Count == oldSlots.Count)
+                        {
+                            for (int i = 0; i < oldSlots.Count; i++)
+                            {
+                                oldSlots[i].Name = newSlots[i].Name;
+                                oldSlots[i].Kind = newSlots[i].Kind;
+                                oldSlots[i].Required = newSlots[i].Required;
+                                oldSlots[i].AllowMultiple = newSlots[i].AllowMultiple;
+                                oldSlots[i].Order = i;
+                            }
+                        }
+                        else if (wasSuggestion)
+                        {
+                            return new RServiceResult<LiteraryDevice>(null, "برای این آرایه ویرایش‌هایی ثبت شده که از جایگاه‌هایش استفاده می‌کنند؛ تعداد جایگاه‌ها را تغییر ندهید، یا ابتدا آن ویرایش‌ها را رد کنید.");
+                        }
+                        else
+                        {
+                            return new RServiceResult<LiteraryDevice>(null, "برای این آرایه پیش‌تر برچسب یا پیشنهاد برچسب ثبت شده است و جایگاه‌هایش دیگر قابل تغییر نیست.");
                         }
                     }
                 }
@@ -732,6 +749,10 @@ namespace RMuseum.Services.Implementation
             {
                 return "مقادیر جایگاه‌های برچسب آرایه قابل خواندن نیست.";
             }
+
+            //every value must belong to a slot of this device (a stale suggestion would otherwise fail on a foreign key)
+            if (parts.Any(p => !device.Slots.Any(s => s.Id == p.SlotId)))
+                return $"جایگاه‌های این برچسب با جایگاه‌های فعلی آرایهٔ «{device.Name}» سازگار نیست (جایگاه‌های آرایه پس از ثبت پیشنهاد تغییر کرده است). این برچسب را رد کنید و دوباره از ویرایشگر ثبت کنید.";
 
             //resolve concepts: reuse an approved concept with the same normalized name/alias, else create it
             foreach (var part in parts)
