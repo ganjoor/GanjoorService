@@ -1,4 +1,5 @@
 ﻿@model GanjooRazor.Pages._LiteraryTagsPartialModel
+@using DNTPersianUtils.Core
 @if (Model.Failed)
 {
     <p data-lit-failed="1">در دریافت آرایه‌ها خطایی رخ داد.</p>
@@ -19,7 +20,7 @@
             @if (couplet.Number > 0)
             {
                 <div class="lit-text">
-                    <a href="#bn@(couplet.Number)" class="lit-num">@couplet.Number</a>
+                    <a href="#bn@(couplet.Number)" class="lit-num">@couplet.Number.ToPersianNumbers()</a>
                     @if (couplet.Words1.Count > 0)
                     {
                         <span class="lit-m">
