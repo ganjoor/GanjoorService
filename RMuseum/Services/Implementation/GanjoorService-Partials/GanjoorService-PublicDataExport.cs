@@ -290,6 +290,9 @@ namespace RMuseum.Services.Implementation
                 ValidDeathDate = poet.ValidDeathDate,
                 BirthPlace = poet.BirthLocation?.Name,
                 DeathPlace = poet.DeathLocation?.Name,
+                BirthLocationId = poet.BirthLocationId,
+                DeathLocationId = poet.DeathLocationId,
+                PinOrder = poet.PinOrder,
             };
 
             string path = Path.Combine(repoRoot, "poets", TrimLeadingSlash(catPoet.FullUrl), "poet.json");
@@ -414,6 +417,11 @@ namespace RMuseum.Services.Implementation
                 Description = cat.Description,
                 DescriptionHtml = cat.DescriptionHtml,
                 BookName = cat.BookName,
+                CatType = cat.CatType.ToString(),
+                TableOfContentsStyle = cat.TableOfContentsStyle.ToString(),
+                MixedModeOrder = cat.MixedModeOrder,
+                SumUpSubsGeoLocations = cat.SumUpSubsGeoLocations,
+                MapName = cat.MapName,
                 ChildCats = childCats.Select(c => new CatChildRefDto { Id = c.Id, Title = c.Title, FullUrl = c.FullUrl }).ToList(),
                 Poems = poems.Select(p => new PoemChildRefDto { Id = p.Id, Title = p.Title, FullUrl = p.FullUrl }).ToList(),
             };
@@ -536,6 +544,8 @@ namespace RMuseum.Services.Implementation
                     PoemFormat = s.PoemFormat?.ToString(),
                     Language = s.Language,
                     CoupletsCount = s.CoupletsCount,
+                    MetreId = s.GanjoorMetreId,
+                    MetreRefSectionIndex = s.GanjoorMetreRefSectionIndex,
                 }).ToList(),
                 Verses = verses.Select(v => new VersePublicDto
                 {

@@ -31,6 +31,12 @@ namespace RMuseum.Services.Implementation
             public Dictionary<int, int> ConceptIds = new Dictionary<int, int>();
 
             /// <summary>
+            /// metre ids of the export => local metre ids
+            /// </summary>
+            public Dictionary<int, int> MetreIds = new Dictionary<int, int>();
+            public int Metres;
+
+            /// <summary>
             /// the database had no tags of this kind when the import started, so poems that already exist
             /// get their tags from the export too (otherwise only poems imported by this run do)
             /// </summary>
@@ -43,7 +49,7 @@ namespace RMuseum.Services.Implementation
 
             public string Summary()
             {
-                return $"locations: {Locations}, people: {People}, relations: {Relations}, affiliations: {Affiliations}, evidences: {Evidences}; " +
+                return $"metres: {Metres}; locations: {Locations}, people: {People}, relations: {Relations}, affiliations: {Affiliations}, evidences: {Evidences}; " +
                        $"literary devices: {Devices}, slots: {Slots}, concepts: {Concepts}, sources: {Sources}; " +
                        $"tags: places/dates {GeoTags}, people {PersonTags}, literary {LiteraryTags}, skipped {SkippedTags}";
             }
@@ -100,6 +106,45 @@ namespace RMuseum.Services.Implementation
         /// </summary>
         private async Task ImportSharedTaggingDataFromPublicData(RMuseumDbContext context, IPublicDataSource source, PublicImportContext pic)
         {
+            // ---- metres: poems and their sections refer to them by foreign key, and nothing else creates them in an empty
+            // database. Matched by rhythm (the natural key), so a database with metres of its own keeps them.
+            var metreDtos = await ReadPublicDataListAsync<MetrePublicDto>(source, "metres.json");
+            if (metreDtos.Count > 0)
+            {
+                var localMetres = await context.GanjoorMetres.AsNoTracking().Select(m => new { m.Id, m.Rhythm }).ToListAsync();
+                var metreByRhythm = new Dictionary<string, int>();
+                foreach (var m in localMetres.Where(m => !string.IsNullOrEmpty(m.Rhythm)))
+                    if (!metreByRhythm.ContainsKey(m.Rhythm))
+                        metreByRhythm[m.Rhythm] = m.Id;
+                var usedMetreIds = new HashSet<int>(localMetres.Select(m => m.Id));
+                int nextMetreId = Math.Max(usedMetreIds.Count == 0 ? 0 : usedMetreIds.Max(), metreDtos.Max(m => m.Id)) + 1;
+                var newMetres = new List<GanjoorMetre>();
+                foreach (var dto in metreDtos)
+                {
+                    if (!string.IsNullOrEmpty(dto.Rhythm) && metreByRhythm.TryGetValue(dto.Rhythm, out int sameRhythmId))
+                    {
+                        pic.MetreIds[dto.Id] = sameRhythmId;
+                        continue;
+                    }
+                    int metreId = usedMetreIds.Contains(dto.Id) ? nextMetreId++ : dto.Id;
+                    usedMetreIds.Add(metreId);
+                    if (!string.IsNullOrEmpty(dto.Rhythm))
+                        metreByRhythm[dto.Rhythm] = metreId;
+                    pic.MetreIds[dto.Id] = metreId;
+                    newMetres.Add(new GanjoorMetre
+                    {
+                        Id = metreId,
+                        UrlSlug = dto.UrlSlug,
+                        Rhythm = dto.Rhythm,
+                        Name = dto.Name,
+                        Description = dto.Description,
+                        VerseCount = 0, // a statistic, filled by the stats job
+                    });
+                }
+                await InsertWithExplicitIdsAsync(context, newMetres);
+                pic.Metres = newMetres.Count;
+            }
+
             // ---- places
             var locationDtos = await ReadPublicDataListAsync<LocationPublicDto>(source, "locations.json");
             var existingLocationIds = new HashSet<int>(await context.GanjoorGeoLocations.AsNoTracking().Select(l => l.Id).ToListAsync());
@@ -296,6 +341,29 @@ namespace RMuseum.Services.Implementation
                 await context.SaveChangesAsync();
                 context.ChangeTracker.Clear();
             }
+        }
+
+        /// <summary>
+        /// local id of the metre a poem refers to. The metre is normally already known from metres.json; for an export
+        /// without that file (or a metre missing in it) it is created from the poem's own reference
+        /// </summary>
+        private async Task<int?> EnsurePublicDataMetreAsync(RMuseumDbContext context, PublicImportContext pic, MetreRefDto metre)
+        {
+            if (metre == null)
+                return null;
+            if (pic.MetreIds.TryGetValue(metre.Id, out int known))
+                return known;
+            int? existing = string.IsNullOrEmpty(metre.Rhythm) ? (int?)null
+                : await context.GanjoorMetres.AsNoTracking().Where(m => m.Rhythm == metre.Rhythm).Select(m => (int?)m.Id).FirstOrDefaultAsync();
+            if (existing == null)
+            {
+                var created = new GanjoorMetre { Rhythm = metre.Rhythm, Name = metre.Name, VerseCount = 0 };
+                context.GanjoorMetres.Add(created);
+                await context.SaveChangesAsync();
+                existing = created.Id;
+            }
+            pic.MetreIds[metre.Id] = existing.Value;
+            return existing.Value;
         }
 
         /// <summary>

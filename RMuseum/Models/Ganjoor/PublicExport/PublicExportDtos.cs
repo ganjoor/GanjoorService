@@ -124,6 +124,17 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         public bool ValidDeathDate { get; set; }
         public string BirthPlace { get; set; }
         public string DeathPlace { get; set; }
+
+        /// <summary>
+        /// id of an entry of locations.json
+        /// </summary>
+        public int? BirthLocationId { get; set; }
+        public int? DeathLocationId { get; set; }
+
+        /// <summary>
+        /// order of the poet among pinned poets (0 = not pinned)
+        /// </summary>
+        public int PinOrder { get; set; }
     }
 
     /// <summary>
@@ -139,6 +150,19 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         public string Description { get; set; }
         public string DescriptionHtml { get; set; }
         public string BookName { get; set; }
+
+        /// <summary>
+        /// Default, Book or BookPart
+        /// </summary>
+        public string CatType { get; set; }
+
+        /// <summary>
+        /// GanjoorTOC name
+        /// </summary>
+        public string TableOfContentsStyle { get; set; }
+        public int MixedModeOrder { get; set; }
+        public bool SumUpSubsGeoLocations { get; set; }
+        public string MapName { get; set; }
 
         /// <summary>
         /// child categories, sorted by Id for deterministic output
@@ -509,6 +533,12 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         public string PoemFormat { get; set; }
         public string Language { get; set; }
         public int CoupletsCount { get; set; }
+
+        /// <summary>
+        /// the section's own metre (id of metres.json); a poem can have sections of several metres
+        /// </summary>
+        public int? MetreId { get; set; }
+        public int? MetreRefSectionIndex { get; set; }
     }
 
     public class VersePublicDto

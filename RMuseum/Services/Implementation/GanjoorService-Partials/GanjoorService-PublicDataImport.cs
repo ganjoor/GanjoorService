@@ -160,6 +160,9 @@ namespace RMuseum.Services.Implementation
                     ValidBirthDate = poetDto.ValidBirthDate,
                     DeathYearInLHijri = poetDto.DeathYearInLHijri,
                     ValidDeathDate = poetDto.ValidDeathDate,
+                    BirthLocationId = poetDto.BirthLocationId != null && importContext.LocationIds.Contains(poetDto.BirthLocationId.Value) ? poetDto.BirthLocationId : null,
+                    DeathLocationId = poetDto.DeathLocationId != null && importContext.LocationIds.Contains(poetDto.DeathLocationId.Value) ? poetDto.DeathLocationId : null,
+                    PinOrder = poetDto.PinOrder,
                 });
                 await context.SaveChangesAsync();
             }
@@ -198,7 +201,12 @@ namespace RMuseum.Services.Implementation
                     DescriptionHtml = catDto.DescriptionHtml,
                     BookName = catDto.BookName,
                     Published = true,
-                    TableOfContentsStyle = GanjoorTOC.Analyse,
+                    // an export made before these fields were added has none: the defaults are what imports used before
+                    TableOfContentsStyle = Enum.TryParse<GanjoorTOC>(catDto.TableOfContentsStyle, out var tocStyle) ? tocStyle : GanjoorTOC.Analyse,
+                    CatType = Enum.TryParse<GanjoorCatType>(catDto.CatType, out var catType) ? catType : GanjoorCatType.Default,
+                    MixedModeOrder = catDto.MixedModeOrder,
+                    SumUpSubsGeoLocations = catDto.SumUpSubsGeoLocations,
+                    MapName = catDto.MapName,
                 });
 
                 context.GanjoorPages.Add(new GanjoorPage
@@ -261,6 +269,7 @@ namespace RMuseum.Services.Implementation
                 SectionIndex2 = v.SectionIndex2,
                 SectionIndex3 = v.SectionIndex3,
                 SectionIndex4 = v.SectionIndex4,
+                CoupletSummary = v.CoupletSummary,
             }).ToList();
 
             // HtmlText/PlainText aren't duplicated in the export — regenerated here with the same
@@ -269,6 +278,9 @@ namespace RMuseum.Services.Implementation
             // than however it happened to render at export time.
             string htmlText = PrepareHtmlText(verses);
             string plainText = PreparePlainText(verses);
+
+            // the poem's metre must exist before the rows that refer to it (the sections' metres come from metres.json)
+            int? poemMetreId = await EnsurePublicDataMetreAsync(context, importContext, poemDto.Metre);
 
             var dbPoem = new GanjoorPoem
             {
@@ -280,7 +292,7 @@ namespace RMuseum.Services.Implementation
                 FullUrl = poemDto.FullUrl,
                 PlainText = plainText,
                 HtmlText = htmlText,
-                GanjoorMetreId = poemDto.Metre?.Id,
+                GanjoorMetreId = poemMetreId,
                 RhymeLetters = poemDto.RhymeLetters,
                 SourceName = poemDto.SourceName,
                 SourceUrlSlug = poemDto.SourceUrlSlug,
@@ -299,6 +311,17 @@ namespace RMuseum.Services.Implementation
 
             foreach (var section in poemDto.Sections)
             {
+                var sectionType = Enum.Parse<VersePoemSectionType>(section.VerseType);
+                // the first verse of the section: its couplet index is what "#bn" links to, its text the excerpt
+                // (same rules as StartFillingPoemSectionsCoupletIndex and the excerpt filling in GanjoorService)
+                var firstVerse = verses.Where(v => (sectionType == VersePoemSectionType.First && v.SectionIndex1 == section.Index)
+                                                   || (sectionType == VersePoemSectionType.Second && v.SectionIndex2 == section.Index)
+                                                   || (sectionType == VersePoemSectionType.Third && v.SectionIndex3 == section.Index)
+                                                   || (sectionType == VersePoemSectionType.Forth && v.SectionIndex4 == section.Index))
+                                       .OrderBy(v => v.VOrder).FirstOrDefault();
+                int? sectionMetreId = section.MetreId != null && importContext.MetreIds.TryGetValue(section.MetreId.Value, out int mappedSectionMetre)
+                    ? mappedSectionMetre : poemMetreId;
+
                 context.GanjoorPoemSections.Add(new GanjoorPoemSection
                 {
                     PoemId = poemId,
@@ -306,14 +329,17 @@ namespace RMuseum.Services.Implementation
                     Index = section.Index,
                     Number = section.Number,
                     SectionType = Enum.Parse<PoemSectionType>(section.SectionType),
-                    VerseType = Enum.Parse<VersePoemSectionType>(section.VerseType),
-                    GanjoorMetreId = poemDto.Metre?.Id,
+                    VerseType = sectionType,
+                    GanjoorMetreId = sectionMetreId,
+                    GanjoorMetreRefSectionIndex = section.MetreRefSectionIndex,
                     RhymeLetters = section.RhymeLetters,
                     PlainText = section.PlainText,
                     HtmlText = section.HtmlText,
                     PoemFormat = string.IsNullOrEmpty(section.PoemFormat) ? (GanjoorPoemFormat?)null : Enum.Parse<GanjoorPoemFormat>(section.PoemFormat),
                     Language = section.Language,
                     CoupletsCount = section.CoupletsCount,
+                    CachedFirstCoupletIndex = sectionType != VersePoemSectionType.First && firstVerse?.CoupletIndex != null ? firstVerse.CoupletIndex.Value : 0,
+                    Excerpt = firstVerse == null ? "" : firstVerse.Text,
                 });
             }
             await context.SaveChangesAsync();
