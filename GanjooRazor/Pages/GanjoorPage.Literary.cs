@@ -164,76 +164,12 @@ namespace GanjooRazor.Pages
                 {
                     var couplet = new LiteraryCoupletView() { Number = group.Key };
                     if (group.Key > 0 && hemistichs.TryGetValue(group.Key, out var h))
-                    {
-                        int i = 0;
-                        foreach (var w in LiteraryWords(h.Item1))
-                            couplet.Words1.Add(new LiteraryWordView() { Misra = 1, Index = ++i, Text = w });
-                        i = 0;
-                        foreach (var w in LiteraryWords(h.Item2))
-                            couplet.Words2.Add(new LiteraryWordView() { Misra = 2, Index = ++i, Text = w });
-                    }
+                        FillLiteraryWords(couplet, h.Item1, h.Item2);
                     foreach (var tag in group)
                     {
                         if (!deviceById.TryGetValue(tag.DeviceId, out var device))
                             continue;
-                        var view = new LiteraryTagView()
-                        {
-                            DeviceName = device.Name,
-                            Definition = device.Definition,
-                            Uncertain = tag.Uncertain,
-                            Note = tag.Note,
-                            SourceKey = null
-                        };
-                        if (!string.IsNullOrEmpty(tag.OriginRef) && sourceByKey.TryGetValue(tag.OriginRef, out var tagSource))
-                        {
-                            view.SourceKey = tagSource.Key;
-                            view.SourceName = tagSource.Name;
-                            if (!model.Sources.Any(x => x.Key == tagSource.Key))
-                                model.Sources.Add(tagSource);
-                        }
-                        var spans = new List<string>();
-                        foreach (var part in (tag.Parts ?? new List<PoemLiteraryTagPart>()).OrderBy(p => p.Order))
-                        {
-                            var slot = device.Slots?.FirstOrDefault(s => s.Id == part.SlotId);
-                            if (slot == null)
-                                continue;
-                            string words = null;
-                            bool located = part.WordStart != null && part.WordEnd != null && (part.Misra == 1 || part.Misra == 2);
-                            if (located)
-                            {
-                                var list = part.Misra == 1 ? couplet.Words1 : couplet.Words2;
-                                var picked = list.Where(w => w.Index >= part.WordStart && w.Index <= part.WordEnd).Select(w => w.Text).ToList();
-                                if (picked.Count > 0)
-                                {
-                                    words = string.Join(" ", picked);
-                                    spans.Add($"{part.Misra}:{part.WordStart}-{part.WordEnd}");
-                                }
-                            }
-                            if (words == null)
-                                words = part.Text;
-                            string value;
-                            switch (slot.Kind)
-                            {
-                                case LiteraryDeviceSlotKind.Concept:
-                                    value = part.Concept?.Name ?? part.Text;
-                                    break;
-                                case LiteraryDeviceSlotKind.SpanConcept:
-                                    value = (part.Concept != null && !string.IsNullOrEmpty(words) && words != part.Concept.Name)
-                                        ? $"{words} ← {part.Concept.Name}"
-                                        : (part.Concept?.Name ?? words);
-                                    break;
-                                case LiteraryDeviceSlotKind.Text:
-                                    value = part.Text;
-                                    break;
-                                default:
-                                    value = words;
-                                    break;
-                            }
-                            if (!string.IsNullOrEmpty(value))
-                                view.Lines.Add(new LiteraryLineView() { Slot = slot.Name, Value = value });
-                        }
-                        view.Spans = string.Join(" ", spans);
-                        couplet.Tags.Add(view);
+                        couplet.Tags.Add(BuildLiteraryTagView(tag, device, couplet, sourceByKey, model.Sources));
                     }
                     if (couplet.Tags.Count > 0)
                         model.Couplets.Add(couplet);
@@ -245,6 +181,85 @@ namespace GanjooRazor.Pages
                 model.Couplets.Clear();
             }
             return Partial("~/Pages/Partials/GanjoorPage/_LiteraryTagsPartial.cshtml", model);
+        }
+
+        /// <summary>
+        /// the words of a couplet's two hemistichs, numbered from 1 in each (the numbering the tags' word ranges use)
+        /// </summary>
+        private static void FillLiteraryWords(LiteraryCoupletView couplet, string hemistich1, string hemistich2)
+        {
+            int i = 0;
+            foreach (var w in LiteraryWords(hemistich1))
+                couplet.Words1.Add(new LiteraryWordView() { Misra = 1, Index = ++i, Text = w });
+            i = 0;
+            foreach (var w in LiteraryWords(hemistich2))
+                couplet.Words2.Add(new LiteraryWordView() { Misra = 2, Index = ++i, Text = w });
+        }
+
+        /// <summary>
+        /// what the reader sees of one tag; <paramref name="couplet"/> must already hold the words of the tag's couplet
+        /// </summary>
+        /// <param name="sources">collects the sources of the tags shown (distinct)</param>
+        private static LiteraryTagView BuildLiteraryTagView(PoemLiteraryTag tag, LiteraryDevice device, LiteraryCoupletView couplet, Dictionary<string, LiteraryTagSource> sourceByKey, List<LiteraryTagSource> sources)
+        {
+                var view = new LiteraryTagView()
+                {
+                    DeviceName = device.Name,
+                    Definition = device.Definition,
+                    Uncertain = tag.Uncertain,
+                    Note = tag.Note,
+                    SourceKey = null
+                };
+                if (!string.IsNullOrEmpty(tag.OriginRef) && sourceByKey.TryGetValue(tag.OriginRef, out var tagSource))
+                {
+                    view.SourceKey = tagSource.Key;
+                    view.SourceName = tagSource.Name;
+                    if (!sources.Any(x => x.Key == tagSource.Key))
+                        sources.Add(tagSource);
+                }
+                var spans = new List<string>();
+                foreach (var part in (tag.Parts ?? new List<PoemLiteraryTagPart>()).OrderBy(p => p.Order))
+                {
+                    var slot = device.Slots?.FirstOrDefault(s => s.Id == part.SlotId);
+                    if (slot == null)
+                        continue;
+                    string words = null;
+                    bool located = part.WordStart != null && part.WordEnd != null && (part.Misra == 1 || part.Misra == 2);
+                    if (located)
+                    {
+                        var list = part.Misra == 1 ? couplet.Words1 : couplet.Words2;
+                        var picked = list.Where(w => w.Index >= part.WordStart && w.Index <= part.WordEnd).Select(w => w.Text).ToList();
+                        if (picked.Count > 0)
+                        {
+                            words = string.Join(" ", picked);
+                            spans.Add($"{part.Misra}:{part.WordStart}-{part.WordEnd}");
+                        }
+                    }
+                    if (words == null)
+                        words = part.Text;
+                    string value;
+                    switch (slot.Kind)
+                    {
+                        case LiteraryDeviceSlotKind.Concept:
+                            value = part.Concept?.Name ?? part.Text;
+                            break;
+                        case LiteraryDeviceSlotKind.SpanConcept:
+                            value = (part.Concept != null && !string.IsNullOrEmpty(words) && words != part.Concept.Name)
+                                ? $"{words} ← {part.Concept.Name}"
+                                : (part.Concept?.Name ?? words);
+                            break;
+                        case LiteraryDeviceSlotKind.Text:
+                            value = part.Text;
+                            break;
+                        default:
+                            value = words;
+                            break;
+                    }
+                    if (!string.IsNullOrEmpty(value))
+                        view.Lines.Add(new LiteraryLineView() { Slot = slot.Name, Value = value });
+                }
+                view.Spans = string.Join(" ", spans);
+            return view;
         }
 
         private static Dictionary<int, Tuple<string, string>> LiteraryHemistichs(GanjoorVerseViewModel[] verses)

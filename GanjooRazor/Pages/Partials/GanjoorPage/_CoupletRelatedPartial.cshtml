@@ -1,0 +1,62 @@
+﻿@model GanjooRazor.Pages._CoupletRelatedPartialModel
+@using DNTPersianUtils.Core
+@if (!Model.Any)
+{
+    return;
+}
+<div class="width-100per" data-nosnippet>
+    @if (Model.Locations.Count > 0)
+    {
+        <div class="century">مکان‌ها</div>
+        <div class="notice">
+            @foreach (var location in Model.Locations)
+            {
+                <a href="javascript:void(0)" onclick="viewLocation(@Html.Raw(location.Coordinates)); return false;" class="pagebutton comments-link">@location.Name</a>@if (location.LunarYear != null)
+                {
+                    <small> (سال @location.LunarYear.Value.ToPersianNumbers() قمری)</small>
+                }
+                @:&#32;
+            }
+        </div>
+    }
+    @if (Model.People.Count > 0)
+    {
+        <div class="century">شخص‌ها</div>
+        <div class="notice">
+            @foreach (var person in Model.People)
+            {
+                <a href="javascript:void(0)" onclick="PersonWindow.open(@person.Id)" class="pagebutton comments-link" title="@(person.AllusionOnly ? "فقط اشاره" : null)">@person.Name@(person.AllusionOnly ? " (اشاره)" : "")</a>@:&#32;
+            }
+        </div>
+    }
+    @if (Model.LiteraryTags.Count > 0)
+    {
+        <div class="century">آرایه‌های ادبی</div>
+        <div class="notice">
+            @foreach (var tag in Model.LiteraryTags)
+            {
+                <div>
+                    <span class="lit-dev" title="@tag.Definition">@tag.DeviceName</span>
+                    @if (tag.Uncertain)
+                    {
+                        <span class="lit-unc">(نامطمئن)</span>
+                    }
+                    @if (!string.IsNullOrEmpty(tag.SourceKey))
+                    {
+                        <a class="lit-src" href="javascript:void(0)" title="منبع این آرایه" data-src="@tag.SourceKey" onclick="LiteraryTagSourceWindow.open(this.getAttribute('data-src')); return false;">@tag.SourceName</a>
+                    }
+                    <div class="lit-lines">
+                        @foreach (var line in tag.Lines)
+                        {
+                            <div><span class="lit-slot">@line.Slot:</span> @line.Value</div>
+                        }
+                        @if (!string.IsNullOrEmpty(tag.Note))
+                        {
+                            <div class="lit-note">@tag.Note</div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

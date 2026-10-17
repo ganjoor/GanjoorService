@@ -141,6 +141,21 @@
 
 
 
+<div id="related-block-@Model.CoupletIndex" class="width-100per"></div>
+<script>
+    (function () {
+        var box = document.getElementById('related-block-@Model.CoupletIndex');
+        if (!box) return;
+        $.ajax({
+            type: 'GET',
+            url: '?Handler=CoupletRelated&poemId=@Model.PoemId&coupletIndex=@Model.CoupletIndex',
+            success: function (data) {
+                if (data && String(data).trim()) box.innerHTML = data;
+            }
+        });
+    })();
+</script>
+
 <div id="comments-block-@Model.CoupletIndex" class="clear-both">
     @foreach (var comment in Model.Comments)
     {
