@@ -247,7 +247,7 @@
             type: "POST",
             url: '?handler=' + handler,
             data: data,
-            error: function () { upToast('خطا رخ داد.', 'error'); },
+            error: function (xhr) { upShowError((xhr && xhr.responseText) || 'خطا رخ داد.'); },
             success: function () { upToast(okMsg || 'فرایند شروع شد.', 'success'); }
         });
     }
@@ -273,7 +273,7 @@
     function stToggleCred() { document.getElementById('st-cred').classList.toggle('open'); }
     function stNaskban() {
         var u = document.getElementById('st-nb-user').value, p = document.getElementById('st-nb-pass').value;
-        if (!u || !p) { upToast('نام کاربری و گذرواژه لازم است.', 'error'); return; }
+        if (!u || !p) { upShowError('نام کاربری و گذرواژه لازم است.'); return; }
         stPost('ImportNaskbanPaperSources', { poetId: stPoetId(), username: u, password: p });
         document.getElementById('st-nb-pass').value = '';
     }
