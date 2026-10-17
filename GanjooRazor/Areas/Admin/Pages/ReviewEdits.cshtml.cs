@@ -722,6 +722,22 @@ namespace GanjooRazor.Areas.Admin.Pages
                                     }
                                 }
 
+                                if (!Correction.GeoDateTags[i].MarkForDelete)
+                                {
+                                    // the moderator may overrule the contributor's role of a tagged person (also in a request to change
+                                    // the role of an existing person tag) and the "ignore in the category map" choice of a location tag
+                                    string mentionText = (pms.geoTagPersonMention != null && i < pms.geoTagPersonMention.Length) ? pms.geoTagPersonMention[i] : null;
+                                    if (!string.IsNullOrWhiteSpace(mentionText) && int.TryParse(mentionText, out int mentionValue) && Enum.IsDefined(typeof(PersonMentionKind), mentionValue))
+                                    {
+                                        Correction.GeoDateTags[i].PersonMention = (PersonMentionKind)mentionValue;
+                                    }
+                                    string ignoreText = (pms.geoTagIgnoreInCategory != null && i < pms.geoTagIgnoreInCategory.Length) ? pms.geoTagIgnoreInCategory[i] : null;
+                                    if (!string.IsNullOrWhiteSpace(ignoreText) && bool.TryParse(ignoreText, out bool ignoreValue))
+                                    {
+                                        Correction.GeoDateTags[i].IgnoreInCategory = ignoreValue;
+                                    }
+                                }
+
                                 Correction.GeoDateTags[i].Result = (CorrectionReviewResult)Enum.Parse(typeof(CorrectionReviewResult), pms.geoTagReviewResult[i]);
                                 Correction.GeoDateTags[i].ReviewNote = (pms.geoTagReviewNotes != null && i < pms.geoTagReviewNotes.Length) ? pms.geoTagReviewNotes[i] : null;
                             }

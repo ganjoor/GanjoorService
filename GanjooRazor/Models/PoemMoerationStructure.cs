@@ -45,6 +45,16 @@
         /// </summary>
         public string[] geoTagPersonName { get; set; }
         /// <summary>
+        /// moderator's final role of the tagged person for each geo tag ("0" Participant, "1" Allusion), null when the
+        /// tag has no person role to review (also used for a request to change the role of an existing person tag)
+        /// </summary>
+        public string[] geoTagPersonMention { get; set; }
+        /// <summary>
+        /// moderator's final value of "ignore in the category/poet map" for each geo tag ("true"/"false"), null when
+        /// the tag is not a location tag
+        /// </summary>
+        public string[] geoTagIgnoreInCategory { get; set; }
+        /// <summary>
         /// review result of each suggested literary tag (آرایه ادبی)
         /// </summary>
         public string[] literaryReviewResult { get; set; }

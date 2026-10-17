@@ -169,6 +169,8 @@
         var geoTagLongitude = [];
         var geoTagPersonId = [];
         var geoTagPersonName = [];
+        var geoTagPersonMention = [];
+        var geoTagIgnoreInCategory = [];
         for (var g = 0; g < (geoTagCount || 0); g++) {
             var geoElementId = '#geotag' + (g + 1).toString() + '_review_result_Approved';
             if ($(geoElementId).length > 0) {
@@ -185,6 +187,11 @@
                 var geoPersonSelect = $('#geotag' + (g + 1).toString() + '_person_select');
                 geoTagPersonId.push(geoPersonSelect.length > 0 ? geoPersonSelect.val() : '0');
                 geoTagPersonName.push($('#geotag' + (g + 1).toString() + '_person_name').val() || null);
+
+                var geoMentionSelect = $('#geotag' + (g + 1).toString() + '_mention_select');
+                geoTagPersonMention.push(geoMentionSelect.length > 0 ? geoMentionSelect.val() : null);
+                var geoIgnoreBox = $('#geotag' + (g + 1).toString() + '_ignore_in_category');
+                geoTagIgnoreInCategory.push(geoIgnoreBox.length > 0 ? (geoIgnoreBox.is(':checked') ? 'true' : 'false') : null);
             }
         }
 
@@ -221,6 +228,8 @@
         pms.geoTagLongitude= geoTagLongitude;
         pms.geoTagPersonId= geoTagPersonId;
         pms.geoTagPersonName= geoTagPersonName;
+        pms.geoTagPersonMention= geoTagPersonMention;
+        pms.geoTagIgnoreInCategory= geoTagIgnoreInCategory;
         pms.literaryReviewResult= literaryReviewResult;
         pms.literaryReviewNotes= literaryReviewNotes;
 
@@ -929,6 +938,13 @@ else
                                 @(existingTagForKindCheck?.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? "اشاره" : "بخشی از داستان/متن")
                                 ← <strong>@(geoTag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion ? "فقط اشاره" : "بخشی از داستان/متن")</strong>
                             </p>
+                            <div class="up-field up-field--attention">
+                                <label for="geotag@(geoIndex)_mention_select"><span class="up-field-icon" aria-hidden="true">🎭</span> نقش نهایی نامبرده (در صورت نادرست بودن درخواست، اینجا اصلاح کنید)</label>
+                                <select id="geotag@(geoIndex)_mention_select" name="geotag@(geoIndex)_mention_select">
+                                    <option value="0" selected="@(geoTag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Participant)">بخشی از داستان یا متن است (کنشگر، مخاطب یا موضوع روایت؛ شامل شاعر و یاورانش)</option>
+                                    <option value="1" selected="@(geoTag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion)">فقط اشاره است (تشبیه، یادآوری گذشته، پیش‌بینی آینده، «همچون فلانی»)</option>
+                                </select>
+                            </div>
                         </td>
                     </tr>
                 }
@@ -1050,6 +1066,17 @@ else
                     </tr>
                     <tr>
                         <td colspan="2">
+                            <div class="up-field up-field--attention">
+                                <label for="geotag@(geoIndex)_mention_select"><span class="up-field-icon" aria-hidden="true">🎭</span> نقش نامبرده در این بیت/شعر (انتخاب پیشنهاددهنده؛ در صورت نادرست بودن اینجا اصلاح کنید)</label>
+                                <select id="geotag@(geoIndex)_mention_select" name="geotag@(geoIndex)_mention_select">
+                                    <option value="0" selected="@(geoTag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Participant)">بخشی از داستان یا متن است (کنشگر، مخاطب یا موضوع روایت؛ شامل شاعر و یاورانش)</option>
+                                    <option value="1" selected="@(geoTag.PersonMention == RMuseum.Models.Ganjoor.PersonMentionKind.Allusion)">فقط اشاره است (تشبیه، یادآوری گذشته، پیش‌بینی آینده، «همچون فلانی»)</option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
                             <p class="up-hint">
                                 اگر کاربر نامبرده را اشتباه تشخیص داده (مثلاً نامبرده‌ای که از قبل در فهرست است را به‌عنوان نامبردۀ جدید پیشنهاد کرده)، به‌جای رد کردن می‌توانید آن را به نامبردۀ موجود متصل کنید؛
                                 برای نامبردۀ تازه فقط نام قابل اصلاح است - اصلاح روابط/تاریخ‌ها نیازمند رد کردن و ارسال دوبارهٔ پیشنهاد توسط کاربر است:
@@ -1120,6 +1147,16 @@ else
                             {
                                 <p><small>یادداشت پیشنهاد دهنده: @geoTag.SuggestionNote</small></p>
                             }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="up-field up-field--attention">
+                                <label for="geotag@(geoIndex)_ignore_in_category">
+                                    <input type="checkbox" id="geotag@(geoIndex)_ignore_in_category" name="geotag@(geoIndex)_ignore_in_category" checked="@geoTag.IgnoreInCategory" />
+                                    در نقشهٔ کلی مجموعه نادیده گرفته شود (مثلاً مکانی که فقط برای مقایسه ذکر شده؛ انتخاب پیشنهاددهنده را می‌توانید اینجا اصلاح کنید)
+                                </label>
+                            </div>
                         </td>
                     </tr>
                     <tr>

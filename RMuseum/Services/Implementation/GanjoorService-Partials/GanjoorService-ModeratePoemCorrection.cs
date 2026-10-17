@@ -678,6 +678,21 @@ namespace RMuseum.Services.Implementation
                         dbGeoDateTag.Result = moderatedTag.Result;
                         dbGeoDateTag.ReviewNote = moderatedTag.ReviewNote;
 
+                        if (!dbGeoDateTag.MarkForDelete)
+                        {
+                            // what the moderator may correct before approving: the location or person the contributor meant,
+                            // the role of the tagged person and "ignore in the category map" (the review page changes these
+                            // on the correction it posts back; without copying them here only the contributor's values count)
+                            dbGeoDateTag.LocationId = moderatedTag.LocationId;
+                            dbGeoDateTag.SuggestedLocationName = moderatedTag.SuggestedLocationName;
+                            dbGeoDateTag.SuggestedLatitude = moderatedTag.SuggestedLatitude;
+                            dbGeoDateTag.SuggestedLongitude = moderatedTag.SuggestedLongitude;
+                            dbGeoDateTag.PersonId = moderatedTag.PersonId;
+                            dbGeoDateTag.SuggestedPersonGraphJson = moderatedTag.SuggestedPersonGraphJson;
+                            dbGeoDateTag.PersonMention = moderatedTag.PersonMention;
+                            dbGeoDateTag.IgnoreInCategory = moderatedTag.IgnoreInCategory;
+                        }
+
                         if (moderatedTag.Result == CorrectionReviewResult.Approved)
                         {
                             dbCorrection.AffectedThePoem = true;
