@@ -1686,6 +1686,16 @@ namespace RMuseum.Services
         void OpenAIStartSuggestingPoemPeople(int masterCatId, int startPoemId, int count, bool dryRun, bool restart = false);
 
         /// <summary>
+        /// suggest literary devices for the poems of a book using AI (registered as unreviewed poem corrections, so they pass moderation); resumable
+        /// </summary>
+        /// <param name="masterCatId">0 = all poems</param>
+        /// <param name="startPoemId"></param>
+        /// <param name="count">0 = all</param>
+        /// <param name="dryRun"></param>
+        /// <param name="restart">true: ignore the saved resume point</param>
+        void OpenAIStartSuggestingPoemLiteraryTags(int masterCatId, int startPoemId, int count, bool dryRun, bool restart = false);
+
+        /// <summary>
         /// send cat correction
         /// </summary>
         /// <param name="correction"></param>

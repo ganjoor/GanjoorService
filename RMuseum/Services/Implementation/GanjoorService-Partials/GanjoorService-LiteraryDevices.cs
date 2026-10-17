@@ -797,7 +797,7 @@ namespace RMuseum.Services.Implementation
                 DeviceId = suggestion.DeviceId,
                 Uncertain = suggestion.Uncertain,
                 Note = suggestion.SuggestionNote,
-                Origin = LiteraryTagOrigin.Editor,
+                Origin = _IsAILiteraryUser(dbCorrection.UserId) ? LiteraryTagOrigin.AI : LiteraryTagOrigin.Editor,
                 CreatedByUserId = dbCorrection.UserId,
                 CreateDate = DateTime.Now,
                 Parts = parts.Select(p => new PoemLiteraryTagPart()

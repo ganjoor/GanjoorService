@@ -4889,6 +4889,28 @@ namespace RMuseum.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// suggest literary devices (آرایه‌های ادبی) for the poems of a book using AI. Everything is registered as unreviewed poem corrections
+        /// of the configured user (OpenAILiteraryUserId), so the suggestions pass the usual moderation flow; tags approved from them are marked as AI-made.
+        /// Resumable: without restart the job continues after the last processed poem of the previous run for the same book. Poems with a pending
+        /// literary suggestion of the AI user are skipped (review them, then run again).
+        /// </summary>
+        /// <param name="masterCatId">0 = all poems</param>
+        /// <param name="startPoemId"></param>
+        /// <param name="count">0 = all</param>
+        /// <param name="dryRun">true: write nothing, only report in the job log</param>
+        /// <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
+        /// <returns></returns>
+        [HttpPut("ai/generate/poem/literary")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        public IActionResult OpenAIStartSuggestingPoemLiteraryTags(int masterCatId = 0, int startPoemId = 0, int count = 0, bool dryRun = false, bool restart = false)
+        {
+            _ganjoorService.OpenAIStartSuggestingPoemLiteraryTags(masterCatId, startPoemId, count, dryRun, restart);
+            return Ok();
+        }
+
 
         /// <summary>
         /// send cat corrections

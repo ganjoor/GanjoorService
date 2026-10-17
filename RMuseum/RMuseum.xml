@@ -2633,6 +2633,20 @@
             <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.OpenAIStartSuggestingPoemLiteraryTags(System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            suggest literary devices (آرایه‌های ادبی) for the poems of a book using AI. Everything is registered as unreviewed poem corrections
+            of the configured user (OpenAILiteraryUserId), so the suggestions pass the usual moderation flow; tags approved from them are marked as AI-made.
+            Resumable: without restart the job continues after the last processed poem of the previous run for the same book. Poems with a pending
+            literary suggestion of the AI user are skipped (review them, then run again).
+            </summary>
+            <param name="masterCatId">0 = all poems</param>
+            <param name="startPoemId"></param>
+            <param name="count">0 = all</param>
+            <param name="dryRun">true: write nothing, only report in the job log</param>
+            <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.SuggestCatCorrectionAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel)">
             <summary>
             send cat corrections
@@ -23280,6 +23294,16 @@
             <param name="dryRun"></param>
             <param name="restart">true: ignore the saved resume point</param>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.OpenAIStartSuggestingPoemLiteraryTags(System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            suggest literary devices for the poems of a book using AI (registered as unreviewed poem corrections, so they pass moderation); resumable
+            </summary>
+            <param name="masterCatId">0 = all poems</param>
+            <param name="startPoemId"></param>
+            <param name="count">0 = all</param>
+            <param name="dryRun"></param>
+            <param name="restart">true: ignore the saved resume point</param>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.SuggestCatCorrectionAsync(RMuseum.Models.Ganjoor.ViewModels.GanjoorCatCorrectionViewModel)">
             <summary>
             send cat correction
@@ -25884,6 +25908,9 @@
             <summary>
             IGanjoorService implementation
             </summary>
+            <summary>
+            IGanjoorService implementation
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -26748,6 +26775,38 @@
             <param name="startFrom">id of the first poem to process (the resume point wins when it is greater)</param>
             <param name="count">0 = all</param>
             <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._AILiteraryCouplets(System.Collections.Generic.IEnumerable{System.ValueTuple{RMuseum.Models.Ganjoor.VersePosition,System.String}})">
+            <summary>
+            couplets numbered exactly like the editor's word picker (see Editor.LiteraryCoupletsJson)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._AILiteraryBuild(RMuseum.Services.Implementation.GanjoorService.AILiteraryContext,RMuseum.Services.Implementation.GanjoorService.AILiteraryTag,System.Collections.Generic.Dictionary{System.Int32,RMuseum.Services.Implementation.GanjoorService.AILiteraryCouplet},System.Boolean,System.String@)">
+            <summary>
+            checks one AI answer against the device definition and the poem text, same rules as submission validation
+            </summary>
+            <returns>null (with error set) if the tag is not acceptable</returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.OpenAIStartSuggestingPoemLiteraryTags(System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            suggest literary devices for the poems of a book using AI; everything is registered as an unreviewed
+            poem correction of the configured user, so it passes the usual moderation flow
+            </summary>
+            <param name="masterCatId">book category id; 0 = all poems</param>
+            <param name="startPoemId">first poem id to process (poems are processed in id order); the resume point wins when it is greater</param>
+            <param name="count">0 = all</param>
+            <param name="dryRun">only report in the job log, write nothing (the resume point is neither reset nor advanced)</param>
+            <param name="restart">false: resume after the last processed poem of the previous run (same masterCatId); true: start from the beginning</param>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._AILiteraryUserIdText">
+            <summary>
+            the user the AI literary suggestions are registered for
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._IsAILiteraryUser(System.Guid)">
+            <summary>
+            true if tags approved from a correction of this user are produced by AI
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._AIFindCandidates(System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIPersonRec},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.Dictionary{System.Int32,System.Int32},System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIPersonRec}@,System.Collections.Generic.List{RMuseum.Services.Implementation.GanjoorService.AIPersonRec}@)">
             <summary>
