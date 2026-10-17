@@ -75,6 +75,7 @@ namespace RMuseum.Services.Implementation
 - کیفیت مهم‌تر از تعداد است. فقط مواردی را بنویس که آشکار و نسبتاً مطمئنی؛ اگر تردید داری uncertain را true بگذار و اگر بیشتر تردید داری اصلاً ننویس. برای هر بیت حداکثر دو آرایهٔ برجسته بنویس و بیتی که آرایهٔ روشنی ندارد را خالی بگذار.
 - تناسب و تضاد را فقط وقتی بنویس که دو واژه یا گروه کوتاه آشکارا از یک مجموعهٔ معنایی یا دو قطب مقابل‌اند؛ هر ارتباط دوری یا سلیقه‌ای تناسب نیست. تلمیح را فقط وقتی بنویس که به داستان، آیه، حدیث یا شعری مشخص و شناخته اشاره شده باشد، نه برای هر مضمون دینی یا عرفانی.
 - هر کلمهٔ مصرع‌ها پیش از خودش شماره دارد (مثلاً ۳:خار). جای هر جایگاه متنی را با couplet (شمارهٔ بیت درون [ ])، misra (۱ مصرع اول، ۲ مصرع دوم)، from و to (شمارهٔ اولین و آخرین کلمه، هر دو شامل) مشخص کن و همان کلمه‌ها را بی‌تغییر در quote بنویس. بازه را تا حد ممکن کوتاه بگیر: فقط خود واژه‌ها یا گروه کوتاهی که آرایه در آن‌هاست، نه صفت‌ها و واژه‌های اطراف و نه یک مصرع کامل. بازه نباید از یک مصرع بیرون برود.
+- جایگاهی که «چندبار ممکن» است (مثل واژه‌های متناسب) را با چند part جدا پر کن، هر واژه یا گروه در part خودش؛ همهٔ واژه‌ها را در یک part نریز.
 - جایگاه‌های مفهومی را با concept پر کن: نام کوتاه و متعارف مفهوم، مفرد و حداکثر سه واژه، بی‌حرف اضافه (مثلاً «شمع»، «زلف»، «عاشق»). جمله یا عبارت توضیحی ننویس.
 - جایگاه‌های متنی را با text پر کن (کوتاه).
 - couplet هر آرایه شمارهٔ بیت اصلی آن است؛ برای آرایه‌ای که کل شعر را در بر می‌گیرد 0 بگذار.
@@ -335,6 +336,12 @@ namespace RMuseum.Services.Implementation
                 if ((slot.Required && count == 0) || (!slot.AllowMultiple && count > 1))
                 {
                     error = $"{device.Name}/{slot.Name}: slot count {count}";
+                    return null;
+                }
+                // a required repeatable text slot is a relation between words (تناسب، ...): one span holding all the words is not a relation
+                if (slot.Required && slot.AllowMultiple && count == 1 && (slot.Kind == LiteraryDeviceSlotKind.Span || slot.Kind == LiteraryDeviceSlotKind.SpanConcept))
+                {
+                    error = $"{device.Name}/{slot.Name}: at least two separate parts are needed";
                     return null;
                 }
             }
