@@ -91,6 +91,7 @@ namespace RMuseum.Services.Implementation
                                 {
                                     BackfillGeoTags = !await context.PoemGeoDateTags.AnyAsync(),
                                     BackfillLiteraryTags = !await context.PoemLiteraryTags.AnyAsync(),
+                                    LegacyLiteraryCoupletNumbers = manifest.SchemaVersion < 4,
                                 };
                                 await jobProgressServiceEF.UpdateJob(job.Id, 0, "Importing places, people and literary devices");
                                 await ImportSharedTaggingDataFromPublicData(context, source, importContext);

@@ -46,7 +46,7 @@ namespace GanjooRazor.Utils
         public static Dictionary<int, Tuple<string, string>> GetHemistichs(GanjoorVerseViewModel[] verses)
         {
             var res = new Dictionary<int, Tuple<string, string>>();
-            int n = 0;
+            int n = -1; //0 based like GanjoorVerse.CoupletIndex
             string m1 = null;
             foreach (var v in verses)
             {

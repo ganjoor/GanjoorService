@@ -114,9 +114,9 @@ else
                                 <a href="@item.PoemFullUrl">@item.PoemFullTitle</a>
                             </h2>
                             <div class="lit-st-meta">
-                                @if (item.CoupletIndex > 0)
+                                @if (item.CoupletIndex >= 0)
                                 {
-                                    <text>بیت @item.CoupletIndex.ToPersianNumbers()</text>
+                                    <text>بیت @((item.CoupletIndex + 1).ToPersianNumbers())</text>
                                 }
                                 @if (Model.Device == null && Model.DevicesById.TryGetValue(item.DeviceId, out var itemDevice))
                                 {

@@ -12,7 +12,7 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         /// <summary>
         /// bump this whenever a DTO shape changes in a way consumers should know about
         /// </summary>
-        public int SchemaVersion { get; set; } = 3;
+        public int SchemaVersion { get; set; } = 4;
 
         /// <summary>
         /// UTC generation timestamp of this run (informational only — never embed per-file
@@ -457,7 +457,7 @@ namespace RMuseum.Models.Ganjoor.PublicExport
     }
 
     /// <summary>
-    /// a literary tag; CoupletIndex is the 1-based number of the main couplet as shown on the site (0 = the whole poem)
+    /// a literary tag; CoupletIndex is the 0-based index of the main couplet (VersePublicDto.CoupletIndex), -1 = the whole poem (schema 3 and older counted couplets from 1 and used 0 for the whole poem)
     /// </summary>
     public class LiteraryTagPublicDto
     {
@@ -488,7 +488,7 @@ namespace RMuseum.Models.Ganjoor.PublicExport
     }
 
     /// <summary>
-    /// the value of one slot of a literary tag: words (CoupletIndex/Misra/WordStart/WordEnd, 1-based, the
+    /// the value of one slot of a literary tag: words (CoupletIndex 0-based like VersePublicDto.CoupletIndex, -1 = not located; Misra/WordStart/WordEnd 1-based, the
     /// words of a hemistich split at whitespace), and/or a concept, and/or text, depending on the slot kind
     /// </summary>
     public class LiteraryTagPartPublicDto

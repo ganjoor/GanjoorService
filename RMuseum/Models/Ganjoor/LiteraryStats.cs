@@ -183,7 +183,7 @@ namespace RMuseum.Models.Ganjoor
         public string PoetName { get; set; }
 
         /// <summary>
-        /// couplet number (1 based as in the editor), 0 = whole poem
+        /// couplet index (0 based like GanjoorVerse.CoupletIndex), -1 = whole poem
         /// </summary>
         public int CoupletIndex { get; set; }
 

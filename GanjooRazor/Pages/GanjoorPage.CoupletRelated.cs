@@ -98,13 +98,13 @@ namespace GanjooRazor.Pages
                     }
                 }
 
-                // literary devices: numbered from 1 over the couplets, which is the verses' index + 1
+                // literary devices: couplet index is 0 based like the verses' CoupletIndex
                 var tagsResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/poem/{poemId}/tags");
                 var devices = await GetLiteraryDevicesCachedAsync();
                 if (tagsResponse.IsSuccessStatusCode && devices != null)
                 {
                     var tags = (JsonConvert.DeserializeObject<PoemLiteraryTag[]>(await tagsResponse.Content.ReadAsStringAsync()) ?? new PoemLiteraryTag[0])
-                        .Where(t => t.CoupletIndex == coupletIndex + 1).ToList();
+                        .Where(t => t.CoupletIndex == coupletIndex).ToList();
                     if (tags.Count > 0)
                     {
                         var versesResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/verses?coupletIndex={coupletIndex}");

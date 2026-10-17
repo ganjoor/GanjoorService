@@ -142,7 +142,7 @@ namespace GanjooRazor.Areas.Admin.Pages
         private static Dictionary<int, Tuple<string, string>> GetHemistichs(GanjoorVerseViewModel[] verses)
         {
             var res = new Dictionary<int, Tuple<string, string>>();
-            int n = 0;
+            int n = -1; //0 based like GanjoorVerse.CoupletIndex
             string m1 = null;
             foreach (var v in verses)
             {
@@ -233,7 +233,7 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                 string CoupletLabel(int n)
                 {
-                    return n > 0 && hemistichs.ContainsKey(n) ? hemistichs[n].Item1 : null;
+                    return n >= 0 && hemistichs.ContainsKey(n) ? hemistichs[n].Item1 : null;
                 }
 
                 for (int i = 0; i < Correction.LiteraryTags.Length; i++)

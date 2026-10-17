@@ -405,13 +405,13 @@ else
                         <tr>
                             <td colspan="3">
                                 آرایهٔ ادبی@(string.IsNullOrEmpty(litDisplay.DeviceName) ? "" : ": " + litDisplay.DeviceName) -
-                                @if (litTag.CoupletIndex <= 0)
+                                @if (litTag.CoupletIndex < 0)
                                 {
                                     <text>کل شعر</text>
                                 }
                                 else
                                 {
-                                    <a href="/?p=@correction.PoemId#bn@(litTag.CoupletIndex)" target="_blank">بیت @(litTag.CoupletIndex.ToPersianNumbers())</a>
+                                    <a href="/?p=@correction.PoemId#bn@(litTag.CoupletIndex + 1)" target="_blank">بیت @((litTag.CoupletIndex + 1).ToPersianNumbers())</a>
                                 }
                             </td>
                         </tr>

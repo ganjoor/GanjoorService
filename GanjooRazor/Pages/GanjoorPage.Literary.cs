@@ -162,8 +162,8 @@ namespace GanjooRazor.Pages
                 var deviceById = devices.ToDictionary(d => d.Id);
                 foreach (var group in tags.GroupBy(t => t.CoupletIndex).OrderBy(g => g.Key))
                 {
-                    var couplet = new LiteraryCoupletView() { Number = group.Key };
-                    if (group.Key > 0 && hemistichs.TryGetValue(group.Key, out var h))
+                    var couplet = new LiteraryCoupletView() { Number = group.Key + 1 }; //shown 1 based, 0 = whole poem
+                    if (group.Key >= 0 && hemistichs.TryGetValue(group.Key, out var h))
                         FillLiteraryWords(couplet, h.Item1, h.Item2);
                     foreach (var tag in group)
                     {
@@ -265,7 +265,7 @@ namespace GanjooRazor.Pages
         private static Dictionary<int, Tuple<string, string>> LiteraryHemistichs(GanjoorVerseViewModel[] verses)
         {
             var res = new Dictionary<int, Tuple<string, string>>();
-            int n = 0;
+            int n = -1; //0 based like GanjoorVerse.CoupletIndex
             string m1 = null;
             foreach (var v in verses)
             {

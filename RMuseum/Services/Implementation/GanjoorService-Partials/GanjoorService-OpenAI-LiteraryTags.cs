@@ -74,11 +74,11 @@ namespace RMuseum.Services.Implementation
 - فقط از آرایه‌های فهرست استفاده کن و شمارهٔ آرایه (device) و شمارهٔ جایگاه‌ها (slot) را دقیقاً از فهرست بردار.
 - کیفیت مهم‌تر از تعداد است. فقط مواردی را بنویس که آشکار و نسبتاً مطمئنی؛ اگر تردید داری uncertain را true بگذار و اگر بیشتر تردید داری اصلاً ننویس. برای هر بیت حداکثر دو آرایهٔ برجسته بنویس و بیتی که آرایهٔ روشنی ندارد را خالی بگذار.
 - تناسب و تضاد را فقط وقتی بنویس که دو واژه یا گروه کوتاه آشکارا از یک مجموعهٔ معنایی یا دو قطب مقابل‌اند؛ هر ارتباط دوری یا سلیقه‌ای تناسب نیست. تلمیح را فقط وقتی بنویس که به داستان، آیه، حدیث یا شعری مشخص و شناخته اشاره شده باشد، نه برای هر مضمون دینی یا عرفانی.
-- هر کلمهٔ مصرع‌ها پیش از خودش شماره دارد (مثلاً ۳:خار). جای هر جایگاه متنی را با couplet (شمارهٔ بیت درون [ ])، misra (۱ مصرع اول، ۲ مصرع دوم)، from و to (شمارهٔ اولین و آخرین کلمه، هر دو شامل) مشخص کن و همان کلمه‌ها را بی‌تغییر در quote بنویس. بازه را تا حد ممکن کوتاه بگیر: فقط خود واژه‌ها یا گروه کوتاهی که آرایه در آن‌هاست، نه صفت‌ها و واژه‌های اطراف و نه یک مصرع کامل. بازه نباید از یک مصرع بیرون برود.
+- هر کلمهٔ مصرع‌ها پیش از خودش شماره دارد (مثلاً ۳:خار). جای هر جایگاه متنی را با couplet (شمارهٔ بیت درون [ ]؛ شماره‌گذاری بیت‌ها از ۰ شروع می‌شود)، misra (۱ مصرع اول، ۲ مصرع دوم)، from و to (شمارهٔ اولین و آخرین کلمه، هر دو شامل) مشخص کن و همان کلمه‌ها را بی‌تغییر در quote بنویس. بازه را تا حد ممکن کوتاه بگیر: فقط خود واژه‌ها یا گروه کوتاهی که آرایه در آن‌هاست، نه صفت‌ها و واژه‌های اطراف و نه یک مصرع کامل. بازه نباید از یک مصرع بیرون برود.
 - جایگاهی که «چندبار ممکن» است (مثل واژه‌های متناسب) را با چند part جدا پر کن، هر واژه یا گروه در part خودش؛ همهٔ واژه‌ها را در یک part نریز.
 - جایگاه‌های مفهومی را با concept پر کن: نام کوتاه و متعارف مفهوم، مفرد و حداکثر سه واژه، بی‌حرف اضافه (مثلاً «شمع»، «زلف»، «عاشق»). جمله یا عبارت توضیحی ننویس.
 - جایگاه‌های متنی را با text پر کن (کوتاه).
-- couplet هر آرایه شمارهٔ بیت اصلی آن است؛ برای آرایه‌ای که کل شعر را در بر می‌گیرد 0 بگذار.
+- couplet هر آرایه شمارهٔ بیت اصلی آن است؛ برای آرایه‌ای که کل شعر را در بر می‌گیرد -1 بگذار.
 - note را یک جملهٔ کوتاه فارسی بنویس که دلیل تشخیص را بگوید. در note دربارهٔ واژه‌ها ادعای واقعیت‌محور نکن مگر مطمئن باشی، و هیچ مصرعی را بلند نقل نکن.
 - هیچ توضیح بیرون از JSON ننویس.
 
@@ -154,7 +154,7 @@ namespace RMuseum.Services.Implementation
                 if (part.WordStart != null && part.WordEnd != null && couplets.TryGetValue(part.CoupletIndex, out var c))
                 {
                     var words = part.Misra == 1 ? c.W1 : c.W2;
-                    pieces.Add("«" + string.Join(" ", words.Skip(part.WordStart.Value - 1).Take(part.WordEnd.Value - part.WordStart.Value + 1)) + "»" + (part.CoupletIndex != tag.CoupletIndex ? $" (بیت {part.CoupletIndex})" : ""));
+                    pieces.Add("«" + string.Join(" ", words.Skip(part.WordStart.Value - 1).Take(part.WordEnd.Value - part.WordStart.Value + 1)) + "»" + (part.CoupletIndex != tag.CoupletIndex ? $" (بیت {part.CoupletIndex + 1})" : ""));
                 }
                 if (part.ConceptId != null)
                     pieces.Add("مفهوم #" + part.ConceptId);
@@ -179,7 +179,7 @@ namespace RMuseum.Services.Implementation
         {
             var list = new List<AILiteraryCouplet>();
             AILiteraryCouplet current = null;
-            int n = 0;
+            int n = -1; //0 based like GanjoorVerse.CoupletIndex
             foreach (var v in verses)
             {
                 switch (v.Position)
@@ -272,7 +272,7 @@ namespace RMuseum.Services.Implementation
 
                 if (needsSpan)
                 {
-                    int coupletNo = p.Couplet ?? ai.Couplet ?? 0;
+                    int coupletNo = p.Couplet ?? ai.Couplet ?? -1;
                     if (!couplets.TryGetValue(coupletNo, out var c))
                     {
                         error = $"{device.Name}/{slot.Name}: couplet {coupletNo} is not in the poem";
@@ -346,10 +346,10 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
-            int main = ai.Couplet ?? 0;
-            if (main == 0 && !wholePoemAllowed)
-                main = parts.Where(p => p.CoupletIndex > 0).Select(p => p.CoupletIndex).DefaultIfEmpty(0).Min();
-            if (main < 0 || (main == 0 && !wholePoemAllowed) || (main > 0 && !couplets.ContainsKey(main)))
+            int main = ai.Couplet ?? -1; //-1 = whole poem
+            if (main < 0 && !wholePoemAllowed)
+                main = parts.Where(p => p.CoupletIndex >= 0).Select(p => p.CoupletIndex).DefaultIfEmpty(-1).Min();
+            if (main < -1 || (main == -1 && !wholePoemAllowed) || (main >= 0 && !couplets.ContainsKey(main)))
             {
                 error = $"{device.Name}: invalid couplet {ai.Couplet}";
                 return null;

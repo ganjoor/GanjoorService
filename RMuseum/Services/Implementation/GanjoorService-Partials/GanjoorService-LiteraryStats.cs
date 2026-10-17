@@ -214,7 +214,7 @@ namespace RMuseum.Services.Implementation
                 foreach (var poemVerses in verses.GroupBy(v => v.PoemId))
                 {
                     var map = new Dictionary<int, Tuple<string, string>>();
-                    int n = 0;
+                    int n = -1;
                     string m1 = null;
                     foreach (var v in poemVerses)
                     {
@@ -246,7 +246,7 @@ namespace RMuseum.Services.Implementation
                 foreach (var t in page)
                 {
                     Tuple<string, string> hemistichs = null;
-                    if (t.CoupletIndex > 0 && couplets.TryGetValue(t.PoemId, out var map))
+                    if (t.CoupletIndex >= 0 && couplets.TryGetValue(t.PoemId, out var map))
                         map.TryGetValue(t.CoupletIndex, out hemistichs);
 
                     var itemParts = new List<LiteraryStatsTagPart>();

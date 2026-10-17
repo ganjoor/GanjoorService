@@ -2830,10 +2830,10 @@ else
         <div class="up-field">
             <label for="lit-couplet">بیت</label>
             <select id="lit-couplet">
-                <option value="0">— کل شعر / تعیین‌نشده —</option>
+                <option value="-1">— کل شعر / تعیین‌نشده —</option>
                 @foreach (var couplet in Model.Couplets)
                 {
-                    <option value="@(couplet.Item1 + 1)">@($"{(couplet.Item1 + 1).ToPersianNumbers()} - {couplet.Item2}")</option>
+                    <option value="@couplet.Item1">@($"{(couplet.Item1 + 1).ToPersianNumbers()} - {couplet.Item2}")</option>
                 }
             </select>
         </div>
@@ -2930,7 +2930,7 @@ else
         }
 
         function litNewInst() {
-            var main = parseInt($('#lit-couplet').val() || '0', 10);
+            var main = parseInt($('#lit-couplet').val() || '-1', 10);
             return { couplet: main, misra: 0, ws: null, we: null, stage: 0, conceptId: null, conceptName: '', text: '' };
         }
 
@@ -3011,10 +3011,10 @@ else
             var hasSpan = s.kind === 0 || s.kind === 1;
             var hasConcept = s.kind === 1 || s.kind === 2;
             if (hasSpan) {
-                html += '<select onchange="litSetCouplet(' + s.id + ',' + i + ',this.value)"><option value="0">— بیت را انتخاب کنید —</option>';
+                html += '<select onchange="litSetCouplet(' + s.id + ',' + i + ',this.value)"><option value="-1">— بیت را انتخاب کنید —</option>';
                 for (var c = 0; c < litCouplets.length; c++) {
                     var cp = litCouplets[c];
-                    html += '<option value="' + cp.n + '"' + (cp.n === inst.couplet ? ' selected' : '') + '>' + litEsc(cp.n + ' - ' + (cp.m1 || '') + (cp.m2 ? ' - ' + cp.m2 : '')) + '</option>';
+                    html += '<option value="' + cp.n + '"' + (cp.n === inst.couplet ? ' selected' : '') + '>' + litEsc((cp.n + 1) + ' - ' + (cp.m1 || '') + (cp.m2 ? ' - ' + cp.m2 : '')) + '</option>';
                 }
                 html += '</select>';
                 var cpl = litCouplet(inst.couplet);
@@ -3058,7 +3058,7 @@ else
         function litRemoveInst(slotId, i) { litForm.slots[slotId].splice(i, 1); litRenderSlots(); }
         function litSetCouplet(slotId, i, v) {
             var inst = litInst(slotId, i);
-            inst.couplet = parseInt(v || '0', 10);
+            inst.couplet = parseInt(v || '-1', 10);
             inst.misra = 0; inst.ws = null; inst.we = null; inst.stage = 0;
             litRenderSlots();
         }
@@ -3138,7 +3138,7 @@ else
                 if (s.required && insts.length === 0) { upToast('جایگاه «' + s.name + '» پر نشده است.', 'error'); return null; }
                 for (var i = 0; i < insts.length; i++) {
                     var x = insts[i];
-                    var p = { slotId: s.id, coupletIndex: 0, misra: 0, wordStart: null, wordEnd: null, conceptId: null, suggestedConceptName: null, text: null };
+                    var p = { slotId: s.id, coupletIndex: -1, misra: 0, wordStart: null, wordEnd: null, conceptId: null, suggestedConceptName: null, text: null };
                     if (s.kind === 0 || s.kind === 1) {
                         if (x.ws == null) { upToast('جای «' + s.name + '» را در متن مشخص کنید.', 'error'); return null; }
                         p.coupletIndex = x.couplet; p.misra = x.misra; p.wordStart = x.ws; p.wordEnd = x.we;
@@ -3169,9 +3169,9 @@ else
             if (silentIfEmpty && !litHasUnstaged()) return true;
             var parts = litBuildParts(d);
             if (parts == null) return false;
-            var main = parseInt($('#lit-couplet').val() || '0', 10);
-            if (main === 0) {
-                var withSpan = parts.filter(function (p) { return p.coupletIndex > 0; })[0];
+            var main = parseInt($('#lit-couplet').val() || '-1', 10);
+            if (main === -1) {
+                var withSpan = parts.filter(function (p) { return p.coupletIndex >= 0; })[0];
                 if (withSpan) main = withSpan.coupletIndex;
             }
             litSuggestions.push({
@@ -3209,7 +3209,7 @@ else
 
         function litCoupletLabel(n) {
             var c = litCouplet(n);
-            return c ? (n + ' - ' + (c.m1 || '')) : '— کل شعر —';
+            return c ? ((n + 1) + ' - ' + (c.m1 || '')) : '— کل شعر —';
         }
 
         function litRenderExisting() {

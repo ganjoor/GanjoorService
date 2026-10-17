@@ -609,7 +609,7 @@ namespace RMuseum.Services.Implementation
                 tag.SuggestionNote = _TrimOrNull(tag.SuggestionNote);
                 if (tag.SuggestionNote != null && tag.SuggestionNote.Length > LiteraryNoteMaxLength)
                     return "توضیح برچسب آرایه بیش از حد طولانی است.";
-                if (tag.CoupletIndex < 0)
+                if (tag.CoupletIndex < -1)
                     return "شمارهٔ بیت نامعتبر است.";
 
                 if (tag.MarkForDelete)
@@ -660,11 +660,11 @@ namespace RMuseum.Services.Implementation
 
                     if (needsSpan)
                     {
-                        if (part.CoupletIndex < 1 || part.Misra < 1 || part.Misra > 2 || part.WordStart == null || part.WordEnd == null
+                        if (part.CoupletIndex < 0 || part.Misra < 1 || part.Misra > 2 || part.WordStart == null || part.WordEnd == null
                             || part.WordStart < 1 || part.WordEnd < part.WordStart)
                             return $"جای «{slot.Name}» در متن شعر مشخص نشده است.";
                     }
-                    else if (part.CoupletIndex < 0 || part.Misra < 0 || part.Misra > 2)
+                    else if (part.CoupletIndex < -1 || part.Misra < 0 || part.Misra > 2)
                     {
                         return $"جای «{slot.Name}» نامعتبر است.";
                     }
@@ -832,6 +832,55 @@ namespace RMuseum.Services.Implementation
             status.Completed = completed;
             status.UserId = userId;
             status.Date = DateTime.Now;
+        }
+
+        private const string LiteraryZeroBasedOptionName = "LiteraryCoupletIndexZeroBasedDone";
+
+        /// <summary>
+        /// one-time conversion of the couplet numbers of literary tags (tags, their parts, corrections and the parts
+        /// stored in correction PartsJson) from the old convention (1 based, 0 = whole poem / not located) to the
+        /// convention of GanjoorVerse.CoupletIndex (0 based, -1 = whole poem / not located). It refuses to run twice.
+        /// </summary>
+        /// <returns>number of converted records</returns>
+        public async Task<RServiceResult<int>> ConvertLiteraryCoupletIndexesToZeroBasedAsync()
+        {
+            try
+            {
+                if (await _context.Options.AsNoTracking().AnyAsync(o => o.Name == LiteraryZeroBasedOptionName && o.RAppUserId == null))
+                    return new RServiceResult<int>(0, "این تبدیل قبلاً انجام شده است و تکرار آن شماره‌ها را خراب می‌کند.");
+
+                int total = 0;
+                var strategy = _context.Database.CreateExecutionStrategy();
+                await strategy.ExecuteAsync(async () =>
+                {
+                    _context.ChangeTracker.Clear();
+                    total = 0;
+                    using (var transaction = await _context.Database.BeginTransactionAsync())
+                    {
+                        total += await _context.PoemLiteraryTags.ExecuteUpdateAsync(s => s.SetProperty(t => t.CoupletIndex, t => t.CoupletIndex - 1));
+                        total += await _context.PoemLiteraryTagParts.ExecuteUpdateAsync(s => s.SetProperty(p => p.CoupletIndex, p => p.CoupletIndex - 1));
+                        total += await _context.GanjoorPoemLiteraryTagCorrections.ExecuteUpdateAsync(s => s.SetProperty(c => c.CoupletIndex, c => c.CoupletIndex - 1));
+
+                        var corrections = await _context.GanjoorPoemLiteraryTagCorrections.Where(c => c.PartsJson != null && c.PartsJson != "").ToListAsync();
+                        foreach (var correction in corrections)
+                        {
+                            var parts = _ReadParts(correction.PartsJson);
+                            foreach (var part in parts)
+                                part.CoupletIndex--;
+                            correction.PartsJson = JsonConvert.SerializeObject(parts);
+                        }
+
+                        _context.Options.Add(new RSecurityBackend.Models.Generic.Db.RGenericOption { Name = LiteraryZeroBasedOptionName, Value = DateTime.UtcNow.ToString("o"), RAppUserId = null });
+                        await _context.SaveChangesAsync();
+                        await transaction.CommitAsync();
+                    }
+                });
+                return new RServiceResult<int>(total);
+            }
+            catch (Exception exp)
+            {
+                return new RServiceResult<int>(0, exp.ToString());
+            }
         }
     }
 }

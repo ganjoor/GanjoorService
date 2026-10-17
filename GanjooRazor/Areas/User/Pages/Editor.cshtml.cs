@@ -262,7 +262,7 @@ namespace GanjooRazor.Areas.User.Pages
             {
                 var list = new List<object>();
                 var verses = PageInformation?.Poem?.Verses ?? Array.Empty<GanjoorVerseViewModel>();
-                int n = 0;
+                int n = -1; //0 based like GanjoorVerse.CoupletIndex
                 string m1 = null, m2 = null;
                 bool open = false;
                 void Flush()

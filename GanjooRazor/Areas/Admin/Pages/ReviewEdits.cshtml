@@ -1257,10 +1257,10 @@ else
                 <tr>
                     <td colspan="2">
                         <b>@(litItem.Delete ? "درخواست حذف آرایهٔ ادبی" : "آرایهٔ ادبی پیشنهادی"): @litItem.DeviceName</b>@(litItem.Uncertain ? " (پیشنهاددهنده مطمئن نیست)" : "")
-                        @if (litItem.CoupletNumber > 0)
+                        @if (litItem.CoupletNumber >= 0)
                         {
                             <text>
-                                - بیت <a href="@($"{Model.PageInformation.FullUrl}#bn{litItem.CoupletNumber}")" target="_blank">@litItem.CoupletNumber.ToPersianNumbers()</a>
+                                - بیت <a href="@($"{Model.PageInformation.FullUrl}#bn{litItem.CoupletNumber + 1}")" target="_blank">@((litItem.CoupletNumber + 1).ToPersianNumbers())</a>
                                 @if (!string.IsNullOrEmpty(litItem.Couplet))
                                 {
                                     <span class="up-hint">@litItem.Couplet</span>

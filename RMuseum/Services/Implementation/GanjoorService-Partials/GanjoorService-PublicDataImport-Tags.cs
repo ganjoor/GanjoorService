@@ -43,6 +43,12 @@ namespace RMuseum.Services.Implementation
             public bool BackfillGeoTags;
             public bool BackfillLiteraryTags;
 
+            /// <summary>
+            /// the export is older than schema 4: literary couplet numbers are 1 based and 0 means the whole poem,
+            /// so subtracting 1 gives the current convention (0 based, -1 whole poem / not located)
+            /// </summary>
+            public bool LegacyLiteraryCoupletNumbers;
+
             public int Locations, People, Relations, Affiliations, Evidences;
             public int Devices, Slots, Concepts, Sources;
             public int GeoTags, PersonTags, LiteraryTags, SkippedTags;
@@ -444,7 +450,7 @@ namespace RMuseum.Services.Implementation
                         parts.Add(new PoemLiteraryTagPart
                         {
                             SlotId = slotId,
-                            CoupletIndex = p.CoupletIndex,
+                            CoupletIndex = pic.LegacyLiteraryCoupletNumbers ? p.CoupletIndex - 1 : p.CoupletIndex,
                             Misra = p.Misra,
                             WordStart = p.WordStart,
                             WordEnd = p.WordEnd,
@@ -462,7 +468,7 @@ namespace RMuseum.Services.Implementation
                     context.PoemLiteraryTags.Add(new PoemLiteraryTag
                     {
                         PoemId = poemId,
-                        CoupletIndex = lt.CoupletIndex,
+                        CoupletIndex = pic.LegacyLiteraryCoupletNumbers ? lt.CoupletIndex - 1 : lt.CoupletIndex,
                         DeviceId = deviceId,
                         Uncertain = lt.Uncertain,
                         Note = lt.Note,

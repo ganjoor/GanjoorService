@@ -771,7 +771,7 @@ namespace RMuseum.Services.Implementation
                 tagCollector.LiteraryByDevice.TryGetValue(device.Id, out var entries);
                 var sorted = (entries ?? new List<LiteraryTagIndexEntryPublicDto>())
                                 .OrderBy(e => e.PoemId).ThenBy(e => e.CoupletIndex)
-                                .ThenBy(e => e.Parts.Count > 0 ? e.Parts[0].CoupletIndex : 0)
+                                .ThenBy(e => e.Parts.Count > 0 ? e.Parts[0].CoupletIndex : -1)
                                 .ThenBy(e => e.Parts.Count > 0 ? e.Parts[0].Misra : 0)
                                 .ThenBy(e => e.Parts.Count > 0 ? e.Parts[0].WordStart ?? 0 : 0)
                                 .ToList();
@@ -884,8 +884,10 @@ tags are exported, with no information about who suggested or approved them.
 - `GET {t.LiteraryTagsByDevice}` — every tag of one device across all poems, each with its `PoemId`
 - the per-poem file carries its own tags in `LiteraryTags`
 
-In a tag, `CoupletIndex` is the 1-based number of the main couplet as numbered on ganjoor.net (`0`
-means the whole poem). A part located in the text has its own `CoupletIndex`, `Misra` (1 or 2) and
+In a tag, `CoupletIndex` is the index of the main couplet, counted from 0 exactly like `CoupletIndex`
+in the poem file's `Verses` (`-1` means the whole poem; files of schema version 3 and older counted
+couplets from 1 and used 0 for the whole poem). A part located in the text has its own `CoupletIndex`
+(0-based, `-1` if not located), `Misra` (1 or 2) and
 `WordStart` / `WordEnd` (1-based, inclusive; the words of a hemistich split at whitespace).
 `Uncertain` marks tags the annotator was not sure about. `Origin` is `Editor`, `AcademicCorpus`,
 `Algorithm` or `AI`; `MachineGenerated` is true for the last two.
