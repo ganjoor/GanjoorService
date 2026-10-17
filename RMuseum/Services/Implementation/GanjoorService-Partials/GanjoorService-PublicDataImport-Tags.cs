@@ -94,10 +94,12 @@ namespace RMuseum.Services.Implementation
                 }
                 using (var transaction = await context.Database.BeginTransactionAsync())
                 {
+#pragma warning disable EF1002 // schema and table names come from the EF model, not from input (identifiers cannot be parameters)
                     await context.Database.ExecuteSqlRawAsync($"SET IDENTITY_INSERT [{schema}].[{table}] ON");
                     context.AddRange(items);
                     await context.SaveChangesAsync();
                     await context.Database.ExecuteSqlRawAsync($"SET IDENTITY_INSERT [{schema}].[{table}] OFF");
+#pragma warning restore EF1002
                     await transaction.CommitAsync();
                 }
             });
