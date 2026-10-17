@@ -202,24 +202,6 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
-        /// ONE-TIME conversion of literary couplet numbers to the 0 based convention of GanjoorVerse.CoupletIndex
-        /// (-1 = whole poem); call it exactly once right after deploying the version that uses the new convention. It refuses to run twice.
-        /// </summary>
-        /// <returns>number of converted records</returns>
-        [HttpPost]
-        [Route("convert-couplet-indexes-to-zero-based")]
-        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + SecurableItem.ModifyOperationShortName)]
-        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(int))]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
-        public async Task<IActionResult> ConvertCoupletIndexesToZeroBased()
-        {
-            var res = await _ganjoorService.ConvertLiteraryCoupletIndexesToZeroBasedAsync();
-            if (!string.IsNullOrEmpty(res.ExceptionString))
-                return BadRequest(res.ExceptionString);
-            return Ok(res.Result);
-        }
-
-        /// <summary>
         /// approved literary tags of a poem
         /// </summary>
         [HttpGet]

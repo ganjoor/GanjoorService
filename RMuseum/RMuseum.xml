@@ -11195,7 +11195,7 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.LiteraryTagPartSuggestion.CoupletIndex">
             <summary>
-            couplet index (1 based, 0 = not located)
+            couplet index (0 based like GanjoorVerse.CoupletIndex, -1 = not located)
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.LiteraryTagPartSuggestion.Misra">
@@ -13414,7 +13414,7 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.CoupletIndex">
             <summary>
-            couplet number (1 based as in the editor), 0 = whole poem
+            couplet index (0 based like GanjoorVerse.CoupletIndex), -1 = whole poem
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.LiteraryStatsTagItem.Hemistich1">
@@ -13936,7 +13936,7 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.CoupletIndex">
             <summary>
-            main couplet index (same convention as PoemGeoDateTag.CoupletIndex: 0 = whole poem)
+            main couplet index (0 based like GanjoorVerse.CoupletIndex, -1 = whole poem)
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTag.DeviceId">
@@ -14007,7 +14007,7 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTagPart.CoupletIndex">
             <summary>
-            couplet index (1 based, 0 = not located in a particular couplet)
+            couplet index (0 based like GanjoorVerse.CoupletIndex, -1 = not located in a particular couplet)
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PoemLiteraryTagPart.Misra">
@@ -14557,7 +14557,7 @@
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PublicExport.LiteraryTagPublicDto">
             <summary>
-            a literary tag; CoupletIndex is the 1-based number of the main couplet as shown on the site (0 = the whole poem)
+            a literary tag; CoupletIndex is the 0-based index of the main couplet (VersePublicDto.CoupletIndex), -1 = the whole poem (schema 3 and older counted couplets from 1 and used 0 for the whole poem)
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PublicExport.LiteraryTagPublicDto.Uncertain">
@@ -14582,7 +14582,7 @@
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PublicExport.LiteraryTagPartPublicDto">
             <summary>
-            the value of one slot of a literary tag: words (CoupletIndex/Misra/WordStart/WordEnd, 1-based, the
+            the value of one slot of a literary tag: words (CoupletIndex 0-based like VersePublicDto.CoupletIndex, -1 = not located; Misra/WordStart/WordEnd 1-based, the
             words of a hemistich split at whitespace), and/or a concept, and/or text, depending on the slot kind
             </summary>
         </member>
@@ -27357,6 +27357,12 @@
             <summary>
             the database had no tags of this kind when the import started, so poems that already exist
             get their tags from the export too (otherwise only poems imported by this run do)
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.GanjoorService.PublicImportContext.LegacyLiteraryCoupletNumbers">
+            <summary>
+            the export is older than schema 4: literary couplet numbers are 1 based and 0 means the whole poem,
+            so subtracting 1 gives the current convention (0 based, -1 whole poem / not located)
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.InsertWithExplicitIdsAsync``1(RMuseum.DbContext.RMuseumDbContext,System.Collections.Generic.List{``0})">

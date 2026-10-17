@@ -1904,12 +1904,6 @@ namespace RMuseum.Services
         Task<RServiceResult<PoemLiteraryTag[]>> GetPoemLiteraryTagsAsync(int poemId);
 
         /// <summary>
-        /// one-time conversion of literary tag couplet numbers to the 0 based convention of GanjoorVerse.CoupletIndex (-1 = whole poem); refuses to run twice
-        /// </summary>
-        /// <returns>number of converted records</returns>
-        Task<RServiceResult<int>> ConvertLiteraryCoupletIndexesToZeroBasedAsync();
-
-        /// <summary>
         /// is the literary annotation of the poem complete
         /// </summary>
         /// <param name="poemId"></param>
