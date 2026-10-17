@@ -2725,6 +2725,14 @@ else
             <p class="up-hint">اگر این برچسب به یک بیت مشخص اشاره دارد، آن را انتخاب کنید تا دیگران بتوانند شاهد آن را در متن پیدا کنند.</p>
         </div>
 
+        <div class="up-field up-field--attention">
+            <label for="persontag-mention"><span class="up-field-icon" aria-hidden="true">🎭</span> نقش نامبرده در این بیت/شعر (فراموش نکنید انتخابش کنید)</label>
+            <select id="persontag-mention">
+                <option value="0">بخشی از داستان یا متن است (کنشگر، مخاطب یا موضوع روایت؛ شامل شاعر و یاورانش)</option>
+                <option value="1">فقط اشاره است (تشبیه، یادآوری گذشته، پیش‌بینی آینده، «همچون فلانی»)</option>
+            </select>
+        </div>
+
         <div class="up-field">
             <label for="geotag-person-search">نامبرده</label>
             <div class="up-autocomplete-wrap">
@@ -2790,14 +2798,6 @@ else
             </p>
             <div id="geotag-person-relatives-list"></div>
             <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="addPersonRelativeRow()">➕ افزودن خویشاوند یا وابستگی</a>
-        </div>
-
-        <div class="up-field">
-            <label for="persontag-mention">نقش نامبرده در این بیت/شعر</label>
-            <select id="persontag-mention">
-                <option value="0">بخشی از داستان یا متن است (کنشگر، مخاطب یا موضوع روایت؛ شامل شاعر و یاورانش)</option>
-                <option value="1">فقط اشاره است (تشبیه، یادآوری گذشته، پیش‌بینی آینده، «همچون فلانی»)</option>
-            </select>
         </div>
 
         <div class="up-field">

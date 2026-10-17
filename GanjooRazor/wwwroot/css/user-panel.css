@@ -615,6 +615,25 @@ body.up-modal-open {
     opacity: 0.8;
 }
 
+/* a field the user must not overlook (e.g. the role of a tagged person): warm box with an accent edge, like .up-alert--warning */
+.up-field--attention {
+    background: #fff6e5;
+    border: 1px solid #f3ddaa;
+    border-right: 4px solid #d98e04;
+    border-radius: var(--up-radius-sm);
+    padding: var(--up-space-2) var(--up-space-3);
+}
+
+.up-field--attention > label {
+    color: #5e4a1c;
+    font-weight: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+    .up-field--attention { background: #332a14; border-color: #5c4a1f; border-right-color: #d98e04; }
+    .up-field--attention > label { color: bisque; }
+}
+
 .up-field-row {
     display: flex;
     gap: var(--up-space-3);
