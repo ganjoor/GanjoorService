@@ -14322,6 +14322,21 @@
             number of couplet-bound person tags (the sum of all index/person-tags shards)
             </summary>
         </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto.LiteraryDevicesCount">
+            <summary>
+            number of approved literary devices (آرایه‌های ادبی) in literary-devices.json
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto.LiteraryConceptsCount">
+            <summary>
+            number of concepts in literary-concepts.json
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto.LiteraryTagsCount">
+            <summary>
+            number of literary tags (the sum of all index/literary-tags files)
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto.PersonIndexShardSize">
             <summary>
             number of ids grouped into each index/person-tags shard file: the shard of person X is
@@ -14371,6 +14386,12 @@
             <summary>
             approved place/date/person tags bound to couplets of this poem, sorted by couplet
             index; left out of the file (null) when the poem has none
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.PoemPublicDto.LiteraryTags">
+            <summary>
+            literary device tags (آرایه‌های ادبی) of this poem, sorted by couplet index; left out of the file
+            (null) when the poem has none
             </summary>
         </member>
         <member name="T:RMuseum.Models.Ganjoor.PublicExport.PoemTagPublicDto">
@@ -14479,6 +14500,73 @@
             <summary>
             index/person-tags/{bucket}.json item - where a person is tagged, so "all couplets about X"
             doesn't need a scan of every poem file
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.LiteraryDevicePublicDto">
+            <summary>
+            a literary device (e.g. تشبیه) with the slots its tags are made of
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.LiteraryDevicePublicDto.Category">
+            <summary>
+            LiteraryDeviceCategory name
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.LiteraryDeviceSlotPublicDto.Kind">
+            <summary>
+            Span (words of the poem), SpanConcept (words of the poem and the concept they stand for),
+            Concept (a concept only) or Text (free text)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.LiteraryConceptPublicDto.Aliases">
+            <summary>
+            other names of the concept, separated by |
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.LiteraryTagSourcePublicDto">
+            <summary>
+            where a group of imported literary tags comes from, with its license (the tags name it in SourceKey)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.LiteraryTagPublicDto">
+            <summary>
+            a literary tag; CoupletIndex is the 1-based number of the main couplet as shown on the site (0 = the whole poem)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.LiteraryTagPublicDto.Uncertain">
+            <summary>
+            the annotator was not sure
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.LiteraryTagPublicDto.Origin">
+            <summary>
+            Editor (a person), AcademicCorpus (imported, see SourceKey), Algorithm or AI
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.LiteraryTagPublicDto.SourceKey">
+            <summary>
+            key of an entry of literary-sources.json (imported tags only)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.LiteraryTagPublicDto.MachineGenerated">
+            <summary>
+            Origin is AI or Algorithm
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.LiteraryTagPartPublicDto">
+            <summary>
+            the value of one slot of a literary tag: words (CoupletIndex/Misra/WordStart/WordEnd, 1-based, the
+            words of a hemistich split at whitespace), and/or a concept, and/or text, depending on the slot kind
+            </summary>
+        </member>
+        <member name="P:RMuseum.Models.Ganjoor.PublicExport.LiteraryTagPartPublicDto.Misra">
+            <summary>
+            1 or 2 (0 = not a span)
+            </summary>
+        </member>
+        <member name="T:RMuseum.Models.Ganjoor.PublicExport.LiteraryTagIndexEntryPublicDto">
+            <summary>
+            an entry of index/literary-tags/{deviceId}.json
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PublicExport.VersePublicDto.CoupletSummary">
@@ -27098,6 +27186,16 @@
             tags only have to be loaded once (per poet) from the database
             </summary>
         </member>
+        <member name="P:RMuseum.Services.Implementation.GanjoorService.PublicExportTagCollector.LiteraryByPoem">
+            <summary>
+            literary tags of the poet being exported, by poem id (cleared after each poet)
+            </summary>
+        </member>
+        <member name="P:RMuseum.Services.Implementation.GanjoorService.PublicExportTagCollector.LiteraryByDevice">
+            <summary>
+            all literary tags by device id, for index/literary-tags
+            </summary>
+        </member>
         <member name="F:RMuseum.Services.Implementation.GanjoorService._publicDataExportRunningLock">
             <summary>
             Guards against two runs of the same export job (keyed by job name — "PublicDataExport"
@@ -27137,6 +27235,11 @@
             queries per poem — tens of thousands of round-trips for the full corpus, every run).
             </summary>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ToPublicLiteraryTag(RMuseum.Models.Ganjoor.PoemLiteraryTag)">
+            <summary>
+            public form of a literary tag: no author, no dates, and imported tags are traced back to their source
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportCatTreeToJson(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.GanjoorCat,System.Collections.Generic.Dictionary{System.Int32,RMuseum.Models.Ganjoor.GanjoorMetre},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorPoemSection}},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.List{RMuseum.Models.Ganjoor.GanjoorVerse}},System.Collections.Generic.Dictionary{System.Int32,System.Collections.Generic.List{RMuseum.Models.Ganjoor.PoemGeoDateTag}},System.Collections.Generic.Dictionary{System.Int32,System.String},System.Collections.Generic.Dictionary{System.Int32,System.String},RMuseum.Services.Implementation.GanjoorService.PublicExportTagCollector)">
             <summary>
             recursively writes _cat.json for <paramref name="cat"/> and every poem directly
@@ -27161,6 +27264,14 @@
             sharded index/person-tags. Runs after all poems are written because relation evidence
             is limited to couplets of poems that are part of the export (poemIdIndex). Who added
             a piece of evidence or when is never exported.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ExportLiteraryData(RMuseum.DbContext.RMuseumDbContext,System.String,RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto,RMuseum.Services.Implementation.GanjoorService.PublicExportTagCollector)">
+            <summary>
+            writes literary-devices.json (approved devices with their slots), literary-concepts.json (approved
+            concepts), literary-sources.json (origin and license of imported tags) and one
+            index/literary-tags/{deviceId}.json per device. Who suggested or approved a device, concept or tag,
+            and when, is never exported; neither is a device's Source field.
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.BuildApiMarkdown(RMuseum.Models.Ganjoor.PublicExport.PublicExportManifestDto)">

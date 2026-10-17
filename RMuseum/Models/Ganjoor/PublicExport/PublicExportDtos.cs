@@ -12,7 +12,7 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         /// <summary>
         /// bump this whenever a DTO shape changes in a way consumers should know about
         /// </summary>
-        public int SchemaVersion { get; set; } = 2;
+        public int SchemaVersion { get; set; } = 3;
 
         /// <summary>
         /// UTC generation timestamp of this run (informational only — never embed per-file
@@ -43,6 +43,21 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         /// number of couplet-bound person tags (the sum of all index/person-tags shards)
         /// </summary>
         public int PersonTagsCount { get; set; }
+
+        /// <summary>
+        /// number of approved literary devices (آرایه‌های ادبی) in literary-devices.json
+        /// </summary>
+        public int LiteraryDevicesCount { get; set; }
+
+        /// <summary>
+        /// number of concepts in literary-concepts.json
+        /// </summary>
+        public int LiteraryConceptsCount { get; set; }
+
+        /// <summary>
+        /// number of literary tags (the sum of all index/literary-tags files)
+        /// </summary>
+        public int LiteraryTagsCount { get; set; }
 
         /// <summary>
         /// number of ids grouped into each index/person-tags shard file: the shard of person X is
@@ -79,6 +94,10 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         public string PersonAffiliations { get; set; } = "person-affiliations.json";
         public string GeoTags { get; set; } = "geotags.json";
         public string PersonTagsIndexShard { get; set; } = "index/person-tags/{bucket}.json";
+        public string LiteraryDevices { get; set; } = "literary-devices.json";
+        public string LiteraryConcepts { get; set; } = "literary-concepts.json";
+        public string LiteraryTagSources { get; set; } = "literary-sources.json";
+        public string LiteraryTagsByDevice { get; set; } = "index/literary-tags/{deviceId}.json";
     }
 
     public class PublicExportManifestPoetEntryDto
@@ -172,6 +191,12 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         /// index; left out of the file (null) when the poem has none
         /// </summary>
         public List<PoemTagPublicDto> Tags { get; set; }
+
+        /// <summary>
+        /// literary device tags (آرایه‌های ادبی) of this poem, sorted by couplet index; left out of the file
+        /// (null) when the poem has none
+        /// </summary>
+        public List<LiteraryTagPublicDto> LiteraryTags { get; set; }
     }
 
     /// <summary>
@@ -343,6 +368,126 @@ namespace RMuseum.Models.Ganjoor.PublicExport
         public int PoemId { get; set; }
         public int CoupletIndex { get; set; }
         public string PersonMention { get; set; }
+    }
+
+    /// <summary>
+    /// a literary device (e.g. تشبیه) with the slots its tags are made of
+    /// </summary>
+    public class LiteraryDevicePublicDto
+    {
+        public int Id { get; set; }
+        public string Key { get; set; }
+        public string Name { get; set; }
+
+        /// <summary>
+        /// LiteraryDeviceCategory name
+        /// </summary>
+        public string Category { get; set; }
+        public string Definition { get; set; }
+        public string Example { get; set; }
+        public bool IsCore { get; set; }
+        public List<LiteraryDeviceSlotPublicDto> Slots { get; set; } = new List<LiteraryDeviceSlotPublicDto>();
+    }
+
+    public class LiteraryDeviceSlotPublicDto
+    {
+        public int Id { get; set; }
+        public string Key { get; set; }
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Span (words of the poem), SpanConcept (words of the poem and the concept they stand for),
+        /// Concept (a concept only) or Text (free text)
+        /// </summary>
+        public string Kind { get; set; }
+        public bool Required { get; set; }
+        public bool AllowMultiple { get; set; }
+        public int Order { get; set; }
+    }
+
+    public class LiteraryConceptPublicDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+
+        /// <summary>
+        /// other names of the concept, separated by |
+        /// </summary>
+        public string Aliases { get; set; }
+        public int? ParentId { get; set; }
+    }
+
+    /// <summary>
+    /// where a group of imported literary tags comes from, with its license (the tags name it in SourceKey)
+    /// </summary>
+    public class LiteraryTagSourcePublicDto
+    {
+        public string Key { get; set; }
+        public string Name { get; set; }
+        public string Title { get; set; }
+        public string Authors { get; set; }
+        public string Url { get; set; }
+        public string Description { get; set; }
+        public string License { get; set; }
+        public string LicenseText { get; set; }
+    }
+
+    /// <summary>
+    /// a literary tag; CoupletIndex is the 1-based number of the main couplet as shown on the site (0 = the whole poem)
+    /// </summary>
+    public class LiteraryTagPublicDto
+    {
+        public int CoupletIndex { get; set; }
+        public int DeviceId { get; set; }
+
+        /// <summary>
+        /// the annotator was not sure
+        /// </summary>
+        public bool Uncertain { get; set; }
+        public string Note { get; set; }
+
+        /// <summary>
+        /// Editor (a person), AcademicCorpus (imported, see SourceKey), Algorithm or AI
+        /// </summary>
+        public string Origin { get; set; }
+
+        /// <summary>
+        /// key of an entry of literary-sources.json (imported tags only)
+        /// </summary>
+        public string SourceKey { get; set; }
+
+        /// <summary>
+        /// Origin is AI or Algorithm
+        /// </summary>
+        public bool MachineGenerated { get; set; }
+        public List<LiteraryTagPartPublicDto> Parts { get; set; } = new List<LiteraryTagPartPublicDto>();
+    }
+
+    /// <summary>
+    /// the value of one slot of a literary tag: words (CoupletIndex/Misra/WordStart/WordEnd, 1-based, the
+    /// words of a hemistich split at whitespace), and/or a concept, and/or text, depending on the slot kind
+    /// </summary>
+    public class LiteraryTagPartPublicDto
+    {
+        public int SlotId { get; set; }
+        public int CoupletIndex { get; set; }
+
+        /// <summary>
+        /// 1 or 2 (0 = not a span)
+        /// </summary>
+        public int Misra { get; set; }
+        public int? WordStart { get; set; }
+        public int? WordEnd { get; set; }
+        public int? ConceptId { get; set; }
+        public string Text { get; set; }
+    }
+
+    /// <summary>
+    /// an entry of index/literary-tags/{deviceId}.json
+    /// </summary>
+    public class LiteraryTagIndexEntryPublicDto : LiteraryTagPublicDto
+    {
+        public int PoemId { get; set; }
     }
 
     public class MetreRefDto

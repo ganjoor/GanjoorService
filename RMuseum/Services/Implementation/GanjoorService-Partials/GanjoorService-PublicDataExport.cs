@@ -40,6 +40,16 @@ namespace RMuseum.Services.Implementation
         {
             public List<GeoTagPublicDto> GeoTags { get; } = new List<GeoTagPublicDto>();
             public Dictionary<int, List<PersonTagRefPublicDto>> PersonTags { get; } = new Dictionary<int, List<PersonTagRefPublicDto>>();
+
+            /// <summary>
+            /// literary tags of the poet being exported, by poem id (cleared after each poet)
+            /// </summary>
+            public Dictionary<int, List<PoemLiteraryTag>> LiteraryByPoem { get; } = new Dictionary<int, List<PoemLiteraryTag>>();
+
+            /// <summary>
+            /// all literary tags by device id, for index/literary-tags
+            /// </summary>
+            public Dictionary<int, List<LiteraryTagIndexEntryPublicDto>> LiteraryByDevice { get; } = new Dictionary<int, List<LiteraryTagIndexEntryPublicDto>>();
         }
 
         /// <summary>
@@ -188,7 +198,7 @@ namespace RMuseum.Services.Implementation
                                 await TextFileWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "README.md"), BuildReadmeMarkdown(manifest));
 
                                 await jobProgressServiceEF.UpdateJob(job.Id, 99, "Committing and pushing");
-                                int changed = publisher.CommitAndPush($"data: export {manifest.PoetsCount} poets / {manifest.PoemsCount} poems / {manifest.PeopleCount} people / {manifest.PersonTagsCount + manifest.GeoTagsCount} tags — {DateTime.UtcNow:yyyy-MM-dd}");
+                                int changed = publisher.CommitAndPush($"data: export {manifest.PoetsCount} poets / {manifest.PoemsCount} poems / {manifest.PeopleCount} people / {manifest.PersonTagsCount + manifest.GeoTagsCount} tags / {manifest.LiteraryTagsCount} literary tags — {DateTime.UtcNow:yyyy-MM-dd}");
 
                                 await jobProgressServiceEF.UpdateJob(job.Id, 100, changed == 0 ? "No changes" : $"{changed} files changed", true);
                             }
@@ -322,7 +332,49 @@ namespace RMuseum.Services.Implementation
                                     .GroupBy(t => t.PoemId)
                                     .ToDictionary(g => g.Key, g => g.ToList());
 
-            return await ExportCatTreeToJson(context, repoRoot, catPoet, metresById, sectionsByPoem, versesByPoem, tagsByPoem, catIdIndex, poemIdIndex, tagCollector);
+            //literary tags (approved by definition: pending suggestions only exist in the correction tables)
+            tagCollector.LiteraryByPoem.Clear();
+            foreach (var group in (await context.PoemLiteraryTags.AsNoTracking()
+                                        .Include(t => t.Parts)
+                                        .Where(t => t.Poem.Cat.PoetId == poet.Id)
+                                        .OrderBy(t => t.CoupletIndex).ThenBy(t => t.DeviceId).ThenBy(t => t.Id)
+                                        .ToListAsync())
+                                    .GroupBy(t => t.PoemId))
+            {
+                tagCollector.LiteraryByPoem[group.Key] = group.ToList();
+            }
+
+            int exported = await ExportCatTreeToJson(context, repoRoot, catPoet, metresById, sectionsByPoem, versesByPoem, tagsByPoem, catIdIndex, poemIdIndex, tagCollector);
+            tagCollector.LiteraryByPoem.Clear();
+            return exported;
+        }
+
+        /// <summary>
+        /// public form of a literary tag: no author, no dates, and imported tags are traced back to their source
+        /// </summary>
+        private static LiteraryTagPublicDto ToPublicLiteraryTag(PoemLiteraryTag t)
+        {
+            return new LiteraryTagPublicDto
+            {
+                CoupletIndex = t.CoupletIndex,
+                DeviceId = t.DeviceId,
+                Uncertain = t.Uncertain,
+                Note = t.Note,
+                Origin = t.Origin.ToString(),
+                SourceKey = t.Origin == LiteraryTagOrigin.AcademicCorpus ? t.OriginRef : null,
+                MachineGenerated = t.Origin == LiteraryTagOrigin.AI || t.Origin == LiteraryTagOrigin.Algorithm,
+                Parts = (t.Parts ?? new List<PoemLiteraryTagPart>()).OrderBy(p => p.Order).ThenBy(p => p.Id)
+                            .Select(p => new LiteraryTagPartPublicDto
+                            {
+                                SlotId = p.SlotId,
+                                CoupletIndex = p.CoupletIndex,
+                                Misra = p.Misra,
+                                WordStart = p.WordStart,
+                                WordEnd = p.WordEnd,
+                                ConceptId = p.ConceptId,
+                                Text = p.Text,
+                            }).ToList(),
+            };
         }
 
         /// <summary>
@@ -433,6 +485,32 @@ namespace RMuseum.Services.Implementation
                 }
             }
 
+            List<LiteraryTagPublicDto> literaryTags = null;
+            if (tagCollector.LiteraryByPoem.TryGetValue(poem.Id, out var poemLiteraryTags) && poemLiteraryTags.Count > 0)
+            {
+                literaryTags = poemLiteraryTags.Select(ToPublicLiteraryTag).ToList();
+                foreach (var lt in literaryTags)
+                {
+                    if (!tagCollector.LiteraryByDevice.TryGetValue(lt.DeviceId, out var byDevice))
+                    {
+                        byDevice = new List<LiteraryTagIndexEntryPublicDto>();
+                        tagCollector.LiteraryByDevice[lt.DeviceId] = byDevice;
+                    }
+                    byDevice.Add(new LiteraryTagIndexEntryPublicDto
+                    {
+                        PoemId = poem.Id,
+                        CoupletIndex = lt.CoupletIndex,
+                        DeviceId = lt.DeviceId,
+                        Uncertain = lt.Uncertain,
+                        Note = lt.Note,
+                        Origin = lt.Origin,
+                        SourceKey = lt.SourceKey,
+                        MachineGenerated = lt.MachineGenerated,
+                        Parts = lt.Parts,
+                    });
+                }
+            }
+
             var dto = new PoemPublicDto
             {
                 Id = poem.Id,
@@ -485,6 +563,7 @@ namespace RMuseum.Services.Implementation
                     MachineGenerated = t.MachineGenerated,
                     Note = t.Note,
                 }).ToList(),
+                LiteraryTags = literaryTags,
             };
 
             string path = Path.Combine(repoRoot, "poets", TrimLeadingSlash(poem.FullUrl) + ".json");
@@ -612,6 +691,85 @@ namespace RMuseum.Services.Implementation
             }
             manifest.PersonTagsCount = personTagsCount;
             manifest.PersonIndexShardSize = PersonIndexShardSize;
+
+            await ExportLiteraryData(context, repoRoot, manifest, tagCollector);
+        }
+
+        /// <summary>
+        /// writes literary-devices.json (approved devices with their slots), literary-concepts.json (approved
+        /// concepts), literary-sources.json (origin and license of imported tags) and one
+        /// index/literary-tags/{deviceId}.json per device. Who suggested or approved a device, concept or tag,
+        /// and when, is never exported; neither is a device's Source field.
+        /// </summary>
+        private async Task ExportLiteraryData(RMuseumDbContext context, string repoRoot, PublicExportManifestDto manifest, PublicExportTagCollector tagCollector)
+        {
+            var devices = (await context.LiteraryDevices.AsNoTracking().Include(d => d.Slots)
+                                .Where(d => d.Status == LiteraryEntityStatus.Approved)
+                                .OrderBy(d => d.Id)
+                                .ToListAsync())
+                            .Select(d => new LiteraryDevicePublicDto
+                            {
+                                Id = d.Id,
+                                Key = d.Key,
+                                Name = d.Name,
+                                Category = d.Category.ToString(),
+                                Definition = d.Definition,
+                                Example = d.Example,
+                                IsCore = d.IsCore,
+                                Slots = d.Slots.OrderBy(s => s.Order).ThenBy(s => s.Id).Select(s => new LiteraryDeviceSlotPublicDto
+                                {
+                                    Id = s.Id,
+                                    Key = s.Key,
+                                    Name = s.Name,
+                                    Kind = s.Kind.ToString(),
+                                    Required = s.Required,
+                                    AllowMultiple = s.AllowMultiple,
+                                    Order = s.Order,
+                                }).ToList(),
+                            })
+                            .ToList();
+            await DeterministicJsonWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "literary-devices.json"), devices);
+            manifest.LiteraryDevicesCount = devices.Count;
+
+            var concepts = await context.LiteraryConcepts.AsNoTracking()
+                                .Where(c => c.Status == LiteraryEntityStatus.Approved)
+                                .OrderBy(c => c.Id)
+                                .Select(c => new LiteraryConceptPublicDto { Id = c.Id, Name = c.Name, Aliases = c.Aliases, ParentId = c.ParentId })
+                                .ToListAsync();
+            await DeterministicJsonWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "literary-concepts.json"), concepts);
+            manifest.LiteraryConceptsCount = concepts.Count;
+
+            var sources = await context.LiteraryTagSources.AsNoTracking()
+                                .OrderBy(s => s.Key)
+                                .Select(s => new LiteraryTagSourcePublicDto
+                                {
+                                    Key = s.Key,
+                                    Name = s.Name,
+                                    Title = s.Title,
+                                    Authors = s.Authors,
+                                    Url = s.Url,
+                                    Description = s.Description,
+                                    License = s.License,
+                                    LicenseText = s.LicenseText,
+                                })
+                                .ToListAsync();
+            await DeterministicJsonWriter.WriteIfChangedAsync(Path.Combine(repoRoot, "literary-sources.json"), sources);
+
+            int literaryTagsCount = 0;
+            foreach (var device in devices)
+            {
+                tagCollector.LiteraryByDevice.TryGetValue(device.Id, out var entries);
+                var sorted = (entries ?? new List<LiteraryTagIndexEntryPublicDto>())
+                                .OrderBy(e => e.PoemId).ThenBy(e => e.CoupletIndex)
+                                .ThenBy(e => e.Parts.Count > 0 ? e.Parts[0].CoupletIndex : 0)
+                                .ThenBy(e => e.Parts.Count > 0 ? e.Parts[0].Misra : 0)
+                                .ThenBy(e => e.Parts.Count > 0 ? e.Parts[0].WordStart ?? 0 : 0)
+                                .ToList();
+                literaryTagsCount += sorted.Count;
+                await DeterministicJsonWriter.WriteIfChangedAsync(
+                    Path.Combine(repoRoot, "index", "literary-tags", $"{device.Id}.json"), sorted);
+            }
+            manifest.LiteraryTagsCount = literaryTagsCount;
         }
 
         private static string TrimLeadingSlash(string url)
@@ -699,6 +857,29 @@ the poem file's `Verses`).
 Many tags and relations are created with AI assistance and reviewed by a human moderator;
 `MachineGenerated` marks tags and records that were created by the AI.
 
+## Literary devices (آرایه‌های ادبی)
+
+Poems are annotated with literary devices such as تشبیه, استعاره or جناس. Only approved devices and
+tags are exported, with no information about who suggested or approved them.
+
+- `GET {t.LiteraryDevices}` — the devices: id, key, name, category, definition, example and `Slots`.
+  A tag is made of one value per slot (e.g. a تشبیه has «مشبه» and «مشبه‌به»); a slot's `Kind` says what
+  its value holds: `Span` (words of the poem), `SpanConcept` (words and the concept they stand for),
+  `Concept` or `Text`. `Required` / `AllowMultiple` tell whether the slot must be filled / can repeat.
+- `GET {t.LiteraryConcepts}` — the concepts slot values refer to (e.g. «شمع», «زلف»): id, name,
+  aliases (separated by `|`) and an optional `ParentId`
+- `GET {t.LiteraryTagSources}` — origin and license of imported annotations. Tags with
+  `Origin` = `AcademicCorpus` name their entry in `SourceKey`; redistributing those tags means
+  keeping that attribution and license
+- `GET {t.LiteraryTagsByDevice}` — every tag of one device across all poems, each with its `PoemId`
+- the per-poem file carries its own tags in `LiteraryTags`
+
+In a tag, `CoupletIndex` is the 1-based number of the main couplet as numbered on ganjoor.net (`0`
+means the whole poem). A part located in the text has its own `CoupletIndex`, `Misra` (1 or 2) and
+`WordStart` / `WordEnd` (1-based, inclusive; the words of a hemistich split at whitespace).
+`Uncertain` marks tags the annotator was not sure about. `Origin` is `Editor`, `AcademicCorpus`,
+`Algorithm` or `AI`; `MachineGenerated` is true for the last two.
+
 ## Not included
 
 No comments, bookmarks, reading history, edit/correction history, or any other user-account-linked
@@ -743,6 +924,10 @@ Currently tracks **{manifest.PoetsCount} poets** / **{manifest.PoemsCount} poems
 - **[`people.json`](people.json)**, **[`locations.json`](locations.json)**,
   **[`person-relations.json`](person-relations.json)**, **[`geotags.json`](geotags.json)** — the
   people, places, family relations (attested per book) and tagged couplets; see `API.md`.
+- **[`literary-devices.json`](literary-devices.json)**, **[`literary-concepts.json`](literary-concepts.json)**
+  and **[`literary-sources.json`](literary-sources.json)** — the literary devices (آرایه‌های ادبی) with
+  their slots, the concepts they refer to, and the license of imported annotations; the tags themselves
+  are in each poem file and in `index/literary-tags/`.
 - **[`API.md`](API.md)** — how to fetch any of this over plain HTTPS (no server needed, via
   jsDelivr), including how to resolve a bare numeric id to its path.
 
