@@ -1276,7 +1276,7 @@ else
                                     <span class="up-badge up-badge--primary">مفهوم جدید</span>
                                     @if (!string.IsNullOrEmpty(litLine.Similar))
                                     {
-                                        <span class="up-hint">مشابه موجود: @litLine.Similar</span>
+                                        <span class="up-hint">@(litLine.SimilarIsSame ? "از قبل موجود است:" : "مفهوم نزدیک موجود:") @litLine.Similar</span>
                                     }
                                 }
                             </p>

@@ -65,12 +65,62 @@ namespace GanjooRazor.Areas.Admin.Pages
         /// <summary>
         /// one line of a literary tag shown to the moderator
         /// </summary>
+        /// <summary>
+        /// comparison form of a concept name: no vowel marks, ZWNJ, spaces or punctuation, Arabic ye/kaf unified
+        /// </summary>
+        private static string _ConceptNorm(string text)
+        {
+            var sb = new StringBuilder();
+            foreach (char ch in text ?? "")
+            {
+                if ((ch >= '\u064B' && ch <= '\u065F') || ch == '\u0670' || ch == '\u0640' || ch == '\u200c' || ch == '\u200d')
+                    continue;
+                if (char.IsWhiteSpace(ch) || char.IsPunctuation(ch))
+                    continue;
+                sb.Append(ch == 'ي' ? 'ی' : ch == 'ك' ? 'ک' : ch);
+            }
+            return sb.ToString();
+        }
+
+        private static HashSet<string> _ConceptWords(string text)
+        {
+            return new HashSet<string>((text ?? "").Replace('\u200c', ' ').Replace('ي', 'ی').Replace('ك', 'ک')
+                .Split(new[] { ' ', '،', ',', ';', '-', '/' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(w => _ConceptNorm(w)).Where(w => w.Length > 0));
+        }
+
+        /// <summary>
+        /// the API finds concepts whose name merely contains the phrase; keeps only an identical concept (name or alias)
+        /// or concepts sharing at least half of the words of both names
+        /// </summary>
+        private static Tuple<string, bool> _SimilarConcepts(string suggested, LiteraryConcept[] found)
+        {
+            string wanted = _ConceptNorm(suggested);
+            var same = found.Where(c => _ConceptNorm(c.Name) == wanted
+                    || (c.Aliases ?? "").Split(new[] { '،', ',', ';', '|', '\n' }, StringSplitOptions.RemoveEmptyEntries).Any(a => _ConceptNorm(a) == wanted))
+                .Select(c => c.Name).ToList();
+            if (same.Count > 0)
+                return Tuple.Create(string.Join("، ", same), true);
+            var mine = _ConceptWords(suggested);
+            var near = found.Where(c =>
+            {
+                var theirs = _ConceptWords(c.Name);
+                int shared = mine.Count(w => theirs.Contains(w));
+                return shared > 0 && shared * 2 >= mine.Count && shared * 2 >= theirs.Count;
+            }).Take(4).Select(c => c.Name);
+            return Tuple.Create(string.Join("، ", near), false);
+        }
+
         public class LiteraryReviewLine
         {
             public string Slot { get; set; }
             public string Value { get; set; }
             public bool NewConcept { get; set; }
             public string Similar { get; set; }
+            /// <summary>
+            /// Similar is an existing concept with the same name (or alias), not just a near one
+            /// </summary>
+            public bool SimilarIsSame { get; set; }
         }
 
         /// <summary>
@@ -170,7 +220,7 @@ namespace GanjooRazor.Areas.Admin.Pages
                             conceptNames[c.Id] = c.Name;
                 }
 
-                var similarCache = new Dictionary<string, string>();
+                var similarCache = new Dictionary<string, Tuple<string, bool>>();
 
                 string SpanText(LiteraryTagPartSuggestion p)
                 {
@@ -244,12 +294,13 @@ namespace GanjooRazor.Areas.Admin.Pages
                                 line.NewConcept = true;
                                 if (!similarCache.ContainsKey(p.SuggestedConceptName))
                                 {
-                                    var sr = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/concepts?query={Uri.EscapeDataString(p.SuggestedConceptName)}&take=4");
+                                    var sr = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/literary/concepts?query={Uri.EscapeDataString(p.SuggestedConceptName)}&take=8");
                                     similarCache[p.SuggestedConceptName] = sr.IsSuccessStatusCode
-                                        ? string.Join("، ", JsonConvert.DeserializeObject<LiteraryConcept[]>(await sr.Content.ReadAsStringAsync()).Select(c => c.Name))
-                                        : "";
+                                        ? _SimilarConcepts(p.SuggestedConceptName, JsonConvert.DeserializeObject<LiteraryConcept[]>(await sr.Content.ReadAsStringAsync()))
+                                        : Tuple.Create("", false);
                                 }
-                                line.Similar = similarCache[p.SuggestedConceptName];
+                                line.Similar = similarCache[p.SuggestedConceptName].Item1;
+                                line.SimilarIsSame = similarCache[p.SuggestedConceptName].Item2;
                             }
                             if (!string.IsNullOrEmpty(p.Text)) vals.Add(p.Text);
                             line.Value = string.Join(" ← ", vals);
