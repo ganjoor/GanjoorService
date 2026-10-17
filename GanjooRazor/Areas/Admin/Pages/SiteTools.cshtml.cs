@@ -317,6 +317,10 @@ namespace GanjooRazor.Areas.Admin.Pages
                     path = "ai/generate/poem/summaries";
                     query = $"startFrom={startFrom}&masterCatId={masterCatId}&regenerateAI={regenerateAI.ToString().ToLowerInvariant()}&{common}";
                     break;
+                case "literary":
+                    path = "ai/generate/poem/literary";
+                    query = $"masterCatId={masterCatId}&startPoemId={startFrom}&dryRun={dryRun.ToString().ToLowerInvariant()}&{common}";
+                    break;
                 case "geo":
                     path = "ai/generate/poem/geo";
                     query = $"startFrom={startFrom}&{common}";
