@@ -41,6 +41,8 @@ namespace RMuseum.Services.Implementation
         /// one that already has some content (merge): every entity is looked up by its id first
         /// and only inserted if missing, so re-running never duplicates or overwrites anything —
         /// including content a developer may have hand-edited locally after a previous import.
+        /// Also imports the places, people, family relations, couplet tags (places, dates, people) and literary
+        /// devices/concepts/tags of the export, when it has them.
         /// </summary>
         /// <param name="useHttp">true: fetch over HTTP (location is a base URL). false: read from a local folder (location is a path).</param>
         /// <param name="location">base URL or local folder path of the exported data tree</param>
@@ -84,13 +86,26 @@ namespace RMuseum.Services.Implementation
                                         throw new Exception($"poet id {poetId} was not found in manifest.json");
                                 }
 
+                                // places, people and literary devices come first: the tags of the poems refer to them
+                                var importContext = new PublicImportContext
+                                {
+                                    BackfillGeoTags = !await context.PoemGeoDateTags.AnyAsync(),
+                                    BackfillLiteraryTags = !await context.PoemLiteraryTags.AnyAsync(),
+                                };
+                                await jobProgressServiceEF.UpdateJob(job.Id, 0, "Importing places, people and literary devices");
+                                await ImportSharedTaggingDataFromPublicData(context, source, importContext);
+
                                 int poetIndex = 0;
                                 foreach (var poetEntry in poetsToImport)
                                 {
                                     poetIndex++;
                                     await jobProgressServiceEF.UpdateJob(job.Id, (int)(100.0 * poetIndex / Math.Max(1, poetsToImport.Count)), $"Importing {poetEntry.Nickname}");
-                                    await ImportPoetFromPublicData(context, source, poetEntry.Id, poetEntry.FullUrl);
+                                    await ImportPoetFromPublicData(context, source, poetEntry.Id, poetEntry.FullUrl, importContext);
                                 }
+
+                                // kinship/affiliation evidence quotes couplets, so it needs the poems to be in place
+                                await jobProgressServiceEF.UpdateJob(job.Id, 98, "Importing person relations");
+                                await ImportPersonRelationsFromPublicData(context, source, importContext);
 
                                 // GanjooRazor's home page groups poets by century (GetCenturiesAsync /
                                 // the "PoetGroups" the view renders) — that grouping is a materialized
@@ -103,7 +118,7 @@ namespace RMuseum.Services.Implementation
                                 await _RegenerateHalfCenturies(context);
                                 _memoryCache.Remove("ganjoor/centuries"); // same cache key GetCenturiesAsync/the "periods" endpoint use
 
-                                await jobProgressServiceEF.UpdateJob(job.Id, 100, "", true);
+                                await jobProgressServiceEF.UpdateJob(job.Id, 100, importContext.Summary(), true);
                             }
                             catch (Exception exp)
                             {
@@ -121,7 +136,7 @@ namespace RMuseum.Services.Implementation
             }
         }
 
-        private async Task ImportPoetFromPublicData(RMuseumDbContext context, IPublicDataSource source, int poetId, string poetFullUrl)
+        private async Task ImportPoetFromPublicData(RMuseumDbContext context, IPublicDataSource source, int poetId, string poetFullUrl, PublicImportContext importContext)
         {
             string nickname = poetFullUrl;
 
@@ -155,11 +170,11 @@ namespace RMuseum.Services.Implementation
 
             // the poet's root category IS the poet's landing page (e.g. /hafez) — imported the
             // same way as any category, just flagged as the tree's root for page-type purposes
-            await ImportCatTreeFromPublicData(context, source, poetId, poetFullUrl, null, nickname, isRoot: true);
+            await ImportCatTreeFromPublicData(context, source, poetId, poetFullUrl, null, nickname, isRoot: true, importContext: importContext);
         }
 
         private async Task ImportCatTreeFromPublicData(RMuseumDbContext context, IPublicDataSource source, int poetId,
-            string catFullUrl, int? parentPageId, string parentFullTitle, bool isRoot)
+            string catFullUrl, int? parentPageId, string parentFullTitle, bool isRoot, PublicImportContext importContext)
         {
             string catJson = await source.ReadTextAsync($"poets{catFullUrl}/_cat.json");
             if (catJson == null)
@@ -209,19 +224,25 @@ namespace RMuseum.Services.Implementation
             foreach (var poemRef in catDto.Poems)
             {
                 if (await context.GanjoorPoems.AnyAsync(p => p.Id == poemRef.Id))
-                    continue; // already imported — never re-fetch or overwrite
+                {
+                    // already imported — never re-fetch or overwrite; only a database that has no tags yet
+                    // gets the tags of its existing poems from the export
+                    if (importContext.BackfillGeoTags || importContext.BackfillLiteraryTags)
+                        await BackfillPoemTagsFromPublicData(context, source, poemRef.Id, poemRef.FullUrl, importContext);
+                    continue;
+                }
 
-                await ImportPoemFromPublicData(context, source, poetId, catDto.Id, poemRef.Id, poemRef.FullUrl, catPageId, fullTitle);
+                await ImportPoemFromPublicData(context, source, poetId, catDto.Id, poemRef.Id, poemRef.FullUrl, catPageId, fullTitle, importContext);
             }
 
             foreach (var childRef in catDto.ChildCats)
             {
-                await ImportCatTreeFromPublicData(context, source, poetId, childRef.FullUrl, catPageId, fullTitle, isRoot: false);
+                await ImportCatTreeFromPublicData(context, source, poetId, childRef.FullUrl, catPageId, fullTitle, isRoot: false, importContext: importContext);
             }
         }
 
         private async Task ImportPoemFromPublicData(RMuseumDbContext context, IPublicDataSource source, int poetId, int catId,
-            int poemId, string poemFullUrl, int parentPageId, string parentFullTitle)
+            int poemId, string poemFullUrl, int parentPageId, string parentFullTitle, PublicImportContext importContext)
         {
             string poemJson = await source.ReadTextAsync($"poets{poemFullUrl}.json");
             if (poemJson == null)
@@ -317,6 +338,9 @@ namespace RMuseum.Services.Implementation
                 ParentId = parentPageId,
             });
             await context.SaveChangesAsync();
+
+            await ImportPoemTagsFromPublicData(context, poemId, poemDto, importContext, isNewPoem: true);
+            context.ChangeTracker.Clear(); // everything above is saved; keeps a full-corpus run from tracking every poem
         }
 
         private static string LastUrlSegment(string fullUrl)

@@ -25955,6 +25955,10 @@
             IGanjoorService implementation
             </summary>
             <summary>
+            IGanjoorService implementation: importing people, places, couplet tags and literary devices
+            from a public data export tree (see GanjoorService-PublicDataExport.cs for the file layout)
+            </summary>
+            <summary>
             IGanjoorService implementation
             </summary>
             <summary>
@@ -27289,6 +27293,58 @@
             API.md.
             </summary>
         </member>
+        <member name="T:RMuseum.Services.Implementation.GanjoorService.PublicImportContext">
+            <summary>
+            state of one import run: which ids exist locally, how ids of the export map to local ids
+            (literary devices, slots and concepts are matched with what is already in the database, so
+            their ids can differ) and what was added
+            </summary>
+        </member>
+        <member name="F:RMuseum.Services.Implementation.GanjoorService.PublicImportContext.BackfillGeoTags">
+            <summary>
+            the database had no tags of this kind when the import started, so poems that already exist
+            get their tags from the export too (otherwise only poems imported by this run do)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.InsertWithExplicitIdsAsync``1(RMuseum.DbContext.RMuseumDbContext,System.Collections.Generic.List{``0})">
+            <summary>
+            inserts entities whose ids come from the export. These tables have identity columns, which refuse explicit
+            values unless IDENTITY_INSERT is on (only one table at a time, hence one call per table)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportSharedTaggingDataFromPublicData(RMuseum.DbContext.RMuseumDbContext,RMuseum.Utils.PublicDataImport.IPublicDataSource,RMuseum.Services.Implementation.GanjoorService.PublicImportContext)">
+            <summary>
+            places, people and literary devices/concepts/sources: everything the tags refer to, so it has to be in
+            place before the poems are imported. Existing rows are never touched: places and people are matched by id,
+            literary devices by key (or name) and concepts by name, because a database may have its own core devices
+            with other ids
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportPoemTagsFromPublicData(RMuseum.DbContext.RMuseumDbContext,System.Int32,RMuseum.Models.Ganjoor.PublicExport.PoemPublicDto,RMuseum.Services.Implementation.GanjoorService.PublicImportContext,System.Boolean)">
+            <summary>
+            place/date/person tags and literary tags of one poem. A poem that already has tags of a kind keeps them
+            untouched; poems that were already in the database before this run are only filled in when the whole
+            database had no tags of that kind when the run started (see PublicImportContext.BackfillGeoTags)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.BackfillPoemTagsFromPublicData(RMuseum.DbContext.RMuseumDbContext,RMuseum.Utils.PublicDataImport.IPublicDataSource,System.Int32,System.String,RMuseum.Services.Implementation.GanjoorService.PublicImportContext)">
+            <summary>
+            an existing poem is not re-imported, but its tags can still be missing (see ImportPoemTagsFromPublicData)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportPersonRelationsFromPublicData(RMuseum.DbContext.RMuseumDbContext,RMuseum.Utils.PublicDataImport.IPublicDataSource,RMuseum.Services.Implementation.GanjoorService.PublicImportContext)">
+            <summary>
+            family relations and other ties between people, with the couplets that attest them. Runs after the poems
+            because the evidence couplet text is taken from the imported verses; evidence of poems that were not
+            imported (e.g. when a single poet was requested) is left out
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.ImportPersonEvidencesAsync``1(RMuseum.DbContext.RMuseumDbContext,System.Collections.Generic.List{System.Tuple{System.Int32,RMuseum.Models.Ganjoor.PublicExport.PersonEvidencePublicDto}},System.Func{System.Int32,RMuseum.Models.Ganjoor.PublicExport.PersonEvidencePublicDto,System.String,``0})">
+            <summary>
+            adds evidence rows for the poems that exist locally; the couplet text is rebuilt from the verses
+            </summary>
+            <returns>number of added rows</returns>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SyntheticCatPageId(System.Int32)">
             <summary>
             Category (and root-poet) pages don't carry a real production page id in the public
@@ -27307,6 +27363,8 @@
             one that already has some content (merge): every entity is looked up by its id first
             and only inserted if missing, so re-running never duplicates or overwrites anything —
             including content a developer may have hand-edited locally after a previous import.
+            Also imports the places, people, family relations, couplet tags (places, dates, people) and literary
+            devices/concepts/tags of the export, when it has them.
             </summary>
             <param name="useHttp">true: fetch over HTTP (location is a base URL). false: read from a local folder (location is a path).</param>
             <param name="location">base URL or local folder path of the exported data tree</param>
