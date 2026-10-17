@@ -26893,6 +26893,22 @@
             <param name="count">0 = all</param>
             <param name="restart">false: resume after the last processed poem of the previous run; true: start from the beginning</param>
         </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._AILiteraryNorm(System.String)">
+            <summary>
+            form used to compare what the model quotes with the poem: no vowel marks, punctuation, spaces or ZWNJ
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._AILiteraryLocate(System.String[],System.String,System.Int32,System.Int32@,System.Int32@)">
+            <summary>
+            finds the words of <paramref name="words"/> that spell <paramref name="quote"/>, preferring the window nearest to
+            the range the model gave (the model often miscounts words but quotes them right)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._AILiteraryDescribe(RMuseum.Services.Implementation.GanjoorService.AILiteraryContext,RMuseum.Models.Ganjoor.GanjoorPoemLiteraryTagCorrection,System.Collections.Generic.Dictionary{System.Int32,RMuseum.Services.Implementation.GanjoorService.AILiteraryCouplet})">
+            <summary>
+            the tag as one log line: device, couplet and what each slot holds (words, concept, text)
+            </summary>
+        </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._AILiteraryCouplets(System.Collections.Generic.IEnumerable{System.ValueTuple{RMuseum.Models.Ganjoor.VersePosition,System.String}})">
             <summary>
             couplets numbered exactly like the editor's word picker (see Editor.LiteraryCoupletsJson)

@@ -26,6 +26,7 @@ namespace RMuseum.Services.Implementation
             public int? Misra { get; set; }
             public int? From { get; set; }
             public int? To { get; set; }
+            public string Quote { get; set; }
             public string Concept { get; set; }
             public string Text { get; set; }
         }
@@ -71,19 +72,99 @@ namespace RMuseum.Services.Implementation
 
 قواعد:
 - فقط از آرایه‌های فهرست استفاده کن و شمارهٔ آرایه (device) و شمارهٔ جایگاه‌ها (slot) را دقیقاً از فهرست بردار.
-- فقط مواردی را بنویس که نسبتاً مطمئنی. اگر تردید داری uncertain را true بگذار و اگر بیشتر تردید داری اصلاً ننویس. تعداد کم و درست بهتر از زیاد و نادرست است.
-- هر کلمهٔ مصرع‌ها پیش از خودش شماره دارد (مثلاً ۳:خار). جای هر جایگاه متنی را با couplet (شمارهٔ بیت درون [ ])، misra (۱ مصرع اول، ۲ مصرع دوم)، from و to (شمارهٔ اولین و آخرین کلمه، هر دو شامل) مشخص کن. بازه نباید از یک مصرع بیرون برود.
-- جایگاه‌های مفهومی را با concept پر کن: نام کوتاه و متعارف مفهوم، مفرد و بی‌حرف اضافه (مثلاً «شمع»، «زلف»، «عاشق»).
+- کیفیت مهم‌تر از تعداد است. فقط مواردی را بنویس که آشکار و نسبتاً مطمئنی؛ اگر تردید داری uncertain را true بگذار و اگر بیشتر تردید داری اصلاً ننویس. برای هر بیت حداکثر دو آرایهٔ برجسته بنویس و بیتی که آرایهٔ روشنی ندارد را خالی بگذار.
+- تناسب و تضاد را فقط وقتی بنویس که دو واژه یا گروه کوتاه آشکارا از یک مجموعهٔ معنایی یا دو قطب مقابل‌اند؛ هر ارتباط دوری یا سلیقه‌ای تناسب نیست. تلمیح را فقط وقتی بنویس که به داستان، آیه، حدیث یا شعری مشخص و شناخته اشاره شده باشد، نه برای هر مضمون دینی یا عرفانی.
+- هر کلمهٔ مصرع‌ها پیش از خودش شماره دارد (مثلاً ۳:خار). جای هر جایگاه متنی را با couplet (شمارهٔ بیت درون [ ])، misra (۱ مصرع اول، ۲ مصرع دوم)، from و to (شمارهٔ اولین و آخرین کلمه، هر دو شامل) مشخص کن و همان کلمه‌ها را بی‌تغییر در quote بنویس. بازه را تا حد ممکن کوتاه بگیر: فقط خود واژه‌ها یا گروه کوتاهی که آرایه در آن‌هاست، نه صفت‌ها و واژه‌های اطراف و نه یک مصرع کامل. بازه نباید از یک مصرع بیرون برود.
+- جایگاه‌های مفهومی را با concept پر کن: نام کوتاه و متعارف مفهوم، مفرد و حداکثر سه واژه، بی‌حرف اضافه (مثلاً «شمع»، «زلف»، «عاشق»). جمله یا عبارت توضیحی ننویس.
 - جایگاه‌های متنی را با text پر کن (کوتاه).
 - couplet هر آرایه شمارهٔ بیت اصلی آن است؛ برای آرایه‌ای که کل شعر را در بر می‌گیرد 0 بگذار.
-- note را یک جملهٔ کوتاه فارسی بنویس که دلیل تشخیص را بگوید. هیچ مصرعی را بلند نقل نکن.
+- note را یک جملهٔ کوتاه فارسی بنویس که دلیل تشخیص را بگوید. در note دربارهٔ واژه‌ها ادعای واقعیت‌محور نکن مگر مطمئن باشی، و هیچ مصرعی را بلند نقل نکن.
 - هیچ توضیح بیرون از JSON ننویس.
 
 خروجی فقط یک JSON با این ساختار باشد:
-{""tags"":[{""device"":شماره,""couplet"":شماره,""uncertain"":false,""note"":""..."",""parts"":[{""slot"":شماره,""couplet"":شماره,""misra"":1,""from"":1,""to"":2,""concept"":""..."",""text"":""...""}]}]}
+{""tags"":[{""device"":شماره,""couplet"":شماره,""uncertain"":false,""note"":""..."",""parts"":[{""slot"":شماره,""couplet"":شماره,""misra"":1,""from"":1,""to"":2,""quote"":""..."",""concept"":""..."",""text"":""...""}]}]}
 (در هر part فقط فیلدهای لازم برای نوع آن جایگاه را بیاور.) اگر هیچ آرایه‌ای نبود: {""tags"":[]}
 
 ";
+
+        /// <summary>
+        /// form used to compare what the model quotes with the poem: no vowel marks, punctuation, spaces or ZWNJ
+        /// </summary>
+        private static string _AILiteraryNorm(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return "";
+            var sb = new StringBuilder();
+            foreach (char ch in text)
+            {
+                if ((ch >= '\u064B' && ch <= '\u065F') || ch == '\u0670' || ch == '\u0640' || ch == '\u200c' || ch == '\u200d')
+                    continue;
+                if (char.IsWhiteSpace(ch) || char.IsPunctuation(ch) || char.IsSymbol(ch))
+                    continue;
+                sb.Append(ch == 'ي' ? 'ی' : ch == 'ك' ? 'ک' : ch);
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// finds the words of <paramref name="words"/> that spell <paramref name="quote"/>, preferring the window nearest to
+        /// the range the model gave (the model often miscounts words but quotes them right)
+        /// </summary>
+        private static bool _AILiteraryLocate(string[] words, string quote, int hintFrom, out int from, out int to)
+        {
+            from = to = 0;
+            string wanted = _AILiteraryNorm(quote);
+            if (wanted.Length == 0)
+                return false;
+            int bestDistance = int.MaxValue;
+            for (int start = 0; start < words.Length; start++)
+            {
+                var built = new StringBuilder();
+                for (int end = start; end < words.Length && built.Length <= wanted.Length; end++)
+                {
+                    built.Append(_AILiteraryNorm(words[end]));
+                    if (built.Length == wanted.Length && built.ToString() == wanted)
+                    {
+                        int distance = Math.Abs(start + 1 - hintFrom);
+                        if (distance < bestDistance)
+                        {
+                            bestDistance = distance;
+                            from = start + 1;
+                            to = end + 1;
+                        }
+                        break;
+                    }
+                }
+            }
+            return bestDistance != int.MaxValue;
+        }
+
+        /// <summary>
+        /// the tag as one log line: device, couplet and what each slot holds (words, concept, text)
+        /// </summary>
+        private static string _AILiteraryDescribe(AILiteraryContext lc, GanjoorPoemLiteraryTagCorrection tag, Dictionary<int, AILiteraryCouplet> couplets)
+        {
+            var device = lc.Devices[tag.DeviceId];
+            var items = new List<string>();
+            foreach (var part in _ReadParts(tag.PartsJson))
+            {
+                var slot = device.Slots.FirstOrDefault(sl => sl.Id == part.SlotId);
+                var pieces = new List<string>();
+                if (part.WordStart != null && part.WordEnd != null && couplets.TryGetValue(part.CoupletIndex, out var c))
+                {
+                    var words = part.Misra == 1 ? c.W1 : c.W2;
+                    pieces.Add("«" + string.Join(" ", words.Skip(part.WordStart.Value - 1).Take(part.WordEnd.Value - part.WordStart.Value + 1)) + "»" + (part.CoupletIndex != tag.CoupletIndex ? $" (بیت {part.CoupletIndex})" : ""));
+                }
+                if (part.ConceptId != null)
+                    pieces.Add("مفهوم #" + part.ConceptId);
+                if (!string.IsNullOrWhiteSpace(part.SuggestedConceptName))
+                    pieces.Add("مفهوم جدید: " + part.SuggestedConceptName);
+                if (!string.IsNullOrWhiteSpace(part.Text))
+                    pieces.Add(part.Text);
+                items.Add($"{slot?.Name}: {string.Join(" - ", pieces)}");
+            }
+            return string.Join(" | ", items);
+        }
 
         private static string[] _AIWords(string text)
         {
@@ -198,22 +279,36 @@ namespace RMuseum.Services.Implementation
                     }
                     int misra = p.Misra ?? 0;
                     var words = misra == 1 ? c.W1 : misra == 2 ? c.W2 : null;
-                    if (words == null || words.Length == 0 || p.From == null || p.To == null || p.From < 1 || p.To < p.From || p.To > words.Length)
+                    if (words == null || words.Length == 0)
                     {
-                        error = $"{device.Name}/{slot.Name}: invalid word range {coupletNo}/{misra}/{p.From}-{p.To}";
+                        error = $"{device.Name}/{slot.Name}: invalid hemistich {coupletNo}/{misra}";
+                        return null;
+                    }
+                    if (string.IsNullOrWhiteSpace(p.Quote))
+                    {
+                        error = $"{device.Name}/{slot.Name}: no quote for the words";
+                        return null;
+                    }
+                    // the numbers must point at the words that were quoted; if they do not, the quote wins (models miscount words)
+                    int from = p.From ?? 0, to = p.To ?? 0;
+                    bool numbersFit = from >= 1 && to >= from && to <= words.Length
+                                      && _AILiteraryNorm(string.Concat(words.Skip(from - 1).Take(to - from + 1))) == _AILiteraryNorm(p.Quote);
+                    if (!numbersFit && !_AILiteraryLocate(words, p.Quote, from, out from, out to))
+                    {
+                        error = $"{device.Name}/{slot.Name}: «{_AIShort(p.Quote, 40)}» is not in hemistich {coupletNo}/{misra}";
                         return null;
                     }
                     part.CoupletIndex = coupletNo;
                     part.Misra = misra;
-                    part.WordStart = p.From;
-                    part.WordEnd = p.To;
+                    part.WordStart = from;
+                    part.WordEnd = to;
                 }
                 if (needsConcept)
                 {
                     string name = _NormalizeConceptName(p.Concept);
-                    if (name.Length == 0 || name.Length > LiteraryConceptNameMaxLength)
+                    if (name.Length == 0 || name.Length > LiteraryConceptNameMaxLength || name.Split(' ').Length > 3)
                     {
-                        error = $"{device.Name}/{slot.Name}: invalid concept";
+                        error = $"{device.Name}/{slot.Name}: concept «{_AIShort(name, 40)}» is not a short name";
                         return null;
                     }
                     if (lc.ConceptIds.TryGetValue(name, out int conceptId))
@@ -356,7 +451,7 @@ namespace RMuseum.Services.Implementation
                     if (!known.Add(key))
                         continue;
                     newTags.Add(built);
-                    run.Log.AppendLine($"{tag}: {lc.Devices[built.DeviceId].Name} @ {built.CoupletIndex}{(built.Uncertain ? " (uncertain)" : "")}");
+                    run.Log.AppendLine($"{tag}: {lc.Devices[built.DeviceId].Name} @ {built.CoupletIndex}{(built.Uncertain ? " (uncertain)" : "")} - {_AILiteraryDescribe(lc, built, windowMap)}");
                 }
             }
 
