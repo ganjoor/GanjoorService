@@ -995,6 +995,7 @@ namespace GanjooRazor.Areas.User.Pages
                              new PoemGeoDateTag()
                              {
                                  PoemId = poemId,
+                                 CoupletIndex = PoemGeoDateTag.WholePoem,
                                  LocationId = locationId == 0 ? null : locationId,
                                  LunarYear = string.IsNullOrEmpty(year) ? null : int.Parse(year),
                                  LunarMonth = month == 0 ? null : month,

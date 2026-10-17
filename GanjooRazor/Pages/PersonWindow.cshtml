@@ -204,7 +204,7 @@ else
                     if (tag.Poem != null)
                     {
                         <li>
-                            <a href="@(tag.CoupletIndex > 0 ? tag.Poem.FullUrl + "#bn" + (tag.CoupletIndex + 1) : tag.Poem.FullUrl)">@tag.Poem.FullTitle</a>
+                            <a href="@(tag.CoupletIndex >= 0 ? tag.Poem.FullUrl + "#bn" + (tag.CoupletIndex + 1) : tag.Poem.FullUrl)">@tag.Poem.FullTitle</a>
                             @if (!string.IsNullOrEmpty(tag.CoupletText))
                             {
                                 <p>@tag.CoupletText</p>
@@ -225,7 +225,7 @@ else
                         @foreach (var tag in allusionTags)
                         {
                             <li>
-                                <a href="@(tag.CoupletIndex > 0 ? tag.Poem.FullUrl + "#bn" + (tag.CoupletIndex + 1) : tag.Poem.FullUrl)">@tag.Poem.FullTitle</a>
+                                <a href="@(tag.CoupletIndex >= 0 ? tag.Poem.FullUrl + "#bn" + (tag.CoupletIndex + 1) : tag.Poem.FullUrl)">@tag.Poem.FullTitle</a>
                                 @if (!string.IsNullOrEmpty(tag.CoupletText))
                                 {
                                     <p>@tag.CoupletText</p>

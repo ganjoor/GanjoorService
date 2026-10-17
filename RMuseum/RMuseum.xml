@@ -11052,7 +11052,8 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.CoupletIndex">
             <summary>
-            couplet index (matches PoemGeoDateTag.CoupletIndex)
+            couplet index, 0 based (PoemGeoDateTag.CoupletIndex); null for a tag of the whole poem,
+            which is stored as PoemGeoDateTag.WholePoem (-1) once approved
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.GanjoorPoemGeoDateTagCorrection.LocationId">
@@ -13787,6 +13788,11 @@
             Geo + date tags for poems
             </summary>
         </member>
+        <member name="F:RMuseum.Models.Ganjoor.PoemGeoDateTag.WholePoem">
+            <summary>
+            the CoupletIndex of a tag that applies to the whole poem
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.Id">
             <summary>
             Id
@@ -13804,7 +13810,8 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.CoupletIndex">
             <summary>
-            couplet index
+            couplet index: 0 based like GanjoorVerse.CoupletIndex (0 is the first couplet),
+            or <see cref="F:RMuseum.Models.Ganjoor.PoemGeoDateTag.WholePoem"/> (-1) if the tag applies to the whole poem
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PoemGeoDateTag.LocationId">
@@ -14423,7 +14430,7 @@
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PublicExport.PoemTagPublicDto.CoupletIndex">
             <summary>
-            the tagged couplet (VersePublicDto.CoupletIndex)
+            the tagged couplet (VersePublicDto.CoupletIndex, 0 based); -1 if the tag applies to the whole poem
             </summary>
         </member>
         <member name="P:RMuseum.Models.Ganjoor.PublicExport.PoemTagPublicDto.PersonMention">

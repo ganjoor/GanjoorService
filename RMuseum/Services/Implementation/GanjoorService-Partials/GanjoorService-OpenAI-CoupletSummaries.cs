@@ -663,7 +663,7 @@ namespace RMuseum.Services.Implementation
                                                       await context.SaveChangesAsync();
                                                   }
 
-                                                  if (true == await context.PoemGeoDateTags.AsNoTracking().Where(p => p.PoemId == poem.Id && p.LocationId == geoLocation.Id && p.CoupletIndex == 0).AnyAsync())
+                                                  if (true == await context.PoemGeoDateTags.AsNoTracking().Where(p => p.PoemId == poem.Id && p.LocationId == geoLocation.Id && p.CoupletIndex == PoemGeoDateTag.WholePoem).AnyAsync())
                                                   {
                                                       continue;
                                                   }
@@ -671,7 +671,7 @@ namespace RMuseum.Services.Implementation
                                                   PoemGeoDateTag poemGeoDateTag = new PoemGeoDateTag()
                                                   {
                                                       PoemId = poem.Id,
-                                                      CoupletIndex = 0,
+                                                      CoupletIndex = PoemGeoDateTag.WholePoem,
                                                       LocationId = geoLocation.Id,
                                                       MachineGenerated = true,
                                                   };

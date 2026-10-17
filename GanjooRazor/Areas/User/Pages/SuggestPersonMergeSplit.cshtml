@@ -74,7 +74,7 @@ else
                                 <option value="">— انتخاب کنید —</option>
                                 @foreach (var tag in Model.Tags)
                                 {
-                                    <option value="@tag.PoemId|@tag.CoupletIndex">@tag.Poem.FullTitle — بیت @(tag.CoupletIndex + 1)@(string.IsNullOrEmpty(tag.CoupletText) ? "" : " — " + (tag.CoupletText.Length > 60 ? tag.CoupletText.Substring(0, 60) + "…" : tag.CoupletText))</option>
+                                    <option value="@tag.PoemId|@Math.Max(tag.CoupletIndex, 0)">@tag.Poem.FullTitle — @(tag.CoupletIndex < 0 ? "کل شعر" : "بیت " + (tag.CoupletIndex + 1))@(string.IsNullOrEmpty(tag.CoupletText) ? "" : " — " + (tag.CoupletText.Length > 60 ? tag.CoupletText.Substring(0, 60) + "…" : tag.CoupletText))</option>
                                 }
                             </select>
                         </td>
@@ -86,7 +86,7 @@ else
                                 <option value="">تا پایان کتاب</option>
                                 @foreach (var tag in Model.Tags)
                                 {
-                                    <option value="@tag.PoemId|@tag.CoupletIndex">@tag.Poem.FullTitle — بیت @(tag.CoupletIndex + 1)</option>
+                                    <option value="@tag.PoemId|@Math.Max(tag.CoupletIndex, 0)">@tag.Poem.FullTitle — @(tag.CoupletIndex < 0 ? "کل شعر" : "بیت " + (tag.CoupletIndex + 1))</option>
                                 }
                             </select>
                         </td>

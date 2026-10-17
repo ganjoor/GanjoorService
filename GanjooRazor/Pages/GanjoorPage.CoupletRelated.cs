@@ -67,9 +67,8 @@ namespace GanjooRazor.Pages
             var model = new _CoupletRelatedPartialModel();
             try
             {
-                // places and people: tags carry the same 0 based couplet index as the verses.
-                // (0 is also what a tag of the whole poem is stored with, so those show on the first couplet too until
-                // whole-poem tags get a value of their own.)
+                // places and people: tags carry the same 0 based couplet index as the verses (-1 is a tag of the whole poem,
+                // which belongs to no couplet panel)
                 {
                     var geoResponse = await _httpClient.GetAsync($"{APIRoot.Url}/api/ganjoor/poem/{poemId}/geotag");
                     if (geoResponse.IsSuccessStatusCode)

@@ -788,7 +788,7 @@ namespace RMuseum.Services.Implementation
                 .Where(c => c.PoemId == poemId && !c.Reviewed)
                 .SelectMany(c => c.GeoDateTags).Where(t => t.PersonId != null && !t.MarkForDelete)
                 .Select(t => new { PersonId = t.PersonId.Value, t.CoupletIndex }).ToListAsync())
-                .Select(t => (t.PersonId, t.CoupletIndex ?? 0)));
+                .Select(t => (t.PersonId, t.CoupletIndex ?? PoemGeoDateTag.WholePoem)));
 
             var resolved = new List<AIResolved>();
             foreach (var p in extracted)

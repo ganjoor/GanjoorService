@@ -11,7 +11,8 @@
         public int Id { get; set; }
 
         /// <summary>
-        /// couplet index (matches PoemGeoDateTag.CoupletIndex)
+        /// couplet index, 0 based (PoemGeoDateTag.CoupletIndex); null for a tag of the whole poem,
+        /// which is stored as PoemGeoDateTag.WholePoem (-1) once approved
         /// </summary>
         public int? CoupletIndex { get; set; }
 

@@ -231,7 +231,7 @@ namespace RMuseum.Models.Ganjoor.PublicExport
     public class PoemTagPublicDto
     {
         /// <summary>
-        /// the tagged couplet (VersePublicDto.CoupletIndex)
+        /// the tagged couplet (VersePublicDto.CoupletIndex, 0 based); -1 if the tag applies to the whole poem
         /// </summary>
         public int CoupletIndex { get; set; }
         public int? LocationId { get; set; }

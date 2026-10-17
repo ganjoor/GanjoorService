@@ -333,10 +333,10 @@ namespace RMuseum.Services.Implementation
                         tag.Poem.PlainText = null;
                     }
 
-                    // fill in the tagged couplet's own text (CoupletIndex 0 means "whole poem" - no
+                    // fill in the tagged couplet's own text (a negative CoupletIndex means "whole poem" - no
                     // single couplet to show), so the person page can show the actual verse instead
                     // of just a link to the poem it came from
-                    if (tag.CoupletIndex > 0)
+                    if (tag.CoupletIndex >= 0)
                     {
                         var coupletVerses = await _context.GanjoorVerses.AsNoTracking()
                             .Where(v => v.PoemId == tag.PoemId && v.CoupletIndex == tag.CoupletIndex)
@@ -3330,6 +3330,8 @@ namespace RMuseum.Services.Implementation
                     var bookOfPoem = new Dictionary<int, int?>();
                     async Task<bool> InPartAsync(int poemId, int coupletIndex)
                     {
+                        // a tag of the whole poem (negative index) counts as sitting at the poem's start
+                        coupletIndex = Math.Max(coupletIndex, 0);
                         if (poemId < model.FromPoemId || (poemId == model.FromPoemId && coupletIndex < model.FromCoupletIndex))
                             return false;
                         if (model.ToPoemId != null)

@@ -8,6 +8,11 @@ namespace RMuseum.Models.Ganjoor
     public class PoemGeoDateTag
     {
         /// <summary>
+        /// the CoupletIndex of a tag that applies to the whole poem
+        /// </summary>
+        public const int WholePoem = -1;
+
+        /// <summary>
         /// Id
         /// </summary>
         public int Id { get; set; }
@@ -23,7 +28,8 @@ namespace RMuseum.Models.Ganjoor
         public GanjoorPoem Poem { get; set; }
 
         /// <summary>
-        /// couplet index
+        /// couplet index: 0 based like GanjoorVerse.CoupletIndex (0 is the first couplet),
+        /// or <see cref="WholePoem"/> (-1) if the tag applies to the whole poem
         /// </summary>
         public int CoupletIndex { get; set; }
 

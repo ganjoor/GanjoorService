@@ -845,7 +845,7 @@ guessing a path:
 Couplets are tagged with places, dates and people (the people may be historical or legendary
 figures, not only poets). Only approved tags are exported, with no information about who suggested
 or approved them. A couplet is addressed by its poem id and `CoupletIndex` (the same value as in
-the poem file's `Verses`).
+the poem file's `Verses`, counted from 0). A tag whose `CoupletIndex` is -1 applies to the whole poem.
 
 - `GET {t.Locations}` — places: id, name, latitude, longitude
 - `GET {t.People}` — people: names, aliases, description, gender, life dates, birth/death place ids

@@ -768,8 +768,8 @@ namespace RMuseum.Services.Implementation
                                 var newTag = new PoemGeoDateTag()
                                 {
                                     PoemId = dbCorrection.PoemId,
-                                    // PoemGeoDateTag.CoupletIndex uses 0 for "whole poem", matching a null CoupletIndex here
-                                    CoupletIndex = dbGeoDateTag.CoupletIndex ?? 0,
+                                    // a null CoupletIndex here means "whole poem", which PoemGeoDateTag.CoupletIndex stores as -1
+                                    CoupletIndex = (dbGeoDateTag.CoupletIndex == null || dbGeoDateTag.CoupletIndex < 0) ? PoemGeoDateTag.WholePoem : dbGeoDateTag.CoupletIndex.Value,
                                     LocationId = approvedLocationId,
                                     LunarYear = dbGeoDateTag.LunarYear,
                                     LunarMonth = dbGeoDateTag.LunarMonth,

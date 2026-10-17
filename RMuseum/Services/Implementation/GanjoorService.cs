@@ -2167,7 +2167,7 @@ namespace RMuseum.Services.Implementation
                         geoDateTag.LunarDay = null;
                         geoDateTag.PersonId = null;
                         geoDateTag.SuggestedPersonGraphJson = null;
-                        geoDateTag.CoupletIndex = targetTag.CoupletIndex;
+                        geoDateTag.CoupletIndex = targetTag.CoupletIndex < 0 ? (int?)null : targetTag.CoupletIndex;
                         continue;
                     }
 
@@ -2205,8 +2205,8 @@ namespace RMuseum.Services.Implementation
                             // client-side check already asks the user to confirm that before it gets here
                         }
 
-                        // PoemGeoDateTag.CoupletIndex uses 0 for "whole poem", matching a null CoupletIndex here
-                        int effectiveCoupletIndex = geoDateTag.CoupletIndex ?? 0;
+                        // a null CoupletIndex here means "whole poem", which PoemGeoDateTag.CoupletIndex stores as -1
+                        int effectiveCoupletIndex = (geoDateTag.CoupletIndex == null || geoDateTag.CoupletIndex < 0) ? PoemGeoDateTag.WholePoem : geoDateTag.CoupletIndex.Value;
                         var approvedForCouplet = approvedGeoDateTags.Where(t => t.CoupletIndex == effectiveCoupletIndex);
 
                         if (hasLocation)
