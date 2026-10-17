@@ -142,19 +142,6 @@
 
 
 <div id="related-block-@Model.CoupletIndex" class="width-100per"></div>
-<script>
-    (function () {
-        var box = document.getElementById('related-block-@Model.CoupletIndex');
-        if (!box) return;
-        $.ajax({
-            type: 'GET',
-            url: '?Handler=CoupletRelated&poemId=@Model.PoemId&coupletIndex=@Model.CoupletIndex',
-            success: function (data) {
-                if (data && String(data).trim()) box.innerHTML = data;
-            }
-        });
-    })();
-</script>
 
 <div id="comments-block-@Model.CoupletIndex" class="clear-both">
     @foreach (var comment in Model.Comments)
@@ -235,3 +222,71 @@ else
     </p>
 }
 
+<div id="related-map-block-@Model.CoupletIndex" class="width-100per"></div>
+<script>
+    (function () {
+        var box = document.getElementById('related-block-@Model.CoupletIndex');
+        var mapBox = document.getElementById('related-map-block-@Model.CoupletIndex');
+        if (!box || !mapBox) return;
+
+        // the map is drawn when its box is on screen, a map built in a box that is not shown measures zero and stays grey
+        function drawMap(locations) {
+            if (typeof L === 'undefined' || !L.tileLayer || !L.tileLayer.provider) return;
+            var holder = document.createElement('div');
+            holder.id = 'related-map-@Model.CoupletIndex';
+            holder.className = 'inline-map';
+            mapBox.appendChild(holder);
+            var map = L.map(holder.id);
+            L.tileLayer.provider('OpenStreetMap').addTo(map);
+            var points = [];
+            locations.forEach(function (loc) {
+                var marker = L.marker([loc.lat, loc.lng]).addTo(map);
+                var info = document.createElement('div');
+                var link = document.createElement('a');
+                link.className = 'actionlink';
+                link.textContent = loc.name;
+                link.onclick = function () { viewLocation(loc.lat, loc.lng); };
+                info.appendChild(link);
+                if (loc.year != null) {
+                    info.appendChild(document.createElement('br'));
+                    info.appendChild(document.createTextNode('سال ' + (typeof persianizeNumerals === 'function' ? persianizeNumerals(String(loc.year)) : loc.year) + ' قمری'));
+                }
+                marker.bindPopup(info);
+                points.push([loc.lat, loc.lng]);
+            });
+            if (points.length === 1) map.setView(points[0], 6);
+            else map.fitBounds(points, { padding: [30, 30], maxZoom: 8 });
+            setTimeout(function () { map.invalidateSize(); }, 200);
+        }
+
+        $.ajax({
+            type: 'GET',
+            url: '?Handler=CoupletRelated&poemId=@Model.PoemId&coupletIndex=@Model.CoupletIndex',
+            success: function (data) {
+                if (!data || !String(data).trim()) return;
+                var temp = document.createElement('div');
+                temp.innerHTML = data;
+                var locationsElement = temp.querySelector('[data-locations]');
+                var locations = null;
+                if (locationsElement) {
+                    try { locations = JSON.parse(locationsElement.getAttribute('data-locations')); } catch (e) { locations = null; }
+                    locationsElement.parentNode.removeChild(locationsElement);
+                }
+                box.innerHTML = temp.innerHTML;
+                if (locations && locations.length > 0) {
+                    if ('IntersectionObserver' in window) {
+                        var observer = new IntersectionObserver(function (entries) {
+                            if (entries.some(function (entry) { return entry.isIntersecting; })) {
+                                observer.disconnect();
+                                drawMap(locations);
+                            }
+                        }, { rootMargin: '200px' });
+                        observer.observe(mapBox);
+                    } else {
+                        drawMap(locations);
+                    }
+                }
+            }
+        });
+    })();
+</script>

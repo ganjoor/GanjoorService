@@ -60,3 +60,8 @@
         </div>
     }
 </div>
+@if (Model.Locations.Count > 0)
+{
+    @* picked up by the couplet panel, which draws the map after its comments *@
+    <div hidden data-locations="@Newtonsoft.Json.JsonConvert.SerializeObject(Model.Locations.Select(l => new { name = l.Name, lat = l.Latitude, lng = l.Longitude, year = l.LunarYear }))"></div>
+}
