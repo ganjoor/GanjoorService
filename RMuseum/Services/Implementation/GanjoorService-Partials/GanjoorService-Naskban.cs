@@ -91,62 +91,72 @@ namespace RMuseum.Services.Implementation
                 }
 
                 await jobProgressServiceEF.UpdateJob(job.Id, 1, "retrieving unsynced");
+                int count = 0;
                 using (HttpClient secureClient = new HttpClient())
                 {
                     secureClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loggedOnUser.Token);
-                    var unsyncedResponse = await secureClient.GetAsync("https://api.naskban.ir/api/pdf/ganjoor/unsynched");
-                    if (!unsyncedResponse.IsSuccessStatusCode)
+                    do
                     {
-                        return new RServiceResult<int>(0, "unsync error: " + JsonConvert.DeserializeObject<string>(await unsyncedResponse.Content.ReadAsStringAsync()));
-                    }
-                    var unsynchronizeds = JsonConvert.DeserializeObject<PDFGanjoorLink[]>(await unsyncedResponse.Content.ReadAsStringAsync());
-                    int linkIndex = 0;
-                    await jobProgressServiceEF.UpdateJob(job.Id, linkIndex, $"unsynchronizeds.count = {unsynchronizeds.Length}");
-                    
-                    foreach (var unsynchronized in unsynchronizeds)
-                    {
-                        bool isTextOriginalSource =
-                            unsynchronized.IsTextOriginalSource
-                            &&
-                            await context.GanjoorLinks.Where(l => l.GanjoorPostId == unsynchronized.GanjoorPostId && l.IsTextOriginalSource).AnyAsync() == false
-                            &&
-                            await context.PinterestLinks.Where(l => l.GanjoorPostId == unsynchronized.GanjoorPostId && l.IsTextOriginalSource).AnyAsync() == false
-                            ;
-                        linkIndex++;
-                        if (false == await context.PinterestLinks.Where(p => p.NaskbanLinkId == unsynchronized.Id).AnyAsync())
+                        var unsyncedResponse = await secureClient.GetAsync("https://api.naskban.ir/api/pdf/ganjoor/unsynched?take=100");
+                        if (!unsyncedResponse.IsSuccessStatusCode)
                         {
-                            PinterestLink link = new PinterestLink()
-                            {
-                                GanjoorPostId = unsynchronized.GanjoorPostId,
-                                GanjoorTitle = unsynchronized.GanjoorTitle,
-                                GanjoorUrl = unsynchronized.GanjoorUrl,
-                                AltText = unsynchronized.PDFPageTitle,
-                                LinkType = LinkType.Naskban,
-                                PinterestUrl = $"https://naskban.ir/{unsynchronized.PDFBookId}/{unsynchronized.PageNumber}",
-                                PinterestImageUrl = unsynchronized.ExternalThumbnailImageUrl,
-                                ReviewResult = ReviewResult.Approved,
-                                SuggestionDate = DateTime.Now,
-                                SuggestedById = ganjoorUserId,
-                                Synchronized = true,
-                                ReviewerId = ganjoorUserId,
-                                IsTextOriginalSource = isTextOriginalSource,
-                                PDFBookId = unsynchronized.PDFBookId,
-                                PageNumber = unsynchronized.PageNumber,
-                                NaskbanLinkId = unsynchronized.Id,
-                                MatchPercent = unsynchronized.SuggestedByMachine ? 100 : 0,
-                                HumanReviewed = !unsynchronized.SuggestedByMachine,
-                            };
-                            context.PinterestLinks.Add(link);
-                            await context.SaveChangesAsync();
-                            await jobProgressServiceEF.UpdateJob(job.Id, linkIndex, $"{linkIndex} of {unsynchronizeds.Length} local saved");
+                            return new RServiceResult<int>(0, "unsync error: " + JsonConvert.DeserializeObject<string>(await unsyncedResponse.Content.ReadAsStringAsync()));
                         }
-                        await secureClient.PutAsync($"https://api.naskban.ir/api/pdf/ganjoor/sync/{unsynchronized.Id}", null);
-                        await jobProgressServiceEF.UpdateJob(job.Id, linkIndex, $"{linkIndex} of {unsynchronizeds.Length} remote saved");
+                        var unsynchronizeds = JsonConvert.DeserializeObject<PDFGanjoorLink[]>(await unsyncedResponse.Content.ReadAsStringAsync());
+                        if(unsynchronizeds.Length == 0)
+                        {
+                            break;
+                        }
+                        count += unsynchronizeds.Length;
+                        int linkIndex = 0;
+                        await jobProgressServiceEF.UpdateJob(job.Id, linkIndex, $"unsynchronizeds.count = {unsynchronizeds.Length}");
+
+                        foreach (var unsynchronized in unsynchronizeds)
+                        {
+                            bool isTextOriginalSource =
+                                unsynchronized.IsTextOriginalSource
+                                &&
+                                await context.GanjoorLinks.Where(l => l.GanjoorPostId == unsynchronized.GanjoorPostId && l.IsTextOriginalSource).AnyAsync() == false
+                                &&
+                                await context.PinterestLinks.Where(l => l.GanjoorPostId == unsynchronized.GanjoorPostId && l.IsTextOriginalSource).AnyAsync() == false
+                                ;
+                            linkIndex++;
+                            if (false == await context.PinterestLinks.Where(p => p.NaskbanLinkId == unsynchronized.Id).AnyAsync())
+                            {
+                                PinterestLink link = new PinterestLink()
+                                {
+                                    GanjoorPostId = unsynchronized.GanjoorPostId,
+                                    GanjoorTitle = unsynchronized.GanjoorTitle,
+                                    GanjoorUrl = unsynchronized.GanjoorUrl,
+                                    AltText = unsynchronized.PDFPageTitle,
+                                    LinkType = LinkType.Naskban,
+                                    PinterestUrl = $"https://naskban.ir/{unsynchronized.PDFBookId}/{unsynchronized.PageNumber}",
+                                    PinterestImageUrl = unsynchronized.ExternalThumbnailImageUrl,
+                                    ReviewResult = ReviewResult.Approved,
+                                    SuggestionDate = DateTime.Now,
+                                    SuggestedById = ganjoorUserId,
+                                    Synchronized = true,
+                                    ReviewerId = ganjoorUserId,
+                                    IsTextOriginalSource = isTextOriginalSource,
+                                    PDFBookId = unsynchronized.PDFBookId,
+                                    PageNumber = unsynchronized.PageNumber,
+                                    NaskbanLinkId = unsynchronized.Id,
+                                    MatchPercent = unsynchronized.SuggestedByMachine ? 100 : 0,
+                                    HumanReviewed = !unsynchronized.SuggestedByMachine,
+                                };
+                                context.PinterestLinks.Add(link);
+                                await context.SaveChangesAsync();
+                                await jobProgressServiceEF.UpdateJob(job.Id, linkIndex, $"{linkIndex} of {unsynchronizeds.Length} local saved");
+                            }
+                            await secureClient.PutAsync($"https://api.naskban.ir/api/pdf/ganjoor/sync/{unsynchronized.Id}", null);
+                            await jobProgressServiceEF.UpdateJob(job.Id, linkIndex, $"{linkIndex} of {unsynchronizeds.Length} remote saved");
+                        }
                     }
+                    while (true);
 
                     var logoutUrl = $"https://api.naskban.ir/api/users/delsession?userId={loggedOnUser.User.Id}&sessionId={loggedOnUser.SessionId}";
                     await secureClient.DeleteAsync(logoutUrl);
-                    return new RServiceResult<int>(unsynchronizeds.Length);
+                    return new RServiceResult<int>(count);
                 }
             }
             catch (Exception exp)
