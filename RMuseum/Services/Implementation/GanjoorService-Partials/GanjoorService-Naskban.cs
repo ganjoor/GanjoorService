@@ -43,7 +43,7 @@ namespace RMuseum.Services.Implementation
                                {
                                    LongRunningJobProgressServiceEF jobProgressServiceEF = new LongRunningJobProgressServiceEF(context);
                                    var job = (await jobProgressServiceEF.NewJob("SynchronizeNaskbanLinks", "Query data")).Result;
-                                   var res = await _SynchronizeNaskbanLinksAsync(context, ganjoorUserId, naskbanUserName, naskbanPassword);
+                                   var res = await _SynchronizeNaskbanLinksAsync(context, ganjoorUserId, naskbanUserName, naskbanPassword, jobProgressServiceEF, job);
                                    if (!string.IsNullOrEmpty(res.ExceptionString))
                                    {
                                        await jobProgressServiceEF.UpdateJob(job.Id, 100, "", false, res.ExceptionString);
@@ -63,11 +63,14 @@ namespace RMuseum.Services.Implementation
         /// <param name="ganjoorUserId"></param>
         /// <param name="naskbanUserName"></param>
         /// <param name="naskbanPassword"></param>
+        /// <param name="jobProgressServiceEF"></param>
+        /// <param name="job"></param>
         /// <returns>number of synched items</returns>
-        private async Task<RServiceResult<int>> _SynchronizeNaskbanLinksAsync(RMuseumDbContext context, Guid ganjoorUserId, string naskbanUserName, string naskbanPassword)
+        private async Task<RServiceResult<int>> _SynchronizeNaskbanLinksAsync(RMuseumDbContext context, Guid ganjoorUserId, string naskbanUserName, string naskbanPassword, LongRunningJobProgressServiceEF jobProgressServiceEF, RLongRunningJobStatus job)
         {
             try
             {
+                await jobProgressServiceEF.UpdateJob(job.Id, 1, "logging in into naskban");
                 LoggedOnUserModelEx loggedOnUser;
                 using (HttpClient client = new HttpClient())
                 {
@@ -87,7 +90,7 @@ namespace RMuseum.Services.Implementation
                     loggedOnUser = JsonConvert.DeserializeObject<LoggedOnUserModelEx>(await loginResponse.Content.ReadAsStringAsync());
                 }
 
-
+                await jobProgressServiceEF.UpdateJob(job.Id, 1, "retrieving unsynced");
                 using (HttpClient secureClient = new HttpClient())
                 {
                     secureClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loggedOnUser.Token);
@@ -97,6 +100,9 @@ namespace RMuseum.Services.Implementation
                         return new RServiceResult<int>(0, "unsync error: " + JsonConvert.DeserializeObject<string>(await unsyncedResponse.Content.ReadAsStringAsync()));
                     }
                     var unsynchronizeds = JsonConvert.DeserializeObject<PDFGanjoorLink[]>(await unsyncedResponse.Content.ReadAsStringAsync());
+                    int linkIndex = 0;
+                    await jobProgressServiceEF.UpdateJob(job.Id, linkIndex, $"unsynchronizeds.count = {unsynchronizeds.Length}");
+                    
                     foreach (var unsynchronized in unsynchronizeds)
                     {
                         bool isTextOriginalSource =
@@ -106,6 +112,7 @@ namespace RMuseum.Services.Implementation
                             &&
                             await context.PinterestLinks.Where(l => l.GanjoorPostId == unsynchronized.GanjoorPostId && l.IsTextOriginalSource).AnyAsync() == false
                             ;
+                        linkIndex++;
                         if (false == await context.PinterestLinks.Where(p => p.NaskbanLinkId == unsynchronized.Id).AnyAsync())
                         {
                             PinterestLink link = new PinterestLink()
@@ -131,8 +138,10 @@ namespace RMuseum.Services.Implementation
                             };
                             context.PinterestLinks.Add(link);
                             await context.SaveChangesAsync();
+                            await jobProgressServiceEF.UpdateJob(job.Id, linkIndex, $"{linkIndex} of {unsynchronizeds.Length} local saved");
                         }
                         await secureClient.PutAsync($"https://api.naskban.ir/api/pdf/ganjoor/sync/{unsynchronized.Id}", null);
+                        await jobProgressServiceEF.UpdateJob(job.Id, linkIndex, $"{linkIndex} of {unsynchronizeds.Length} remote saved");
                     }
 
                     var logoutUrl = $"https://api.naskban.ir/api/users/delsession?userId={loggedOnUser.User.Id}&sessionId={loggedOnUser.SessionId}";

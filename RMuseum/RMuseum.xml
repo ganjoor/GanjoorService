@@ -26789,7 +26789,7 @@
             <param name="naskbanUserName"></param>
             <param name="naskbanPassword"></param>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService._SynchronizeNaskbanLinksAsync(RMuseum.DbContext.RMuseumDbContext,System.Guid,System.String,System.String)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._SynchronizeNaskbanLinksAsync(RMuseum.DbContext.RMuseumDbContext,System.Guid,System.String,System.String,RSecurityBackend.Services.Implementation.LongRunningJobProgressServiceEF,RSecurityBackend.Models.Generic.Db.RLongRunningJobStatus)">
             <summary>
             synchronize naskban links
             </summary>
@@ -26797,6 +26797,8 @@
             <param name="ganjoorUserId"></param>
             <param name="naskbanUserName"></param>
             <param name="naskbanPassword"></param>
+            <param name="jobProgressServiceEF"></param>
+            <param name="job"></param>
             <returns>number of synched items</returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.MarkNaskbanLinksAsHumanReviewed(System.Int32,System.Int32,System.Boolean)">
