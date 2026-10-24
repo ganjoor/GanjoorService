@@ -5,7 +5,7 @@ namespace RMuseum.Utils
     /// <summary>
     /// Base address of the host that serves static assets (recitation mp3/ogg/xml files, GDB packages,
     /// logos, ...). Configurable through the "ExternalAssets:RootUrl" appsettings value; the
-    /// default is the historical https://i.ganjoor.net. The public API address (ApiUrl) is configured the same way.
+    /// default is the historical https://i.ganjoor.net.
     /// </summary>
     /// <remarks>
     /// Static on purpose: it is read by model classes (e.g. Recitation.Mp3Url) that have no access to
@@ -18,20 +18,7 @@ namespace RMuseum.Utils
         /// </summary>
         public const string DefaultRootUrl = "https://i.ganjoor.net";
 
-        /// <summary>
-        /// Default public API address, used when nothing is configured
-        /// </summary>
-        public const string DefaultApiUrl = "https://api.ganjoor.net";
-
         private static string _rootUrl = DefaultRootUrl;
-
-        private static string _apiUrl = DefaultApiUrl;
-
-        /// <summary>
-        /// Public API address without a trailing slash, e.g. https://api.ganjoor.net
-        /// (configured through "ExternalAssets:ApiRootUrl")
-        /// </summary>
-        public static string ApiUrl => _apiUrl;
 
         /// <summary>
         /// Root url without a trailing slash, e.g. https://i.ganjoor.net
@@ -46,9 +33,6 @@ namespace RMuseum.Utils
         {
             string value = configuration?.GetSection("ExternalAssets")["RootUrl"];
             _rootUrl = string.IsNullOrWhiteSpace(value) ? DefaultRootUrl : value.Trim().TrimEnd('/');
-
-            string apiValue = configuration?.GetSection("ExternalAssets")["ApiRootUrl"];
-            _apiUrl = string.IsNullOrWhiteSpace(apiValue) ? DefaultApiUrl : apiValue.Trim().TrimEnd('/');
         }
     }
 }
