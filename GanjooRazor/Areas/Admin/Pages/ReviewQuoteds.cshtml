@@ -128,7 +128,7 @@ else
         </div>
         <div class="up-field">
             <label>تصویر شاعر</label>
-            <img src="@($"https://api.ganjoor.net{Model.GanjoorQuotedPoem.CachedRelatedPoemPoetImage}")" style="max-width:200px;" />
+            <img src="@($"{GanjooRazor.APIRoot.InternetUrl}{Model.GanjoorQuotedPoem.CachedRelatedPoemPoetImage}")" style="max-width:200px;" />
         </div>
         <div class="up-field">
             <label>عنوان شعر</label>

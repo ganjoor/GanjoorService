@@ -198,7 +198,7 @@ namespace GanjooRazor.Pages
                                Name = "محمدرضا شجریان",
                                Id = "1",
                                Url = "https://beeptunes.com/artist/3403349",
-                               Image = "https://api.ganjoor.net/api/rimages/d32a98c3-a20c-4d37-45a9-08d93cffb0b7.jpg"
+                               Image = $"{APIRoot.InternetUrl}/api/rimages/d32a98c3-a20c-4d37-45a9-08d93cffb0b7.jpg"
                            }
                            );
             }
@@ -386,7 +386,7 @@ namespace GanjooRazor.Pages
                                      Name = "رباعیات خیام",
                                      Id = "1",
                                      Url = "https://beeptunes.com/track/3434445",
-                                     Image = "https://api.ganjoor.net/api/rimages/d32a98c3-a20c-4d37-45a9-08d93cffb0b7.jpg"
+                                     Image = $"{APIRoot.InternetUrl}/api/rimages/d32a98c3-a20c-4d37-45a9-08d93cffb0b7.jpg"
                                  }
                                  );
             }
@@ -497,7 +497,7 @@ namespace GanjooRazor.Pages
                                   Name = "من بی می ناب زیستن نتوانم",
                                   Id = "1",
                                   Url = "https://beeptunes.com/track/3434445",
-                                  Image = "https://api.ganjoor.net/api/rimages/d32a98c3-a20c-4d37-45a9-08d93cffb0b7.jpg"
+                                  Image = $"{APIRoot.InternetUrl}/api/rimages/d32a98c3-a20c-4d37-45a9-08d93cffb0b7.jpg"
                               }
                               );
             }
@@ -594,7 +594,7 @@ namespace GanjooRazor.Pages
                              Name = "من بی می ناب زیستن نتوانم",
                              Id = "1",
                              Url = "https://beeptunes.com/track/3434445",
-                             Image = "https://api.ganjoor.net/api/rimages/d32a98c3-a20c-4d37-45a9-08d93cffb0b7.jpg",
+                             Image = $"{APIRoot.InternetUrl}/api/rimages/d32a98c3-a20c-4d37-45a9-08d93cffb0b7.jpg",
                              ArtistName = "محمدرضا شجریان",
                              ArtistId = "1",
                              ArtistUrl = "https://beeptunes.com/artist/3403349",

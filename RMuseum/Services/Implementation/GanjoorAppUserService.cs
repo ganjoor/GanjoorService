@@ -116,7 +116,7 @@ namespace RMuseum.Services.Implementation
                 +
                 "<td align=\"center\" style=\"padding: 40px 0 30px 0;\">"
                 +
-                "<img src=\"https://i.ganjoor.net/gm.gif\" alt=\"گنجور\" width=\"150\" height=\"150\" style=\"display: block;\" />"
+                $"<img src=\"{RMuseum.Utils.ExternalAssets.RootUrl}/gm.gif\" alt=\"گنجور\" width=\"150\" height=\"150\" style=\"display: block;\" />"
                 +
                 "</td>"
                 +

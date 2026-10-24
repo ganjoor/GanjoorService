@@ -136,7 +136,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// <summary>
         /// MP3 url
         /// </summary>
-        public string Mp3Url { get { return $"https://i.ganjoor.net/{SoundFilesFolder}/{FileNameWithoutExtension}.mp3"; } }
+        public string Mp3Url { get { return $"{RMuseum.Utils.ExternalAssets.RootUrl}/{SoundFilesFolder}/{FileNameWithoutExtension}.mp3"; } }
 
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// <summary>
         /// OGG url
         /// </summary>
-        public string OggUrl { get { return $"https://i.ganjoor.net/{SoundFilesFolder}/{FileNameWithoutExtension}.ogg"; } }
+        public string OggUrl { get { return $"{RMuseum.Utils.ExternalAssets.RootUrl}/{SoundFilesFolder}/{FileNameWithoutExtension}.ogg"; } }
 
         /// <summary>
         /// This is also a legacy field
@@ -165,7 +165,7 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         /// <summary>
         /// XML url
         /// </summary>
-        public string XMLUrl { get { return $"https://i.ganjoor.net/{SoundFilesFolder}/x/{FileNameWithoutExtension}.xml"; } }
+        public string XMLUrl { get { return $"{RMuseum.Utils.ExternalAssets.RootUrl}/{SoundFilesFolder}/x/{FileNameWithoutExtension}.xml"; } }
 
         /// <summary>
         /// Audio Title

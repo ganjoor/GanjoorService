@@ -46,6 +46,27 @@ namespace GanjooRazor
             }
         }
 
+        private static string _imagesUrl = "";
+
+        /// <summary>
+        /// Static assets host (breadcrumb icons etc.), configurable through the "ImagesRoot"
+        /// appsettings value; defaults to https://i.ganjoor.net
+        /// </summary>
+        public static string ImagesUrl
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_imagesUrl))
+                    return _imagesUrl;
+                IConfigurationRoot configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json")
+                    .Build();
+                string value = configuration["ImagesRoot"];
+                _imagesUrl = string.IsNullOrWhiteSpace(value) ? "https://i.ganjoor.net" : value.Trim().TrimEnd('/');
+                return _imagesUrl;
+            }
+        }
+
         private static string _semanticSearchUrl = "";
 
         /// <summary>

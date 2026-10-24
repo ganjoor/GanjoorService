@@ -131,10 +131,10 @@ namespace RMuseum.Services.Implementation
                                                         CatName = poet.Nickname,
                                                         CatID = catPoet.Id,
                                                         PoetID = poet.Id,
-                                                        DownloadUrl = $"https://i.ganjoor.net/android/gdb/{Path.GetFileName(zipFile)}",
+                                                        DownloadUrl = $"{RMuseum.Utils.ExternalAssets.RootUrl}/android/gdb/{Path.GetFileName(zipFile)}",
                                                         BlogUrl = "",
                                                         FileExt = ".zip",
-                                                        ImageUrl = (hasImage ? $"https://i.ganjoor.net/android/img/{poet.Id}.png" : ""),
+                                                        ImageUrl = (hasImage ? $"{RMuseum.Utils.ExternalAssets.RootUrl}/android/img/{poet.Id}.png" : ""),
                                                         FileSizeInByte = zipArray.Length,
                                                         LowestPoemID = lowestPoemID,
                                                         PubDate = DateTime.Now

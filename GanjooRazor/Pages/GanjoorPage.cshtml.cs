@@ -860,10 +860,10 @@ namespace GanjooRazor.Pages
             foreach (var gran in GanjoorPage.PoetOrCat.Cat.Ancestors)
             {
                 title += $"{gran.Title} » ";
-                breadCrumbList.AddItem(gran.Title, gran.FullUrl, poetCat ? $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}" : "https://i.ganjoor.net/cat.png");
+                breadCrumbList.AddItem(gran.Title, gran.FullUrl, poetCat ? $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}" : $"{APIRoot.ImagesUrl}/cat.png");
                 poetCat = false;
             }
-            breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Cat.Title, GanjoorPage.PoetOrCat.Cat.FullUrl, "https://i.ganjoor.net/cat.png");
+            breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Cat.Title, GanjoorPage.PoetOrCat.Cat.FullUrl, $"{APIRoot.ImagesUrl}/cat.png");
             title += GanjoorPage.PoetOrCat.Cat.Title;
             ViewData["Title"] = title;
         }
@@ -874,10 +874,10 @@ namespace GanjooRazor.Pages
             bool poetCat = true;
             foreach (var gran in GanjoorPage.Poem.Category.Cat.Ancestors)
             {
-                breadCrumbList.AddItem(gran.Title, gran.FullUrl, poetCat ? $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}" : "https://i.ganjoor.net/cat.png");
+                breadCrumbList.AddItem(gran.Title, gran.FullUrl, poetCat ? $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}" : $"{APIRoot.ImagesUrl}/cat.png");
                 poetCat = false;
             }
-            breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Cat.Title, GanjoorPage.PoetOrCat.Cat.FullUrl, "https://i.ganjoor.net/cat.png");
+            breadCrumbList.AddItem(GanjoorPage.PoetOrCat.Cat.Title, GanjoorPage.PoetOrCat.Cat.FullUrl, $"{APIRoot.ImagesUrl}/cat.png");
 
             var aiMuseumImage = GanjoorPage.Poem.Images.FirstOrDefault(i => i.TargetPageUrl.StartsWith("https://museum.ganjoor.net/items/ai"));
             if (aiMuseumImage != null)
@@ -890,7 +890,7 @@ namespace GanjooRazor.Pages
             }
             else
             {
-                breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, "https://i.ganjoor.net/poem.png");
+                breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, $"{APIRoot.ImagesUrl}/poem.png");
             }
         }
 
@@ -908,7 +908,7 @@ namespace GanjooRazor.Pages
                 {
                     foreach (var gran in GanjoorPage.PoetOrCat.Cat.Ancestors)
                     {
-                        breadCrumbList.AddItem(gran.Title, gran.FullUrl, poetCat ? $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}" : "https://i.ganjoor.net/cat.png");
+                        breadCrumbList.AddItem(gran.Title, gran.FullUrl, poetCat ? $"{APIRoot.InternetUrl + GanjoorPage.PoetOrCat.Poet.ImageUrl}" : $"{APIRoot.ImagesUrl}/cat.png");
                         poetCat = false;
                         fullTitle += $"{gran.Title} » ";
                     }
@@ -920,7 +920,7 @@ namespace GanjooRazor.Pages
             {
                 ViewData["Title"] = $"گنجور » {GanjoorPage.FullTitle}";
             }
-            breadCrumbList.AddItem(GanjoorPage.Title, GanjoorPage.FullUrl, "https://i.ganjoor.net/cat.png");
+            breadCrumbList.AddItem(GanjoorPage.Title, GanjoorPage.FullUrl, $"{APIRoot.ImagesUrl}/cat.png");
         }
 
         /// <summary>

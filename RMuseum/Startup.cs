@@ -47,6 +47,7 @@ namespace RMuseum
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            RMuseum.Utils.ExternalAssets.Configure(configuration);
         }
 
         public IConfiguration Configuration { get; }

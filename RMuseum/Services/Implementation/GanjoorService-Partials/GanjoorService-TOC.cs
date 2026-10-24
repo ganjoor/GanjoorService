@@ -424,7 +424,7 @@ namespace RMuseum.Services.Implementation
                                 if (childPoet != null)
                                 {
                                     var childPoetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == childPoet.Id && c.ParentId == null).SingleAsync();
-                                    var poetImageUrl = $"https://api.ganjoor.net/api/ganjoor/poet/image{childPoetCat.FullUrl}.gif";
+                                    var poetImageUrl = $"{RMuseum.Utils.ExternalAssets.ApiUrl}/api/ganjoor/poet/image{childPoetCat.FullUrl}.gif";
                                     html += $"<div class=\"poet\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
                                     html += $"<a href=\"{childPage.FullUrl}\">{Environment.NewLine}";
                                     html += $"<img src=\"{poetImageUrl}\" alt=\"{childPoet.Nickname}\" >";
@@ -494,7 +494,7 @@ namespace RMuseum.Services.Implementation
                                 if (childPoet != null)
                                 {
                                     var poetCat = await context.GanjoorCategories.AsNoTracking().Where(c => c.PoetId == childPoet.Id && c.ParentId == null).SingleAsync();
-                                    var poetImageUrl = $"https://api.ganjoor.net/api/ganjoor/poet/image{poetCat.FullUrl}.gif";
+                                    var poetImageUrl = $"{RMuseum.Utils.ExternalAssets.ApiUrl}/api/ganjoor/poet/image{poetCat.FullUrl}.gif";
                                     html += $"<div class=\"poet\" id=\"page-{childPage.Id}\">{Environment.NewLine}";
                                     html += $"<a href=\"{childPage.FullUrl}\">{Environment.NewLine}";
                                     html += $"<img src=\"{poetImageUrl}\" alt=\"{childPoet.Nickname}\" >";

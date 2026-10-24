@@ -160,7 +160,7 @@ namespace RMuseum.Services.Implementation
                         ChosenOne = picture.ChosenOne,
                         SuggestedById = picture.SuggestedById,
                         ImageUrl = $"api/rimages/{picture.PictureId}.jpg",
-                        ExternalNormalSizeImageUrl = $"https://api.ganjoor.net/api/rimages/{picture.PictureId}.jpg"
+                        ExternalNormalSizeImageUrl = $"{RMuseum.Utils.ExternalAssets.ApiUrl}/api/rimages/{picture.PictureId}.jpg"
                     }
                     );
             }
@@ -200,7 +200,7 @@ namespace RMuseum.Services.Implementation
                           ChosenOne = r.ChosenOne,
                           SuggestedById = r.SuggestedById,
                           ImageUrl = $"api/rimages/{r.PictureId}.jpg",
-                          ExternalNormalSizeImageUrl = $"https://api.ganjoor.net/api/rimages/{r.PictureId}.jpg"
+                          ExternalNormalSizeImageUrl = $"{RMuseum.Utils.ExternalAssets.ApiUrl}/api/rimages/{r.PictureId}.jpg"
                       }
                       ).FirstOrDefaultAsync()
                  );
