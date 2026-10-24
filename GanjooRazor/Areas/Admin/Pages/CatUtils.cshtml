@@ -403,7 +403,7 @@
             {
                 <tr>
                     <td colspan="5">
-                        <img src="@Model.PoemRelatedImages.Where(r => r.PoemId == poem.Id && r.TargetPageUrl.Contains("https://naskban.ir")).First().ThumbnailImageUrl" />
+                        <img src="@(GanjooRazor.APIRoot.OfflineImageUrl(Model.PoemRelatedImages.Where(r => r.PoemId == poem.Id && r.TargetPageUrl.Contains("https://naskban.ir")).First().ThumbnailImageUrl))" />
                         <br />
                         <p><a role="button" onclick="deleteRelatedImage('@Model.PoemRelatedImages.Where(r => r.PoemId == poem.Id && r.TargetPageUrl.Contains("https://naskban.ir")).First().TargetPageUrl')" class="up-btn up-btn--ghost up-btn--sm">حذف این تصویر</a></p>
                     </td>

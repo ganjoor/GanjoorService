@@ -67,6 +67,43 @@ namespace GanjooRazor
             }
         }
 
+        /// <summary>
+        /// The host stored in image urls kept in the database (thumbnails, covers, ...)
+        /// </summary>
+        public const string StoredImagesHost = "https://i.ganjoor.net";
+
+        private static bool? _offlineMode;
+
+        /// <summary>
+        /// "OfflineMode" appsettings flag: true when this instance is an offline copy of the site
+        /// </summary>
+        public static bool OfflineMode
+        {
+            get
+            {
+                if (_offlineMode.HasValue)
+                    return _offlineMode.Value;
+                IConfigurationRoot configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json")
+                    .Build();
+                _offlineMode = bool.TryParse(configuration["OfflineMode"], out var value) && value;
+                return _offlineMode.Value;
+            }
+        }
+
+        /// <summary>
+        /// Image urls received from the service (ThumbnailImageUrl, CoverThumbnailImageUrl, ...) start
+        /// with <see cref="StoredImagesHost"/> because that is what is stored in the database. In
+        /// offline mode this swaps that host for the configured "ImagesRoot" value, so an offline
+        /// copy can serve the images itself. Outside offline mode the url is returned unchanged.
+        /// </summary>
+        public static string OfflineImageUrl(string url)
+        {
+            if (string.IsNullOrEmpty(url) || !OfflineMode)
+                return url;
+            return url.Replace(StoredImagesHost, ImagesUrl, System.StringComparison.Ordinal);
+        }
+
         private static string _semanticSearchUrl = "";
 
         /// <summary>

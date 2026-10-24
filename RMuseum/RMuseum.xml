@@ -30373,7 +30373,7 @@
             <summary>
             Base address of the host that serves static assets (recitation mp3/ogg/xml files, GDB packages,
             logos, ...). Configurable through the "ExternalAssets:RootUrl" appsettings value; the
-            default is the historical https://i.ganjoor.net. The public API address (ApiUrl) is configured the same way.
+            default is the historical https://i.ganjoor.net.
             </summary>
             <remarks>
             Static on purpose: it is read by model classes (e.g. Recitation.Mp3Url) that have no access to
@@ -30383,17 +30383,6 @@
         <member name="F:RMuseum.Utils.ExternalAssets.DefaultRootUrl">
             <summary>
             Default value used when nothing is configured
-            </summary>
-        </member>
-        <member name="F:RMuseum.Utils.ExternalAssets.DefaultApiUrl">
-            <summary>
-            Default public API address, used when nothing is configured
-            </summary>
-        </member>
-        <member name="P:RMuseum.Utils.ExternalAssets.ApiUrl">
-            <summary>
-            Public API address without a trailing slash, e.g. https://api.ganjoor.net
-            (configured through "ExternalAssets:ApiRootUrl")
             </summary>
         </member>
         <member name="P:RMuseum.Utils.ExternalAssets.RootUrl">

@@ -201,7 +201,7 @@
                     {
                         <div class="related-image-container">
                             <a target="_blank" href="@Html.Raw(book.BookFullUrl)">
-                                <img src="@Html.Raw(book.CoverThumbnailImageUrl)" alt="@book.BookFullTitle" loading="lazy" class="related-image">
+                                <img src="@Html.Raw(GanjooRazor.APIRoot.OfflineImageUrl(book.CoverThumbnailImageUrl))" alt="@book.BookFullTitle" loading="lazy" class="related-image">
                             </a>
                             <div class="related-image-is-text-source">
                                 <a target="_blank" href="@Html.Raw(book.BookFullUrl)">@book.BookFullTitle</a>

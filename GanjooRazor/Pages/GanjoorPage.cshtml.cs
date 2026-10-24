@@ -882,11 +882,11 @@ namespace GanjooRazor.Pages
             var aiMuseumImage = GanjoorPage.Poem.Images.FirstOrDefault(i => i.TargetPageUrl.StartsWith("https://museum.ganjoor.net/items/ai"));
             if (aiMuseumImage != null)
             {
-                breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, aiMuseumImage.ThumbnailImageUrl.Replace("/thumb/", "/orig/"));
+                breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, APIRoot.OfflineImageUrl(aiMuseumImage.ThumbnailImageUrl.Replace("/thumb/", "/orig/")));
             }
             else if (GanjoorPage.Poem.Images.Any())
             {
-                breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, GanjoorPage.Poem.Images.First().ThumbnailImageUrl.Replace("/thumb/", "/orig/"));
+                breadCrumbList.AddItem(GanjoorPage.Poem.Title, GanjoorPage.Poem.FullUrl, APIRoot.OfflineImageUrl(GanjoorPage.Poem.Images.First().ThumbnailImageUrl.Replace("/thumb/", "/orig/")));
             }
             else
             {
