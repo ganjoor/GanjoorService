@@ -83,7 +83,7 @@
                             }
                         });
 
-                        _setXml('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitaion.Id}.xml")');
+                        _setXml('@(string.IsNullOrEmpty(recitaion.XmlUrl) ? $"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitaion.Id}.xml" : recitaion.XmlUrl)', '@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitaion.Id}.xml")');
                         showStickyPlayer(currentAudio, '@Html.Raw(recitaion.AudioArtist)', @recitaion.Id);
                     });
 

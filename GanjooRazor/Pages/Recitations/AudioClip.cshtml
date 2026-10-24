@@ -166,7 +166,7 @@
 
             @Html.Raw($" var normaltext = { (Model.Poem.Verses.Where(v => v.VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph).Any() ? "true" : "false") }")
 
-                function prepareclip(xmlfilename, poemtitle, auartist, oggurl, mp3url, verseArray) {
+                function prepareclip(xmlfilename, poemtitle, auartist, oggurl, mp3url, verseArray, xmlfallbackurl) {
                     var verseStart = [];
                     var verseEnd = [];
                     var verseIndex = [];
@@ -174,6 +174,7 @@
                     var vCount = 0;
 
                     audioxmlfiles[0] = xmlfilename;
+                    audioxmlfallbacks[0] = xmlfallbackurl;
 
 
                     var jlist = new jPlayerPlaylist({
@@ -189,11 +190,7 @@
                         {
                             setmedia: function(event) {
 
-                                $.ajax({
-                                    type: "GET",
-                                    url: audioxmlfiles[jlist.current],
-                                    dataType: "xml",
-                                    success: function(xml) {
+                                ganjoorLoadSyncXml(audioxmlfiles[jlist.current], audioxmlfallbacks[jlist.current], function(xml) {
                                         var nOneSecondBugFix = 2000;
                                         $(xml).find('OneSecondBugFix').each(function() {
                                             nOneSecondBugFix = parseInt($(xml).find('OneSecondBugFix').text());
@@ -210,7 +207,6 @@
                                         if (v > 1)
                                             verseEnd[v] = verseStart[v] + 2 * (verseEnd[v - 1] - verseStart[v - 1]);
                                         vCount = v;
-                                    }
                                 });
 
 
@@ -291,8 +287,8 @@
             //<![CDATA[
             $(document).ready(function() {
 
-                prepareclip('@Html.Raw($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{Model.Recitation.Id}.xml")', '@Model.Recitation.AudioTitle',
-                    'به خوانش @Model.Recitation.AudioArtist', '', '@Model.Recitation.Mp3Url', verses);
+                prepareclip('@Html.Raw(string.IsNullOrEmpty(Model.Recitation.XmlUrl) ? $"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{Model.Recitation.Id}.xml" : Model.Recitation.XmlUrl)', '@Model.Recitation.AudioTitle',
+                    'به خوانش @Model.Recitation.AudioArtist', '', '@Model.Recitation.Mp3Url', verses, '@Html.Raw($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{Model.Recitation.Id}.xml")');
 
 
             });

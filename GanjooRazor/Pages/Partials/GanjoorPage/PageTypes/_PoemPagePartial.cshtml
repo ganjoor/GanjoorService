@@ -11,12 +11,8 @@
     var nLastHighlight = -1;
          var vCount = 0;
 
-    var _setXml = function(xmlUrl) {
-        $.ajax({
-            type: "GET",
-                url: xmlUrl,
-            dataType: "xml",
-            success: function(xml) {
+    var _setXml = function(xmlUrl, fallbackUrl) {
+        ganjoorLoadSyncXml(xmlUrl, fallbackUrl, function(xml) {
                 var nOneSecondBugFix = 2000;
                 $(xml).find('OneSecondBugFix').each(function() {
                         nOneSecondBugFix = parseInt($(xml).find('OneSecondBugFix').text());
@@ -33,8 +29,7 @@
                 if (v > 1)
                     verseEnd[v] = verseStart[v] + 2 * (verseEnd[v - 1] - verseStart[v - 1]);
                 vCount = v;
-            }
-             });
+        });
     }
 
     var _trackTimeChanged = function(audio) {
@@ -58,6 +53,7 @@
 <script>
     var narrators = [];
     var audioxmlfiles = [];
+    var audioxmlfallbacks = [];
         var recitaionIds = [];
                 @foreach (var recitation in Model.GanjoorPage.Poem.Recitations)
         {
@@ -65,7 +61,8 @@
                 {
                         <text>
                                     narrators.push('@Html.Raw(recitation.AudioArtist)');
-                                    audioxmlfiles.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
+                                    audioxmlfiles.push('@(string.IsNullOrEmpty(recitation.XmlUrl) ? $"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml" : recitation.XmlUrl)');
+                                    audioxmlfallbacks.push('@($"{GanjooRazor.APIRoot.InternetUrl}/api/audio/file/{recitation.Id}.xml")');
                                     recitaionIds.push(@recitation.Id);
                         </text>
                  }

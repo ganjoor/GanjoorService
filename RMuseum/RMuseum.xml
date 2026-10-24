@@ -7501,6 +7501,13 @@
             Mp3 Url
             </summary>
         </member>
+        <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.XmlUrl">
+            <summary>
+            Url of the synchronization (xml) file. Like Mp3Url, it points to the external assets host
+            (ExternalAssets:RootUrl) when files are loaded from an external server, which must send
+            CORS headers for browser scripts to read it; otherwise it is {WebServiceUrl.Url}/api/audio/file/{audio.Id}.xml
+            </summary>
+        </member>
         <member name="P:RMuseum.Models.GanjoorAudio.ViewModels.PublicRecitationViewModel.XmlText">
             <summary>
             Xml Text, xml file url is {WebServiceUrl.Url}/api/audio/file/{audio.Id}.xml
@@ -30361,6 +30368,44 @@
             <param name="paging"></param>
             <param name="userId"></param>
             <returns></returns>
+        </member>
+        <member name="T:RMuseum.Utils.ExternalAssets">
+            <summary>
+            Base address of the host that serves static assets (recitation mp3/ogg/xml files, GDB packages,
+            logos, ...). Configurable through the "ExternalAssets:RootUrl" appsettings value; the
+            default is the historical https://i.ganjoor.net. The public API address (ApiUrl) is configured the same way.
+            </summary>
+            <remarks>
+            Static on purpose: it is read by model classes (e.g. Recitation.Mp3Url) that have no access to
+            dependency injection. Startup calls <see cref="M:RMuseum.Utils.ExternalAssets.Configure(Microsoft.Extensions.Configuration.IConfiguration)"/> once at application start.
+            </remarks>
+        </member>
+        <member name="F:RMuseum.Utils.ExternalAssets.DefaultRootUrl">
+            <summary>
+            Default value used when nothing is configured
+            </summary>
+        </member>
+        <member name="F:RMuseum.Utils.ExternalAssets.DefaultApiUrl">
+            <summary>
+            Default public API address, used when nothing is configured
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.ExternalAssets.ApiUrl">
+            <summary>
+            Public API address without a trailing slash, e.g. https://api.ganjoor.net
+            (configured through "ExternalAssets:ApiRootUrl")
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.ExternalAssets.RootUrl">
+            <summary>
+            Root url without a trailing slash, e.g. https://i.ganjoor.net
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.ExternalAssets.Configure(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Reads "ExternalAssets:RootUrl" from configuration (falls back to the default when empty)
+            </summary>
+            <param name="configuration"></param>
         </member>
         <member name="T:RMuseum.Utils.GanjoorCommentRankingScoreCalculator">
             <summary>

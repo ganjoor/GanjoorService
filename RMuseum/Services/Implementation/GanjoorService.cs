@@ -762,6 +762,7 @@ namespace RMuseum.Services.Implementation
                      PublishDate = audio.ReviewDate,
                      FileLastUpdated = audio.FileLastUpdated,
                      Mp3Url = loadFromExternalServer ? audio.Mp3Url : $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.mp3",
+                     XmlUrl = loadFromExternalServer ? audio.XMLUrl : $"{WebServiceUrl.Url}/api/audio/file/{audio.Id}.xml",
                      XmlText = $"{WebServiceUrl.Url}/api/audio/xml/{audio.Id}",
                      PlainText = "", //poem.PlainText 
                      HtmlText = "",//poem.HtmlText

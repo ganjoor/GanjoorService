@@ -83,6 +83,13 @@ namespace RMuseum.Models.GanjoorAudio.ViewModels
         public string Mp3Url { get; set; }
 
         /// <summary>
+        /// Url of the synchronization (xml) file. Like Mp3Url, it points to the external assets host
+        /// (ExternalAssets:RootUrl) when files are loaded from an external server, which must send
+        /// CORS headers for browser scripts to read it; otherwise it is {WebServiceUrl.Url}/api/audio/file/{audio.Id}.xml
+        /// </summary>
+        public string XmlUrl { get; set; }
+
+        /// <summary>
         /// Xml Text, xml file url is {WebServiceUrl.Url}/api/audio/file/{audio.Id}.xml
         /// </summary>
         public string XmlText { get; set; }

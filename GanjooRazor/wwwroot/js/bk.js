@@ -9,14 +9,46 @@
 // jQuery AJAX request as a header from here on - so individual $.ajax(...) calls below don't
 // need to be touched one by one. A page that doesn't render the meta tag (i.e. has nothing that
 // needs it) simply sends no header, which is harmless.
+//
+// The header is attached to same-origin requests only: a cross-origin request (e.g. loading a
+// recitation's sync xml from the assets host) must not leak the token to another host, and a
+// custom header would also turn it into a CORS preflight request that the other host would
+// have to be configured to answer.
 (function () {
     var token = $('meta[name="csrf-token"]').attr('content');
     if (token) {
-        $.ajaxSetup({
-            headers: { 'X-CSRF-TOKEN': token }
+        $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
+            if (!options.crossDomain) {
+                jqXHR.setRequestHeader('X-CSRF-TOKEN', token);
+            }
         });
     }
 })();
+
+// --- Recitation sync xml loading -----------------------------------------------------------
+// The sync xml of a recitation is read from the assets host (the url is in audioxmlfiles); if
+// that fails (missing CORS header, file not copied there yet, ...) it is read once more from
+// the API endpoint kept in audioxmlfallbacks at the same index.
+var audioxmlfallbacks = [];
+
+function ganjoorLoadSyncXml(url, fallbackUrl, onSuccess) {
+    $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "xml",
+        success: onSuccess,
+        error: function () {
+            if (fallbackUrl && fallbackUrl !== url) {
+                $.ajax({
+                    type: "GET",
+                    url: fallbackUrl,
+                    dataType: "xml",
+                    success: onSuccess
+                });
+            }
+        }
+    });
+}
 
 // --- Sanitizer "text was dropped" feedback ----------------------------------------------
 // Shared by every place a TinyMCE-edited field (a comment, a bookmark note, a suggested
@@ -686,11 +718,7 @@ function playCouplet(coupletIndex) {
 
 
     if (audioxmlfiles.length > 0) {
-        $.ajax({
-            type: "GET",
-            url: audioxmlfiles[recitationIndex],
-            dataType: "xml",
-            success: function (xml) {
+        ganjoorLoadSyncXml(audioxmlfiles[recitationIndex], audioxmlfallbacks[recitationIndex], function (xml) {
                 var nOneSecondBugFix = 2000;
                 $(xml).find('OneSecondBugFix').each(function () {
                     nOneSecondBugFix = parseInt($(xml).find('OneSecondBugFix').text());
@@ -718,7 +746,6 @@ function playCouplet(coupletIndex) {
                 if (!foundCouplet) {
                     alert('در این خوانش این خط خوانده نشده است.');
                 }
-            }
         });
     }
 }
