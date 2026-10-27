@@ -981,6 +981,22 @@
         }
 
 
+        // only summaries the user actually changed are checked (see the limits above)
+        var summaryProblems = [];
+        for (var si = 1; si <= verseCount; si++) {
+            if ($('#summary-' + si.toString()).length == 0 || $('#originalsummary-' + si.toString()).text() == $('#summary-' + si.toString()).text()) {
+                continue;
+            }
+            var coupletProblems = coupletSummaryProblems(si);
+            if (coupletProblems.length > 0) {
+                summaryProblems.push('«' + $('#summary-' + si.toString()).attr('data-couplet-title') + '»:\n' + coupletProblems.join('\n'));
+            }
+        }
+        if (summaryProblems.length > 0) {
+            upShowError('معنی بیت‌های زیر را اصلاح کنید و دوباره ذخیره کنید:\n\n' + summaryProblems.join('\n\n'));
+            return;
+        }
+
         var rhyme_letters = $('#rhyme-letters').val();
         if (rhyme_letters == $('#rhyme-letters-old').text()) {
             rhyme_letters = null;
@@ -1199,7 +1215,84 @@
 
     function summarycompare(id) {
         internalEditorcompare(id, 'originalsummary-', 'summary-', 'comparesummary-');
+        updateCoupletSummaryHint(id);
     }
+
+    // --- couplet summary limits (checked here in the editor only) --------------------------------
+    // A couplet summary should be a short plain-prose rendering of the couplet. The limits are relative
+    // to the couplet's own text length: past the warning length the hint turns red (saving is still
+    // allowed), past the maximum - or when forbidden characters are used - saving is blocked. Only
+    // summaries that were actually changed are checked, so untouched existing summaries never block
+    // saving. Tune the values below if needed.
+    var SUMMARY_WARN_RATIO = 2.0;
+    var SUMMARY_MAX_RATIO = 3.0;
+    var SUMMARY_WARN_MIN_LENGTH = 80;
+    var SUMMARY_MAX_MIN_LENGTH = 120;
+    var SUMMARY_FORBIDDEN_CHARS = /[()\[\]"“”„«»:：=<>\/]/;
+    var SUMMARY_LATIN_LETTERS = /[A-Za-z]/;
+
+    function summaryFa(n) {
+        return Number(n).toLocaleString('fa-IR');
+    }
+
+    function normalizedSummaryText(id) {
+        return $('#summary-' + String(id)).text().replace(/\s+/g, ' ').trim();
+    }
+
+    function summaryLengthLimits(id) {
+        var coupletLength = parseInt($('#summary-' + String(id)).attr('data-couplet-length')) || 0;
+        return {
+            warn: Math.max(SUMMARY_WARN_MIN_LENGTH, Math.round(coupletLength * SUMMARY_WARN_RATIO)),
+            max: Math.max(SUMMARY_MAX_MIN_LENGTH, Math.round(coupletLength * SUMMARY_MAX_RATIO))
+        };
+    }
+
+    // returns a list of problems that block saving this couplet's summary (empty when it is fine)
+    function coupletSummaryProblems(id) {
+        var text = normalizedSummaryText(id);
+        var problems = [];
+        if (text.length == 0) {
+            return problems; // clearing a summary is always allowed
+        }
+        var limits = summaryLengthLimits(id);
+        if (text.length > limits.max) {
+            problems.push('طول متن (' + summaryFa(text.length) + ' نویسه) بیشتر از حداکثر مجاز (' + summaryFa(limits.max) + ' نویسه) است؛ آن را کوتاه‌تر و در یک یا دو جمله بنویسید.');
+        }
+        if (text.indexOf('هوش مصنوعی') == 0) {
+            problems.push('عبارت «هوش مصنوعی:» را از ابتدای متن حذف کنید.');
+        } else {
+            var forbidden = text.match(SUMMARY_FORBIDDEN_CHARS);
+            if (forbidden) {
+                problems.push('نویسهٔ «' + forbidden[0] + '» مجاز نیست. پرانتز، گیومه، دونقطه و مانند آن‌ها را در متن معنی به کار نبرید؛ توضیح یا معنی واژه‌ها را در حاشیه‌ها بنویسید.');
+            }
+        }
+        if (SUMMARY_LATIN_LETTERS.test(text)) {
+            problems.push('حروف لاتین مجاز نیست.');
+        }
+        return problems;
+    }
+
+    function updateCoupletSummaryHint(id) {
+        var hint = $('#summarylimit-' + String(id));
+        if (hint.length == 0) {
+            return;
+        }
+        var text = normalizedSummaryText(id);
+        var limits = summaryLengthLimits(id);
+        var problems = coupletSummaryProblems(id);
+        var message = 'معنی را کوتاه و روان، در یک یا دو جمله بنویسید (پیشنهاد: حداکثر ' + summaryFa(limits.warn) + ' نویسه، حداکثر مجاز: ' + summaryFa(limits.max) + '). طول فعلی: ' + summaryFa(text.length);
+        if (problems.length > 0) {
+            message = problems.join(' ');
+        }
+        hint.text(message);
+        hint.toggleClass('up-hint--danger', problems.length > 0 || text.length > limits.warn);
+    }
+
+    $(document).ready(function () {
+        $('[id^="summarylimit-"]').each(function () {
+            updateCoupletSummaryHint(this.id.substring('summarylimit-'.length));
+        });
+    });
 
     async function breakPoem(poemId, vOrder, vText) {
         var ok = await upConfirm(vText);
@@ -2347,11 +2440,30 @@ else
                         <p class="up-mt-0">در صورتی که متن تولید شده توسط هوش مصنوعی را ویرایش می‌کنید عبارت نشان‌دهندهٔ تولید <span style="color:red">هوش مصنوعی</span> بودن آن را <span style="color:red">حذف کنید</span>.</p>
                     </div>
 
+                    @{
+                        // length of the couplet's own text (same verses as shown in the "متن" box above); the
+                        // couplet summary length limit in the editor script is relative to it
+                        var coupletTextLength = 0;
+                        for (int coupletTextIndex = verseIndex; coupletTextIndex < Model.PageInformation.Poem.Verses.Length &&
+                            (coupletTextIndex == verseIndex ||
+                            (
+                            Model.PageInformation.Poem.Verses[coupletTextIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Right
+                            && Model.PageInformation.Poem.Verses[coupletTextIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1
+                            && Model.PageInformation.Poem.Verses[coupletTextIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Paragraph
+                            )); coupletTextIndex++)
+                        {
+                            coupletTextLength += (Model.PageInformation.Poem.Verses[coupletTextIndex].Text ?? "").Trim().Length;
+                            if (Model.PageInformation.Poem.Verses[verseIndex].VersePosition == RMuseum.Models.Ganjoor.VersePosition.Paragraph)
+                                break;
+                        }
+                        var coupletTitleText = (Model.PageInformation.Poem.Verses[verseIndex].Text ?? "").Trim();
+                        var coupletTitle = coupletTitleText.Length > 30 ? coupletTitleText.Substring(0, 30) + " ..." : coupletTitleText;
+                    }
                     <div class="up-field">
                         <label for="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")"><span class="up-field-icon" aria-hidden="true">💬</span> معنای ویراستهٔ من (به زبان غیرمحاوره‌ای و همه‌کس فهم)</label>
                         @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder && !string.IsNullOrEmpty(v.CoupletSummary)).Any())
                         {
-                            <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" contenteditable="true" class="up-editable">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder).First().CoupletSummary</div>
+                            <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" data-couplet-length="@coupletTextLength" data-couplet-title="@coupletTitle" contenteditable="true" class="up-editable">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder).First().CoupletSummary</div>
                             <script>
                                 document.getElementById("summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")").addEventListener("input", function () {
                                     summarycompare(@Model.PageInformation.Poem.Verses[verseIndex].VOrder)
@@ -2363,13 +2475,14 @@ else
                         }
                         else
                         {
-                            <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" contenteditable="true" class="up-editable">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</div>
+                            <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" data-couplet-length="@coupletTextLength" data-couplet-title="@coupletTitle" contenteditable="true" class="up-editable">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</div>
                             <script>
                                 document.getElementById("summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")").addEventListener("input", function () {
                                     summarycompare(@Model.PageInformation.Poem.Verses[verseIndex].VOrder)
                                 }, false);
                             </script>
                         }
+                        <p class="up-hint" id="summarylimit-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")"></p>
                         @if (string.IsNullOrEmpty(Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary))
                         {
                             <p class="up-hint">هنوز متنی برای معنی نوشته نشده است.</p>
