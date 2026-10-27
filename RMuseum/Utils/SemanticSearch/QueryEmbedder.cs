@@ -68,9 +68,27 @@ namespace RMuseum.Utils.SemanticSearch
         private readonly Tokenizer _tokenizer;
         private readonly int _dimension;
 
-        public QueryEmbedder(string modelPath, string vocabPath, string mergesPath, int dimension = 1024)
+        private readonly int _maxQueryTokens;
+
+        /// <param name="intraOpThreads">threads ONNX Runtime may use for one query (0 = its default, i.e. all cores)</param>
+        /// <param name="maxQueryTokens">queries longer than this many tokens are cut (bounds CPU time and memory per query)</param>
+        public QueryEmbedder(string modelPath, string vocabPath, string mergesPath, int dimension = 1024,
+            int intraOpThreads = 0, int maxQueryTokens = 128)
         {
-            _session = new InferenceSession(modelPath);
+            // The CPU memory arena only ever grows (it never gives memory back to the OS) and grows
+            // again for every new input shape, which is what made the process balloon under load.
+            // Queries are tiny and rare enough that allocating per run is the better trade.
+            var sessionOptions = new SessionOptions
+            {
+                EnableCpuMemArena = false,
+                EnableMemoryPattern = false,
+            };
+            if (intraOpThreads > 0)
+            {
+                sessionOptions.IntraOpNumThreads = intraOpThreads;
+            }
+            _maxQueryTokens = maxQueryTokens > 0 ? maxQueryTokens : 128;
+            _session = new InferenceSession(modelPath, sessionOptions);
 
             // Attempt 3 — the confirmed fix. Attempts 1 and 2 changed how text gets SPLIT into
             // words (the pre-tokenizer regex); both ran without error but still produced zero
@@ -119,7 +137,8 @@ namespace RMuseum.Utils.SemanticSearch
             // like NumLayers/NumKvHeads/HeadDim above — re-confirm the same way (compare against
             // real Python output) if the model is ever swapped.
             const int EndOfSequenceTokenId = 151643;
-            var fullTokenIds = new List<int>(tokenIds) { EndOfSequenceTokenId };
+            // cut over-long queries (the instruction prefix is at the start, so only the tail is lost)
+            var fullTokenIds = new List<int>(tokenIds.Count > _maxQueryTokens ? tokenIds.Take(_maxQueryTokens) : tokenIds) { EndOfSequenceTokenId };
             int seqLen = fullTokenIds.Count;
 
             var inputIds = new DenseTensor<long>(new[] { 1, seqLen });

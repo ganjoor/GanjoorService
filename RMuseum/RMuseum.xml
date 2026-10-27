@@ -30830,6 +30830,18 @@
             lazy-loaded embeddings/model themselves and is available even when Enabled is false.
             </summary>
         </member>
+        <member name="P:RMuseum.Utils.SemanticSearch.LazySemanticSearchResources.EmbedGate">
+            <summary>
+            Limits how many queries are embedded (the CPU/memory heavy native step) at the same
+            time. SemanticSearch:MaxConcurrentSearches, default 2.
+            </summary>
+        </member>
+        <member name="P:RMuseum.Utils.SemanticSearch.LazySemanticSearchResources.QueueWait">
+            <summary>how long a request may wait for the gate before being refused (SemanticSearch:QueueWaitSeconds, default 10)</summary>
+        </member>
+        <member name="P:RMuseum.Utils.SemanticSearch.LazySemanticSearchResources.MaxQueryLength">
+            <summary>longer queries are cut to this many characters (SemanticSearch:MaxQueryLength, default 300)</summary>
+        </member>
         <member name="M:RMuseum.Utils.SemanticSearch.LazySemanticSearchResources.TryGetResources(RMuseum.Utils.SemanticSearch.EmbeddingIndex@,RMuseum.Utils.SemanticSearch.QueryEmbedder@,System.String@)">
              <summary>
              Attempts to load the resources on first call (subsequent calls reuse the same result,
@@ -30850,6 +30862,12 @@
             controller catches this specifically and returns HTTP 503 with the message, distinct from
             a plain 400/500, so a client (or a person checking logs) can tell "this feature isn't
             configured/loaded right now" apart from "the query itself was bad" or "something crashed".
+            </summary>
+        </member>
+        <member name="T:RMuseum.Utils.SemanticSearch.SemanticSearchBusyException">
+            <summary>
+            Thrown when too many searches are already being embedded and the wait for a free slot ran
+            out; the controller answers HTTP 429 so clients can retry later.
             </summary>
         </member>
         <member name="T:RMuseum.Utils.SemanticSearch.QueryEmbedder">
@@ -30894,6 +30912,10 @@
             benchmarked for Persian poetry specifically — reasonable to A/B test once the basic
             pipeline is confirmed working (see VERIFICATION.md), not something to treat as final.
             </summary>
+        </member>
+        <member name="M:RMuseum.Utils.SemanticSearch.QueryEmbedder.#ctor(System.String,System.String,System.String,System.Int32,System.Int32,System.Int32)">
+            <param name="intraOpThreads">threads ONNX Runtime may use for one query (0 = its default, i.e. all cores)</param>
+            <param name="maxQueryTokens">queries longer than this many tokens are cut (bounds CPU time and memory per query)</param>
         </member>
         <member name="M:RMuseum.Utils.SemanticSearch.QueryEmbedder.EmbedQuery(System.String)">
             <summary>

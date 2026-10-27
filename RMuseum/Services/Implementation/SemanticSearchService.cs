@@ -65,6 +65,11 @@ namespace RMuseum.Services.Implementation
             if (request == null || string.IsNullOrWhiteSpace(request.Query))
                 throw new ArgumentException("query must not be empty", nameof(request));
 
+            // bound the cost of one query: over-long text is cut before anything else uses it
+            request.Query = request.Query.Trim();
+            if (request.Query.Length > _resources.MaxQueryLength)
+                request.Query = request.Query.Substring(0, _resources.MaxQueryLength);
+
             if (!_resources.TryGetResources(out var embeddingIndex, out var queryEmbedder, out var error))
             {
                 throw new SemanticSearchUnavailableException(
@@ -143,7 +148,19 @@ namespace RMuseum.Services.Implementation
                     allowedPoemIds = new HashSet<int>(ids);
                 }
 
-                float[] queryVector = queryEmbedder.EmbedQuery(request.Query);
+                // only a few queries may run the model at once (it is CPU- and native-memory-heavy);
+                // the rest wait briefly, then are refused instead of piling up
+                if (!await _resources.EmbedGate.WaitAsync(_resources.QueueWait))
+                    throw new SemanticSearchBusyException("Semantic search is busy right now, please try again in a moment.");
+                float[] queryVector;
+                try
+                {
+                    queryVector = queryEmbedder.EmbedQuery(request.Query);
+                }
+                finally
+                {
+                    _resources.EmbedGate.Release();
+                }
 
                 // Fetch a larger candidate pool than the final k, so there's room for the
                 // AI-summary re-ranking below to actually change the outcome — re-ranking a pool

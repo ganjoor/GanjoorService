@@ -80,21 +80,21 @@ namespace RMuseum.Utils.SemanticSearch
                     "The index and binary file don't agree — do not trust this data until re-verified " +
                     "(see verify_embeddings.py in the ganjoor-embeddings tooling).");
 
+            // read straight into the float[] (no intermediate byte[] copy: that second ~540MB block
+            // would sit on the large object heap until a full GC)
             var vectors = new float[metadata.Count * metadata.Dimension];
-            using (var stream = File.OpenRead(binPath))
-            using (var reader = new BinaryReader(stream))
+            using (var stream = new FileStream(binPath, FileMode.Open, FileAccess.Read, FileShare.Read, 1 << 20))
             {
-                var buffer = new byte[vectors.Length * sizeof(float)];
+                var buffer = System.Runtime.InteropServices.MemoryMarshal.AsBytes(vectors.AsSpan());
                 int totalRead = 0;
                 while (totalRead < buffer.Length)
                 {
-                    int read = reader.Read(buffer, totalRead, buffer.Length - totalRead);
+                    int read = stream.Read(buffer.Slice(totalRead));
                     if (read == 0) break;
                     totalRead += read;
                 }
                 if (totalRead != buffer.Length)
                     throw new InvalidDataException($"expected to read {buffer.Length} bytes from embeddings.f32, got {totalRead}");
-                Buffer.BlockCopy(buffer, 0, vectors, 0, buffer.Length);
             }
 
             return new EmbeddingIndex(vectors, metadata.Ids, metadata);

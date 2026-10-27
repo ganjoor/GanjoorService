@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading;
 
 namespace RMuseum.Utils.SemanticSearch
 {
@@ -62,6 +63,21 @@ namespace RMuseum.Utils.SemanticSearch
         /// </summary>
         public float AiSummaryScorePenalty { get; }
 
+        /// <summary>
+        /// Limits how many queries are embedded (the CPU/memory heavy native step) at the same
+        /// time. SemanticSearch:MaxConcurrentSearches, default 2.
+        /// </summary>
+        public SemaphoreSlim EmbedGate { get; }
+
+        /// <summary>how long a request may wait for the gate before being refused (SemanticSearch:QueueWaitSeconds, default 10)</summary>
+        public TimeSpan QueueWait { get; }
+
+        /// <summary>longer queries are cut to this many characters (SemanticSearch:MaxQueryLength, default 300)</summary>
+        public int MaxQueryLength { get; }
+
+        private readonly int _intraOpThreads;
+        private readonly int _maxQueryTokens;
+
         public LazySemanticSearchResources(IConfiguration configuration, ILogger<LazySemanticSearchResources> logger)
         {
             _enabled = string.Equals(configuration["SemanticSearch:Enabled"], "true", StringComparison.OrdinalIgnoreCase);
@@ -71,6 +87,12 @@ namespace RMuseum.Utils.SemanticSearch
             _mergesPath = configuration["SemanticSearch:MergesPath"];
             _dimension = int.TryParse(configuration["SemanticSearch:Dimension"], out var d) ? d : 1024;
             AiSummaryScorePenalty = float.TryParse(configuration["SemanticSearch:AiSummaryScorePenalty"], out var p) ? p : 0.97f;
+            int maxConcurrent = int.TryParse(configuration["SemanticSearch:MaxConcurrentSearches"], out var mc) && mc > 0 ? mc : 2;
+            EmbedGate = new SemaphoreSlim(maxConcurrent, maxConcurrent);
+            QueueWait = TimeSpan.FromSeconds(int.TryParse(configuration["SemanticSearch:QueueWaitSeconds"], out var qw) && qw > 0 ? qw : 10);
+            MaxQueryLength = int.TryParse(configuration["SemanticSearch:MaxQueryLength"], out var ml) && ml > 0 ? ml : 300;
+            _intraOpThreads = int.TryParse(configuration["SemanticSearch:IntraOpThreads"], out var it) && it > 0 ? it : 0;
+            _maxQueryTokens = int.TryParse(configuration["SemanticSearch:MaxQueryTokens"], out var mt) && mt > 0 ? mt : 128;
             _logger = logger;
 
             if (!_enabled)
@@ -110,7 +132,7 @@ namespace RMuseum.Utils.SemanticSearch
                         try
                         {
                             _embeddingIndex = EmbeddingIndex.Load(_embeddingsDirectory);
-                            _queryEmbedder = new QueryEmbedder(_modelPath, _vocabPath, _mergesPath, _dimension);
+                            _queryEmbedder = new QueryEmbedder(_modelPath, _vocabPath, _mergesPath, _dimension, _intraOpThreads, _maxQueryTokens);
                             _logger.LogInformation(
                                 "Semantic search resources loaded: {Count} poems, dimension {Dimension}.",
                                 _embeddingIndex.Metadata.Count, _embeddingIndex.Metadata.Dimension);
@@ -149,5 +171,14 @@ namespace RMuseum.Utils.SemanticSearch
     public class SemanticSearchUnavailableException : Exception
     {
         public SemanticSearchUnavailableException(string message) : base(message) { }
+    }
+
+    /// <summary>
+    /// Thrown when too many searches are already being embedded and the wait for a free slot ran
+    /// out; the controller answers HTTP 429 so clients can retry later.
+    /// </summary>
+    public class SemanticSearchBusyException : Exception
+    {
+        public SemanticSearchBusyException(string message) : base(message) { }
     }
 }

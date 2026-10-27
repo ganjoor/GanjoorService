@@ -52,6 +52,11 @@ namespace RMuseum.Controllers
                 // actual crash
                 return StatusCode((int)HttpStatusCode.ServiceUnavailable, exp.Message);
             }
+            catch (SemanticSearchBusyException exp)
+            {
+                Response.Headers["Retry-After"] = "5";
+                return StatusCode((int)HttpStatusCode.TooManyRequests, exp.Message);
+            }
             catch (ArgumentException exp)
             {
                 return BadRequest(exp.Message);
