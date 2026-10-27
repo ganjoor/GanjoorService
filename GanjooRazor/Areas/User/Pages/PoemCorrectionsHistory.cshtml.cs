@@ -102,7 +102,7 @@ namespace GanjooRazor.Areas.User.Pages
                                     new NameIdUrlImage()
                                     {
                                         Name = "صفحهٔ اول",
-                                        Url = "/User/PoemCorrectionsHistory?page=1"
+                                        Url = $"/User/PoemCorrectionsHistory?page=1&id={poemId}"
                                     }
                                     );
                             }
@@ -129,7 +129,7 @@ namespace GanjooRazor.Areas.User.Pages
                                             new NameIdUrlImage()
                                             {
                                                 Name = i.ToPersianNumbers(),
-                                                Url = $"/User/PoemCorrectionsHistory?page={i}"
+                                                Url = $"/User/PoemCorrectionsHistory?page={i}&id={poemId}"
                                             }
                                             );
                                     }
@@ -151,7 +151,7 @@ namespace GanjooRazor.Areas.User.Pages
                                    new NameIdUrlImage()
                                    {
                                        Name = "صفحهٔ آخر",
-                                       Url = $"/User/PoemCorrectionsHistory?page={paginationMetadata.totalPages}"
+                                       Url = $"/User/PoemCorrectionsHistory?page={paginationMetadata.totalPages}&id={poemId}"
                                    }
                                    );
                             }
