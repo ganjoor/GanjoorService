@@ -982,20 +982,16 @@
 
 
         // only summaries the user actually changed are checked (see the limits above)
-        var summaryProblems = [];
-        for (var si = 1; si <= verseCount; si++) {
-            if ($('#summary-' + si.toString()).length == 0 || $('#originalsummary-' + si.toString()).text() == $('#summary-' + si.toString()).text()) {
-                continue;
-            }
-            var coupletProblems = coupletSummaryProblems(si);
-            if (coupletProblems.length > 0) {
-                summaryProblems.push('«' + $('#summary-' + si.toString()).attr('data-couplet-title') + '»:\n' + coupletProblems.join('\n'));
-            }
-        }
+        var summaryProblems = collectCoupletSummaryProblems();
         if (summaryProblems.length > 0) {
-            upShowError('معنی بیت‌های زیر را اصلاح کنید و دوباره ذخیره کنید:\n\n' + summaryProblems.join('\n\n'));
+            var summaryProblemTexts = summaryProblems.map(function (item) {
+                return '«' + item.title + '»:\n' + item.problems.join('\n');
+            });
+            renderSummaryProblemsPanel();
+            upShowError('معنی بیت‌های زیر را اصلاح کنید و دوباره ذخیره کنید:\n\n' + summaryProblemTexts.join('\n\n'));
             return;
         }
+        $('#summaryproblems').hide();
 
         var rhyme_letters = $('#rhyme-letters').val();
         if (rhyme_letters == $('#rhyme-letters-old').text()) {
@@ -1211,6 +1207,60 @@
 
     function editorcompare(id) {
         internalEditorcompare(id, 'original-', 'id-', 'compare-');
+        updateVerseFormattingHint(id);
+    }
+
+    // --- excessive diacritics / punctuation warning for edited verse text (warning only) -----------
+    // Heavy vowel marks or lots of punctuation make a poem harder to read for most visitors. This
+    // never blocks saving: it only shows a hint under the edited line, for Persian lines whose text
+    // was changed and became more marked than the existing text was.
+    var VERSE_MARKS_WARN_RATIO = 0.2;   // vowel marks (fatha, damma, kasra, sukun, tanwin) per letter
+    var VERSE_PUNCT_WARN_COUNT = 3;     // punctuation marks in a single line
+    var VERSE_FORMAT_MIN_LETTERS = 8;   // shorter lines are not judged
+    var VERSE_VOWEL_MARKS = /[\u064B-\u0650\u0652]/g;
+    var VERSE_LETTERS = /[\u0621-\u064A\u0671-\u06D3\u06D5]/g;
+    var VERSE_PUNCTUATION = /[،؛؟!?.,:;"“”«»()\[\]…–—]/g;
+
+    function verseFormattingStats(text) {
+        var letters = (text.match(VERSE_LETTERS) || []).length;
+        var marks = (text.match(VERSE_VOWEL_MARKS) || []).length;
+        var punctuation = (text.match(VERSE_PUNCTUATION) || []).length;
+        return { letters: letters, marks: marks, markRatio: letters > 0 ? marks / letters : 0, punctuation: punctuation };
+    }
+
+    function updateVerseFormattingHint(id) {
+        var hint = $('#verseformat-' + String(id));
+        var box = $('#id-' + String(id));
+        if (hint.length == 0 || box.length == 0) {
+            return;
+        }
+        var text = box.text();
+        var originalText = $('#original-' + String(id)).text();
+        var isPersian = $('#language-' + String(id)).val() == '1';
+        var warnMarks = false;
+        var warnPunctuation = false;
+        if (isPersian && text != originalText) {
+            var now = verseFormattingStats(text);
+            var before = verseFormattingStats(originalText);
+            if (now.letters >= VERSE_FORMAT_MIN_LETTERS) {
+                warnMarks = now.markRatio >= VERSE_MARKS_WARN_RATIO && now.markRatio > before.markRatio;
+                warnPunctuation = now.punctuation >= VERSE_PUNCT_WARN_COUNT && now.punctuation > before.punctuation;
+            }
+        }
+        var warn = warnMarks || warnPunctuation;
+        var message = '';
+        if (warn) {
+            var what = warnMarks && warnPunctuation ? 'حرکت‌گذاری و علائم سجاوندی زیادی' : (warnMarks ? 'حرکت‌گذاری زیادی' : 'علائم سجاوندی زیادی');
+            message = '⚠ این مصرع ' + what + ' دارد. حرکت‌گذاری و نشانه‌گذاری بی‌دلیل و افراطی خواندن شعر را برای خوانندگان سخت و ناخوشایند می‌کند؛ فقط جایی که برای خواندن درست لازم است از آن‌ها استفاده کنید.';
+        }
+        hint.text(message);
+        var wasWarning = box.hasClass('up-editable--warn');
+        box.toggleClass('up-editable--warn', warn);
+        hint.toggleClass('up-hint--warn', warn);
+        if (warn && !wasWarning) {
+            restartAttention(box[0]);
+            restartAttention(hint[0]);
+        }
     }
 
     function summarycompare(id) {
@@ -1300,18 +1350,94 @@
 
         // one-shot attention animation, only at the moment the box turns invalid
         if (invalid && !wasInvalid) {
-            var targets = [box[0], hint[0]];
-            for (var t = 0; t < targets.length; t++) {
-                var el = targets[t];
-                el.classList.remove('up-attention');
-                void el.offsetWidth; // restart the animation
-                el.classList.add('up-attention');
-                el.addEventListener('animationend', function () { this.classList.remove('up-attention'); }, { once: true });
-            }
+            restartAttention(box[0]);
+            restartAttention(hint[0]);
+        }
+
+        // keep the "fix these couplets" list (shown after a refused save) in step with what is typed
+        if ($('#summaryproblems').is(':visible')) {
+            renderSummaryProblemsPanel();
         }
     }
 
+    function restartAttention(el) {
+        el.classList.remove('up-attention');
+        void el.offsetWidth; // restart the animation
+        el.classList.add('up-attention');
+        el.addEventListener('animationend', function () { this.classList.remove('up-attention'); }, { once: true });
+    }
+
+    // all changed couplet summaries that currently break a rule: [{ id, number, title, problems }]
+    function collectCoupletSummaryProblems() {
+        var result = [];
+        $('[id^="summarylimit-"]').each(function () {
+            var id = this.id.substring('summarylimit-'.length);
+            var box = $('#summary-' + id);
+            if (box.length == 0 || $('#originalsummary-' + id).text() == box.text()) {
+                return;
+            }
+            var problems = coupletSummaryProblems(id);
+            if (problems.length > 0) {
+                result.push({
+                    id: id,
+                    number: box.attr('data-couplet-number'),
+                    title: box.attr('data-couplet-title'),
+                    problems: problems
+                });
+            }
+        });
+        return result;
+    }
+
+    // builds the clickable list with DOM calls (never innerHTML): titles/problems are plain text
+    function renderSummaryProblemsPanel() {
+        var list = document.getElementById('summaryproblems-list');
+        var panel = $('#summaryproblems');
+        var items = collectCoupletSummaryProblems();
+        list.textContent = '';
+        if (items.length == 0) {
+            panel.hide();
+            return 0;
+        }
+        items.forEach(function (item) {
+            var row = document.createElement('div');
+            row.className = 'up-verse-row';
+            var button = document.createElement('a');
+            button.setAttribute('role', 'button');
+            button.className = 'up-btn up-btn--sm up-btn--ghost';
+            button.textContent = '↪ بیت ' + summaryFa(item.number) + ': «' + item.title + '»';
+            button.addEventListener('click', function () { jumpToCoupletSummary(item.id); });
+            var detail = document.createElement('p');
+            detail.className = 'up-hint';
+            detail.textContent = item.problems.join(' ');
+            row.appendChild(button);
+            row.appendChild(detail);
+            list.appendChild(row);
+        });
+        panel.show();
+        return items.length;
+    }
+
+    function jumpToCoupletSummary(id) {
+        var box = document.getElementById('summary-' + String(id));
+        if (!box) {
+            return;
+        }
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(function () {
+            box.focus({ preventScroll: true });
+            restartAttention(box);
+            var hint = document.getElementById('summarylimit-' + String(id));
+            if (hint) {
+                restartAttention(hint);
+            }
+        }, 350);
+    }
+
     $(document).ready(function () {
+        $('select[id^="language-"]').on('change', function () {
+            updateVerseFormattingHint(this.id.substring('language-'.length));
+        });
         $('[id^="summarylimit-"]').each(function () {
             updateCoupletSummaryHint(this.id.substring('summarylimit-'.length));
         });
@@ -2026,6 +2152,7 @@ else
                             }, false);
                         </script>
                     }
+                    <p class="up-hint" id="verseformat-@($"{verse.VOrder}")"></p>
                 </div>
 
                 <div id="original-reveal-@($"{verse.VOrder}")" class="up-reveal" style="display:none">
@@ -2486,7 +2613,7 @@ else
                         <label for="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")"><span class="up-field-icon" aria-hidden="true">💬</span> معنای ویراستهٔ من (به زبان غیرمحاوره‌ای و همه‌کس فهم)</label>
                         @if (Model.MyLastEdit != null && Model.MyLastEdit.VerseOrderText != null && Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder && !string.IsNullOrEmpty(v.CoupletSummary)).Any())
                         {
-                            <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" data-couplet-length="@coupletTextLength" data-couplet-title="@coupletTitle" contenteditable="true" class="up-editable">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder).First().CoupletSummary</div>
+                            <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" data-couplet-length="@coupletTextLength" data-couplet-title="@coupletTitle" data-couplet-number="@summaryCoupletNumber" contenteditable="true" class="up-editable">@Model.MyLastEdit.VerseOrderText.Where(v => v.VORder == Model.PageInformation.Poem.Verses[verseIndex].VOrder).First().CoupletSummary</div>
                             <script>
                                 document.getElementById("summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")").addEventListener("input", function () {
                                     summarycompare(@Model.PageInformation.Poem.Verses[verseIndex].VOrder)
@@ -2498,7 +2625,7 @@ else
                         }
                         else
                         {
-                            <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" data-couplet-length="@coupletTextLength" data-couplet-title="@coupletTitle" contenteditable="true" class="up-editable">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</div>
+                            <div id="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" name="summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")" data-couplet-length="@coupletTextLength" data-couplet-title="@coupletTitle" data-couplet-number="@summaryCoupletNumber" contenteditable="true" class="up-editable">@Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary</div>
                             <script>
                                 document.getElementById("summary-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")").addEventListener("input", function () {
                                     summarycompare(@Model.PageInformation.Poem.Verses[verseIndex].VOrder)
@@ -3483,6 +3610,11 @@ else
                 <input type="checkbox" name="hide-my-name" id="hide-my-name" />
             }
             <label for="hide-my-name">مشخصات من در تاریخچهٔ ویرایش‌های این شعر نمایش داده نشود</label>
+        </div>
+
+        <div id="summaryproblems" class="up-alert up-alert--danger" style="display:none">
+            <p class="up-mt-0"><strong>معنی این بیت‌ها پیش از ذخیره باید اصلاح شود</strong> (برای رفتن به هر بیت، روی آن بزنید):</p>
+            <div id="summaryproblems-list"></div>
         </div>
 
         <div class="up-form-actions">
