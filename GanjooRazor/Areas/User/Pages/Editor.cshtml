@@ -1540,6 +1540,19 @@
         return items.length;
     }
 
+    // jumps between a verse's edit box (id-N) and its couplet-summary edit box (summary-N)
+    function jumpToEditBox(boxId) {
+        var box = document.getElementById(boxId);
+        if (!box) {
+            return;
+        }
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(function () {
+            box.focus({ preventScroll: true });
+            restartAttention(box);
+        }, 350);
+    }
+
     function jumpToCoupletSummary(id) {
         var box = document.getElementById('summary-' + String(id));
         if (!box) {
@@ -2243,12 +2256,29 @@ else
         @foreach (var verse in Model.PageInformation.Poem.Verses)
         {
             var verseCoupletNumber = Model.GetVerseCoupletNumber(verse);
+            // order of the verse that starts this verse's couplet = the id of its couplet-summary box
+            var verseSummaryOrder = verse.VOrder;
+            {
+                var verseSummaryIndex = Array.IndexOf(Model.PageInformation.Poem.Verses, verse);
+                while (verseSummaryIndex > 0
+                    && Model.PageInformation.Poem.Verses[verseSummaryIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Right
+                    && Model.PageInformation.Poem.Verses[verseSummaryIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.CenteredVerse1
+                    && Model.PageInformation.Poem.Verses[verseSummaryIndex].VersePosition != RMuseum.Models.Ganjoor.VersePosition.Paragraph)
+                {
+                    verseSummaryIndex--;
+                }
+                if (verseSummaryIndex >= 0)
+                {
+                    verseSummaryOrder = Model.PageInformation.Poem.Verses[verseSummaryIndex].VOrder;
+                }
+            }
             <div class="up-verse-row" id="tr-@verse.VOrder">
                 <p>
                     <span class="up-verse-number">@verseCoupletNumber.ToPersianNumbers()</span>
                     @{ var verseProgressPercent = Model.GetCoupletProgressPercent(verseCoupletNumber); }
                     <span class="up-verse-progress" title="@verseCoupletNumber.ToPersianNumbers() از @Model.TotalCoupletsCount.ToPersianNumbers()"><span class="up-verse-progress-fill" style="width:@(verseProgressPercent)%;--up-progress-color:@(Model.GetCoupletProgressColor(verseProgressPercent))"></span></span>
                     <span class="up-hint">ترتیب مصرع یا خط از ابتدا: @verse.VOrder.ToPersianNumbers()</span>
+                    <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="jumpToEditBox('summary-@verseSummaryOrder')">↪ ویرایش برگردان این بیت</a>
                 </p>
 
                 <div class="up-field">
@@ -2676,11 +2706,12 @@ else
            )
             {
                 var summaryCoupletNumber = Model.GetVerseCoupletNumber(Model.PageInformation.Poem.Verses[verseIndex]);
-                <div class="up-verse-row">
+                <div class="up-verse-row" id="summaryrow-@Model.PageInformation.Poem.Verses[verseIndex].VOrder">
                     <p>
                         <span class="up-verse-number">@summaryCoupletNumber.ToPersianNumbers()</span>
                         @{ var summaryProgressPercent = Model.GetCoupletProgressPercent(summaryCoupletNumber); }
                         <span class="up-verse-progress" title="@summaryCoupletNumber.ToPersianNumbers() از @Model.TotalCoupletsCount.ToPersianNumbers()"><span class="up-verse-progress-fill" style="width:@(summaryProgressPercent)%;--up-progress-color:@(Model.GetCoupletProgressColor(summaryProgressPercent))"></span></span>
+                        <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="jumpToEditBox('id-@Model.PageInformation.Poem.Verses[verseIndex].VOrder')">↪ ویرایش مصرع‌های این بیت</a>
                     </p>
                     <div class="up-field">
                         <label>متن</label>
