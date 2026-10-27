@@ -157,3 +157,52 @@ function upShowError(message) {
 
     closeBtn.focus();
 }
+
+// ---------- floating scroll-to-top / scroll-to-bottom buttons (see _UserPanelLayout.cshtml) ----------
+(function () {
+    var wrapper = document.getElementById('up-scroll-buttons');
+    var topButton = document.getElementById('up-scroll-top');
+    var bottomButton = document.getElementById('up-scroll-bottom');
+    if (!wrapper || !topButton || !bottomButton) {
+        return;
+    }
+    var THRESHOLD = 300; // px away from the top / bottom before a button is offered
+
+    function pageHeight() {
+        return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+    }
+
+    function update() {
+        var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+        var showTop = y > THRESHOLD;
+        var showBottom = pageHeight() - (y + window.innerHeight) > THRESHOLD;
+        topButton.hidden = !showTop;
+        bottomButton.hidden = !showBottom;
+        wrapper.hidden = !(showTop || showBottom);
+    }
+
+    function scrollToY(y) {
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
+    }
+
+    topButton.addEventListener('click', function () { scrollToY(0); });
+    bottomButton.addEventListener('click', function () { scrollToY(pageHeight()); });
+
+    var scheduled = false;
+    function schedule() {
+        if (scheduled) {
+            return;
+        }
+        scheduled = true;
+        window.requestAnimationFrame(function () {
+            scheduled = false;
+            update();
+        });
+    }
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    // the page grows while the user edits (hints, panels); re-evaluate occasionally
+    setInterval(update, 1500);
+    update();
+})();

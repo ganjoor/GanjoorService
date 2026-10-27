@@ -1120,3 +1120,52 @@ body.up-modal-open {
         animation: none;
     }
 }
+
+/* ---------- floating scroll-to-top / scroll-to-bottom buttons ---------- */
+
+.up-scroll-buttons {
+    position: fixed;
+    /* the floating theme button (p8.css #theme-toggle) sits at left:20px, bottom:20px and is 44px
+       high: stack above it, on the same edge */
+    left: 20px;
+    bottom: 72px;
+    z-index: 1040; /* above the page, below toasts and modals */
+    display: flex;
+    flex-direction: column;
+    gap: var(--up-space-2, 8px);
+}
+
+.up-scroll-buttons[hidden],
+.up-scroll-btn[hidden] {
+    display: none;
+}
+
+.up-scroll-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--up-border);
+    border-radius: 50%;
+    background: var(--up-surface);
+    color: var(--up-primary);
+    box-shadow: var(--up-shadow-sm);
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+/* the border follows the background on hover: a light ring around a dark circle looks jagged */
+.up-scroll-btn:hover,
+.up-scroll-btn:focus-visible {
+    background: var(--up-primary);
+    border-color: var(--up-primary);
+    color: var(--up-on-primary);
+}
+
+@media print {
+    .up-scroll-buttons {
+        display: none;
+    }
+}

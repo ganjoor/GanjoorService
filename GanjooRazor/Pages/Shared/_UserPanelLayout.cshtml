@@ -217,13 +217,22 @@
         </main>
     </div>
 
+    <div class="up-scroll-buttons" id="up-scroll-buttons" hidden>
+        <button type="button" class="up-scroll-btn" id="up-scroll-top" title="رفتن به بالای صفحه" aria-label="رفتن به بالای صفحه" hidden>
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 6l-7 7 1.4 1.4L12 8.8l5.6 5.6L19 13z" fill="currentColor"/></svg>
+        </button>
+        <button type="button" class="up-scroll-btn" id="up-scroll-bottom" title="رفتن به پایین صفحه" aria-label="رفتن به پایین صفحه" hidden>
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 18l7-7-1.4-1.4L12 15.2 6.4 9.6 5 11z" fill="currentColor"/></svg>
+        </button>
+    </div>
+
     <partial name="_Toasts" />
     <partial name="_ConfirmModal" />
     <partial name="_ErrorModal" />
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="/js/user-panel.js?version=4"></script>
+    <script src="/js/user-panel.js?version=5"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
     <div id="footer"></div>
