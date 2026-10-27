@@ -1275,7 +1275,9 @@
         }
         // orthography hints (rules live in js/verse-orthography.js); only for Persian lines whose text changed
         if (isPersian && text != originalText && typeof GanjoorVerseOrthography !== 'undefined') {
-            var issues = GanjoorVerseOrthography.analyze(text, originalText);
+            // compared with an empty text on purpose: an edited line is reported in full, including problems
+            // that were already in the original (the editor is asked to fix them while touching the line)
+            var issues = GanjoorVerseOrthography.analyze(text, '');
             for (var i = 0; i < issues.length; i++) {
                 if (issues[i].level == 'warn') {
                     warn = true;
@@ -1370,7 +1372,9 @@
         var originalText = $('#originalsummary-' + String(id)).text();
         var messages = [];
         if (text != originalText && typeof GanjoorVerseOrthography !== 'undefined') {
-            var issues = GanjoorVerseOrthography.analyze(text, originalText, { prose: true });
+            // compared with an empty text on purpose: a summary the user edited is reported in full, even for
+            // problems that were already in the (often AI-generated) original text
+            var issues = GanjoorVerseOrthography.analyze(text, '', { prose: true });
             for (var i = 0; i < issues.length; i++) {
                 messages.push((issues[i].level == 'warn' ? '⚠ ' : '💡 ') + issues[i].message);
             }
@@ -2170,6 +2174,10 @@ else
 
     <p class="up-btn-group-label">لغزش سریع</p>
     <div class="up-btn-group">
+        @if (Model.PageInformation.Poem.Verses != null && Model.PageInformation.Poem.Verses.Length > 0)
+        {
+            <a role="button" onclick="jumpToEditBox('id-@Model.PageInformation.Poem.Verses[0].VOrder')" class="up-btn up-btn--sm up-btn--ghost">📝 ویرایش نخستین خط</a>
+        }
         @if (Model.CanAssignRhythms)
         {
             <a role="button" href="#rhythms-section" class="up-btn up-btn--sm up-btn--ghost">🎵 بخش وزن، قافیه و قالب شعری</a>
@@ -2178,7 +2186,7 @@ else
         {
             <a role="button" href="#poem-sections" class="up-btn up-btn--sm up-btn--ghost">🧩 بخش قطعات</a>
         }
-        <a role="button" href="#summaries" class="up-btn up-btn--sm up-btn--ghost">💬 بخش معنی</a>
+        <a role="button" href="#summaries" class="up-btn up-btn--sm up-btn--ghost">💬 بخش برگردان</a>
         <a role="button" href="#geo-date-section" class="up-btn up-btn--sm up-btn--ghost">🗺️ بخش زمان و مکان</a>
         <a role="button" href="#person-tag-section" class="up-btn up-btn--sm up-btn--ghost">🧑‍🎓 بخش نامبردگان</a>
         <a role="button" href="#literary-section" class="up-btn up-btn--sm up-btn--ghost">🎨 بخش آرایه‌های ادبی</a>
