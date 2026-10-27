@@ -14,6 +14,7 @@
         $('[contenteditable]').keypress(function (e) { return e.which != 13; });
     });
 </script>
+<script src="~/js/verse-orthography.js" asp-append-version="true"></script>
 <script>
 
     function resetVersePositions(verseCount) {
@@ -1214,10 +1215,11 @@
     // Heavy vowel marks or lots of punctuation make a poem harder to read for most visitors. This
     // never blocks saving: it only shows a hint under the edited line, for Persian lines whose text
     // was changed and became more marked than the existing text was.
-    var VERSE_MARKS_WARN_RATIO = 0.2;   // vowel marks (fatha, damma, kasra, sukun, tanwin) per letter
+    var VERSE_MARKS_WARN_RATIO = 0.1;   // vowel marks (fatha, damma, kasra, sukun, tanwin) per letter
+    var VERSE_MARKS_WARN_MIN_COUNT = 3; // and at least this many marks in the line
     var VERSE_PUNCT_WARN_COUNT = 3;     // punctuation marks in a single line
     var VERSE_FORMAT_MIN_LETTERS = 8;   // shorter lines are not judged
-    var VERSE_VOWEL_MARKS = /[\u064B-\u0650\u0652]/g;
+    var VERSE_VOWEL_MARKS = /[\u064B-\u0650\u0652]/g; // shadda (\u0651) is deliberately not counted: it is always helpful
     var VERSE_LETTERS = /[\u0621-\u064A\u0671-\u06D3\u06D5]/g;
     var VERSE_PUNCTUATION = /[،؛؟!?.,:;"“”«»()\[\]…–—]/g;
 
@@ -1243,21 +1245,36 @@
             var now = verseFormattingStats(text);
             var before = verseFormattingStats(originalText);
             if (now.letters >= VERSE_FORMAT_MIN_LETTERS) {
-                warnMarks = now.markRatio >= VERSE_MARKS_WARN_RATIO && now.markRatio > before.markRatio;
+                warnMarks = now.markRatio >= VERSE_MARKS_WARN_RATIO && now.marks >= VERSE_MARKS_WARN_MIN_COUNT;
+                // (no 'more than the original' condition: a line the editor touched and that is still heavily marked is reported)
                 warnPunctuation = now.punctuation >= VERSE_PUNCT_WARN_COUNT && now.punctuation > before.punctuation;
             }
         }
+        var messages = [];
         var warn = warnMarks || warnPunctuation;
-        var message = '';
         if (warn) {
             var what = warnMarks && warnPunctuation ? 'حرکت‌گذاری و علائم سجاوندی زیادی' : (warnMarks ? 'حرکت‌گذاری زیادی' : 'علائم سجاوندی زیادی');
-            message = '⚠ این مصرع ' + what + ' دارد. حرکت‌گذاری و نشانه‌گذاری بی‌دلیل و افراطی خواندن شعر را برای خوانندگان سخت و ناخوشایند می‌کند؛ فقط جایی که برای خواندن درست لازم است از آن‌ها استفاده کنید.';
+            messages.push('⚠ این مصرع ' + what + ' دارد. حرکت‌گذاری و نشانه‌گذاری بی‌دلیل و افراطی خواندن شعر را برای خوانندگان سخت و ناخوشایند می‌کند؛ فقط جایی که برای خواندن درست لازم است از آن‌ها استفاده کنید.');
         }
+        // orthography hints (rules live in js/verse-orthography.js); only for Persian lines whose text changed
+        if (isPersian && text != originalText && typeof GanjoorVerseOrthography !== 'undefined') {
+            var issues = GanjoorVerseOrthography.analyze(text, originalText);
+            for (var i = 0; i < issues.length; i++) {
+                if (issues[i].level == 'warn') {
+                    warn = true;
+                    messages.push('⚠ ' + issues[i].message);
+                } else {
+                    messages.push('💡 ' + issues[i].message);
+                }
+            }
+        }
+        var message = messages.join('\n');
+        var changed = hint.text() != message;
         hint.text(message);
         var wasWarning = box.hasClass('up-editable--warn');
         box.toggleClass('up-editable--warn', warn);
-        hint.toggleClass('up-hint--warn', warn);
-        if (warn && !wasWarning) {
+        hint.toggleClass('up-hint--warn', messages.length > 0);
+        if (warn && (!wasWarning || changed)) {
             restartAttention(box[0]);
             restartAttention(hint[0]);
         }

@@ -1067,6 +1067,7 @@ body.up-modal-open {
     background: #fff4e0;
     border-inline-start-color: #e69100;
     color: #7a4b00;
+    white-space: pre-line; /* one message per line */
 }
 
 .up-attention {
