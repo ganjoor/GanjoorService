@@ -982,6 +982,23 @@
         }
 
 
+        // verse lines with line breaks / repeated spaces (only changed lines are checked)
+        var verseProblems = collectVerseBlockingProblems();
+        if (verseProblems.length > 0) {
+            var verseProblemTexts = verseProblems.map(function (item) {
+                return '«' + item.title + '»:\n' + item.problems.join('\n');
+            });
+            upShowError('مصرع‌های زیر را اصلاح کنید و دوباره ذخیره کنید:\n\n' + verseProblemTexts.join('\n\n'));
+            var firstBox = document.getElementById('id-' + verseProblems[0].id);
+            if (firstBox) {
+                setTimeout(function () {
+                    firstBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    restartAttention(firstBox);
+                }, 350);
+            }
+            return;
+        }
+
         // only summaries the user actually changed are checked (see the limits above)
         var summaryProblems = collectCoupletSummaryProblems();
         if (summaryProblems.length > 0) {
@@ -1268,14 +1285,101 @@
                 }
             }
         }
+        // line breaks and repeated spaces are not just hints: saving is refused (see savePoemCorrections)
+        var blocking = verseBlockingProblems(id);
+        var invalid = blocking.length > 0;
+        if (invalid) {
+            messages = blocking.map(function (m) { return '⛔ ' + m; }).concat(messages);
+        }
         var message = messages.join('\n');
         var changed = hint.text() != message;
         hint.text(message);
-        var wasWarning = box.hasClass('up-editable--warn');
-        box.toggleClass('up-editable--warn', warn);
-        hint.toggleClass('up-hint--warn', messages.length > 0);
-        if (warn && (!wasWarning || changed)) {
+        var wasFlagged = box.hasClass('up-editable--warn') || box.hasClass('up-editable--invalid');
+        var showWarn = warn && !invalid;
+        box.toggleClass('up-editable--invalid', invalid).toggleClass('up-editable--warn', showWarn);
+        hint.toggleClass('up-hint--alert', invalid).toggleClass('up-hint--warn', messages.length > 0 && !invalid);
+        if ((invalid || warn) && (!wasFlagged || changed)) {
             restartAttention(box[0]);
+            restartAttention(hint[0]);
+        }
+    }
+
+    // --- verse lines: problems that block saving (client side only) --------------------------------
+    // A pasted multi-line text (Enter / line breaks) or several spaces in a row inside one hemistich.
+    // Only lines the user changed are judged, and repeated spaces only when there are more of them
+    // than in the original, so untouched existing lines never block saving.
+    var VERSE_REPEATED_SPACES = /[ \u00a0]{2,}/g;
+    var VERSE_LINE_BREAK = /[\r\n\u2028\u2029]/;
+
+    function verseBoxHasLineBreak(el) {
+        if (VERSE_LINE_BREAK.test(el.textContent)) {
+            return true;
+        }
+        if (el.querySelector('div, p, li')) {
+            return el.textContent.trim() != '';
+        }
+        var breaks = el.querySelectorAll('br');
+        if (breaks.length > 1) {
+            return true;
+        }
+        return breaks.length == 1 && breaks[0] !== el.lastChild;
+    }
+
+    function verseBlockingProblems(id) {
+        var box = $('#id-' + String(id));
+        if (box.length == 0) {
+            return [];
+        }
+        var text = box.text();
+        var originalText = $('#original-' + String(id)).text();
+        if (text == originalText) {
+            return [];
+        }
+        var problems = [];
+        if (verseBoxHasLineBreak(box[0])) {
+            problems.push('در این مصرع Enter یا خط جدید هست (معمولاً بر اثر کپی کردن). هر مصرع باید یک خط باشد؛ خط‌های اضافه را حذف کنید.');
+        }
+        if ((text.match(VERSE_REPEATED_SPACES) || []).length > (originalText.match(VERSE_REPEATED_SPACES) || []).length) {
+            problems.push('چند فاصله پشت سر هم گذاشته شده است؛ فقط یک فاصله بگذارید.');
+        }
+        return problems;
+    }
+
+    // [{ id, title, problems }] for every changed verse line that currently blocks saving
+    function collectVerseBlockingProblems() {
+        var result = [];
+        $('[id^="verseformat-"]').each(function () {
+            var id = this.id.substring('verseformat-'.length);
+            var problems = verseBlockingProblems(id);
+            if (problems.length > 0) {
+                var shown = $('#original-' + id).text().trim();
+                result.push({ id: id, title: shown.length > 30 ? shown.substring(0, 30) + ' ...' : shown, problems: problems });
+            }
+        });
+        return result;
+    }
+
+    // --- orthography hints for the poem summary and couplet summaries (warning only) ---------------
+    function updateSummaryOrthographyHint(id) {
+        var hint = $('#summaryorth-' + String(id));
+        var box = $('#summary-' + String(id));
+        if (hint.length == 0 || box.length == 0) {
+            return;
+        }
+        var text = box.text();
+        var originalText = $('#originalsummary-' + String(id)).text();
+        var messages = [];
+        if (text != originalText && typeof GanjoorVerseOrthography !== 'undefined') {
+            var issues = GanjoorVerseOrthography.analyze(text, originalText, { prose: true });
+            for (var i = 0; i < issues.length; i++) {
+                messages.push((issues[i].level == 'warn' ? '⚠ ' : '💡 ') + issues[i].message);
+            }
+        }
+        var message = messages.join('\n');
+        var changed = hint.text() != message;
+        hint.text(message);
+        hint.toggleClass('up-hint--warn', messages.length > 0);
+        if (messages.length > 0 && changed) {
             restartAttention(hint[0]);
         }
     }
@@ -1283,6 +1387,7 @@
     function summarycompare(id) {
         internalEditorcompare(id, 'originalsummary-', 'summary-', 'comparesummary-');
         updateCoupletSummaryHint(id);
+        updateSummaryOrthographyHint(id);
     }
 
     // --- couplet summary limits (checked here in the editor only) --------------------------------
@@ -2535,6 +2640,7 @@ else
                     }, false);
                 </script>
             }
+            <p class="up-hint" id="summaryorth-0"></p>
             @if (string.IsNullOrEmpty(Model.PageInformation.Poem.PoemSummary))
             {
                 <p class="up-hint">هنوز متنی برای خلاصهٔ کلی نوشته نشده است.</p>
@@ -2650,6 +2756,7 @@ else
                             </script>
                         }
                         <p class="up-hint" id="summarylimit-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")"></p>
+                        <p class="up-hint" id="summaryorth-@($"{Model.PageInformation.Poem.Verses[verseIndex].VOrder}")"></p>
                         @if (string.IsNullOrEmpty(Model.PageInformation.Poem.Verses[verseIndex].CoupletSummary))
                         {
                             <p class="up-hint">هنوز متنی برای معنی نوشته نشده است.</p>

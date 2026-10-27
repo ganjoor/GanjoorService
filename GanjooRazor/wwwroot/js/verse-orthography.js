@@ -11,7 +11,8 @@
  *               'suggest' : shown as a quieter suggestion, no highlight
  *   message     text shown to the editor (Persian)
  *   skipLast    true: the last word of the hemistich is ignored (rhyme words are often
- *               deliberately spelled in a special way)
+ *               deliberately spelled in a special way); not applied to prose
+ *   verseOnly   true: the rule is not applied to prose (couplet summaries / poem summary)
  *   count(text) number of occurrences of the problem in the text
  * To disable a rule, delete its entry or comment it out. Rules never depend on each other.
  */
@@ -66,6 +67,7 @@ var GanjoorVerseOrthography = (function () {
         {
             id: 'latin-quotes',
             level: 'warn',
+            verseOnly: true, // in summaries quotation marks are already refused by the editor
             message: 'به‌جای گیومهٔ لاتین (" یا “ ”) از «گیومهٔ فارسی» استفاده کنید.',
             count: function (t) { return matches(/["“”]/g, t); }
         },
@@ -134,15 +136,21 @@ var GanjoorVerseOrthography = (function () {
         }
     ];
 
-    // returns [{id, level, message}] for the rules that match MORE in `text` than in `originalText`
-    function analyze(text, originalText) {
+    // returns [{id, level, message}] for the rules that match MORE in `text` than in `originalText`.
+    // options.prose = true for explanatory prose (summaries): no rhyme-word exception, verse-only rules off.
+    function analyze(text, originalText, options) {
+        var prose = !!(options && options.prose);
         var result = [];
         text = text || '';
         originalText = originalText || '';
         for (var i = 0; i < rules.length; i++) {
             var rule = rules[i];
-            var now = rule.skipLast ? withoutLastWord(text) : text;
-            var before = rule.skipLast ? withoutLastWord(originalText) : originalText;
+            if (prose && rule.verseOnly) {
+                continue;
+            }
+            var skipLast = rule.skipLast && !prose;
+            var now = skipLast ? withoutLastWord(text) : text;
+            var before = skipLast ? withoutLastWord(originalText) : originalText;
             if (rule.count(now) > rule.count(before)) {
                 result.push({ id: rule.id, level: rule.level, message: rule.message });
             }

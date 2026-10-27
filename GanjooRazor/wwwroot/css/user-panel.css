@@ -1049,6 +1049,7 @@ body.up-modal-open {
 
 .up-hint--alert,
 .up-hint--warn {
+    white-space: pre-line; /* one message per line */
     margin-top: 6px;
     padding: 6px 10px;
     border-radius: var(--up-radius-sm);
@@ -1067,7 +1068,6 @@ body.up-modal-open {
     background: #fff4e0;
     border-inline-start-color: #e69100;
     color: #7a4b00;
-    white-space: pre-line; /* one message per line */
 }
 
 .up-attention {
