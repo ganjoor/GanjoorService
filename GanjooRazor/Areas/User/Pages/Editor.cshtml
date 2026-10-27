@@ -1232,8 +1232,8 @@
     // Heavy vowel marks or lots of punctuation make a poem harder to read for most visitors. This
     // never blocks saving: it only shows a hint under the edited line, for Persian lines whose text
     // was changed and became more marked than the existing text was.
-    var VERSE_MARKS_WARN_RATIO = 0.1;   // vowel marks (fatha, damma, kasra, sukun, tanwin) per letter
-    var VERSE_MARKS_WARN_MIN_COUNT = 3; // and at least this many marks in the line
+    var VERSE_MARKS_WARN_RATIO = 0.2;   // vowel marks (fatha, damma, kasra, sukun, tanwin) per letter
+    var VERSE_MARKS_WARN_MIN_COUNT = 0; // and at least this many marks in the line
     var VERSE_PUNCT_WARN_COUNT = 3;     // punctuation marks in a single line
     var VERSE_FORMAT_MIN_LETTERS = 8;   // shorter lines are not judged
     var VERSE_VOWEL_MARKS = /[\u064B-\u0650\u0652]/g; // shadda (\u0651) is deliberately not counted: it is always helpful
