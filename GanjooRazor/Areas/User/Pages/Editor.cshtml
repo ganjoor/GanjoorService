@@ -1277,15 +1277,38 @@
         if (hint.length == 0) {
             return;
         }
+        var box = $('#summary-' + String(id));
         var text = normalizedSummaryText(id);
         var limits = summaryLengthLimits(id);
-        var problems = coupletSummaryProblems(id);
+        // an untouched existing summary is never flagged (it can not block saving either)
+        var changed = $('#originalsummary-' + String(id)).text() != box.text();
+        var problems = changed ? coupletSummaryProblems(id) : [];
+        var invalid = problems.length > 0;
+        var tooLong = changed && !invalid && text.length > limits.warn;
+
         var message = 'معنی را کوتاه و روان، در یک یا دو جمله بنویسید (پیشنهاد: حداکثر ' + summaryFa(limits.warn) + ' نویسه، حداکثر مجاز: ' + summaryFa(limits.max) + '). طول فعلی: ' + summaryFa(text.length);
-        if (problems.length > 0) {
-            message = problems.join(' ');
+        if (invalid) {
+            message = '⚠ ' + problems.join(' ');
+        } else if (tooLong) {
+            message = 'متن از طول پیشنهادی (' + summaryFa(limits.warn) + ' نویسه) بلندتر است؛ اگر می‌شود کوتاه‌ترش کنید. طول فعلی: ' + summaryFa(text.length);
         }
         hint.text(message);
-        hint.toggleClass('up-hint--danger', problems.length > 0 || text.length > limits.warn);
+
+        var wasInvalid = box.hasClass('up-editable--invalid');
+        box.toggleClass('up-editable--invalid', invalid).toggleClass('up-editable--warn', tooLong);
+        hint.toggleClass('up-hint--alert', invalid).toggleClass('up-hint--warn', tooLong);
+
+        // one-shot attention animation, only at the moment the box turns invalid
+        if (invalid && !wasInvalid) {
+            var targets = [box[0], hint[0]];
+            for (var t = 0; t < targets.length; t++) {
+                var el = targets[t];
+                el.classList.remove('up-attention');
+                void el.offsetWidth; // restart the animation
+                el.classList.add('up-attention');
+                el.addEventListener('animationend', function () { this.classList.remove('up-attention'); }, { once: true });
+            }
+        }
     }
 
     $(document).ready(function () {

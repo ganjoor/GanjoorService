@@ -1019,3 +1019,103 @@ body.up-modal-open {
 .up-diff-badge { display: inline-block; margin-inline-start: .4em; padding: 0 .45em; border-radius: 999px; font-size: .75em; background: rgba(255, 152, 0, .85); color: #fff; }
 .up-diff-del { background: rgba(220, 53, 69, .25); text-decoration: line-through; border-radius: 2px; }
 .up-diff-add { background: rgba(40, 167, 69, .3); border-radius: 2px; }
+
+/* ---- couplet summary validation feedback in the editor (Editor.cshtml) ----
+   .up-editable--invalid / .up-hint--alert : a rule is broken, saving will be refused
+   .up-editable--warn    / .up-hint--warn  : text is longer than suggested, saving is still allowed
+   .up-attention : one-shot shake/pulse, added by the script when a box becomes invalid */
+.up-editable--invalid {
+    background: #fdecec;
+    border-color: #c62828;
+    box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.22);
+}
+
+.up-editable--invalid:focus {
+    background: #fdecec;
+    border-color: #c62828;
+    box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.35);
+}
+
+.up-editable--warn {
+    background: #fff4e0;
+    border-color: #e69100;
+}
+
+.up-editable--warn:focus {
+    background: #fff4e0;
+    border-color: #e69100;
+    box-shadow: 0 0 0 3px rgba(230, 145, 0, 0.25);
+}
+
+.up-hint--alert,
+.up-hint--warn {
+    margin-top: 6px;
+    padding: 6px 10px;
+    border-radius: var(--up-radius-sm);
+    border-inline-start: 4px solid transparent;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.up-hint--alert {
+    background: #fdecec;
+    border-inline-start-color: #c62828;
+    color: #8e0000;
+}
+
+.up-hint--warn {
+    background: #fff4e0;
+    border-inline-start-color: #e69100;
+    color: #7a4b00;
+}
+
+.up-attention {
+    animation: up-attention-shake 0.45s ease-in-out 1;
+}
+
+.up-hint--alert.up-attention {
+    animation: up-attention-pulse 0.9s ease-out 1;
+}
+
+@keyframes up-attention-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+
+@keyframes up-attention-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(198, 40, 40, 0.55); }
+    100% { box-shadow: 0 0 0 12px rgba(198, 40, 40, 0); }
+}
+
+@media (prefers-color-scheme: dark) {
+    .up-editable--invalid,
+    .up-editable--invalid:focus {
+        background: rgba(198, 40, 40, 0.18);
+        border-color: #ef5350;
+    }
+    .up-editable--warn,
+    .up-editable--warn:focus {
+        background: rgba(230, 145, 0, 0.16);
+        border-color: #ffb74d;
+    }
+    .up-hint--alert {
+        background: rgba(198, 40, 40, 0.2);
+        border-inline-start-color: #ef5350;
+        color: #ffcdd2;
+    }
+    .up-hint--warn {
+        background: rgba(230, 145, 0, 0.18);
+        border-inline-start-color: #ffb74d;
+        color: #ffe0b2;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .up-attention,
+    .up-hint--alert.up-attention {
+        animation: none;
+    }
+}
