@@ -1240,6 +1240,36 @@
     var VERSE_LETTERS = /[\u0621-\u064A\u0671-\u06D3\u06D5]/g;
     var VERSE_PUNCTUATION = /[،؛؟!?.,:;"“”«»()\[\]…–—]/g;
 
+    // one-click clean-up: removes every vowel mark (the same set the warning counts; shadda stays)
+    function stripVerseMarks(id) {
+        var box = document.getElementById('id-' + String(id));
+        if (!box) {
+            return;
+        }
+        if ($('#language-' + String(id)).val() != '1') {
+            upShowError('حذف حرکت‌ها فقط برای مصرع‌های فارسی در نظر گرفته شده است.');
+            return;
+        }
+        var text = box.textContent;
+        var cleaned = text.replace(VERSE_VOWEL_MARKS, '');
+        if (cleaned == text) {
+            return;
+        }
+        box.focus();
+        // insertText keeps the browser's undo history (Ctrl+Z brings the marks back) and fires "input"
+        var done = false;
+        try {
+            document.execCommand('selectAll', false, null);
+            done = document.execCommand('insertText', false, cleaned);
+        } catch (e) {
+            done = false;
+        }
+        if (!done || box.textContent != cleaned) {
+            box.textContent = cleaned;
+            editorcompare(id);
+        }
+    }
+
     function verseFormattingStats(text) {
         var letters = (text.match(VERSE_LETTERS) || []).length;
         var marks = (text.match(VERSE_VOWEL_MARKS) || []).length;
@@ -1256,6 +1286,8 @@
         var text = box.text();
         var originalText = $('#original-' + String(id)).text();
         var isPersian = $('#language-' + String(id)).val() == '1';
+        // the clean-up button is only useful while the line still has vowel marks
+        $('#stripmarks-' + String(id)).prop('disabled', !(isPersian && (text.match(VERSE_VOWEL_MARKS) || []).length > 0));
         var warnMarks = false;
         var warnPunctuation = false;
         if (isPersian && text != originalText) {
@@ -1576,6 +1608,10 @@
     $(document).ready(function () {
         $('select[id^="language-"]').on('change', function () {
             updateVerseFormattingHint(this.id.substring('language-'.length));
+        });
+        // enables the clean-up button on lines that already contain vowel marks
+        $('[id^="verseformat-"]').each(function () {
+            updateVerseFormattingHint(this.id.substring('verseformat-'.length));
         });
         $('[id^="summarylimit-"]').each(function () {
             updateCoupletSummaryHint(this.id.substring('summarylimit-'.length));
@@ -2287,6 +2323,7 @@ else
                     <span class="up-verse-progress" title="@verseCoupletNumber.ToPersianNumbers() از @Model.TotalCoupletsCount.ToPersianNumbers()"><span class="up-verse-progress-fill" style="width:@(verseProgressPercent)%;--up-progress-color:@(Model.GetCoupletProgressColor(verseProgressPercent))"></span></span>
                     <span class="up-hint">ترتیب مصرع یا خط از ابتدا: @verse.VOrder.ToPersianNumbers()</span>
                     <a role="button" class="up-btn up-btn--sm up-btn--ghost" onclick="jumpToEditBox('summary-@verseSummaryOrder')">↪ ویرایش برگردان این بیت</a>
+                    <button type="button" class="up-btn up-btn--sm up-btn--ghost" id="stripmarks-@($"{verse.VOrder}")" onclick="stripVerseMarks(@verse.VOrder)" title="حذف همهٔ حرکت‌ها (فتحه، ضمه، کسره، سکون، تنوین) از این مصرع؛ تشدید می‌ماند" aria-label="حذف حرکت‌های این مصرع" disabled>🧹</button>
                 </p>
 
                 <div class="up-field">
