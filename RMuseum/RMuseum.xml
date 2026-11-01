@@ -1655,8 +1655,8 @@
         </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetARandomPoem(System.Int32)">
             <summary>
-            get a random poem from a poet (c.ganjoor.net replacement), 0 means random poet, 
-            حافظ (2)، خیام (3)، ابوسعید ابوالخیر (26)، صائب (22)، سعدی (7)، باباطاهر (28)، مولوی (5)، اوحدی (19)، خواجو (20)، شهریار (35)، عراقی (21)، فروغی بسطامی (32)، سلمان ساوجی (40)، محتشم کاشانی (29)، امیرخسرو دهلوی (34)، سیف فرغانی (31)، عبید زاکانی (33)، هاتف اصفهانی (25) یا رهی معیری (41)
+            get a random poem from a poet (c.ganjoor.net replacement), 0 means a random poem from all of ganjoor.
+            poems containing explicit words are never returned by this method
             </summary>
             <param name="poetId"></param>
             <returns></returns>
@@ -22352,12 +22352,13 @@
             <param name="sortOnVerseCount"></param>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.IGanjoorService.Faal(System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Services.IGanjoorService.Faal(System.Int32,System.Boolean,System.Boolean)">
             <summary>
             get a random poem (2 = from hafez)
             </summary>
             <param name="poetId"></param>
             <param name="recitation"></param>
+            <param name="applyWordFilter">false skips the explicit-word filter (used for the hafez faal)</param>
             <returns></returns>
         </member>
         <member name="M:RMuseum.Services.IGanjoorService.ImportFromSqlite(System.Int32,Microsoft.AspNetCore.Http.IFormFile)">
@@ -28254,13 +28255,23 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:RMuseum.Services.Implementation.GanjoorService.Faal(System.Int32,System.Boolean)">
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.Faal(System.Int32,System.Boolean,System.Boolean)">
             <summary>
-            get a random poem from hafez
+            get a random poem: with recitation = true a recited poem from hafez (faal), otherwise a random poem
+            from the given poet (0 = from all of ganjoor). Poems containing words from the random-poem word
+            filter (<see cref="T:RMuseum.Utils.RandomPoemFilter"/>) are never returned.
             </summary>
             <param name="poetId"></param>
             <param name="recitation"></param>
+            <param name="applyWordFilter">false skips the explicit-word filter (used for the hafez faal)</param>
             <returns></returns>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._GetRandomPoemAsync(System.Int32,System.Boolean)">
+            <summary>
+            a random published poem of a poet (0 = any poet), skipping poems the word filter rejects.
+            A random id inside the id range of the candidate poems is drawn and the first poem at or after it
+            is taken, so gaps in the id sequence do not matter (they only weight the draw slightly).
+            </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetSimilarPoemsAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,RMuseum.Models.Ganjoor.GanjoorPoemFormat,System.String,System.Int32,System.Int32,System.Int32[])">
             <summary>
@@ -30725,6 +30736,32 @@
             Fetches over HTTP — point <c>baseUrl</c> at either the jsDelivr CDN URL
             (https://cdn.jsdelivr.net/gh/ORG/REPO@main/) or raw.githubusercontent.com. A missing file
             (404) is treated the same as "doesn't exist", not an error.
+            </summary>
+        </member>
+        <member name="T:RMuseum.Utils.RandomPoemFilter">
+             <summary>
+             A deliberately blunt word check used ONLY by the random-poem API (poem/random and the faal
+             endpoint) so that explicit poems are not served to people (and third-party apps) who did not ask
+             for them. Excluding a poem from the random pool costs nothing - it stays everywhere else on the
+             site - so the check errs on the side of excluding: a few innocent poems being skipped is fine.
+            
+             The text is normalized first (Arabic yeh/kaf unified, vowel marks, tatweel and ZWNJ removed) and a
+             stem matches when it starts a word and is followed by at most three more letters (suffixes such as
+             the possessive endings: کیرم، کونی ...). Words that are common in innocent text (e.g. «کس») must
+             never be listed on their own.
+            
+             More stems can be added without touching the code: appsettings.json,
+             "RandomPoem": { "ExtraBannedStems": [ "..." ] } (written in normal Persian spelling).
+             </summary>
+        </member>
+        <member name="M:RMuseum.Utils.RandomPoemFilter.Configure(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            reads the optional extra stems from configuration (RandomPoem:ExtraBannedStems)
+            </summary>
+        </member>
+        <member name="M:RMuseum.Utils.RandomPoemFilter.IsAllowed(System.String[])">
+            <summary>
+            true if none of the given texts contains a banned stem
             </summary>
         </member>
         <member name="T:RMuseum.Utils.SemanticSearch.EmbeddingIndex">

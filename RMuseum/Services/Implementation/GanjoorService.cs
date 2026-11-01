@@ -2768,36 +2768,78 @@ namespace RMuseum.Services.Implementation
                 41
             };
 
-            return _GetRandomPoemId(poetIdArray[r.Next(0, poetIdArray.Length - 1)], loopBreaker++);
+            return _GetRandomPoemId(poetIdArray[r.Next(0, poetIdArray.Length)], loopBreaker + 1);
 
         }
 
 
 
         /// <summary>
-        /// get a random poem from hafez
+        /// get a random poem: with recitation = true a recited poem from hafez (faal), otherwise a random poem
+        /// from the given poet (0 = from all of ganjoor). Poems containing words from the random-poem word
+        /// filter (<see cref="RMuseum.Utils.RandomPoemFilter"/>) are never returned.
         /// </summary>
         /// <param name="poetId"></param>
         /// <param name="recitation"></param>
+        /// <param name="applyWordFilter">false skips the explicit-word filter (used for the hafez faal)</param>
         /// <returns></returns>
-        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> Faal(int poetId = 2, bool recitation = true)
+        public async Task<RServiceResult<GanjoorPoemCompleteViewModel>> Faal(int poetId = 2, bool recitation = true, bool applyWordFilter = true)
         {
-            int poemId = _GetRandomPoemId(poetId);
-            var poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).AsNoTracking().SingleOrDefaultAsync();
-            PublicRecitationViewModel[] recitations = poem == null || !recitation ? new PublicRecitationViewModel[] { } : (await GetPoemRecitations(poemId)).Result;
-            int loopPreventer = 0;
-            while (poem == null || (recitation && recitations.Length == 0))
+            if (!recitation)
             {
-                poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).AsNoTracking().SingleOrDefaultAsync();
-                recitations = poem == null ? new PublicRecitationViewModel[] { } : (await GetPoemRecitations(poemId)).Result;
-                loopPreventer++;
-                if (loopPreventer > 5)
-                {
-                    return new RServiceResult<GanjoorPoemCompleteViewModel>(null);
-                }
+                return await _GetRandomPoemAsync(poetId, applyWordFilter);
             }
 
-            return await GetPoemById(poemId, false, false, false, recitation, false, false, false, true /*verse details*/, false);
+            for (int attempt = 0; attempt < 30; attempt++)
+            {
+                int poemId = _GetRandomPoemId(poetId);
+                var poem = await _context.GanjoorPoems.Where(p => p.Id == poemId).AsNoTracking().SingleOrDefaultAsync();
+                if (poem == null || (applyWordFilter && !RMuseum.Utils.RandomPoemFilter.IsAllowed(poem.Title, poem.PlainText)))
+                    continue;
+                PublicRecitationViewModel[] recitations = (await GetPoemRecitations(poemId)).Result;
+                if (recitations.Length == 0)
+                    continue;
+                return await GetPoemById(poemId, false, false, false, true, false, false, false, true /*verse details*/, false);
+            }
+            return new RServiceResult<GanjoorPoemCompleteViewModel>(null);
+        }
+
+        /// <summary>
+        /// a random published poem of a poet (0 = any poet), skipping poems the word filter rejects.
+        /// A random id inside the id range of the candidate poems is drawn and the first poem at or after it
+        /// is taken, so gaps in the id sequence do not matter (they only weight the draw slightly).
+        /// </summary>
+        private async Task<RServiceResult<GanjoorPoemCompleteViewModel>> _GetRandomPoemAsync(int poetId, bool applyWordFilter = true)
+        {
+            IQueryable<GanjoorPoem> candidates = _context.GanjoorPoems.AsNoTracking()
+                .Where(p => p.Published && p.Cat.Published && p.Cat.Poet.Published);
+            if (poetId > 0)
+            {
+                candidates = candidates.Where(p => p.Cat.PoetId == poetId);
+            }
+
+            string cacheKey = $"random-poem-id-range-{poetId}";
+            if (!_memoryCache.TryGetValue(cacheKey, out (int MinId, int MaxId) range))
+            {
+                if (!await candidates.AnyAsync())
+                    return new RServiceResult<GanjoorPoemCompleteViewModel>(null);
+                range = (await candidates.MinAsync(p => p.Id), await candidates.MaxAsync(p => p.Id));
+                _memoryCache.Set(cacheKey, range, TimeSpan.FromHours(1));
+            }
+
+            for (int attempt = 0; attempt < 40; attempt++)
+            {
+                int startId = Random.Shared.Next(range.MinId, range.MaxId + 1);
+                var candidate = await candidates
+                    .Where(p => p.Id >= startId)
+                    .OrderBy(p => p.Id)
+                    .Select(p => new { p.Id, p.Title, p.PlainText })
+                    .FirstOrDefaultAsync();
+                if (candidate == null || (applyWordFilter && !RMuseum.Utils.RandomPoemFilter.IsAllowed(candidate.Title, candidate.PlainText)))
+                    continue;
+                return await GetPoemById(candidate.Id, false, false, false, false, false, false, false, true /*verse details*/, false);
+            }
+            return new RServiceResult<GanjoorPoemCompleteViewModel>(null);
         }
 
         /// <summary>

@@ -1927,15 +1927,15 @@ namespace RMuseum.Controllers
         public async Task<IActionResult> Faal()
         {
             RServiceResult<GanjoorPoemCompleteViewModel> res =
-                await _ganjoorService.Faal(2, true);
+                await _ganjoorService.Faal(2, true, false); // hafez: no word filter
             if (!string.IsNullOrEmpty(res.ExceptionString))
                 return BadRequest(res.ExceptionString);
             return Ok(res.Result);
         }
 
         /// <summary>
-        /// get a random poem from a poet (c.ganjoor.net replacement), 0 means random poet, 
-        /// حافظ (2)، خیام (3)، ابوسعید ابوالخیر (26)، صائب (22)، سعدی (7)، باباطاهر (28)، مولوی (5)، اوحدی (19)، خواجو (20)، شهریار (35)، عراقی (21)، فروغی بسطامی (32)، سلمان ساوجی (40)، محتشم کاشانی (29)، امیرخسرو دهلوی (34)، سیف فرغانی (31)، عبید زاکانی (33)، هاتف اصفهانی (25) یا رهی معیری (41)
+        /// get a random poem from a poet (c.ganjoor.net replacement), 0 means a random poem from all of ganjoor.
+        /// poems containing explicit words are never returned by this method
         /// </summary>
         /// <param name="poetId"></param>
         /// <returns></returns>

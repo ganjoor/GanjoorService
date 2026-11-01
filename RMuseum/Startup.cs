@@ -48,6 +48,7 @@ namespace RMuseum
         {
             Configuration = configuration;
             RMuseum.Utils.ExternalAssets.Configure(configuration);
+            RMuseum.Utils.RandomPoemFilter.Configure(configuration);
         }
 
         public IConfiguration Configuration { get; }

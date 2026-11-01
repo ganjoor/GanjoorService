@@ -602,8 +602,9 @@ namespace RMuseum.Services
         /// </summary>
         /// <param name="poetId"></param>
         /// <param name="recitation"></param>
+        /// <param name="applyWordFilter">false skips the explicit-word filter (used for the hafez faal)</param>
         /// <returns></returns>
-        Task<RServiceResult<GanjoorPoemCompleteViewModel>> Faal(int poetId = 2, bool recitation = true);
+        Task<RServiceResult<GanjoorPoemCompleteViewModel>> Faal(int poetId = 2, bool recitation = true, bool applyWordFilter = true);
 
         /// <summary>
         /// import from sqlite
