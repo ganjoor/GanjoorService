@@ -2805,47 +2805,90 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// a random poem of a published poet (0 = any poet), skipping poems the word filter rejects.
-        /// The ids of all candidate poems are cached (one hour) and one of them is picked uniformly at random,
-        /// so the draw does not depend on how the ids are distributed (gaps, id ranges per poet).
+        /// a random poem for the random-poem api. Global mode (poetId = 0) first picks a poet (every published
+        /// poet has the same chance), then one of the poet's poems; if that poet has no suitable poem after a few
+        /// tries another poet is picked. Only poems made exclusively of proper couplets qualify (no paragraphs,
+        /// comments, free-form or orphan verses) and poems rejected by the word filter are skipped.
         /// </summary>
         private async Task<RServiceResult<GanjoorPoemCompleteViewModel>> _GetRandomPoemAsync(int poetId, bool applyWordFilter = true)
+        {
+            const string poetsCacheKey = "random-poem-published-poet-ids";
+            if (!_memoryCache.TryGetValue(poetsCacheKey, out int[] publishedPoetIds))
+            {
+                publishedPoetIds = await _context.GanjoorPoets.AsNoTracking().Where(p => p.Published).Select(p => p.Id).ToArrayAsync();
+                _memoryCache.Set(poetsCacheKey, publishedPoetIds, TimeSpan.FromHours(1));
+            }
+            if (publishedPoetIds.Length == 0 || (poetId > 0 && !publishedPoetIds.Contains(poetId)))
+                return new RServiceResult<GanjoorPoemCompleteViewModel>(null);
+
+            int maxPoetAttempts = poetId > 0 ? 6 : 25;
+            const int triesPerPoet = 5;
+            for (int poetAttempt = 0; poetAttempt < maxPoetAttempts; poetAttempt++)
+            {
+                int chosenPoetId = poetId > 0 ? poetId : publishedPoetIds[Random.Shared.Next(publishedPoetIds.Length)];
+                int[] poemIds = await _GetPoetPoemIdsForRandomAsync(chosenPoetId);
+                if (poemIds.Length == 0)
+                    continue;
+                for (int attempt = 0; attempt < triesPerPoet; attempt++)
+                {
+                    int poemId = poemIds[Random.Shared.Next(poemIds.Length)];
+                    var positions = await _context.GanjoorVerses.AsNoTracking()
+                        .Where(v => v.PoemId == poemId)
+                        .OrderBy(v => v.VOrder)
+                        .Select(v => v.VersePosition)
+                        .ToListAsync();
+                    if (!_IsCoupletsOnly(positions))
+                        continue;
+                    if (applyWordFilter)
+                    {
+                        var candidate = await _context.GanjoorPoems.AsNoTracking()
+                            .Where(p => p.Id == poemId)
+                            .Select(p => new { p.Title, p.PlainText })
+                            .SingleOrDefaultAsync();
+                        if (candidate == null || !RMuseum.Utils.RandomPoemFilter.IsAllowed(candidate.Title, candidate.PlainText))
+                            continue;
+                    }
+                    return await GetPoemById(poemId, false, false, false, false, false, false, false, true /*verse details*/, false);
+                }
+            }
+            return new RServiceResult<GanjoorPoemCompleteViewModel>(null);
+        }
+
+        /// <summary>
+        /// ids of a poet's poems (cached for an hour; empty results are not cached since poetId comes from the public api)
+        /// </summary>
+        private async Task<int[]> _GetPoetPoemIdsForRandomAsync(int poetId)
         {
             string cacheKey = $"random-poem-ids-{poetId}";
             if (!_memoryCache.TryGetValue(cacheKey, out int[] poemIds))
             {
-                // only the poet's own Published flag is used: GanjoorPoem.Published / GanjoorCat.Published are not
-                // set for most of the older content, so filtering on them shrank the pool to a few recent categories
-                IQueryable<GanjoorPoem> candidates = _context.GanjoorPoems.AsNoTracking()
-                    .Where(p => p.Cat.Poet.Published);
-                if (poetId > 0)
-                {
-                    candidates = candidates.Where(p => p.Cat.PoetId == poetId);
-                }
-                poemIds = await candidates.Select(p => p.Id).ToArrayAsync();
-                if (poemIds.Length > 0) // do not cache empty results: poetId comes from the public api
+                poemIds = await _context.GanjoorPoems.AsNoTracking().Where(p => p.Cat.PoetId == poetId).Select(p => p.Id).ToArrayAsync();
+                if (poemIds.Length > 0)
                 {
                     _memoryCache.Set(cacheKey, poemIds, TimeSpan.FromHours(1));
                 }
             }
-            if (poemIds.Length == 0)
-                return new RServiceResult<GanjoorPoemCompleteViewModel>(null);
+            return poemIds;
+        }
 
-            for (int attempt = 0; attempt < 40; attempt++)
+        /// <summary>
+        /// true if the verses (in order) are nothing but whole couplets: Right then Left, or CenteredVerse1 then
+        /// CenteredVerse2. Paragraphs, comments, free-form verses and unpaired verses disqualify the poem.
+        /// </summary>
+        private static bool _IsCoupletsOnly(IReadOnlyList<VersePosition> positions)
+        {
+            if (positions.Count == 0 || positions.Count % 2 != 0)
+                return false;
+            for (int i = 0; i < positions.Count; i += 2)
             {
-                int poemId = poemIds[Random.Shared.Next(poemIds.Length)];
-                if (applyWordFilter)
-                {
-                    var candidate = await _context.GanjoorPoems.AsNoTracking()
-                        .Where(p => p.Id == poemId)
-                        .Select(p => new { p.Title, p.PlainText })
-                        .SingleOrDefaultAsync();
-                    if (candidate == null || !RMuseum.Utils.RandomPoemFilter.IsAllowed(candidate.Title, candidate.PlainText))
-                        continue;
-                }
-                return await GetPoemById(poemId, false, false, false, false, false, false, false, true /*verse details*/, false);
+                var first = positions[i];
+                var second = positions[i + 1];
+                bool normal = first == VersePosition.Right && second == VersePosition.Left;
+                bool centered = first == VersePosition.CenteredVerse1 && second == VersePosition.CenteredVerse2;
+                if (!normal && !centered)
+                    return false;
             }
-            return new RServiceResult<GanjoorPoemCompleteViewModel>(null);
+            return true;
         }
 
         /// <summary>
