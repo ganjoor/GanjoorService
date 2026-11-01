@@ -2821,12 +2821,13 @@ namespace RMuseum.Services.Implementation
             if (publishedPoetIds.Length == 0 || (poetId > 0 && !publishedPoetIds.Contains(poetId)))
                 return new RServiceResult<GanjoorPoemCompleteViewModel>(null);
 
-            int maxPoetAttempts = poetId > 0 ? 6 : 25;
+            bool globalMode = poetId <= 0;
+            int maxPoetAttempts = globalMode ? 80 : 6;
             const int triesPerPoet = 5;
             for (int poetAttempt = 0; poetAttempt < maxPoetAttempts; poetAttempt++)
             {
                 int chosenPoetId = poetId > 0 ? poetId : publishedPoetIds[Random.Shared.Next(publishedPoetIds.Length)];
-                int[] poemIds = await _GetPoetPoemIdsForRandomAsync(chosenPoetId);
+                int[] poemIds = await _GetPoetPoemIdsForRandomAsync(chosenPoetId, globalMode);
                 if (poemIds.Length == 0)
                     continue;
                 for (int attempt = 0; attempt < triesPerPoet; attempt++)
@@ -2855,18 +2856,22 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// ids of a poet's poems (cached for an hour; empty results are not cached since poetId comes from the public api)
+        /// ids of a poet's poems (cached for an hour); in global mode only poems whose url contains ghazal or robaee
         /// </summary>
-        private async Task<int[]> _GetPoetPoemIdsForRandomAsync(int poetId)
+        private async Task<int[]> _GetPoetPoemIdsForRandomAsync(int poetId, bool ghazalOrRobaeeOnly)
         {
-            string cacheKey = $"random-poem-ids-{poetId}";
+            string cacheKey = $"random-poem-ids-{poetId}-{(ghazalOrRobaeeOnly ? "gr" : "all")}";
             if (!_memoryCache.TryGetValue(cacheKey, out int[] poemIds))
             {
-                poemIds = await _context.GanjoorPoems.AsNoTracking().Where(p => p.Cat.PoetId == poetId).Select(p => p.Id).ToArrayAsync();
-                if (poemIds.Length > 0)
+                IQueryable<GanjoorPoem> query = _context.GanjoorPoems.AsNoTracking().Where(p => p.Cat.PoetId == poetId);
+                if (ghazalOrRobaeeOnly)
                 {
-                    _memoryCache.Set(cacheKey, poemIds, TimeSpan.FromHours(1));
+                    // global mode: skip couplets taken out of the middle of long narrative poems (masnavi, shahname...)
+                    query = query.Where(p => p.FullUrl.Contains("ghazal") || p.FullUrl.Contains("robaee"));
                 }
+                poemIds = await query.Select(p => p.Id).ToArrayAsync();
+                // poetId always comes from the published poets list here (or was validated), so empty results can be cached too
+                _memoryCache.Set(cacheKey, poemIds, TimeSpan.FromHours(1));
             }
             return poemIds;
         }
