@@ -2805,7 +2805,7 @@ namespace RMuseum.Services.Implementation
         }
 
         /// <summary>
-        /// a random published poem of a poet (0 = any poet), skipping poems the word filter rejects.
+        /// a random poem of a published poet (0 = any poet), skipping poems the word filter rejects.
         /// The ids of all candidate poems are cached (one hour) and one of them is picked uniformly at random,
         /// so the draw does not depend on how the ids are distributed (gaps, id ranges per poet).
         /// </summary>
@@ -2814,8 +2814,10 @@ namespace RMuseum.Services.Implementation
             string cacheKey = $"random-poem-ids-{poetId}";
             if (!_memoryCache.TryGetValue(cacheKey, out int[] poemIds))
             {
+                // only the poet's own Published flag is used: GanjoorPoem.Published / GanjoorCat.Published are not
+                // set for most of the older content, so filtering on them shrank the pool to a few recent categories
                 IQueryable<GanjoorPoem> candidates = _context.GanjoorPoems.AsNoTracking()
-                    .Where(p => p.Published && p.Cat.Published && p.Cat.Poet.Published);
+                    .Where(p => p.Cat.Poet.Published);
                 if (poetId > 0)
                 {
                     candidates = candidates.Where(p => p.Cat.PoetId == poetId);
