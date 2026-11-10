@@ -1482,7 +1482,9 @@ namespace RMuseum.Services.Implementationa
                         Configuration.GetSection("ExternalFTPServer")["Password"]
                     );
                     ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
-                    await ftpClient.AutoConnect();
+                    ftpClient.Config.EncryptionMode = FtpEncryptionMode.Explicit; // explicit FTPS (AUTH TLS)
+                    ftpClient.Config.DataConnectionEncryption = true;
+                    await ftpClient.Connect();
                     ftpClient.Config.RetryAttempts = 3;
 
                     await ftpClient.UploadFile(narration.LocalXmlFilePath, $"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}", createRemoteDir: true);
@@ -1594,7 +1596,9 @@ namespace RMuseum.Services.Implementationa
                         Configuration.GetSection("ExternalFTPServer")["Password"]
                     );
                     ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
-                    await ftpClient.AutoConnect();
+                    ftpClient.Config.EncryptionMode = FtpEncryptionMode.Explicit; // explicit FTPS (AUTH TLS)
+                    ftpClient.Config.DataConnectionEncryption = true;
+                    await ftpClient.Connect();
                     ftpClient.Config.RetryAttempts = 3;
 
                     if (true == await ftpClient.FileExists($"{Configuration.GetSection("ExternalFTPServer")["RootPath"]}{narration.RemoteXMLFilePath}"))

@@ -88,7 +88,9 @@ namespace RMuseum.Services.Implementation
                                             Configuration.GetSection("ExternalFTPServer")["Password"]
                                         );
                                     ftpClient.ValidateCertificate += FtpClient_ValidateCertificate;
-                                    await ftpClient.AutoConnect();
+                                    ftpClient.Config.EncryptionMode = FtpEncryptionMode.Explicit; // explicit FTPS (AUTH TLS)
+                                    ftpClient.Config.DataConnectionEncryption = true;
+                                    await ftpClient.Connect();
                                     ftpClient.Config.RetryAttempts = 3;
                                     while (next != null)
                                     {

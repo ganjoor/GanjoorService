@@ -28268,9 +28268,21 @@
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService._GetRandomPoemAsync(System.Int32,System.Boolean)">
             <summary>
-            a random published poem of a poet (0 = any poet), skipping poems the word filter rejects.
-            A random id inside the id range of the candidate poems is drawn and the first poem at or after it
-            is taken, so gaps in the id sequence do not matter (they only weight the draw slightly).
+            a random poem for the random-poem api. Global mode (poetId = 0) first picks a poet (every published
+            poet has the same chance), then one of the poet's poems; if that poet has no suitable poem after a few
+            tries another poet is picked. Only poems made exclusively of proper couplets qualify (no paragraphs,
+            comments, free-form or orphan verses) and poems rejected by the word filter are skipped.
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._GetPoetPoemIdsForRandomAsync(System.Int32,System.Boolean)">
+            <summary>
+            ids of a poet's poems (cached for an hour); in global mode only poems whose url contains ghazal or robaee
+            </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService._IsCoupletsOnly(System.Collections.Generic.IReadOnlyList{RMuseum.Models.Ganjoor.VersePosition})">
+            <summary>
+            true if the verses (in order) are nothing but whole couplets: Right then Left, or CenteredVerse1 then
+            CenteredVerse2. Paragraphs, comments, free-form verses and unpaired verses disqualify the poem.
             </summary>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.GetSimilarPoemsAsync(RSecurityBackend.Models.Generic.PagingParameterModel,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.String,RMuseum.Models.Ganjoor.GanjoorPoemFormat,System.String,System.Int32,System.Int32,System.Int32[])">
