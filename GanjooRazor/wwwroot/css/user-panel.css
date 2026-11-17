@@ -10,9 +10,10 @@
 */
 
 :root {
-    --up-primary: #300;
-    --up-primary-hover: #4d1010;
-    --up-on-primary: #fff;
+    /* Align with public parchment–ink–seal tokens where the panel shares the site feel. */
+    --up-primary: #bf3f2a;
+    --up-primary-hover: #9a2f1f;
+    --up-on-primary: #fffaf0;
 
     --up-success: #0a0;
     --up-success-dark: darkgreen;
@@ -21,18 +22,18 @@
     --up-danger-dark: darkred;
     --up-gray: slategray;
 
-    --up-bg: #f5f7fb;
-    --up-surface: #fff;
-    --up-surface-alt: #f4f1ec;
-    --up-border: #e0e0e0;
-    --up-text: #222;
-    --up-text-muted: #666;
+    --up-bg: #f5f6f8;
+    --up-surface: #ffffff;
+    --up-surface-alt: #f0f2f5;
+    --up-border: #cfd5de;
+    --up-text: #1c1916;
+    --up-text-muted: #5c564e;
 
-    --up-radius-sm: 5px;
-    --up-radius: 10px;
+    --up-radius-sm: 8px;
+    --up-radius: 14px;
     --up-radius-lg: 16px;
-    --up-shadow: 0 5px 0.3rem rgba(0, 0, 0, 0.3);
-    --up-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.12);
+    --up-shadow: 0 8px 28px rgba(26, 20, 16, 0.08);
+    --up-shadow-sm: 0 2px 8px rgba(26, 20, 16, 0.1);
 
     --up-space-1: 4px;
     --up-space-2: 8px;
