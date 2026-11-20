@@ -55,14 +55,14 @@ else
 
     <div id="fa">
 
-        <div class="actionbox">
-            <form action="/search" method="get" id="searchhorm">
+        <div class="actionbox ganjoor-search-cluster ganjoor-search-cluster--home">
+            <form action="/search" method="get" id="searchhorm" class="ganjoor-search ganjoor-search--home">
                 <span class="home-search-input-wrap">
-                    <input type="text" name="s" id="s" placeholder="جستجو" class="inputText" size="35" value="" oninput="onHomeSearchInput(this.value)">
+                    <input type="text" name="s" id="s" placeholder="جستجو" class="inputText ganjoor-search__query" size="35" value="" oninput="onHomeSearchInput(this.value)" autocomplete="off">
                     <span id="home-search-clear" class="home-search-clear" style="display:none" title="پاک‌کردن" onclick="clearHomeSearch()">×</span>
                 </span>
                 <input type="hidden" name="es" id="es" value="1">
-                <select name="author" id="author">
+                <select name="author" id="author" class="ganjoor-search__scope">
                     <option value="0" selected>در آثار همهٔ سخنوران</option>
                     @{
                         foreach (RMuseum.Models.Ganjoor.ViewModels.GanjoorPoetViewModel poet in Model.Poets)
@@ -71,7 +71,7 @@ else
                         }
                     }
                 </select>
-                <input type="submit" value="بیاب">
+                <input type="submit" class="ganjoor-search__submit" value="بیاب">
             </form>
         </div>
 

@@ -1,14 +1,14 @@
 ﻿@model GanjooRazor.Pages._SearchHeaderPartialModel
-<div id="hdr2" class="clearfix">
+<div id="hdr2" class="clearfix ganjoor-masthead">
     <h1><a href="/" title="گنجور"><img src="/image/gdapk.png" alt="گنجور" /></a></h1>
-    <div class="actionbox">
-        <form action="/search" method="get" id="searchform">
-            <input type="text" name="s" id="s" class="inputText" value="@Model.SearchQuery" placeholder="جستجو" />
+    <div class="actionbox ganjoor-search-cluster">
+        <form action="/search" method="get" id="searchform" class="ganjoor-search">
+            <input type="text" name="s" id="s" class="inputText ganjoor-search__query" value="@Model.SearchQuery" placeholder="جستجو" autocomplete="off" />
             @if (Model.ShowExactSearchHiddenField)
             {
                 <input type="hidden" name="es" id="es" value="1" />
             }
-            <select name="author" id="author" onchange="onSelectedPoetChanged()">
+            <select name="author" id="author" class="ganjoor-search__scope" onchange="onSelectedPoetChanged()">
                 @{
                     if (Model.SelectedPoetId != 0)
                     {
@@ -37,7 +37,7 @@
             </select>
             @if (Model.CurrentCategory != null)
             {
-                <select name="cat" id="cat" style="@(Model.WideCategorySelect ? "width:150px" : "")">
+                <select name="cat" id="cat" class="ganjoor-search__scope ganjoor-search__scope--cat" style="@(Model.WideCategorySelect ? "width:150px" : "")">
                     @{
                         var effectiveSelectedCatId = Model.SelectedCategoryId ?? Model.CurrentCategory.Id;
 
@@ -86,7 +86,7 @@
                 </select>
             }
 
-            <input type="submit" value="بیاب" />
+            <input type="submit" class="ganjoor-search__submit" value="بیاب" />
         </form>
     </div><!-- .actionbox -->
 </div><!-- #hdr2 -->
