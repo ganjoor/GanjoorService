@@ -70,6 +70,13 @@ namespace RMuseum.Utils.SemanticSearch
 
         private readonly int _maxQueryTokens;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="modelPath"></param>
+        /// <param name="vocabPath"></param>
+        /// <param name="mergesPath"></param>
+        /// <param name="dimension"></param>
         /// <param name="intraOpThreads">threads ONNX Runtime may use for one query (0 = its default, i.e. all cores)</param>
         /// <param name="maxQueryTokens">queries longer than this many tokens are cut (bounds CPU time and memory per query)</param>
         public QueryEmbedder(string modelPath, string vocabPath, string mergesPath, int dimension = 1024,
