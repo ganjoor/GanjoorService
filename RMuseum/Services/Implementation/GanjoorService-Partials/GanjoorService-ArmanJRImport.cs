@@ -162,7 +162,7 @@ namespace RMuseum.Services.Implementation
             {
                 if (!string.IsNullOrEmpty(verseDto.CoupletSummary))
                 {
-                    var editableVerse = editableVerses.Where(v => v.Id == verseDto.Id).SingleOrDefault();
+                    var editableVerse = editableVerses.Where(v => v.VOrder == verseDto.VOrder).SingleOrDefault();
                     if (editableVerse != null)
                     {
                         if (editableVerse.CoupletSummary.StartsWith(AISummaryPrefix))
