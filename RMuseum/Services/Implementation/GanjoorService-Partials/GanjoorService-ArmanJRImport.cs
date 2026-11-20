@@ -149,7 +149,7 @@ namespace RMuseum.Services.Implementation
             if (editablePoem == null)
                 return;
 
-            if (!string.IsNullOrEmpty(poemDto.PoemSummary) && editablePoem.PoemSummary.StartsWith(AISummaryPrefix))
+            if (!string.IsNullOrEmpty(poemDto.PoemSummary) && (string.IsNullOrEmpty(editablePoem.PoemSummary) || editablePoem.PoemSummary.StartsWith(AISummaryPrefix)))
             {
                 editablePoem.PoemSummary = poemDto.PoemSummary;
                 context.Update(editablePoem);
@@ -165,7 +165,7 @@ namespace RMuseum.Services.Implementation
                     var editableVerse = editableVerses.Where(v => v.VOrder == verseDto.VOrder).SingleOrDefault();
                     if (editableVerse != null)
                     {
-                        if (editableVerse.CoupletSummary.StartsWith(AISummaryPrefix))
+                        if (editableVerse.CoupletSummary == null || editableVerse.CoupletSummary.StartsWith(AISummaryPrefix))
                         {
                             editableVerse.CoupletSummary = verseDto.CoupletSummary;
                             context.Update(editableVerse);
