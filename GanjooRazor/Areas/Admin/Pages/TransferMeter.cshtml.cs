@@ -81,20 +81,6 @@ namespace GanjooRazor.Areas.Admin.Pages
 
                     RhythmsAlphabetically = rhythmsByVerseCount.ToArray();
 
-                    var pageUrlResponse = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/pageurl?id={Request.Query["id"]}");
-                    if (!pageUrlResponse.IsSuccessStatusCode)
-                    {
-                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(pageUrlResponse);
-                        return Page();
-                    }
-                    var pageUrl = JsonConvert.DeserializeObject<string>(await pageUrlResponse.Content.ReadAsStringAsync());
-
-                    var pageQuery = await secureClient.GetAsync($"{APIRoot.Url}/api/ganjoor/page?url={pageUrl}");
-                    if (!pageQuery.IsSuccessStatusCode)
-                    {
-                        FatalError = await global::GanjooRazor.Utils.ApiErrorReader.ReadErrorAsync(pageQuery);
-                        return Page();
-                    }
                 }
                 else
                 {
