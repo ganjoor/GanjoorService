@@ -1819,6 +1819,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Controllers.GanjoorController.StartImportAISummariesFromPublicDataRepo">
+            <summary>
+            https://x.com/itsArmanj/status/2123434482757996948
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Controllers.GanjoorController.GetUserPublicProfile(System.Guid)">
             <summary>
             Get user public profile
@@ -22424,6 +22430,12 @@
             <param name="poetId">0 imports every poet; a specific id imports only that poet (useful on a slow connection)</param>
             <returns></returns>
         </member>
+        <member name="M:RMuseum.Services.IGanjoorService.StartImportAISummariesFromPublicDataRepo">
+            <summary>
+            https://x.com/itsArmanj/status/2123434482757996948
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:RMuseum.Services.IGanjoorService.HealthCheckContents">
             <summary>
             examine site pages for broken links
@@ -25995,6 +26007,9 @@
             IGanjoorService implementation
             </summary>
             <summary>
+            IGanjoorService implementation
+            </summary>
+            <summary>
             IGanjoorService implementation: importing people, places, couplet tags and literary devices
             from a public data export tree (see GanjoorService-PublicDataExport.cs for the file layout)
             </summary>
@@ -26043,6 +26058,12 @@
             <summary>
             IGanjoorService implementation
             </summary>
+        </member>
+        <member name="M:RMuseum.Services.Implementation.GanjoorService.StartImportAISummariesFromPublicDataRepo">
+            <summary>
+            https://x.com/itsArmanj/status/2123434482757996948
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:RMuseum.Services.Implementation.GanjoorService.SwitchCoupletBookmark(System.Guid,System.Int32,System.Int32)">
             <summary>
@@ -30963,6 +30984,13 @@
             </summary>
         </member>
         <member name="M:RMuseum.Utils.SemanticSearch.QueryEmbedder.#ctor(System.String,System.String,System.String,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="modelPath"></param>
+            <param name="vocabPath"></param>
+            <param name="mergesPath"></param>
+            <param name="dimension"></param>
             <param name="intraOpThreads">threads ONNX Runtime may use for one query (0 = its default, i.e. all cores)</param>
             <param name="maxQueryTokens">queries longer than this many tokens are cut (bounds CPU time and memory per query)</param>
         </member>

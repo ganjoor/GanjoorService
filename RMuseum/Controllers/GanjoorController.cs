@@ -2552,6 +2552,32 @@ namespace RMuseum.Controllers
         }
 
         /// <summary>
+        /// https://x.com/itsArmanj/status/2123434482757996948
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("armanjr/import")]
+        [Authorize(Policy = RMuseumSecurableItem.GanjoorEntityShortName + ":" + RMuseumSecurableItem.ImportOperationShortName)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(string))]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public IActionResult StartImportAISummariesFromPublicDataRepo()
+        {
+            try
+            {
+                var res = _ganjoorService.StartImportAISummariesFromPublicDataRepo();
+                if (!string.IsNullOrEmpty(res.ExceptionString))
+                    return BadRequest(res.ExceptionString);
+                return Ok();
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.ToString());
+            }
+        }
+
+
+
+        /// <summary>
         /// Get user public profile
         /// </summary>
         /// <param name="id"></param>

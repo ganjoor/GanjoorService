@@ -670,6 +670,13 @@ namespace RMuseum.Services
         RServiceResult<bool> StartImportFromPublicDataRepo(bool useHttp, string location, int poetId = 0);
 
         /// <summary>
+        /// https://x.com/itsArmanj/status/2123434482757996948
+        /// </summary>
+        /// <returns></returns>
+        RServiceResult<bool> StartImportAISummariesFromPublicDataRepo();
+
+
+        /// <summary>
         /// examine site pages for broken links
         /// </summary>
         /// <returns></returns>
